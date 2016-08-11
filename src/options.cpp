@@ -37,7 +37,7 @@ options::options( QWidget * parent,
 
         m_ui->pushButton->setIcon( QIcon( ":/file.png" ) ) ;
 
-	this->setWindowIcon( QIcon( ":/cryfs-gui.png" ) ) ;
+	this->setWindowIcon( QIcon( ":/sirikali.png" ) ) ;
 
         connect( m_ui->pushButton,SIGNAL( clicked() ),this,SLOT( pushButton() ) ) ;
 

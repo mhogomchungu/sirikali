@@ -244,7 +244,14 @@ QString utility::executableFullPath( const QString& e )
 {
 	QString exe ;
 
-	for( const auto& it : { "/usr/local/bin/","/usr/local/sbin/","/usr/bin/","/usr/sbin/","/bin/","/sbin/" } ){
+	auto l = { "/usr/local/bin/",
+		   "/usr/local/sbin/",
+		   "/usr/bin/",
+		   "/usr/sbin/",
+		   "/bin/",
+		   "/sbin/" } ;
+
+	for( const auto& it : l ){
 
 		exe = it + e ;
 
@@ -393,9 +400,7 @@ This program is distributed in the hope that it will be useful,\
 but WITHOUT ANY WARRANTY; without even the implied warranty of \
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the \
 GNU General Public License for more details.\n\
-\n\
-You should have received a copy of the GNU General Public License\n\
-along with this program.  If not, see <http://www.gnu.org/licenses/>." ).arg( VERSION_STRING ) ;
+" ).arg( VERSION_STRING ) ;
 
 	DialogMsg m( parent ) ;
 	m.ShowUIInfo( QObject::tr( "about SiriKali" ),license ) ;

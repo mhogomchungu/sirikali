@@ -543,7 +543,7 @@ void sirikali::Show()
 
 	if( b.isEmpty() ){
 
-		oneinstance::instance( this,"cryfs-gui.socket","startGUI",
+		oneinstance::instance( this,"SiriKali.socket","startGUI",
 				       volume,[ this,volume ]( QObject * instance ){
 
 			connect( instance,SIGNAL( raise() ),this,
