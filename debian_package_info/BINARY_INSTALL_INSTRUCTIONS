@@ -17,12 +17,12 @@ In debian:
 
 1. Open the terminal.
 2. Change directories to where the debian packages are.
-3. Run the following command to install them: su -c "dpkg -i cryfs-gui*.deb"
+3. Run the following command to install them: su -c "dpkg -i sirikali*.deb"
 4. Enter root's password when asked.
 
 In Ubuntu:
 
 1. Open the terminal.
 2. Change directories to where the debian packages are.
-3. Run the following command to install them: sudo dpkg -i cryfs-gui*.deb
+3. Run the following command to install them: sudo dpkg -i sirikali*.deb
 4. Enter your password when asked.

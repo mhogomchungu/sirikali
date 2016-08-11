@@ -1,5 +1,5 @@
-usr/bin/cryfs_gui
+usr/bin/sirikali
 usr/share/applications/*
 usr/share/pixmaps/*
-usr/share/cryfs-gui/translations/*
+usr/share/sirikali/translations/*
 usr/share/icons/hicolor/48X48/apps/*

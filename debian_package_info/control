@@ -12,4 +12,4 @@ Vcs-Browser: https://github.com/mhogomchungu/sirikali
 Package: sirikali
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: A Qt/C++ fGUI front end to cryfs,gocryptfs,securefs and encfs.
+Description: A Qt/C++ GUI front end to cryfs,gocryptfs,securefs and encfs.
