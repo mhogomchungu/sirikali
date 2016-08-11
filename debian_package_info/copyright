@@ -1,12 +1,12 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: cryfs-gui
-Source: https://github.com/mhogomchungu/cryfs-gui
+Upstream-Name: SiriKali
+Source: https://github.com/mhogomchungu/sirikali
 
 Files: *
 Copyright: 2016 Mhogo Mchungu <mhogomchungu@gmail.com>
 License: GPL-2+
 
-Files: cryfs-gui/src/3rdParty/json.hpp
+Files: src/3rdParty/json.hpp
 Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 Copyright (c) 2013-2016 Niels Lohmann <http://nlohmann.me>.
 
@@ -28,7 +28,7 @@ LIABILITY, WHETHER IN AN ACTION OF  CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-Files: cryfs-gui/src/lxqt_wallet/*
+Files: src/lxqt_wallet/*
 Copyright: 2013 Mhogo Mchungu <mhogomchungu@gmail.com>
 License: BSD-2-clause
  All rights reserved.

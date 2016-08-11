@@ -7,9 +7,9 @@ that use "su" command to gain root's privileges.
 
 ps: copy and paste all commands to make sure you dont mistype them.
 
-ps: at step 4,make sure the version number on the command matches the version number of cryfs-gui you are building.
+ps: at step 4,make sure the version number on the command matches the version number of SiriKali you are building.
 
-HOW TO BUILD A CRYFS-GUI PACKAGE ON UBUNTU OR ANY OTHER DEBIAN BASED DISTRIBUTION THAT USES "SUDO".
+HOW TO BUILD A SiriKali PACKAGE ON UBUNTU OR ANY OTHER DEBIAN BASED DISTRIBUTION THAT USES "SUDO".
 
 
 2. Install a package called "build-essential" by running the following command:
@@ -30,7 +30,7 @@ HOW TO BUILD A CRYFS-GUI PACKAGE ON UBUNTU OR ANY OTHER DEBIAN BASED DISTRIBUTIO
    ******************************************************************************************************
 
 
-4. While on cryfs-gui's source folder,create a debian archive by running the following command:
+4. While on SiriKali's source folder,create a debian archive by running the following command:
 
    ******************************************************************************************************
 
@@ -39,7 +39,7 @@ HOW TO BUILD A CRYFS-GUI PACKAGE ON UBUNTU OR ANY OTHER DEBIAN BASED DISTRIBUTIO
    ******************************************************************************************************
 
 
-5. While still on cryfs-gui's source folder,create debian packages by runnning the following command:
+5. While still on SiriKali's source folder,create debian packages by runnning the following command:
 
    ******************************************************************************************************
 
@@ -48,11 +48,11 @@ HOW TO BUILD A CRYFS-GUI PACKAGE ON UBUNTU OR ANY OTHER DEBIAN BASED DISTRIBUTIO
    ******************************************************************************************************
 
 
-6. Wait for the build process to finish and then look at zuluCrypt's source folder's parent folder for zuluCrypt
+6. Wait for the build process to finish and then look at SiriKali's source folder's parent folder for SiriKali
    debian packages.
 
 
-7. While still on cryfs-gui's source folder,install cryfs-gui debian packages by running the following
+7. While still on SiriKali's source folder,install SiriKali debian packages by running the following
    command:
 
    ******************************************************************************************************
@@ -61,11 +61,11 @@ HOW TO BUILD A CRYFS-GUI PACKAGE ON UBUNTU OR ANY OTHER DEBIAN BASED DISTRIBUTIO
 
    ******************************************************************************************************
 
-8. cryfs-gui should now be installed and you can access it from desktop environment's application launcher.
+8. SiriKali should now be installed and you can access it from desktop environment's application launcher.
 
 
 
-HOW TO BUILD A CRYFS-GUI PACKAGE ON DEBIAN OR ANY OTHER DEBIAN BASED DISTRIBUTION THAT USES "SU".
+HOW TO BUILD A SiriKali PACKAGE ON DEBIAN OR ANY OTHER DEBIAN BASED DISTRIBUTION THAT USES "SU".
 
 
 2. Install a package called "build-essential" by running the following command:
@@ -86,7 +86,7 @@ HOW TO BUILD A CRYFS-GUI PACKAGE ON DEBIAN OR ANY OTHER DEBIAN BASED DISTRIBUTIO
    ******************************************************************************************************
 
 
-4. While on cryfs-gui's source folder,create a debian archive by running the following command:
+4. While on SiriKali's source folder,create a debian archive by running the following command:
 
    ******************************************************************************************************
 
@@ -95,7 +95,7 @@ HOW TO BUILD A CRYFS-GUI PACKAGE ON DEBIAN OR ANY OTHER DEBIAN BASED DISTRIBUTIO
    ******************************************************************************************************
 
 
-5. While still on cryfs-gui's source folder,create debian packages by runnning the following command:
+5. While still on SiriKali's source folder,create debian packages by runnning the following command:
 
    ******************************************************************************************************
 
@@ -104,11 +104,11 @@ HOW TO BUILD A CRYFS-GUI PACKAGE ON DEBIAN OR ANY OTHER DEBIAN BASED DISTRIBUTIO
    ******************************************************************************************************
 
 
-6. Wait for the build process to finish and then look at zuluCrypt's source folder's parent folder for zuluCrypt
+6. Wait for the build process to finish and then look at SiriKali's source folder's parent folder for SiriKali
    debian packages.
 
 
-7. While still on cryfs-gui's source folder,install cryfs-gui debian packages by running the following
+7. While still on SiriKali's source folder,install SiriKali debian packages by running the following
    command:
 
    ******************************************************************************************************
@@ -118,4 +118,4 @@ HOW TO BUILD A CRYFS-GUI PACKAGE ON DEBIAN OR ANY OTHER DEBIAN BASED DISTRIBUTIO
    ******************************************************************************************************
 
 
-8. cryfs-gui should now be installed and you can access it from desktop environment's application launcher.
+8. SiriKali should now be installed and you can access it from desktop environment's application launcher.

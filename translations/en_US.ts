@@ -130,7 +130,7 @@ options:
 	     mode and a value of &quot;ro&quot; will open the volume in read only mode.
 	-z   Full path of the mount point to be used when the volume is opened from CLI.
 	     This option is optional.
-        -c   Set Cryfs Configuration File Path when a volume is opened from CLI.
+        -c   Set Configuration File Path when a volume is opened from CLI.
 	-i   Set inactivity timeout(in minutes) to dismount the volume when mounted from CLI.
 
 </source>
@@ -148,7 +148,7 @@ options:
     </message>
     <message>
         <location filename="../src/utility.cpp" line="410"/>
-        <source>about cryfs-gui</source>
+        <source>about SiriKali</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

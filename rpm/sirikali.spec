@@ -24,7 +24,7 @@ License:        GPL-2.0+
 Group:          Productivity/Security
 Source:         %{name}-%{version}.tar.xz
 Source100:      sirikali-rpmlint
-URL:            http://mhogomchungu.github.io/SiriKali
+URL:            http://mhogomchungu.github.io/sirikali
 
 BuildRequires: cmake
 BuildRequires: gcc-c++
@@ -41,7 +41,7 @@ BuildRequires: libqt5-qtbase-devel
 %endif
 
 %description
-sirikali is a Qt/C++ front end to encfs,cryfs,gocryptfs and securefs.
+SiriKali is a Qt/C++ GUI front end to encfs,cryfs,gocryptfs and securefs.
 
 %prep
 %setup -q

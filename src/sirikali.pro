@@ -14,7 +14,7 @@ SOURCES += lxqt_wallet/frontend/password_dialog.cpp \
     keydialog.cpp  \
     plugin.cpp   \
     walletconfig.cpp   \
-    cryfstask.cpp  \
+    siritask.cpp  \
     main.cpp  \
     readonlywarning.cpp \
     walletconfiginput.cpp \

@@ -20,7 +20,7 @@ version 1.0.0
 
 -- Add ability to auto unlock a volume from CLI.An example of how to do this is:
 
-   cryfs_gui -d /home/mtz/cryfs.volume -b "internal"
+   sirikali -d /home/mtz/cryfs.volume -b "internal"
 
    The "-b" option gives a passphrase storage backend to use to retrieve the password to unlock
    the volume. Currently,only 3 backends are supported:
@@ -31,7 +31,7 @@ version 1.0.0
    Set the backend to use a blank passphrase(not recommended) if you want to be able to unlock
    your volumes without being prompt for a backend password.
 
--- Add support for unlocking a cryfs volume using an external config file.
+-- Add support for unlocking volumes using an external config file.
 -- Add a GUI ability to show cryfs file system space utilization.
 -- Add a menu entry to set default mount point path prefix.
 -- Add a convenient "HMAC+KeyFile" option to use a keyfile with an empty passphrase
