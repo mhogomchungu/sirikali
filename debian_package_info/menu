@@ -1,2 +1,2 @@
-?package(cryfs-gui):needs="X11" section="Applications/System/Security"\
-  title="cryfs-gui" command="/usr/bin/cryfs_gui"
+?package(sirikali):needs="X11" section="Applications/System/Security"\
+  title="SiriKali" command="/usr/bin/sirikali"
