@@ -1,0 +1,121 @@
+
+1. If this folder is named "debian_package_info" then rename it to "debian" before proceeding.
+
+These instructions starts with howto on ubuntu or any other debian based distribtion that use "sudo" command
+to gain root's privileges and then ends with howto on debian or any other debian based distribtion
+that use "su" command to gain root's privileges.
+
+ps: copy and paste all commands to make sure you dont mistype them.
+
+ps: at step 4,make sure the version number on the command matches the version number of cryfs-gui you are building.
+
+HOW TO BUILD A CRYFS-GUI PACKAGE ON UBUNTU OR ANY OTHER DEBIAN BASED DISTRIBUTION THAT USES "SUDO".
+
+
+2. Install a package called "build-essential" by running the following command:
+
+   ******************************************************************************************************
+
+   sudo apt-get install build-essential
+
+   ******************************************************************************************************
+
+
+3. Run the following command to make sure all required packages are installed:
+
+   ******************************************************************************************************
+
+   sudo apt-get -f install tar xz-utils qtbase5-dev g++ cmake libgcrypt20-dev libsecret-1-dev pkg-config chrpath bzip2 debhelper
+
+   ******************************************************************************************************
+
+
+4. While on cryfs-gui's source folder,create a debian archive by running the following command:
+
+   ******************************************************************************************************
+
+   tar cf - . | xz -zf - > ../SiriKali-1.0.0.orig.tar.xz
+
+   ******************************************************************************************************
+
+
+5. While still on cryfs-gui's source folder,create debian packages by runnning the following command:
+
+   ******************************************************************************************************
+
+   dpkg-buildpackage -uc -us
+
+   ******************************************************************************************************
+
+
+6. Wait for the build process to finish and then look at zuluCrypt's source folder's parent folder for zuluCrypt
+   debian packages.
+
+
+7. While still on cryfs-gui's source folder,install cryfs-gui debian packages by running the following
+   command:
+
+   ******************************************************************************************************
+
+   sudo dpkg --install ../*.deb
+
+   ******************************************************************************************************
+
+8. cryfs-gui should now be installed and you can access it from desktop environment's application launcher.
+
+
+
+HOW TO BUILD A CRYFS-GUI PACKAGE ON DEBIAN OR ANY OTHER DEBIAN BASED DISTRIBUTION THAT USES "SU".
+
+
+2. Install a package called "build-essential" by running the following command:
+
+   ******************************************************************************************************
+
+   su -c "apt-get install build-essential"
+
+   ******************************************************************************************************
+
+
+3. Run the following command to make sure all required packages are installed:
+
+   ******************************************************************************************************
+
+   su -c "apt-get -f install tar xz-utils qtbase5-dev g++ cmake libgcrypt20-dev libsecret-1-dev pkg-config chrpath bzip2 debhelper"
+
+   ******************************************************************************************************
+
+
+4. While on cryfs-gui's source folder,create a debian archive by running the following command:
+
+   ******************************************************************************************************
+
+   tar cf - . | xz -zf - > ../SiriKali-1.0.0.orig.tar.xz
+
+   ******************************************************************************************************
+
+
+5. While still on cryfs-gui's source folder,create debian packages by runnning the following command:
+
+   ******************************************************************************************************
+
+   dpkg-buildpackage -uc -us
+
+   ******************************************************************************************************
+
+
+6. Wait for the build process to finish and then look at zuluCrypt's source folder's parent folder for zuluCrypt
+   debian packages.
+
+
+7. While still on cryfs-gui's source folder,install cryfs-gui debian packages by running the following
+   command:
+
+   ******************************************************************************************************
+
+   su -c "dpkg --install ../*.deb && apt-get install -f"
+
+   ******************************************************************************************************
+
+
+8. cryfs-gui should now be installed and you can access it from desktop environment's application launcher.

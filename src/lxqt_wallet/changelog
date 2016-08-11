@@ -1,0 +1,4 @@
+
+- version 1.0.0
+	- initial release
+	- libgcrypt is used for encryption and decryption of the internal wallet

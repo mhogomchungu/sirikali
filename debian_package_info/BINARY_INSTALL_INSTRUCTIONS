@@ -1,0 +1,28 @@
+
+This package contains debian packages for 32 bit systems and 64 bit systems.
+
+Packages for 32 bit systems are in i386 folder.
+
+Packages for 64 bit systems are in amd64 folder.
+
+Use packages that match your computer architecture.
+
+To install this packages,just click on it and see if your system understands how to
+install debian packages.
+
+If your system does not understand how to install debian packages by clicking on them,then install
+them using the following steps:
+
+In debian:
+
+1. Open the terminal.
+2. Change directories to where the debian packages are.
+3. Run the following command to install them: su -c "dpkg -i cryfs-gui*.deb"
+4. Enter root's password when asked.
+
+In Ubuntu:
+
+1. Open the terminal.
+2. Change directories to where the debian packages are.
+3. Run the following command to install them: sudo dpkg -i cryfs-gui*.deb
+4. Enter your password when asked.

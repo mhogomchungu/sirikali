@@ -1,0 +1,11 @@
+
+ <!DOCTYPE RCC>
+ <RCC version="1.0">
+	 <qresource>
+		 <file>sirikali.png</file>
+		 <file>folder.png</file>
+		 <file>file.png</file>
+		 <file>keyfile.png</file>
+		 <file>module.png</file>
+	 </qresource>
+ </RCC>

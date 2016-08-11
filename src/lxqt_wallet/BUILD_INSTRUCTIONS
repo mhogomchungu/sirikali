@@ -1,0 +1,23 @@
+
+
+The build system in use is cmake
+
+To build make sure you have the following packages installed(packages may be named differently in your distribution):
+
+g++
+gcc
+cmake
+kde-devel( if you want to build KDE/KWALLET support )
+qt4-devel
+
+Build instructions are below:
+
+mkdir build
+cd build
+cmake -DCMAKE_INSTALL_PREFIX=`kde4-config --prefix`  -DCMAKE_BUILD_TYPE=RELEASE ..
+make
+make install
+
+To build without KDE/KWALLET support,pass "-DNOKDESUPPORT=true" as one of the arguments in the third stage above
+
+To build without gnome/secret_service support,pass "-DNOSECRETSUPPORT=true" as one of the arguments in the third stage above

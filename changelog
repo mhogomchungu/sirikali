@@ -1,0 +1,41 @@
+
+version 1.0.0
+-- Initial release.
+-- Can create and unlock Cryfs Volumes.
+-- Can create and unlock Encfs Volumes.
+-- Can create and unlock Gocryptfs Volumes.
+-- Can create and unlock Securefs Volumes.
+-- Can save and retrieve volumes keys from KDE wallet,GNOME's libsecret and an internal
+   secured storage system backed by libgcrypt.
+-- Can save favorite volumes for easier access to frequently used volumes.
+-- Can use keys derived from passphrases,keyfiles and a combination of a passphrase and a keyfile.
+-- Can be build with Qt4(default) or with Qt5.
+-- Can measure password strength when creating a new volume.
+   The support is added using libpwquality project: https://fedorahosted.org/libpwquality/
+
+-- Add ability to unmount all volumes at the same time(Menu->UnmountAll)
+-- Add ability to generate mounting dialog with a single action(Menu->Favorites->Mount All)
+
+-- Add French translations.
+
+-- Add ability to auto unlock a volume from CLI.An example of how to do this is:
+
+   cryfs_gui -d /home/mtz/cryfs.volume -b "internal"
+
+   The "-b" option gives a passphrase storage backend to use to retrieve the password to unlock
+   the volume. Currently,only 3 backends are supported:
+   1. "internal" backend is always there and its backed by libgcrypt.
+   2. "kwallet" is backed by KDE wallet is a compile time dependency of the project.
+   3. "gnomewallet" is backed by GNOME's libsecret and is a compile time dependency of the project.
+
+   Set the backend to use a blank passphrase(not recommended) if you want to be able to unlock
+   your volumes without being prompt for a backend password.
+
+-- Add support for unlocking a cryfs volume using an external config file.
+-- Add a GUI ability to show cryfs file system space utilization.
+-- Add a menu entry to set default mount point path prefix.
+-- Add a convenient "HMAC+KeyFile" option to use a keyfile with an empty passphrase
+   as a volume password. "Key+KeyFile" option is to be used if volume passphrase is to be a combination
+   of a password and a keyfile. Both of these two options are better than using a "KeyFile" option
+   because keyfiles will most likely be trancated on the first new line character encountered and al the
+   contents of the keyfile may not be used leading to weak passphrase.

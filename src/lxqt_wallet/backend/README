@@ -1,0 +1,56 @@
+
+
+
+This source file is the one responsible for secure storage information in key-pair fashion.
+
+It has a dependency only on gcrypt and it is designed to be used in other projects simply by
+dropping the source file in the middle of the build tree and start using it.
+
+A simple use case for it is in applications that want to store securely their user's account
+credentials but do not want to tie themselves to desktop environments through the use of 
+KDE kwallet or gnome gnome-keyring
+
+Encrypted file documentation.
+
+A newly created file or an empty one takes 64 bytes.
+
+The first 16 bytes are used for pbkdf2 salt.
+This salt is obtained from "/dev/urandom" and will not change when the wallet is updated.
+
+The second 16 bytes are used to store AES Initialization Vector.
+The IV is initially obtained from "/dev/urandom".
+The IV is stored unencrypted and will change on every wallet update.
+
+Everything from 32nd byte onward is store encrypted.
+
+The third 16 bytes are "magic string" bytes.
+The first 11 bytes are used to store a known data aka "magic string" to be used to check if decryption key is correct or not.
+The remaining 5 bytes are used to store file version number.
+
+The fourth 16 bytes are used to store information about the contents of the load.
+The first 8 bytes are a u_int64_t data type and are used to store the load size
+The second 8 bytes are a u_int64_t data type and are used to store the number of entries in the wallet.
+
+The load starts at 64th byte.
+
+The file is encrypted using CBC mode of 256 bit AES and hence may be padded to a file size larger than file contents to
+accomodate CBC mode demanding data sizes that are divisible by 16.
+
+Key-Pair entries are stored as singly linked list nodes in an array.
+Interesting video on why traditional linked lists are bad: http://www.youtube.com/watch?v=YQs6IC-vgmo
+
+A node of a linked list has 4 properties.
+First 4 bytes of the node are a u_int32_t data type and are used to store the size of the key.
+Second 4 bytes of the node are a u_int32_t data type and used to stores the size of the value.
+The 8th byte of the node will be the beginning of the key.
+The 8th byte of the node plus the size of the key will be the beginning of the value.
+
+The sum of the two 4 bytes plus the length of the key plus the length of the value will
+point to the next node in the list.
+
+An empty node takes 8 bytes.A key is not allowed to be empty necessitating it having at least one character
+making the minimum allowed size for the node to be 9 bytes.
+
+The size of the key in the node is managed by a u_int32_t data type.
+The size of the value in the node is managed by a u_int32_t data type.
+The above two data types means a node can occupy upto 8 bytes + 8 GiB of memory.

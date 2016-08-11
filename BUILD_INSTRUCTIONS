@@ -1,0 +1,64 @@
+
+This tool depends on the following packages installed to build, their precise name may differ in your distro.
+
+Look in "debian" or "debian_package_info" folder for information on how to build a debian package.
+
+3. For Qt4 build(libqt4-devel,libqt4-network,libqtcore4,libqtgui4)
+   For Qt5 build(qt5-base-devel or a packages that provides Qt5Core-devel,Qt5Gui-devel,Qt5Network-devel)
+4. gcc
+5. gcc-c++
+7. cmake
+8.
+9. libgcrypt-devel libgcrypt11-dev
+10.libsecret-devel or libsecret-1-dev( optional dependency to store keys in gnome's libsecret )
+11.kde-devel( optional dependency to store keys in kde's kwallet )
+12.pkg-config
+
+To build cryfs-gui with default options,run these 5 commands from inside cryfs-gui source folder.
+
+*****************************************************************************************************
+
+mkdir build
+
+cd build
+
+cmake -DCMAKE_INSTALL_PREFIX=/usr -DQT5=true -DNOSECRETSUPPORT=false -DINTERNAL_LXQT_WALLET=false -DNOKDESUPPORT=false -DCMAKE_BUILD_TYPE=RELEASE . ..
+
+make
+
+make install( or sudo make install )
+
+*****************************************************************************************************
+
+The build system now uses GNUInstallDirs (https://cmake.org/cmake/help/v3.5/module/GNUInstallDirs.html), so pretty much all directories can be controlled properly.
+
+meaning of different options:
+
+-DCMAKE_INSTALL_PREFIX=/usr
+This option tells the build process to install project's files in "/usr/".
+
+-DCMAKE_INSTALL_LIBDIR=lib
+This option specifies the base directory where libraries should be installed. Normally, this is automatically detected.
+
+-DCMAKE_BUILD_TYPE=RELEASE
+This option tells the build process to build the project in release mode.This mode is most suitable for non developers.
+
+-DQT5=true
+This option tells the build process to build GUI components using Qt5.Set the option to "false" if you want to build using Qt4.
+
+-DNOSECRETSUPPORT=false
+This option tells the build process to add gnome's libsecret secure storage of passwords.Set this option to "true" if
+you do not want libsecret's support.
+
+-DNOKDESUPPORT=false
+This option tells the build process to add KDE's secure storage of passwords.Set this option to "true" if you do not
+want KDE wallet support.
+
+-DINTERNAL_LXQT_WALLET=false
+This project depends on lxqt_wallet project and it ships with an internal copy of the project. Set this option to "true"
+if you want zuluCrypt to unconditionally use the internal copy of the project or to "false" to make the build process
+use a system installed version if found.
+
+Build errors/test fails/feature requests/recommendations can be reported at: https://github.com/mhogomchungu/SiriKali/issues
+or using my private email address at: mhogomchungu@gmail.com
+
