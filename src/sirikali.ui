@@ -103,7 +103,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pbunlockcryptfs">
+         <widget class="QPushButton" name="pbunlockvolume">
           <property name="text">
            <string>Mount &amp;Volume</string>
           </property>

@@ -63,19 +63,26 @@ sirikali::sirikali( QWidget * parent ) :
 	m_settings( "SiriKali","SiriKali" ),
 	m_mountInfo( mountinfo::instance( this,true,[](){ QCoreApplication::quit() ; } ) )
 {
+	utility::setSettingsObject( &m_settings ) ;
+}
+
+/*
+ * This should be the only function that closes the application
+ */
+void sirikali::closeApplication()
+{
+	m_mountInfo.stop()() ;
 }
 
 void sirikali::setUpApp( const QString& volume )
 {
-	utility::setSettingsObject( &m_settings ) ;
-
 	this->setLocalizationLanguage( true ) ;
 
 	m_ui = new Ui::sirikali ;
 	m_ui->setupUi( this ) ;
 
 	m_ui->pbcreate->setMinimumHeight( 31 ) ;
-	m_ui->pbunlockcryptfs->setMinimumHeight( 31 ) ;
+	m_ui->pbunlockvolume->setMinimumHeight( 31 ) ;
 	m_ui->pbmenu->setMinimumHeight( 31 ) ;
 	m_ui->pbupdate->setMinimumHeight( 31 ) ;
 
@@ -101,9 +108,6 @@ void sirikali::setUpApp( const QString& volume )
 
 	m_ui->tableWidget->setMouseTracking( true ) ;
 
-	connect( m_ui->tableWidget,SIGNAL( itemEntered( QTableWidgetItem * ) ),
-		 this,SLOT( itemEntered( QTableWidgetItem * ) ) ) ;
-
 	connect( m_ui->tableWidget,SIGNAL( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ),
 		 this,SLOT( slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) ) ;
 
@@ -115,8 +119,8 @@ void sirikali::setUpApp( const QString& volume )
 	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),
 		 this,SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
 
-	connect( m_ui->pbunlockcryptfs,SIGNAL( clicked() ),
-		 this,SLOT( unlockCryptFs() ) ) ;
+	connect( m_ui->pbunlockvolume,SIGNAL( clicked() ),
+		 this,SLOT( unlockVolume() ) ) ;
 
 	m_ui->pbcreate->setMenu( [ this ](){
 
@@ -139,7 +143,7 @@ void sirikali::setUpApp( const QString& volume )
 
 	this->setUpFont() ;
 
-	const auto& icon = utility::getIcon() ;
+	const auto icon = utility::getIcon() ;
 
 	this->setAcceptDrops( true ) ;
 	this->setWindowIcon( icon ) ;
@@ -300,7 +304,7 @@ void sirikali::setUpAppMenu()
 		auto m = new QMenu( this ) ;
 
 		m->addAction( _addAction( false,false,tr( "Show/Hide" ),
-					  "Show/Hide",SLOT( showTrayGUI() ) ) ) ;
+					  "Show/Hide",SLOT( slotTrayClicked() ) ) ) ;
 
 		m->addAction( ac ) ;
 
@@ -331,22 +335,9 @@ void sirikali::setDefaultMountPointPrefix()
 	}
 }
 
-void sirikali::showTrayGUI()
-{
-	this->slotTrayClicked( QSystemTrayIcon::Trigger ) ;
-}
-
 void sirikali::startAutoMonitor()
 {
 	m_mountInfo.start() ;
-}
-
-/*
- * This should be the only function that closes the application
- */
-void sirikali::closeApplication()
-{
-	m_mountInfo.stop()() ;
 }
 
 void sirikali::aboutToShowMenu()
@@ -426,8 +417,7 @@ QString sirikali::resolveFavoriteMountPoint( const QString& e )
 
 void sirikali::favoriteClicked( QAction * ac )
 {
-	auto e = ac->text() ;
-	e.remove( "&" ) ;
+	auto e = ac->text().remove( '&' ) ;
 
 	if( e == tr( "Manage Favorites" ) ){
 
@@ -491,11 +481,6 @@ void sirikali::reuseMountPoint( bool e )
 bool sirikali::autoOpenFolderOnMount( void )
 {
 	return utility::autoOpenFolderOnMount() ;
-}
-
-void sirikali::itemEntered( QTableWidgetItem * item )
-{
-	Q_UNUSED( item ) ;
 }
 
 void sirikali::startGUI()
@@ -993,7 +978,7 @@ void sirikali::showMoungDialog( const QString& volume,const QString& m_point )
 	}
 }
 
-void sirikali::unlockCryptFs()
+void sirikali::unlockVolume()
 {
 	this->disableAll() ;
 
@@ -1173,7 +1158,7 @@ void sirikali::disableAll()
 	m_ui->pbmenu->setEnabled( false ) ;
 	m_ui->pbupdate->setEnabled( false ) ;
 	m_ui->tableWidget->setEnabled( false ) ;
-	m_ui->pbunlockcryptfs->setEnabled( false ) ;
+	m_ui->pbunlockvolume->setEnabled( false ) ;
 	m_ui->pbcreate->setEnabled( false ) ;
 }
 
@@ -1185,7 +1170,7 @@ void sirikali::enableAll()
 		m_ui->pbupdate->setEnabled( true ) ;
 		m_ui->tableWidget->setEnabled( true ) ;
 		m_ui->tableWidget->setFocus() ;
-		m_ui->pbunlockcryptfs->setEnabled( true ) ;
+		m_ui->pbunlockvolume->setEnabled( true ) ;
 		m_ui->pbcreate->setEnabled( true ) ;
 	}
 }

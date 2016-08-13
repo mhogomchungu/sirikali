@@ -748,7 +748,7 @@ QString utility::mountPath( const QString& path )
 
 			_mountPath = _settings->value( "MountPrefix" ).toString() ;
 		}else{
-			_mountPath = utility::homePath() + "/.SiriKali.tmp" ;
+			_mountPath = utility::homePath() + "/.SiriKali" ;
 
 			utility::setDefaultMountPointPrefix( _mountPath ) ;
 		}

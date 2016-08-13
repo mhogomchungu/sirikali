@@ -55,15 +55,15 @@ public slots:
 	void raiseWindow( QString ) ;
 private slots:
 	void setDefaultMountPointPrefix( void ) ;
-	void showTrayGUI( void ) ;
 	void properties( void ) ;
 	void autoCheckUpdates( bool ) ;
 	void reuseMountPoint( bool ) ;
-        void unlockVolume( const QString&,const QString&,const QString&,const QString&,const QString&,bool ) ;
+	void unlockVolume( const QString&,const QString&,const QString&,
+			   const QString&,const QString&,bool ) ;
 	void aboutToShowMenu( void ) ;
 	void changeInternalWalletPassWord( void ) ;
 	void closeApplication( void ) ;
-	void unlockCryptFs( void ) ;
+	void unlockVolume( void ) ;
 	void startGUI( void ) ;
 	void showMoungDialog( const volumeInfo& ) ;
 	void showMoungDialog( const QString&,const QString& = QString() ) ;
@@ -75,13 +75,12 @@ private slots:
 	void slotMount( void ) ;
 	void unMountAll( void ) ;
 	void pbUmount( void ) ;
-	void slotTrayClicked( QSystemTrayIcon::ActivationReason ) ;
+	void slotTrayClicked( QSystemTrayIcon::ActivationReason = QSystemTrayIcon::Trigger ) ;
 	void slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ;
 	void enableAll( void ) ;
 	void enableAll_1( void ) ;
 	void slotOpenFolder( void ) ;
 	void slotOpenSharedFolder( void ) ;
-	void itemEntered( QTableWidgetItem * ) ;
 	void addEntryToTable( const QStringList& ) ;
 	void addEntryToTable( const volumeInfo& ) ;
 	void autoOpenFolderOnMount( bool ) ;
