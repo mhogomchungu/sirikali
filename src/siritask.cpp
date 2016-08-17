@@ -152,7 +152,6 @@ static QString _args( const QString& exe,const siritask::options& opt,
 				return e.arg( exe,configPath,cipherFolder ) ;
 			}else{
 				auto e = QString( "%1 %2 %3 %4 %5" ) ;
-
 				return e.arg( exe,mode,configPath,cipherFolder,mountPoint ) ;
 			}
 		}else{
@@ -162,7 +161,6 @@ static QString _args( const QString& exe,const siritask::options& opt,
 				return e.arg( exe,configPath,cipherFolder ) ;
 			}else{
 				auto e = QString( "%1 mount -b %2 %3 -o fsname=securefs@%4 -o subtype=securefs %5 %6" ) ;
-
 				return e.arg( exe,configPath,mode,cipherFolder,cipherFolder,mountPoint ) ;
 			}
 		}
@@ -373,11 +371,6 @@ Task::future< cs >& siritask::encryptedFolderCreate( const options& opt )
 					if( opt.type.isOneOf( "gocryptfs","securefs" ) ){
 
 						e = siritask::encryptedFolderMount( opt,true ).get() ;
-
-						if( e != cs::success ){
-
-							siritask::deleteMountFolder( opt.plainFolder ) ;
-						}
 					}else{
 						opt.openFolder( opt.plainFolder ) ;
 					}
