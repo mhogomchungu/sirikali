@@ -71,10 +71,10 @@ keyDialog::keyDialog( QWidget * parent,
 	m_ui->checkBoxShareMountPoint->setVisible( false ) ;
 
 	m_table = table ;
-	m_path = e.volumeName() ;
+	m_path = e.volumePath() ;
 	m_working = false ;
 
-	m_create = e.volumeName().isEmpty() ;
+	m_create = e.isNotValid() ;
 
 	m_reUseMountPoint = utility::reUseMountPoint() ;
 
@@ -310,6 +310,10 @@ void keyDialog::cbMountReadOnlyStateChanged( int state )
 
 void keyDialog::textChanged( QString e )
 {
+	e.remove( '/' ) ;
+
+	m_ui->lineEditMountPoint->setText( e ) ;
+
 	auto r =  m_ui->lineEditFolderPath->text() ;
 
 	auto l = r.lastIndexOf( '/' ) ;

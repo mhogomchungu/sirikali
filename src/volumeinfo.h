@@ -35,55 +35,25 @@ public:
 	{
 		this->setValues( l ) ;
 	}
-	const QString& volumeName() const
+	const QString& volumePath() const
 	{
-		return m_volume ;
+		return m_volumePath ;
 	}
 	const QString& mountPoint() const
 	{
 		return m_mountPoint ;
 	}
-	const QString& fileSystem() const
+	bool isValid() const
 	{
-		return m_fileSystem ;
+		return !this->isNotValid() ;
 	}
-	bool isEmpty() const
+	bool isNotValid() const
 	{
-		return m_volume.isEmpty() ;
-	}
-	bool isNotEmpty() const
-	{
-		return !m_volume.isEmpty() ;
-	}
-	bool entryisValid() const
-	{
-		if( m_volume.isEmpty() ){
-			return false ;
-		}
-		if( m_fileSystem == "encfs" || m_fileSystem == "cryfs" ){
-			return true ;
-		}
-		return true ;
-	}
-	bool encryptedVolume() const
-	{
-		return  m_fileSystem.startsWith( "crypto" ) ||
-			m_fileSystem == "Nil"   ||
-			m_fileSystem == "cryptfs" ||
-			m_fileSystem == "cryfs" ||
-			m_fileSystem == "encfs" ;
-	}
-	bool mounted() const
-	{
-		return m_mountPoint != "Nil" ;
-	}
-	bool readOnly() const
-	{
-	    return m_mode == "ro" ;
+		return m_volumePath.isEmpty() ;
 	}
 	QStringList entryList() const
 	{
-		return { m_volume,m_mountPoint,m_fileSystem,m_mode } ;
+		return { m_volumePath,m_mountPoint,m_fileSystem,m_mode } ;
 	}
 private:
 	void setValues( const QStringList& l )
@@ -92,29 +62,29 @@ private:
 
 		if( s == 1 ){
 
-			m_volume = l.at( 0 ) ;
+			m_volumePath = l.at( 0 ) ;
 
 		}else if( s == 2 ){
 
-			m_volume     = l.at( 0 ) ;
+			m_volumePath = l.at( 0 ) ;
 			m_mountPoint = l.at( 1 ) ;
 
 		}else if( s == 3 ){
 
-			m_volume     = l.at( 0 ) ;
+			m_volumePath = l.at( 0 ) ;
 			m_mountPoint = l.at( 1 ) ;
 			m_fileSystem = l.at( 2 ) ;
 
 		}else if( s >= 4 ){
 
-			m_volume     = l.at( 0 ) ;
+			m_volumePath = l.at( 0 ) ;
 			m_mountPoint = l.at( 1 ) ;
 			m_fileSystem = l.at( 2 ) ;
 			m_mode       = l.at( 3 ) ;
 		}
 	}
 
-	QString m_volume ;
+	QString m_volumePath ;
 	QString m_mountPoint ;
 	QString m_fileSystem ;
 	QString m_mode ;

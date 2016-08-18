@@ -957,7 +957,7 @@ void sirikali::slotMount()
 
 void sirikali::showMoungDialog( const volumeInfo& v )
 {
-	if( v.isEmpty() ){
+	if( v.isNotValid() ){
 
 		DialogMsg msg( this ) ;
 
@@ -1038,11 +1038,11 @@ void sirikali::removeEntryFromTable( QString volume )
 
 void sirikali::updateList( const volumeInfo& entry )
 {
-	if( entry.isNotEmpty() ){
+	if( entry.isValid() ){
 
 		auto table = m_ui->tableWidget ;
 
-		auto row = tablewidget::columnHasEntry( table,entry.volumeName() ) ;
+		auto row = tablewidget::columnHasEntry( table,entry.volumePath() ) ;
 
 		if( row == -1 ){
 
@@ -1132,7 +1132,7 @@ void sirikali::updateVolumeList( const QVector< volumeInfo >& r )
 
 	for( const auto& it : r ){
 
-		if( it.entryisValid() ){
+		if( it.isValid() ){
 
 			this->updateList( it ) ;
 		}
