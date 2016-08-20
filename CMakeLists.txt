@@ -86,6 +86,7 @@ if( INTERNAL_LXQT_WALLET )
 
 	ADD_SUBDIRECTORY( src/lxqt_wallet )
 	include_directories( ${PROJECT_SOURCE_DIR}/src/lxqt_wallet/frontend )
+	include_directories( ${PROJECT_BINARY_DIR}/src/lxqt_wallet/frontend )
 else()
 	pkg_check_modules( LXQT_WALLET lxqt-wallet )
 
@@ -98,6 +99,7 @@ else()
 
 		ADD_SUBDIRECTORY( src/lxqt_wallet )
 		include_directories( ${PROJECT_SOURCE_DIR}/src/lxqt_wallet/frontend )
+		include_directories( ${PROJECT_BINARY_DIR}/src/lxqt_wallet/frontend )
 	else()
 		if( LXQT_WALLET_VERSION VERSION_GREATER "2.0.0" AND QT5 )
 
@@ -116,6 +118,7 @@ else()
 
 			ADD_SUBDIRECTORY( src/lxqt_wallet )
 			include_directories( ${PROJECT_SOURCE_DIR}/src/lxqt_wallet/frontend )
+			include_directories( ${PROJECT_BINARY_DIR}/src/lxqt_wallet/frontend )
 		endif()
 	endif()
 endif()
