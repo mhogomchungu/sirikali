@@ -28,140 +28,48 @@
 
 #include "3rdParty/json.hpp"
 
-static QString _tr( const QString& n,const QString& a,const QStringList& l )
+static QString _tr( const QStringList& l )
 {
 	auto e = QObject::tr( "%1\"%2\" Installed Version Is : %3.\nLatest Version Is : %4." ) ;
-	return e.arg( n,a,l.at( 0 ),l.at( 1 ) ) ;
+	return e.arg( "",l.at( 0 ),l.at( 1 ),l.at( 2 ) ) ;
 }
 
-static QString _versions()
-{
-	auto _get_version = []( const QString& exe,const QString& args ){
-
-		auto e = utility::executableFullPath( exe ) ;
-
-		if( !e.isEmpty() ){
-
-			auto a = utility::Task::run( e + args ).await().splitOutput( ' ' ) ;
-
-			if( a.size() > 1 ){
-
-				auto r = a.at( 1 ) ;
-
-				r.remove( ';' ) ;
-				r.remove( 'v' ) ;
-
-				return r ;
-			}
-		}
-
-		return QString( "\"\"" ) ;
-	} ;
-
-	auto a = _tr( "\n\n\n","gocryptfs",{ _get_version( "gocryptfs"," --version" ),"\"\"" } ) ;
-
-	auto b = _tr( "\n\n\n","securefs",{ _get_version( "securefs"," version" ),"\"\"" } ) ;
-
-	return a + b ;
-}
-
-static void _show( QObject * obj,bool autocheck,QWidget * w,QString l,const QStringList& e = QStringList() )
+static void _show( QObject * obj,bool autocheck,QWidget * w,const QVector< QStringList >& l )
 {
 	DialogMsg msg( w ) ;
 
-	l.remove( '\n' ) ;
+	bool show = false ;
+	QString e ;
 
-	if( l.isEmpty() ){
+	for( const auto& it : l ){
 
-		if( !autocheck ){
+		e += _tr( it ) + "\n\n" ;
 
-			auto e = QObject::tr( "Failed To Check For Updates." ) ;
-			msg.ShowUIOK( QObject::tr( "ERROR" ),e ) ;
+		show = ( it.at( 1 ) != it.at( 2 ) ) ;
+	}
+
+	if( autocheck ){
+
+		if( show ){
+
+			msg.ShowUIInfo( QObject::tr( "Version Info" ),e + "\n" ) ;
 		}
 	}else{
-		if( autocheck ){
-
-			auto _mismatch = [ & ]{
-
-				if( e.size() == 2 ){
-
-					return e.at( 0 ) != e.at( 1 ) ;
-				}else{
-					return false ;
-				}
-			} ;
-
-			if( ( l != "Not Found" && l != THIS_VERSION ) || _mismatch() ){
-
-				l = _tr( "\n","SiriKali",{ THIS_VERSION,l } ) ;
-
-				if( !e.isEmpty() ){
-
-					l += _tr( "\n\n\n","cryfs",e ) ;
-				}
-
-				l += _versions() ;
-
-				msg.ShowUIInfo( QObject::tr( "Update Available" ),l + "\n" ) ;
-			}
-		}else{
-			if( l != "Not Found" ){
-
-				l = _tr( "\n","SiriKali",{ THIS_VERSION,l } ) ;
-
-				if( !e.isEmpty() ){
-
-					l += _tr( "\n\n\n","cryfs",e ) ;
-				}
-
-				l += _versions() ;
-
-				msg.ShowUIInfo( QObject::tr( "Version Info" ),l + "\n" ) ;
-			}else{
-				auto e = QObject::tr( "Failed To Check For Updates." ) ;
-
-				msg.ShowUIOK( QObject::tr( "ERROR" ),e ) ;
-			}
-		}
+		msg.ShowUIInfo( QObject::tr( "Version Info" ),e + "\n" ) ;
 	}
 
 	obj->deleteLater() ;
 }
 
-static QNetworkRequest _request( bool e )
+static QString _get_app_version( const QString& e )
 {
-	QUrl url ;
-	QNetworkRequest request ;
+	if( e == "cryfs" ){
 
-	if( e ){
-		url.setUrl( "https://raw.githubusercontent.com/mhogomchungu/SiriKali/master/version" ) ;
-		request.setRawHeader( "Host","raw.githubusercontent.com" ) ;
-	}else{
-		url.setUrl( "https://www.cryfs.org/version_info.json" ) ;
-		request.setRawHeader( "Host","www.cryfs.org" ) ;
-	}
+		auto exe = utility::executableFullPath( e ) ;
 
-	auto u = "Mozilla/5.0 (X11; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0" ;
+		if( !exe.isEmpty() ){
 
-	request.setRawHeader( "User-Agent",u ) ;
-	request.setRawHeader( "Accept-Encoding","text/plain" ) ;
-
-	request.setUrl( url ) ;
-
-	return request ;
-}
-
-void checkForUpdates::show( const QByteArray& cryfs,const QByteArray& cryfs_gui )
-{
-	auto f = [](){
-
-		auto exe = utility::executableFullPath( "cryfs" ) ;
-
-		if( exe.isEmpty() ){
-
-			return QByteArray() ;
-		}else{
-			return Task::await< QByteArray >( [ & ](){
+			return Task::await< QString >( [ & ]()->QString{
 
 				auto e = utility::Task( exe,-1,[](){
 
@@ -178,51 +86,168 @@ void checkForUpdates::show( const QByteArray& cryfs,const QByteArray& cryfs_gui 
 
 					return e.at( 2 ).split( '\n' ).first() ;
 				}else{
-					return QByteArray() ;
+					return QString() ;
 				}
 			} ) ;
 		}
-	}() ;
 
-	auto d = [ & ](){
+	}else if( utility::equalsAtleastOne( e,"gocryptfs","securefs","encfs" ) ){
+
+		auto exe = utility::executableFullPath( e ) ;
+
+		if( !exe.isEmpty() ){
+
+			auto args = [ & ]{
+
+				if( utility::equalsAtleastOne( e,"gocryptfs","encfs" ) ){
+
+					return " --version" ;
+				}else{
+					return " version" ;
+				}
+			}() ;
+
+			auto a = utility::Task::run( exe + args ).await().splitOutput( ' ',e != "encfs" ) ;
+
+			if( a.size() > 1 ){
+
+				auto r = [ & ]()->QString{
+
+					if( e == "encfs" ){
+
+						return a.at( 2 ) ;
+					}else{
+						return a.at( 1 ) ;
+					}
+				}() ;
+
+				r.remove( ';' ) ;
+				r.remove( 'v' ) ;
+				r.remove( '\n' ) ;
+
+				return r ;
+			}
+		}
+
+	}else if( e == "SiriKali" ){
+
+		return THIS_VERSION ;
+	}
+
+	return "N/A" ;
+}
+
+static QStringList _get_versions( NetworkAccessManager& m,const QStringList& e )
+{
+	const auto& exe  = e.at( 0 ) ;
+	const auto& link = e.at( 1 ) ;
+	const auto& host = e.at( 2 ) ;
+
+	auto f = _get_app_version( exe ) ;
+
+	if( f == "N/A" ){
+
+		return { exe,"N/A","N/A" } ;
+	}
+
+	auto _request = [ & ]( const QStringList& s ){
+
+		QNetworkRequest e( QUrl( s.first() ) ) ;
+
+		e.setRawHeader( "Host",s.at( 1 ).toLatin1() ) ;
+		e.setRawHeader( "Accept-Encoding","text/plain" ) ;
+
+		return e ;
+	} ;
+
+	return { exe,f,[ & ]()->QString{
 
 		try{
-			auto e = nlohmann::json::parse( cryfs.constData() ) ;
+			if( exe == "cryfs" ){
 
-			auto r = e.find( "version_info" ).value().find( "current" ).value() ;
+				auto data = m.get( _request( { link,host } ) )->readAll() ;
+				auto json = nlohmann::json::parse( data.constData() ) ;
 
-			return QString::fromStdString( r ) ;
+				auto it = json.find( "version_info" ) ;
 
-		}catch( ... ){
+				if( it != json.end() ){
 
-			return QString() ;
-		}
-	}() ;
+					auto e = it.value() ;
 
-	if( f.isEmpty() || d.isEmpty() ){
+					auto r = e.find( "current" ) ;
 
-		_show( this,m_autocheck,m_widget,cryfs_gui ) ;
-	}else{
-		_show( this,m_autocheck,m_widget,cryfs_gui,{ f,d } ) ;
-	}
+					if( r != e.end() ){
+
+						return QString::fromStdString( r.value() ) ;
+					}
+				}
+			}else{
+				auto data = m.get( _request( { link,host } ) )->readAll() ;
+
+				for( const auto& it : nlohmann::json::parse( data.constData() ) ){
+
+					auto e = it.find( "tag_name" ) ;
+
+					if( e != it.end() ){
+
+						auto r = QString::fromStdString( e.value() ).remove( 'v' ) ;
+
+						/*
+						 * Try to filter out release candidates,betas and alphas
+						 * because
+						 * we only care about final releases.
+						 */
+						if( utility::containsAtleastOne( r,"-","rc","beta","alpha"
+										 ,"b","a","m" ) ){
+
+							continue ;
+						}
+
+						return r ;
+					}
+				}
+			}
+
+		}catch( ... ){}
+
+		return "N/A" ;
+	}() } ;
 }
 
 checkForUpdates::checkForUpdates( QWidget * widget,bool autocheck ) :
 	m_autocheck( autocheck ),m_widget( widget )
 {
-	using reply_t = NetworkAccessManager::NetworkReply ;
+	_show( this,m_autocheck,m_widget,[ & ]()->QVector< QStringList >{
 
-	m_networkAccessManager.get( _request( true ),[ this ]( reply_t r ){
+		auto _build = []( const QString& e ){
 
-                auto k = r.release() ;
+			return "https://api.github.com/repos/" + e + "/releases" ;
+		} ;
 
-		m_networkAccessManager.get( _request( false ),[ this,k ]( reply_t e ){
+		auto& m = m_networkAccessManager ;
 
-			reply_t r = k ;
+		auto a = _get_versions( m,{ "SiriKali",
+					    _build( "mhogomchungu/sirikali" ),
+					    "api.github.com" } ) ;
 
-			this->show( e->readAll(),r->readAll() ) ;
-		} ) ;
-	} ) ;
+		auto b = _get_versions( m,{ "cryfs",
+					    "https://www.cryfs.org/version_info.json",
+					    "www.cryfs.org" } ) ;
+
+		auto c = _get_versions( m,{ "gocryptfs",
+					    _build( "rfjakob/gocryptfs" ),
+					    "api.github.com" } ) ;
+
+		auto d = _get_versions( m,{ "securefs",
+					    _build( "netheril96/securefs" ),
+					    "api.github.com" } ) ;
+
+		auto e = _get_versions( m,{ "encfs",
+					    _build( "vgough/encfs" ),
+					    "api.github.com" } ) ;
+
+		return { a,b,c,d,e } ;
+	}() ) ;
 }
 
 void checkForUpdates::instance( QWidget * widget,bool e )

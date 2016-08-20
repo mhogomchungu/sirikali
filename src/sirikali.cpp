@@ -58,6 +58,8 @@
 #include "walletconfig.h"
 #include <memory>
 
+#include "3rdParty/json.hpp"
+
 sirikali::sirikali( QWidget * parent ) :
 	QWidget( parent ),
 	m_settings( "SiriKali","SiriKali" ),

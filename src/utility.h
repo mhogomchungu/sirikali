@@ -320,9 +320,14 @@ namespace utility
 		{
 			this->execute( exe,-1,env,QByteArray(),std::move( f ) ) ;
 		}
-		QStringList splitOutput( char token ) const
+		QStringList splitOutput( char token,bool stdOutput = true ) const
 		{
-			return utility::split( m_data,token ) ;
+			if( stdOutput ){
+
+				return utility::split( m_data,token ) ;
+			}else{
+				return utility::split( m_stdError,token ) ;
+			}
 		}
 		void output( const QByteArray& r )
 		{

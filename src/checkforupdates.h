@@ -37,7 +37,6 @@ public:
 
 	static void instance( QWidget *,bool ) ;
 private:
-	void show( const QByteArray&,const QByteArray& ) ;
 	bool m_autocheck ;
 	QWidget * m_widget ;
 	NetworkAccessManager m_networkAccessManager ;
