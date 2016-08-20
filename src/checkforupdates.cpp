@@ -109,7 +109,7 @@ static QString _get_app_version( const QString& e )
 
 			auto a = utility::Task::run( exe + args ).await().splitOutput( ' ',e != "encfs" ) ;
 
-			if( a.size() > 1 ){
+			if( a.size() > 2 ){
 
 				auto r = [ & ]()->QString{
 
