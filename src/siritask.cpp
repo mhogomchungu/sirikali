@@ -225,14 +225,16 @@ static cs _cmd( bool create,const siritask::options& opt,
 
 				return cs::success ;
 			}else{
-				auto a = "Did you enter the correct password?" ;
+				auto a = _taskOutput() ;
+
 				auto b = "password incorrect" ;
 				auto c = "Password incorrect" ;
 				auto d = "Invalid password" ;
+				auto e = "Did you enter the correct password?" ;
 
-				if( utility::containsAtleastOne( _taskOutput(),a,b,c,d ) ){
+				if( utility::containsAtleastOne( a,b,c,d,e ) ){
 
-					std::cout << _taskOutput().constData() << std::endl ;
+					std::cout << a.constData() << std::endl ;
 
 					if( app == "cryfs" ){
 
@@ -451,14 +453,7 @@ Task::future< QVector< volumeInfo > >& siritask::updateVolumeList()
 
 		auto _ro = []( const QStringList& l ){
 
-			const auto& e = l.at( 5 ) ;
-
-			if( e.startsWith( "ro," ) ){
-
-				return "ro" ;
-			}else{
-				return "rw" ;
-			}
+			return l.at( 5 ).mid( 0,2 ) ;
 		} ;
 
 		QVector< volumeInfo > e ;

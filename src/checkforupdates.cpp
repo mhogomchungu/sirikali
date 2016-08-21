@@ -39,7 +39,7 @@ static void _show( QObject * obj,bool autocheck,QWidget * w,const QVector< QStri
 	DialogMsg msg( w ) ;
 
 	bool show = false ;
-	QString e ;
+	QString e = "\n\n" ;
 
 	for( const auto& it : l ){
 
