@@ -892,3 +892,19 @@ void utility::doNotShowReadOnlyWarning( bool e )
 {
 	_settings->setValue( "DoNotShowReadOnlyWarning",e ) ;
 }
+
+bool utility::autoMountFavoritesOnStartUp()
+{
+	if( _settings->contains( "AutoMountFavoritesOnStartUp" ) ){
+
+		return _settings->value( "AutoMountFavoritesOnStartUp" ).toBool() ;
+	}else{
+		utility::autoMountFavoritesOnStartUp( false ) ;
+		return false ;
+	}
+}
+
+void utility::autoMountFavoritesOnStartUp( bool e )
+{
+	_settings->setValue( "AutoMountFavoritesOnStartUp",e ) ;
+}

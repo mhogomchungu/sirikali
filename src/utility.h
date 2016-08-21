@@ -154,6 +154,9 @@ namespace utility
 	bool doNotShowReadOnlyWarning() ;
 	void doNotShowReadOnlyWarning( bool ) ;
 
+	bool autoMountFavoritesOnStartUp() ;
+	void autoMountFavoritesOnStartUp( bool ) ;
+
 	bool setOpenVolumeReadOnly( QWidget * parent,bool check ) ;
 	bool getOpenVolumeReadOnlyOption() ;
 

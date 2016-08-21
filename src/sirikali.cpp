@@ -66,6 +66,7 @@ sirikali::sirikali( QWidget * parent ) :
 	m_mountInfo( mountinfo::instance( this,true,[](){ QCoreApplication::quit() ; } ) )
 {
 	utility::setSettingsObject( &m_settings ) ;
+	m_secrets.setParent( this ) ;
 }
 
 /*
@@ -243,6 +244,11 @@ void sirikali::setUpAppMenu()
 
 	m->addAction( _addAction( true,checkForUpdates::autoCheck(),tr( "Autocheck For Updates" ),
 				  "Autocheck For Updates",SLOT( autoCheckUpdates( bool ) ) ) ) ;
+
+	m->addAction( _addAction( true,utility::autoMountFavoritesOnStartUp(),
+				  tr( "AutoMount Favorites On StartUp" ),
+				  "AutoMount Favorites On StartUp",
+				  SLOT( autoMountFavoritesOnStartUp( bool ) ) ) ) ;
 
 	m->addAction( _addAction( false,false,tr( "Set Mount Point Prefix" ),
 				  "Set Mount Point Prefix",SLOT( setDefaultMountPointPrefix() ) ) ) ;
@@ -480,6 +486,11 @@ void sirikali::reuseMountPoint( bool e )
 	utility::reUseMountPoint( e ) ;
 }
 
+void sirikali::autoMountFavoritesOnStartUp( bool e )
+{
+	utility::autoMountFavoritesOnStartUp( e ) ;
+}
+
 bool sirikali::autoOpenFolderOnMount( void )
 {
 	return utility::autoOpenFolderOnMount() ;
@@ -490,6 +501,11 @@ void sirikali::startGUI()
 	if( !m_startHidden ){
 
 		this->raiseWindow() ;
+	}
+
+	if( utility::autoMountFavoritesOnStartUp() ){
+
+		this->autoUnlockVolumes() ;
 	}
 }
 
@@ -512,8 +528,6 @@ void sirikali::raiseWindow( QString volume )
 
 void sirikali::Show()
 {
-	m_secrets.setParent( this ) ;
-
 	auto l = QCoreApplication::arguments() ;
 
 	m_startHidden  = l.contains( "-e" ) ;
@@ -623,6 +637,36 @@ void sirikali::unlockVolume( const QString& volume,const QString& mountPath,
 			qDebug() << tr( "ERROR: Failed To Unlock Requested Backend." ) ;
 			QCoreApplication::exit( 1 ) ;
 		}
+	}
+}
+
+void sirikali::autoUnlockVolumes()
+{
+	auto l = utility::readFavorites() ;
+
+	if( !l.isEmpty() ){
+
+		auto m = m_secrets.walletBk( LXQt::Wallet::BackEnd::internal ) ;
+
+		if( m->open( utility::walletName(),utility::applicationName() ) ){
+
+			for( const auto& it: l ){
+
+				auto e = utility::split( it,'\t' ) ;
+
+				const auto key = m->readValue( e.at( 0 ) ) ;
+
+				if( !key.isEmpty() ){
+
+					siritask::options s = { e.at( 0 ),e.at( 1 ),key,"","","",false,
+								[]( const QString& e ){ Q_UNUSED( e ) ; } } ;
+
+					siritask::encryptedFolderMount( s ).await() ;
+				}
+			}
+		}
+
+		this->enableAll() ;
 	}
 }
 

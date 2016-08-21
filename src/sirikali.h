@@ -58,6 +58,7 @@ private slots:
 	void properties( void ) ;
 	void autoCheckUpdates( bool ) ;
 	void reuseMountPoint( bool ) ;
+	void autoMountFavoritesOnStartUp( bool ) ;
 	void unlockVolume( const QString&,const QString&,const QString&,
 			   const QString&,const QString&,bool ) ;
 	void aboutToShowMenu( void ) ;
@@ -115,6 +116,7 @@ private:
 	void setUpFont( void ) ;
 	void setUpShortCuts( void ) ;
 	void setUpApp( const QString& ) ;
+	void autoUnlockVolumes( void ) ;
 
 	Ui::sirikali * m_ui = nullptr ;
 
