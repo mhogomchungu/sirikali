@@ -33,13 +33,12 @@ namespace siritask
 	class volumeType
 	{
 	public:
-		volumeType( const QString& type ) : m_type( type )
+		template< typename T >
+		volumeType( const T& type ) : m_type( type )
 		{
 		}
-		volumeType( const char * type ) : m_type( type )
-		{
-		}
-		volumeType& operator=( const char * e )
+		template< typename T >
+		volumeType& operator=( const T& e )
 		{
 			m_type = e ;
 			return *this ;
@@ -52,7 +51,8 @@ namespace siritask
 		{
 			return utility::executableFullPath( m_type ) ;
 		}
-		bool operator==( const char * type ) const
+		template< typename T >
+		bool operator==( const T& type ) const
 		{
 			return m_type == type ;
 		}
