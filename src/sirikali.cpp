@@ -117,7 +117,7 @@ void sirikali::setUpApp( const QString& volume )
 	connect( m_ui->pbupdate,SIGNAL( clicked()),
 		 this,SLOT( pbUpdate() ) ) ;
 
-	connect( &m_mountInfo,SIGNAL( gotEvent() ),this,SLOT( pbUpdate() ) ) ;
+	connect( &m_mountInfo,SIGNAL( gotEvent() ),this,SLOT( pbUpdate() ),Qt::QueuedConnection ) ;
 
 	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),
 		 this,SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
@@ -669,7 +669,7 @@ void sirikali::autoUnlockVolumes()
 				siritask::options s = { e.at( 0 ),e.at( 1 ),key,"","","",false,
 							[]( const QString& e ){ Q_UNUSED( e ) ; } } ;
 
-				siritask::encryptedFolderMount( s ).await() ;
+				siritask::encryptedFolderMount( s ).start() ;
 			}
 		}
 	}
