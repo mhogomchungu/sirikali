@@ -49,6 +49,10 @@ public:
 		{
 			return m_wallet ;
 		}
+		operator bool()
+		{
+			return m_wallet ;
+		}
 	private:
 		LXQt::Wallet::Wallet * m_wallet = nullptr ;
 	};

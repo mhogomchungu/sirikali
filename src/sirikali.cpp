@@ -642,27 +642,34 @@ void sirikali::unlockVolume( const QString& volume,const QString& mountPath,
 
 void sirikali::autoUnlockVolumes()
 {
-	auto l = utility::readFavorites() ;
+	const auto l = utility::readFavorites() ;
 
-	if( !l.isEmpty() ){
+	if( l.isEmpty() ){
 
-		auto m = m_secrets.walletBk( LXQt::Wallet::BackEnd::internal ) ;
+		return ;
+	}
 
-		if( m->open( utility::walletName(),utility::applicationName() ) ){
+	auto m = m_secrets.walletBk( utility::autoMountBackEnd() ) ;
 
-			for( const auto& it: l ){
+	if( !m ){
 
-				const auto e = utility::split( it,'\t' ) ;
+		return ;
+	}
 
-				const auto key = m->readValue( e.at( 0 ) ) ;
+	if( m->open( utility::walletName(),utility::applicationName() ) ){
 
-				if( !key.isEmpty() ){
+		for( const auto& it : l ){
 
-					siritask::options s = { e.at( 0 ),e.at( 1 ),key,"","","",false,
-								[]( const QString& e ){ Q_UNUSED( e ) ; } } ;
+			const auto e = utility::split( it,'\t' ) ;
 
-					siritask::encryptedFolderMount( s ).await() ;
-				}
+			const auto key = m->readValue( e.at( 0 ) ) ;
+
+			if( !key.isEmpty() ){
+
+				siritask::options s = { e.at( 0 ),e.at( 1 ),key,"","","",false,
+							[]( const QString& e ){ Q_UNUSED( e ) ; } } ;
+
+				siritask::encryptedFolderMount( s ).await() ;
 			}
 		}
 	}

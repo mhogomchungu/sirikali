@@ -122,6 +122,8 @@ namespace utility
 
 	QIcon getIcon() ;
 
+	LXQt::Wallet::BackEnd autoMountBackEnd() ;
+
 	QStringList directoryList( const QString& e ) ;
 
 	QString executableFullPath( const QString& ) ;

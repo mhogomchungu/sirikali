@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  *  Copyright ( c ) 2011-2015
  *  name : Francis Banyikwa
@@ -907,4 +907,26 @@ bool utility::autoMountFavoritesOnStartUp()
 void utility::autoMountFavoritesOnStartUp( bool e )
 {
 	_settings->setValue( "AutoMountFavoritesOnStartUp",e ) ;
+}
+
+LXQt::Wallet::BackEnd utility::autoMountBackEnd()
+{
+	if( _settings->contains( "AutoMountPassWordBackEnd" ) ){
+
+		auto e = _settings->value( "AutoMountPassWordBackEnd" ).toString() ;
+
+		if( e == "libsecret" ){
+
+			return LXQt::Wallet::BackEnd::libsecret ;
+
+		}else if( e == "kdewallet" ){
+
+			return LXQt::Wallet::BackEnd::kwallet ;
+		}else{
+			return LXQt::Wallet::BackEnd::internal ;
+		}
+	}else{
+		_settings->setValue( "AutoMountPassWordBackEnd",QString( "internal" ) ) ;
+		return LXQt::Wallet::BackEnd::internal ;
+	}
 }
