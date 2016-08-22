@@ -67,7 +67,7 @@ public:
 
 	~secrets() ;
 private:
-	LXQt::Wallet::Wallet * internalWallet() ;
+	LXQt::Wallet::Wallet ** internalWallet() ;
 	QWidget * m_parent = nullptr ;
 	LXQt::Wallet::Wallet * m_internalWallet = nullptr ;
 };

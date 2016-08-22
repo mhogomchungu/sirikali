@@ -652,7 +652,7 @@ void sirikali::autoUnlockVolumes()
 
 			for( const auto& it: l ){
 
-				auto e = utility::split( it,'\t' ) ;
+				const auto e = utility::split( it,'\t' ) ;
 
 				const auto key = m->readValue( e.at( 0 ) ) ;
 
@@ -665,8 +665,6 @@ void sirikali::autoUnlockVolumes()
 				}
 			}
 		}
-
-		this->enableAll() ;
 	}
 }
 

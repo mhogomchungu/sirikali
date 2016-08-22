@@ -26,7 +26,17 @@ secrets::secrets( QWidget * parent ) : m_parent( parent )
 
 void secrets::changeInternalWalletPassword( const QString& walletName,const QString& appName )
 {
-	this->internalWallet()->changeWalletPassWord( walletName,appName ) ;
+	auto e = this->internalWallet() ;
+	auto f = *e ;
+
+	f->changeWalletPassWord( walletName,appName,[ e,f ]( bool q ){
+
+		if( q ){
+
+			f->deleteLater() ;
+			*e = nullptr ;
+		}
+	} ) ;
 }
 
 secrets::~secrets()
@@ -34,7 +44,7 @@ secrets::~secrets()
 	delete m_internalWallet ;
 }
 
-LXQt::Wallet::Wallet * secrets::internalWallet()
+LXQt::Wallet::Wallet ** secrets::internalWallet()
 {
 	if( m_internalWallet == nullptr ){
 
@@ -45,14 +55,14 @@ LXQt::Wallet::Wallet * secrets::internalWallet()
 		m_internalWallet->setParent( m_parent ) ;
 	}
 
-	return m_internalWallet ;
+	return &m_internalWallet ;
 }
 
 secrets::wallet secrets::walletBk( LXQt::Wallet::BackEnd e )
 {
 	if( e == LXQt::Wallet::BackEnd::internal ){
 
-		return this->internalWallet() ;
+		return *( this->internalWallet() ) ;
 	}else{
 		return LXQt::Wallet::getWalletBackend( e ) ;
 	}
