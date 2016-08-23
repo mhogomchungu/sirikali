@@ -8,11 +8,13 @@ Look in "debian" or "debian_package_info" folder for information on how to build
 4. gcc
 5. gcc-c++
 7. cmake
-8.
+8. pwquality-devel( optional dependency used to measure the quality of a password when creating volumes )
 9. libgcrypt-devel libgcrypt11-dev
 10.libsecret-devel or libsecret-1-dev( optional dependency to store keys in gnome's libsecret )
 11.kde-devel( optional dependency to store keys in kde's kwallet )
 12.pkg-config
+13.lxqt_wallet-devel( optional dependency used for secure storage of keys.An internal copy of this project will be
+   used if an external version is not present )
 
 To build SiriKali with default options,run these 5 commands from inside SiriKali source folder.
 
