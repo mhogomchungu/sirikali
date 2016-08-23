@@ -184,6 +184,27 @@ static QStringList _get_versions( NetworkAccessManager& m,const QStringList& e )
 			}else{
 				auto data = m.get( _request( { link,host } ) )->readAll() ;
 
+				auto _found_release = []( const QString& e ){
+
+					for( const auto& it : e ){
+
+						/*
+						 * A release version has version in format of "A.B.C"
+						 *
+						 * ie it only has dots and digits. Presence of any other
+						 * character makes the release assumed to be a beta/alpha
+						 * or prerelease version(something like "A.B.C-rc1" or
+						 * "A.B.C.beta6"
+						 */
+						if( it != '.' && !( it >= '0' && it <= '9' ) ){
+
+							return false ;
+						}
+					}
+
+					return true ;
+				} ;
+
 				for( const auto& it : nlohmann::json::parse( data.constData() ) ){
 
 					auto e = it.find( "tag_name" ) ;
@@ -192,18 +213,10 @@ static QStringList _get_versions( NetworkAccessManager& m,const QStringList& e )
 
 						auto r = QString::fromStdString( e.value() ).remove( 'v' ) ;
 
-						/*
-						 * Try to filter out release candidates,betas and alphas
-						 * because
-						 * we only care about final releases.
-						 */
-						if( utility::containsAtleastOne( r,"-","rc","beta","alpha"
-										 ,"b","a","m" ) ){
+						if( _found_release( r ) ){
 
-							continue ;
+							return r ;
 						}
-
-						return r ;
 					}
 				}
 			}
