@@ -29,6 +29,8 @@
 
 #include <QCoreApplication>
 
+#include <iostream>
+
 class monitorMountinfo
 {
 public:
@@ -115,11 +117,45 @@ void mountinfo::run()
 
 	monitorMountinfo monitor ;
 
+	m_running = monitor ;
+
+	auto oldMountList = mountinfo::mountedVolumes() ;
+
+	decltype( oldMountList ) newMountList ;
+
+	auto _volumeWasMounted = [ & ](){ return oldMountList.size() < newMountList.size() ; } ;
+
+	auto _mountedVolume = [ & ]( const QString& e ){ return !oldMountList.contains( e ) ; } ;
+
+	auto _normalVolume = []( const QString& e ){
+
+		return !utility::containsAtleastOne( e," fuse.cryfs "," fuse.encfs ",
+						     " fuse.gocryptfs "," fuse.securefs " ) ;
+	} ;
+
 	if( monitor ){
 
-		m_running = true ;
-
 		while( monitor.gotEvent() ){
+
+			newMountList = mountinfo::mountedVolumes() ;
+
+			if( _volumeWasMounted() ){
+
+				for( const auto& it : newMountList ){
+
+					if( _mountedVolume( it ) && _normalVolume( it ) ){
+
+						const auto e = utility::split( it,' ' ) ;
+
+						if( e.size() > 3 ){
+
+							gotEvent( e.at( 4 ) ) ;
+						}
+					}
+				}
+			}
+
+			oldMountList = newMountList ;
 
 			if( m_announceEvents ){
 

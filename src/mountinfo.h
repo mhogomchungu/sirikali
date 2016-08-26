@@ -47,6 +47,7 @@ public:
 	~mountinfo() ;
 signals:
 	void gotEvent( void ) ;
+	void gotEvent( QString ) ;
 private slots:
 	void threadStopped( void ) ;
 private:

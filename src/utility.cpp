@@ -930,3 +930,19 @@ LXQt::Wallet::BackEnd utility::autoMountBackEnd()
 		return LXQt::Wallet::BackEnd::internal ;
 	}
 }
+
+void utility::autoMountFavoritesOnAvailable( bool e )
+{
+	_settings->setValue( "AutoMountFavoritesOnAvailable",e ) ;
+}
+
+bool utility::autoMountFavoritesOnAvailable()
+{
+	if( _settings->contains( "AutoMountFavoritesOnAvailable" ) ){
+
+		return _settings->value( "AutoMountFavoritesOnAvailable" ).toBool() ;
+	}else{
+		utility::autoMountFavoritesOnAvailable( false ) ;
+		return false ;
+	}
+}

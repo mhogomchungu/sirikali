@@ -117,7 +117,11 @@ void sirikali::setUpApp( const QString& volume )
 	connect( m_ui->pbupdate,SIGNAL( clicked()),
 		 this,SLOT( pbUpdate() ) ) ;
 
-	connect( &m_mountInfo,SIGNAL( gotEvent() ),this,SLOT( pbUpdate() ),Qt::QueuedConnection ) ;
+	connect( &m_mountInfo,SIGNAL( gotEvent() ),this,
+		 SLOT( pbUpdate() ),Qt::QueuedConnection ) ;
+
+	connect( &m_mountInfo,SIGNAL( gotEvent( QString ) ),
+		 this,SLOT( autoMountFavoritesOnAvailable( QString ) ),Qt::QueuedConnection ) ;
 
 	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),
 		 this,SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
@@ -640,10 +644,34 @@ void sirikali::unlockVolume( const QString& volume,const QString& mountPath,
 	}
 }
 
+void sirikali::autoMountFavoritesOnAvailable( QString m )
+{
+	if( utility::autoMountFavoritesOnAvailable() ){
+
+		const auto l = utility::readFavorites() ;
+		QStringList e ;
+
+		for( const auto& it : l ){
+
+			const auto r = utility::split( it,'\t' ) ;
+
+			if( r.first().startsWith( m ) ){
+
+				e.append( it ) ;
+			}
+		}
+
+		this->autoUnlockVolumes( e ) ;
+	}
+}
+
 void sirikali::autoUnlockVolumes()
 {
-	const auto l = utility::readFavorites() ;
+	this->autoUnlockVolumes( utility::readFavorites() ) ;
+}
 
+void sirikali::autoUnlockVolumes( const QStringList& l )
+{
 	if( l.isEmpty() ){
 
 		return ;

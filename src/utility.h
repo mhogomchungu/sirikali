@@ -162,6 +162,9 @@ namespace utility
 	bool setOpenVolumeReadOnly( QWidget * parent,bool check ) ;
 	bool getOpenVolumeReadOnlyOption() ;
 
+	bool autoMountFavoritesOnAvailable() ;
+	void autoMountFavoritesOnAvailable( bool ) ;
+
 	QStringList split( const QString&,char = '\n' ) ;
 	void addToFavorite( const QString& dev,const QString& m_point ) ;
 

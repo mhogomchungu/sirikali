@@ -93,6 +93,7 @@ private slots:
 	void licenseInfo( void ) ;
 	void updateCheck( void ) ;
 	void languageMenu( QAction * ac ) ;
+	void autoMountFavoritesOnAvailable( QString ) ;
 private:
 	QString resolveFavoriteMountPoint( const QString& ) ;
 
@@ -117,6 +118,7 @@ private:
 	void setUpShortCuts( void ) ;
 	void setUpApp( const QString& ) ;
 	void autoUnlockVolumes( void ) ;
+	void autoUnlockVolumes( const QStringList& ) ;
 
 	Ui::sirikali * m_ui = nullptr ;
 
