@@ -249,30 +249,26 @@ void sirikali::setUpAppMenu()
 	m->addAction( _addAction( true,checkForUpdates::autoCheck(),tr( "Autocheck For Updates" ),
 				  "Autocheck For Updates",SLOT( autoCheckUpdates( bool ) ) ) ) ;
 
-	m->addAction( _addAction( true,utility::autoMountFavoritesOnStartUp(),
-				  tr( "AutoMount Favorites On StartUp" ),
-				  "AutoMount Favorites On StartUp",
-				  SLOT( autoMountFavoritesOnStartUp( bool ) ) ) ) ;
-
 	m->addAction( _addAction( false,false,tr( "Set Mount Point Prefix" ),
 				  "Set Mount Point Prefix",SLOT( setDefaultMountPointPrefix() ) ) ) ;
 
 	m->addAction( _addAction( false,false,tr( "Unmount All" ),"Unmount All",SLOT( unMountAll() ) ) ) ;
 
-	[ & ](){
+	m->addMenu( [ &_addMenu,&_addAction ](){
 
-		auto m = _addMenu( tr( "AutoMount" ),"AutoMount",nullptr,nullptr ) ;
+		auto m = _addMenu( tr( "AutoMount Favorites" ),"AutoMount Favorites",nullptr,nullptr ) ;
 
 		m->addAction( _addAction( true,utility::autoMountFavoritesOnStartUp(),
-					  tr( "AutoMount At Start Up" ),
-					  "AutoMount At Start Up",
-					   SLOT( autoMountAtStartUp( bool ) ) ) ) ;
+					  tr( "AutoMount Favorite Volumes At Start Up" ),
+					  "AutoMount Favorite Volumes At Start Up",
+					   SLOT( autoMountFavoritesOnStartUp( bool ) ) ) ) ;
 
 		m->addAction( _addAction( true,utility::autoMountFavoritesOnAvailable(),
-					  tr( "AutoMount When Available" ),
-					  "AutoMount When Available",
+					  tr( "AutoMount Favorite Volumes When Available" ),
+					  "AutoMount Favorite Volumes When Available",
 					  SLOT( autoMountWhenAvailable( bool ) ) ) ) ;
-	}() ;
+		return m ;
+	}() ) ;
 
 	m_change_password_action = [ &_addMenu,&_addAction ](){
 
@@ -345,11 +341,6 @@ void sirikali::setUpAppMenu()
 void sirikali::autoMountWhenAvailable( bool e )
 {
 	utility::autoMountFavoritesOnAvailable( e ) ;
-}
-
-void sirikali::autoMountAtStartUp( bool e )
-{
-	utility::autoMountFavoritesOnStartUp( e ) ;
 }
 
 void sirikali::setDefaultMountPointPrefix()
