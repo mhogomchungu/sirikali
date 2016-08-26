@@ -259,6 +259,21 @@ void sirikali::setUpAppMenu()
 
 	m->addAction( _addAction( false,false,tr( "Unmount All" ),"Unmount All",SLOT( unMountAll() ) ) ) ;
 
+	[ & ](){
+
+		auto m = _addMenu( tr( "AutoMount" ),"AutoMount",nullptr,nullptr ) ;
+
+		m->addAction( _addAction( true,utility::autoMountFavoritesOnStartUp(),
+					  tr( "AutoMount At Start Up" ),
+					  "AutoMount At Start Up",
+					   SLOT( autoMountAtStartUp( bool ) ) ) ) ;
+
+		m->addAction( _addAction( true,utility::autoMountFavoritesOnAvailable(),
+					  tr( "AutoMount When Available" ),
+					  "AutoMount When Available",
+					  SLOT( autoMountWhenAvailable( bool ) ) ) ) ;
+	}() ;
+
 	m_change_password_action = [ &_addMenu,&_addAction ](){
 
 		auto m = _addMenu( tr( "Internal Wallet" ),"Internal Wallet",nullptr,nullptr ) ;
@@ -325,6 +340,16 @@ void sirikali::setUpAppMenu()
 
 	connect( &m_trayIcon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),
 		 this,SLOT( slotTrayClicked( QSystemTrayIcon::ActivationReason ) ) ) ;
+}
+
+void sirikali::autoMountWhenAvailable( bool e )
+{
+	utility::autoMountFavoritesOnAvailable( e ) ;
+}
+
+void sirikali::autoMountAtStartUp( bool e )
+{
+	utility::autoMountFavoritesOnStartUp( e ) ;
 }
 
 void sirikali::setDefaultMountPointPrefix()
