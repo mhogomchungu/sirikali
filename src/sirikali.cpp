@@ -690,6 +690,11 @@ void sirikali::autoUnlockVolumes( const QStringList& l )
 
 			const auto e = utility::split( it,'\t' ) ;
 
+			if( e.size() < 2 ){
+
+				continue ;
+			}
+
 			const auto key = m->readValue( e.at( 0 ) ) ;
 
 			if( !key.isEmpty() ){
