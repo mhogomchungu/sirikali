@@ -34,7 +34,7 @@ HOW TO BUILD A SiriKali PACKAGE ON UBUNTU OR ANY OTHER DEBIAN BASED DISTRIBUTION
 
    ******************************************************************************************************
 
-   tar cf - . | xz -zf - > ../sirikali_1.0.0.orig.tar.xz
+   tar cf - . | xz -zf - > ../sirikali_1.1.0.orig.tar.xz
 
    ******************************************************************************************************
 
@@ -90,7 +90,7 @@ HOW TO BUILD A SiriKali PACKAGE ON DEBIAN OR ANY OTHER DEBIAN BASED DISTRIBUTION
 
    ******************************************************************************************************
 
-   tar cf - . | xz -zf - > ../sirikali_1.0.0.orig.tar.xz
+   tar cf - . | xz -zf - > ../sirikali_1.1.0.orig.tar.xz
 
    ******************************************************************************************************
 
