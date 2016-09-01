@@ -56,6 +56,11 @@ namespace siritask
 		{
 			return m_type == type ;
 		}
+		template< typename T >
+		bool operator!=( const T& type ) const
+		{
+			return m_type != type ;
+		}
 		template< typename ... T >
 		bool isOneOf( const T& ... t ) const
 		{
