@@ -41,13 +41,13 @@ class options : public QDialog
 {
 	Q_OBJECT
 public:
-	static void instance( QWidget * parent,const QStringList& l,
+	static void instance( QWidget * parent,bool r,const QStringList& l,
 			      std::function< void( const QStringList& ) >&& e )
 	{
-		new options( parent,l,std::move( e ) ) ;
+		new options( parent,r,l,std::move( e ) ) ;
 	}
 
-	options( QWidget * parent,const QStringList&,std::function< void( const QStringList& ) >&& ) ;
+	options( QWidget * parent,bool,const QStringList&,std::function< void( const QStringList& ) >&& ) ;
 	~options() ;
 private slots:
         void pushButton( void ) ;

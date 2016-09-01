@@ -25,7 +25,7 @@
 
 #include <QFileDialog>
 
-options::options( QWidget * parent,const QStringList& l,
+options::options( QWidget * parent,bool r,const QStringList& l,
 		  std::function< void( const QStringList& ) >&& e ) :
 	QDialog( parent ),
 	m_ui( new Ui::options ),
@@ -47,6 +47,8 @@ options::options( QWidget * parent,const QStringList& l,
 
 	m_ui->lineEditIdleTime->setText( l.at( 0 ) ) ;
 	m_ui->lineConfigFilePath->setText( l.at( 1 ) ) ;
+
+	m_ui->pushButton->setEnabled( !r ) ;
 
 	this->show() ;
 }

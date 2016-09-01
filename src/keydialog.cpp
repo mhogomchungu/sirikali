@@ -250,7 +250,7 @@ void keyDialog::windowSetTitle( const QString& s )
 
 void keyDialog::pbOptions()
 {
-	options::instance( m_parentWidget,[ this ]()->QStringList{
+	options::instance( m_parentWidget,m_create,[ this ]()->QStringList{
 
 		return { m_options,m_configFile } ;
 
