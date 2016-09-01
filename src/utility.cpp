@@ -317,38 +317,60 @@ QString utility::getVolumeID( const QString& id,bool expand )
 	return id ;
 }
 
-void utility::addToFavorite( const QString& dev,const QString& m_point )
+void utility::addToFavorite( const QStringList& e )
 {
-	if( !( dev.isEmpty() || m_point.isEmpty() ) ){
+	if( !e.isEmpty() ){
 
-		_settings->setValue( "Favorites",[ & ](){
+		_settings->setValue( "FavoritesVolumes",[ & ](){
 
-			auto e = utility::readFavorites() ;
+			auto q = utility::readFavorites() ;
 
-			e.append( QString( "%1\t%2" ).arg( dev,m_point ) ) ;
+			q.append( e ) ;
 
-			return e ;
+			QStringList l ;
+
+			for( const auto& it : q ){
+
+				l.append( it.configString() ) ;
+			}
+
+			return l ;
 		}() ) ;
 	}
 }
 
-QStringList utility::readFavorites()
+QVector< favorites::entry > utility::readFavorites()
 {
-	if( _settings->contains( "Favorites" ) ){
+	if( _settings->contains( "FavoritesVolumes" ) ){
 
-		return _settings->value( "Favorites" ).toStringList() ;
+		QVector< favorites::entry > e ;
+
+		for( const auto& it : _settings->value( "FavoritesVolumes" ).toStringList() ){
+
+			e.append( it ) ;
+		}
+
+		return e ;
 	}else{
-		return QStringList() ;
+		return QVector< favorites::entry >() ;
 	}
 }
 
-void utility::removeFavoriteEntry( const QString& entry )
+void utility::removeFavoriteEntry( const favorites::entry& e )
 {
-	_settings->setValue( "Favorites",[ & ](){
+	_settings->setValue( "FavoritesVolumes",[ & ](){
 
-		auto l = utility::readFavorites() ;
+		auto q = utility::readFavorites() ;
 
-		l.removeOne( entry ) ;
+		QStringList l ;
+
+		for( const auto& it : q ){
+
+			if( it != e ){
+
+				l.append( it.configString() ) ;
+			}
+		}
 
 		return l ;
 	}() ) ;
@@ -358,20 +380,15 @@ void utility::readFavorites( QMenu * m,bool truncate )
 {
 	m->clear() ;
 
-	auto _add_action = [ m,truncate ]( const QString& e ){
+	auto _add_action = [ m,truncate ]( const favorites::entry& e ){
 
 		auto ac = new QAction( m ) ;
 
 		if( truncate ){
 
-			auto l = utility::split( e,'\t' ) ;
-
-			if( l.size() > 0 ){
-
-				ac->setText( l.first() ) ;
-			}
+			ac->setText( e.volumePath ) ;
 		}else{
-			ac->setText( e ) ;
+			ac->setText( e.string() ) ;
 		}
 
 		return ac ;

@@ -69,6 +69,7 @@ private slots:
 	void startGUI( void ) ;
 	void showMoungDialog( const volumeInfo& ) ;
 	void showMoungDialog( const QString&,const QString& = QString() ) ;
+	void showMoungDialog( const favorites::entry& ) ;
 	void mount( const volumeInfo&,const QString& = QString() ) ;
 	void defaultButton( void ) ;
 	void itemClicked( QTableWidgetItem * ) ;
@@ -119,7 +120,7 @@ private:
 	void setUpShortCuts( void ) ;
 	void setUpApp( const QString& ) ;
 	void autoUnlockVolumes( void ) ;
-	void autoUnlockVolumes( const QStringList& ) ;
+	QVector< favorites::entry > autoUnlockVolumes( const QVector< favorites::entry >& ) ;
 
 	Ui::sirikali * m_ui = nullptr ;
 

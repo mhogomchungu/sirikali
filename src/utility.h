@@ -50,6 +50,7 @@
 
 #include "task.h"
 #include "lxqt_wallet.h"
+#include "favorites.h"
 
 #include <QObject>
 #include <QLabel>
@@ -166,11 +167,11 @@ namespace utility
 	void autoMountFavoritesOnAvailable( bool ) ;
 
 	QStringList split( const QString&,char = '\n' ) ;
-	void addToFavorite( const QString& dev,const QString& m_point ) ;
+	void addToFavorite( const QStringList& ) ;
 
-	QStringList readFavorites( void ) ;
+	QVector< favorites::entry > readFavorites( void ) ;
 	void readFavorites( QMenu *,bool = false ) ;
-	void removeFavoriteEntry( const QString& ) ;
+	void removeFavoriteEntry( const favorites::entry& ) ;
 	QString getVolumeID( const QString&,bool = false ) ;
 	QString localizationLanguage() ;
 	QString localizationLanguagePath() ;

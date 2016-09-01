@@ -25,7 +25,7 @@
 
 #include <QFileDialog>
 
-options::options( QWidget * parent,
+options::options( QWidget * parent,const QStringList& l,
 		  std::function< void( const QStringList& ) >&& e ) :
 	QDialog( parent ),
 	m_ui( new Ui::options ),
@@ -44,6 +44,9 @@ options::options( QWidget * parent,
 	connect( m_ui->pbOK,SIGNAL( clicked() ),this,SLOT( pbOK() ) ) ;
 
 	m_ui->lineEditIdleTime->setFocus() ;
+
+	m_ui->lineEditIdleTime->setText( l.at( 0 ) ) ;
+	m_ui->lineConfigFilePath->setText( l.at( 1 ) ) ;
 
 	this->show() ;
 }

@@ -24,9 +24,16 @@
 
 #include <initializer_list>
 
+#include "favorites.h"
+
 class volumeInfo
 {
 public:
+	volumeInfo( const favorites::entry& e )
+	{
+		this->setValues( { e.volumePath,e.mountPointPath,"","",
+		                   e.configFilePath,e.idleTimeOut } ) ;
+	}
 	volumeInfo( const QStringList& l = QStringList() )
 	{
 		this->setValues( l ) ;
@@ -42,6 +49,14 @@ public:
 	const QString& mountPoint() const
 	{
 		return m_mountPoint ;
+	}
+	const QString& configFilePath() const
+	{
+		return m_configPath ;
+	}
+	const QString& idleTimeOut() const
+	{
+		return m_idleTime ;
 	}
 	bool isValid() const
 	{
@@ -75,12 +90,39 @@ private:
 			m_mountPoint = l.at( 1 ) ;
 			m_fileSystem = l.at( 2 ) ;
 
-		}else if( s >= 4 ){
+		}else if( s == 4 ){
 
 			m_volumePath = l.at( 0 ) ;
 			m_mountPoint = l.at( 1 ) ;
 			m_fileSystem = l.at( 2 ) ;
 			m_mode       = l.at( 3 ) ;
+
+		}else if( s == 5 ){
+
+			m_volumePath = l.at( 0 ) ;
+			m_mountPoint = l.at( 1 ) ;
+			m_fileSystem = l.at( 2 ) ;
+			m_mode       = l.at( 3 ) ;
+			m_configPath = l.at( 4 ) ;
+
+		}else if( s >= 6 ){
+
+			m_volumePath = l.at( 0 ) ;
+			m_mountPoint = l.at( 1 ) ;
+			m_fileSystem = l.at( 2 ) ;
+			m_mode       = l.at( 3 ) ;
+			m_configPath = l.at( 4 ) ;
+			m_idleTime   = l.at( 5 ) ;
+		}
+
+		if( m_configPath == "N/A" ){
+
+			m_configPath.clear() ;
+		}
+
+		if( m_idleTime == "N/A" ){
+
+			m_idleTime.clear() ;
 		}
 	}
 
@@ -88,6 +130,8 @@ private:
 	QString m_mountPoint ;
 	QString m_fileSystem ;
 	QString m_mode ;
+	QString m_configPath ;
+	QString m_idleTime ;
 };
 
 #endif // VOLUMEENTRYPROPERTIES_H

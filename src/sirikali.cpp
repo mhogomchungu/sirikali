@@ -423,26 +423,6 @@ void sirikali::autoCheckUpdates( bool e )
 	checkForUpdates::autoCheck( e ) ;
 }
 
-QString sirikali::resolveFavoriteMountPoint( const QString& e )
-{
-	for( const auto& it : utility::readFavorites() ){
-
-		if( it.startsWith( e + '\t' ) ){
-
-			auto l = it.split( '\t' ) ;
-
-			if( l.size() > 1 ){
-
-				return l.at( 1 ) ;
-			}else{
-				return QString() ;
-			}
-		}
-	}
-
-	return QString() ;
-}
-
 void sirikali::favoriteClicked( QAction * ac )
 {
 	auto e = ac->text().remove( '&' ) ;
@@ -450,21 +430,27 @@ void sirikali::favoriteClicked( QAction * ac )
 	if( e == tr( "Manage Favorites" ) ){
 
 		favorites::instance( this ) ;
+	}else{
+		if( e == tr( "Mount All" ) ){
 
-	}else if( e == tr( "Mount All" ) ){
+			for( const auto& it : this->autoUnlockVolumes( utility::readFavorites() ) ){
 
-		for( const auto& it : utility::readFavorites() ){
+				this->showMoungDialog( it ) ;
+			}
+		}else{
+			for( const auto& it : utility::readFavorites() ){
 
-			auto e = utility::split( it,'\t' ) ;
+				if( it.volumePath == e ){
 
-			if( e.size() > 1 ){
+					if( !this->autoUnlockVolumes( { it } ).isEmpty() ){
 
-				this->showMoungDialog( e.at( 0 ),e.at( 1 ) ) ;
+						this->showMoungDialog( it ) ;
+					}
+
+					break ;
+				}
 			}
 		}
-
-	}else{
-		this->showMoungDialog( e,this->resolveFavoriteMountPoint( e ) ) ;
 	}
 }
 
@@ -664,14 +650,11 @@ void sirikali::autoMountFavoritesOnAvailable( QString m )
 {
 	if( utility::autoMountFavoritesOnAvailable() ){
 
-		const auto l = utility::readFavorites() ;
-		QStringList e ;
+		QVector< favorites::entry > e ;
 
-		for( const auto& it : l ){
+		for( const auto& it : utility::readFavorites() ){
 
-			const auto r = utility::split( it,'\t' ) ;
-
-			if( r.first().startsWith( m ) ){
+			if( it.volumePath.startsWith( m ) && it.autoMount() ){
 
 				e.append( it ) ;
 			}
@@ -683,43 +666,71 @@ void sirikali::autoMountFavoritesOnAvailable( QString m )
 
 void sirikali::autoUnlockVolumes()
 {
-	this->autoUnlockVolumes( utility::readFavorites() ) ;
+	QVector< favorites::entry > e ;
+
+	for( const auto& it : utility::readFavorites() ){
+
+		if( it.autoMount() ){
+
+			e.append( it ) ;
+		}
+	}
+
+	this->autoUnlockVolumes( e ) ;
 }
 
-void sirikali::autoUnlockVolumes( const QStringList& l )
+QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorites::entry >& l )
 {
 	if( l.isEmpty() ){
 
-		return ;
+		return l ;
 	}
 
 	auto m = m_secrets.walletBk( utility::autoMountBackEnd() ) ;
 
 	if( !m ){
 
-		return ;
+		return l ;
 	}
 
-	if( m->open( utility::walletName(),utility::applicationName() ) ){
+	auto _mountVolumes = [ & ](){
+
+		QVector< favorites::entry > e ;
 
 		for( const auto& it : l ){
 
-			const auto e = utility::split( it,'\t' ) ;
+			const auto key = m->readValue( it.volumePath ) ;
 
-			if( e.size() < 2 ){
+			if( key.isEmpty() ){
 
-				continue ;
-			}
-
-			const auto key = m->readValue( e.at( 0 ) ) ;
-
-			if( !key.isEmpty() ){
-
-				siritask::options s = { e.at( 0 ),e.at( 1 ),key,"","","",false,
+				e.append( it ) ;
+			}else{
+				siritask::options s = { it.volumePath,
+							it.mountPointPath,
+							key,
+							it.idleTimeOut,
+							it.configFilePath,
+							"",
+							false,
 							[]( const QString& e ){ Q_UNUSED( e ) ; } } ;
 
 				siritask::encryptedFolderMount( s ).start() ;
 			}
+		}
+
+		return e ;
+	} ;
+
+
+	if( m->opened() ){
+
+		return _mountVolumes() ;
+	}else{
+		if( m->open( utility::walletName(),utility::applicationName() ) ){
+
+			return _mountVolumes() ;
+		}else{
+			return l ;
 		}
 	}
 }
@@ -1076,6 +1087,11 @@ void sirikali::showMoungDialog( const QString& volume,const QString& m_point )
 
 		this->mount( { volume,m_point } ) ;
 	}
+}
+
+void sirikali::showMoungDialog( const favorites::entry& e )
+{
+	this->mount( e ) ;
 }
 
 void sirikali::unlockVolume()

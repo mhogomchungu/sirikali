@@ -49,7 +49,7 @@ static QString _gnomeWallet()
 {
 	return QObject::tr( "Gnome Wallet" ) ;
 }
-
+#include <iostream>
 keyDialog::keyDialog( QWidget * parent,
 		      QTableWidget * table,
 		      secrets& s,
@@ -69,6 +69,9 @@ keyDialog::keyDialog( QWidget * parent,
 	m_parentWidget = parent ;
 
 	m_ui->checkBoxShareMountPoint->setVisible( false ) ;
+
+	m_configFile = e.configFilePath() ;
+	m_options    = e.idleTimeOut() ;
 
 	m_table = table ;
 	m_path = e.volumePath() ;
@@ -247,7 +250,11 @@ void keyDialog::windowSetTitle( const QString& s )
 
 void keyDialog::pbOptions()
 {
-	options::instance( m_parentWidget,[ this ]( const QStringList& e ){
+	options::instance( m_parentWidget,[ this ]()->QStringList{
+
+		return { m_options,m_configFile } ;
+
+	}(),[ this ]( const QStringList& e ){
 
 		m_options = e.at( 0 ) ;
 
