@@ -49,16 +49,17 @@ static QString _gnomeWallet()
 {
 	return QObject::tr( "Gnome Wallet" ) ;
 }
-#include <iostream>
+
 keyDialog::keyDialog( QWidget * parent,
 		      QTableWidget * table,
 		      secrets& s,
 		      const volumeInfo& e,
 		      std::function< void() > p,
 		      std::function< void( const QString& ) > q,
-		      const QString& exe ) :
+		      const QString& exe,const QByteArray& key ) :
 	QDialog( parent ),
 	m_ui( new Ui::keyDialog ),
+	m_key( key ),
 	m_exe( exe ),
 	m_secrets( s ),
 	m_cancel( std::move( p ) ),
@@ -231,6 +232,12 @@ keyDialog::keyDialog( QWidget * parent,
 	this->installEventFilter( this ) ;
 
 	connect( m_ui->pbOptions,SIGNAL( clicked() ),this,SLOT( pbOptions() ) ) ;
+
+	if( !m_key.isEmpty() ){
+
+		m_ui->lineEditKey->setText( m_key ) ;
+		m_ui->pbOpen->setFocus() ;
+	}
 }
 
 void keyDialog::windowSetTitle( const QString& s )

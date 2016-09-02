@@ -963,3 +963,19 @@ bool utility::autoMountFavoritesOnAvailable()
 		return false ;
 	}
 }
+
+bool utility::autoMountFavoritesVolume()
+{
+	if( _settings->contains( "AutoMountFavoritesVolume" ) ){
+
+		return _settings->value( "AutoMountFavoritesVolume" ).toBool() ;
+	}else{
+		utility::autoMountFavoritesVolume( true ) ;
+		return true ;
+	}
+}
+
+void utility::autoMountFavoritesVolume( bool e )
+{
+	_settings->setValue( "AutoMountFavoritesVolume",e ) ;
+}

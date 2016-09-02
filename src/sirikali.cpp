@@ -697,6 +697,25 @@ QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorite
 
 		QVector< favorites::entry > e ;
 
+		auto _mount = [ this ]( const favorites::entry& e,const QByteArray& key ){
+
+			if( utility::autoMountFavoritesVolume() ){
+
+				siritask::options s = { e.volumePath,
+							e.mountPointPath,
+							key,
+							e.idleTimeOut,
+							e.configFilePath,
+							"",
+							false,
+							[]( const QString& e ){ Q_UNUSED( e ) ; } } ;
+
+				siritask::encryptedFolderMount( s ).start() ;
+			}else{
+				this->mount( e,QString(),key ) ;
+			}
+		} ;
+
 		for( const auto& it : l ){
 
 			const auto key = m->readValue( it.volumePath ) ;
@@ -705,16 +724,7 @@ QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorite
 
 				e.append( it ) ;
 			}else{
-				siritask::options s = { it.volumePath,
-							it.mountPointPath,
-							key,
-							it.idleTimeOut,
-							it.configFilePath,
-							"",
-							false,
-							[]( const QString& e ){ Q_UNUSED( e ) ; } } ;
-
-				siritask::encryptedFolderMount( s ).start() ;
+				_mount( it,key ) ;
 			}
 		}
 
@@ -1029,7 +1039,7 @@ void sirikali::dropEvent( QDropEvent * e )
 	}
 }
 
-void sirikali::mount( const volumeInfo& entry,const QString& exe )
+void sirikali::mount( const volumeInfo& entry,const QString& exe,const QByteArray& key )
 {
 	this->disableAll() ;
 
@@ -1041,7 +1051,7 @@ void sirikali::mount( const volumeInfo& entry,const QString& exe )
 
 		this->openMountPointPath( e ) ;
 
-	},exe ).ShowUI() ;
+	},exe,key ).ShowUI() ;
 }
 
 void sirikali::createVolume( QAction * ac )

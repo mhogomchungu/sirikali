@@ -55,6 +55,7 @@ private slots:
 private:
 	void closeEvent( QCloseEvent * ) ;
 	Ui::options * m_ui ;
+	bool m_create ;
 	std::function< void( const QStringList& ) > m_setOptions ;
 };
 

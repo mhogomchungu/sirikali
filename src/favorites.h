@@ -89,6 +89,7 @@ public:
 			return QString( e ).arg( volumePath,mountPointPath,autoMountVolume,
 						 _opt( configFilePath ),_opt( idleTimeOut ) ) ;
 		}
+
 		bool operator!=( const favorites::entry& other ) const
 		{
 			return !this->operator==( other ) ;

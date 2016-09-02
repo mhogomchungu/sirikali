@@ -29,6 +29,7 @@ options::options( QWidget * parent,bool r,const QStringList& l,
 		  std::function< void( const QStringList& ) >&& e ) :
 	QDialog( parent ),
 	m_ui( new Ui::options ),
+	m_create( r ),
 	m_setOptions( std::move( e ) )
 {
 	m_ui->setupUi( this ) ;
@@ -48,15 +49,38 @@ options::options( QWidget * parent,bool r,const QStringList& l,
 	m_ui->lineEditIdleTime->setText( l.at( 0 ) ) ;
 	m_ui->lineConfigFilePath->setText( l.at( 1 ) ) ;
 
-	m_ui->pushButton->setEnabled( !r ) ;
-
 	this->show() ;
 }
 
 void options::pushButton()
 {
-	auto e = QFileDialog::getOpenFileName( this,tr( "Select Cryfs/Gocryptfs Configuration File" ),
-                                               utility::homePath() ) ;
+	auto e = [ this ](){
+
+		if( m_create ){
+
+			QFileDialog dialog( this ) ;
+
+			dialog.setFileMode( QFileDialog::AnyFile ) ;
+
+			dialog.setDirectory( utility::homePath() ) ;
+
+			if( dialog.exec() ){
+
+				auto q = dialog.selectedFiles() ;
+
+				if( !q.isEmpty() ){
+
+					return q.first() ;
+				}
+			}
+
+			return QString() ;
+		}else{
+			return QFileDialog::getOpenFileName( this,
+							     tr( "Select Cryfs/Gocryptfs Configuration File" ),
+							     utility::homePath() ) ;
+		}
+	}() ;
 
         if( !e.isEmpty() ){
 

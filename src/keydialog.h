@@ -101,9 +101,9 @@ public:
 				    const volumeInfo& v,
 				    std::function< void() > cancel,
 				    std::function< void( const QString& ) > success,
-				    const QString& exe = QString() )
+				    const QString& exe = QString(),const QByteArray& key = QByteArray() )
 	{
-		return *( new keyDialog( parent,table,s,v,std::move( cancel ),std::move( success ),exe ) ) ;
+		return *( new keyDialog( parent,table,s,v,std::move( cancel ),std::move( success ),exe,key ) ) ;
 	}
 	keyDialog( QWidget * parent,
 		   QTableWidget *,
@@ -111,7 +111,8 @@ public:
 		   const volumeInfo&,
 		   std::function< void() >,
 		   std::function< void( const QString& ) >,
-		   const QString&) ;
+		   const QString&,
+		   const QByteArray& ) ;
 	~keyDialog() ;
 	void ShowUI( void ) ;
 	void HideUI( void ) ;
