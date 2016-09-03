@@ -178,21 +178,7 @@ utility::wallet utility::getKey( const QString& keyID,LXQt::Wallet::Wallet& wall
 
 	auto s = wallet.backEnd() ;
 
-	if( s == LXQt::Wallet::BackEnd::kwallet || s == LXQt::Wallet::BackEnd::libsecret ){
-
-		if( s == LXQt::Wallet::BackEnd::kwallet ){
-
-			w.opened = wallet.open( "default",utility::applicationName() ) ;
-		}else{
-			w.opened = wallet.open( utility::walletName(),utility::applicationName() ) ;
-		}
-
-		if( w.opened ){
-
-			w.key = _getKey( wallet,keyID ) ;
-		}
-
-	}else if( s == LXQt::Wallet::BackEnd::internal ){
+	if( s == LXQt::Wallet::BackEnd::internal ){
 
 		auto walletName = utility::walletName() ;
 		auto appName    = utility::applicationName() ;
@@ -214,6 +200,13 @@ utility::wallet utility::getKey( const QString& keyID,LXQt::Wallet::Wallet& wall
 			}
 		}else{
 			w.notConfigured = true ;
+		}
+	}else{
+		w.opened = wallet.open( utility::walletName( s ),utility::applicationName() ) ;
+
+		if( w.opened ){
+
+			w.key = _getKey( wallet,keyID ) ;
 		}
 	}
 
@@ -748,6 +741,16 @@ QStringList utility::split( const QString& e,char token )
 QString utility::walletName()
 {
 	return "SiriKali" ;
+}
+
+QString utility::walletName( LXQt::Wallet::BackEnd s )
+{
+	if( s == LXQt::Wallet::BackEnd::kwallet ){
+
+		return "default" ;
+	}else{
+		return utility::walletName() ;
+	}
 }
 
 QString utility::applicationName()

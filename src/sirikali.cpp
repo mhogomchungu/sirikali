@@ -736,7 +736,7 @@ QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorite
 
 		return _mountVolumes() ;
 	}else{
-		if( m->open( utility::walletName(),utility::applicationName() ) ){
+		if( m->open( utility::walletName( m->backEnd() ),utility::applicationName() ) ){
 
 			return _mountVolumes() ;
 		}else{

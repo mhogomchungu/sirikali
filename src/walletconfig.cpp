@@ -200,16 +200,10 @@ void walletconfig::ShowUI( secrets::wallet&& wallet )
 	}else{
 		m_wallet->setImage( QIcon( ":/sirikali" ) ) ;
 
-		m_wallet->open( [ & ]()->QString{
+		auto a = utility::walletName( m_wallet->backEnd() ) ;
+		auto b = utility::applicationName() ;
 
-			if( m_wallet->backEnd() == LXQt::Wallet::BackEnd::kwallet ){
-
-				return "default" ;
-			}else{
-				return utility::walletName() ;
-			}
-
-		}(),utility::applicationName(),[ this ]( bool opened ){
+		m_wallet->open( a,b,[ this ]( bool opened ){
 
 			if( opened ){
 

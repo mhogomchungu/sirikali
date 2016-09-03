@@ -180,6 +180,7 @@ namespace utility
 	QString localizationLanguagePath() ;
 	void setLocalizationLanguage( const QString& ) ;
 	QString walletName( void ) ;
+	QString walletName( LXQt::Wallet::BackEnd ) ;
 	QString applicationName( void ) ;
 	bool eventFilter( QObject * gui,QObject * watched,QEvent * event,std::function< void() > ) ;
 	void licenseInfo( QWidget * ) ;
