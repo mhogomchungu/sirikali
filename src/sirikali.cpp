@@ -736,6 +736,8 @@ QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorite
 
 		return _mountVolumes() ;
 	}else{
+		m->setImage( QIcon( ":/sirikali" ) ) ;
+
 		if( m->open( utility::walletName( m->backEnd() ),utility::applicationName() ) ){
 
 			return _mountVolumes() ;
