@@ -170,11 +170,14 @@ namespace utility
 	void autoMountFavoritesOnAvailable( bool ) ;
 
 	QStringList split( const QString&,char = '\n' ) ;
-	void addToFavorite( const QStringList& ) ;
 
+	void clearFavorites( void ) ;
+	void addToFavorite( const QStringList& ) ;
 	QVector< favorites::entry > readFavorites( void ) ;
+	void replaceFavorite( const favorites::entry&,const favorites::entry& ) ;
 	void readFavorites( QMenu *,bool = false ) ;
 	void removeFavoriteEntry( const favorites::entry& ) ;
+
 	QString getVolumeID( const QString&,bool = false ) ;
 	QString localizationLanguage() ;
 	QString localizationLanguagePath() ;

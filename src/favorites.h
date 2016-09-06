@@ -151,6 +151,7 @@ public slots:
 	void ShowUI( void ) ;
 	void HideUI( void ) ;
 private slots:
+	void toggleAutoMount( void ) ;
 	void configPath( void ) ;
 	void removeEntryFromFavoriteList( void ) ;
 	void add( void ) ;
@@ -163,6 +164,7 @@ private slots:
 	void shortcutPressed( void ) ;
 	void devicePathTextChange( QString ) ;
 private:
+	favorites::entry getEntry( int ) ;
 	QString getExistingFile( const QString& ) ;
 	QString getExistingDirectory( const QString& ) ;
 	void closeEvent( QCloseEvent * ) ;

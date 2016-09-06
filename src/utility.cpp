@@ -310,6 +310,31 @@ QString utility::getVolumeID( const QString& id,bool expand )
 	return id ;
 }
 
+void utility::clearFavorites()
+{
+	_settings->setValue( "FavoritesVolumes",QStringList() ) ;
+}
+
+void utility::replaceFavorite( const favorites::entry& e,const favorites::entry& f )
+{
+	QStringList l ;
+
+	for( const auto& it : utility::readFavorites() ){
+
+		if( it == e ){
+
+			l.append( f.configString() ) ;
+		}else{
+			l.append( it.configString() ) ;
+		}
+	}
+
+	if( !l.isEmpty() ){
+
+		_settings->setValue( "FavoritesVolumes",l ) ;
+	}
+}
+
 void utility::addToFavorite( const QStringList& e )
 {
 	if( !e.isEmpty() ){

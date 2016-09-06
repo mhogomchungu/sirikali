@@ -161,10 +161,17 @@ void favorites::itemClicked( QTableWidgetItem * current,bool clicked )
 		QMenu m ;
 
 		m.setFont( this->font() ) ;
+
+		connect( m.addAction( tr( "Toggle AutoMount" ) ),
+			 SIGNAL( triggered() ),this,SLOT( toggleAutoMount() ) ) ;
+
+		m.addSeparator() ;
+
 		connect( m.addAction( tr( "Remove Selected Entry" ) ),
 			 SIGNAL( triggered() ),this,SLOT( removeEntryFromFavoriteList() ) ) ;
 
 		m.addSeparator() ;
+
 		m.addAction( tr( "Cancel" ) ) ;
 
 		if( clicked ){
@@ -178,6 +185,48 @@ void favorites::itemClicked( QTableWidgetItem * current,bool clicked )
 	}
 }
 
+favorites::entry favorites::getEntry( int row )
+{
+	QString e ;
+
+	auto table = m_ui->tableWidget ;
+
+	for( int i = 0 ; i < table->columnCount() ; i++ ){
+
+		e += table->item( row,i )->text() + "\t" ;
+	}
+
+	return e ;
+}
+
+void favorites::toggleAutoMount()
+{
+	auto table = m_ui->tableWidget ;
+
+	if( table->rowCount() > 0 ){
+
+		auto row = table->currentRow() ;
+
+		auto item = table->item( row,2 ) ;
+
+		auto e = this->getEntry( row ) ;
+
+		item->setText( [ & ](){
+
+			if( item->text() == "true" ){
+
+				return "false" ;
+			}else{
+				return "true" ;
+			}
+		}() ) ;
+
+		auto f = this->getEntry( row ) ;
+
+		utility::replaceFavorite( e,f ) ;
+	}
+}
+
 void favorites::removeEntryFromFavoriteList()
 {
 	auto table = m_ui->tableWidget ;
@@ -188,14 +237,7 @@ void favorites::removeEntryFromFavoriteList()
 
 		auto row = table->currentRow() ;
 
-		QString q ;
-
-		for( int i = 0 ; i < table->columnCount() ; i++ ){
-
-			q += table->item( row,i )->text() + "\t" ;
-		}
-
-		utility::removeFavoriteEntry( q ) ;
+		utility::removeFavoriteEntry( this->getEntry( row ) ) ;
 
 		tablewidget::deleteRow( table,row ) ;
 
