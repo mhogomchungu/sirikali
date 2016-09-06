@@ -85,8 +85,8 @@ void options::pushButton()
 
 					return "securefs.json" ;
 				}else{
-					return ""
- ;				}
+					return "" ;
+				}
 			}() ) ;
 
 			if( dialog.exec() ){
