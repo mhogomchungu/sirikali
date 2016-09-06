@@ -64,6 +64,8 @@ void options::pushButton()
 
 			dialog.setDirectory( utility::homePath() ) ;
 
+			dialog.setAcceptMode( QFileDialog::AcceptSave ) ;
+
 			if( dialog.exec() ){
 
 				auto q = dialog.selectedFiles() ;
