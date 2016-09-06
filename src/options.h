@@ -56,6 +56,7 @@ private:
 	void closeEvent( QCloseEvent * ) ;
 	Ui::options * m_ui ;
 	bool m_create ;
+	QString m_type ;
 	std::function< void( const QStringList& ) > m_setOptions ;
 };
 

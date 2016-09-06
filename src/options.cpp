@@ -30,6 +30,7 @@ options::options( QWidget * parent,bool r,const QStringList& l,
 	QDialog( parent ),
 	m_ui( new Ui::options ),
 	m_create( r ),
+	m_type( l.at( 2 ).toLower() ),
 	m_setOptions( std::move( e ) )
 {
 	m_ui->setupUi( this ) ;
@@ -65,6 +66,28 @@ void options::pushButton()
 			dialog.setDirectory( utility::homePath() ) ;
 
 			dialog.setAcceptMode( QFileDialog::AcceptSave ) ;
+
+			dialog.selectFile( [ this ](){
+
+				if( m_type == "cryfs" ){
+
+					return "cryfs.config" ;
+
+				}else if( m_type == "encfs" ){
+
+					return "encfs6.xml" ;
+
+				}else if( m_type == "gocryptfs"){
+
+					return "gocryptfs.conf" ;
+
+				}else if( m_type == "securefs" ){
+
+					return "securefs.json" ;
+				}else{
+					return ""
+ ;				}
+			}() ) ;
 
 			if( dialog.exec() ){
 

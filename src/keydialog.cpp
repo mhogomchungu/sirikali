@@ -259,7 +259,7 @@ void keyDialog::pbOptions()
 {
 	options::instance( m_parentWidget,m_create,[ this ]()->QStringList{
 
-		return { m_options,m_configFile } ;
+		return { m_options,m_configFile,m_exe } ;
 
 	}(),[ this ]( const QStringList& e ){
 
