@@ -967,18 +967,18 @@ bool utility::autoMountFavoritesOnAvailable()
 	}
 }
 
-bool utility::autoMountFavoritesVolume()
+bool utility::showMountDialogWhenAutoMounting()
 {
-	if( _settings->contains( "AutoMountFavoritesVolume" ) ){
+	if( _settings->contains( "ShowMountDialogWhenAutoMounting" ) ){
 
-		return _settings->value( "AutoMountFavoritesVolume" ).toBool() ;
+		return _settings->value( "ShowMountDialogWhenAutoMounting" ).toBool() ;
 	}else{
-		utility::autoMountFavoritesVolume( true ) ;
-		return true ;
+		utility::showMountDialogWhenAutoMounting( false ) ;
+		return false ;
 	}
 }
 
-void utility::autoMountFavoritesVolume( bool e )
+void utility::showMountDialogWhenAutoMounting( bool e )
 {
-	_settings->setValue( "AutoMountFavoritesVolume",e ) ;
+	_settings->setValue( "ShowMountDialogWhenAutoMounting",e ) ;
 }

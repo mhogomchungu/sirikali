@@ -54,6 +54,7 @@ public slots:
 	void raiseWindow( void ) ;
 	void raiseWindow( QString ) ;
 private slots:
+	void showMountDialogWhenAutoMounting( bool ) ;
 	void autoMountWhenAvailable( bool ) ;
 	void setDefaultMountPointPrefix( void ) ;
 	void properties( void ) ;

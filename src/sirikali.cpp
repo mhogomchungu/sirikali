@@ -267,6 +267,11 @@ void sirikali::setUpAppMenu()
 					  tr( "AutoMount Favorite Volumes When Available" ),
 					  "AutoMount Favorite Volumes When Available",
 					  SLOT( autoMountWhenAvailable( bool ) ) ) ) ;
+
+		m->addAction( _addAction( true,utility::showMountDialogWhenAutoMounting(),
+					  tr( "Show Mount Dialog When AutoMounting" ),
+					  "Show Mount Dialog When AutoMounting",
+					  SLOT( showMountDialogWhenAutoMounting( bool ) ) ) ) ;
 		return m ;
 	}() ) ;
 
@@ -336,6 +341,11 @@ void sirikali::setUpAppMenu()
 
 	connect( &m_trayIcon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),
 		 this,SLOT( slotTrayClicked( QSystemTrayIcon::ActivationReason ) ) ) ;
+}
+
+void sirikali::showMountDialogWhenAutoMounting( bool e )
+{
+	utility::showMountDialogWhenAutoMounting( e ) ;
 }
 
 void sirikali::autoMountWhenAvailable( bool e )
@@ -699,8 +709,10 @@ QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorite
 
 		auto _mount = [ this ]( const favorites::entry& e,const QByteArray& key ){
 
-			if( utility::autoMountFavoritesVolume() ){
+			if( utility::showMountDialogWhenAutoMounting() ){
 
+				this->mount( e,QString(),key ) ;
+			}else{
 				siritask::options s = { e.volumePath,
 							e.mountPointPath,
 							key,
@@ -711,8 +723,6 @@ QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorite
 							[]( const QString& e ){ Q_UNUSED( e ) ; } } ;
 
 				siritask::encryptedFolderMount( s ).start() ;
-			}else{
-				this->mount( e,QString(),key ) ;
 			}
 		} ;
 

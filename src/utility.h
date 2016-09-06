@@ -160,8 +160,8 @@ namespace utility
 	bool autoMountFavoritesOnStartUp() ;
 	void autoMountFavoritesOnStartUp( bool ) ;
 
-	bool autoMountFavoritesVolume() ;
-	void autoMountFavoritesVolume( bool ) ;
+	bool showMountDialogWhenAutoMounting() ;
+	void showMountDialogWhenAutoMounting( bool ) ;
 
 	bool setOpenVolumeReadOnly( QWidget * parent,bool check ) ;
 	bool getOpenVolumeReadOnlyOption() ;
