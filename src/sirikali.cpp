@@ -219,7 +219,8 @@ void sirikali::setUpAppMenu()
 		return ac ;
 	} ;
 
-	auto _addMenu = [ m,this ]( const QString& r,const char * z,const char * t,const char * s ){
+	auto _addMenu = [ this ]( QMenu * m,const QString& r,
+			const char * z,const char * t,const char * s ){
 
 		auto e = m->addMenu( r ) ;
 
@@ -254,42 +255,68 @@ void sirikali::setUpAppMenu()
 
 	m->addAction( _addAction( false,false,tr( "Unmount All" ),"Unmount All",SLOT( unMountAll() ) ) ) ;
 
-	m->addMenu( [ &_addMenu,&_addAction ](){
+	m->addMenu( [ this,m,&_addMenu,&_addAction ](){
 
-		auto m = _addMenu( tr( "AutoMount Favorites" ),"AutoMount Favorites",nullptr,nullptr ) ;
+		auto e = _addMenu( m,tr( "AutoMount Favorites" ),"AutoMount Favorites",nullptr,nullptr ) ;
 
-		m->addAction( _addAction( true,utility::autoMountFavoritesOnStartUp(),
+		e->addMenu( [ this,e,&_addMenu,&_addAction ](){
+
+			m_autoMountKeyStorage = _addMenu( e,tr( "AutoMount Key Source" ),"AutoMount Key Source",
+							  SLOT( autoMountKeySource( QAction * ) ),
+							  SLOT( autoMountKeyStorage() ) ) ;
+
+			auto _addOption = [ & ]( const QString& e,const char * z,LXQt::Wallet::BackEnd s ){
+
+				auto ac = _addAction( true,false,e,z,nullptr ) ;
+
+				ac->setEnabled( LXQt::Wallet::backEndIsSupported( s ) ) ;
+
+				ac->setChecked( s == utility::autoMountBackEnd() ) ;
+
+				m_autoMountKeyStorage->addAction( ac ) ;
+			} ;
+
+			_addOption( tr( "Internal Wallet" ),"Internal Wallet",LXQt::Wallet::BackEnd::internal ) ;
+			_addOption( tr( "KDE Wallet" ),"KDE Wallet",LXQt::Wallet::BackEnd::kwallet ) ;
+			_addOption( tr( "Gnome Wallet" ),"Gnome Wallet",LXQt::Wallet::BackEnd::libsecret ) ;
+
+			return m_autoMountKeyStorage ;
+		}() ) ;
+
+		e->addSeparator() ;
+
+		e->addAction( _addAction( true,utility::autoMountFavoritesOnStartUp(),
 					  tr( "AutoMount Favorite Volumes At Start Up" ),
 					  "AutoMount Favorite Volumes At Start Up",
 					   SLOT( autoMountFavoritesOnStartUp( bool ) ) ) ) ;
 
-		m->addAction( _addAction( true,utility::autoMountFavoritesOnAvailable(),
+		e->addAction( _addAction( true,utility::autoMountFavoritesOnAvailable(),
 					  tr( "AutoMount Favorite Volumes When Available" ),
 					  "AutoMount Favorite Volumes When Available",
 					  SLOT( autoMountWhenAvailable( bool ) ) ) ) ;
 
-		m->addAction( _addAction( true,utility::showMountDialogWhenAutoMounting(),
+		e->addAction( _addAction( true,utility::showMountDialogWhenAutoMounting(),
 					  tr( "Show Mount Dialog When AutoMounting" ),
 					  "Show Mount Dialog When AutoMounting",
 					  SLOT( showMountDialogWhenAutoMounting( bool ) ) ) ) ;
-		return m ;
+		return e ;
 	}() ) ;
 
-	m_change_password_action = [ &_addMenu,&_addAction ](){
+	m_change_password_action = [ m,&_addMenu,&_addAction ](){
 
-		auto m = _addMenu( tr( "Internal Wallet" ),"Internal Wallet",nullptr,nullptr ) ;
+		auto e = _addMenu( m,tr( "Internal Wallet" ),"Internal Wallet",nullptr,nullptr ) ;
 
 		auto ac = _addAction( false,false,tr( "Change Password" ),"Change Password",
 				       SLOT( changeInternalWalletPassWord() ) ) ;
 
-		m->addAction( ac ) ;
+		e->addAction( ac ) ;
 
 		return ac ;
 	}() ;
 
-	m_key_manager_menu = [ &_addMenu,&_addAction ](){
+	m_key_manager_menu = [ m,&_addMenu,&_addAction ](){
 
-		auto m = _addMenu( tr( "Key Storage" ),"Key Storage",
+		auto q = _addMenu( m,tr( "Key Storage" ),"Key Storage",
 				   SLOT( keyManagerClicked( QAction * ) ),
 				   SLOT( aboutToShowMenu() ) ) ;
 
@@ -299,21 +326,21 @@ void sirikali::setUpAppMenu()
 
 			ac->setEnabled( LXQt::Wallet::backEndIsSupported( s ) ) ;
 
-			m->addAction( ac ) ;
+			q->addAction( ac ) ;
 		} ;
 
 		_addOption( tr( "Internal Wallet" ),"Internal Wallet",LXQt::Wallet::BackEnd::internal ) ;
 		_addOption( tr( "KDE Wallet" ),"KDE Wallet",LXQt::Wallet::BackEnd::kwallet ) ;
 		_addOption( tr( "Gnome Wallet" ),"Gnome Wallet",LXQt::Wallet::BackEnd::libsecret ) ;
 
-		return m ;
+		return q ;
 	}() ;
 
-	m_favorite_menu = _addMenu( tr( "Favorites" ),"Favorites",
+	m_favorite_menu = _addMenu( m,tr( "Favorites" ),"Favorites",
 				    SLOT( favoriteClicked( QAction * ) ),
 				    SLOT( showFavorites() ) ) ;
 
-	m_language_menu = _addMenu( tr( "Select Language" ),"Select Language",
+	m_language_menu = _addMenu( m,tr( "Select Language" ),"Select Language",
 				    SLOT( languageMenu( QAction * ) ),nullptr ) ;
 
 	m->addAction( _addAction( false,false,tr( "Check For Updates" ),"Check For Updates",
@@ -341,6 +368,67 @@ void sirikali::setUpAppMenu()
 
 	connect( &m_trayIcon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),
 		 this,SLOT( slotTrayClicked( QSystemTrayIcon::ActivationReason ) ) ) ;
+}
+
+void sirikali::autoMountKeyStorage()
+{
+	auto s = utility::autoMountBackEnd() ;
+
+	auto a = tr( "Internal Wallet" ).remove( '&' ) ;
+	auto b = tr( "KDE Wallet" ).remove( '&' ) ;
+	auto c = tr( "Gnome Wallet" ).remove( '&' ) ;
+
+	for( const auto& it: m_autoMountKeyStorage->actions() ){
+
+		it->setChecked( [ & ](){
+
+			auto e = it->text().remove( '&' ) ;
+
+			if( e == a ){
+
+				return s == LXQt::Wallet::BackEnd::internal ;
+
+			}else if( e == b ){
+
+				return s == LXQt::Wallet::BackEnd::kwallet ;
+
+			}else if( e == c ){
+
+				return s == LXQt::Wallet::BackEnd::libsecret ;
+			}else{
+				return false ;
+			}
+		}() ) ;
+	}
+}
+
+void sirikali::autoMountKeySource( QAction * e )
+{
+	utility::autoMountBackEnd( [ e ](){
+
+		auto a = e->text().remove( '&' ) ;
+
+		auto b = tr( "Internal Wallet" ).remove( '&' ) ;
+
+		auto c = tr( "KDE Wallet" ).remove( '&' ) ;
+
+		auto d = tr( "Gnome Wallet" ).remove( '&' ) ;
+
+		if( a == b ){
+
+			return LXQt::Wallet::BackEnd::internal ;
+
+		}else if( a == c ){
+
+			return LXQt::Wallet::BackEnd::kwallet ;
+
+		}else if( a == d ){
+
+			return LXQt::Wallet::BackEnd::libsecret ;
+		}else{
+			return LXQt::Wallet::BackEnd::internal ;
+		}
+	}() ) ;
 }
 
 void sirikali::showMountDialogWhenAutoMounting( bool e )

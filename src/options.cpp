@@ -77,7 +77,7 @@ void options::pushButton()
 
 					return "encfs6.xml" ;
 
-				}else if( m_type == "gocryptfs"){
+				}else if( m_type == "gocryptfs" ){
 
 					return "gocryptfs.conf" ;
 

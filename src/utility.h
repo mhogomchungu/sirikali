@@ -123,7 +123,9 @@ namespace utility
 
 	QIcon getIcon() ;
 
-	LXQt::Wallet::BackEnd autoMountBackEnd() ;
+	LXQt::Wallet::BackEnd autoMountBackEnd( void ) ;
+
+	void autoMountBackEnd( LXQt::Wallet::BackEnd ) ;
 
 	QStringList directoryList( const QString& e ) ;
 
