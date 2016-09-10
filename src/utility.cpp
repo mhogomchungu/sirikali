@@ -972,7 +972,6 @@ void utility::autoMountBackEnd( LXQt::Wallet::BackEnd e )
 		}else{
 			return QString( "internal" ) ;
 		}
-
 	}() ) ;
 }
 

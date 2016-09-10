@@ -49,6 +49,7 @@ public:
 		{
 			return m_wallet ;
 		}
+
 		operator bool()
 		{
 			return m_wallet ;
