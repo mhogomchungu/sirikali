@@ -488,11 +488,11 @@ void sirikali::keyManagerClicked( QAction * ac )
 
 		auto e = ac->text().remove( '&' ) ;
 
-		if( e == tr( "KDE Wallet" ) ){
+		if( e == tr( "KDE Wallet" ).remove( '&' ) ){
 
 			return LXQt::Wallet::BackEnd::kwallet ;
 
-		}else if( e == tr( "Gnome Wallet" ) ){
+		}else if( e == tr( "Gnome Wallet" ).remove( '&' ) ){
 
 			return LXQt::Wallet::BackEnd::libsecret ;
 		}else{
@@ -525,11 +525,11 @@ void sirikali::favoriteClicked( QAction * ac )
 {
 	auto e = ac->text().remove( '&' ) ;
 
-	if( e == tr( "Manage Favorites" ) ){
+	if( e == tr( "Manage Favorites" ).remove( '&' ) ){
 
 		favorites::instance( this ) ;
 	}else{
-		if( e == tr( "Mount All" ) ){
+		if( e == tr( "Mount All" ).remove( '&' ) ){
 
 			for( const auto& it : this->autoUnlockVolumes( utility::readFavorites() ) ){
 
@@ -992,9 +992,9 @@ void sirikali::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 		connect( ac,SIGNAL( triggered() ),this,slot ) ;
 	} ;
 
-	_addAction( tr( "Unmount" ),SLOT( pbUmount() ),true ) ;
-
 	_addAction( tr( "Open Folder" ),SLOT( slotOpenFolder() ),true ) ;
+
+	_addAction( tr( "Unmount" ),SLOT( pbUmount() ),true ) ;
 
 	_addAction( tr( "Properties" ),SLOT( properties() ),[ this ](){
 
