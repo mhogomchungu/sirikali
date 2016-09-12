@@ -44,3 +44,7 @@ version 1.1.0
 -- Add ability to automount favorites volumes on program start up time.
 -- Add ability to automount favorites volumes when they become available ie,when the files systems the volume
    resides in is mounted.
+
+version 1.2.0
+-- Add ability to add a favorite volume with mount options(external config file path,idle timeout,auto mount).
+-- Add a GUI option to select what secure key storage backend to use when auto mounting volumes.
