@@ -378,11 +378,9 @@ void utility::removeFavoriteEntry( const favorites::entry& e )
 {
 	_settings->setValue( "FavoritesVolumes",[ & ](){
 
-		auto q = utility::readFavorites() ;
-
 		QStringList l ;
 
-		for( const auto& it : q ){
+		for( const auto& it : utility::readFavorites() ){
 
 			if( it != e ){
 
