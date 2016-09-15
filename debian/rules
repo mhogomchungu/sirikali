@@ -1,5 +1,9 @@
 #!/usr/bin/make -f
 
+PKD = $(word 1,$(abspath $(dir $(MAKEFILE_LIST))))
+PKG = $(shell dpkg-parsechangelog -l$(PKD)/changelog --show-field=Source)
+VER = $(shell (dpkg-parsechangelog -l$(PKD)/changelog | grep Version | sed 's/Version..//' | sed 's/-.\+//'))
+
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
@@ -14,4 +18,11 @@ override_dh_auto_configure:
 %:
 	dh $@
 
-.PHONY: override_dh_auto_configure
+.PHONY get-orig-source:
+get-orig-source:  $(info I: $(PKG)_$(VER))
+	@echo "# Downloading..."
+	uscan --noconf --verbose --rename --destdir=$(CURDIR) --check-dirname-level=0 --force-download --download-version $(VER) $(PKD)
+	rm -f $(PKG)-$(VER).tar.xz.pgp
+
+
+.PHONY: override_dh_auto_configure get-orig-source

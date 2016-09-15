@@ -1,6 +1,4 @@
 # Compulsory line, this is a version 3 file
 version=3
 
-opts=filenamemangle=s/.+\/v?(\d\S*)\.tar\.gz/sirikali-$1\.tar\.gz/ \
-  https://github.com/mhogomchungu/sirikali/tags .*/v?(\d\S*)\.tar\.gz
-
+https://github.com/mhogomchungu/sirikali/releases /download/.+/SiriKali-(.*)\.tar\.xz
