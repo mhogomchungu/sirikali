@@ -1,3 +1,11 @@
+sirikali (1.2.0-1) UNRELEASED; urgency=low
+  [Mhogo Mchungu]
+  * New Features
+     -- Add ability to add a favorite volume with mount options(external config file path,idle timeout,auto mount).
+     -- Add a GUI option to select what secure key storage backend to use when auto mounting volumes.
+
+ -- Mhogo Mchungu <mhogomchungu@gmail.com>  Fri, 16 Sept 2016 16:38:48 +0000
+
 sirikali (1.1.0-1) UNRELEASED; urgency=low
   [Mhogo Mchungu]
   * New Features

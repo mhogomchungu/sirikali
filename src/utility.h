@@ -177,7 +177,7 @@ namespace utility
 	void addToFavorite( const QStringList& ) ;
 	QVector< favorites::entry > readFavorites( void ) ;
 	void replaceFavorite( const favorites::entry&,const favorites::entry& ) ;
-	void readFavorites( QMenu *,bool = false ) ;
+	void readFavorites( QMenu *,bool,const QString&,const QString& ) ;
 	void removeFavoriteEntry( const favorites::entry& ) ;
 
 	QString getVolumeID( const QString&,bool = false ) ;

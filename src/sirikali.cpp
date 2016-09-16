@@ -554,7 +554,7 @@ void sirikali::favoriteClicked( QAction * ac )
 
 void sirikali::showFavorites()
 {
-	utility::readFavorites( m_favorite_menu,true ) ;
+	utility::readFavorites( m_favorite_menu,true,tr( "Manage Favorites" ),tr( "Mount All" ) ) ;
 }
 
 void sirikali::setLocalizationLanguage( bool translate )

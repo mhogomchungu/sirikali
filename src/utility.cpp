@@ -392,7 +392,7 @@ void utility::removeFavoriteEntry( const favorites::entry& e )
 	}() ) ;
 }
 
-void utility::readFavorites( QMenu * m,bool truncate )
+void utility::readFavorites( QMenu * m,bool truncate ,const QString& a, const QString& b )
 {
 	m->clear() ;
 
@@ -410,8 +410,8 @@ void utility::readFavorites( QMenu * m,bool truncate )
 		return ac ;
 	} ;
 
-	m->addAction( new QAction( QObject::tr( "Manage Favorites" ),m ) ) ;
-	m->addAction( new QAction( QObject::tr( "Mount All" ),m ) ) ;
+	m->addAction( new QAction( a,m ) ) ;
+	m->addAction( new QAction( b,m ) ) ;
 
 	m->addSeparator() ;
 
