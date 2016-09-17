@@ -18,6 +18,10 @@ override_dh_auto_configure:
 %:
 	dh $@
 
+override_dh_auto_build:
+	dh_auto_build
+	ronn debian/*.ronn
+
 .PHONY get-orig-source:
 get-orig-source:  $(info I: $(PKG)_$(VER))
 	@echo "# Downloading..."

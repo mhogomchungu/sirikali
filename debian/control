@@ -3,7 +3,15 @@ Section: admin
 Priority: extra
 Maintainer: Mhogo Mchungu <mhogomchungu@gmail.com>
 Uploaders: David Steele <steele@debian.org>
-Build-Depends: debhelper (>= 9), cmake, pkg-config, libgcrypt11-dev, libsecret-1-dev, qtbase5-dev, chrpath, bzip2
+Build-Depends: debhelper (>= 9),
+               cmake,
+               pkg-config,
+               libgcrypt11-dev,
+               libsecret-1-dev,
+               qtbase5-dev,
+               chrpath,
+               bzip2,
+               ruby-ronn,
 Standards-Version: 3.9.8
 Homepage: http://mhogomchungu.github.io/sirikali
 Vcs-Git: https://github.com/davesteele/sirikali.git -b debian
