@@ -136,10 +136,19 @@ void sirikali::setUpApp( const QString& volume )
 		connect( m,SIGNAL( triggered( QAction * ) ),
 			 this,SLOT( createVolume( QAction * ) ) ) ;
 
-		m->addAction( "Cryfs" ) ;
-		m->addAction( "Gocryptfs" ) ;
-		m->addAction( "Securefs" ) ;
-		m->addAction( "Encfs" ) ;
+		auto _enable = []( QAction * ac,const QString& exe ){
+
+			if( utility::executableFullPath( exe.toLower() ).isEmpty() ){
+
+				ac->setEnabled( false ) ;
+				ac->setText( tr( "%1 Is Not Installed" ).arg( exe ) ) ;
+			}
+		} ;
+
+		_enable( m->addAction( "Cryfs" ),"Cryfs" ) ;
+		_enable( m->addAction( "Gocryptfs" ),"Gocryptfs" ) ;
+		_enable( m->addAction( "Securefs" ),"Securefs" ) ;
+		_enable( m->addAction( "Encfs" ),"Encfs" ) ;
 
 		return m ;
 	}() ) ;

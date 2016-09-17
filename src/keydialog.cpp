@@ -776,19 +776,19 @@ void keyDialog::cbActicated( QString e )
 {
 	e.remove( '&' ) ;
 
-	if( e == tr( "Key" ) ){
+	if( e == tr( "Key" ).remove( '&' ) ){
 
 		this->key() ;
 
-	}else if( e == tr( "KeyFile" ) ){
+	}else if( e == tr( "KeyFile" ).remove( '&' ) ){
 
 		this->keyFile() ;
 
-	}else if( e == tr( "Key+KeyFile" ) ){
+	}else if( e == tr( "Key+KeyFile" ).remove( '&' ) ){
 
 		this->keyAndKeyFile() ;
 
-	}else if( e == tr( "HMAC+KeyFile" ) ){
+	}else if( e == tr( "HMAC+KeyFile" ).remove( '&' ) ){
 
 		this->HMACKeyFile() ;
 	}else{

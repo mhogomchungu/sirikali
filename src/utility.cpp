@@ -747,8 +747,7 @@ QString utility::homePath()
 
 bool utility::pathIsReadable( const QString& path )
 {
-	QDir d( path ) ;
-	return d.isReadable() ;
+	return QDir( path ).isReadable() ;
 }
 
 bool utility::pathExists( const QString& path )
