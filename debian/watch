@@ -1,4 +1,5 @@
 # Compulsory line, this is a version 3 file
 version=3
 
+opts=pgpsigurlmangle=s/$/.asc/ \
 https://github.com/mhogomchungu/sirikali/releases /download/.+/SiriKali-(.*)\.tar\.xz
