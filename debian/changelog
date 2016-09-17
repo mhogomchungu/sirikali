@@ -2,8 +2,8 @@ sirikali (1.1.0-1) UNRELEASED; urgency=low
   [Mhogo Mchungu]
   * New Features
      -- Add ability to automount favorites volumes on program start up time.
-     -- Add ability to automount favorites volumes when they become available ie,when the files systems the volume
-        resides in is mounted.
+     -- Add ability to automount favorites volumes when they become available
+        i.e., when the files systems the volume resides in is mounted.
 
  -- Mhogo Mchungu <mhogomchungu@gmail.com>  Thu, 1 Sep 2016 16:38:48 +0000
 
