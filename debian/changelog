@@ -5,6 +5,9 @@ sirikali (1.1.0-1) UNRELEASED; urgency=low
      -- Add ability to automount favorites volumes when they become available
         i.e., when the files systems the volume resides in is mounted.
 
+  [David Steele]
+  * Reworked Debian packaging
+
  -- Mhogo Mchungu <mhogomchungu@gmail.com>  Thu, 1 Sep 2016 16:38:48 +0000
 
 sirikali (1.0.0-1) UNRELEASED; urgency=low
