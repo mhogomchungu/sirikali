@@ -69,6 +69,7 @@ rm -rf $RPM_BUILD_DIR/sirikali
 
 %defattr(0644,root,root)
 %{_datadir}/icons/hicolor/48x48/apps/sirikali.png
+%{_datadir}/icons/hicolor/256x256/apps/sirikali.png
 %{_datadir}/pixmaps/sirikali.png
 %{_datadir}/sirikali/translations/en_US.qm
 %{_datadir}/sirikali/translations/fr_FR.qm
