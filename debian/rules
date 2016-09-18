@@ -14,4 +14,4 @@ override_dh_auto_configure:
 %:
 	dh $@
 
-.PHONY: override_dh_auto_configure override_dh_install
+.PHONY: override_dh_auto_configure
