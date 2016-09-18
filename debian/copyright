@@ -1,9 +1,14 @@
-Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: SiriKali
 Source: https://github.com/mhogomchungu/sirikali
 
 Files: *
-Copyright: 2016 Mhogo Mchungu <mhogomchungu@gmail.com>
+Copyright: 2016 Francis Banyikwa <mhogomchungu@gmail.com>
+License: GPL-2+
+
+Files: debian/sirikali.appdata.xml
+       debian/sirikali.1.ronn
+Copyright: 2016 David Steele <steele@debian.org>
 License: GPL-2+
 
 Files: src/3rdParty/json.hpp
@@ -13,6 +18,13 @@ License: Expat
 Files: src/lxqt_wallet/*
 Copyright: 2013-2016 Mhogo Mchungu <mhogomchungu@gmail.com>
 License: BSD-2-clause
+
+Files: src/task.h
+       src/lxqt_wallet/*
+       src/networkAccessManager.hpp
+Copyright: 2014-2016 Francis Banyikwa <mhogomchungu@gmail.com>
+License: BSD-2-clause
+
 
 License: Expat
  Permission is hereby  granted, free of charge, to any  person obtaining a copy
