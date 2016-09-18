@@ -19,7 +19,8 @@ Vcs-Browser: https://github.com/davesteele/sirikali
 
 Package: sirikali
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, cryfs
+Suggests: encfs
 Description: manage user encrypted volumes
  Sirikali provides a Qt/C++ GUI front end to cryfs,gocryptfs,securefs and encfs,
  allowing the user to create, mount, and unmount encrypted volumes.
