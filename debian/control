@@ -1,8 +1,7 @@
 Source: sirikali
 Section: admin
 Priority: extra
-Maintainer: Mhogo Mchungu <mhogomchungu@gmail.com>
-Uploaders: David Steele <steele@debian.org>
+Maintainer: David Steele <steele@debian.org>
 Build-Depends: debhelper (>= 9),
                cmake,
                pkg-config,
