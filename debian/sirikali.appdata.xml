@@ -18,7 +18,7 @@ allowing the user to create, mount, and unmount encrypted volumes.</p>
 <project_license>GPL-2.0</project_license>
 <developer_name>Mhogo Mchungu</developer_name>
 <update_contact>mhogomchungu_AT_gmail.comd</update_contact>
-<translation type="gettext">sirikali</translation>
+<translation type="qt">sirikali</translation>
 <screenshots>
     <screenshot type="default">
         <image>https://raw.githubusercontent.com/mhogomchungu/sirikali/master/images/Screenshot_20160810_215609.png</image>
