@@ -1,4 +1,5 @@
-sirikali (1.1.0-1) UNRELEASED; urgency=low
+sirikali (1.1.0-1) unstable; urgency=low
+
   [Mhogo Mchungu]
   * New Features
      -- Add ability to automount favorites volumes on program start up time.
@@ -7,8 +8,9 @@ sirikali (1.1.0-1) UNRELEASED; urgency=low
 
   [David Steele]
   * Reworked Debian packaging
+  * Closes: #838426.
 
- -- Mhogo Mchungu <mhogomchungu@gmail.com>  Thu, 1 Sep 2016 16:38:48 +0000
+ -- David Steele <steele@debian.org>  Tue, 20 Sep 2016 19:59:35 -0400
 
 sirikali (1.0.0-1) UNRELEASED; urgency=low
   [Mhogo Mchungu]
