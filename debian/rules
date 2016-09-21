@@ -18,9 +18,12 @@ override_dh_auto_configure:
 %:
 	dh $@
 
+CHDATE = $(shell grep "^ \-\-" debian/changelog | head -1 | sed 's/.\+, //' | sed 's/...\:.\+//' )
+DT = $(shell date -d "${CHDATE}" "+%Y-%m-%d")
+
 override_dh_auto_build:
 	dh_auto_build
-	ronn debian/*.ronn
+	ronn --date=${DT} debian/*.ronn
 
 get-orig-source:  $(info I: $(PKG)_$(VER))
 	@echo "# Downloading..."
