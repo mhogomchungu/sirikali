@@ -804,9 +804,9 @@ QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorite
 
 		QVector< favorites::entry > e ;
 
-		auto _mount = [ this ]( const favorites::entry& e,const QByteArray& key ){
+		auto _mount = [ this ]( const favorites::entry& e,const QByteArray& key,bool s ){
 
-			if( utility::showMountDialogWhenAutoMounting() ){
+			if( s ){
 
 				this->mount( e,QString(),key ) ;
 			}else{
@@ -823,6 +823,8 @@ QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorite
 			}
 		} ;
 
+		auto s = utility::showMountDialogWhenAutoMounting() ;
+
 		for( const auto& it : l ){
 
 			const auto key = m->readValue( it.volumePath ) ;
@@ -831,7 +833,7 @@ QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorite
 
 				e.append( it ) ;
 			}else{
-				_mount( it,key ) ;
+				_mount( it,key,s ) ;
 			}
 		}
 
