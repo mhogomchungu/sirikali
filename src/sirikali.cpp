@@ -733,12 +733,9 @@ void sirikali::unlockVolume( const QString& volume,const QString& mountPath,
 					}
 				}() ;
 
-				auto o = []( const QString& e ){ Q_UNUSED( e ) ; } ;
+				auto& e = siritask::encryptedFolderMount( { volume,m,w.key,mOpt,cPath,QString(),mode } ) ;
 
-				auto e = siritask::encryptedFolderMount( { volume,m,w.key,mOpt,
-									    cPath,"",mode,o } ).await() ;
-
-				if( e == siritask::status::success ){
+				if( e.await() == siritask::status::success ){
 
 					QCoreApplication::exit( 0 ) ;
 				}else{
@@ -810,16 +807,7 @@ QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorite
 
 				this->mount( e,QString(),key ) ;
 			}else{
-				siritask::options s = { e.volumePath,
-							e.mountPointPath,
-							key,
-							e.idleTimeOut,
-							e.configFilePath,
-							"",
-							false,
-							[]( const QString& e ){ Q_UNUSED( e ) ; } } ;
-
-				siritask::encryptedFolderMount( s ).start() ;
+				siritask::encryptedFolderMount( { e,key } ).start() ;
 			}
 		} ;
 
