@@ -106,13 +106,10 @@ void plugin::pbSetKey()
 
 	Task::run< QByteArray >( [ this,passphrase,keyFile ](){
 
-		switch( m_pluginType ){
-
-		case plugins::plugin::hmac_key:
+		if( m_pluginType == plugins::plugin::hmac_key ){
 
 			return plugins::hmac_key( keyFile,passphrase ) ;
-
-		default:
+		}else{
 			return QByteArray() ;
 		}
 
