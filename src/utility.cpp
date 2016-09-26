@@ -370,7 +370,7 @@ QVector< favorites::entry > utility::readFavorites()
 
 		return e ;
 	}else{
-		return QVector< favorites::entry >() ;
+		return {} ;
 	}
 }
 

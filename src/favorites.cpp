@@ -187,13 +187,13 @@ void favorites::itemClicked( QTableWidgetItem * current,bool clicked )
 
 favorites::entry favorites::getEntry( int row )
 {
-	QString e ;
+	QStringList e ;
 
 	auto table = m_ui->tableWidget ;
 
 	for( int i = 0 ; i < table->columnCount() ; i++ ){
 
-		e += table->item( row,i )->text() + "\t" ;
+		e.append( table->item( row,i )->text() ) ;
 	}
 
 	return e ;
