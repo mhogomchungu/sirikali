@@ -209,6 +209,8 @@ void sirikali::setUpAppMenu()
 
 		m_actionPair.append( { ac,z } ) ;
 
+		ac->setFont( this->font() ) ;
+
 		if( p ){
 
 			ac->setCheckable( p ) ;
@@ -233,7 +235,7 @@ void sirikali::setUpAppMenu()
 
 		auto e = m->addMenu( r ) ;
 
-		m_menuPair.append( { m,z } ) ;
+		m_menuPair.append( { e,z } ) ;
 
 		e->setFont( this->font() ) ;
 
@@ -493,7 +495,7 @@ void sirikali::changeInternalWalletPassWord()
 
 void sirikali::keyManagerClicked( QAction * ac )
 {
-	walletconfig::instance( this ).ShowUI( m_secrets.walletBk( [ ac ](){
+	walletconfig::instance( this,m_secrets.walletBk( [ ac ](){
 
 		auto e = ac->text().remove( '&' ) ;
 

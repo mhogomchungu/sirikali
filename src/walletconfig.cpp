@@ -36,8 +36,8 @@
 
 #define COMMENT "-SiriKali_Comment_ID"
 
-walletconfig::walletconfig( QWidget * parent ) :
-	QDialog( parent ),m_ui( new Ui::walletconfig )
+walletconfig::walletconfig( QWidget * parent,secrets::wallet&& wallet ) :
+	QDialog( parent ),m_ui( new Ui::walletconfig ),m_wallet( std::move( wallet ) )
 {
 	m_ui->setupUi( this ) ;
 
@@ -57,6 +57,26 @@ walletconfig::walletconfig( QWidget * parent ) :
 		 this,SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
 
 	this->installEventFilter( this ) ;
+
+	if( m_wallet->opened() ){
+
+		this->accessWallet() ;
+	}else{
+		m_wallet->setImage( QIcon( ":/sirikali" ) ) ;
+
+		auto a = utility::walletName( m_wallet->backEnd() ) ;
+		auto b = utility::applicationName() ;
+
+		m_wallet->open( a,b,[ this ]( bool opened ){
+
+			if( opened ){
+
+				this->accessWallet() ;
+			}else{
+				this->HideUI() ;
+			}
+		} ) ;
+	}
 }
 
 bool walletconfig::eventFilter( QObject * watched,QEvent * event )
@@ -188,37 +208,11 @@ void walletconfig::pbAdd()
 	} ) ;
 }
 
-void walletconfig::ShowUI( secrets::wallet&& wallet )
-{
-	this->disableAll() ;
-
-	m_wallet = std::move( wallet ) ;
-
-	if( m_wallet->opened() ){
-
-		this->accessWallet() ;
-	}else{
-		m_wallet->setImage( QIcon( ":/sirikali" ) ) ;
-
-		auto a = utility::walletName( m_wallet->backEnd() ) ;
-		auto b = utility::applicationName() ;
-
-		m_wallet->open( a,b,[ this ]( bool opened ){
-
-			if( opened ){
-
-				this->accessWallet() ;
-			}else{
-				this->HideUI() ;
-			}
-		} ) ;
-	}
-}
-
 void walletconfig::accessWallet()
 {
 	using walletKeys = decltype( m_wallet->readAllKeyValues() ) ;
 
+	this->enableAll() ;
 	this->show() ;
 
 	Task::run<walletKeys>( [ this ](){
