@@ -111,7 +111,6 @@ private:
 	void openMountPoint( const QString& ) ;
 	void setLocalizationLanguage( bool ) ;
 
-	void translateApp( void ) ;
 	void dragEnterEvent( QDragEnterEvent * ) ;
 	void dropEvent( QDropEvent * ) ;
 	void showContextMenu( QTableWidgetItem *,bool ) ;

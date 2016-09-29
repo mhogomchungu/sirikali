@@ -203,9 +203,9 @@ void sirikali::setUpAppMenu()
 
 	m->setFont( this->font() ) ;
 
-	auto _addAction = [ this ]( bool p,bool q,const char * z,const char * s ){
+	auto _addAction = [ this ]( bool p,bool q,const QString& e,const char * z,const char * s ){
 
-		auto ac = new QAction( z,this ) ;
+		auto ac = new QAction( e,this ) ;
 
 		m_actionPair.append( { ac,z } ) ;
 
@@ -229,9 +229,10 @@ void sirikali::setUpAppMenu()
 		return ac ;
 	} ;
 
-	auto _addMenu = [ this ]( QMenu * m,const char * z,const char * t,const char * s ){
+	auto _addMenu = [ this ]( QMenu * m,const QString& r,
+			const char * z,const char * t,const char * s ){
 
-		auto e = m->addMenu( z ) ;
+		auto e = m->addMenu( r ) ;
 
 		m_menuPair.append( { e,z } ) ;
 
@@ -251,15 +252,16 @@ void sirikali::setUpAppMenu()
 	} ;
 
 	auto _addWalletEntries = [ this,&_addMenu,&_addAction ]( QMenu * menu,bool checkable,
-			const char * txt,const char * slot_a,const char * slot_b ){
+			const QString& translatedText,const char * untranslatedText,
+			const char * slot_a,const char * slot_b ){
 
-		auto q = _addMenu( menu,txt,slot_a,slot_b ) ;
+		auto q = _addMenu( menu,translatedText,untranslatedText,slot_a,slot_b ) ;
 
 		using bk = LXQt::Wallet::BackEnd ;
 
-		auto _addOption = [ & ]( const char * txt,bk s ){
+		auto _addOption = [ & ]( const QString& translatedTxt,const char * untranslatedTxt,bk s ){
 
-			auto ac = _addAction( checkable,false,txt,nullptr ) ;
+			auto ac = _addAction( checkable,false,translatedTxt,untranslatedTxt,nullptr ) ;
 
 			if( checkable ){
 
@@ -271,32 +273,34 @@ void sirikali::setUpAppMenu()
 			q->addAction( ac ) ;
 		} ;
 
-		_addOption( "Internal Wallet",bk::internal ) ;
-		_addOption( "KDE Wallet",bk::kwallet ) ;
-		_addOption( "Gnome Wallet",bk::libsecret ) ;
+		_addOption( tr( "Internal Wallet" ),"Internal Wallet",bk::internal ) ;
+		_addOption( tr( "KDE Wallet" ),"KDE Wallet",bk::kwallet ) ;
+		_addOption( tr( "Gnome Wallet" ),"Gnome Wallet",bk::libsecret ) ;
 
 		return q ;
 	} ;
 
-	m->addAction( _addAction( true,m_autoOpenFolderOnMount,"Auto Open Mount Point",
-				  SLOT( autoOpenFolderOnMount( bool ) ) ) ) ;
+	m->addAction( _addAction( true,m_autoOpenFolderOnMount,tr( "Auto Open Mount Point" ),
+				  "Auto Open Mount Point",SLOT( autoOpenFolderOnMount( bool ) ) ) ) ;
 
-	m->addAction( _addAction( true,utility::reUseMountPoint(),"Reuse Mount Point",
-				  SLOT( reuseMountPoint( bool ) ) ) ) ;
+	m->addAction( _addAction( true,utility::reUseMountPoint(),tr( "Reuse Mount Point" ),
+				  "Reuse Mount Point",SLOT( reuseMountPoint( bool ) ) ) ) ;
 
-	m->addAction( _addAction( true,checkForUpdates::autoCheck(),"Autocheck For Updates",
-				  SLOT( autoCheckUpdates( bool ) ) ) ) ;
+	m->addAction( _addAction( true,checkForUpdates::autoCheck(),tr( "Autocheck For Updates" ),
+				  "Autocheck For Updates",SLOT( autoCheckUpdates( bool ) ) ) ) ;
 
-	m->addAction( _addAction( false,false,"Set Mount Point Prefix",
-				  SLOT( setDefaultMountPointPrefix() ) ) ) ;
+	m->addAction( _addAction( false,false,tr( "Set Mount Point Prefix" ),
+				  "Set Mount Point Prefix",SLOT( setDefaultMountPointPrefix() ) ) ) ;
 
-	m->addAction( _addAction( false,false,"Unmount All",SLOT( unMountAll() ) ) ) ;
+	m->addAction( _addAction( false,false,tr( "Unmount All" ),
+				  "Unmount All",SLOT( unMountAll() ) ) ) ;
 
 	m->addMenu( [ this,m,&_addMenu,&_addAction,&_addWalletEntries ](){
 
-		auto e = _addMenu( m,"AutoMount Favorites",nullptr,nullptr ) ;
+		auto e = _addMenu( m,tr( "AutoMount Favorites" ),"AutoMount Favorites",nullptr,nullptr ) ;
 
-		m_autoMountKeyStorage = _addWalletEntries( e,true,"AutoMount Key Source",
+		m_autoMountKeyStorage = _addWalletEntries( e,true,tr( "AutoMount Key Source" ),
+							   "AutoMount Key Source",
 							   SLOT( autoMountKeySource( QAction * ) ),
 							   SLOT( autoMountKeyStorage() ) ) ;
 
@@ -305,14 +309,17 @@ void sirikali::setUpAppMenu()
 		e->addSeparator() ;
 
 		e->addAction( _addAction( true,utility::autoMountFavoritesOnStartUp(),
+					  tr( "AutoMount Favorite Volumes At Start Up" ),
 					  "AutoMount Favorite Volumes At Start Up",
 					   SLOT( autoMountFavoritesOnStartUp( bool ) ) ) ) ;
 
 		e->addAction( _addAction( true,utility::autoMountFavoritesOnAvailable(),
+					  tr( "AutoMount Favorite Volumes When Available" ),
 					  "AutoMount Favorite Volumes When Available",
 					  SLOT( autoMountWhenAvailable( bool ) ) ) ) ;
 
 		e->addAction( _addAction( true,utility::showMountDialogWhenAutoMounting(),
+					  tr( "Show Mount Dialog When AutoMounting" ),
 					  "Show Mount Dialog When AutoMounting",
 					  SLOT( showMountDialogWhenAutoMounting( bool ) ) ) ) ;
 		return e ;
@@ -320,9 +327,9 @@ void sirikali::setUpAppMenu()
 
 	m_change_password_action = [ m,&_addMenu,&_addAction ](){
 
-		auto e = _addMenu( m,"Internal Wallet",nullptr,nullptr ) ;
+		auto e = _addMenu( m,tr( "Internal Wallet" ),"Internal Wallet",nullptr,nullptr ) ;
 
-		auto ac = _addAction( false,false,"Change Password",
+		auto ac = _addAction( false,false,tr( "Change Password" ),"Change Password",
 				       SLOT( changeInternalWalletPassWord() ) ) ;
 
 		e->addAction( ac ) ;
@@ -330,23 +337,29 @@ void sirikali::setUpAppMenu()
 		return ac ;
 	}() ;
 
-	m_key_manager_menu = _addWalletEntries( m,false,"Key Storage",
+	m_key_manager_menu = _addWalletEntries( m,false,tr( "Key Storage" ),
+						"Key Storage",
 						SLOT( keyManagerClicked( QAction * ) ),
 						SLOT( aboutToShowMenu() ) ) ;
 
-	m_favorite_menu = _addMenu( m,"Favorites",
+	m_favorite_menu = _addMenu( m,tr( "Favorites" ),"Favorites",
 				    SLOT( favoriteClicked( QAction * ) ),
 				    SLOT( showFavorites() ) ) ;
 
-	m_language_menu = _addMenu( m,"Select Language",SLOT( languageMenu( QAction * ) ),nullptr ) ;
+	m_language_menu = _addMenu( m,tr( "Select Language" ),"Select Language",
+				    SLOT( languageMenu( QAction * ) ),nullptr ) ;
 
-	m->addAction( _addAction( false,false,"Check For Updates",SLOT( updateCheck() ) ) ) ;
+	m->addAction( _addAction( false,false,tr( "Check For Updates" ),"Check For Updates",
+				  SLOT( updateCheck() ) ) ) ;
 
-	m->addAction( _addAction( false,false,"About",SLOT( licenseInfo() ) ) ) ;
+	m->addAction( _addAction( false,false,tr( "About" ),"About",SLOT( licenseInfo() ) ) ) ;
 
-	m->addAction( _addAction( false,false,"Show/Hide",SLOT( slotTrayClicked() ) ) ) ;
+	m->addAction( _addAction( false,false,tr( "Show/Hide" ),
+				  "Show/Hide",SLOT( slotTrayClicked() ) ) ) ;
 
-	m->addAction( _addAction( false,false,"Quit",SLOT( closeApplication() ) ) ) ;
+	m->addAction( _addAction( false,false,tr( "Quit" ),"Quit",SLOT( closeApplication() ) ) ) ;
+
+	this->showFavorites() ;
 
 	m_ui->pbmenu->setMenu( m ) ;
 
@@ -354,10 +367,6 @@ void sirikali::setUpAppMenu()
 
 	connect( &m_trayIcon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),
 		 this,SLOT( slotTrayClicked( QSystemTrayIcon::ActivationReason ) ) ) ;
-
-	this->showFavorites() ;
-
-	this->translateApp() ;
 }
 
 void sirikali::autoMountKeyStorage()
@@ -556,11 +565,6 @@ void sirikali::languageMenu( QAction * ac )
 {
 	utility::languageMenu( this,m_language_menu,ac ) ;
 
-	this->translateApp() ;
-}
-
-void sirikali::translateApp()
-{
 	m_ui->retranslateUi( this ) ;
 
 	for( auto& it : m_actionPair ){
