@@ -58,6 +58,8 @@ walletconfig::walletconfig( QWidget * parent,secrets::wallet&& wallet ) :
 
 	this->installEventFilter( this ) ;
 
+	this->disableAll() ;
+
 	if( m_wallet->opened() ){
 
 		this->accessWallet() ;
@@ -212,7 +214,6 @@ void walletconfig::accessWallet()
 {
 	using walletKeys = decltype( m_wallet->readAllKeyValues() ) ;
 
-	this->enableAll() ;
 	this->show() ;
 
 	Task::run<walletKeys>( [ this ](){

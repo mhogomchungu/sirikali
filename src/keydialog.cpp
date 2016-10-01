@@ -257,11 +257,8 @@ void keyDialog::windowSetTitle( const QString& s )
 
 void keyDialog::pbOptions()
 {
-	options::instance( m_parentWidget,m_create,[ this ]()->QStringList{
-
-		return { m_options,m_configFile,m_exe } ;
-
-	}(),[ this ]( const QStringList& e ){
+	options::instance( m_parentWidget,m_create,{ m_options,m_configFile,m_exe },
+			   [ this ]( const QStringList& e ){
 
 		m_options = e.at( 0 ) ;
 
