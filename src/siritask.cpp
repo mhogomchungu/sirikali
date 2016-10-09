@@ -35,8 +35,7 @@ static bool _create_folder( const QString& m )
 
 		return utility::reUseMountPoint() ;
 	}else{
-		QDir e ;
-		return e.mkpath( m ) ;
+		return QDir().mkpath( m ) ;
 	}
 }
 
@@ -51,8 +50,7 @@ bool siritask::deleteMountFolder( const QString& m )
 
 		return false ;
 	}else{
-		QDir e ;
-		return e.rmdir( m ) ;
+		return QDir().rmdir( m ) ;
 	}
 }
 

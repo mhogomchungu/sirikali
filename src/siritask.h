@@ -23,7 +23,7 @@
 #include "volumeinfo.h"
 #include "task.h"
 #include "utility.h"
-
+#include "favorites.h"
 #include <QVector>
 #include <QString>
 #include <QStringList>
@@ -33,6 +33,9 @@ namespace siritask
 	class volumeType
 	{
 	public:
+		volumeType()
+		{
+		}
 		template< typename T >
 		volumeType( const T& type ) : m_type( type )
 		{
@@ -56,6 +59,11 @@ namespace siritask
 		{
 			return m_type == type ;
 		}
+		template< typename T >
+		bool operator!=( const T& type ) const
+		{
+			return m_type != type ;
+		}
 		template< typename ... T >
 		bool isOneOf( const T& ... t ) const
 		{
@@ -64,9 +72,44 @@ namespace siritask
 	private:
 		QString m_type ;
 	};
-
 	struct options
 	{
+		using function_t = std::function< void( const QString& ) > ;
+
+		options( const favorites::entry& e,
+			 const QString& volumeKey = QString(),
+			 function_t folder_opener = []( const QString& e ){ Q_UNUSED( e ) ; } ) :
+
+			cipherFolder( e.volumePath ),
+			plainFolder( e.mountPointPath ),
+			key( volumeKey ),
+			mOpt( e.idleTimeOut ),
+			configFilePath( e.configFilePath ),
+			type( QString() ),
+			ro( false ),
+			openFolder( folder_opener )
+		{
+		}
+		options( const QString& cipher_folder,
+			 const QString& plain_folder,
+			 const QString& volume_key,
+			 const QString& mount_options,
+			 const QString& config_file_path,
+			 const QString& volume_type,
+			 bool unlock_in_read_only,
+			 function_t folder_opener = []( const QString& e ){ Q_UNUSED( e ) ; } ) :
+
+			cipherFolder( cipher_folder ),
+			plainFolder( plain_folder ),
+			key( volume_key ),
+			mOpt( mount_options ),
+			configFilePath( config_file_path ),
+			type( volume_type ),
+			ro( unlock_in_read_only ),
+			openFolder( folder_opener )
+		{
+		}
+
 		QString cipherFolder ;
 		QString plainFolder ;
 		QString key ;
@@ -74,7 +117,7 @@ namespace siritask
 		QString configFilePath ;
 		siritask::volumeType type ;
 		bool ro ;
-		std::function< void( const QString& ) > openFolder ;
+		function_t openFolder ;
 	};
 
 	enum class status

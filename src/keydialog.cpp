@@ -56,9 +56,10 @@ keyDialog::keyDialog( QWidget * parent,
 		      const volumeInfo& e,
 		      std::function< void() > p,
 		      std::function< void( const QString& ) > q,
-		      const QString& exe ) :
+		      const QString& exe,const QByteArray& key ) :
 	QDialog( parent ),
 	m_ui( new Ui::keyDialog ),
+	m_key( key ),
 	m_exe( exe ),
 	m_secrets( s ),
 	m_cancel( std::move( p ) ),
@@ -69,6 +70,9 @@ keyDialog::keyDialog( QWidget * parent,
 	m_parentWidget = parent ;
 
 	m_ui->checkBoxShareMountPoint->setVisible( false ) ;
+
+	m_configFile = e.configFilePath() ;
+	m_options    = e.idleTimeOut() ;
 
 	m_table = table ;
 	m_path = e.volumePath() ;
@@ -228,6 +232,12 @@ keyDialog::keyDialog( QWidget * parent,
 	this->installEventFilter( this ) ;
 
 	connect( m_ui->pbOptions,SIGNAL( clicked() ),this,SLOT( pbOptions() ) ) ;
+
+	if( !m_key.isEmpty() ){
+
+		m_ui->lineEditKey->setText( m_key ) ;
+		m_ui->pbOpen->setFocus() ;
+	}
 }
 
 void keyDialog::windowSetTitle( const QString& s )
@@ -247,7 +257,8 @@ void keyDialog::windowSetTitle( const QString& s )
 
 void keyDialog::pbOptions()
 {
-	options::instance( m_parentWidget,[ this ]( const QStringList& e ){
+	options::instance( m_parentWidget,m_create,{ m_options,m_configFile,m_exe },
+			   [ this ]( const QStringList& e ){
 
 		m_options = e.at( 0 ) ;
 
@@ -762,19 +773,19 @@ void keyDialog::cbActicated( QString e )
 {
 	e.remove( '&' ) ;
 
-	if( e == tr( "Key" ) ){
+	if( e == tr( "Key" ).remove( '&' ) ){
 
 		this->key() ;
 
-	}else if( e == tr( "KeyFile" ) ){
+	}else if( e == tr( "KeyFile" ).remove( '&' ) ){
 
 		this->keyFile() ;
 
-	}else if( e == tr( "Key+KeyFile" ) ){
+	}else if( e == tr( "Key+KeyFile" ).remove( '&' ) ){
 
 		this->keyAndKeyFile() ;
 
-	}else if( e == tr( "HMAC+KeyFile" ) ){
+	}else if( e == tr( "HMAC+KeyFile" ).remove( '&' ) ){
 
 		this->HMACKeyFile() ;
 	}else{

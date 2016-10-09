@@ -54,6 +54,9 @@ public slots:
 	void raiseWindow( void ) ;
 	void raiseWindow( QString ) ;
 private slots:
+	void autoMountKeyStorage( void ) ;
+	void autoMountKeySource( QAction * ) ;
+	void showMountDialogWhenAutoMounting( bool ) ;
 	void autoMountWhenAvailable( bool ) ;
 	void setDefaultMountPointPrefix( void ) ;
 	void properties( void ) ;
@@ -69,7 +72,8 @@ private slots:
 	void startGUI( void ) ;
 	void showMoungDialog( const volumeInfo& ) ;
 	void showMoungDialog( const QString&,const QString& = QString() ) ;
-	void mount( const volumeInfo&,const QString& = QString() ) ;
+	void showMoungDialog( const favorites::entry& ) ;
+	void mount( const volumeInfo&,const QString& = QString(),const QByteArray& = QByteArray() ) ;
 	void defaultButton( void ) ;
 	void itemClicked( QTableWidgetItem * ) ;
 	void pbUpdate( void ) ;
@@ -119,7 +123,7 @@ private:
 	void setUpShortCuts( void ) ;
 	void setUpApp( const QString& ) ;
 	void autoUnlockVolumes( void ) ;
-	void autoUnlockVolumes( const QStringList& ) ;
+	QVector< favorites::entry > autoUnlockVolumes( const QVector< favorites::entry >& ) ;
 
 	Ui::sirikali * m_ui = nullptr ;
 
@@ -130,6 +134,7 @@ private:
 	QMenu * m_not_hidden_volume_menu = nullptr ;
 	QMenu * m_key_manager_menu = nullptr ;
 	QMenu * m_language_menu = nullptr ;
+	QMenu * m_autoMountKeyStorage = nullptr ;
 
 	QVector< std::pair< QAction *,const char * > > m_actionPair ;
 	QVector< std::pair< QMenu *,const char * > > m_menuPair ;

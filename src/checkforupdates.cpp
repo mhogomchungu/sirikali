@@ -45,7 +45,14 @@ static void _show( QObject * obj,bool autocheck,QWidget * w,const QVector< QStri
 
 		e += _tr( it ) + "\n\n" ;
 
-		show = ( it.at( 1 ) != it.at( 2 ) ) ;
+		const auto& a = it.at( 1 ) ;
+
+		const auto& b = it.at( 2 ) ;
+
+		if( a != "N/A" and b != "N/A" ){
+
+			show = ( a != b ) ;
+		}
 	}
 
 	if( autocheck ){
@@ -61,11 +68,11 @@ static void _show( QObject * obj,bool autocheck,QWidget * w,const QVector< QStri
 	obj->deleteLater() ;
 }
 
-static QString _get_app_version( const QString& e )
+static QString _get_app_version( const siritask::volumeType& e )
 {
 	if( e == "cryfs" ){
 
-		auto exe = utility::executableFullPath( e ) ;
+		auto exe = e.executableFullPath() ;
 
 		if( !exe.isEmpty() ){
 
@@ -86,20 +93,20 @@ static QString _get_app_version( const QString& e )
 
 					return e.at( 2 ).split( '\n' ).first() ;
 				}else{
-					return QString() ;
+					return "N/A" ;
 				}
 			} ) ;
 		}
 
-	}else if( utility::equalsAtleastOne( e,"gocryptfs","securefs","encfs" ) ){
+	}else if( e.isOneOf( "gocryptfs","securefs","encfs" ) ){
 
-		auto exe = utility::executableFullPath( e ) ;
+		auto exe = e.executableFullPath() ;
 
 		if( !exe.isEmpty() ){
 
 			auto args = [ & ]{
 
-				if( utility::equalsAtleastOne( e,"gocryptfs","encfs" ) ){
+				if( e.isOneOf( "gocryptfs","encfs" ) ){
 
 					return " --version" ;
 				}else{

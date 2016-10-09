@@ -39,8 +39,7 @@ favorites::favorites( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::favor
 	this->setWindowFlags( Qt::Window | Qt::Dialog ) ;
 	this->setFont( parent->font() ) ;
 
-	this->setFixedSize( this->size() ) ;
-
+	connect( m_ui->pbConfigFilePath,SIGNAL( clicked() ),this,SLOT( configPath() ) ) ;
 	connect( m_ui->pbAdd,SIGNAL( clicked() ),this,SLOT( add() ) ) ;
 	connect( m_ui->pbFolderPath,SIGNAL( clicked() ),this,SLOT( folderPath() ) ) ;
 	connect( m_ui->pbMountPointPath,SIGNAL( clicked() ),this,SLOT( mountPointPath() ) ) ;
@@ -53,8 +52,20 @@ favorites::favorites( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::favor
 
 	m_ui->pbFolderPath->setIcon( QIcon( ":/sirikali.png" ) ) ;
 	m_ui->pbMountPointPath->setIcon( QIcon( ":/folder.png" ) ) ;
+	m_ui->pbConfigFilePath->setIcon( QIcon( ":/file.png" ) ) ;
 
 	m_ui->lineEditEncryptedFolderPath->setEnabled( false ) ;
+	m_ui->lineEditConfigFilePath->setEnabled( false ) ;
+
+	m_ui->cbAutoMount->setChecked( false ) ;
+
+	auto table = m_ui->tableWidget ;
+
+	table->setColumnWidth( 0,285 ) ;
+	table->setColumnWidth( 1,285 ) ;
+	table->setColumnWidth( 2,100 ) ;
+	table->setColumnWidth( 3,140 ) ;
+	table->setColumnWidth( 4,115 ) ;
 
 	this->addAction( [ this ](){
 
@@ -117,7 +128,7 @@ void favorites::ShowUI()
 
 	for( const auto& it : utility::readFavorites() ){
 
-		_add_entry( utility::split( it,'\t' ) ) ;
+		_add_entry( it.list() ) ;
 	}
 
 	m_ui->lineEditEncryptedFolderPath->clear() ;
@@ -150,10 +161,17 @@ void favorites::itemClicked( QTableWidgetItem * current,bool clicked )
 		QMenu m ;
 
 		m.setFont( this->font() ) ;
+
+		connect( m.addAction( tr( "Toggle AutoMount" ) ),
+			 SIGNAL( triggered() ),this,SLOT( toggleAutoMount() ) ) ;
+
+		m.addSeparator() ;
+
 		connect( m.addAction( tr( "Remove Selected Entry" ) ),
 			 SIGNAL( triggered() ),this,SLOT( removeEntryFromFavoriteList() ) ) ;
 
 		m.addSeparator() ;
+
 		m.addAction( tr( "Cancel" ) ) ;
 
 		if( clicked ){
@@ -167,6 +185,48 @@ void favorites::itemClicked( QTableWidgetItem * current,bool clicked )
 	}
 }
 
+favorites::entry favorites::getEntry( int row )
+{
+	QStringList e ;
+
+	auto table = m_ui->tableWidget ;
+
+	for( int i = 0 ; i < table->columnCount() ; i++ ){
+
+		e.append( table->item( row,i )->text() ) ;
+	}
+
+	return e ;
+}
+
+void favorites::toggleAutoMount()
+{
+	auto table = m_ui->tableWidget ;
+
+	if( table->rowCount() > 0 ){
+
+		auto row = table->currentRow() ;
+
+		auto item = table->item( row,2 ) ;
+
+		auto e = this->getEntry( row ) ;
+
+		item->setText( [ & ](){
+
+			if( item->text() == "true" ){
+
+				return "false" ;
+			}else{
+				return "true" ;
+			}
+		}() ) ;
+
+		auto f = this->getEntry( row ) ;
+
+		utility::replaceFavorite( e,f ) ;
+	}
+}
+
 void favorites::removeEntryFromFavoriteList()
 {
 	auto table = m_ui->tableWidget ;
@@ -177,15 +237,9 @@ void favorites::removeEntryFromFavoriteList()
 
 		auto row = table->currentRow() ;
 
-		auto p = table->item( row,0 )->text() ;
-		auto q = table->item( row,1 )->text() ;
+		utility::removeFavoriteEntry( this->getEntry( row ) ) ;
 
-		if( !p.isEmpty() && !q.isEmpty() ){
-
-			utility::removeFavoriteEntry( QString( "%1\t%2" ).arg( p,q ) ) ;
-
-			tablewidget::deleteRow( table,row ) ;
-		}
+		tablewidget::deleteRow( table,row ) ;
 
 		table->setEnabled( true ) ;
 	}
@@ -205,23 +259,73 @@ void favorites::add()
 
 	if( dev.isEmpty() ){
 
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Encrypted folder address field is empty" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Encrypted Folder Address Field Is Empty" ) ) ;
 	}
 	if( path.isEmpty() ){
 
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Mount point path field is empty" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Mount Point Path Field Is Empty" ) ) ;
 	}
 
 	m_ui->tableWidget->setEnabled( false ) ;
 
-	this->addEntries( { dev,path } ) ;
+	auto _option = []( const QString& e )->QString{
 
-	utility::addToFavorite( dev,path ) ;
+		if( e.isEmpty() ){
 
-	m_ui->lineEditEncryptedFolderPath->clear() ; ;
+			return "N/A" ;
+		}else{
+			return e ;
+		}
+	} ;
+
+	auto autoMount = [ this ](){
+
+		if( m_ui->cbAutoMount->isChecked() ){
+
+			return "true" ;
+		}else{
+			return "false" ;
+		}
+	}() ;
+
+	QStringList e = { dev,
+			  path,
+			  autoMount,
+			  _option( m_ui->lineEditConfigFilePath->text() ),
+			  _option( m_ui->lineEditIdleTimeOut->text() ) } ;
+
+	this->addEntries( e ) ;
+
+	utility::addToFavorite( e ) ;
+
+	m_ui->lineEditEncryptedFolderPath->clear() ;
 	m_ui->lineEditMountPath->clear() ;
 
 	m_ui->tableWidget->setEnabled( true ) ;
+}
+
+void favorites::configPath()
+{
+	auto e = this->getExistingFile( tr( "Path To A Config File" ) ) ;
+
+	m_ui->lineEditConfigFilePath->setText( e ) ;
+}
+
+QString favorites::getExistingFile( const QString& r )
+{
+	auto e = QFileDialog::getOpenFileName( this,r,QDir::homePath() ) ;
+
+	while( true ){
+
+		if( e.endsWith( '/' ) ){
+
+			e.truncate( e.length() - 1 ) ;
+		}else{
+			break ;
+		}
+	}
+
+	return e ;
 }
 
 QString favorites::getExistingDirectory( const QString& r )

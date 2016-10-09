@@ -57,7 +57,7 @@ file( WRITE ${PROJECT_BINARY_DIR}/locale_path.h "\n#define TRANSLATION_PATH \"${
 
 file( WRITE  ${PROJECT_BINARY_DIR}/install_prefix.h "\n#define INSTALL_PREFIX \"${CMAKE_INSTALL_PREFIX}/\"\n" )
 
-set( PGR_VERSION "1.1.0" )
+set( PGR_VERSION "1.2.0" )
 
 file( WRITE ${PROJECT_BINARY_DIR}/version.h "
 #ifndef THIS_VERSION
@@ -231,8 +231,9 @@ DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications
 PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )
 
-install( FILES src/sirikali.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps/ )
-install( FILES src/sirikali.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pixmaps )
+install( FILES icons/256x256/sirikali.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/256x256/apps/ )
+install( FILES icons/48x48/sirikali.png DESTINATION   ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps/ )
+install( FILES src/sirikali.png DESTINATION           ${CMAKE_INSTALL_DATAROOTDIR}/pixmaps )
 
 install( FILES translations/en_US.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 install( FILES translations/fr_FR.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )

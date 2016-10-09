@@ -1,0 +1,15 @@
+Source: sirikali
+Section: admin
+Priority: extra
+Maintainer: Mhogo Mchungu <mhogomchungu@gmail.com>
+Uploaders:
+Build-Depends: debhelper (>= 9), cmake, pkg-config, libgcrypt20-dev, libsecret-1-dev, qtbase5-dev, chrpath, bzip2
+Standards-Version: 3.9.5
+Homepage: http://mhogomchungu.github.io/sirikali
+Vcs-Git: https://github.com/mhogomchungu/sirikali
+Vcs-Browser: https://github.com/mhogomchungu/sirikali
+
+Package: sirikali
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: A Qt/C++ GUI front end to cryfs,gocryptfs,securefs and encfs.

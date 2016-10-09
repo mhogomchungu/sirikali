@@ -37,6 +37,108 @@ class favorites : public QDialog
 {
 	Q_OBJECT
 public:
+	struct entry
+	{
+		entry()
+		{
+		}
+
+		entry( const QStringList& e )
+		{
+			this->config( e ) ;
+		}
+
+		entry( const QString& r )
+		{
+			this->config( r.split( '\t',QString::SkipEmptyParts ) ) ;
+		}
+
+		QStringList list( bool e = true ) const
+		{
+			if( e ){
+
+				return this->configString().split( '\t',QString::SkipEmptyParts ) ;
+			}else{
+				return { volumePath,
+					 mountPointPath,
+					 autoMountVolume,
+					 configFilePath,
+					 idleTimeOut } ;
+			}
+		}
+
+		QString string( char s = '\t' ) const
+		{
+			return this->list().join( s ) ;
+		}
+
+		QString configString() const
+		{
+			auto _opt = [ ]( const QString& e )->QString{
+
+				if( e.isEmpty() ){
+
+					return "N/A" ;
+				}else{
+					return e ;
+				}
+			} ;
+
+			auto e = "%1\t%2\t%3\t%4\t%5\t" ;
+
+			return QString( e ).arg( volumePath,mountPointPath,autoMountVolume,
+						 _opt( configFilePath ),_opt( idleTimeOut ) ) ;
+		}
+
+		bool operator!=( const favorites::entry& other ) const
+		{
+			return !this->operator==( other ) ;
+		}
+
+		bool operator==( const favorites::entry& other ) const
+		{
+			return  volumePath      == other.volumePath &&
+				mountPointPath  == other.mountPointPath &&
+				autoMountVolume == other.autoMountVolume &&
+				configFilePath  == other.configFilePath &&
+				idleTimeOut     == other.idleTimeOut ;
+		}
+
+		bool autoMount() const
+		{
+			return autoMountVolume == "true" ;
+		}
+
+		QString volumePath ;
+		QString mountPointPath ;
+		QString autoMountVolume ;
+		QString configFilePath ;
+		QString idleTimeOut ;
+
+	private:
+		void config( const QStringList& e )
+		{
+			if( e.size() > 4 ){
+
+				volumePath      = e.at( 0 ) ;
+				mountPointPath  = e.at( 1 ) ;
+				autoMountVolume = e.at( 2 ) ;
+				configFilePath  = e.at( 3 ) ;
+				idleTimeOut     = e.at( 4 ) ;
+
+				if( configFilePath == "N/A" ){
+
+					configFilePath.clear() ;
+				}
+
+				if( idleTimeOut == "N/A" ){
+
+					idleTimeOut.clear() ;
+				}
+			}
+		}
+	};
+
 	static favorites& instance( QWidget * parent = 0 )
 	{
 		return *( new favorites( parent ) ) ;
@@ -49,6 +151,8 @@ public slots:
 	void ShowUI( void ) ;
 	void HideUI( void ) ;
 private slots:
+	void toggleAutoMount( void ) ;
+	void configPath( void ) ;
 	void removeEntryFromFavoriteList( void ) ;
 	void add( void ) ;
 	void cancel( void ) ;
@@ -60,6 +164,8 @@ private slots:
 	void shortcutPressed( void ) ;
 	void devicePathTextChange( QString ) ;
 private:
+	favorites::entry getEntry( int ) ;
+	QString getExistingFile( const QString& ) ;
 	QString getExistingDirectory( const QString& ) ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;

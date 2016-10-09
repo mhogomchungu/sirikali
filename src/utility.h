@@ -50,6 +50,7 @@
 
 #include "task.h"
 #include "lxqt_wallet.h"
+#include "favorites.h"
 
 #include <QObject>
 #include <QLabel>
@@ -122,7 +123,9 @@ namespace utility
 
 	QIcon getIcon() ;
 
-	LXQt::Wallet::BackEnd autoMountBackEnd() ;
+	LXQt::Wallet::BackEnd autoMountBackEnd( void ) ;
+
+	void autoMountBackEnd( LXQt::Wallet::BackEnd ) ;
 
 	QStringList directoryList( const QString& e ) ;
 
@@ -159,6 +162,9 @@ namespace utility
 	bool autoMountFavoritesOnStartUp() ;
 	void autoMountFavoritesOnStartUp( bool ) ;
 
+	bool showMountDialogWhenAutoMounting() ;
+	void showMountDialogWhenAutoMounting( bool ) ;
+
 	bool setOpenVolumeReadOnly( QWidget * parent,bool check ) ;
 	bool getOpenVolumeReadOnlyOption() ;
 
@@ -166,16 +172,20 @@ namespace utility
 	void autoMountFavoritesOnAvailable( bool ) ;
 
 	QStringList split( const QString&,char = '\n' ) ;
-	void addToFavorite( const QString& dev,const QString& m_point ) ;
 
-	QStringList readFavorites( void ) ;
-	void readFavorites( QMenu *,bool = false ) ;
-	void removeFavoriteEntry( const QString& ) ;
+	void clearFavorites( void ) ;
+	void addToFavorite( const QStringList& ) ;
+	QVector< favorites::entry > readFavorites( void ) ;
+	void replaceFavorite( const favorites::entry&,const favorites::entry& ) ;
+	void readFavorites( QMenu *,bool,const QString&,const QString& ) ;
+	void removeFavoriteEntry( const favorites::entry& ) ;
+
 	QString getVolumeID( const QString&,bool = false ) ;
 	QString localizationLanguage() ;
 	QString localizationLanguagePath() ;
 	void setLocalizationLanguage( const QString& ) ;
 	QString walletName( void ) ;
+	QString walletName( LXQt::Wallet::BackEnd ) ;
 	QString applicationName( void ) ;
 	bool eventFilter( QObject * gui,QObject * watched,QEvent * event,std::function< void() > ) ;
 	void licenseInfo( QWidget * ) ;

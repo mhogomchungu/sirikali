@@ -100,6 +100,16 @@ void DialogMsg::ShowPermissionProblem( const QString& msg,const QString& device 
 
 void DialogMsg::setDimentions( const QString& msg )
 {
+	this->setFixedSize( 372,146 ) ;
+
+	m_ui->label->setGeometry( 10,10,351,91 ) ;
+	m_ui->label->setFixedSize( m_ui->label->size() ) ;
+	m_ui->pbOk->setGeometry( 150,110,75,31 ) ;
+	m_ui->pbYes->setGeometry( 120,110,71,31 ) ;
+	m_ui->pbNo->setGeometry( 190,110,75,31 ) ;
+
+	return ;
+
 	int len = msg.size() ;
 
 	if( len <= 30 ){

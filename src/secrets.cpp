@@ -101,6 +101,7 @@ secrets::wallet::~wallet()
 
 secrets::wallet::wallet( secrets::wallet&& w )
 {
+	_delete( m_wallet ) ;
 	m_wallet = w.m_wallet ;
 	w.m_wallet = nullptr ;
 }

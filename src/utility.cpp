@@ -178,21 +178,7 @@ utility::wallet utility::getKey( const QString& keyID,LXQt::Wallet::Wallet& wall
 
 	auto s = wallet.backEnd() ;
 
-	if( s == LXQt::Wallet::BackEnd::kwallet || s == LXQt::Wallet::BackEnd::libsecret ){
-
-		if( s == LXQt::Wallet::BackEnd::kwallet ){
-
-			w.opened = wallet.open( "default",utility::applicationName() ) ;
-		}else{
-			w.opened = wallet.open( utility::walletName(),utility::applicationName() ) ;
-		}
-
-		if( w.opened ){
-
-			w.key = _getKey( wallet,keyID ) ;
-		}
-
-	}else if( s == LXQt::Wallet::BackEnd::internal ){
+	if( s == LXQt::Wallet::BackEnd::internal ){
 
 		auto walletName = utility::walletName() ;
 		auto appName    = utility::applicationName() ;
@@ -214,6 +200,13 @@ utility::wallet utility::getKey( const QString& keyID,LXQt::Wallet::Wallet& wall
 			}
 		}else{
 			w.notConfigured = true ;
+		}
+	}else{
+		w.opened = wallet.open( utility::walletName( s ),utility::applicationName() ) ;
+
+		if( w.opened ){
+
+			w.key = _getKey( wallet,keyID ) ;
 		}
 	}
 
@@ -317,68 +310,108 @@ QString utility::getVolumeID( const QString& id,bool expand )
 	return id ;
 }
 
-void utility::addToFavorite( const QString& dev,const QString& m_point )
+void utility::clearFavorites()
 {
-	if( !( dev.isEmpty() || m_point.isEmpty() ) ){
+	_settings->setValue( "FavoritesVolumes",QStringList() ) ;
+}
 
-		_settings->setValue( "Favorites",[ & ](){
+void utility::replaceFavorite( const favorites::entry& e,const favorites::entry& f )
+{
+	QStringList l ;
 
-			auto e = utility::readFavorites() ;
+	for( const auto& it : utility::readFavorites() ){
 
-			e.append( QString( "%1\t%2" ).arg( dev,m_point ) ) ;
+		if( it == e ){
 
-			return e ;
+			l.append( f.configString() ) ;
+		}else{
+			l.append( it.configString() ) ;
+		}
+	}
+
+	if( !l.isEmpty() ){
+
+		_settings->setValue( "FavoritesVolumes",l ) ;
+	}
+}
+
+void utility::addToFavorite( const QStringList& e )
+{
+	if( !e.isEmpty() ){
+
+		_settings->setValue( "FavoritesVolumes",[ & ](){
+
+			auto q = utility::readFavorites() ;
+
+			q.append( e ) ;
+
+			QStringList l ;
+
+			for( const auto& it : q ){
+
+				l.append( it.configString() ) ;
+			}
+
+			return l ;
 		}() ) ;
 	}
 }
 
-QStringList utility::readFavorites()
+QVector< favorites::entry > utility::readFavorites()
 {
-	if( _settings->contains( "Favorites" ) ){
+	if( _settings->contains( "FavoritesVolumes" ) ){
 
-		return _settings->value( "Favorites" ).toStringList() ;
+		QVector< favorites::entry > e ;
+
+		for( const auto& it : _settings->value( "FavoritesVolumes" ).toStringList() ){
+
+			e.append( it ) ;
+		}
+
+		return e ;
 	}else{
-		return QStringList() ;
+		return {} ;
 	}
 }
 
-void utility::removeFavoriteEntry( const QString& entry )
+void utility::removeFavoriteEntry( const favorites::entry& e )
 {
-	_settings->setValue( "Favorites",[ & ](){
+	_settings->setValue( "FavoritesVolumes",[ & ](){
 
-		auto l = utility::readFavorites() ;
+		QStringList l ;
 
-		l.removeOne( entry ) ;
+		for( const auto& it : utility::readFavorites() ){
+
+			if( it != e ){
+
+				l.append( it.configString() ) ;
+			}
+		}
 
 		return l ;
 	}() ) ;
 }
 
-void utility::readFavorites( QMenu * m,bool truncate )
+void utility::readFavorites( QMenu * m,bool truncate ,const QString& a, const QString& b )
 {
 	m->clear() ;
 
-	auto _add_action = [ m,truncate ]( const QString& e ){
+	auto _add_action = [ m,truncate ]( const favorites::entry& e ){
 
 		auto ac = new QAction( m ) ;
 
 		if( truncate ){
 
-			auto l = utility::split( e,'\t' ) ;
-
-			if( l.size() > 0 ){
-
-				ac->setText( l.first() ) ;
-			}
+			ac->setText( e.volumePath ) ;
 		}else{
-			ac->setText( e ) ;
+			ac->setText( e.string() ) ;
 		}
 
 		return ac ;
 	} ;
 
-	m->addAction( new QAction( QObject::tr( "Manage Favorites" ),m ) ) ;
-	m->addAction( new QAction( QObject::tr( "Mount All" ),m ) ) ;
+	m->addAction( new QAction( a,m ) ) ;
+	m->addAction( new QAction( b,m ) ) ;
 
 	m->addSeparator() ;
 
@@ -714,8 +747,7 @@ QString utility::homePath()
 
 bool utility::pathIsReadable( const QString& path )
 {
-	QDir d( path ) ;
-	return d.isReadable() ;
+	return QDir( path ).isReadable() ;
 }
 
 bool utility::pathExists( const QString& path )
@@ -731,6 +763,16 @@ QStringList utility::split( const QString& e,char token )
 QString utility::walletName()
 {
 	return "SiriKali" ;
+}
+
+QString utility::walletName( LXQt::Wallet::BackEnd s )
+{
+	if( s == LXQt::Wallet::BackEnd::kwallet ){
+
+		return "default" ;
+	}else{
+		return utility::walletName() ;
+	}
 }
 
 QString utility::applicationName()
@@ -909,6 +951,27 @@ void utility::autoMountFavoritesOnStartUp( bool e )
 	_settings->setValue( "AutoMountFavoritesOnStartUp",e ) ;
 }
 
+void utility::autoMountBackEnd( LXQt::Wallet::BackEnd e )
+{
+	_settings->setValue( "AutoMountPassWordBackEnd",[ e ](){
+
+		if( e == LXQt::Wallet::BackEnd::internal ){
+
+			return QString( "internal" ) ;
+
+		}else if( e == LXQt::Wallet::BackEnd::libsecret ){
+
+			return QString( "libsecret" ) ;
+
+		}else if( e == LXQt::Wallet::BackEnd::kwallet ){
+
+			return QString( "kwallet" ) ;
+		}else{
+			return QString( "internal" ) ;
+		}
+	}() ) ;
+}
+
 LXQt::Wallet::BackEnd utility::autoMountBackEnd()
 {
 	if( _settings->contains( "AutoMountPassWordBackEnd" ) ){
@@ -919,7 +982,7 @@ LXQt::Wallet::BackEnd utility::autoMountBackEnd()
 
 			return LXQt::Wallet::BackEnd::libsecret ;
 
-		}else if( e == "kdewallet" ){
+		}else if( e == "kwallet" ){
 
 			return LXQt::Wallet::BackEnd::kwallet ;
 		}else{
@@ -945,4 +1008,20 @@ bool utility::autoMountFavoritesOnAvailable()
 		utility::autoMountFavoritesOnAvailable( false ) ;
 		return false ;
 	}
+}
+
+bool utility::showMountDialogWhenAutoMounting()
+{
+	if( _settings->contains( "ShowMountDialogWhenAutoMounting" ) ){
+
+		return _settings->value( "ShowMountDialogWhenAutoMounting" ).toBool() ;
+	}else{
+		utility::showMountDialogWhenAutoMounting( false ) ;
+		return false ;
+	}
+}
+
+void utility::showMountDialogWhenAutoMounting( bool e )
+{
+	_settings->setValue( "ShowMountDialogWhenAutoMounting",e ) ;
 }
