@@ -44,15 +44,31 @@ static QString _makePath( const QString& e )
 	return utility::Task::makePath( e ) ;
 }
 
+template< typename ... T >
+static bool _deleteFolders( const T& ... m )
+{
+	bool s = false ;
+
+	QDir e ;
+
+	for( const auto& it : { m ... } ){
+
+		s = e.rmdir( it ) ;
+	}
+
+	return s ;
+}
+
 bool siritask::deleteMountFolder( const QString& m )
 {
 	if( utility::reUseMountPoint() ){
 
 		return false ;
 	}else{
-		return QDir().rmdir( m ) ;
+		return _deleteFolders( m ) ;
 	}
 }
+
 
 Task::future< bool >& siritask::encryptedFolderUnMount( const QString& m )
 {
@@ -395,17 +411,25 @@ Task::future< cs >& siritask::encryptedFolderCreate( const options& opt )
 					if( opt.type.isOneOf( "gocryptfs","securefs" ) ){
 
 						e = siritask::encryptedFolderMount( opt,true ).get() ;
+
+						if( e != cs::success ){
+
+							_deleteFolders( opt.cipherFolder ) ;
+							/*
+							 * opt.plainFolder was deleted by
+							 * siritask::encryptedFolderMount above
+							 */
+						}
 					}else{
 						opt.openFolder( opt.plainFolder ) ;
 					}
 				}else{
-					siritask::deleteMountFolder( opt.plainFolder ) ;
-					siritask::deleteMountFolder( opt.cipherFolder ) ;
+					_deleteFolders( opt.plainFolder,opt.cipherFolder ) ;
 				}
 
 				return e ;
 			}else{
-				siritask::deleteMountFolder( opt.cipherFolder ) ;
+				_deleteFolders( opt.cipherFolder ) ;
 
 				return cs::failedToCreateMountPoint ;
 			}
