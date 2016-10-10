@@ -223,6 +223,7 @@ static cs _cmd( bool create,const siritask::options& opt,
 
 			env.insert( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
 			env.insert( "CRYFS_FRONTEND","noninteractive" ) ;
+			env.insert( "PATH","/bin:/usr/bin" ) ;
 
 			return env ;
 
