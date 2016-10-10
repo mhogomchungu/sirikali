@@ -76,6 +76,24 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& m )
 	} ) ;
 }
 
+static bool _newer_gocryptfs()
+{
+	auto e = utility::Task::run( "gocryptfs --version" ).await().splitOutput( ' ' ) ;
+
+	if( e.size() < 2 ){
+
+		return true ;
+	}else{
+		auto q = e.at( 1 ) ;
+
+		q.remove( 'v' ) ;
+		q.remove( 'V' ) ;
+		q.remove( ';' ) ;
+
+		return q > "1.0" ;
+	}
+}
+
 static QString _args( const QString& exe,const siritask::options& opt,
 		      const QString& configFilePath,
 		      bool create )
@@ -150,7 +168,13 @@ static QString _args( const QString& exe,const siritask::options& opt,
 				return e.arg( exe,configPath,cipherFolder ) ;
 			}else{
 				auto e = QString( "%1 %2 %3 %4 %5" ) ;
-				return e.arg( exe,mode,configPath,cipherFolder,mountPoint ) ;
+
+				if( _newer_gocryptfs() ){
+
+					return e.arg( exe,configPath,cipherFolder,mountPoint,mode ) ;
+				}else{
+					return e.arg( exe,mode,configPath,cipherFolder,mountPoint ) ;
+				}
 			}
 		}else{
 			if( create ){
