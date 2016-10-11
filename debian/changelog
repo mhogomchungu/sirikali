@@ -6,6 +6,9 @@ sirikali (1.2.0-1) unstable; urgency=low
      -- Add a GUI option to select what secure key storage backend
         to use when auto mounting volumes.
 
+  [David Steele]
+  * Incorporate upstream addition of PATH to called tasks.
+
  -- David Steele <steele@debian.org>  Sun, 09 Oct 2016 10:03:25 -0400
 
 sirikali (1.1.0-1) unstable; urgency=low
