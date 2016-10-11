@@ -45,14 +45,7 @@ static void _show( QObject * obj,bool autocheck,QWidget * w,const QVector< QStri
 
 		e += _tr( it ) + "\n\n" ;
 
-		const auto& a = it.at( 1 ) ;
-
-		const auto& b = it.at( 2 ) ;
-
-		if( a != "N/A" and b != "N/A" ){
-
-			show = ( a != b ) ;
-		}
+		show = ( it.at( 1 ) != it.at( 2 ) ) ;
 	}
 
 	if( autocheck ){
