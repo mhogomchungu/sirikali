@@ -16,7 +16,7 @@ override_dh_auto_configure:
 	dh_auto_configure -- -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_LIBDIR=lib/$(DEB_HOST_MULTIARCH) -DQT5=true  -DNOSECRETSUPPORT=false -DNOKDESUPPORT=true
 
 %:
-	dh $@
+	dh $@ --parallel
 
 CHDATE = $(shell grep "^ \-\-" debian/changelog | head -1 | sed 's/.\+, //' | sed 's/...\:.\+//' )
 DT = $(shell date -d "${CHDATE}" "+%Y-%m-%d")
