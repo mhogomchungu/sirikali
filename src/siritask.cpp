@@ -219,11 +219,16 @@ static cs _cmd( bool create,const siritask::options& opt,
 	}else{
 		auto e = utility::Task( _args( exe,opt,configFilePath,create ),20000,[](){
 
-			QProcessEnvironment env ;
+			auto env = QProcessEnvironment::systemEnvironment() ;
 
 			env.insert( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
 			env.insert( "CRYFS_FRONTEND","noninteractive" ) ;
-			env.insert( "PATH","/bin:/usr/bin" ) ;
+
+			auto path = env.value( "PATH" ) ;
+
+			path += ":/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin" ;
+
+			env.insert( "PATH",path ) ;
 
 			return env ;
 

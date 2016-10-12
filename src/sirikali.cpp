@@ -1347,10 +1347,7 @@ void sirikali::updateVolumeList( const QVector< volumeInfo >& r )
 
 	for( const auto& it : r ){
 
-		if( it.isValid() ){
-
-			this->updateList( it ) ;
-		}
+		this->updateList( it ) ;
 	}
 
 	this->enableAll() ;
