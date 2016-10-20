@@ -55,3 +55,4 @@ version 1.3.0
                is started while the system has no internet connection.
    -- FIX BUG: Dont auto delete mount folders when a volumes was unmounted outside of SiriKali.
    -- FIX BUG: Populate $PATH variable properly before calling backends since some backends fails without it.
+   -- FIX BUG: The build process failed to build on Qt4

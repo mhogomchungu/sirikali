@@ -69,7 +69,7 @@ public:
 
 		QString string( char s = '\t' ) const
 		{
-			return this->list().join( s ) ;
+			return this->list().join( QString( s ) ) ;
 		}
 
 		QString configString() const
