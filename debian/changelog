@@ -1,3 +1,9 @@
+sirikali (1.2.0-2) unstable; urgency=medium
+
+  * Depend on encfs for armel, where cryfs doesn't currently build.
+
+ -- David Steele <steele@debian.org>  Sat, 22 Oct 2016 22:43:05 -0400
+
 sirikali (1.2.0-1) unstable; urgency=low
   [Mhogo Mchungu]
   * New Features
