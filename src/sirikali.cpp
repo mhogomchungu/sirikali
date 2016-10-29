@@ -1188,11 +1188,6 @@ void sirikali::showMoungDialog( const QString& volume,const QString& m_point )
 	}
 }
 
-void sirikali::showMoungDialog( const favorites::entry& e )
-{
-	this->mount( e ) ;
-}
-
 void sirikali::unlockVolume()
 {
 	this->disableAll() ;

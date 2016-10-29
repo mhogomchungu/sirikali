@@ -3,13 +3,13 @@ This tool depends on the following packages installed to build, their precise na
 
 Look in "debian" or "debian_package_info" folder for information on how to build a debian package.
 
-3. For Qt4 build(libqt4-devel,libqt4-network,libqtcore4,libqtgui4)
+3. For Qt4 build(libqt4-devel or a package that provides libqt4-network-devel,libqtcore4-devel,libqtgui4-devel)
    For Qt5 build(qt5-base-devel or a packages that provides Qt5Core-devel,Qt5Gui-devel,Qt5Network-devel)
 4. gcc
 5. gcc-c++
 7. cmake
 8. pwquality-devel( optional dependency used to measure the quality of a password when creating volumes )
-9. libgcrypt-devel libgcrypt11-dev
+9. libgcrypt-devel or libgcrypt11-dev
 10.libsecret-devel or libsecret-1-dev( optional dependency to store keys in gnome's libsecret )
 11.kde-devel( optional dependency to store keys in kde's kwallet )
 12.pkg-config

@@ -67,9 +67,11 @@ keyDialog::keyDialog( QWidget * parent,
 {
 	m_ui->setupUi( this ) ;
 
-	m_parentWidget = parent ;
+	this->setUIVisible( true ) ;
 
-	m_ui->checkBoxShareMountPoint->setVisible( false ) ;
+	m_ui->pbOK->setText( tr( "&OK" ) ) ;
+
+	m_parentWidget = parent ;
 
 	m_configFile = e.configFilePath() ;
 	m_options    = e.idleTimeOut() ;
@@ -82,7 +84,27 @@ keyDialog::keyDialog( QWidget * parent,
 
 	m_reUseMountPoint = utility::reUseMountPoint() ;
 
+	connect( m_ui->pbCancel,SIGNAL( clicked() ),
+		 this,SLOT( pbCancel() ) ) ;
+	connect( m_ui->pbOpen,SIGNAL( clicked() ),
+		 this,SLOT( pbOpen() ) ) ;
+	connect( m_ui->pbkeyOption,SIGNAL( clicked() ),
+		 this,SLOT( pbkeyOption() ) ) ;
+	connect( m_ui->pbOpenFolderPath,SIGNAL( clicked() ),
+		 this,SLOT( pbFolderPath() ) ) ;
+	connect( m_ui->pbMountPoint,SIGNAL( clicked() ),
+		 this,SLOT( pbMountPointPath() ) ) ;
+	connect( m_ui->checkBoxOpenReadOnly,SIGNAL( stateChanged( int ) ),
+		 this,SLOT( cbMountReadOnlyStateChanged( int ) ) ) ;
+	connect( m_ui->cbKeyType,SIGNAL( currentIndexChanged( QString ) ),
+		 this,SLOT( cbActicated( QString ) ) ) ;
+	connect( m_ui->pbOK,SIGNAL( clicked( bool ) ),
+		 this,SLOT( pbOK() ) ) ;
+
 	if( m_create ){
+
+		connect( m_ui->lineEditMountPoint,SIGNAL( textChanged( QString ) ),
+			 this,SLOT( textChanged( QString ) ) ) ;
 
 		m_ui->pbOpen->setText( tr( "&Create" ) ) ;
 
@@ -180,23 +202,6 @@ keyDialog::keyDialog( QWidget * parent,
 
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
 
-	connect( m_ui->pbCancel,SIGNAL( clicked() ),
-		 this,SLOT( pbCancel() ) ) ;
-	connect( m_ui->pbOpen,SIGNAL( clicked() ),
-		 this,SLOT( pbOpen() ) ) ;
-	connect( m_ui->pbkeyOption,SIGNAL( clicked() ),
-		 this,SLOT( pbkeyOption() ) ) ;
-	connect( m_ui->pbOpenFolderPath,SIGNAL( clicked() ),
-		 this,SLOT( pbFolderPath() ) ) ;
-	connect( m_ui->pbMountPoint,SIGNAL( clicked() ),
-		 this,SLOT( pbMountPointPath() ) ) ;
-	connect( m_ui->checkBoxOpenReadOnly,SIGNAL( stateChanged( int ) ),
-		 this,SLOT( cbMountReadOnlyStateChanged( int ) ) ) ;
-	connect( m_ui->cbKeyType,SIGNAL( currentIndexChanged( QString ) ),
-		 this,SLOT( cbActicated( QString ) ) ) ;
-	connect( m_ui->lineEditMountPoint,SIGNAL( textChanged( QString ) ),
-		 this,SLOT( textChanged( QString ) ) ) ;
-
 	m_ui->cbKeyType->addItem( tr( "Key" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "KeyFile" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "HMAC+KeyFile" ) ) ;
@@ -213,8 +218,6 @@ keyDialog::keyDialog( QWidget * parent,
 
 		m_ui->cbKeyType->addItem( _kwallet() ) ;
 	}
-
-	m_ui->checkBoxShareMountPoint->setEnabled( false ) ;
 
 	if( m_create ){
 
@@ -405,7 +408,6 @@ void keyDialog::enableAll()
 
 	m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
 
-	m_ui->checkBoxShareMountPoint->setEnabled( false ) ;
 	m_ui->lineEditFolderPath->setEnabled( false ) ;
 	m_ui->label_3->setEnabled( true ) ;
 }
@@ -425,8 +427,38 @@ void keyDialog::disableAll()
 	m_ui->pbOpen->setEnabled( false ) ;
 	m_ui->label->setEnabled( false ) ;
 	m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
-	m_ui->checkBoxShareMountPoint->setEnabled( false ) ;
 	m_ui->lineEditFolderPath->setEnabled( false ) ;
+}
+
+void keyDialog::setUIVisible( bool e )
+{
+	m_ui->pbOK->setVisible( !e ) ;
+	m_ui->labelMsg->setVisible( !e ) ;
+
+	m_ui->cbKeyType->setVisible( e ) ;
+	m_ui->pbOptions->setVisible( e ) ;
+	m_ui->pbkeyOption->setVisible( e ) ;
+	m_ui->label_2->setVisible( e ) ;
+	m_ui->lineEditMountPoint->setVisible( e ) ;
+	m_ui->lineEditKey->setVisible( e ) ;
+	m_ui->pbCancel->setVisible( e ) ;
+	m_ui->pbOpen->setVisible( e ) ;
+	m_ui->label->setVisible( e ) ;
+
+	if( e ){
+
+		m_ui->pbMountPoint->setVisible( !m_create ) ;
+		m_ui->label_3->setVisible( m_create ) ;
+		m_ui->checkBoxOpenReadOnly->setVisible( !m_create ) ;
+		m_ui->lineEditFolderPath->setVisible( m_create ) ;
+		m_ui->pbOpenFolderPath->setVisible( m_create ) ;
+	}else{
+		m_ui->pbMountPoint->setVisible( e ) ;
+		m_ui->label_3->setVisible( e ) ;
+		m_ui->checkBoxOpenReadOnly->setVisible( e ) ;
+		m_ui->lineEditFolderPath->setVisible( e ) ;
+		m_ui->pbOpenFolderPath->setVisible( e ) ;
+	}
 }
 
 void keyDialog::KeyFile()
@@ -466,16 +498,20 @@ void keyDialog::pbOpen()
 
 		if( m_ui->lineEditMountPoint->text().isEmpty() ){
 
-			DialogMsg msg( this ) ;
+			this->showErrorMessage( tr( "Volume Name Field Is Empty." ) ) ;
 
-			return msg.ShowUIOK( tr( "ERROR" ),tr( "Volume Name Field Is Empty." ) ) ;
+			m_ui->lineEditMountPoint->setFocus() ;
+
+			return ;
 		}
 
 		if( m_ui->lineEditKey->text().isEmpty() ){
 
-			DialogMsg msg( this ) ;
+			this->showErrorMessage( tr( "Key Field Is Empty." ) ) ;
 
-			return msg.ShowUIOK( tr( "ERROR" ),tr( "Key Field Is Empty." ) ) ;
+			m_ui->lineEditKey->setFocus() ;
+
+			return ;
 		}
 	}
 
@@ -512,8 +548,7 @@ void keyDialog::pbOpen()
 
 			if( w.notConfigured ){
 
-				DialogMsg msg( this ) ;
-				msg.ShowUIOK( tr( "ERROR!" ),tr( "Internal Wallet Is Not Configured." ) ) ;
+				this->showErrorMessage( tr( "Internal Wallet Is Not Configured." ) ) ;
 				return this->enableAll() ;
 			}
 		}else{
@@ -524,9 +559,7 @@ void keyDialog::pbOpen()
 
 			if( w.key.isEmpty() ){
 
-				DialogMsg msg( this ) ;
-
-				msg.ShowUIOK( tr( "ERROR" ),tr( "The Volume Does Not Appear To Have An Entry In The Wallet." ) ) ;
+				this->showErrorMessage( "The Volume Does Not Appear To Have An Entry In The Wallet." ) ;
 
 				this->enableAll() ;
 
@@ -545,7 +578,7 @@ void keyDialog::pbOpen()
 
 bool keyDialog::completed( siritask::status s )
 {
-	DialogMsg msg( this ) ;
+	QString msg ;
 
 	switch( s ){
 
@@ -555,64 +588,84 @@ bool keyDialog::completed( siritask::status s )
 
 	case siritask::status::cryfs :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Unlock A Cryfs Volume.\nWrong Password Entered." ) ) ;
+		msg = tr( "Failed To Unlock A Cryfs Volume.\nWrong Password Entered." ) ;
 		break;
 
 	case siritask::status::encfs :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Unlock An Encfs Volume.\nWrong Password Entered." ) ) ;
+		msg = tr( "Failed To Unlock An Encfs Volume.\nWrong Password Entered." ) ;
 		break;
 
 	case siritask::status::gocryptfs :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Unlock A Gocryptfs Volume.\nWrong Password Entered." ) ) ;
+		msg = tr( "Failed To Unlock A Gocryptfs Volume.\nWrong Password Entered." ) ;
 		break;
 
 	case siritask::status::securefs :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Unlock A Securefs Volume.\nWrong Password Entered." ) ) ;
+		msg = tr( "Failed To Unlock A Securefs Volume.\nWrong Password Entered." ) ;
 		break;
 
 	case siritask::status::cryfsNotFound :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Complete The Request.\nCryfs Executable Could Not Be Found." ) ) ;
+		msg = tr( "Failed To Complete The Request.\nCryfs Executable Could Not Be Found." ) ;
 		break;
 
 	case siritask::status::encfsNotFound :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Complete The Request.\nEncfs Executable Could Not Be Found." ) ) ;
+		msg = tr( "Failed To Complete The Request.\nEncfs Executable Could Not Be Found." ) ;
 		break;
 
 	case siritask::status::gocryptfsNotFound :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Complete The Request.\nGocryptfs Executable Could Not Be Found." ) ) ;
+		msg = tr( "Failed To Complete The Request.\nGocryptfs Executable Could Not Be Found." ) ;
 		break;
 
 	case siritask::status::securefsNotFound :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Complete The Request.\nSecurefs Executable Could Not Be Found." ) ) ;
+		msg = tr( "Failed To Complete The Request.\nSecurefs Executable Could Not Be Found." ) ;
 		break;
 
 	case siritask::status::failedToCreateMountPoint :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Create Mount Point." ) ) ;
+		msg = tr( "Failed To Create Mount Point." ) ;
 		break;
 
 	case siritask::status::unknown :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Unlock The Volume.\nNot Supported Volume Encountered." ) ) ;
+		msg = tr( "Failed To Unlock The Volume.\nNot Supported Volume Encountered." ) ;
 		break;
 
 	case siritask::status::backendFail :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Complete The Task.\nBackend Not Responding." ) ) ;
+		msg = tr( "Failed To Complete The Task.\nBackend Not Responding." ) ;
 		break;
 	default:
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Complete The Task.\nAn Unknown Error Has Occured." ) ) ;
+		msg = tr( "Failed To Complete The Task.\nAn Unknown Error Has Occured." ) ;
 		break;
 	}
 
+	this->showErrorMessage( msg ) ;
+
 	return false ;
+}
+
+void keyDialog::showErrorMessage( const QString& e )
+{
+	this->setUIVisible( false ) ;
+
+	m_ui->labelMsg->setText( e ) ;
+
+	m_ui->pbOK->setFocus() ;
+
+	m_eventLoop.exec() ;
+
+	this->setUIVisible( true ) ;
+}
+
+void keyDialog::pbOK()
+{
+	m_eventLoop.exit() ;
 }
 
 void keyDialog::encryptedFolderCreate()
@@ -623,9 +676,7 @@ void keyDialog::encryptedFolderCreate()
 
 	if( utility::pathExists( path ) ){
 
-		DialogMsg msg( this ) ;
-
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Encrypted Folder Path Is Already Taken." ) ) ;
+		this->showErrorMessage( tr( "Encrypted Folder Path Is Already Taken." ) ) ;
 
 		return this->enableAll() ;
 	}
@@ -634,20 +685,20 @@ void keyDialog::encryptedFolderCreate()
 
 	if( utility::pathExists( m ) && !m_reUseMountPoint ){
 
-		DialogMsg msg( this ) ;
-
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Mount Point Path Already Taken." ) ) ;
+		this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
 
 		return this->enableAll() ;
 	}
 
 	if( m_key.isEmpty() ){
 
-		DialogMsg msg( this ) ;
+		this->showErrorMessage( tr( "Atleast One Required Field Is Empty." ) ) ;
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Atleast One Required Field Is Empty." ) ) ;
+		this->enableAll() ;
 
-		return this->enableAll() ;
+		m_ui->lineEditKey->setFocus() ;
+
+		return ;
 	}
 
 	auto& e = siritask::encryptedFolderCreate( { path,m,m_key,m_options,m_configFile,
@@ -662,9 +713,9 @@ void keyDialog::encryptedFolderCreate()
 			m_ui->lineEditKey->clear() ;
 		}
 
-		m_ui->lineEditKey->setFocus() ;
-
 		this->enableAll() ;
+
+		m_ui->lineEditKey->setFocus() ;
 	}
 }
 
@@ -674,31 +725,40 @@ void keyDialog::encryptedFolderMount()
 
 	auto m = m_ui->lineEditMountPoint->text() ;
 
+	if( m.isEmpty() ){
+
+		this->showErrorMessage( tr( "Atleast One Required Field Is Empty." ) ) ;
+
+		this->enableAll() ;
+
+		m_ui->lineEditMountPoint->setFocus() ;
+
+		return ;
+	}
+
 	if( utility::pathExists( m ) && !m_reUseMountPoint ){
 
-		DialogMsg msg( this ) ;
-
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Mount Point Path Already Taken." ) ) ;
+		this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
 
 		return this->enableAll() ;
 	}
 
 	if( !utility::pathExists( m_path ) ){
 
-		DialogMsg msg( this ) ;
-
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Encrypted Folder Appear To Not Be Present." ) ) ;
+		this->showErrorMessage( tr( "Encrypted Folder Appear To Not Be Present." ) ) ;
 
 		return this->enableAll() ;
 	}
 
 	if( m_key.isEmpty() ){
 
-		DialogMsg msg( this ) ;
+		this->showErrorMessage( tr( "Atleast One Required Field Is Empty." ) ) ;
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Atleast One Required Field Is Empty." ) ) ;
+		this->enableAll() ;
 
-		return this->enableAll() ;
+		m_ui->lineEditKey->setFocus() ;
+
+		return ;
 	}
 
 	auto& e = siritask::encryptedFolderMount( { m_path,m,m_key,m_options,
@@ -711,9 +771,10 @@ void keyDialog::encryptedFolderMount()
 		m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
 
 		m_ui->lineEditKey->clear() ;
-		m_ui->lineEditKey->setFocus() ;
 
 		this->enableAll() ;
+
+		m_ui->lineEditKey->setFocus() ;
 	}
 }
 
@@ -749,9 +810,7 @@ void keyDialog::openVolume()
 
 		if( m_key.contains( '\n' ) ){
 
-			DialogMsg msg( this ) ;
-
-			msg.ShowUIOK( tr( "WARNING" ),tr( "KeyFile Contents Will Be Trancated On The First Encountered NewLine Character." ) ) ;
+			this->showErrorMessage( tr( "KeyFile Contents Will Be Trancated On The First Encountered NewLine Character." ) ) ;
 		}
 
 	}else if( keyType == keyDialog::Plugin ){

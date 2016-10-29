@@ -49,7 +49,7 @@ version 1.2.0
 -- Add ability to add a favorite volume with mount options(external config file path,idle timeout,auto mount).
 -- Add a GUI option to select what secure key storage backend to use when auto mounting volumes.
 
-version 1.3.0
+version 1.2.1
 -- Maintanance release.
    -- FIX BUG: Dont generate an update warning prompt on startup when auto check for updates is set but the application
                is started while the system has no internet connection.

@@ -134,25 +134,12 @@
     <rect>
      <x>130</x>
      <y>60</y>
-     <width>281</width>
+     <width>301</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
     <string>Mount In &amp;Read Only Mode</string>
-   </property>
-  </widget>
-  <widget class="QCheckBox" name="checkBoxShareMountPoint">
-   <property name="geometry">
-    <rect>
-     <x>490</x>
-     <y>40</y>
-     <width>20</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>&amp;Share Mount Point</string>
    </property>
   </widget>
   <widget class="QPushButton" name="pbOptions">
@@ -220,6 +207,38 @@
     <string/>
    </property>
   </widget>
+  <widget class="QPushButton" name="pbOK">
+   <property name="geometry">
+    <rect>
+     <x>230</x>
+     <y>180</y>
+     <width>101</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&amp;OK</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelMsg">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>10</y>
+     <width>441</width>
+     <height>171</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+  </widget>
  </widget>
  <tabstops>
   <tabstop>lineEditKey</tabstop>
@@ -228,7 +247,6 @@
   <tabstop>cbKeyType</tabstop>
   <tabstop>pbkeyOption</tabstop>
   <tabstop>checkBoxOpenReadOnly</tabstop>
-  <tabstop>checkBoxShareMountPoint</tabstop>
   <tabstop>pbOptions</tabstop>
   <tabstop>pbOpen</tabstop>
   <tabstop>pbCancel</tabstop>
