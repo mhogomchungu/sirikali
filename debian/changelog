@@ -1,4 +1,4 @@
-sirikali (1.2.1-1) UNRELEASED; urgency=low
+sirikali (1.2.1-1) unstable; urgency=low
   [Mhogo Mchungu]
   * New Features
      -- Maintanance release.
@@ -7,7 +7,7 @@ sirikali (1.2.1-1) UNRELEASED; urgency=low
      -- FIX BUG: Populate $PATH variable properly before calling backends since some backends fails without it.
      -- FIX BUG: The build process failed to build on Qt4
 
- -- Mhogo Mchungu <mhogomchungu@gmail.com>  Sat, 29 Oct 2016 16:38:48 +0000
+ -- David Steele <steele@debian.org>  Sat, 29 Oct 2016 10:32:53 -0400
 
 sirikali (1.2.0-2) unstable; urgency=medium
 
