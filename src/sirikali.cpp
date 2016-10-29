@@ -1188,11 +1188,6 @@ void sirikali::showMoungDialog( const QString& volume,const QString& m_point )
 	}
 }
 
-void sirikali::showMoungDialog( const favorites::entry& e )
-{
-	this->mount( e ) ;
-}
-
 void sirikali::unlockVolume()
 {
 	this->disableAll() ;
@@ -1284,8 +1279,10 @@ void sirikali::pbUmount()
 
 		auto m = table->item( row,1 )->text() ;
 
-		if( !siritask::encryptedFolderUnMount( m ).await() ){
+		if( siritask::encryptedFolderUnMount( m ).await() ){
 
+			siritask::deleteMountFolder( m ) ;
+		}else{
 			DialogMsg m( this ) ;
 			m.ShowUIOK( tr( "ERROR" ),tr( "Failed To Unmount %1 Volume" ).arg( type ) ) ;
 
@@ -1341,23 +1338,11 @@ void sirikali::pbUpdate()
 
 void sirikali::updateVolumeList( const QVector< volumeInfo >& r )
 {
-	auto l = tablewidget::columnEntries( m_ui->tableWidget,1 ) ;
-
 	tablewidget::clearTable( m_ui->tableWidget ) ;
 
 	for( const auto& it : r ){
 
-		if( it.isValid() ){
-
-			this->updateList( it ) ;
-		}
-
-		l.removeOne( it.mountPoint() ) ;
-	}
-
-	for( const auto& it : l ){
-
-		siritask::deleteMountFolder( it ) ;
+		this->updateList( it ) ;
 	}
 
 	this->enableAll() ;

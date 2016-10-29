@@ -72,7 +72,6 @@ private slots:
 	void startGUI( void ) ;
 	void showMoungDialog( const volumeInfo& ) ;
 	void showMoungDialog( const QString&,const QString& = QString() ) ;
-	void showMoungDialog( const favorites::entry& ) ;
 	void mount( const volumeInfo&,const QString& = QString(),const QByteArray& = QByteArray() ) ;
 	void defaultButton( void ) ;
 	void itemClicked( QTableWidgetItem * ) ;

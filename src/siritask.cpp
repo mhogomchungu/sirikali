@@ -44,15 +44,31 @@ static QString _makePath( const QString& e )
 	return utility::Task::makePath( e ) ;
 }
 
+template< typename ... T >
+static bool _deleteFolders( const T& ... m )
+{
+	bool s = false ;
+
+	QDir e ;
+
+	for( const auto& it : { m ... } ){
+
+		s = e.rmdir( it ) ;
+	}
+
+	return s ;
+}
+
 bool siritask::deleteMountFolder( const QString& m )
 {
 	if( utility::reUseMountPoint() ){
 
 		return false ;
 	}else{
-		return QDir().rmdir( m ) ;
+		return _deleteFolders( m ) ;
 	}
 }
+
 
 Task::future< bool >& siritask::encryptedFolderUnMount( const QString& m )
 {
@@ -203,10 +219,16 @@ static cs _cmd( bool create,const siritask::options& opt,
 	}else{
 		auto e = utility::Task( _args( exe,opt,configFilePath,create ),20000,[](){
 
-			QProcessEnvironment env ;
+			auto env = QProcessEnvironment::systemEnvironment() ;
 
 			env.insert( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
 			env.insert( "CRYFS_FRONTEND","noninteractive" ) ;
+
+			auto path = env.value( "PATH" ) ;
+
+			path += ":/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin" ;
+
+			env.insert( "PATH",path ) ;
 
 			return env ;
 
@@ -371,17 +393,25 @@ Task::future< cs >& siritask::encryptedFolderCreate( const options& opt )
 					if( opt.type.isOneOf( "gocryptfs","securefs" ) ){
 
 						e = siritask::encryptedFolderMount( opt,true ).get() ;
+
+						if( e != cs::success ){
+
+							_deleteFolders( opt.cipherFolder ) ;
+							/*
+							 * opt.plainFolder was deleted by
+							 * siritask::encryptedFolderMount above
+							 */
+						}
 					}else{
 						opt.openFolder( opt.plainFolder ) ;
 					}
 				}else{
-					siritask::deleteMountFolder( opt.plainFolder ) ;
-					siritask::deleteMountFolder( opt.cipherFolder ) ;
+					_deleteFolders( opt.plainFolder,opt.cipherFolder ) ;
 				}
 
 				return e ;
 			}else{
-				siritask::deleteMountFolder( opt.cipherFolder ) ;
+				_deleteFolders( opt.cipherFolder ) ;
 
 				return cs::failedToCreateMountPoint ;
 			}

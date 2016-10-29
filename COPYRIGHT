@@ -1,34 +1,42 @@
-Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: SiriKali
 Source: https://github.com/mhogomchungu/sirikali
 
 Files: *
-Copyright: 2016 Mhogo Mchungu <mhogomchungu@gmail.com>
+Copyright: 2016 Francis Banyikwa <mhogomchungu@gmail.com>
+License: GPL-2+
+
+Files: debian/sirikali.appdata.xml
+       debian/sirikali.1.ronn
+Copyright: 2016 David Steele <steele@debian.org>
 License: GPL-2+
 
 Files: src/3rdParty/json.hpp
-Licensed under the MIT License <http://opensource.org/licenses/MIT>.
-Copyright (c) 2013-2016 Niels Lohmann <http://nlohmann.me>.
+Copyright: (c) 2013-2016 Niels Lohmann <http://nlohmann.me>.
+License: Expat
 
 Files: src/lxqt_wallet/*
 Copyright: 2013-2016 Mhogo Mchungu <mhogomchungu@gmail.com>
 License: BSD-2-clause
 
-Files: src/networkAccessManager.hpp
-Copyright: 2016 Mhogo Mchungu <mhogomchungu@gmail.com>
+Files: src/task.h
+       src/lxqt_wallet/*
+       src/networkAccessManager.hpp
+Copyright: 2014-2016 Francis Banyikwa <mhogomchungu@gmail.com>
 License: BSD-2-clause
 
-License: MIT
+
+License: Expat
  Permission is hereby  granted, free of charge, to any  person obtaining a copy
  of this software and associated  documentation files (the "Software"), to deal
  in the Software  without restriction, including without  limitation the rights
  to  use, copy,  modify, merge,  publish, distribute,  sublicense, and/or  sell
  copies  of  the Software,  and  to  permit persons  to  whom  the Software  is
  furnished to do so, subject to the following conditions:
-
+ .
  The above copyright notice and this permission notice shall be included in all
  copies or substantial portions of the Software.
-
+ .
  THE SOFTWARE  IS PROVIDED "AS  IS", WITHOUT WARRANTY  OF ANY KIND,  EXPRESS OR
  IMPLIED,  INCLUDING BUT  NOT  LIMITED TO  THE  WARRANTIES OF  MERCHANTABILITY,
  FITNESS FOR  A PARTICULAR PURPOSE AND  NONINFRINGEMENT. IN NO EVENT  SHALL THE

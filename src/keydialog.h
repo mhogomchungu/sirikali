@@ -127,6 +127,7 @@ private slots:
 	void pbkeyOption( void ) ;
 	void pbMountPointPath( void ) ;
 	void pbFolderPath( void ) ;
+	void pbOK( void ) ;
 	void plugIn( void ) ;
 	void key( void ) ;
 	void keyFile( void ) ;
@@ -138,6 +139,8 @@ private slots:
 	void encryptedFolderMount( void ) ;
 	void encryptedFolderCreate( void ) ;
 private :
+	void showErrorMessage( const QString& ) ;
+	void setUIVisible( bool ) ;
 	void keyAndKeyFile( void ) ;
 	void openVolume( void ) ;
 	void enableAll( void ) ;
@@ -155,6 +158,8 @@ private :
 	QString m_options ;
 	QString m_configFile ;
 	QString m_exe ;
+
+	QEventLoop m_eventLoop ;
 
 	QStringList m_keyFiles ;
 
