@@ -2,9 +2,13 @@ sirikali (1.2.1-1) unstable; urgency=low
   [Mhogo Mchungu]
   * New Features
      -- Maintanance release.
-     -- FIX BUG: Dont generate an update warning prompt on startup when auto check for updates is set but the application is started while the system has no internet connection.
-     -- FIX BUG: Dont auto delete mount folders when a volumes was unmounted outside of SiriKali.
-     -- FIX BUG: Populate $PATH variable properly before calling backends since some backends fails without it.
+     -- FIX BUG: Dont generate an update warning prompt on startup when
+        auto check for updates is set but the application is started while
+        the system has no internet connection.
+     -- FIX BUG: Dont auto delete mount folders when a volumes was
+        unmounted outside of SiriKali.
+     -- FIX BUG: Populate $PATH variable properly before calling backends
+        since some backends fails without it.
      -- FIX BUG: The build process failed to build on Qt4
 
  -- David Steele <steele@debian.org>  Sat, 29 Oct 2016 10:32:53 -0400
