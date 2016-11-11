@@ -377,10 +377,6 @@ p, li { white-space: pre-wrap; }
         <translation>&amp;OK</translation>
     </message>
     <message>
-        <source>&amp;Share Mount Point</source>
-        <translation type="vanished">&amp;Share (Partage) Point de montage</translation>
-    </message>
-    <message>
         <location filename="../src/keydialog.ui" line="155"/>
         <source>O&amp;ptions</source>
         <translation>O&amp;ptions</translation>
@@ -458,10 +454,6 @@ p, li { white-space: pre-wrap; }
         <translation>Sélectionner un fichier afin de l&apos;utiliser comme un fichier de clé.</translation>
     </message>
     <message>
-        <source>ERROR</source>
-        <translation type="vanished">ERREUR</translation>
-    </message>
-    <message>
         <location filename="../src/keydialog.cpp" line="501"/>
         <source>Volume Name Field Is Empty.</source>
         <translation>Le champ du Nom du Volume est vide.</translation>
@@ -472,17 +464,9 @@ p, li { white-space: pre-wrap; }
         <translation>Champ de la clé est vide.</translation>
     </message>
     <message>
-        <source>ERROR!</source>
-        <translation type="vanished">ERREUR!</translation>
-    </message>
-    <message>
         <location filename="../src/keydialog.cpp" line="551"/>
         <source>Internal Wallet Is Not Configured.</source>
         <translation>Trousseau Interne non configuré.</translation>
-    </message>
-    <message>
-        <source>The Volume Does Not Appear To Have An Entry In The Wallet.</source>
-        <translation type="vanished">Le volume ne semble pas avoir une entrée dans le trousseau.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="591"/>
@@ -507,7 +491,7 @@ Mot de passe entré incorrect.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="606"/>
-        <source>Failed To Unlock A Ecryptfs Volume.
+        <source>Failed To Unlock An Ecryptfs Volume.
 Wrong Password Entered.</source>
         <translation>Echec de l&apos;ouverture du volume Ecryptfs.
 Mot de passe entré incorrect.</translation>
@@ -602,10 +586,6 @@ Une erreur inconnue est survenue.</translation>
         <location filename="../src/keydialog.cpp" line="758"/>
         <source>Encrypted Folder Appear To Not Be Present.</source>
         <translation>Le chemin du répertoire chiffré ne semble pas présent.</translation>
-    </message>
-    <message>
-        <source>WARNING</source>
-        <translation type="vanished">ATTENTION</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="823"/>

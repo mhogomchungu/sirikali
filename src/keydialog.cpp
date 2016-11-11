@@ -603,7 +603,7 @@ bool keyDialog::completed( siritask::status s )
 
 	case siritask::status::ecryptfs :
 
-		msg = tr( "Failed To Unlock A Ecryptfs Volume.\nWrong Password Entered." ) ;
+		msg = tr( "Failed To Unlock An Ecryptfs Volume.\nWrong Password Entered." ) ;
 		break;
 
 	case siritask::status::securefs :
