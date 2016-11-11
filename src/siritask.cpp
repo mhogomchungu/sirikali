@@ -17,6 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "plugins.h"
 #include "siritask.h"
 #include "mountinfo.h"
 
@@ -69,18 +70,101 @@ bool siritask::deleteMountFolder( const QString& m )
 	}
 }
 
-
-Task::future< bool >& siritask::encryptedFolderUnMount( const QString& m )
+static void _clearKeyring( const QString& key )
 {
-	return Task::run< bool >( [ m ](){
+	if( key.isEmpty() ){
 
-		auto cmd = "fusermount -u " + _makePath( m ) ;
+		return ;
+	}
+
+	auto a = utility::Task::run( "keyctl list @u" ).await().output() ;
+
+	for( const auto& it : utility::split( a,'\n' ) ){
+
+		if( it.endsWith( key ) ){
+
+			auto e = utility::split( it,' ' ) ;
+
+			if( !e.isEmpty() ){
+
+				auto k = e.first() ;
+
+				k.replace( ":","" ) ;
+
+				utility::Task::run( "keyctl unlink " + k + " @u" ).await() ;
+			}
+
+			break ;
+		}
+	}
+}
+
+static void _getSignatures( const QString& cipherFolder,
+			    QString& ecryptfs_sig,
+			    QString& ecryptfs_fnek_sig )
+{
+	auto _decode = []( QString path ){
+
+		path.replace( "\\012","\n" ) ;
+		path.replace( "\\040"," " ) ;
+		path.replace( "\\134","\\" ) ;
+		path.replace( "\\011","\\t" ) ;
+
+		return path ;
+	} ;
+
+	for( const auto& it : mountinfo::mountedVolumes() ){
+
+		if( _decode( it ).contains( " " + cipherFolder + " " ) ){
+
+			auto l = utility::split( utility::split( it,' ' ).last(),',' ) ;
+
+			for( auto& xt : l ){
+
+				if( xt.startsWith( "ecryptfs_fnek_sig=" ) ){
+
+					ecryptfs_fnek_sig = xt.replace( "ecryptfs_fnek_sig=","" ) ;
+
+				}else if( xt.startsWith( "ecryptfs_sig=" ) ){
+
+					ecryptfs_sig = xt.replace( "ecryptfs_sig=","" ) ;
+				}
+			}
+
+			break ;
+		}
+	}
+}
+
+Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFolder,
+							const QString& mountPoint,
+							const QString& fileSystem )
+{
+	return Task::run< bool >( [ = ](){
+
+		QString ecryptfs_sig ;
+		QString ecryptfs_fnek_sig ;
+
+		auto cmd = [ & ](){
+
+			if( fileSystem == "ecryptfs" ){
+
+				_getSignatures( cipherFolder,ecryptfs_sig,ecryptfs_fnek_sig ) ;
+
+				return "ecryptfs-simple -u " + _makePath( cipherFolder ) ;
+			}else{
+				return "fusermount -u " + _makePath( mountPoint ) ;
+			}
+		}() ;
 
 		utility::Task::waitForOneSecond() ;
 
 		for( int i = 0 ; i < 5 ; i++ ){
 
 			if( utility::Task( cmd,10000 ).success() ){
+
+				_clearKeyring( ecryptfs_sig ) ;
+				_clearKeyring( ecryptfs_fnek_sig ) ;
 
 				return true ;
 			}else{
@@ -178,6 +262,10 @@ static QString _args( const QString& exe,const siritask::options& opt,
 				return e.arg( exe,configPath,mode,cipherFolder,cipherFolder,mountPoint ) ;
 			}
 		}
+
+	}else if( type.startsWith( "ecryptfs" ) ){
+
+		return "ecryptfs-simple -a " + cipherFolder + " " + mountPoint ;
 	}else{
 		auto e = QString( "%1 %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ) ;
 
@@ -213,6 +301,10 @@ static cs _cmd( bool create,const siritask::options& opt,
 		}else if( app == "securefs" ){
 
 			return cs::securefsNotFound ;
+
+		}else if( app.startsWith( "ecryptfs" ) ){
+
+			return cs::ecryptfs_simpleNotFound ;
 		}else{
 			return cs::gocryptfsNotFound ;
 		}
@@ -251,8 +343,9 @@ static cs _cmd( bool create,const siritask::options& opt,
 				auto c = "Password incorrect" ;
 				auto d = "Invalid password" ;
 				auto e = "Did you enter the correct password?" ;
+				auto f = "error: mount failed (No such file or directory)" ;
 
-				if( utility::containsAtleastOne( a,b,c,d,e ) ){
+				if( utility::containsAtleastOne( a,b,c,d,e,f ) ){
 
 					std::cout << a.constData() << std::endl ;
 
@@ -267,6 +360,10 @@ static cs _cmd( bool create,const siritask::options& opt,
 					}else if( app == "securefs" ){
 
 						return cs::securefs ;
+
+					}else if( app.startsWith( "ecryptfs" ) ){
+
+						return cs::ecryptfs ;
 					}else{
 						return cs::gocryptfs ;
 					}
@@ -288,6 +385,23 @@ static QString _configFilePath( const siritask::options& opt )
 	}else{
 		return utility::homePath() + "/" + opt.configFilePath ;
 	}
+}
+
+static bool _ecryptfsVolume( const QString& e )
+{
+	auto configPath = [](){
+
+		auto s = QProcessEnvironment::systemEnvironment().value( "XDG_CONFIG_HOME" ) ;
+
+		if( s.isEmpty() ){
+
+			return utility::homePath() + "/.config/.ecryptfs-simple/" ;
+		}else{
+			return s + "/.ecryptfs-simple/" ;
+		}
+	}() ;
+
+	return utility::pathExists( configPath + plugins::sha512( e.toLatin1() ) ) ;
 }
 
 Task::future< cs >& siritask::encryptedFolderMount( const options& opt,bool reUseMountPoint )
@@ -331,6 +445,14 @@ Task::future< cs >& siritask::encryptedFolderMount( const options& opt,bool reUs
 			}else if( utility::pathExists( opt.cipherFolder + "/.securefs.json" ) ){
 
 				return _mount( "securefs",opt,QString() ) ;
+
+			}else if( _ecryptfsVolume( opt.cipherFolder ) ){
+
+				auto m = opt ;
+
+				m.key = "2\n" + m.key ;
+
+				return _mount( "ecryptfs-simple",m,QString() ) ;
 			}else{
                                 auto encfs6 = opt.cipherFolder + "/.encfs6.xml" ;
                                 auto encfs5 = opt.cipherFolder + "/.encfs5" ;
@@ -474,9 +596,11 @@ Task::future< QVector< volumeInfo > >& siritask::updateVolumeList()
 			}
 		} ;
 
-		auto _fs = []( const QString& e ){
+		auto _fs = []( QString e ){
 
-			return e.mid( 5 ) ;
+			e.replace( "fuse.","" ) ;
+
+			return e ;
 		} ;
 
 		auto _ro = []( const QStringList& l ){
@@ -491,7 +615,8 @@ Task::future< QVector< volumeInfo > >& siritask::updateVolumeList()
 			if( utility::containsAtleastOne( it," fuse.cryfs ",
 							 " fuse.encfs ",
 							 " fuse.gocryptfs ",
-							 " fuse.securefs " ) ){
+							 " fuse.securefs ",
+							 " ecryptfs " ) ){
 
 				const auto& k = utility::split( it,' ' ) ;
 
@@ -507,9 +632,10 @@ Task::future< QVector< volumeInfo > >& siritask::updateVolumeList()
 
 					e.append( { _dcd( cf,true ),_dcd( m,false ),_fs( fs ),_ro( k ) } ) ;
 
-				}else if( fs == "fuse.gocryptfs" ){
+				}else if( utility::equalsAtleastOne( fs,"fuse.gocryptfs","ecryptfs" ) ){
 
 					e.append( { _dcd( cf,false ),_dcd( m,false ),_fs( fs ),_ro( k ) } ) ;
+
 				}else{
 					e.append( { _hash( m ),_dcd( m,false ),_fs( fs ),_ro( k ) } ) ;
 				}

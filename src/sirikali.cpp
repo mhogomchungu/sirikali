@@ -1277,11 +1277,13 @@ void sirikali::pbUmount()
 
 		auto type = table->item( row,2 )->text() ;
 
-		auto m = table->item( row,1 )->text() ;
+		auto a = table->item( row,0 )->text() ;
+		auto b = table->item( row,1 )->text() ;
+		auto c = table->item( row,2 )->text() ;
 
-		if( siritask::encryptedFolderUnMount( m ).await() ){
+		if( siritask::encryptedFolderUnMount( a,b,c ).await() ){
 
-			siritask::deleteMountFolder( m ) ;
+			siritask::deleteMountFolder( b ) ;
 		}else{
 			DialogMsg m( this ) ;
 			m.ShowUIOK( tr( "ERROR" ),tr( "Failed To Unmount %1 Volume" ).arg( type ) ) ;
@@ -1299,22 +1301,26 @@ void sirikali::unMountAll()
 
 	auto table = m_ui->tableWidget ;
 
-	auto l = tablewidget::columnEntries( table,1 ) ;
+	auto cipherFolders = tablewidget::columnEntries( table,0 ) ;
+	auto mountPoints   = tablewidget::columnEntries( table,1 ) ;
+	auto fileSystems   = tablewidget::columnEntries( table,2 ) ;
 
-	int r = l.size() - 1 ;
+	int r = cipherFolders.size() - 1 ;
 
 	if( r < 0 ){
 
 		utility::Task::suspendForOneSecond() ;
 	}else{
 		do{
-			const auto& e = l.at( r ) ;
+			const auto& a = cipherFolders.at( r ) ;
+			const auto& b = mountPoints.at( r ) ;
+			const auto& c = fileSystems.at( r ) ;
 
-			if( siritask::encryptedFolderUnMount( e ).await() ){
+			if( siritask::encryptedFolderUnMount( a,b,c ).await() ){
 
-				tablewidget::deleteRow( table,e,1 ) ;
+				tablewidget::deleteRow( table,b,1 ) ;
 
-				siritask::deleteMountFolder( e ) ;
+				siritask::deleteMountFolder( b ) ;
 
 				utility::Task::suspendForOneSecond() ;
 			}
