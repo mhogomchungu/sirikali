@@ -149,6 +149,7 @@ void sirikali::setUpApp( const QString& volume )
 		_enable( m->addAction( "Gocryptfs" ),"Gocryptfs" ) ;
 		_enable( m->addAction( "Securefs" ),"Securefs" ) ;
 		_enable( m->addAction( "Encfs" ),"Encfs" ) ;
+		_enable( m->addAction( "Ecryptfs" ),"Ecryptfs-simple" ) ;
 
 		return m ;
 	}() ) ;
