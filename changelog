@@ -56,3 +56,6 @@ version 1.2.1
    -- FIX BUG: Dont auto delete mount folders when a volumes was unmounted outside of SiriKali.
    -- FIX BUG: Populate $PATH variable properly before calling backends since some backends fails without it.
    -- FIX BUG: The build process failed to build on Qt4
+
+version 1.2.2
+-- Add support for creating and unlocking ecryptfs volumes using ecryptfs-simple(https://github.com/mhogomchungu/ecryptfs-simple)

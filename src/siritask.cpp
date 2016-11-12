@@ -343,7 +343,7 @@ static cs _cmd( bool create,const siritask::options& opt,
 				auto c = "Password incorrect" ;
 				auto d = "Invalid password" ;
 				auto e = "Did you enter the correct password?" ;
-				auto f = "error: mount failed (No such file or directory)" ;
+				auto f = "error: mount failed" ;
 
 				if( utility::containsAtleastOne( a,b,c,d,e,f ) ){
 
@@ -395,9 +395,9 @@ static bool _ecryptfsVolume( const QString& e )
 
 		if( s.isEmpty() ){
 
-			return utility::homePath() + "/.config/.ecryptfs-simple/" ;
+			return utility::homePath() + "/.config/ecryptfs-simple/" ;
 		}else{
-			return s + "/.ecryptfs-simple/" ;
+			return s + "/ecryptfs-simple/" ;
 		}
 	}() ;
 
