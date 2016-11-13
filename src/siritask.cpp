@@ -219,7 +219,7 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 	auto configPath = [ & ](){
 
-		if( type.isOneOf( "cryfs","gocryptfs","securefs" ) ){
+		if( type.isOneOf( "cryfs","gocryptfs","securefs" ) || type.startsWith( "ecryptfs" ) ){
 
 			if( !configFilePath.isEmpty() ){
 
@@ -265,7 +265,9 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 	}else if( type.startsWith( "ecryptfs" ) ){
 
-		return "ecryptfs-simple -a " + cipherFolder + " " + mountPoint ;
+		auto e = QString( "ecryptfs-simple -a %1 %2 %3" ) ;
+
+		return e.arg( configPath,cipherFolder,mountPoint ) ;
 	}else{
 		auto e = QString( "%1 %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ) ;
 
@@ -387,23 +389,6 @@ static QString _configFilePath( const siritask::options& opt )
 	}
 }
 
-static bool _ecryptfsVolume( const QString& e )
-{
-	auto configPath = [](){
-
-		auto s = QProcessEnvironment::systemEnvironment().value( "XDG_CONFIG_HOME" ) ;
-
-		if( s.isEmpty() ){
-
-			return utility::homePath() + "/.config/ecryptfs-simple/" ;
-		}else{
-			return s + "/ecryptfs-simple/" ;
-		}
-	}() ;
-
-	return utility::pathExists( configPath + plugins::sha512( e.toLatin1() ) ) ;
-}
-
 Task::future< cs >& siritask::encryptedFolderMount( const options& opt,bool reUseMountPoint )
 {
 	return Task::run< cs >( [ opt,reUseMountPoint ](){
@@ -446,13 +431,13 @@ Task::future< cs >& siritask::encryptedFolderMount( const options& opt,bool reUs
 
 				return _mount( "securefs",opt,QString() ) ;
 
-			}else if( _ecryptfsVolume( opt.cipherFolder ) ){
+			}else if( utility::pathExists( opt.cipherFolder + "/.ecryptfs.config" ) ){
 
 				auto m = opt ;
 
 				m.key = "2\n" + m.key ;
 
-				return _mount( "ecryptfs-simple",m,QString() ) ;
+				return _mount( "ecryptfs-simple",m,opt.cipherFolder + "/.ecryptfs.config" ) ;
 			}else{
                                 auto encfs6 = opt.cipherFolder + "/.encfs6.xml" ;
                                 auto encfs5 = opt.cipherFolder + "/.encfs5" ;
@@ -477,6 +462,14 @@ Task::future< cs >& siritask::encryptedFolderMount( const options& opt,bool reUs
 				}else if( e.endsWith( "securefs.json" ) ){
 
 					return _mount( "securefs",opt,e ) ;
+
+				}else if( e.endsWith( "ecryptfs.config" ) ){
+
+					auto m = opt ;
+
+					m.key = "2\n" + m.key ;
+
+					return _mount( "ecryptfs-simple",m,e ) ;
 				}else{
 					return _mount( "cryfs",opt,e ) ;
 				}
@@ -512,7 +505,17 @@ Task::future< cs >& siritask::encryptedFolderCreate( const options& opt )
 						return "p\n" + opt.key ;
 					}
 
-				}(),_configFilePath( opt ) ) ;
+				}(),[ & ](){
+
+					auto e = _configFilePath( opt ) ;
+
+					if( e.isEmpty() && opt.type.startsWith( "ecryptfs" ) ){
+
+						return opt.cipherFolder + "/.ecryptfs.config" ;
+					}else{
+						return e ;
+					}
+				}() ) ;
 
 				if( e == cs::success ){
 
