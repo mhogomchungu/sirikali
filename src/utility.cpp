@@ -233,8 +233,15 @@ bool utility::eventFilter( QObject * gui,QObject * watched,QEvent * event,std::f
 	return false ;
 }
 
-QString utility::executableFullPath( const QString& e )
+QString utility::executableFullPath( const QString& f )
 {
+	QString e = f ;
+
+	if( e == "ecryptfs" ){
+
+		e = "ecryptfs-simple" ;
+	}
+
 	QString exe ;
 
 	auto l = { "/usr/local/bin/",

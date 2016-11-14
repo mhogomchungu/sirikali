@@ -219,7 +219,7 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 	auto configPath = [ & ](){
 
-		if( type.isOneOf( "cryfs","gocryptfs","securefs" ) || type.startsWith( "ecryptfs" ) ){
+		if( type.isOneOf( "cryfs","gocryptfs","securefs","ecryptfs" ) ){
 
 			if( !configFilePath.isEmpty() ){
 
@@ -437,7 +437,7 @@ Task::future< cs >& siritask::encryptedFolderMount( const options& opt,bool reUs
 
 				m.key = "2\n" + m.key ;
 
-				return _mount( "ecryptfs-simple",m,opt.cipherFolder + "/.ecryptfs.config" ) ;
+				return _mount( "ecryptfs",m,opt.cipherFolder + "/.ecryptfs.config" ) ;
 			}else{
                                 auto encfs6 = opt.cipherFolder + "/.encfs6.xml" ;
                                 auto encfs5 = opt.cipherFolder + "/.encfs5" ;
@@ -469,7 +469,7 @@ Task::future< cs >& siritask::encryptedFolderMount( const options& opt,bool reUs
 
 					m.key = "2\n" + m.key ;
 
-					return _mount( "ecryptfs-simple",m,e ) ;
+					return _mount( "ecryptfs",m,e ) ;
 				}else{
 					return _mount( "cryfs",opt,e ) ;
 				}
@@ -498,7 +498,7 @@ Task::future< cs >& siritask::encryptedFolderCreate( const options& opt )
 
 						return opt.key + "\n" + opt.key ;
 
-					}else if( opt.type.startsWith( "ecryptfs" ) ){
+					}else if( opt.type == "ecryptfs" ){
 
 						return "2\n" + opt.key + "\n1\n2\nn\ny\n\n" ;
 					}else{
@@ -509,7 +509,7 @@ Task::future< cs >& siritask::encryptedFolderCreate( const options& opt )
 
 					auto e = _configFilePath( opt ) ;
 
-					if( e.isEmpty() && opt.type.startsWith( "ecryptfs" ) ){
+					if( e.isEmpty() && opt.type == "ecryptfs" ){
 
 						return opt.cipherFolder + "/.ecryptfs.config" ;
 					}else{

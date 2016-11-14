@@ -711,11 +711,6 @@ void keyDialog::encryptedFolderCreate()
 		return ;
 	}
 
-	if( m_exe == "Ecryptfs" ){
-
-		m_exe = "ecryptfs-simple" ;
-	}
-
 	auto& e = siritask::encryptedFolderCreate( { path,m,m_key,m_options,m_configFile,
 						      m_exe.toLower(),false,m_success } ) ;
 

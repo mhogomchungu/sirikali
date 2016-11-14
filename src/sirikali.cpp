@@ -141,7 +141,13 @@ void sirikali::setUpApp( const QString& volume )
 			if( utility::executableFullPath( exe.toLower() ).isEmpty() ){
 
 				ac->setEnabled( false ) ;
-				ac->setText( tr( "%1 Is Not Installed" ).arg( exe ) ) ;
+
+				if( exe == "Ecryptfs" ){
+
+					ac->setText( tr( "%1 Is Not Installed" ).arg( "Ecryptfs-simple" ) ) ;
+				}else{
+					ac->setText( tr( "%1 Is Not Installed" ).arg( exe ) ) ;
+				}
 			}
 		} ;
 
@@ -149,7 +155,7 @@ void sirikali::setUpApp( const QString& volume )
 		_enable( m->addAction( "Gocryptfs" ),"Gocryptfs" ) ;
 		_enable( m->addAction( "Securefs" ),"Securefs" ) ;
 		_enable( m->addAction( "Encfs" ),"Encfs" ) ;
-		_enable( m->addAction( "Ecryptfs" ),"Ecryptfs-simple" ) ;
+		_enable( m->addAction( "Ecryptfs" ),"Ecryptfs" ) ;
 
 		return m ;
 	}() ) ;
