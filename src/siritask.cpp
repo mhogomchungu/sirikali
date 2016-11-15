@@ -70,72 +70,6 @@ bool siritask::deleteMountFolder( const QString& m )
 	}
 }
 
-static void _clearKeyring( const QString& key )
-{
-	if( key.isEmpty() ){
-
-		return ;
-	}
-
-	auto a = utility::Task::run( "keyctl list @u" ).await().output() ;
-
-	for( const auto& it : utility::split( a,'\n' ) ){
-
-		if( it.endsWith( key ) ){
-
-			auto e = utility::split( it,' ' ) ;
-
-			if( !e.isEmpty() ){
-
-				auto k = e.first() ;
-
-				k.replace( ":","" ) ;
-
-				utility::Task::run( "keyctl unlink " + k + " @u" ).await() ;
-			}
-
-			break ;
-		}
-	}
-}
-
-static void _getSignatures( const QString& cipherFolder,
-			    QString& ecryptfs_sig,
-			    QString& ecryptfs_fnek_sig )
-{
-	auto _decode = []( QString path ){
-
-		path.replace( "\\012","\n" ) ;
-		path.replace( "\\040"," " ) ;
-		path.replace( "\\134","\\" ) ;
-		path.replace( "\\011","\\t" ) ;
-
-		return path ;
-	} ;
-
-	for( const auto& it : mountinfo::mountedVolumes() ){
-
-		if( _decode( it ).contains( " " + cipherFolder + " " ) ){
-
-			auto l = utility::split( utility::split( it,' ' ).last(),',' ) ;
-
-			for( auto& xt : l ){
-
-				if( xt.startsWith( "ecryptfs_fnek_sig=" ) ){
-
-					ecryptfs_fnek_sig = xt.replace( "ecryptfs_fnek_sig=","" ) ;
-
-				}else if( xt.startsWith( "ecryptfs_sig=" ) ){
-
-					ecryptfs_sig = xt.replace( "ecryptfs_sig=","" ) ;
-				}
-			}
-
-			break ;
-		}
-	}
-}
-
 Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFolder,
 							const QString& mountPoint,
 							const QString& fileSystem )
@@ -149,9 +83,7 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 
 			if( fileSystem == "ecryptfs" ){
 
-				_getSignatures( cipherFolder,ecryptfs_sig,ecryptfs_fnek_sig ) ;
-
-				return "ecryptfs-simple -u " + _makePath( cipherFolder ) ;
+				return "ecryptfs-simple -k " + _makePath( cipherFolder ) ;
 			}else{
 				return "fusermount -u " + _makePath( mountPoint ) ;
 			}
@@ -162,9 +94,6 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 		for( int i = 0 ; i < 5 ; i++ ){
 
 			if( utility::Task( cmd,10000 ).success() ){
-
-				_clearKeyring( ecryptfs_sig ) ;
-				_clearKeyring( ecryptfs_fnek_sig ) ;
 
 				return true ;
 			}else{
