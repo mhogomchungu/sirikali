@@ -76,9 +76,6 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 {
 	return Task::run< bool >( [ = ](){
 
-		QString ecryptfs_sig ;
-		QString ecryptfs_fnek_sig ;
-
 		auto cmd = [ & ](){
 
 			if( fileSystem == "ecryptfs" ){
