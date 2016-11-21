@@ -37,8 +37,12 @@
 
 #include <memory>
 
-plugin::plugin( QWidget * parent,plugins::plugin t,std::function< void( const QString& ) > function,const QString& e,const QVector<QString>& exe ) :
-	QDialog( parent ),m_ui( new Ui::plugin ),m_function( std::move( function ) ),m_pluginType( t ),m_exe( exe )
+plugin::plugin( QWidget * parent,plugins::plugin plugin,
+		std::function< void( const QString& ) > function,
+		const QString& e,const QVector<QString>& exe ) :
+	QDialog( parent ),m_ui( new Ui::plugin ),
+	m_function( std::move( function ) ),
+	m_pluginType( plugin ),m_exe( exe )
 {
 	m_ui->setupUi( this ) ;
 
