@@ -26,8 +26,6 @@
 #include <QDebug>
 #include <QFile>
 
-#include <iostream>
-
 using cs = siritask::status ;
 
 static bool _create_folder( const QString& m )
@@ -191,9 +189,9 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 	}else if( type.startsWith( "ecryptfs" ) ){
 
-		auto e = QString( "ecryptfs-simple -o key=passphrase -a %1 %2 %3" ) ;
+		auto e = QString( "%1 -o key=passphrase -a %2 %3 %4" ) ;
 
-		return e.arg( configPath,cipherFolder,mountPoint ) ;
+		return e.arg( exe,configPath,cipherFolder,mountPoint ) ;
 	}else{
 		auto e = QString( "%1 %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ) ;
 
@@ -275,7 +273,7 @@ static cs _cmd( bool create,const siritask::options& opt,
 
 				if( utility::containsAtleastOne( a,b,c,d,e,f ) ){
 
-					std::cout << a.constData() << std::endl ;
+					utility::debug() << a ;
 
 					if( app == "cryfs" ){
 
@@ -299,7 +297,7 @@ static cs _cmd( bool create,const siritask::options& opt,
 			}
 		}
 
-		std::cout << _taskOutput().constData() << std::endl ;
+		utility::debug() << _taskOutput() ;
 
 		return cs::backendFail ;
 	}
