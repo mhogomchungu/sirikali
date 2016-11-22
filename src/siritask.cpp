@@ -191,7 +191,7 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 	}else if( type.startsWith( "ecryptfs" ) ){
 
-		auto e = QString( "ecryptfs-simple -a %1 %2 %3" ) ;
+		auto e = QString( "ecryptfs-simple -o key=passphrase -a %1 %2 %3" ) ;
 
 		return e.arg( configPath,cipherFolder,mountPoint ) ;
 	}else{
@@ -359,11 +359,7 @@ Task::future< cs >& siritask::encryptedFolderMount( const options& opt,bool reUs
 
 			}else if( utility::pathExists( opt.cipherFolder + "/.ecryptfs.config" ) ){
 
-				auto m = opt ;
-
-				m.key = "2\n" + m.key ;
-
-				return _mount( "ecryptfs",m,opt.cipherFolder + "/.ecryptfs.config" ) ;
+				return _mount( "ecryptfs",opt,opt.cipherFolder + "/.ecryptfs.config" ) ;
 			}else{
                                 auto encfs6 = opt.cipherFolder + "/.encfs6.xml" ;
                                 auto encfs5 = opt.cipherFolder + "/.encfs5" ;
@@ -391,11 +387,7 @@ Task::future< cs >& siritask::encryptedFolderMount( const options& opt,bool reUs
 
 				}else if( e.endsWith( "ecryptfs.config" ) ){
 
-					auto m = opt ;
-
-					m.key = "2\n" + m.key ;
-
-					return _mount( "ecryptfs",m,e ) ;
+					return _mount( "ecryptfs",opt,e ) ;
 				}else{
 					return _mount( "cryfs",opt,e ) ;
 				}
