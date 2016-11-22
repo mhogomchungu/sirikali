@@ -418,7 +418,7 @@ Task::future< cs >& siritask::encryptedFolderCreate( const options& opt )
 
 					}else if( opt.type == "ecryptfs" ){
 
-						return "2\n" + opt.key + "\n1\n2\nn\ny\n\n" ;
+						return opt.key + "\n1\n2\nn\ny\n\n" ;
 					}else{
 						return "p\n" + opt.key ;
 					}
