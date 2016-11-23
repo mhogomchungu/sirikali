@@ -189,9 +189,33 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 	}else if( type.startsWith( "ecryptfs" ) ){
 
-		auto e = QString( "%1 -o key=passphrase -a %2 %3 %4" ) ;
+		auto _options = []( const std::initializer_list< QString >& e ){
 
-		return e.arg( exe,configPath,cipherFolder,mountPoint ) ;
+			QString q = "-o key=passphrase" ;
+
+			for( const auto& it : e ){
+
+				q += "," + it ;
+			}
+
+			return q ;
+		} ;
+
+		if( create ){
+
+			auto e = QString( "%1 %2 -a %3 %4 %5" ) ;
+
+			auto s = _options( { "ecryptfs_passthrough=n",
+					     "ecryptfs_enable_filename_crypto=y",
+					     "ecryptfs_key_bytes=32",
+					     "ecryptfs_cipher=aes" } ) ;
+
+			return e.arg( exe,s,configPath,cipherFolder,mountPoint ) ;
+		}else{
+			auto e = QString( "%1 %2 -a %3 %4 %5" ) ;
+
+			return e.arg( exe,_options( {} ),configPath,cipherFolder,mountPoint ) ;
+		}
 	}else{
 		auto e = QString( "%1 %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ) ;
 
@@ -416,7 +440,7 @@ Task::future< cs >& siritask::encryptedFolderCreate( const options& opt )
 
 					}else if( opt.type == "ecryptfs" ){
 
-						return opt.key + "\n1\n2\nn\ny\n\n" ;
+						return opt.key + "\n" ;
 					}else{
 						return "p\n" + opt.key ;
 					}
