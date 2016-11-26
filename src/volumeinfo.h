@@ -25,10 +25,19 @@
 #include <initializer_list>
 
 #include "favorites.h"
+#include "utility.h"
 
 class volumeInfo
 {
 public:
+	static bool volumeIsSupported( const QString& e )
+	{
+		return utility::containsAtleastOne( e," fuse.cryfs ",
+		                                    " fuse.encfs ",
+		                                    " fuse.gocryptfs ",
+		                                    " fuse.securefs ",
+		                                    " ecryptfs " ) ;
+	}
 	volumeInfo( const favorites::entry& e )
 	{
 		this->setValues( { e.volumePath,e.mountPointPath,"","",

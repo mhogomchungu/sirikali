@@ -559,11 +559,7 @@ Task::future< QVector< volumeInfo > >& siritask::updateVolumeList()
 
 		for( const auto& it : mountinfo::mountedVolumes() ){
 
-			if( utility::containsAtleastOne( it," fuse.cryfs ",
-							 " fuse.encfs ",
-							 " fuse.gocryptfs ",
-							 " fuse.securefs ",
-							 " ecryptfs " ) ){
+			if( volumeInfo::volumeIsSupported( it ) ){
 
 				const auto& k = utility::split( it,' ' ) ;
 
@@ -582,7 +578,6 @@ Task::future< QVector< volumeInfo > >& siritask::updateVolumeList()
 				}else if( utility::equalsAtleastOne( fs,"fuse.gocryptfs","ecryptfs" ) ){
 
 					e.append( { _dcd( cf,false ),_dcd( m,false ),_fs( fs ),_ro( k ) } ) ;
-
 				}else{
 					e.append( { _hash( m ),_dcd( m,false ),_fs( fs ),_ro( k ) } ) ;
 				}
