@@ -841,6 +841,45 @@ QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorite
 	}
 }
 
+void sirikali::ecryptfsProperties()
+{
+	auto s = [ this ](){
+
+		auto table = m_ui->tableWidget ;
+
+		auto item = table->currentItem() ;
+
+		if( item ){
+
+			return table->item( item->row(),1 )->text() ;
+		}else{
+			return QString() ;
+		}
+	}() ;
+
+	for( const auto& it : siritask::updateVolumeList().await() ){
+
+		if( it.mountPoint() == s ){
+
+			DialogMsg msg( this ) ;
+
+			msg.ShowUIInfo( tr( "INFORMATION" ),[ & ](){
+
+				auto s = it.mountOptions() ;
+
+				s.replace( ",","\n\n" ) ;
+				s.replace( "ro\n\n","mode=read only\n\n" ) ;
+				s.replace( "rw\n\n","mode=read and write\n\n" ) ;
+				s.replace( "="," = " ) ;
+
+				return s;
+			}() ) ;
+
+			break ;
+		}
+	}
+}
+
 void sirikali::properties()
 {
 	this->disableAll() ;
@@ -976,23 +1015,31 @@ void sirikali::properties()
 
 void sirikali::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 {
+	struct volumeType{ const char * slot ; bool enabled ; } ;
+
 	QMenu m ;
 
 	m.setFont( this->font() ) ;
 
-	auto _addAction = [ & ]( const QString& txt,const char * slot,bool enable ){
+	auto _addAction = [ & ]( const QString& txt,const volumeType& e ){
 
 		auto ac = m.addAction( txt ) ;
-		ac->setEnabled( enable ) ;
 
-		connect( ac,SIGNAL( triggered() ),this,slot ) ;
+		if( e.enabled ){
+
+			ac->setEnabled( true ) ;
+
+			connect( ac,SIGNAL( triggered() ),this,e.slot ) ;
+		}else{
+			ac->setEnabled( false ) ;
+		}
 	} ;
 
-	_addAction( tr( "Open Folder" ),SLOT( slotOpenFolder() ),true ) ;
+	_addAction( tr( "Open Folder" ),{ SLOT( slotOpenFolder() ),true } ) ;
 
-	_addAction( tr( "Unmount" ),SLOT( pbUmount() ),true ) ;
+	_addAction( tr( "Unmount" ),{ SLOT( pbUmount() ),true } ) ;
 
-	_addAction( tr( "Properties" ),SLOT( properties() ),[ this ](){
+	_addAction( tr( "Properties" ),[ this ]()->volumeType{
 
 		auto table = m_ui->tableWidget ;
 
@@ -1000,10 +1047,19 @@ void sirikali::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 		if( row >= 0 ){
 
-			return table->item( row,2 )->text() == "cryfs" ;
-		}else{
-			return false ;
+			auto e = table->item( row,2 )->text() ;
+
+			if( e == "cryfs" ){
+
+				return { SLOT( properties() ),true } ;
+
+			}else if( e == "ecryptfs" ){
+
+				return { SLOT( ecryptfsProperties() ),true } ;
+			}
 		}
+
+		return { nullptr,false } ;
 	}() ) ;
 
 	m.addSeparator() ;
@@ -1235,7 +1291,7 @@ void sirikali::addEntryToTable( const QStringList& l )
 
 void sirikali::addEntryToTable( const volumeInfo& e )
 {
-	this->addEntryToTable( e.entryList() ) ;
+	this->addEntryToTable( e.mountInfo().minimalList() ) ;
 }
 
 void sirikali::removeEntryFromTable( QString volume )
@@ -1266,7 +1322,7 @@ void sirikali::updateList( const volumeInfo& entry )
 			row = tablewidget::addRow( table ) ;
 		}
 
-		tablewidget::updateRow( table,entry.entryList(),row,this->font() ) ;
+		tablewidget::updateRow( table,entry.mountInfo().minimalList(),row,this->font() ) ;
 
 		tablewidget::selectRow( table,row ) ;
 	}

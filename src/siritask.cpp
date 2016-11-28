@@ -536,7 +536,7 @@ Task::future< QVector< volumeInfo > >& siritask::updateVolumeList()
 			return QString::number( hash ) ;
 		} ;
 
-		auto _dcd = []( QString path,bool set_offset ){
+		auto _decode = []( QString path,bool set_offset ){
 
 			path.replace( "\\012","\n" ) ;
 			path.replace( "\\040"," " ) ;
@@ -565,9 +565,11 @@ Task::future< QVector< volumeInfo > >& siritask::updateVolumeList()
 
 		QVector< volumeInfo > e ;
 
+		volumeInfo::mountinfo info ;
+
 		for( const auto& it : mountinfo::mountedVolumes() ){
 
-			if( volumeInfo::volumeIsSupported( it ) ){
+			if( volumeInfo::supported( it ) ){
 
 				const auto& k = utility::split( it,' ' ) ;
 
@@ -579,16 +581,26 @@ Task::future< QVector< volumeInfo > >& siritask::updateVolumeList()
 
 				const auto& fs = k.at( s - 3 ) ;
 
-				if( utility::startsWithAtLeastOne( cf,"encfs@","cryfs@","securefs@" ) ){
+				if( utility::startsWithAtLeastOne( cf,"encfs@",
+								   "cryfs@",
+								   "securefs@" ) ){
 
-					e.append( { _dcd( cf,true ),_dcd( m,false ),_fs( fs ),_ro( k ) } ) ;
+					info.volumePath = _decode( cf,true ) ;
 
-				}else if( utility::equalsAtleastOne( fs,"fuse.gocryptfs","ecryptfs" ) ){
+				}else if( utility::equalsAtleastOne( fs,"fuse.gocryptfs",
+								     "ecryptfs" ) ){
 
-					e.append( { _dcd( cf,false ),_dcd( m,false ),_fs( fs ),_ro( k ) } ) ;
+					info.volumePath = _decode( cf,false ) ;
 				}else{
-					e.append( { _hash( m ),_dcd( m,false ),_fs( fs ),_ro( k ) } ) ;
+					info.volumePath = _hash( m ) ;
 				}
+
+				info.mountPoint   = _decode( m,false ) ;
+				info.fileSystem   = _fs( fs ) ;
+				info.mode         = _ro( k ) ;
+				info.mountOptions = k.last() ;
+
+				e.append( info ) ;
 			}
 		}
 

@@ -54,6 +54,7 @@ public slots:
 	void raiseWindow( void ) ;
 	void raiseWindow( QString ) ;
 private slots:
+	void ecryptfsProperties( void ) ;
 	void autoMountKeyStorage( void ) ;
 	void autoMountKeySource( QAction * ) ;
 	void showMountDialogWhenAutoMounting( bool ) ;

@@ -30,7 +30,64 @@
 class volumeInfo
 {
 public:
-	static bool volumeIsSupported( const QString& e )
+	struct mountinfo
+	{
+		mountinfo()
+		{
+		}
+		mountinfo( const QStringList& l )
+		{
+			auto s = l.size() ;
+
+			if( s == 1 ){
+
+				volumePath = l.at( 0 ) ;
+
+			}else if( s == 2 ){
+
+				volumePath = l.at( 0 ) ;
+				mountPoint = l.at( 1 ) ;
+
+			}else if( s == 3 ){
+
+				volumePath = l.at( 0 ) ;
+				mountPoint = l.at( 1 ) ;
+				fileSystem = l.at( 2 ) ;
+
+			}else if( s == 4 ){
+
+				volumePath = l.at( 0 ) ;
+				mountPoint = l.at( 1 ) ;
+				fileSystem = l.at( 2 ) ;
+				mode       = l.at( 3 ) ;
+
+			}else if( s >= 5 ){
+
+				volumePath = l.at( 0 ) ;
+				mountPoint = l.at( 1 ) ;
+				fileSystem = l.at( 2 ) ;
+				mode       = l.at( 3 ) ;
+				mountOptions = l.at( 4 ) ;
+			}
+		}
+		QStringList minimalList() const
+		{
+			return { volumePath,mountPoint,
+				 fileSystem,mode } ;
+		}
+		QStringList fullList() const
+		{
+			return { volumePath,mountPoint,
+				 fileSystem,mode,mountOptions } ;
+		}
+		QString volumePath ;
+		QString mountPoint ;
+		QString fileSystem ;
+		QString mode ;
+		QString mountOptions ;
+	};
+
+	static bool supported( const QString& e )
 	{
 		return utility::containsAtleastOne( e," fuse.cryfs ",
 		                                    " fuse.encfs ",
@@ -38,26 +95,40 @@ public:
 		                                    " fuse.securefs ",
 		                                    " ecryptfs " ) ;
 	}
+	volumeInfo()
+	{
+	}
+	volumeInfo( const std::initializer_list< QString >& e ) : m_mountinfo( e )
+	{
+	}
+	volumeInfo( const QStringList& e ) : m_mountinfo( e )
+	{
+	}
+	volumeInfo( const volumeInfo::mountinfo& e ) : m_mountinfo( e )
+	{
+	}
 	volumeInfo( const favorites::entry& e )
 	{
-		this->setValues( { e.volumePath,e.mountPointPath,"","",
-		                   e.configFilePath,e.idleTimeOut } ) ;
-	}
-	volumeInfo( const QStringList& l = QStringList() )
-	{
-		this->setValues( l ) ;
-	}
-	volumeInfo( const std::initializer_list<QString>& l )
-	{
-		this->setValues( l ) ;
+		m_mountinfo.volumePath = e.volumePath ;
+		m_mountinfo.mountPoint = e.mountPointPath ;
+
+		if( e.configFilePath != "N/A" ){
+
+			m_configPath = e.configFilePath ;
+		}
+
+		if( e.idleTimeOut == "N/A" ){
+
+			m_idleTime = e.idleTimeOut ;
+		}
 	}
 	const QString& volumePath() const
 	{
-		return m_volumePath ;
+		return m_mountinfo.volumePath ;
 	}
 	const QString& mountPoint() const
 	{
-		return m_mountPoint ;
+		return m_mountinfo.mountPoint ;
 	}
 	const QString& configFilePath() const
 	{
@@ -67,78 +138,24 @@ public:
 	{
 		return m_idleTime ;
 	}
+	const QString& mountOptions() const
+	{
+		return m_mountinfo.mountOptions ;
+	}
+	const volumeInfo::mountinfo& mountInfo() const
+	{
+		return m_mountinfo ;
+	}
 	bool isValid() const
 	{
 		return !this->isNotValid() ;
 	}
 	bool isNotValid() const
 	{
-		return m_volumePath.isEmpty() ;
-	}
-	QStringList entryList() const
-	{
-		return { m_volumePath,m_mountPoint,m_fileSystem,m_mode } ;
+		return this->volumePath().isEmpty() ;
 	}
 private:
-	void setValues( const QStringList& l )
-	{
-		auto s = l.size() ;
-
-		if( s == 1 ){
-
-			m_volumePath = l.at( 0 ) ;
-
-		}else if( s == 2 ){
-
-			m_volumePath = l.at( 0 ) ;
-			m_mountPoint = l.at( 1 ) ;
-
-		}else if( s == 3 ){
-
-			m_volumePath = l.at( 0 ) ;
-			m_mountPoint = l.at( 1 ) ;
-			m_fileSystem = l.at( 2 ) ;
-
-		}else if( s == 4 ){
-
-			m_volumePath = l.at( 0 ) ;
-			m_mountPoint = l.at( 1 ) ;
-			m_fileSystem = l.at( 2 ) ;
-			m_mode       = l.at( 3 ) ;
-
-		}else if( s == 5 ){
-
-			m_volumePath = l.at( 0 ) ;
-			m_mountPoint = l.at( 1 ) ;
-			m_fileSystem = l.at( 2 ) ;
-			m_mode       = l.at( 3 ) ;
-			m_configPath = l.at( 4 ) ;
-
-		}else if( s >= 6 ){
-
-			m_volumePath = l.at( 0 ) ;
-			m_mountPoint = l.at( 1 ) ;
-			m_fileSystem = l.at( 2 ) ;
-			m_mode       = l.at( 3 ) ;
-			m_configPath = l.at( 4 ) ;
-			m_idleTime   = l.at( 5 ) ;
-		}
-
-		if( m_configPath == "N/A" ){
-
-			m_configPath.clear() ;
-		}
-
-		if( m_idleTime == "N/A" ){
-
-			m_idleTime.clear() ;
-		}
-	}
-
-	QString m_volumePath ;
-	QString m_mountPoint ;
-	QString m_fileSystem ;
-	QString m_mode ;
+	volumeInfo::mountinfo m_mountinfo ;
 	QString m_configPath ;
 	QString m_idleTime ;
 };
