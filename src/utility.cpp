@@ -805,7 +805,6 @@ QString utility::mountPath( const QString& path )
 void utility::setDefaultMountPointPrefix( const QString& path )
 {
 	_settings->setValue( "MountPrefix",path ) ;
-	_mountPath.clear() ;
 }
 
 QString utility::mountPathPostFix( const QString& path )
