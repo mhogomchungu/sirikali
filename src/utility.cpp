@@ -783,23 +783,20 @@ QString utility::applicationName()
 	return "SiriKali" ;
 }
 
-static QString _mountPath = QString() ;
-
 QString utility::mountPath( const QString& path )
 {
-	if( _mountPath.isEmpty() ){
+	QString e ;
 
-		if( _settings->contains( "MountPrefix" ) ){
+	if( _settings->contains( "MountPrefix" ) ){
 
-			_mountPath = _settings->value( "MountPrefix" ).toString() ;
-		}else{
-			_mountPath = utility::homePath() + "/.SiriKali" ;
+		e = _settings->value( "MountPrefix" ).toString() ;
+	}else{
+		e = utility::homePath() + "/.SiriKali" ;
 
-			utility::setDefaultMountPointPrefix( _mountPath ) ;
-		}
+		utility::setDefaultMountPointPrefix( e ) ;
 	}
 
-	return _mountPath + "/" + path ;
+	return e + "/" + path ;
 }
 
 void utility::setDefaultMountPointPrefix( const QString& path )
