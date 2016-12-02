@@ -117,7 +117,7 @@ public:
 			m_configPath = e.configFilePath ;
 		}
 
-		if( e.idleTimeOut == "N/A" ){
+		if( e.idleTimeOut != "N/A" ){
 
 			m_idleTime = e.idleTimeOut ;
 		}
