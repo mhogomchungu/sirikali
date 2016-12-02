@@ -264,18 +264,26 @@ void sirikali::setUpAppMenu()
 
 		auto q = _addMenu( menu,translatedText,untranslatedText,slot_a,slot_b ) ;
 
+		auto d = utility::autoMountBackEnd() ;
+
 		using bk = LXQt::Wallet::BackEnd ;
 
-		auto _addOption = [ & ]( const QString& translatedTxt,const char * untranslatedTxt,bk s ){
+		auto _addOption = [ & ]( const QString& translatedTxt,const char * untranslatedTxt,
+				utility::walletBackEnd s ){
 
 			auto ac = _addAction( checkable,false,translatedTxt,untranslatedTxt,nullptr ) ;
 
 			if( checkable ){
 
-				ac->setChecked( s == utility::autoMountBackEnd() ) ;
+				ac->setChecked( d == s ) ;
 			}
 
-			ac->setEnabled( LXQt::Wallet::backEndIsSupported( s ) ) ;
+			if( s.valid() ){
+
+				ac->setEnabled( LXQt::Wallet::backEndIsSupported( s.bk() ) ) ;
+			}else{
+				ac->setEnabled( true ) ;
+			}
 
 			q->addAction( ac ) ;
 		} ;
@@ -283,6 +291,7 @@ void sirikali::setUpAppMenu()
 		_addOption( tr( "Internal Wallet" ),"Internal Wallet",bk::internal ) ;
 		_addOption( tr( "KDE Wallet" ),"KDE Wallet",bk::kwallet ) ;
 		_addOption( tr( "Gnome Wallet" ),"Gnome Wallet",bk::libsecret ) ;
+		_addOption( tr( "None" ),"None",utility::walletBackEnd() ) ;
 
 		return q ;
 	} ;
@@ -383,6 +392,7 @@ void sirikali::autoMountKeyStorage()
 	auto a = tr( "Internal Wallet" ).remove( '&' ) ;
 	auto b = tr( "KDE Wallet" ).remove( '&' ) ;
 	auto c = tr( "Gnome Wallet" ).remove( '&' ) ;
+	auto d = tr( "None" ).remove( '&' ) ;
 
 	for( const auto& it: m_autoMountKeyStorage->actions() ){
 
@@ -402,7 +412,7 @@ void sirikali::autoMountKeyStorage()
 
 				return s == LXQt::Wallet::BackEnd::libsecret ;
 			}else{
-				return false ;
+				return e == d && s.invalid() ;
 			}
 		}() ) ;
 	}
@@ -410,7 +420,7 @@ void sirikali::autoMountKeyStorage()
 
 void sirikali::autoMountKeySource( QAction * e )
 {
-	utility::autoMountBackEnd( [ e ](){
+	utility::autoMountBackEnd( [ e ]()->utility::walletBackEnd{
 
 		auto a = e->text().remove( '&' ) ;
 
@@ -432,7 +442,7 @@ void sirikali::autoMountKeySource( QAction * e )
 
 			return LXQt::Wallet::BackEnd::libsecret ;
 		}else{
-			return LXQt::Wallet::BackEnd::internal ;
+			return utility::walletBackEnd() ;
 		}
 	}() ) ;
 }
@@ -787,7 +797,14 @@ QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorite
 		return l ;
 	}
 
-	auto m = m_secrets.walletBk( utility::autoMountBackEnd() ) ;
+	auto e = utility::autoMountBackEnd() ;
+
+	if( e.invalid() ){
+
+		return l ;
+	}
+
+	auto m = m_secrets.walletBk( e.bk() ) ;
 
 	if( !m ){
 

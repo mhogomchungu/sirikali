@@ -950,28 +950,28 @@ void utility::autoMountFavoritesOnStartUp( bool e )
 	_settings->setValue( "AutoMountFavoritesOnStartUp",e ) ;
 }
 
-void utility::autoMountBackEnd( LXQt::Wallet::BackEnd e )
+void utility::autoMountBackEnd( const utility::walletBackEnd& e )
 {
-	_settings->setValue( "AutoMountPassWordBackEnd",[ e ](){
+	_settings->setValue( "AutoMountPassWordBackEnd",[ & ]()->QString{
 
 		if( e == LXQt::Wallet::BackEnd::internal ){
 
-			return QString( "internal" ) ;
+			return "internal" ;
 
 		}else if( e == LXQt::Wallet::BackEnd::libsecret ){
 
-			return QString( "libsecret" ) ;
+			return "libsecret" ;
 
 		}else if( e == LXQt::Wallet::BackEnd::kwallet ){
 
-			return QString( "kwallet" ) ;
+			return "kwallet" ;
 		}else{
-			return QString( "internal" ) ;
+			return "none" ;
 		}
 	}() ) ;
 }
 
-LXQt::Wallet::BackEnd utility::autoMountBackEnd()
+utility::walletBackEnd utility::autoMountBackEnd()
 {
 	if( _settings->contains( "AutoMountPassWordBackEnd" ) ){
 
@@ -984,8 +984,12 @@ LXQt::Wallet::BackEnd utility::autoMountBackEnd()
 		}else if( e == "kwallet" ){
 
 			return LXQt::Wallet::BackEnd::kwallet ;
-		}else{
+
+		}else if( e == "internal" ){
+
 			return LXQt::Wallet::BackEnd::internal ;
+		}else{
+			return utility::walletBackEnd() ;
 		}
 	}else{
 		_settings->setValue( "AutoMountPassWordBackEnd",QString( "internal" ) ) ;
