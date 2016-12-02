@@ -500,21 +500,24 @@ void sirikali::changeInternalWalletPassWord()
 
 void sirikali::keyManagerClicked( QAction * ac )
 {
-	walletconfig::instance( this,m_secrets.walletBk( [ ac ](){
+	auto e = ac->text().remove( '&' ) ;
 
-		auto e = ac->text().remove( '&' ) ;
+	if( e != tr( "None" ).remove( '&' ) ){
 
-		if( e == tr( "KDE Wallet" ).remove( '&' ) ){
+		walletconfig::instance( this,m_secrets.walletBk( [ & ](){
 
-			return LXQt::Wallet::BackEnd::kwallet ;
+			if( e == tr( "KDE Wallet" ).remove( '&' ) ){
 
-		}else if( e == tr( "Gnome Wallet" ).remove( '&' ) ){
+				return LXQt::Wallet::BackEnd::kwallet ;
 
-			return LXQt::Wallet::BackEnd::libsecret ;
-		}else{
-			return LXQt::Wallet::BackEnd::internal ;
-		}
-	}() ) ) ;
+			}else if( e == tr( "Gnome Wallet" ).remove( '&' ) ){
+
+				return LXQt::Wallet::BackEnd::libsecret ;
+			}else{
+				return LXQt::Wallet::BackEnd::internal ;
+			}
+		}() ) ) ;
+	}
 }
 
 void sirikali::licenseInfo()

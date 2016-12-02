@@ -954,7 +954,11 @@ void utility::autoMountBackEnd( const utility::walletBackEnd& e )
 {
 	_settings->setValue( "AutoMountPassWordBackEnd",[ & ]()->QString{
 
-		if( e == LXQt::Wallet::BackEnd::internal ){
+		if( e.invalid() ){
+
+			return "none" ;
+
+		}else if( e == LXQt::Wallet::BackEnd::internal ){
 
 			return "internal" ;
 
