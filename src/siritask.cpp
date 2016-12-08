@@ -43,6 +43,11 @@ static QString _makePath( const QString& e )
 	return utility::Task::makePath( e ) ;
 }
 
+static std::function< void() > _drop_privileges()
+{
+	return [](){} ;
+}
+
 template< typename ... T >
 static bool _deleteFolders( const T& ... m )
 {
@@ -282,7 +287,7 @@ static cs _cmd( bool create,const siritask::options& opt,
 
 			return env ;
 
-		}(),password.toLatin1() ) ;
+		}(),password.toLatin1(),_drop_privileges() ) ;
 
 		auto _taskOutput = [ & ](){
 
