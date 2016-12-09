@@ -1,0 +1,2 @@
+?package(sirikali):needs="X11" section="Applications/System/Security"\
+  title="SiriKali" command="/usr/bin/sirikali"

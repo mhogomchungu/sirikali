@@ -127,12 +127,6 @@ void mountinfo::run()
 
 	auto _mountedVolume = [ & ]( const QString& e ){ return !oldMountList.contains( e ) ; } ;
 
-	auto _normalVolume = []( const QString& e ){
-
-		return !utility::containsAtleastOne( e," fuse.cryfs "," fuse.encfs ",
-						     " fuse.gocryptfs "," fuse.securefs " ) ;
-	} ;
-
 	if( monitor ){
 
 		while( monitor.gotEvent() ){
@@ -143,7 +137,7 @@ void mountinfo::run()
 
 				for( const auto& it : newMountList ){
 
-					if( _mountedVolume( it ) && _normalVolume( it ) ){
+					if( _mountedVolume( it ) ){
 
 						const auto e = utility::split( it,' ' ) ;
 

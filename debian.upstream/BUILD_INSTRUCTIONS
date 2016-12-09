@@ -1,5 +1,5 @@
 
-1. If this folder is named "debian_package_info" then rename it to "debian" before proceeding.
+1. If this folder is named "debian.upstream" then rename it to "debian" before proceeding.
 
 These instructions starts with howto on ubuntu or any other debian based distribtion that use "sudo" command
 to gain root's privileges and then ends with howto on debian or any other debian based distribtion
@@ -34,7 +34,7 @@ HOW TO BUILD A SiriKali PACKAGE ON UBUNTU OR ANY OTHER DEBIAN BASED DISTRIBUTION
 
    ******************************************************************************************************
 
-   tar cf - . | xz -zf - > ../sirikali_1.2.1.orig.tar.xz
+   tar cf - . | xz -zf - > ../sirikali_1.2.2.orig.tar.xz
 
    ******************************************************************************************************
 
@@ -90,7 +90,7 @@ HOW TO BUILD A SiriKali PACKAGE ON DEBIAN OR ANY OTHER DEBIAN BASED DISTRIBUTION
 
    ******************************************************************************************************
 
-   tar cf - . | xz -zf - > ../sirikali_1.2.1.orig.tar.xz
+   tar cf - . | xz -zf - > ../sirikali_1.2.2.orig.tar.xz
 
    ******************************************************************************************************
 

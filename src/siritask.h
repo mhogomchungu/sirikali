@@ -50,6 +50,11 @@ namespace siritask
 		{
 			return m_type ;
 		}
+		template< typename T >
+		bool startsWith( const T& e ) const
+		{
+			return m_type.startsWith( e ) ;
+		}
 		QString executableFullPath() const
 		{
 			return utility::executableFullPath( m_type ) ;
@@ -127,10 +132,12 @@ namespace siritask
 		encfs,
 		gocryptfs,
 		securefs,
+		ecryptfs,
 		gocryptfsNotFound,
 		cryfsNotFound,
 		encfsNotFound,
 		securefsNotFound,
+		ecryptfs_simpleNotFound,
 		unknown,
 		failedToCreateMountPoint,
 		backendFail
@@ -138,7 +145,9 @@ namespace siritask
 
 	bool deleteMountFolder( const QString& ) ;
 	Task::future< QVector< volumeInfo > >& updateVolumeList( void ) ;
-	Task::future< bool >& encryptedFolderUnMount( const QString& mountPoint ) ;
+	Task::future< bool >& encryptedFolderUnMount( const QString& cipherFolder,
+						      const QString& mountPoint,
+						      const QString& fileSystem ) ;
 	Task::future< siritask::status >& encryptedFolderMount( const options&,bool = false ) ;
 	Task::future< siritask::status >& encryptedFolderCreate( const options& ) ;
 }

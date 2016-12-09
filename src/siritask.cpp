@@ -17,6 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "plugins.h"
 #include "siritask.h"
 #include "mountinfo.h"
 
@@ -24,8 +25,6 @@
 #include <QString>
 #include <QDebug>
 #include <QFile>
-
-#include <iostream>
 
 using cs = siritask::status ;
 
@@ -69,12 +68,21 @@ bool siritask::deleteMountFolder( const QString& m )
 	}
 }
 
-
-Task::future< bool >& siritask::encryptedFolderUnMount( const QString& m )
+Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFolder,
+							const QString& mountPoint,
+							const QString& fileSystem )
 {
-	return Task::run< bool >( [ m ](){
+	return Task::run< bool >( [ = ](){
 
-		auto cmd = "fusermount -u " + _makePath( m ) ;
+		auto cmd = [ & ](){
+
+			if( fileSystem == "ecryptfs" ){
+
+				return "ecryptfs-simple -k " + _makePath( cipherFolder ) ;
+			}else{
+				return "fusermount -u " + _makePath( mountPoint ) ;
+			}
+		}() ;
 
 		utility::Task::waitForOneSecond() ;
 
@@ -135,7 +143,7 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 	auto configPath = [ & ](){
 
-		if( type.isOneOf( "cryfs","gocryptfs","securefs" ) ){
+		if( type.isOneOf( "cryfs","gocryptfs","securefs","ecryptfs" ) ){
 
 			if( !configFilePath.isEmpty() ){
 
@@ -178,6 +186,44 @@ static QString _args( const QString& exe,const siritask::options& opt,
 				return e.arg( exe,configPath,mode,cipherFolder,cipherFolder,mountPoint ) ;
 			}
 		}
+
+	}else if( type.startsWith( "ecryptfs" ) ){
+
+		auto _options = []( const std::initializer_list< QString >& e ){
+
+			QString q = "-o key=passphrase" ;
+
+			for( const auto& it : e ){
+
+				q += "," + it ;
+			}
+
+			return q ;
+		} ;
+
+		auto mode = [ & ](){
+
+			if( opt.ro ){
+
+				return "--readonly" ;
+			}else{
+				return "" ;
+			}
+		}() ;
+
+		auto e = QString( "%1 %2 %3 -a %4 %5 %6" ) ;
+
+		if( create ){
+
+			auto s = _options( { "ecryptfs_passthrough=n",
+					     "ecryptfs_enable_filename_crypto=y",
+					     "ecryptfs_key_bytes=32",
+					     "ecryptfs_cipher=aes" } ) ;
+
+			return e.arg( exe,s,mode,configPath,cipherFolder,mountPoint ) ;
+		}else{
+			return e.arg( exe,_options( {} ),mode,configPath,cipherFolder,mountPoint ) ;
+		}
 	}else{
 		auto e = QString( "%1 %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ) ;
 
@@ -213,6 +259,10 @@ static cs _cmd( bool create,const siritask::options& opt,
 		}else if( app == "securefs" ){
 
 			return cs::securefsNotFound ;
+
+		}else if( app.startsWith( "ecryptfs" ) ){
+
+			return cs::ecryptfs_simpleNotFound ;
 		}else{
 			return cs::gocryptfsNotFound ;
 		}
@@ -251,10 +301,11 @@ static cs _cmd( bool create,const siritask::options& opt,
 				auto c = "Password incorrect" ;
 				auto d = "Invalid password" ;
 				auto e = "Did you enter the correct password?" ;
+				auto f = "error: mount failed" ;
 
-				if( utility::containsAtleastOne( a,b,c,d,e ) ){
+				if( utility::containsAtleastOne( a,b,c,d,e,f ) ){
 
-					std::cout << a.constData() << std::endl ;
+					utility::debug() << a ;
 
 					if( app == "cryfs" ){
 
@@ -267,6 +318,10 @@ static cs _cmd( bool create,const siritask::options& opt,
 					}else if( app == "securefs" ){
 
 						return cs::securefs ;
+
+					}else if( app.startsWith( "ecryptfs" ) ){
+
+						return cs::ecryptfs ;
 					}else{
 						return cs::gocryptfs ;
 					}
@@ -274,7 +329,7 @@ static cs _cmd( bool create,const siritask::options& opt,
 			}
 		}
 
-		std::cout << _taskOutput().constData() << std::endl ;
+		utility::debug() << _taskOutput() ;
 
 		return cs::backendFail ;
 	}
@@ -331,6 +386,10 @@ Task::future< cs >& siritask::encryptedFolderMount( const options& opt,bool reUs
 			}else if( utility::pathExists( opt.cipherFolder + "/.securefs.json" ) ){
 
 				return _mount( "securefs",opt,QString() ) ;
+
+			}else if( utility::pathExists( opt.cipherFolder + "/.ecryptfs.config" ) ){
+
+				return _mount( "ecryptfs",opt,opt.cipherFolder + "/.ecryptfs.config" ) ;
 			}else{
                                 auto encfs6 = opt.cipherFolder + "/.encfs6.xml" ;
                                 auto encfs5 = opt.cipherFolder + "/.encfs5" ;
@@ -355,6 +414,10 @@ Task::future< cs >& siritask::encryptedFolderMount( const options& opt,bool reUs
 				}else if( e.endsWith( "securefs.json" ) ){
 
 					return _mount( "securefs",opt,e ) ;
+
+				}else if( e.endsWith( "ecryptfs.config" ) ){
+
+					return _mount( "ecryptfs",opt,e ) ;
 				}else{
 					return _mount( "cryfs",opt,e ) ;
 				}
@@ -382,11 +445,25 @@ Task::future< cs >& siritask::encryptedFolderCreate( const options& opt )
 					}else if( opt.type == "securefs" ){
 
 						return opt.key + "\n" + opt.key ;
+
+					}else if( opt.type == "ecryptfs" ){
+
+						return opt.key + "\n" ;
 					}else{
 						return "p\n" + opt.key ;
 					}
 
-				}(),_configFilePath( opt ) ) ;
+				}(),[ & ](){
+
+					auto e = _configFilePath( opt ) ;
+
+					if( e.isEmpty() && opt.type == "ecryptfs" ){
+
+						return opt.cipherFolder + "/.ecryptfs.config" ;
+					}else{
+						return e ;
+					}
+				}() ) ;
 
 				if( e == cs::success ){
 
@@ -459,7 +536,7 @@ Task::future< QVector< volumeInfo > >& siritask::updateVolumeList()
 			return QString::number( hash ) ;
 		} ;
 
-		auto _dcd = []( QString path,bool set_offset ){
+		auto _decode = []( QString path,bool set_offset ){
 
 			path.replace( "\\012","\n" ) ;
 			path.replace( "\\040"," " ) ;
@@ -474,9 +551,11 @@ Task::future< QVector< volumeInfo > >& siritask::updateVolumeList()
 			}
 		} ;
 
-		auto _fs = []( const QString& e ){
+		auto _fs = []( QString e ){
 
-			return e.mid( 5 ) ;
+			e.replace( "fuse.","" ) ;
+
+			return e ;
 		} ;
 
 		auto _ro = []( const QStringList& l ){
@@ -486,12 +565,11 @@ Task::future< QVector< volumeInfo > >& siritask::updateVolumeList()
 
 		QVector< volumeInfo > e ;
 
+		volumeInfo::mountinfo info ;
+
 		for( const auto& it : mountinfo::mountedVolumes() ){
 
-			if( utility::containsAtleastOne( it," fuse.cryfs ",
-							 " fuse.encfs ",
-							 " fuse.gocryptfs ",
-							 " fuse.securefs " ) ){
+			if( volumeInfo::supported( it ) ){
 
 				const auto& k = utility::split( it,' ' ) ;
 
@@ -503,16 +581,26 @@ Task::future< QVector< volumeInfo > >& siritask::updateVolumeList()
 
 				const auto& fs = k.at( s - 3 ) ;
 
-				if( utility::startsWithAtLeastOne( cf,"encfs@","cryfs@","securefs@" ) ){
+				if( utility::startsWithAtLeastOne( cf,"encfs@",
+								   "cryfs@",
+								   "securefs@" ) ){
 
-					e.append( { _dcd( cf,true ),_dcd( m,false ),_fs( fs ),_ro( k ) } ) ;
+					info.volumePath = _decode( cf,true ) ;
 
-				}else if( fs == "fuse.gocryptfs" ){
+				}else if( utility::equalsAtleastOne( fs,"fuse.gocryptfs",
+								     "ecryptfs" ) ){
 
-					e.append( { _dcd( cf,false ),_dcd( m,false ),_fs( fs ),_ro( k ) } ) ;
+					info.volumePath = _decode( cf,false ) ;
 				}else{
-					e.append( { _hash( m ),_dcd( m,false ),_fs( fs ),_ro( k ) } ) ;
+					info.volumePath = _hash( m ) ;
 				}
+
+				info.mountPoint   = _decode( m,false ) ;
+				info.fileSystem   = _fs( fs ) ;
+				info.mode         = _ro( k ) ;
+				info.mountOptions = k.last() ;
+
+				e.append( info ) ;
 			}
 		}
 

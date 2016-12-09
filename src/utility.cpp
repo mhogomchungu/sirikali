@@ -83,9 +83,7 @@ void utility::setSettingsObject( QSettings * s )
 
 static int _help()
 {
-	std::cout << "\n" << VERSION_STRING << std::endl ;
-
-	QString helpMsg = QObject::tr( "\n\
+	utility::debug() << VERSION_STRING << QObject::tr( "\n\
 options:\n\
 	-d   Path to where a volume to be auto unlocked/mounted is located.\n\
 	-m   Tool to use to open a default file manager(default tool is xdg-open).\n\
@@ -99,8 +97,6 @@ options:\n\
 	     This option is optional.\n\
 	-c   Set Volume Configuration File Path when a volume is opened from CLI.\n\
 	-i   Set inactivity timeout(in minutes) to dismount the volume when mounted from CLI.\n\n" ) ;
-
-	std::cout << helpMsg.toLatin1().constData() << std::endl ;
 
 	return 0 ;
 }
@@ -233,8 +229,15 @@ bool utility::eventFilter( QObject * gui,QObject * watched,QEvent * event,std::f
 	return false ;
 }
 
-QString utility::executableFullPath( const QString& e )
+QString utility::executableFullPath( const QString& f )
 {
+	QString e = f ;
+
+	if( e == "ecryptfs" ){
+
+		e = "ecryptfs-simple" ;
+	}
+
 	QString exe ;
 
 	auto l = { "/usr/local/bin/",
@@ -780,29 +783,25 @@ QString utility::applicationName()
 	return "SiriKali" ;
 }
 
-static QString _mountPath = QString() ;
-
 QString utility::mountPath( const QString& path )
 {
-	if( _mountPath.isEmpty() ){
+	QString e ;
 
-		if( _settings->contains( "MountPrefix" ) ){
+	if( _settings->contains( "MountPrefix" ) ){
 
-			_mountPath = _settings->value( "MountPrefix" ).toString() ;
-		}else{
-			_mountPath = utility::homePath() + "/.SiriKali" ;
+		e = _settings->value( "MountPrefix" ).toString() ;
+	}else{
+		e = utility::homePath() + "/.SiriKali" ;
 
-			utility::setDefaultMountPointPrefix( _mountPath ) ;
-		}
+		utility::setDefaultMountPointPrefix( e ) ;
 	}
 
-	return _mountPath + "/" + path ;
+	return e + "/" + path ;
 }
 
 void utility::setDefaultMountPointPrefix( const QString& path )
 {
 	_settings->setValue( "MountPrefix",path ) ;
-	_mountPath.clear() ;
 }
 
 QString utility::mountPathPostFix( const QString& path )

@@ -1,0 +1,50 @@
+sirikali (1.2.2-1) UNRELEASED; urgency=low
+  [Mhogo Mchungu]
+  * New Features
+     -- Add support for creating and unlocking ecryptfs volumes using ecryptfs-simple(https://github.com/mhogomchungu/ecryptfs-simple)
+
+ -- Mhogo Mchungu <mhogomchungu@gmail.com>  Wed, 30 Nov 2016 16:38:48 +0000
+
+sirikali (1.2.1-1) UNRELEASED; urgency=low
+  [Mhogo Mchungu]
+  * New Features
+     -- Maintanance release.
+     -- FIX BUG: Dont generate an update warning prompt on startup when auto check for updates is set but the application is started while the system has no internet connection.
+     -- FIX BUG: Dont auto delete mount folders when a volumes was unmounted outside of SiriKali.
+     -- FIX BUG: Populate $PATH variable properly before calling backends since some backends fails without it.
+     -- FIX BUG: The build process failed to build on Qt4
+
+ -- Mhogo Mchungu <mhogomchungu@gmail.com>  Sat, 29 Oct 2016 16:38:48 +0000
+
+sirikali (1.2.0-1) UNRELEASED; urgency=low
+  [Mhogo Mchungu]
+  * New Features
+     -- Add ability to add a favorite volume with mount options(external config file path,idle timeout,auto mount).
+     -- Add a GUI option to select what secure key storage backend to use when auto mounting volumes.
+
+ -- Mhogo Mchungu <mhogomchungu@gmail.com>  Sat, 1 Oct 2016 16:38:48 +0000
+
+sirikali (1.1.0-1) UNRELEASED; urgency=low
+  [Mhogo Mchungu]
+  * New Features
+     -- Add ability to automount favorites volumes on program start up time.
+     -- Add ability to automount favorites volumes when they become available ie,when the files systems the volume
+        resides in is mounted.
+
+ -- Mhogo Mchungu <mhogomchungu@gmail.com>  Thu, 1 Sept 2016 16:38:48 +0000
+
+sirikali (1.0.0-1) UNRELEASED; urgency=low
+  [Mhogo Mchungu]
+  * New Features
+     -- Initial release.
+     -- Can create and unlock Cryfs Volumes.
+     -- Can create and unlock Encfs Volumes.
+     -- Can create and unlock Gocryptfs Volumes.
+     -- Can create and unlock Securefs Volumes.
+     -- Can save and retrieve volumes keys from KDE wallet,GNOME's libsecret and an internal
+             secured storage system backed by libgcrypt.
+     -- Can save favorite volumes for easier access to frequently used volumes.
+     -- Can use keys derived from passphrases,keyfiles and a combination of a passphrase and a keyfile.
+     -- Can be build with Qt4(default) or with Qt5.
+
+ -- Mhogo Mchungu <mhogomchungu@gmail.com>  Thu, 11 Aug 2016 16:38:48 +0000

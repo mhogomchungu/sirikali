@@ -601,6 +601,11 @@ bool keyDialog::completed( siritask::status s )
 		msg = tr( "Failed To Unlock A Gocryptfs Volume.\nWrong Password Entered." ) ;
 		break;
 
+	case siritask::status::ecryptfs :
+
+		msg = tr( "Failed To Unlock An Ecryptfs Volume.\nWrong Password Entered." ) ;
+		break;
+
 	case siritask::status::securefs :
 
 		msg = tr( "Failed To Unlock A Securefs Volume.\nWrong Password Entered." ) ;
@@ -614,6 +619,11 @@ bool keyDialog::completed( siritask::status s )
 	case siritask::status::encfsNotFound :
 
 		msg = tr( "Failed To Complete The Request.\nEncfs Executable Could Not Be Found." ) ;
+		break;
+
+	case siritask::status::ecryptfs_simpleNotFound :
+
+		msg = tr( "Failed To Complete The Request.\nEcryptfs-simple Executable Could Not Be Found." ) ;
 		break;
 
 	case siritask::status::gocryptfsNotFound :

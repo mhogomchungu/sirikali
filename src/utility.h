@@ -58,11 +58,35 @@
 #include <poll.h>
 #include <fcntl.h>
 
+#include <iostream>
+
 class QByteArray ;
 class QEvent ;
 
 namespace utility
 {
+	class debug
+	{
+	public:
+		debug( bool stdout = true ) : m_stdout( stdout )
+		{
+		}
+
+		utility::debug operator<<( const QString& e )
+		{
+			if( m_stdout ){
+
+				std::cout << e.toLatin1().constData() << std::endl ;
+			}else{
+				std::cerr << e.toLatin1().constData() << std::endl ;
+			}
+
+			return utility::debug( m_stdout ) ;
+		}
+	private:
+		bool m_stdout ;
+	};
+
 	class selectMenuOption : public QObject
 	{
 		Q_OBJECT

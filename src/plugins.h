@@ -36,9 +36,64 @@ namespace plugins
 
 enum class plugin{ hmac_key } ;
 
+class gcrypt_md_handle
+{
+public:
+	gcrypt_md_handle( int algo,int flags )
+	{
+		if( gcry_control( GCRYCTL_INITIALIZATION_FINISHED_P ) == 0 ){
+
+			gcry_check_version( nullptr ) ;
+			gcry_control( GCRYCTL_INITIALIZATION_FINISHED,0 ) ;
+		}
+
+		m_algo = algo ;
+		m_error_status = gcry_md_open( &m_handle,algo,flags ) ;
+	}
+
+	void write( const void * buffer,size_t size )
+	{
+		gcry_md_write( m_handle,buffer,size ) ;
+	}
+
+	void write( const QByteArray& buffer )
+	{
+		gcry_md_write( m_handle,buffer.constData(),buffer.size() ) ;
+	}
+
+	bool setKey( const QString& e )
+	{
+		m_error_status = gcry_md_setkey( m_handle,e.toLatin1().constData(),e.size() ) ;
+
+		return m_error_status == GPG_ERR_NO_ERROR ;
+	}
+
+	operator bool()
+	{
+		return m_error_status == GPG_ERR_NO_ERROR ;
+	}
+
+	QByteArray result()
+	{
+		auto key = reinterpret_cast< const char * >( gcry_md_read( m_handle,0 ) ) ;
+		auto len = static_cast< int >( gcry_md_get_algo_dlen( m_algo ) ) ;
+
+		return { key,len } ;
+	}
+
+	~gcrypt_md_handle()
+	{
+		gcry_md_close( m_handle ) ;
+	}
+private:
+	int m_algo ;
+	int m_error_status ;
+	gcry_md_hd_t m_handle ;
+};
+
 static inline QByteArray hmac_key( const QString& keyFile,const QString& password )
 {
-	auto _getKey = []( gcry_md_hd_t handle,const QString& keyFile ){
+	auto _getKey = []( gcrypt_md_handle& handle,const QString& keyFile ){
 
 		QFile f( keyFile ) ;
 
@@ -54,47 +109,41 @@ static inline QByteArray hmac_key( const QString& keyFile,const QString& passwor
 				if( e <= 0 ){
 					break ;
 				}else{
-					gcry_md_write( handle,buffer,e ) ;
+					handle.write( buffer,e ) ;
 				}
 			}
 
-			auto key = reinterpret_cast< const char * >( gcry_md_read( handle,0 ) ) ;
-			auto len = static_cast< int >( gcry_md_get_algo_dlen( GCRY_MD_SHA256 ) ) ;
-
-			QByteArray r( key,len ) ;
-
-			return r.toHex() ;
+			return handle.result().toHex() ;
 		}else{
 			return QByteArray() ;
 		}
 	} ;
 
-	if( gcry_control( GCRYCTL_INITIALIZATION_FINISHED_P ) == 0 ){
+	gcrypt_md_handle handle( GCRY_MD_SHA256,GCRY_MD_FLAG_HMAC ) ;
 
-		gcry_check_version( nullptr ) ;
-		gcry_control( GCRYCTL_INITIALIZATION_FINISHED,0 ) ;
-	}
+	if( handle ){
 
-	QByteArray key ;
-	gcry_md_hd_t handle ;
+		if( handle.setKey( password ) ){
 
-	auto r = gcry_md_open( &handle,GCRY_MD_SHA256,GCRY_MD_FLAG_HMAC ) ;
-
-	if( r == GPG_ERR_NO_ERROR ){
-
-		auto e = password.toLatin1() ;
-
-		r = gcry_md_setkey( handle,e.constData(),e.size() ) ;
-
-		if( r == GPG_ERR_NO_ERROR ){
-
-			key = _getKey( handle,keyFile ) ;
+			return _getKey( handle,keyFile ) ;
 		}
-
-		gcry_md_close( handle ) ;
 	}
 
-	return key ;
+	return QByteArray() ;
+}
+
+static inline QByteArray sha512( const QByteArray& e )
+{
+	gcrypt_md_handle handle( GCRY_MD_SHA512,0 ) ;
+
+	if( handle ){
+
+		handle.write( e ) ;
+
+		return handle.result().toHex() ;
+	}else{
+		return QByteArray() ;
+	}
 }
 
 } //namespace plugins

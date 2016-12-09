@@ -84,6 +84,10 @@ void options::pushButton()
 				}else if( m_type == "securefs" ){
 
 					return "securefs.json" ;
+
+				}else if( m_type == "ecryptfs" ){
+
+					return "ecryptfs.config" ;
 				}else{
 					return "" ;
 				}

@@ -92,16 +92,16 @@ public:
 
 		bool operator!=( const favorites::entry& other ) const
 		{
-			return !this->operator==( other ) ;
+			return !( *this == other ) ;
 		}
 
 		bool operator==( const favorites::entry& other ) const
 		{
-			return  volumePath      == other.volumePath &&
-				mountPointPath  == other.mountPointPath &&
-				autoMountVolume == other.autoMountVolume &&
-				configFilePath  == other.configFilePath &&
-				idleTimeOut     == other.idleTimeOut ;
+			return  this->volumePath      == other.volumePath &&
+				this->mountPointPath  == other.mountPointPath &&
+				this->autoMountVolume == other.autoMountVolume &&
+				this->configFilePath  == other.configFilePath &&
+				this->idleTimeOut     == other.idleTimeOut ;
 		}
 
 		bool autoMount() const
