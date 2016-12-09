@@ -1,9 +1,9 @@
-sirikali (1.2.2-1) UNRELEASED; urgency=medium
+sirikali (1.2.2-1) unstable; urgency=medium
 
   * New upstream version.
   * Update the appstream install directory. 
 
- -- David Steele <steele@debian.org>  Fri, 09 Dec 2016 12:13:00 -0500
+ -- David Steele <steele@debian.org>  Fri, 09 Dec 2016 12:39:24 -0500
 
 sirikali (1.2.1-1) unstable; urgency=low
   [Mhogo Mchungu]
