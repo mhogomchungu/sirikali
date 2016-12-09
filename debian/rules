@@ -2,7 +2,7 @@
 
 PKD = $(word 1,$(abspath $(dir $(MAKEFILE_LIST))))
 PKG = $(shell dpkg-parsechangelog -l$(PKD)/changelog --show-field=Source)
-VER = $(shell (dpkg-parsechangelog -l$(PKD)/changelog | grep Version | sed 's/Version..//' | sed 's/-.\+//'))
+VER ?= $(shell (dpkg-parsechangelog -l$(PKD)/changelog | grep Version | sed 's/Version..//' | sed 's/-.\+//'))
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
