@@ -99,7 +99,7 @@ void mountinfo::threadStopped()
 
 void mountinfo::failedToStart()
 {
-	qDebug() << "failed to monitor /proc/self/mountinfo" ;
+	utility::debug() << "failed to monitor /proc/self/mountinfo" ;
 	m_running = false ;
 }
 

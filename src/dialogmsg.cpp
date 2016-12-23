@@ -24,8 +24,10 @@
 #include <QCheckBox>
 
 #include "utility.h"
+#include "dialogok.h"
 
-DialogMsg::DialogMsg( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::DialogMsg )
+DialogMsg::DialogMsg( QWidget * parent ) :
+	QDialog( parent ),m_ui( new Ui::DialogMsg ),m_parent( parent )
 {
 	m_ui->setupUi( this ) ;
 
@@ -89,13 +91,36 @@ void DialogMsg::ShowUI( const QString& title,const QString& msg )
 
 void DialogMsg::ShowPermissionProblem( const QString& device )
 {
-	Q_UNUSED( device ) ;	
+	Q_UNUSED( device ) ;
+	QString msg = tr( "\n\
+\"system volumes\" are volumes that either udev has identify them as such if udev is enabled \
+or have an entry in \"/etc/fstab\",\"/etc/crypttab\" or \"/etc/zuluCrypt/system_volumes.list\".\n\
+\n\
+If you prefer for a volume not to be considered a system volume,start the tool\
+from root account and then go to \"menu->options->manage non system partitions\" \
+and add the volume to the list and the volume will stop being considered as \"system\".\n\n\
+Alternatively,you can add yourself to group \"zulucrypt\" and \"zulumount\" and all restrictions will go away." ) ;
+
+	this->ShowUIInfo( tr( "INFORMATION" ),false,msg ) ;
 }
 
 void DialogMsg::ShowPermissionProblem( const QString& msg,const QString& device )
 {
-	Q_UNUSED( device ) ;
-	Q_UNUSED( msg ) ;
+	QString msg1 ;
+
+	if( device.startsWith( "/dev/" ) ){
+
+		if( msg == "reading" ){
+
+			msg1 = tr( "Insufficient privilege to access a system device,\nonly root user or members of group zulucrypt can do that" ) ;
+		}else{
+			msg1 = tr( "Insufficient privilege to access a system device in read/write mode,\nonly root user or members of group zulucrypt-write can do that" ) ;
+		}
+	}else{
+		msg1 = tr( "You do not seem to have proper permissions to access the encrypted file in %1 mode,check file permissions and try again" ).arg( msg ) ;
+	}
+
+	this->ShowUIOK( tr( "INFORMATION"),msg1 ) ;
 }
 
 void DialogMsg::setDimentions( const QString& msg )
@@ -124,13 +149,13 @@ void DialogMsg::setDimentions( const QString& msg )
 
 	}else if( len <= 130 ){
 
-		this->setFixedSize( 372,118 ) ;
+		this->setFixedSize( 372,138 ) ;
 
-		m_ui->label->setGeometry( 10,10,351,61 ) ;
+		m_ui->label->setGeometry( 10,10,351,81 ) ;
 		m_ui->label->setFixedSize( m_ui->label->size() ) ;
-		m_ui->pbOk->setGeometry( 150,80,75,31 ) ;
-		m_ui->pbYes->setGeometry( 120,80,71,31 ) ;
-		m_ui->pbNo->setGeometry( 190,80,75,31 ) ;
+		m_ui->pbOk->setGeometry( 150,100,75,31 ) ;
+		m_ui->pbYes->setGeometry( 120,100,71,31 ) ;
+		m_ui->pbNo->setGeometry( 190,100,75,31 ) ;
 
 	}else if( len > 130 ){
 
@@ -182,17 +207,78 @@ void DialogMsg::HideLabels()
 
 void DialogMsg::ShowUIVolumeProperties( const QString& title,const QString& m )
 {
-	Q_UNUSED( title ) ;
-	Q_UNUSED( m ) ;
+	m_ui->pbYes->setHidden( true ) ;
+	m_ui->pbNo->setHidden( true ) ;
+	m_ui->pbOk->setHidden( false ) ;
+
+	m_ui->label->setHidden( true ) ;
+
+	QString msg = m ;
+	msg.remove( "   " ) ;
+
+	auto stl = msg.split( "\n" ) ;
+
+	if( stl.size() >= 14 ){
+
+		this->setFixedSize( this->size() ) ;
+
+		auto _trancate_long_path = []( const QString& e )->QString{
+
+			const int len    = 40 ;
+			const int length = e.length() ;
+
+			if( length <= len ){
+
+				return e ;
+			}else{
+				return e.mid( 0,18 ) + "...." + e.mid( length - 18 ) ;
+			}
+		} ;
+
+		auto _replace = [ & ]( int position,const char * txt,const QString& translated ){
+
+			auto e = stl.at( position ) ;
+
+			e.replace( txt,translated ) ;
+
+			return e ;
+		} ;
+
+		m_ui->labelType->setText( _replace( 0,"type:",tr( "type:" ) ) ) ;
+		m_ui->labelCipher->setText( _replace( 1,"cipher:",tr( "cipher:" ) ) ) ;
+		m_ui->labelKeySize->setText( _replace( 2,"keysize:",tr( "keysize:" ) ) ) ;
+		m_ui->labelOffset->setText( _replace( 3,"offset:",tr( "offset:" ) ) ) ;
+		m_ui->labelDevice->setText( _trancate_long_path( _replace( 4,"device:",tr( "device:" ) ) ) ) ;
+		m_ui->labelLoop->setText( _trancate_long_path( _replace( 5,"loop:",tr( "loop:" ) ) ) ) ;
+		m_ui->labelSize->setText( _replace( 6,"mode:",tr( "mode:" ) ) ) ;
+		m_ui->labelMode->setText( _replace( 7,"active slots:",tr( "active slots:" ) ) ) ;
+		m_ui->labelActiveSlots->setText( _replace( 8,"file system:",tr( "file system:" ) ) ) ;
+		m_ui->labelFs->setText( _replace( 9,"total space:",tr( "total space:" ) ) ) ;
+		m_ui->labelSize_2->setText( _replace( 10,"used space:",tr( "used space:" ) ) ) ;
+		m_ui->labelUsed->setText( _replace( 11,"free space:",tr( "free space:" ) ) ) ;
+		m_ui->labelUnused->setText( _replace( 12,"used%:",tr( "used%:" ) ) ) ;
+		m_ui->labelUsedPerc->setText( _replace( 13,"UUID:",tr( "UUID:" ) ) ) ;
+
+		//QString m = stl.at( 15 ) ;
+		//m.replace( QString( "mount point2" ),QString( "public mount point" ) ) ;
+		//m_ui->labelUsedPerc->setText( m ) ;
+
+		this->ShowUI( title,msg ) ;
+	}
 }
 
-void DialogMsg::ShowUIInfo( const QString& title,const QString& msg )
+void DialogMsg::ShowUIInfo( const QString& title,bool centered,const QString& msg )
 {
 	m_ui->pbYes->setHidden( true ) ;
 	m_ui->pbNo->setHidden( true ) ;
 	m_ui->pbOk->setHidden( false ) ;
 
-	m_ui->label->setAlignment( Qt::AlignHCenter|Qt::AlignVCenter ) ;
+	if( centered ){
+
+		m_ui->label->setAlignment( Qt::AlignHCenter|Qt::AlignVCenter ) ;
+	}else{
+		m_ui->label->setAlignment( Qt::AlignLeft|Qt::AlignVCenter ) ;
+	}
 
 	this->setFixedSize( 562,338 ) ;
 
@@ -206,13 +292,15 @@ void DialogMsg::ShowUIInfo( const QString& title,const QString& msg )
 
 void DialogMsg::ShowUIOK( const QString& title,const QString& msg )
 {
-	m_ui->pbYes->setHidden( true ) ;
-	m_ui->pbNo->setHidden( true ) ;
-	m_ui->pbOk->setHidden( false ) ;
+	dialogok( m_parent,false,false,title,msg ).Show() ;
 
-	this->HideLabels() ;
-	this->setDimentions( msg ) ;
-	this->ShowUI( title,msg ) ;
+	//m_ui->pbYes->setHidden( true ) ;
+	//m_ui->pbNo->setHidden( true ) ;
+	//m_ui->pbOk->setHidden( false ) ;
+
+	//this->HideLabels() ;
+	//this->setDimentions( msg ) ;
+	//this->ShowUI( title,msg ) ;
 }
 
 void DialogMsg::SetUpButtons()
@@ -226,31 +314,50 @@ void DialogMsg::SetUpButtons()
 
 int DialogMsg::ShowUIYesNo( const QString& title,const QString& msg )
 {
-	this->SetUpButtons() ;
-	this->setDimentions( msg ) ;
-	this->ShowUI( title,msg ) ;
+	return dialogok( m_parent,true,false,title,msg ).Show() ;
 
-	return m_status;
+	//this->SetUpButtons() ;
+	//this->setDimentions( msg ) ;
+	//this->ShowUI( title,msg ) ;
+
+	//return m_status;
 }
 
 int  DialogMsg::ShowUIYesNoDefaultNo( const QString& title,const QString& msg )
 {
-	this->SetUpButtons() ;
-	this->setDimentions( msg ) ;
+	return dialogok( m_parent,true,true,title,msg ).Show() ;
 
-	m_ui->pbNo->setFocus() ;
+	//this->SetUpButtons() ;
+	//this->setDimentions( msg ) ;
 
-	this->ShowUI( title,msg ) ;
+	//m_ui->pbNo->setFocus() ;
 
-	return m_status;
+	//this->ShowUI( title,msg ) ;
+
+	//return m_status ;
 }
 
 bool DialogMsg::ShowUIOKDoNotShowOption( const QString& title,const QString& msg )
 {
-	Q_UNUSED( title ) ;
-	Q_UNUSED( msg ) ;
+	QCheckBox checkBox( tr( "Do not show this dialog again" ),this ) ;
 
-	return true ;
+	this->setFixedSize( 270,110 ) ;
+
+	checkBox.setGeometry( 30,40,251,31 ) ;
+
+	m_ui->label->setGeometry( 10,10,251,31 ) ;
+	m_ui->label->setFixedSize( m_ui->label->size() ) ;
+	m_ui->pbOk->setGeometry( 100,70,75,31 ) ;
+
+	m_ui->pbYes->setHidden( true ) ;
+	m_ui->pbNo->setHidden( true ) ;
+	m_ui->pbOk->setHidden( false ) ;
+
+	this->HideLabels() ;
+
+	this->ShowUI( title,msg ) ;
+
+	return checkBox.isChecked() ;
 }
 
 DialogMsg::~DialogMsg()

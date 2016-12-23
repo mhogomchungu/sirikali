@@ -161,13 +161,13 @@ namespace utility
 				return false ;
 			}
 		}
-		bool valid() const
+		bool isValid() const
 		{
 			return m_valid ;
 		}
-		bool invalid() const
+		bool isInvalid() const
 		{
-			return !this->valid() ;
+			return !this->isValid() ;
 		}
 		LXQt::Wallet::BackEnd bk() const
 		{

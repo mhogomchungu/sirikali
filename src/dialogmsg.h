@@ -37,7 +37,7 @@ public:
 	void ShowUIOK( const QString& title,const QString& msg ) ;
 	int  ShowUIYesNo( const QString& title,const QString& msg ) ;
 	int  ShowUIYesNoDefaultNo( const QString& title,const QString& msg ) ;
-	void ShowUIInfo( const QString& title,const QString& msg );
+	void ShowUIInfo( const QString& title,bool,const QString& msg ) ;
 	void ShowUIVolumeProperties( const QString& title,const QString& msg ) ;
 	bool ShowUIOKDoNotShowOption( const QString& title,const QString& msg ) ;
 	void ShowPermissionProblem( const QString& device ) ;
@@ -59,6 +59,7 @@ private:
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::DialogMsg * m_ui ;
+	QWidget * m_parent ;
 	int m_status ;
 };
 

@@ -154,8 +154,7 @@ void utility::openPath( const QString& path,const QString& opener,const QString&
 
 		if( failed && obj ){
 
-			DialogMsg m( obj ) ;
-			m.ShowUIOK( title,msg ) ;
+			DialogMsg( obj ).ShowUIOK( title,msg ) ;
 		}
 	} ) ;
 }
@@ -438,8 +437,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the \
 GNU General Public License for more details.\n\
 " ).arg( VERSION_STRING ) ;
 
-	DialogMsg m( parent ) ;
-	m.ShowUIInfo( QObject::tr( "about SiriKali" ),license ) ;
+	DialogMsg( parent ).ShowUIInfo( QObject::tr( "about SiriKali" ),true,license ) ;
 }
 
 static utility::array_t _default_dimensions( const char * defaults )
@@ -954,7 +952,7 @@ void utility::autoMountBackEnd( const utility::walletBackEnd& e )
 {
 	_settings->setValue( "AutoMountPassWordBackEnd",[ & ]()->QString{
 
-		if( e.invalid() ){
+		if( e.isInvalid() ){
 
 			return "none" ;
 

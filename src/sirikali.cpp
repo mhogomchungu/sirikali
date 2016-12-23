@@ -278,7 +278,7 @@ void sirikali::setUpAppMenu()
 				ac->setChecked( d == s ) ;
 			}
 
-			if( s.valid() ){
+			if( s.isValid() ){
 
 				ac->setEnabled( LXQt::Wallet::backEndIsSupported( s.bk() ) ) ;
 			}else{
@@ -412,7 +412,7 @@ void sirikali::autoMountKeyStorage()
 
 				return s == LXQt::Wallet::BackEnd::libsecret ;
 			}else{
-				return e == d && s.invalid() ;
+				return e == d && s.isInvalid() ;
 			}
 		}() ) ;
 	}
@@ -802,7 +802,7 @@ QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorite
 
 	auto e = utility::autoMountBackEnd() ;
 
-	if( e.invalid() ){
+	if( e.isInvalid() ){
 
 		return l ;
 	}
@@ -881,9 +881,7 @@ void sirikali::ecryptfsProperties()
 
 		if( it.mountPoint() == s ){
 
-			DialogMsg msg( this ) ;
-
-			msg.ShowUIInfo( tr( "INFORMATION" ),[ & ](){
+			DialogMsg( this ).ShowUIInfo( tr( "INFORMATION" ),true,[ & ](){
 
 				auto s = it.mountOptions() ;
 
@@ -918,17 +916,16 @@ void sirikali::properties()
 		}
 	}() ;
 
-	DialogMsg msg( this ) ;
-
 	struct statfs vfs ;
 
 	if( Task::await< int >( [ & ](){ return statfs( m.constData(),&vfs ) ; } ) ){
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Read Volume Properties" ) ) ;
+		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Read Volume Properties" ) ) ;
+
 		return this->enableAll() ;
 	}
 
-	msg.ShowUIInfo( tr( "INFORMATION" ),[ & ](){
+	DialogMsg( this ).ShowUIInfo( tr( "INFORMATION" ),true,[ & ](){
 
 		auto _prettify = []( quint64 s ){
 
@@ -1252,10 +1249,8 @@ void sirikali::showMoungDialog( const volumeInfo& v )
 {
 	if( v.isNotValid() ){
 
-		DialogMsg msg( this ) ;
-
-		msg.ShowUIOK( tr( "ERROR" ),
-			      tr( "Permission To Access The Volume Was Denied\nOr\nThe Volume Is Not Supported" ) ) ;
+		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),
+					    tr( "Permission To Access The Volume Was Denied\nOr\nThe Volume Is Not Supported" ) ) ;
 
 		this->enableAll() ;
 	}else{
@@ -1368,8 +1363,7 @@ void sirikali::pbUmount()
 
 			siritask::deleteMountFolder( b ) ;
 		}else{
-			DialogMsg m( this ) ;
-			m.ShowUIOK( tr( "ERROR" ),tr( "Failed To Unmount %1 Volume" ).arg( type ) ) ;
+			DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Unmount %1 Volume" ).arg( type ) ) ;
 
 			this->enableAll() ;
 		}

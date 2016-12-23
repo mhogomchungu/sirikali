@@ -1,11 +1,13 @@
 
-SOURCES += lxqt_wallet/frontend/password_dialog.cpp \
+SOURCES += \
+    lxqt_wallet/frontend/password_dialog.cpp \
     lxqt_wallet/frontend/task.cpp \
     lxqt_wallet/frontend/lxqt_wallet.cpp \
     lxqt_wallet/frontend/lxqt_secret_service.cpp \
     lxqt_wallet/frontend/lxqt_kwallet.cpp \
     lxqt_wallet/frontend/lxqt_internal_wallet.cpp \
     lxqt_wallet/frontend/changepassworddialog.cpp \
+    dialogok.cpp \
     checkforupdates.cpp \
     favorites.cpp \
     oneinstance.cpp \
@@ -23,7 +25,9 @@ SOURCES += lxqt_wallet/frontend/password_dialog.cpp \
     tablewidget.cpp \
     options.cpp
 
-HEADERS += checkforupdates.h \
+HEADERS += \
+    dialogok.h \
+    checkforupdates.h \
     favorites.h \
     oneinstance.h \
     utility.h  \
@@ -47,7 +51,9 @@ HEADERS += checkforupdates.h \
     lxqt_wallet/frontend/lxqt_internal_wallet.h \
     lxqt_wallet/frontend/changepassworddialog.h
 
-FORMS += sirikali.ui \
+FORMS += \
+    dialogok.ui \
+    sirikali.ui \
     favorites.ui \
     plugin.ui \
     walletconfiginput.ui \

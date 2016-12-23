@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="fr_FR">
+<TS version="2.0" language="fr_FR">
 <context>
     <name>DialogMsg</name>
     <message>
@@ -27,6 +27,180 @@
         <location filename="../src/dialogmsg.ui" line="68"/>
         <source>text</source>
         <translation>texte</translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.ui" line="90"/>
+        <source>type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.ui" line="109"/>
+        <source>cipher</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.ui" line="125"/>
+        <source>key size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.ui" line="141"/>
+        <source>device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.ui" line="160"/>
+        <source>loop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.ui" line="179"/>
+        <source>offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.ui" line="195"/>
+        <location filename="../src/dialogmsg.ui" line="243"/>
+        <source>size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.ui" line="211"/>
+        <source>mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.ui" line="227"/>
+        <source>fs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.ui" line="259"/>
+        <source>used</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.ui" line="275"/>
+        <source>unused</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.ui" line="291"/>
+        <source>used %</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.ui" line="307"/>
+        <source>active slots</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.cpp" line="95"/>
+        <source>
+&quot;system volumes&quot; are volumes that either udev has identify them as such if udev is enabled or have an entry in &quot;/etc/fstab&quot;,&quot;/etc/crypttab&quot; or &quot;/etc/zuluCrypt/system_volumes.list&quot;.
+
+If you prefer for a volume not to be considered a system volume,start the toolfrom root account and then go to &quot;menu-&gt;options-&gt;manage non system partitions&quot; and add the volume to the list and the volume will stop being considered as &quot;system&quot;.
+
+Alternatively,you can add yourself to group &quot;zulucrypt&quot; and &quot;zulumount&quot; and all restrictions will go away.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.cpp" line="104"/>
+        <location filename="../src/dialogmsg.cpp" line="123"/>
+        <source>INFORMATION</source>
+        <translation>INFORMATION</translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.cpp" line="115"/>
+        <source>Insufficient privilege to access a system device,
+only root user or members of group zulucrypt can do that</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.cpp" line="117"/>
+        <source>Insufficient privilege to access a system device in read/write mode,
+only root user or members of group zulucrypt-write can do that</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.cpp" line="120"/>
+        <source>You do not seem to have proper permissions to access the encrypted file in %1 mode,check file permissions and try again</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.cpp" line="247"/>
+        <source>type:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.cpp" line="248"/>
+        <source>cipher:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.cpp" line="249"/>
+        <source>keysize:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.cpp" line="250"/>
+        <source>offset:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.cpp" line="251"/>
+        <source>device:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.cpp" line="252"/>
+        <source>loop:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.cpp" line="253"/>
+        <source>mode:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.cpp" line="254"/>
+        <source>active slots:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.cpp" line="255"/>
+        <source>file system:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.cpp" line="256"/>
+        <source>total space:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.cpp" line="257"/>
+        <source>used space:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.cpp" line="258"/>
+        <source>free space:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.cpp" line="259"/>
+        <source>used%:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.cpp" line="260"/>
+        <source>UUID:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogmsg.cpp" line="342"/>
+        <source>Do not show this dialog again</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -108,12 +282,12 @@ options:
 </translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="442"/>
+        <location filename="../src/utility.cpp" line="440"/>
         <source>about SiriKali</source>
         <translation>A propos de SiriKali</translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="603"/>
+        <location filename="../src/utility.cpp" line="601"/>
         <source>hmac plugin.
 
 This plugin generates a key using below formular:
@@ -218,6 +392,34 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Saisissez le mot de passe du trousseau ci-après pour créer un nouveau trousseau &apos;&lt;span style=&quot; font-weight:600;&quot;&gt;%1&lt;/span&gt;&apos; pour l&apos;application &apos;&lt;span style=&quot; font-weight:600;&quot;&gt;%2&lt;/span&gt;&apos;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+</context>
+<context>
+    <name>dialogok</name>
+    <message>
+        <location filename="../src/dialogok.ui" line="14"/>
+        <source>Dialog</source>
+        <translation>Boîte de dialogue</translation>
+    </message>
+    <message>
+        <location filename="../src/dialogok.ui" line="26"/>
+        <source>&amp;Ok</source>
+        <translation>&amp;Ok</translation>
+    </message>
+    <message>
+        <location filename="../src/dialogok.ui" line="45"/>
+        <source>TextLabel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogok.ui" line="64"/>
+        <source>&amp;Yes</source>
+        <translation>&amp;Oui</translation>
+    </message>
+    <message>
+        <location filename="../src/dialogok.ui" line="77"/>
+        <source>&amp;No</source>
+        <translation>&amp;No</translation>
     </message>
 </context>
 <context>
@@ -645,12 +847,12 @@ Une erreur inconnue est survenue.</translation>
         <translation>Sélectionner un fichier de configuration Cryfs/Gocryptfs</translation>
     </message>
     <message>
-        <location filename="../src/options.cpp" line="140"/>
+        <location filename="../src/options.cpp" line="139"/>
         <source>ERROR</source>
         <translation>ERREUR</translation>
     </message>
     <message>
-        <location filename="../src/options.cpp" line="140"/>
+        <location filename="../src/options.cpp" line="139"/>
         <source>Idle Time Field Requires Digits Only If Not Empty.</source>
         <translation>Le champ de délai d&apos;attente (idle) nécessite des nombres uniquement s&apos;il n&apos;est pas vide.</translation>
     </message>
@@ -752,23 +954,23 @@ Un volume créé avec une clé générée ici devra être ouvert avec le plugin 
     </message>
     <message>
         <location filename="../src/plugin.ui" line="144"/>
-        <location filename="../src/plugin.cpp" line="139"/>
+        <location filename="../src/plugin.cpp" line="137"/>
         <source>KeyFile</source>
         <translation>Fichier de clé</translation>
     </message>
     <message>
-        <location filename="../src/plugin.cpp" line="106"/>
-        <location filename="../src/plugin.cpp" line="128"/>
+        <location filename="../src/plugin.cpp" line="104"/>
+        <location filename="../src/plugin.cpp" line="126"/>
         <source>ERROR</source>
         <translation>ERREUR</translation>
     </message>
     <message>
-        <location filename="../src/plugin.cpp" line="106"/>
+        <location filename="../src/plugin.cpp" line="104"/>
         <source>KeyFile Not Set</source>
         <translation>Fichier de clé non actif</translation>
     </message>
     <message>
-        <location filename="../src/plugin.cpp" line="128"/>
+        <location filename="../src/plugin.cpp" line="126"/>
         <source>Failed To Generate Key</source>
         <translation>Echec de la génération de clé</translation>
     </message>
@@ -996,20 +1198,20 @@ Un volume créé avec une clé générée ici devra être ouvert avec le plugin 
         <translation>ERREUR: Echec du déverrouillage du Gestionnaire sélectionné.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="927"/>
-        <location filename="../src/sirikali.cpp" line="1257"/>
-        <location filename="../src/sirikali.cpp" line="1372"/>
+        <location filename="../src/sirikali.cpp" line="923"/>
+        <location filename="../src/sirikali.cpp" line="1252"/>
+        <location filename="../src/sirikali.cpp" line="1366"/>
         <source>ERROR</source>
         <translation>ERREUR</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="927"/>
+        <location filename="../src/sirikali.cpp" line="923"/>
         <source>Failed To Read Volume Properties</source>
         <translation>Echec de la lecture des propriétés du volume</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="886"/>
-        <location filename="../src/sirikali.cpp" line="931"/>
+        <location filename="../src/sirikali.cpp" line="884"/>
+        <location filename="../src/sirikali.cpp" line="928"/>
         <source>INFORMATION</source>
         <translation>INFORMATION</translation>
     </message>
@@ -1021,77 +1223,77 @@ Un volume créé avec une clé générée ici devra être ouvert avec le plugin 
         <translation>Aucun</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="970"/>
+        <location filename="../src/sirikali.cpp" line="967"/>
         <source>Block Size: %1</source>
         <translation>Taille des blocs: %1</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="971"/>
+        <location filename="../src/sirikali.cpp" line="968"/>
         <source>Used Blocks: %2</source>
         <translation>Blocs utilisés: %2</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="972"/>
+        <location filename="../src/sirikali.cpp" line="969"/>
         <source>Free Blocks: %3</source>
         <translation>Blocs Libres: %3</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="973"/>
+        <location filename="../src/sirikali.cpp" line="970"/>
         <source>Total Blocks %4</source>
         <translation>Total des Blocs %4</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="974"/>
+        <location filename="../src/sirikali.cpp" line="971"/>
         <source>Used Space: %5</source>
         <translation>Espace Utilisé: %5</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="975"/>
+        <location filename="../src/sirikali.cpp" line="972"/>
         <source>Free Space: %6</source>
         <translation>Espace Libre: %6</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="976"/>
+        <location filename="../src/sirikali.cpp" line="973"/>
         <source>Total Space: %7</source>
         <translation>Espace Total: %7</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="977"/>
+        <location filename="../src/sirikali.cpp" line="974"/>
         <source>Used %: %8</source>
         <translation>Utilisé %: %8</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1060"/>
+        <location filename="../src/sirikali.cpp" line="1057"/>
         <source>Unmount</source>
         <translation>Démonter</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1058"/>
+        <location filename="../src/sirikali.cpp" line="1055"/>
         <source>Open Folder</source>
         <translation>Ouvrir Répertoire</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1062"/>
+        <location filename="../src/sirikali.cpp" line="1059"/>
         <source>Properties</source>
         <translation>Propriétés</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1087"/>
+        <location filename="../src/sirikali.cpp" line="1084"/>
         <source>Close Menu</source>
         <translation>Fermer le Menu</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1139"/>
+        <location filename="../src/sirikali.cpp" line="1136"/>
         <source>WARNING</source>
         <translation>Attention</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1140"/>
+        <location filename="../src/sirikali.cpp" line="1137"/>
         <source>Could Not Open Mount Point Because &quot;%1&quot; Tool Does Not Appear To Be Working Correctly.</source>
         <translation>Impossible d&apos;ouvrir le point de montage parce que l&apos;outil &quot;%1&quot; ne semble pas fonctionner correctement.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1258"/>
+        <location filename="../src/sirikali.cpp" line="1253"/>
         <source>Permission To Access The Volume Was Denied
 Or
 The Volume Is Not Supported</source>
@@ -1100,12 +1302,12 @@ ou
 le volume n&apos;est pas supporté</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1278"/>
+        <location filename="../src/sirikali.cpp" line="1273"/>
         <source>Select An Encrypted Volume Directory</source>
         <translation>Sélectionner un répertoire de volume</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1372"/>
+        <location filename="../src/sirikali.cpp" line="1366"/>
         <source>Failed To Unmount %1 Volume</source>
         <translation>Impossible de démonter le Volume %1</translation>
     </message>
@@ -1148,22 +1350,22 @@ le volume n&apos;est pas supporté</translation>
         <translation>Supprimer l&apos;entrée</translation>
     </message>
     <message>
-        <location filename="../src/walletconfig.cpp" line="115"/>
+        <location filename="../src/walletconfig.cpp" line="113"/>
         <source>WARNING!</source>
         <translation>ATTENTION!</translation>
     </message>
     <message>
-        <location filename="../src/walletconfig.cpp" line="115"/>
+        <location filename="../src/walletconfig.cpp" line="113"/>
         <source>Are you sure you want to delete a volume with an id of &quot;%1&quot;?</source>
         <translation>Êtes vous sûr d&apos;effacer un volume avec un ID de &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../src/walletconfig.cpp" line="200"/>
+        <location filename="../src/walletconfig.cpp" line="197"/>
         <source>ERROR!</source>
         <translation>ERREUR!</translation>
     </message>
     <message>
-        <location filename="../src/walletconfig.cpp" line="200"/>
+        <location filename="../src/walletconfig.cpp" line="197"/>
         <source>Failed To Add the Key In The Wallet.</source>
         <translation>Echec de l&apos;ajout de la clé dans le trousseau.</translation>
     </message>
@@ -1206,23 +1408,23 @@ le volume n&apos;est pas supporté</translation>
         <translation>Réentrer la clé</translation>
     </message>
     <message>
-        <location filename="../src/walletconfiginput.cpp" line="95"/>
-        <location filename="../src/walletconfiginput.cpp" line="104"/>
+        <location filename="../src/walletconfiginput.cpp" line="93"/>
+        <location filename="../src/walletconfiginput.cpp" line="100"/>
         <source>ERROR!</source>
         <translation>ERREUR!</translation>
     </message>
     <message>
-        <location filename="../src/walletconfiginput.cpp" line="95"/>
+        <location filename="../src/walletconfiginput.cpp" line="93"/>
         <source>Atleast one required field is empty</source>
         <translation>Au moins un des champs qui est requis est vide</translation>
     </message>
     <message>
-        <location filename="../src/walletconfiginput.cpp" line="104"/>
+        <location filename="../src/walletconfiginput.cpp" line="100"/>
         <source>Passphrases do not match</source>
         <translation>Passphrases non correspondantes</translation>
     </message>
     <message>
-        <location filename="../src/walletconfiginput.cpp" line="127"/>
+        <location filename="../src/walletconfiginput.cpp" line="123"/>
         <source>Select A Volume</source>
         <translation>Sélectionner un volume</translation>
     </message>

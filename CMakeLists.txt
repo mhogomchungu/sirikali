@@ -134,9 +134,11 @@ set( UI_FILES 	src/sirikali.ui
 		src/walletconfig.ui
 		src/walletconfiginput.ui
 		src/options.ui
+		src/dialogok.ui
 )
 
-set( MOC_FILES 	src/sirikali.h
+set( MOC_FILES 	src/dialogok.h
+		src/sirikali.h
 		src/keydialog.h
 		src/oneinstance.h
 		src/mountinfo.h
@@ -152,7 +154,8 @@ set( MOC_FILES 	src/sirikali.h
 		src/task.h
  )
 
-set( SRC 	src/main.cpp
+set( SRC 	src/dialogok.cpp
+		src/main.cpp
 		src/sirikali.cpp
 		src/keydialog.cpp
 		src/siritask.cpp
