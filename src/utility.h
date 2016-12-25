@@ -234,6 +234,8 @@ namespace utility
 	bool autoMountFavoritesOnAvailable() ;
 	void autoMountFavoritesOnAvailable( bool ) ;
 
+	int checkForUpdateInterval( void ) ;
+
 	QStringList split( const QString&,char = '\n' ) ;
 
 	void clearFavorites( void ) ;

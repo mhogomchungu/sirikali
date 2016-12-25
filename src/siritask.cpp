@@ -194,13 +194,13 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 	}else if( type.startsWith( "ecryptfs" ) ){
 
-		auto _options = []( const std::initializer_list< QString >& e ){
+		auto _options = []( const std::initializer_list< const char * >& e ){
 
 			QString q = "-o key=passphrase" ;
 
 			for( const auto& it : e ){
 
-				q += "," + it ;
+				q += it ;
 			}
 
 			return q ;
@@ -220,10 +220,10 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 		if( create ){
 
-			auto s = _options( { "ecryptfs_passthrough=n",
-					     "ecryptfs_enable_filename_crypto=y",
-					     "ecryptfs_key_bytes=32",
-					     "ecryptfs_cipher=aes" } ) ;
+			auto s = _options( { ",ecryptfs_passthrough=n",
+					     ",ecryptfs_enable_filename_crypto=y",
+					     ",ecryptfs_key_bytes=32",
+					     ",ecryptfs_cipher=aes" } ) ;
 
 			return e.arg( exe,s,mode,configPath,cipherFolder,mountPoint ) ;
 		}else{

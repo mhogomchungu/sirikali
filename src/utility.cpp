@@ -1030,3 +1030,14 @@ void utility::showMountDialogWhenAutoMounting( bool e )
 {
 	_settings->setValue( "ShowMountDialogWhenAutoMounting",e ) ;
 }
+
+int utility::checkForUpdateInterval()
+{
+	if( _settings->contains( "checkForUpdateInterval" ) ){
+
+		return _settings->value( "checkForUpdateInterval" ).toInt() * 1000 ;
+	}else{
+		_settings->setValue( "checkForUpdateInterval",int( 300 ) ) ;
+		return 300 * 1000 ;
+	}
+}

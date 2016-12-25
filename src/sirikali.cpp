@@ -201,7 +201,7 @@ void sirikali::setUpApp( const QString& volume )
 		this->showMoungDialog( volume ) ;
 	}
 
-	this->autoUpdateCheck() ;
+	QTimer::singleShot( utility::checkForUpdateInterval(),this,SLOT( autoUpdateCheck() ) ) ;
 }
 
 void sirikali::setUpAppMenu()
