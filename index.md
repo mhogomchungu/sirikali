@@ -31,9 +31,9 @@ Most frequently asked questions are answered <a href="https://github.com/mhogomc
 
 ## Download link
 
-Latest released version is 1.2.2 and it can be downloaded by clicking below link.
+Latest released version is 1.2.3 and it can be downloaded by clicking below link.
 
-<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.2.2/SiriKali-1.2.2.tar.xz">SiriKali-1.2.2.tar.xz</a>
+<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.2.3/SiriKali-1.2.3.tar.xz">SiriKali-1.2.3.tar.xz</a>
 
 Older versions can be downloaded <a href="https://github.com/mhogomchungu/sirikali/releases">here.</a>
 
@@ -121,4 +121,4 @@ i/gJN6mX3AIU7HHEHnP5ty8mwbb8ROc=
 -----END PGP PUBLIC KEY BLOCK-----
 ```
 
-last update: Thu Dec  1 10:39:07 EAT 2016
+last update: Sun Dec 25 19:38:58 EAT 2016
