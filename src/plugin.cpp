@@ -99,11 +99,9 @@ void plugin::pbSetKey()
 	auto passphrase = m_ui->lineEdit->text() ;
 	auto keyFile    = m_ui->lineEdit_2->text() ;
 
-	DialogMsg msg( this ) ;
-
 	if( keyFile.isEmpty() ){
 
-		return msg.ShowUIOK( tr( "ERROR" ),tr( "KeyFile Not Set" ) ) ;
+		return DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "KeyFile Not Set" ) ) ;
 	}
 
 	this->disableAll() ;

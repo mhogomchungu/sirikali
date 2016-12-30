@@ -43,6 +43,11 @@ static QString _makePath( const QString& e )
 	return utility::Task::makePath( e ) ;
 }
 
+static std::function< void() > _drop_privileges()
+{
+	return [](){} ;
+}
+
 template< typename ... T >
 static bool _deleteFolders( const T& ... m )
 {
@@ -189,13 +194,13 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 	}else if( type.startsWith( "ecryptfs" ) ){
 
-		auto _options = []( const std::initializer_list< QString >& e ){
+		auto _options = []( const std::initializer_list< const char * >& e ){
 
 			QString q = "-o key=passphrase" ;
 
 			for( const auto& it : e ){
 
-				q += "," + it ;
+				q += it ;
 			}
 
 			return q ;
@@ -215,10 +220,10 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 		if( create ){
 
-			auto s = _options( { "ecryptfs_passthrough=n",
-					     "ecryptfs_enable_filename_crypto=y",
-					     "ecryptfs_key_bytes=32",
-					     "ecryptfs_cipher=aes" } ) ;
+			auto s = _options( { ",ecryptfs_passthrough=n",
+					     ",ecryptfs_enable_filename_crypto=y",
+					     ",ecryptfs_key_bytes=32",
+					     ",ecryptfs_cipher=aes" } ) ;
 
 			return e.arg( exe,s,mode,configPath,cipherFolder,mountPoint ) ;
 		}else{
@@ -282,7 +287,7 @@ static cs _cmd( bool create,const siritask::options& opt,
 
 			return env ;
 
-		}(),password.toLatin1() ) ;
+		}(),password.toLatin1(),_drop_privileges() ) ;
 
 		auto _taskOutput = [ & ](){
 

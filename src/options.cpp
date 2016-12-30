@@ -136,8 +136,7 @@ void options::pbOK()
 
 	if( !ok ){
 
-		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Idle Time Field Requires Digits Only If Not Empty." ) ) ;
+		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Idle Time Field Requires Digits Only If Not Empty." ) ) ;
 	}else{
 		m_setOptions( { e,m_ui->lineConfigFilePath->text() } ) ;
 

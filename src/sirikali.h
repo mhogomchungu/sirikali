@@ -54,6 +54,7 @@ public slots:
 	void raiseWindow( void ) ;
 	void raiseWindow( QString ) ;
 private slots:
+	void autoUpdateCheck( void ) ;
 	void ecryptfsProperties( void ) ;
 	void autoMountKeyStorage( void ) ;
 	void autoMountKeySource( QAction * ) ;
@@ -106,7 +107,6 @@ private:
 
 	bool autoOpenFolderOnMount( void ) ;
 
-	void autoUpdateCheck( void ) ;
 	void updateVolumeList( const QVector< volumeInfo >& ) ;
 	void openMountPoint( const QString& ) ;
 	void setLocalizationLanguage( bool ) ;

@@ -59,3 +59,6 @@ version 1.2.1
 
 version 1.2.2
 -- Add support for creating and unlocking ecryptfs volumes using ecryptfs-simple(https://github.com/mhogomchungu/ecryptfs-simple)
+
+version 1.2.3
+-- Make it possible to unlock a volume from favorite list without using key storage system.

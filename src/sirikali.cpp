@@ -201,7 +201,7 @@ void sirikali::setUpApp( const QString& volume )
 		this->showMoungDialog( volume ) ;
 	}
 
-	this->autoUpdateCheck() ;
+	QTimer::singleShot( utility::checkForUpdateInterval(),this,SLOT( autoUpdateCheck() ) ) ;
 }
 
 void sirikali::setUpAppMenu()
@@ -264,18 +264,26 @@ void sirikali::setUpAppMenu()
 
 		auto q = _addMenu( menu,translatedText,untranslatedText,slot_a,slot_b ) ;
 
+		auto d = utility::autoMountBackEnd() ;
+
 		using bk = LXQt::Wallet::BackEnd ;
 
-		auto _addOption = [ & ]( const QString& translatedTxt,const char * untranslatedTxt,bk s ){
+		auto _addOption = [ & ]( const QString& translatedTxt,const char * untranslatedTxt,
+				utility::walletBackEnd s ){
 
 			auto ac = _addAction( checkable,false,translatedTxt,untranslatedTxt,nullptr ) ;
 
 			if( checkable ){
 
-				ac->setChecked( s == utility::autoMountBackEnd() ) ;
+				ac->setChecked( d == s ) ;
 			}
 
-			ac->setEnabled( LXQt::Wallet::backEndIsSupported( s ) ) ;
+			if( s.isValid() ){
+
+				ac->setEnabled( LXQt::Wallet::backEndIsSupported( s.bk() ) ) ;
+			}else{
+				ac->setEnabled( true ) ;
+			}
 
 			q->addAction( ac ) ;
 		} ;
@@ -283,6 +291,7 @@ void sirikali::setUpAppMenu()
 		_addOption( tr( "Internal Wallet" ),"Internal Wallet",bk::internal ) ;
 		_addOption( tr( "KDE Wallet" ),"KDE Wallet",bk::kwallet ) ;
 		_addOption( tr( "Gnome Wallet" ),"Gnome Wallet",bk::libsecret ) ;
+		_addOption( tr( "None" ),"None",utility::walletBackEnd() ) ;
 
 		return q ;
 	} ;
@@ -383,6 +392,7 @@ void sirikali::autoMountKeyStorage()
 	auto a = tr( "Internal Wallet" ).remove( '&' ) ;
 	auto b = tr( "KDE Wallet" ).remove( '&' ) ;
 	auto c = tr( "Gnome Wallet" ).remove( '&' ) ;
+	auto d = tr( "None" ).remove( '&' ) ;
 
 	for( const auto& it: m_autoMountKeyStorage->actions() ){
 
@@ -402,7 +412,7 @@ void sirikali::autoMountKeyStorage()
 
 				return s == LXQt::Wallet::BackEnd::libsecret ;
 			}else{
-				return false ;
+				return e == d && s.isInvalid() ;
 			}
 		}() ) ;
 	}
@@ -410,7 +420,7 @@ void sirikali::autoMountKeyStorage()
 
 void sirikali::autoMountKeySource( QAction * e )
 {
-	utility::autoMountBackEnd( [ e ](){
+	utility::autoMountBackEnd( [ e ]()->utility::walletBackEnd{
 
 		auto a = e->text().remove( '&' ) ;
 
@@ -432,7 +442,7 @@ void sirikali::autoMountKeySource( QAction * e )
 
 			return LXQt::Wallet::BackEnd::libsecret ;
 		}else{
-			return LXQt::Wallet::BackEnd::internal ;
+			return utility::walletBackEnd() ;
 		}
 	}() ) ;
 }
@@ -490,21 +500,24 @@ void sirikali::changeInternalWalletPassWord()
 
 void sirikali::keyManagerClicked( QAction * ac )
 {
-	walletconfig::instance( this,m_secrets.walletBk( [ ac ](){
+	auto e = ac->text().remove( '&' ) ;
 
-		auto e = ac->text().remove( '&' ) ;
+	if( e != tr( "None" ).remove( '&' ) ){
 
-		if( e == tr( "KDE Wallet" ).remove( '&' ) ){
+		walletconfig::instance( this,m_secrets.walletBk( [ & ](){
 
-			return LXQt::Wallet::BackEnd::kwallet ;
+			if( e == tr( "KDE Wallet" ).remove( '&' ) ){
 
-		}else if( e == tr( "Gnome Wallet" ).remove( '&' ) ){
+				return LXQt::Wallet::BackEnd::kwallet ;
 
-			return LXQt::Wallet::BackEnd::libsecret ;
-		}else{
-			return LXQt::Wallet::BackEnd::internal ;
-		}
-	}() ) ) ;
+			}else if( e == tr( "Gnome Wallet" ).remove( '&' ) ){
+
+				return LXQt::Wallet::BackEnd::libsecret ;
+			}else{
+				return LXQt::Wallet::BackEnd::internal ;
+			}
+		}() ) ) ;
+	}
 }
 
 void sirikali::licenseInfo()
@@ -787,7 +800,14 @@ QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorite
 		return l ;
 	}
 
-	auto m = m_secrets.walletBk( utility::autoMountBackEnd() ) ;
+	auto e = utility::autoMountBackEnd() ;
+
+	if( e.isInvalid() ){
+
+		return l ;
+	}
+
+	auto m = m_secrets.walletBk( e.bk() ) ;
 
 	if( !m ){
 
@@ -861,9 +881,7 @@ void sirikali::ecryptfsProperties()
 
 		if( it.mountPoint() == s ){
 
-			DialogMsg msg( this ) ;
-
-			msg.ShowUIInfo( tr( "INFORMATION" ),[ & ](){
+			DialogMsg( this ).ShowUIInfo( tr( "INFORMATION" ),true,[ & ](){
 
 				auto s = it.mountOptions() ;
 
@@ -898,17 +916,16 @@ void sirikali::properties()
 		}
 	}() ;
 
-	DialogMsg msg( this ) ;
-
 	struct statfs vfs ;
 
 	if( Task::await< int >( [ & ](){ return statfs( m.constData(),&vfs ) ; } ) ){
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Read Volume Properties" ) ) ;
+		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Read Volume Properties" ) ) ;
+
 		return this->enableAll() ;
 	}
 
-	msg.ShowUIInfo( tr( "INFORMATION" ),[ & ](){
+	DialogMsg( this ).ShowUIInfo( tr( "INFORMATION" ),true,[ & ](){
 
 		auto _prettify = []( quint64 s ){
 
@@ -1232,10 +1249,8 @@ void sirikali::showMoungDialog( const volumeInfo& v )
 {
 	if( v.isNotValid() ){
 
-		DialogMsg msg( this ) ;
-
-		msg.ShowUIOK( tr( "ERROR" ),
-			      tr( "Permission To Access The Volume Was Denied\nOr\nThe Volume Is Not Supported" ) ) ;
+		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),
+					    tr( "Permission To Access The Volume Was Denied\nOr\nThe Volume Is Not Supported" ) ) ;
 
 		this->enableAll() ;
 	}else{
@@ -1348,8 +1363,7 @@ void sirikali::pbUmount()
 
 			siritask::deleteMountFolder( b ) ;
 		}else{
-			DialogMsg m( this ) ;
-			m.ShowUIOK( tr( "ERROR" ),tr( "Failed To Unmount %1 Volume" ).arg( type ) ) ;
+			DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Unmount %1 Volume" ).arg( type ) ) ;
 
 			this->enableAll() ;
 		}

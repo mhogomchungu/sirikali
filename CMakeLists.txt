@@ -57,7 +57,7 @@ file( WRITE ${PROJECT_BINARY_DIR}/locale_path.h "\n#define TRANSLATION_PATH \"${
 
 file( WRITE  ${PROJECT_BINARY_DIR}/install_prefix.h "\n#define INSTALL_PREFIX \"${CMAKE_INSTALL_PREFIX}/\"\n" )
 
-set( PGR_VERSION "1.2.2" )
+set( PGR_VERSION "1.2.3" )
 
 file( WRITE ${PROJECT_BINARY_DIR}/version.h "
 #ifndef THIS_VERSION
@@ -134,9 +134,11 @@ set( UI_FILES 	src/sirikali.ui
 		src/walletconfig.ui
 		src/walletconfiginput.ui
 		src/options.ui
+		src/dialogok.ui
 )
 
-set( MOC_FILES 	src/sirikali.h
+set( MOC_FILES 	src/dialogok.h
+		src/sirikali.h
 		src/keydialog.h
 		src/oneinstance.h
 		src/mountinfo.h
@@ -152,7 +154,8 @@ set( MOC_FILES 	src/sirikali.h
 		src/task.h
  )
 
-set( SRC 	src/main.cpp
+set( SRC 	src/dialogok.cpp
+		src/main.cpp
 		src/sirikali.cpp
 		src/keydialog.cpp
 		src/siritask.cpp

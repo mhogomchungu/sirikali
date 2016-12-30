@@ -90,18 +90,14 @@ void walletconfiginput::pbAdd()
 
 	if( volumeID.isEmpty() || key.isEmpty() || repeatKey.isEmpty() ){
 
-		DialogMsg msg( this ) ;
-
-		msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
+		DialogMsg( this ).ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
 
 		return ;
 	}
 
 	if( key != repeatKey ){
 
-		DialogMsg msg( this ) ;
-
-		msg.ShowUIOK( tr( "ERROR!" ),tr( "Passphrases do not match" ) ) ;
+		DialogMsg( this ).ShowUIOK( tr( "ERROR!" ),tr( "Passphrases do not match" ) ) ;
 
 		return ;
 	}

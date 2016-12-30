@@ -59,10 +59,10 @@ static void _show( QObject * obj,bool autocheck,QWidget * w,const QVector< QStri
 
 		if( show ){
 
-			msg.ShowUIInfo( QObject::tr( "Version Info" ),e + "\n" ) ;
+			msg.ShowUIInfo( QObject::tr( "Version Info" ),true,e + "\n" ) ;
 		}
 	}else{
-		msg.ShowUIInfo( QObject::tr( "Version Info" ),e + "\n" ) ;
+		msg.ShowUIInfo( QObject::tr( "Version Info" ),true,e + "\n" ) ;
 	}
 
 	obj->deleteLater() ;

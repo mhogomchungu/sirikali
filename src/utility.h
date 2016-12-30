@@ -139,6 +139,49 @@ namespace utility
 		QString key ;
 	};
 
+	class walletBackEnd
+	{
+	public:
+		walletBackEnd( LXQt::Wallet::BackEnd s ) : m_valid( true ),m_storage( s )
+		{
+		}
+		walletBackEnd() : m_valid( false )
+		{
+		}
+		bool operator==( LXQt::Wallet::BackEnd s ) const
+		{
+			return m_valid && m_storage == s ;
+		}
+		bool operator==( const utility::walletBackEnd& other ) const
+		{
+			if( this->m_valid && other.m_valid ){
+
+				return this->m_storage == other.m_storage ;
+			}else{
+				return false ;
+			}
+		}
+		bool isValid() const
+		{
+			return m_valid ;
+		}
+		bool isInvalid() const
+		{
+			return !this->isValid() ;
+		}
+		LXQt::Wallet::BackEnd bk() const
+		{
+			return m_storage ;
+		}
+	private:
+		bool m_valid ;
+		LXQt::Wallet::BackEnd m_storage ;
+	};
+
+	utility::walletBackEnd autoMountBackEnd( void ) ;
+
+	void autoMountBackEnd( const utility::walletBackEnd& ) ;
+
 	int startApplication( const char * appName,std::function<int()> ) ;
 
 	wallet getKey( const QString& keyID,LXQt::Wallet::Wallet& ) ;
@@ -146,10 +189,6 @@ namespace utility
 	QString cmdArgumentValue( const QStringList&,const QString& arg,const QString& defaulT = QString() ) ;
 
 	QIcon getIcon() ;
-
-	LXQt::Wallet::BackEnd autoMountBackEnd( void ) ;
-
-	void autoMountBackEnd( LXQt::Wallet::BackEnd ) ;
 
 	QStringList directoryList( const QString& e ) ;
 
@@ -194,6 +233,8 @@ namespace utility
 
 	bool autoMountFavoritesOnAvailable() ;
 	void autoMountFavoritesOnAvailable( bool ) ;
+
+	int checkForUpdateInterval( void ) ;
 
 	QStringList split( const QString&,char = '\n' ) ;
 

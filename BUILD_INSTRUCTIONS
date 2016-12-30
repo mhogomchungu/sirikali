@@ -1,7 +1,7 @@
 
 This tool depends on the following packages installed to build, their precise name may differ in your distro.
 
-Look in "debian" or "debian_package_info" folder for information on how to build a debian package.
+Look in "debian.upstream" folder for information on how to build a debian package.
 
 3. For Qt4 build(libqt4-devel or a package that provides libqt4-network-devel,libqtcore4-devel,libqtgui4-devel)
    For Qt5 build(qt5-base-devel or a packages that provides Qt5Core-devel,Qt5Gui-devel,Qt5Network-devel)
