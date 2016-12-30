@@ -1,3 +1,10 @@
+sirikali (1.2.3-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Minor appstream fix.
+
+ -- David Steele <steele@debian.org>  Thu, 29 Dec 2016 21:24:41 -0500
+
 sirikali (1.2.2-1) unstable; urgency=medium
 
   * New upstream version.
