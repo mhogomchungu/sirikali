@@ -1,7 +1,7 @@
 title: SiriKali
 description: A Qt/C++ GUI front end to cryfs,gocryptfs,securefs and encfs
-google_analytics: 
-show_downloads: true
+google_analytics:
+show_downloads: false
 theme: jekyll-theme-cayman
 
 gems:
