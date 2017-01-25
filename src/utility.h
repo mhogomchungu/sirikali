@@ -68,8 +68,33 @@ namespace utility
 	class debug
 	{
 	public:
-		debug( bool stdout = true ) : m_stdout( stdout )
+		debug( bool s = true ) : m_stdout( s )
 		{
+		}
+
+		template< typename T >
+		utility::debug operator<<( const T& e )
+		{
+			if( m_stdout ){
+
+				std::cout << e << std::endl ;
+			}else{
+				std::cerr << e << std::endl ;
+			}
+
+			return utility::debug( m_stdout ) ;
+		}
+
+		utility::debug operator<<( const QByteArray& e )
+		{
+			if( m_stdout ){
+
+				std::cout << e.constData() << std::endl ;
+			}else{
+				std::cerr << e.constData() << std::endl ;
+			}
+
+			return utility::debug( m_stdout ) ;
 		}
 
 		utility::debug operator<<( const QString& e )
@@ -79,6 +104,24 @@ namespace utility
 				std::cout << e.toLatin1().constData() << std::endl ;
 			}else{
 				std::cerr << e.toLatin1().constData() << std::endl ;
+			}
+
+			return utility::debug( m_stdout ) ;
+		}
+
+		utility::debug operator<<( const QStringList& e )
+		{
+			if( m_stdout ){
+
+				for( const auto& it : e ){
+
+					std::cout << it.toLatin1().constData() << std::endl ;
+				}
+			}else{
+				for( const auto& it : e ){
+
+					std::cerr << it.toLatin1().constData() << std::endl ;
+				}
 			}
 
 			return utility::debug( m_stdout ) ;
