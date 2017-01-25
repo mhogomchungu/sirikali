@@ -232,7 +232,7 @@ QStringList mountinfo::mountedVolumes()
 	QStringList s ;
 	QString mode ;
 	QString fs ;
-	const QString w = "00 00 0:00 / %1 %2,bla,bla,bla - %3 %4 bla,bla,bla" ;
+	const QString w = "bla bla bla:bla bla %1 %2,bla,bla,bla - %3 %4 bla,bla,bla" ;
 
 	for( const auto& it : utility::split( utility::Task::run( "mount" ).await().output() ) ){
 
