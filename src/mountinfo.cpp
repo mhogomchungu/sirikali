@@ -31,6 +31,10 @@
 
 #include <iostream>
 
+#if __linux__
+
+#include <sys/vfs.h>
+
 class monitorMountinfo
 {
 public:
@@ -53,6 +57,24 @@ private:
 	QFile m_handle ;
 	struct pollfd m_monitor ;
 };
+
+Task::future< mountinfo::fsInfo >& mountinfo::fileSystemInfo( const QString& e )
+{
+	return Task::run< mountinfo::fsInfo >( [ = ](){
+
+		struct statfs vfs ;
+		mountinfo::fsInfo s ;
+
+		s.valid = statfs( e.toLatin1().constData(),&vfs ) == 0 ;
+
+		s.f_bavail = vfs.f_bavail ;
+		s.f_bfree  = vfs.f_bfree ;
+		s.f_blocks = vfs.f_blocks ;
+		s.f_bsize  = vfs.f_bsize ;
+
+		return s ;
+	} ) ;
+}
 
 QStringList mountinfo::mountedVolumes()
 {
@@ -160,3 +182,158 @@ void mountinfo::run()
 		return this->failedToStart() ;
 	}
 }
+
+#else
+
+#include <sys/param.h>
+#include <sys/mount.h>
+
+class monitorMountinfo
+{
+public:
+	monitorMountinfo()
+	{
+	}
+	operator bool()
+	{
+		return false ;
+	}
+	bool gotEvent()
+	{
+		return false ;
+	}
+private:
+};
+
+Task::future< mountinfo::fsInfo >& mountinfo::fileSystemInfo( const QString& e )
+{
+	return Task::run< mountinfo::fsInfo >( [ = ](){
+
+		struct statfs vfs ;
+		mountinfo::fsInfo s ;
+
+		s.valid = statfs( e.toLatin1().constData(),&vfs ) == 0 ;
+
+		s.f_bavail = vfs.f_bavail ;
+		s.f_bfree  = vfs.f_bfree ;
+		s.f_blocks = vfs.f_blocks ;
+		s.f_bsize  = vfs.f_bsize ;
+
+		return s ;
+	} ) ;
+}
+
+QStringList mountinfo::mountedVolumes()
+{
+	QFile f( "/proc/self/mountinfo" ) ;
+
+	if( f.open( QIODevice::ReadOnly ) ){
+
+		return utility::split( f.readAll() ) ;
+	}else{
+		return QStringList() ;
+	}
+}
+
+mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& f ) :
+	QThread( parent ),m_stop( std::move( f ) ),m_announceEvents( e )
+{
+	m_babu = parent ;
+	m_baba = this ;
+	m_main = this ;
+}
+
+mountinfo::~mountinfo()
+{
+}
+
+std::function< void() > mountinfo::stop()
+{
+	return [ this ](){
+
+		m_looping = false ;
+	} ;
+}
+
+void mountinfo::threadStopped()
+{
+	m_running = false ;
+	m_stop() ;
+}
+
+void mountinfo::failedToStart()
+{
+	m_running = false ;
+
+	while( true ){
+
+		if( m_looping ){
+
+			this->sleep( 1 ) ;
+		}else{
+			break ;
+		}
+	}
+}
+
+void mountinfo::announceEvents( bool s )
+{
+	m_announceEvents = s ;
+}
+
+void mountinfo::run()
+{
+	m_mtoto = this ;
+
+	connect( m_mtoto,SIGNAL( finished() ),m_main,SLOT( threadStopped() ) ) ;
+	connect( m_mtoto,SIGNAL( finished() ),m_mtoto,SLOT( deleteLater() ) ) ;
+
+	monitorMountinfo monitor ;
+
+	m_running = monitor ;
+
+	m_looping = true ;
+
+	auto oldMountList = mountinfo::mountedVolumes() ;
+
+	decltype( oldMountList ) newMountList ;
+
+	auto _volumeWasMounted = [ & ](){ return oldMountList.size() < newMountList.size() ; } ;
+
+	auto _mountedVolume = [ & ]( const QString& e ){ return !oldMountList.contains( e ) ; } ;
+
+	if( monitor ){
+
+		while( monitor.gotEvent() ){
+
+			newMountList = mountinfo::mountedVolumes() ;
+
+			if( _volumeWasMounted() ){
+
+				for( const auto& it : newMountList ){
+
+					if( _mountedVolume( it ) ){
+
+						const auto e = utility::split( it,' ' ) ;
+
+						if( e.size() > 3 ){
+
+							gotEvent( e.at( 4 ) ) ;
+						}
+					}
+				}
+			}
+
+			oldMountList = newMountList ;
+
+			if( m_announceEvents ){
+
+				emit gotEvent() ;
+			}
+		}
+	}else{
+		this->failedToStart() ;
+	}
+}
+
+#endif

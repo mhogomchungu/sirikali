@@ -27,6 +27,9 @@
 
 #include <functional>
 #include <memory>
+#include <atomic>
+
+#include "task.h"
 
 class QObject ;
 class volumeInfo ;
@@ -35,6 +38,17 @@ class mountinfo : public QThread
 {
 	Q_OBJECT
 public:
+	struct fsInfo
+	{
+		bool valid ;
+		u_int64_t f_blocks ;
+		u_int64_t f_bavail ;
+		u_int64_t f_bsize ;
+		u_int64_t f_bfree ;
+	};
+
+	static Task::future< mountinfo::fsInfo >& fileSystemInfo( const QString& ) ;
+
 	static QStringList mountedVolumes() ;
 
 	static mountinfo& instance( QObject * parent,bool b,std::function< void() >&& f )
@@ -60,6 +74,7 @@ private:
 	bool m_running ;
 	std::function< void() > m_stop ;
 	bool m_announceEvents ;
+	std::atomic< bool > m_looping ;
 };
 
 #endif // MONITOR_MOUNTINFO_H

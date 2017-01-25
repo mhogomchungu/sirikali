@@ -74,6 +74,7 @@ sirikali::sirikali( QWidget * parent ) :
  */
 void sirikali::closeApplication()
 {
+	this->hide() ;
 	m_mountInfo.stop()() ;
 }
 
@@ -916,9 +917,9 @@ void sirikali::properties()
 		}
 	}() ;
 
-	struct statfs vfs ;
+	auto vfs = mountinfo::fileSystemInfo( m ).await() ;
 
-	if( Task::await< int >( [ & ](){ return statfs( m.constData(),&vfs ) ; } ) ){
+	if( !vfs.valid ){
 
 		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Read Volume Properties" ) ) ;
 
