@@ -58,6 +58,7 @@ public:
 	mountinfo( QObject * parent,bool,std::function< void() >&& ) ;
 	std::function< void() > stop() ;
 	void announceEvents( bool ) ;
+	void eventHappened( void ) ;
 	~mountinfo() ;
 signals:
 	void gotEvent( void ) ;
@@ -75,6 +76,8 @@ private:
 	std::function< void() > m_stop ;
 	bool m_announceEvents ;
 	std::atomic< bool > m_looping ;
+	QStringList m_oldMountList ;
+	QStringList m_newMountList ;
 };
 
 #endif // MONITOR_MOUNTINFO_H

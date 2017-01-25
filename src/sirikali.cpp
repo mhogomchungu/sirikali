@@ -44,7 +44,6 @@
 #include <initializer_list>
 
 #include <unistd.h>
-#include <sys/vfs.h>
 
 #include "keydialog.h"
 #include "dialogmsg.h"
@@ -1219,6 +1218,8 @@ void sirikali::mount( const volumeInfo& entry,const QString& exe,const QByteArra
 
 	},[ this ]( const QString& e ){
 
+		m_mountInfo.eventHappened() ;
+
 		this->openMountPointPath( e ) ;
 
 	},exe,key ).ShowUI() ;
@@ -1362,6 +1363,7 @@ void sirikali::pbUmount()
 
 		if( siritask::encryptedFolderUnMount( a,b,c ).await() ){
 
+			m_mountInfo.eventHappened() ;
 			siritask::deleteMountFolder( b ) ;
 		}else{
 			DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Unmount %1 Volume" ).arg( type ) ) ;

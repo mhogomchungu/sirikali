@@ -130,6 +130,10 @@ void mountinfo::announceEvents( bool s )
 	m_announceEvents = s ;
 }
 
+void mountinfo::eventHappened()
+{
+}
+
 void mountinfo::run()
 {
 	m_mtoto = this ;
@@ -226,9 +230,9 @@ Task::future< mountinfo::fsInfo >& mountinfo::fileSystemInfo( const QString& e )
 QStringList mountinfo::mountedVolumes()
 {
 	QStringList s ;
-	QString w = "00 00 0:00 / %1 %2,blablabla - %3 %4 blablabla" ;
 	QString mode ;
 	QString fs ;
+	const QString w = "00 00 0:00 / %1 %2,bla,bla,bla - %3 %4 bla,bla,bla" ;
 
 	for( const auto& it : utility::split( utility::Task::run( "mount" ).await().output() ) ){
 
@@ -257,7 +261,8 @@ mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& f ) :
 {
 	m_babu = parent ;
 	m_baba = this ;
-	m_main = this ;
+	m_main = this ;	
+	m_oldMountList = mountinfo::mountedVolumes() ;
 }
 
 mountinfo::~mountinfo()
@@ -280,22 +285,49 @@ void mountinfo::threadStopped()
 
 void mountinfo::failedToStart()
 {
-	m_running = false ;
-
-	while( true ){
-
-		if( m_looping ){
-
-			this->sleep( 1 ) ;
-		}else{
-			break ;
-		}
-	}
 }
 
 void mountinfo::announceEvents( bool s )
 {
 	m_announceEvents = s ;
+}
+
+void mountinfo::eventHappened()
+{
+	auto _volumeWasMounted = [ & ](){
+
+		return m_oldMountList.size() < m_newMountList.size() ;
+	} ;
+
+	auto _mountedVolume = [ & ]( const QString& e ){
+
+		return !m_oldMountList.contains( e ) ;
+	} ;
+
+	m_newMountList = mountinfo::mountedVolumes() ;
+
+	if( _volumeWasMounted() ){
+
+		for( const auto& it : m_newMountList ){
+
+			if( _mountedVolume( it ) ){
+
+				const auto e = utility::split( it,' ' ) ;
+
+				if( e.size() > 3 ){
+
+					gotEvent( e.at( 4 ) ) ;
+				}
+			}
+		}
+	}
+
+	m_oldMountList = m_newMountList ;
+
+	if( m_announceEvents ){
+
+		emit gotEvent() ;
+	}
 }
 
 void mountinfo::run()
@@ -305,51 +337,20 @@ void mountinfo::run()
 	connect( m_mtoto,SIGNAL( finished() ),m_main,SLOT( threadStopped() ) ) ;
 	connect( m_mtoto,SIGNAL( finished() ),m_mtoto,SLOT( deleteLater() ) ) ;
 
-	monitorMountinfo monitor ;
-
-	m_running = monitor ;
-
 	m_looping = true ;
 
-	auto oldMountList = mountinfo::mountedVolumes() ;
+	/*
+	 * Find a better way to hang this thread until shutdown time
+	 */
 
-	decltype( oldMountList ) newMountList ;
+	while( true ){
 
-	auto _volumeWasMounted = [ & ](){ return oldMountList.size() < newMountList.size() ; } ;
+		if( m_looping ){
 
-	auto _mountedVolume = [ & ]( const QString& e ){ return !oldMountList.contains( e ) ; } ;
-
-	if( monitor ){
-
-		while( monitor.gotEvent() ){
-
-			newMountList = mountinfo::mountedVolumes() ;
-
-			if( _volumeWasMounted() ){
-
-				for( const auto& it : newMountList ){
-
-					if( _mountedVolume( it ) ){
-
-						const auto e = utility::split( it,' ' ) ;
-
-						if( e.size() > 3 ){
-
-							gotEvent( e.at( 4 ) ) ;
-						}
-					}
-				}
-			}
-
-			oldMountList = newMountList ;
-
-			if( m_announceEvents ){
-
-				emit gotEvent() ;
-			}
+			this->sleep( 1 ) ;
+		}else{
+			break ;
 		}
-	}else{
-		this->failedToStart() ;
 	}
 }
 
