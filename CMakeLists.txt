@@ -211,7 +211,7 @@ if( QT5 )
 
 	add_executable( sirikali ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
 
-	TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} -lgcrypt lxqt-wallet )
+	TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet )
 
 	message( STATUS "---------------------------------------------------------------------------" )
 	message( STATUS "Building GUI components using Qt5" )
@@ -236,7 +236,7 @@ else()
 
 	add_executable( sirikali ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
 
-	TARGET_LINK_LIBRARIES( sirikali -lQtCore -lQtGui -lQtNetwork ${library_pwquality} -lgcrypt lxqt-wallet )
+	TARGET_LINK_LIBRARIES( sirikali -lQtCore -lQtGui -lQtNetwork ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet )
 
 	message( STATUS "---------------------------------------------------------------------------" )
 	message( STATUS "Building GUI components using Qt4" )
