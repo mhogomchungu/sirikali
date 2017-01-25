@@ -78,6 +78,23 @@ if( NOT DEFINED QT5 )
 	set( QT5 "true" )
 endif()
 
+find_file( GCRYPT_INCLUDE_FILE gcrypt.h )
+find_path( GCRYPT_INCLUDE_PATH gcrypt.h )
+
+find_library( GCRYPT_LIBRARY gcrypt )
+
+if( NOT GCRYPT_INCLUDE_FILE )
+	MESSAGE( FATAL_ERROR "could not find gcrypt header file" )
+else()
+	MESSAGE( STATUS "found gcrypt header file: ${GCRYPT_INCLUDE_FILE}" )
+endif()
+
+if( NOT GCRYPT_LIBRARY )
+	MESSAGE( FATAL_ERROR "could not find gcrypt library(libgcrypt.so)" )
+else()
+	MESSAGE( STATUS "found gcrypt library: ${GCRYPT_LIBRARY}" )
+endif()
+
 if( INTERNAL_LXQT_WALLET )
 
 	message( STATUS "---------------------------------------------------------------------------" )
@@ -190,6 +207,7 @@ if( QT5 )
 	QT5_ADD_RESOURCES( TRAY_RC_SRCS src/icon.qrc )
 
 	INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
+	INCLUDE_DIRECTORIES( ${GCRYPT_INCLUDE_PATH} )
 
 	add_executable( sirikali ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
 
@@ -214,6 +232,7 @@ else()
 	QT4_ADD_RESOURCES( TRAY_RC_SRCS src/icon.qrc )
 
 	INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
+	INCLUDE_DIRECTORIES( ${GCRYPT_INCLUDE_PATH} )
 
 	add_executable( sirikali ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
 
