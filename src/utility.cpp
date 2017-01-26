@@ -74,23 +74,29 @@
 
 #include "version.h"
 
-#if __linux__
+#ifdef __linux__
 
 #include <sys/vfs.h>
+
+bool utility::platformIsLinux()
+{
+	return true ;
+}
 
 #else
 
 #include <sys/param.h>
 #include <sys/mount.h>
 
+bool utility::platformIsLinux()
+{
+	return false ;
+}
+
 #endif
 
 static QSettings * _settings ;
 
-bool utility::platformIsLinux()
-{
-	return __linux__ ;
-}
 
 Task::future< utility::fsInfo >& utility::fileSystemInfo( const QString& q )
 {
@@ -279,10 +285,10 @@ QString utility::executableFullPath( const QString& f )
 		   "/usr/sbin/",
 		   "/bin/",
 		   "/sbin/",
-		   "/opt/local/bin",
-		   "/opt/local/sbin",
-		   "/opt/bin",
-		   "/opt/sbin" } ;
+		   "/opt/local/bin/",
+		   "/opt/local/sbin/",
+		   "/opt/bin/",
+		   "/opt/sbin/" } ;
 
 	for( const auto& it : l ){
 
