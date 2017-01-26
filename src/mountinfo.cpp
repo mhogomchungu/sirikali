@@ -191,23 +191,7 @@ void mountinfo::run()
 
 #include <sys/param.h>
 #include <sys/mount.h>
-
-class monitorMountinfo
-{
-public:
-	monitorMountinfo()
-	{
-	}
-	operator bool()
-	{
-		return false ;
-	}
-	bool gotEvent()
-	{
-		return false ;
-	}
-private:
-};
+//#include <sys/vfs.h>
 
 Task::future< mountinfo::fsInfo >& mountinfo::fileSystemInfo( const QString& e )
 {
@@ -236,21 +220,18 @@ QStringList mountinfo::mountedVolumes()
 
 	for( const auto& it : utility::split( utility::Task::run( "mount" ).await().output() ) ){
 
-		if( utility::startsWithAtLeastOne( it,"cryfs@","encfs@","securefs@","gocryptfs@" ) ){
+		auto e = utility::split( it,' ' ) ;
 
-			auto e = utility::split( it,' ' ) ;
+		if( e.contains( ", read-only," ) ){
 
-			if( e.contains( ", read-only," ) ){
-
-				mode = "ro" ;
-			}else{
-				mode = "rw" ;
-			}
-
-			fs = "fuse." + it.mid( 0,it.indexOf( '@' ) ) ;
-
-			s.append( w.arg( e.at( 2 ),mode,fs,e.at( 0 ) ) ) ;
+			mode = "ro" ;
+		}else{
+			mode = "rw" ;
 		}
+
+		fs = "fuse." + it.mid( 0,it.indexOf( '@' ) ) ;
+
+		s.append( w.arg( e.at( 2 ),mode,fs,e.at( 0 ) ) ) ;
 	}
 
 	return s ;
