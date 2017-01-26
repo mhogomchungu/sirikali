@@ -74,7 +74,41 @@
 
 #include "version.h"
 
+#if __linux__
+
+#include <sys/vfs.h>
+
+#else
+
+#include <sys/param.h>
+#include <sys/mount.h>
+
+#endif
+
 static QSettings * _settings ;
+
+bool utility::platformIsLinux()
+{
+	return __linux__ ;
+}
+
+Task::future< utility::fsInfo >& utility::fileSystemInfo( const QString& q )
+{
+	return ::Task::run< utility::fsInfo >( [ = ](){
+
+		struct statfs e ;
+		utility::fsInfo s ;
+
+		s.valid = statfs( q.toLatin1().constData(),&e ) == 0 ;
+
+		s.f_bavail = e.f_bavail ;
+		s.f_bfree  = e.f_bfree ;
+		s.f_blocks = e.f_blocks ;
+		s.f_bsize  = e.f_bsize ;
+
+		return s ;
+	} ) ;
+}
 
 void utility::setSettingsObject( QSettings * s )
 {
@@ -1044,13 +1078,4 @@ int utility::checkForUpdateInterval()
 		_settings->setValue( "checkForUpdateInterval",int( 300 ) ) ;
 		return 300 * 1000 ;
 	}
-}
-
-bool utility::platformisLinux()
-{
-#if __linux__
-	return true ;
-#else
-	return false ;
-#endif
 }

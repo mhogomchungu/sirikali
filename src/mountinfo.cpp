@@ -29,50 +29,21 @@
 
 #include <QCoreApplication>
 
-#if __linux__
-
-#include <sys/vfs.h>
-
-#else
-
-#include <sys/param.h>
-#include <sys/mount.h>
-
-#endif
-
 mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& f ) :
 	QThread( parent ),m_stop( std::move( f ) ),m_announceEvents( e ),
-	m_linux( utility::platformisLinux() ),m_oldMountList( this->mountedVolumes() )
+	m_linux( utility::platformIsLinux() ),m_oldMountList( this->mountedVolumes() )
 {
 	m_babu = parent ;
 	m_baba = this ;
 	m_main = this ;
 }
 
-mountinfo::mountinfo() : m_linux( utility::platformisLinux() )
+mountinfo::mountinfo() : m_linux( utility::platformIsLinux() )
 {
 }
 
 mountinfo::~mountinfo()
 {
-}
-
-Task::future< mountinfo::fsInfo >& mountinfo::fileSystemInfo( const QString& e )
-{
-	return Task::run< mountinfo::fsInfo >( [ = ](){
-
-		struct statfs vfs ;
-		mountinfo::fsInfo s ;
-
-		s.valid = statfs( e.toLatin1().constData(),&vfs ) == 0 ;
-
-		s.f_bavail = vfs.f_bavail ;
-		s.f_bfree  = vfs.f_bfree ;
-		s.f_blocks = vfs.f_blocks ;
-		s.f_bsize  = vfs.f_bsize ;
-
-		return s ;
-	} ) ;
 }
 
 QStringList mountinfo::mountedVolumes()
@@ -91,7 +62,7 @@ QStringList mountinfo::mountedVolumes()
 		QStringList s ;
 		QString mode ;
 		QString fs ;
-		const QString w = "bla bla bla:bla bla %1 %2,bla,bla,bla - %3 %4 bla,bla,bla" ;
+		const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
 
 		auto z = utility::Task::run( "mount" ).await().output() ;
 

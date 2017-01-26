@@ -916,7 +916,7 @@ void sirikali::properties()
 		}
 	}() ;
 
-	auto vfs = mountinfo::fileSystemInfo( m ).await() ;
+	auto vfs = utility::fileSystemInfo( m ).await() ;
 
 	if( !vfs.valid ){
 

@@ -221,7 +221,18 @@ namespace utility
 		LXQt::Wallet::BackEnd m_storage ;
 	};
 
-	bool platformisLinux() ;
+	struct fsInfo
+	{
+		bool valid ;
+		u_int64_t f_blocks ;
+		u_int64_t f_bavail ;
+		u_int64_t f_bsize ;
+		u_int64_t f_bfree ;
+	};
+
+	Task::future< utility::fsInfo >& fileSystemInfo( const QString& ) ;
+
+	bool platformIsLinux() ;
 
 	utility::walletBackEnd autoMountBackEnd( void ) ;
 

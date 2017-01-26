@@ -38,18 +38,7 @@ class mountinfo : public QThread
 {
 	Q_OBJECT
 public:
-	struct fsInfo
-	{
-		bool valid ;
-		u_int64_t f_blocks ;
-		u_int64_t f_bavail ;
-		u_int64_t f_bsize ;
-		u_int64_t f_bfree ;
-	};
-
 	QStringList mountedVolumes() ;
-
-	static Task::future< mountinfo::fsInfo >& fileSystemInfo( const QString& ) ;
 
 	static mountinfo& instance( QObject * parent,bool b,std::function< void() >&& f )
 	{
