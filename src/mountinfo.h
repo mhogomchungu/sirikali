@@ -24,6 +24,8 @@
 #include <QThread>
 #include <QString>
 #include <QStringList>
+#include <QMutex>
+#include <QMutexLocker>
 
 #include <functional>
 #include <memory>
@@ -70,6 +72,7 @@ private:
 	bool m_linux ;
 	QStringList m_oldMountList ;
 	QStringList m_newMountList ;
+	QMutex m_mutex ;
 };
 
 #endif // MONITOR_MOUNTINFO_H

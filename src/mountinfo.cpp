@@ -102,6 +102,8 @@ void mountinfo::threadStopped()
 
 void mountinfo::updateVolume()
 {
+	QMutexLocker locker( &m_mutex ) ;
+
 	auto _volumeWasMounted = [ & ](){
 
 		return m_oldMountList.size() < m_newMountList.size() ;
