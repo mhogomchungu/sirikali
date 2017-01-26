@@ -166,7 +166,7 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 	if( type.isOneOf( "gocryptfs","securefs" ) ){
 
-		auto mode = [ & ](){
+		QString mode = [ & ](){
 
 			if( opt.ro ){
 
@@ -183,6 +183,12 @@ static QString _args( const QString& exe,const siritask::options& opt,
 				auto e = QString( "%1 --init %2 %3" ) ;
 				return e.arg( exe,configPath,cipherFolder ) ;
 			}else{
+
+				if( !utility::platformIsLinux() ){
+
+					mode += " -o fsname=gocryptfs@" + cipherFolder ;
+				}
+
 				auto e = QString( "%1 %2 %3 %4 %5" ) ;
 				return e.arg( exe,mode,configPath,cipherFolder,mountPoint ) ;
 			}
@@ -593,7 +599,8 @@ Task::future< QVector< volumeInfo > >& siritask::updateVolumeList()
 
 				if( utility::startsWithAtLeastOne( cf,"encfs@",
 								   "cryfs@",
-								   "securefs@" ) ){
+								   "securefs@",
+								   "gocryptfs@" ) ){
 
 					info.volumePath = _decode( cf,true ) ;
 
