@@ -29,169 +29,33 @@
 
 #include <QCoreApplication>
 
-#include <iostream>
-
 #if __linux__
 
 #include <sys/vfs.h>
 
-class monitorMountinfo
-{
-public:
-	monitorMountinfo() : m_handle( "/proc/self/mountinfo" )
-	{
-		m_handle.open( QIODevice::ReadOnly ) ;
-		m_monitor.fd     = m_handle.handle() ;
-		m_monitor.events = POLLPRI ;
-	}
-	operator bool()
-	{
-		return m_monitor.fd != -1 ;
-	}
-	bool gotEvent()
-	{
-		poll( &m_monitor,1,-1 ) ;
-		return true ;
-	}
-private:
-	QFile m_handle ;
-	struct pollfd m_monitor ;
-};
+#else
 
-Task::future< mountinfo::fsInfo >& mountinfo::fileSystemInfo( const QString& e )
-{
-	return Task::run< mountinfo::fsInfo >( [ = ](){
+#include <sys/param.h>
+#include <sys/mount.h>
 
-		struct statfs vfs ;
-		mountinfo::fsInfo s ;
-
-		s.valid = statfs( e.toLatin1().constData(),&vfs ) == 0 ;
-
-		s.f_bavail = vfs.f_bavail ;
-		s.f_bfree  = vfs.f_bfree ;
-		s.f_blocks = vfs.f_blocks ;
-		s.f_bsize  = vfs.f_bsize ;
-
-		return s ;
-	} ) ;
-}
-
-QStringList mountinfo::mountedVolumes()
-{
-	QFile f( "/proc/self/mountinfo" ) ;
-
-	if( f.open( QIODevice::ReadOnly ) ){
-
-		return utility::split( f.readAll() ) ;
-	}else{
-		return QStringList() ;
-	}
-}
+#endif
 
 mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& f ) :
-	QThread( parent ),m_stop( std::move( f ) ),m_announceEvents( e )
+	QThread( parent ),m_stop( std::move( f ) ),m_announceEvents( e ),
+	m_linux( utility::platformisLinux() ),m_oldMountList( this->mountedVolumes() )
 {
 	m_babu = parent ;
 	m_baba = this ;
 	m_main = this ;
 }
 
+mountinfo::mountinfo() : m_linux( utility::platformisLinux() )
+{
+}
+
 mountinfo::~mountinfo()
 {
 }
-
-std::function< void() > mountinfo::stop()
-{
-	return [ this ](){
-
-		if( m_running ){
-
-			m_mtoto->terminate() ;
-		}else{
-			this->threadStopped() ;
-		}
-	} ;
-}
-
-void mountinfo::threadStopped()
-{
-	m_running = false ;
-	m_stop() ;
-}
-
-void mountinfo::failedToStart()
-{
-	utility::debug() << "failed to monitor /proc/self/mountinfo" ;
-	m_running = false ;
-}
-
-void mountinfo::announceEvents( bool s )
-{
-	m_announceEvents = s ;
-}
-
-void mountinfo::eventHappened()
-{
-}
-
-void mountinfo::run()
-{
-	m_mtoto = this ;
-
-	connect( m_mtoto,SIGNAL( finished() ),m_main,SLOT( threadStopped() ) ) ;
-	connect( m_mtoto,SIGNAL( finished() ),m_mtoto,SLOT( deleteLater() ) ) ;
-
-	monitorMountinfo monitor ;
-
-	m_running = monitor ;
-
-	auto oldMountList = mountinfo::mountedVolumes() ;
-
-	decltype( oldMountList ) newMountList ;
-
-	auto _volumeWasMounted = [ & ](){ return oldMountList.size() < newMountList.size() ; } ;
-
-	auto _mountedVolume = [ & ]( const QString& e ){ return !oldMountList.contains( e ) ; } ;
-
-	if( monitor ){
-
-		while( monitor.gotEvent() ){
-
-			newMountList = mountinfo::mountedVolumes() ;
-
-			if( _volumeWasMounted() ){
-
-				for( const auto& it : newMountList ){
-
-					if( _mountedVolume( it ) ){
-
-						const auto e = utility::split( it,' ' ) ;
-
-						if( e.size() > 3 ){
-
-							gotEvent( e.at( 4 ) ) ;
-						}
-					}
-				}
-			}
-
-			oldMountList = newMountList ;
-
-			if( m_announceEvents ){
-
-				emit gotEvent() ;
-			}
-		}
-	}else{
-		return this->failedToStart() ;
-	}
-}
-
-#else
-
-#include <sys/param.h>
-#include <sys/mount.h>
-//#include <sys/vfs.h>
 
 Task::future< mountinfo::fsInfo >& mountinfo::fileSystemInfo( const QString& e )
 {
@@ -213,67 +77,60 @@ Task::future< mountinfo::fsInfo >& mountinfo::fileSystemInfo( const QString& e )
 
 QStringList mountinfo::mountedVolumes()
 {
-	QStringList s ;
-	QString mode ;
-	QString fs ;
-	const QString w = "bla bla bla:bla bla %1 %2,bla,bla,bla - %3 %4 bla,bla,bla" ;
+	if( m_linux ){
 
-	for( const auto& it : utility::split( utility::Task::run( "mount" ).await().output() ) ){
+		QFile f( "/proc/self/mountinfo" ) ;
 
-		auto e = utility::split( it,' ' ) ;
+		if( f.open( QIODevice::ReadOnly ) ){
 
-		if( e.contains( ", read-only," ) ){
-
-			mode = "ro" ;
+			return utility::split( f.readAll() ) ;
 		}else{
-			mode = "rw" ;
+			return QStringList() ;
+		}
+	}else{
+		QStringList s ;
+		QString mode ;
+		QString fs ;
+		const QString w = "bla bla bla:bla bla %1 %2,bla,bla,bla - %3 %4 bla,bla,bla" ;
+
+		auto z = utility::Task::run( "mount" ).await().output() ;
+
+		for( const auto& it : utility::split( z ) ){
+
+			auto e = utility::split( it,' ' ) ;
+
+			if( e.contains( ", read-only," ) ){
+
+				mode = "ro" ;
+			}else{
+				mode = "rw" ;
+			}
+
+			fs = "fuse." + it.mid( 0,it.indexOf( '@' ) ) ;
+
+			s.append( w.arg( e.at( 2 ),mode,fs,e.at( 0 ) ) ) ;
 		}
 
-		fs = "fuse." + it.mid( 0,it.indexOf( '@' ) ) ;
-
-		s.append( w.arg( e.at( 2 ),mode,fs,e.at( 0 ) ) ) ;
+		return s ;
 	}
-
-	return s ;
-}
-
-mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& f ) :
-	QThread( parent ),m_stop( std::move( f ) ),m_announceEvents( e )
-{
-	m_babu = parent ;
-	m_baba = this ;
-	m_main = this ;	
-	m_oldMountList = mountinfo::mountedVolumes() ;
-}
-
-mountinfo::~mountinfo()
-{
 }
 
 std::function< void() > mountinfo::stop()
 {
-	return [ this ](){
+	if( m_linux ){
 
-		m_looping = false ;
-	} ;
+		return [ this ](){ m_mtoto->terminate() ; } ;
+	}else{
+		return [ this ](){ m_hang = false ; } ;
+	}
 }
 
 void mountinfo::threadStopped()
 {
-	m_running = false ;
 	m_stop() ;
 }
 
-void mountinfo::failedToStart()
-{
-}
-
-void mountinfo::announceEvents( bool s )
-{
-	m_announceEvents = s ;
-}
-
-void mountinfo::eventHappened()
+void mountinfo::updateVolume()
 {
 	auto _volumeWasMounted = [ & ](){
 
@@ -311,22 +168,44 @@ void mountinfo::eventHappened()
 	}
 }
 
-void mountinfo::run()
+void mountinfo::runLinux()
 {
-	m_mtoto = this ;
+	class mountEvent
+	{
+	public:
+		mountEvent() : m_handle( "/proc/self/mountinfo" )
+		{
+			m_handle.open( QIODevice::ReadOnly ) ;
+			m_monitor.fd     = m_handle.handle() ;
+			m_monitor.events = POLLPRI ;
+		}
+		operator bool()
+		{
+			poll( &m_monitor,1,-1 ) ;
+			return true ;
+		}
+	private:
+		QFile m_handle ;
+		struct pollfd m_monitor ;
+	} event ;
 
-	connect( m_mtoto,SIGNAL( finished() ),m_main,SLOT( threadStopped() ) ) ;
-	connect( m_mtoto,SIGNAL( finished() ),m_mtoto,SLOT( deleteLater() ) ) ;
+	while( event ){
 
-	m_looping = true ;
+		this->updateVolume() ;
+	}
+}
+
+void mountinfo::runOSX()
+{
+	m_hang = true ;
 
 	/*
-	 * Find a better way to hang this thread until shutdown time
+	 * TODO: Find a better way to hang this thread until shutdown time
 	 */
 
 	while( true ){
 
-		if( m_looping ){
+		if( m_hang ){
 
 			this->sleep( 1 ) ;
 		}else{
@@ -335,4 +214,30 @@ void mountinfo::run()
 	}
 }
 
-#endif
+void mountinfo::announceEvents( bool s )
+{
+	m_announceEvents = s ;
+}
+
+void mountinfo::eventHappened()
+{
+	if( !m_linux ){
+
+		this->updateVolume() ;
+	}
+}
+
+void mountinfo::run()
+{
+	m_mtoto = this ;
+
+	connect( m_mtoto,SIGNAL( finished() ),m_main,SLOT( threadStopped() ) ) ;
+	connect( m_mtoto,SIGNAL( finished() ),m_mtoto,SLOT( deleteLater() ) ) ;
+
+	if( m_linux ){
+
+		this->runLinux() ;
+	}else{
+		this->runOSX() ;
+	}
+}

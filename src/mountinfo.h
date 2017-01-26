@@ -47,15 +47,16 @@ public:
 		u_int64_t f_bfree ;
 	};
 
-	static Task::future< mountinfo::fsInfo >& fileSystemInfo( const QString& ) ;
+	QStringList mountedVolumes() ;
 
-	static QStringList mountedVolumes() ;
+	static Task::future< mountinfo::fsInfo >& fileSystemInfo( const QString& ) ;
 
 	static mountinfo& instance( QObject * parent,bool b,std::function< void() >&& f )
 	{
 		return *( new mountinfo( parent,b,std::move( f ) ) ) ;
 	}
 	mountinfo( QObject * parent,bool,std::function< void() >&& ) ;
+	mountinfo() ;
 	std::function< void() > stop() ;
 	void announceEvents( bool ) ;
 	void eventHappened( void ) ;
@@ -66,16 +67,18 @@ signals:
 private slots:
 	void threadStopped( void ) ;
 private:
+	void updateVolume( void ) ;
+	void runLinux( void ) ;
+	void runOSX( void ) ;
 	void run( void ) ;
-	void failedToStart( void ) ;
 	QThread * m_baba ;
 	QThread * m_mtoto ;
 	QObject * m_babu ;
 	mountinfo * m_main ;
-	bool m_running ;
-	std::function< void() > m_stop ;
+	std::function< void() > m_stop = [](){} ;
 	bool m_announceEvents ;
-	std::atomic< bool > m_looping ;
+	std::atomic< bool > m_hang ;
+	bool m_linux ;
 	QStringList m_oldMountList ;
 	QStringList m_newMountList ;
 };
