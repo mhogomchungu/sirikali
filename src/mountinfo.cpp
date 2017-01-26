@@ -21,7 +21,6 @@
 
 #include <QString>
 #include <QStringList>
-#include <QDebug>
 
 #include "utility.h"
 #include "task.h"
@@ -113,7 +112,7 @@ void mountinfo::updateVolume()
 		return !m_oldMountList.contains( e ) ;
 	} ;
 
-	m_newMountList = mountinfo::mountedVolumes() ;
+	m_newMountList = this->mountedVolumes() ;
 
 	if( _volumeWasMounted() ){
 
