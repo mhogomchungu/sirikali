@@ -329,10 +329,21 @@ void sirikali::setUpAppMenu()
 					  "AutoMount Favorite Volumes At Start Up",
 					   SLOT( autoMountFavoritesOnStartUp( bool ) ) ) ) ;
 
-		e->addAction( _addAction( true,utility::autoMountFavoritesOnAvailable(),
-					  tr( "AutoMount Favorite Volumes When Available" ),
-					  "AutoMount Favorite Volumes When Available",
-					  SLOT( autoMountWhenAvailable( bool ) ) ) ) ;
+		e->addAction( [ & ](){
+
+			auto s = _addAction( true,utility::autoMountFavoritesOnAvailable(),
+					     tr( "AutoMount Favorite Volumes When Available" ),
+					     "AutoMount Favorite Volumes When Available",
+					     SLOT( autoMountWhenAvailable( bool ) ) ) ;
+
+			if( !utility::platformIsLinux() ){
+
+				s->setChecked( false ) ;
+				s->setEnabled( false ) ;
+			}
+
+			return s ;
+		}() ) ;
 
 		e->addAction( _addAction( true,utility::showMountDialogWhenAutoMounting(),
 					  tr( "Show Mount Dialog When AutoMounting" ),
