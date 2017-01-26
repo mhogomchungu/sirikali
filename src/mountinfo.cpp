@@ -195,7 +195,7 @@ void mountinfo::eventHappened()
 {
 	if( !m_linux ){
 
-		this->updateVolume() ;
+		Task::exec( [ this ](){ this->updateVolume() ; } ) ;
 	}
 }
 
