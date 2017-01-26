@@ -244,7 +244,11 @@ QString utility::executableFullPath( const QString& f )
 		   "/usr/bin/",
 		   "/usr/sbin/",
 		   "/bin/",
-		   "/sbin/" } ;
+		   "/sbin/",
+		   "/opt/local/bin",
+		   "/opt/local/sbin",
+		   "/opt/bin",
+		   "/opt/sbin" } ;
 
 	for( const auto& it : l ){
 
@@ -1040,4 +1044,13 @@ int utility::checkForUpdateInterval()
 		_settings->setValue( "checkForUpdateInterval",int( 300 ) ) ;
 		return 300 * 1000 ;
 	}
+}
+
+bool utility::platformisLinux()
+{
+#if __linux__
+	return true ;
+#else
+	return false ;
+#endif
 }

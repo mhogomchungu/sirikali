@@ -221,6 +221,8 @@ namespace utility
 		LXQt::Wallet::BackEnd m_storage ;
 	};
 
+	bool platformisLinux() ;
+
 	utility::walletBackEnd autoMountBackEnd( void ) ;
 
 	void autoMountBackEnd( const utility::walletBackEnd& ) ;

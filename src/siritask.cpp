@@ -85,7 +85,12 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 
 				return "ecryptfs-simple -k " + _makePath( cipherFolder ) ;
 			}else{
-				return "fusermount -u " + _makePath( mountPoint ) ;
+				if( utility::platformisLinux() ){
+
+					return "fusermount -u " + _makePath( mountPoint ) ;
+				}else{
+					return "umount " + _makePath( mountPoint ) ;
+				}
 			}
 		}() ;
 
