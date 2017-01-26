@@ -835,7 +835,15 @@ QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorite
 
 				this->mount( e,QString(),key ) ;
 			}else{
-				siritask::encryptedFolderMount( { e,key } ).start() ;
+				auto& s = siritask::encryptedFolderMount( { e,key } ) ;
+
+				s.then( [ this ]( siritask::status s ){
+
+					if( s == siritask::status::success ){
+
+						m_mountInfo.eventHappened() ;
+					}
+				} ) ;
 			}
 		} ;
 

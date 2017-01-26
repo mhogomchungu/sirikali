@@ -97,7 +97,6 @@ bool utility::platformIsLinux()
 
 static QSettings * _settings ;
 
-
 Task::future< utility::fsInfo >& utility::fileSystemInfo( const QString& q )
 {
 	return ::Task::run< utility::fsInfo >( [ = ](){
