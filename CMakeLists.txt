@@ -92,8 +92,13 @@ endif()
 if( NOT GCRYPT_LIBRARY )
 	MESSAGE( FATAL_ERROR "could not find gcrypt library(libgcrypt.so)" )
 else()
+	get_filename_component( GCRYPT_LIBRARY_PATH ${GCRYPT_LIBRARY} DIRECTORY )
+
 	MESSAGE( STATUS "found gcrypt library: ${GCRYPT_LIBRARY}" )
+	MESSAGE( STATUS "adding library search path of: ${GCRYPT_LIBRARY_PATH}" )
+
 endif()
+
 
 if( INTERNAL_LXQT_WALLET )
 
@@ -211,7 +216,9 @@ if( QT5 )
 
 	add_executable( sirikali ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
 
-	TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet )
+	link_directories( ${GCRYPT_LIBRARY_PATH} )
+
+	TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet -L${GCRYPT_LIBRARY_PATH})
 
 	message( STATUS "---------------------------------------------------------------------------" )
 	message( STATUS "Building GUI components using Qt5" )
@@ -234,9 +241,11 @@ else()
 	INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 	INCLUDE_DIRECTORIES( ${GCRYPT_INCLUDE_PATH} )
 
+	link_directories( ${GCRYPT_LIBRARY_PATH} )
+
 	add_executable( sirikali ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
 
-	TARGET_LINK_LIBRARIES( sirikali -lQtCore -lQtGui -lQtNetwork ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet )
+	TARGET_LINK_LIBRARIES( sirikali -lQtCore -lQtGui -lQtNetwork ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet -L${GCRYPT_LIBRARY_PATH} )
 
 	message( STATUS "---------------------------------------------------------------------------" )
 	message( STATUS "Building GUI components using Qt4" )
