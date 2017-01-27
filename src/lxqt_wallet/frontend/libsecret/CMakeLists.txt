@@ -7,5 +7,5 @@ link_directories( ${LIBSECRET_LIBDIR} )
 
 set( SECRETSERVICE_LIBRARY "secretlib" )
 add_library( secretlib STATIC ../libsecret.c )
-target_link_libraries( secretlib ${LIBSECRET_LIBRARIES} )
-set_target_properties( secretlib PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pedantic -L${LIBSECRET_LIBDIR}" )
+target_link_libraries( secretlib ${LIBSECRET_LIBRARIES} -L${LIBSECRET_LIBDIR} )
+set_target_properties( secretlib PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pedantic" )
