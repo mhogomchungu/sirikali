@@ -147,9 +147,9 @@ void mountinfo::announceEvents( bool s )
 
 void mountinfo::eventHappened()
 {
-	if( !m_linux ){
+	if( !m_linux && m_announceEvents ){
 
-		Task::exec( [ this ](){ this->updateVolume() ; } ) ;
+		emit gotEvent() ;
 	}
 }
 
