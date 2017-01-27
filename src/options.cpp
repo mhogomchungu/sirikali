@@ -35,6 +35,8 @@ options::options( QWidget * parent,bool r,const QStringList& l,
 {
 	m_ui->setupUi( this ) ;
 
+	this->setWindowFlags( this->windowFlags() | Qt::WindowStaysOnTopHint ) ;
+
 	this->setFixedSize( this->size() ) ;
 
         m_ui->pushButton->setIcon( QIcon( ":/file.png" ) ) ;

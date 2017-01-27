@@ -25,7 +25,10 @@ dialogok::dialogok(  QWidget  * parent,bool s,bool q,const QString& e,const QStr
 	QDialog( parent ),m_ui( new Ui::dialogok )
 {
 	m_ui->setupUi( this ) ;
+
 	m_ui->label->setText( f ) ;
+
+	this->setWindowFlags( this->windowFlags() | Qt::WindowStaysOnTopHint ) ;
 
 	this->setWindowTitle( e ) ;
 
