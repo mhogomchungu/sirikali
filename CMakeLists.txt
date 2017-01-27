@@ -37,7 +37,7 @@ pkg_check_modules( PWQUALITY pwquality )
 if( PWQUALITY_FOUND )
 
 	find_file( header_pwquality pwquality.h PATHS ${PWQUALITY_INCLUDE_DIRS} )
-	find_library( library_pwquality libpwquality.so )
+	find_library( library_pwquality pwquality )
 
 	if( library_pwquality )
 		if( header_pwquality )
@@ -80,6 +80,8 @@ endif()
 
 find_file( GCRYPT_INCLUDE_FILE gcrypt.h )
 find_path( GCRYPT_INCLUDE_PATH gcrypt.h )
+
+add_definitions( -I${GCRYPT_INCLUDE_PATH} )
 
 find_library( GCRYPT_LIBRARY gcrypt )
 

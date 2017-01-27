@@ -4,6 +4,7 @@ cmake_policy(SET CMP0017 OLD)
 
 include_directories( ${LIBSECRET_INCLUDE_DIRS} )
 link_directories( ${LIBSECRET_LIBDIR} )
+add_definitions( -I${LIBSECRET_INCLUDEDIR} )
 
 set( SECRETSERVICE_LIBRARY "secretlib" )
 add_library( secretlib STATIC ../libsecret.c )
