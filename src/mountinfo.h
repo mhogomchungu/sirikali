@@ -51,6 +51,7 @@ public:
 	std::function< void() > stop() ;
 	void announceEvents( bool ) ;
 	void eventHappened( void ) ;
+	void anza( void ) ;
 	~mountinfo() ;
 signals:
 	void gotEvent( void ) ;
@@ -59,8 +60,6 @@ private slots:
 	void threadStopped( void ) ;
 private:
 	void updateVolume( void ) ;
-	void runLinux( void ) ;
-	void runOSX( void ) ;
 	void run( void ) ;
 	QThread * m_baba ;
 	QThread * m_mtoto ;
@@ -68,7 +67,6 @@ private:
 	mountinfo * m_main ;
 	std::function< void() > m_stop = [](){} ;
 	bool m_announceEvents ;
-	std::atomic< bool > m_hang ;
 	bool m_linux ;
 	QStringList m_oldMountList ;
 	QStringList m_newMountList ;

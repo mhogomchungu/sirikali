@@ -490,7 +490,7 @@ void sirikali::setDefaultMountPointPrefix()
 
 void sirikali::startAutoMonitor()
 {
-	m_mountInfo.start() ;
+	m_mountInfo.anza() ;
 }
 
 void sirikali::aboutToShowMenu()

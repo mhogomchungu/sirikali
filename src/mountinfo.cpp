@@ -91,7 +91,7 @@ std::function< void() > mountinfo::stop()
 
 		return [ this ](){ m_mtoto->terminate() ; } ;
 	}else{
-		return [ this ](){ m_hang = false ; } ;
+		return [ this ](){ m_stop() ; } ;
 	}
 }
 
@@ -140,8 +140,34 @@ void mountinfo::updateVolume()
 	}
 }
 
-void mountinfo::runLinux()
+void mountinfo::announceEvents( bool s )
 {
+	m_announceEvents = s ;
+}
+
+void mountinfo::eventHappened()
+{
+	if( !m_linux ){
+
+		Task::exec( [ this ](){ this->updateVolume() ; } ) ;
+	}
+}
+
+void mountinfo::anza()
+{
+	if( m_linux ){
+
+		this->start() ;
+	}
+}
+
+void mountinfo::run()
+{
+	m_mtoto = this ;
+
+	connect( m_mtoto,SIGNAL( finished() ),m_main,SLOT( threadStopped() ) ) ;
+	connect( m_mtoto,SIGNAL( finished() ),m_mtoto,SLOT( deleteLater() ) ) ;
+
 	class mountEvent
 	{
 	public:
@@ -164,52 +190,5 @@ void mountinfo::runLinux()
 	while( event ){
 
 		this->updateVolume() ;
-	}
-}
-
-void mountinfo::runOSX()
-{
-	m_hang = true ;
-
-	/*
-	 * TODO: Find a better way to hang this thread until shutdown time
-	 */
-
-	while( true ){
-
-		if( m_hang ){
-
-			this->sleep( 1 ) ;
-		}else{
-			break ;
-		}
-	}
-}
-
-void mountinfo::announceEvents( bool s )
-{
-	m_announceEvents = s ;
-}
-
-void mountinfo::eventHappened()
-{
-	if( !m_linux ){
-
-		Task::exec( [ this ](){ this->updateVolume() ; } ) ;
-	}
-}
-
-void mountinfo::run()
-{
-	m_mtoto = this ;
-
-	connect( m_mtoto,SIGNAL( finished() ),m_main,SLOT( threadStopped() ) ) ;
-	connect( m_mtoto,SIGNAL( finished() ),m_mtoto,SLOT( deleteLater() ) ) ;
-
-	if( m_linux ){
-
-		this->runLinux() ;
-	}else{
-		this->runOSX() ;
 	}
 }
