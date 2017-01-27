@@ -36,7 +36,7 @@ favorites::favorites( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::favor
 {
 	m_ui->setupUi( this ) ;
 
-	this->setWindowFlags( Qt::Window | Qt::Dialog ) ;
+	this->setWindowFlags( this->windowFlags() | Qt::WindowStaysOnTopHint | Qt::Window | Qt::Dialog ) ;
 	this->setFont( parent->font() ) ;
 
 	connect( m_ui->pbConfigFilePath,SIGNAL( clicked() ),this,SLOT( configPath() ) ) ;

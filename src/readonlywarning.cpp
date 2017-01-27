@@ -37,6 +37,8 @@ readOnlyWarning::readOnlyWarning( QWidget * parent,bool checked ) :
 {
 	m_ui->setupUi( this ) ;
 
+	this->setWindowFlags( this->windowFlags() | Qt::WindowStaysOnTopHint ) ;
+
 	this->setFont( parent->font() ) ;
 	this->setFixedSize( this->size() ) ;
 

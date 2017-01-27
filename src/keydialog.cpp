@@ -67,6 +67,8 @@ keyDialog::keyDialog( QWidget * parent,
 {
 	m_ui->setupUi( this ) ;
 
+	this->setWindowFlags( this->windowFlags() | Qt::WindowStaysOnTopHint ) ;
+
 	this->setUIVisible( true ) ;
 
 	m_ui->pbOK->setText( tr( "&OK" ) ) ;

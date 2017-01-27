@@ -31,6 +31,8 @@ DialogMsg::DialogMsg( QWidget * parent ) :
 {
 	m_ui->setupUi( this ) ;
 
+	this->setWindowFlags( this->windowFlags() | Qt::WindowStaysOnTopHint ) ;
+
 	if( parent ){
 
 		this->setFont( parent->font() ) ;

@@ -41,6 +41,8 @@ walletconfig::walletconfig( QWidget * parent,secrets::wallet&& wallet ) :
 {
 	m_ui->setupUi( this ) ;
 
+	this->setWindowFlags( this->windowFlags() | Qt::WindowStaysOnTopHint ) ;
+
 	this->setFixedSize( this->size() ) ;
 	this->setFont( parent->font() ) ;
 
