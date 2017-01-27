@@ -18,15 +18,9 @@
  */
 
 #include "mountinfo.h"
-
-#include <QString>
-#include <QStringList>
-
 #include "utility.h"
 #include "task.h"
 #include "siritask.h"
-
-#include <QCoreApplication>
 
 mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& f ) :
 	QThread( parent ),m_stop( std::move( f ) ),m_announceEvents( e ),
@@ -102,8 +96,6 @@ void mountinfo::threadStopped()
 
 void mountinfo::updateVolume()
 {
-	QMutexLocker locker( &m_mutex ) ;
-
 	auto _volumeWasMounted = [ & ](){
 
 		return m_oldMountList.size() < m_newMountList.size() ;
