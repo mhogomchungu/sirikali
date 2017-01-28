@@ -34,9 +34,9 @@ walletconfiginput::walletconfiginput( QWidget * parent,
 {
 	m_ui->setupUi( this ) ;
 
-	this->setWindowFlags( this->windowFlags() | Qt::WindowStaysOnTopHint ) ;
-
 	this->setFixedSize( this->size() ) ;
+
+	this->setWindowFlags( this->windowFlags() | Qt::WindowStaysOnTopHint ) ;
 
 	if( parent ){
 

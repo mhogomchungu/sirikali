@@ -37,13 +37,15 @@
 #define COMMENT "-SiriKali_Comment_ID"
 
 walletconfig::walletconfig( QWidget * parent,secrets::wallet&& wallet ) :
-	QDialog( parent ),m_ui( new Ui::walletconfig ),m_wallet( std::move( wallet ) )
+	QDialog( parent ),m_ui( new Ui::walletconfig ),
+	m_wallet( std::move( wallet ) ),m_parentWidget( parent )
 {
 	m_ui->setupUi( this ) ;
 
+	this->setFixedSize( this->size() ) ;
+
 	this->setWindowFlags( this->windowFlags() | Qt::WindowStaysOnTopHint ) ;
 
-	this->setFixedSize( this->size() ) ;
 	this->setFont( parent->font() ) ;
 
 	m_ui->tableWidget->setColumnWidth( 0,386 ) ;
@@ -152,7 +154,7 @@ void walletconfig::pbAdd()
 {
 	this->disableAll() ;
 
-	walletconfiginput::instance( this,[ this ]( const QString& volumeID,
+	walletconfiginput::instance( m_parentWidget,[ this ]( const QString& volumeID,
 				     const QString& comment,const QString& key ){
 
 		m_comment  = comment ;
