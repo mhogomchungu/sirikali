@@ -42,7 +42,7 @@ plugin::plugin( QWidget * parent,plugins::plugin plugin,
 		const QString& e,const QVector<QString>& exe ) :
 	QDialog( parent ),m_ui( new Ui::plugin ),
 	m_function( std::move( function ) ),
-	m_pluginType( plugin ),m_exe( exe )
+	m_pluginType( plugin ),m_exe( exe ),m_parentWidget( parent )
 {
 	m_ui->setupUi( this ) ;
 
@@ -101,7 +101,7 @@ void plugin::pbSetKey()
 
 	if( keyFile.isEmpty() ){
 
-		return DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "KeyFile Not Set" ) ) ;
+		return DialogMsg( m_parentWidget ).ShowUIOK( tr( "ERROR" ),tr( "KeyFile Not Set" ) ) ;
 	}
 
 	this->disableAll() ;
@@ -121,7 +121,7 @@ void plugin::pbSetKey()
 
 		if( m_key.isEmpty() ){
 
-			DialogMsg msg( this ) ;
+			DialogMsg msg( m_parentWidget ) ;
 
 			msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Generate Key" ) ) ;
 

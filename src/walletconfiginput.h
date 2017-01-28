@@ -64,6 +64,7 @@ private:
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	std::function< void( const QString&,const QString&,const QString& ) > m_add ;
 	std::function< void() > m_cancel ;
+	QWidget * m_parentWidget ;
 };
 
 #endif // KWALLETCONFIGINPUT_H

@@ -32,7 +32,8 @@
 #include "dialogmsg.h"
 #include "tablewidget.h"
 
-favorites::favorites( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::favorites )
+favorites::favorites( QWidget * parent ) : QDialog( parent ),
+	m_ui( new Ui::favorites ),m_parentWidget( parent )
 {
 	m_ui->setupUi( this ) ;
 
@@ -252,7 +253,7 @@ void favorites::cancel()
 
 void favorites::add()
 {
-	DialogMsg msg( this ) ;
+	DialogMsg msg( m_parentWidget ) ;
 
 	auto dev = m_ui->lineEditEncryptedFolderPath->text() ;
 	auto path = m_ui->lineEditMountPath->text() ;

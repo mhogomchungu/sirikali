@@ -31,7 +31,8 @@ options::options( QWidget * parent,bool r,const QStringList& l,
 	m_ui( new Ui::options ),
 	m_create( r ),
 	m_type( l.at( 2 ).toLower() ),
-	m_setOptions( std::move( e ) )
+	m_setOptions( std::move( e ) ),
+	m_parentWidget( parent )
 {
 	m_ui->setupUi( this ) ;
 
@@ -138,7 +139,7 @@ void options::pbOK()
 
 	if( !ok ){
 
-		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Idle Time Field Requires Digits Only If Not Empty." ) ) ;
+		DialogMsg( m_parentWidget ).ShowUIOK( tr( "ERROR" ),tr( "Idle Time Field Requires Digits Only If Not Empty." ) ) ;
 	}else{
 		m_setOptions( { e,m_ui->lineConfigFilePath->text() } ) ;
 

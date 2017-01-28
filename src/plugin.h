@@ -72,6 +72,7 @@ private:
 	std::function< void( const QString& ) > m_function ;
 	plugins::plugin m_pluginType ;
 	QVector<QString> m_exe ;
+	QWidget * m_parentWidget ;
 };
 
 #endif // HMAC_H
