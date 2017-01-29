@@ -43,15 +43,15 @@ class plugin : public QDialog
 {
 	Q_OBJECT
 public:
-	static plugin& instance( QWidget * parent,
+	static plugin& instance( QWidget * parent,QDialog * dialog,
 				  plugins::plugin t,
 				  std::function< void( const QString& ) > e,
 				  const QString& f = QString(),
 				  const QVector<QString>& g = QVector<QString>() )
 	{
-		return *( new plugin( parent,t,e,f,g ) ) ;
+		return *( new plugin( parent,dialog,t,e,f,g ) ) ;
 	}
-	plugin( QWidget * parent,
+	plugin( QWidget * parent,QDialog * dialog,
 	      plugins::plugin,
 	      std::function< void( const QString& ) >,
 	      const QString& = QString(),const QVector<QString>& = QVector<QString>() ) ;
@@ -73,6 +73,7 @@ private:
 	plugins::plugin m_pluginType ;
 	QVector<QString> m_exe ;
 	QWidget * m_parentWidget ;
+	QDialog * m_dialog ;
 };
 
 #endif // HMAC_H

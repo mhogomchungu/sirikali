@@ -642,7 +642,7 @@ void utility::saveFont( const QFont& Font )
 	_settings->setValue( "Fonts",s ) ;
 }
 
-int utility::pluginKey( QWidget * w,QString * key,const QString& p )
+int utility::pluginKey( QWidget * w,QDialog * d,QString * key,const QString& p )
 {
 	plugins::plugin pluginType ;
 	QString pluginString ;
@@ -659,7 +659,7 @@ int utility::pluginKey( QWidget * w,QString * key,const QString& p )
 
 	QEventLoop l ;
 
-	plugin::instance( w,pluginType,[ & ]( const QString& e ){
+	plugin::instance( w,d,pluginType,[ & ]( const QString& e ){
 
 		*key = e ;
 

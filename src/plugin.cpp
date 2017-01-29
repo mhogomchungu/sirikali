@@ -37,12 +37,12 @@
 
 #include <memory>
 
-plugin::plugin( QWidget * parent,plugins::plugin plugin,
+plugin::plugin( QWidget * parent,QDialog * dialog,plugins::plugin plugin,
 		std::function< void( const QString& ) > function,
 		const QString& e,const QVector<QString>& exe ) :
 	QDialog( parent ),m_ui( new Ui::plugin ),
 	m_function( std::move( function ) ),
-	m_pluginType( plugin ),m_exe( exe )
+	m_pluginType( plugin ),m_exe( exe ),m_dialog( dialog )
 {
 	m_ui->setupUi( this ) ;
 
@@ -97,6 +97,8 @@ void plugin::HideUI()
 	m_function( m_key ) ;
 
 	this->hide() ;
+	m_dialog->show() ;
+	m_dialog->activateWindow() ;
 	this->deleteLater() ;
 }
 

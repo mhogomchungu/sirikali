@@ -32,7 +32,7 @@ class dialogok : public QDialog
 {
 	Q_OBJECT
 public:
-	dialogok( QWidget * parent,bool,bool,const QString& title,const QString& msg ) ;
+	dialogok( QWidget * parent,QDialog *,bool,bool,const QString& title,const QString& msg ) ;
 	~dialogok() ;
 	int Show() ;
 private slots:
@@ -42,6 +42,7 @@ private slots:
 private:
 	void closeEvent( QCloseEvent * ) ;
 	Ui::dialogok * m_ui ;
+	QDialog * m_dialog ;
 } ;
 
 #endif // DIALOGOK_H

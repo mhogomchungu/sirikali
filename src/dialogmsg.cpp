@@ -207,68 +207,6 @@ void DialogMsg::HideLabels()
 	m_ui->labelUsedPerc->setHidden( true ) ;
 }
 
-void DialogMsg::ShowUIVolumeProperties( const QString& title,const QString& m )
-{
-	m_ui->pbYes->setHidden( true ) ;
-	m_ui->pbNo->setHidden( true ) ;
-	m_ui->pbOk->setHidden( false ) ;
-
-	m_ui->label->setHidden( true ) ;
-
-	QString msg = m ;
-	msg.remove( "   " ) ;
-
-	auto stl = msg.split( "\n" ) ;
-
-	if( stl.size() >= 14 ){
-
-		this->setFixedSize( this->size() ) ;
-
-		auto _trancate_long_path = []( const QString& e )->QString{
-
-			const int len    = 40 ;
-			const int length = e.length() ;
-
-			if( length <= len ){
-
-				return e ;
-			}else{
-				return e.mid( 0,18 ) + "...." + e.mid( length - 18 ) ;
-			}
-		} ;
-
-		auto _replace = [ & ]( int position,const char * txt,const QString& translated ){
-
-			auto e = stl.at( position ) ;
-
-			e.replace( txt,translated ) ;
-
-			return e ;
-		} ;
-
-		m_ui->labelType->setText( _replace( 0,"type:",tr( "type:" ) ) ) ;
-		m_ui->labelCipher->setText( _replace( 1,"cipher:",tr( "cipher:" ) ) ) ;
-		m_ui->labelKeySize->setText( _replace( 2,"keysize:",tr( "keysize:" ) ) ) ;
-		m_ui->labelOffset->setText( _replace( 3,"offset:",tr( "offset:" ) ) ) ;
-		m_ui->labelDevice->setText( _trancate_long_path( _replace( 4,"device:",tr( "device:" ) ) ) ) ;
-		m_ui->labelLoop->setText( _trancate_long_path( _replace( 5,"loop:",tr( "loop:" ) ) ) ) ;
-		m_ui->labelSize->setText( _replace( 6,"mode:",tr( "mode:" ) ) ) ;
-		m_ui->labelMode->setText( _replace( 7,"active slots:",tr( "active slots:" ) ) ) ;
-		m_ui->labelActiveSlots->setText( _replace( 8,"file system:",tr( "file system:" ) ) ) ;
-		m_ui->labelFs->setText( _replace( 9,"total space:",tr( "total space:" ) ) ) ;
-		m_ui->labelSize_2->setText( _replace( 10,"used space:",tr( "used space:" ) ) ) ;
-		m_ui->labelUsed->setText( _replace( 11,"free space:",tr( "free space:" ) ) ) ;
-		m_ui->labelUnused->setText( _replace( 12,"used%:",tr( "used%:" ) ) ) ;
-		m_ui->labelUsedPerc->setText( _replace( 13,"UUID:",tr( "UUID:" ) ) ) ;
-
-		//QString m = stl.at( 15 ) ;
-		//m.replace( QString( "mount point2" ),QString( "public mount point" ) ) ;
-		//m_ui->labelUsedPerc->setText( m ) ;
-
-		this->ShowUI( title,msg ) ;
-	}
-}
-
 void DialogMsg::ShowUIInfo( const QString& title,bool centered,const QString& msg )
 {
 	m_ui->pbYes->setHidden( true ) ;
@@ -294,15 +232,7 @@ void DialogMsg::ShowUIInfo( const QString& title,bool centered,const QString& ms
 
 void DialogMsg::ShowUIOK( const QString& title,const QString& msg )
 {
-	dialogok( m_parent,false,false,title,msg ).Show() ;
-
-	//m_ui->pbYes->setHidden( true ) ;
-	//m_ui->pbNo->setHidden( true ) ;
-	//m_ui->pbOk->setHidden( false ) ;
-
-	//this->HideLabels() ;
-	//this->setDimentions( msg ) ;
-	//this->ShowUI( title,msg ) ;
+	dialogok( m_parent,this,false,false,title,msg ).Show() ;
 }
 
 void DialogMsg::SetUpButtons()
@@ -316,27 +246,12 @@ void DialogMsg::SetUpButtons()
 
 int DialogMsg::ShowUIYesNo( const QString& title,const QString& msg )
 {
-	return dialogok( m_parent,true,false,title,msg ).Show() ;
-
-	//this->SetUpButtons() ;
-	//this->setDimentions( msg ) ;
-	//this->ShowUI( title,msg ) ;
-
-	//return m_status;
+	return dialogok( m_parent,this,true,false,title,msg ).Show() ;
 }
 
 int  DialogMsg::ShowUIYesNoDefaultNo( const QString& title,const QString& msg )
 {
-	return dialogok( m_parent,true,true,title,msg ).Show() ;
-
-	//this->SetUpButtons() ;
-	//this->setDimentions( msg ) ;
-
-	//m_ui->pbNo->setFocus() ;
-
-	//this->ShowUI( title,msg ) ;
-
-	//return m_status ;
+	return dialogok( m_parent,this,true,true,title,msg ).Show() ;
 }
 
 bool DialogMsg::ShowUIOKDoNotShowOption( const QString& title,const QString& msg )

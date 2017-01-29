@@ -38,7 +38,6 @@ public:
 	int  ShowUIYesNo( const QString& title,const QString& msg ) ;
 	int  ShowUIYesNoDefaultNo( const QString& title,const QString& msg ) ;
 	void ShowUIInfo( const QString& title,bool,const QString& msg ) ;
-	void ShowUIVolumeProperties( const QString& title,const QString& msg ) ;
 	bool ShowUIOKDoNotShowOption( const QString& title,const QString& msg ) ;
 	void ShowPermissionProblem( const QString& device ) ;
 	void ShowPermissionProblem( const QString&,const QString& device ) ;

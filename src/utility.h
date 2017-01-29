@@ -324,7 +324,7 @@ namespace utility
 	utility::array_t getWindowDimensions() ;
 	void setWindowDimensions( const std::initializer_list<int>& ) ;
 
-	int pluginKey( QWidget *,QString *,const QString& ) ;
+	int pluginKey( QWidget *,QDialog *,QString *,const QString& ) ;
 
 	QFont getFont( QWidget * ) ;
 	void saveFont( const QFont& ) ;

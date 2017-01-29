@@ -154,7 +154,7 @@ void walletconfig::pbAdd()
 {
 	this->disableAll() ;
 
-	walletconfiginput::instance( m_parentWidget,[ this ]( const QString& volumeID,
+	walletconfiginput::instance( m_parentWidget,this,[ this ]( const QString& volumeID,
 				     const QString& comment,const QString& key ){
 
 		m_comment  = comment ;

@@ -22,8 +22,9 @@
 #include <QMessageBox>
 #include "utility.h"
 
-dialogok::dialogok(  QWidget  * parent,bool s,bool q,const QString& e,const QString& f ) :
-	QDialog( parent ),m_ui( new Ui::dialogok )
+dialogok::dialogok( QWidget  * parent,QDialog * dialog,
+		    bool s,bool q,const QString& e,const QString& f ) :
+	QDialog( parent ),m_ui( new Ui::dialogok ),m_dialog( dialog )
 {
 	m_ui->setupUi( this ) ;
 
@@ -78,6 +79,8 @@ void dialogok::closeEvent( QCloseEvent * e )
 
 dialogok::~dialogok()
 {
+	m_dialog->show() ;
+	m_dialog->activateWindow() ;
 	delete m_ui ;
 }
 
