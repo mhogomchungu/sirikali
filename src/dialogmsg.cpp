@@ -364,5 +364,7 @@ bool DialogMsg::ShowUIOKDoNotShowOption( const QString& title,const QString& msg
 
 DialogMsg::~DialogMsg()
 {
+	m_parent->raise() ;
+	m_parent->activateWindow() ;
 	delete m_ui ;
 }

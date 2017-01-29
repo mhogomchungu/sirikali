@@ -202,6 +202,8 @@ void walletconfig::pbAdd()
 			}
 
 			this->enableAll() ;
+			this->raise() ;
+			this->activateWindow() ;
 			m_ui->tableWidget->setFocus() ;
 		} ) ;
 
