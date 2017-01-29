@@ -1104,15 +1104,29 @@ void utility::setWindowOptions( QDialog * w )
 	}
 }
 
+static bool _use_default_widget_relationship()
+{
+	if( _settings->contains( "useDefaultWidgetRelationship" ) ){
+
+		return _settings->value( "useDefaultWidgetRelationship" ).toBool() ;
+	}else{
+		bool e = true ;
+		_settings->setValue( "useDefaultWidgetRelationship",e ) ;
+		return e ;
+	}
+}
+
 void utility::setParent( QWidget * parent,QWidget ** localParent,QDialog * dialog )
 {
-	Q_UNUSED( dialog ) ;
-
 	if( utility::platformIsLinux() ){
 
-		*localParent = parent ;
+		if( _use_default_widget_relationship() ){
+
+			*localParent = parent ;
+		}else{
+			*localParent = dialog ;
+		}
 	}else{
-		//*localParent = parent ;
 		*localParent = dialog ;
 	}
 }

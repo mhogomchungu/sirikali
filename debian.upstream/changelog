@@ -1,3 +1,10 @@
+sirikali (1.2.4-1) UNRELEASED; urgency=low
+  [Mhogo Mchungu]
+  * New Features
+     -- Add support for OSX
+
+ -- Mhogo Mchungu <mhogomchungu@gmail.com>  Wed, 1 Feb 2016 16:38:48 +0000
+
 sirikali (1.2.3-1) UNRELEASED; urgency=low
   [Mhogo Mchungu]
   * New Features

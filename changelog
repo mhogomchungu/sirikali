@@ -63,5 +63,5 @@ version 1.2.2
 version 1.2.3
 -- Make it possible to unlock a volume from favorite list without using key storage system.
 
-version 1.3.0
+version 1.2.4
 -- Add OSX support.
