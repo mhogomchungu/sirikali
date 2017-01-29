@@ -1106,12 +1106,13 @@ void utility::setWindowOptions( QDialog * w )
 
 void utility::setParent( QWidget * parent,QWidget ** localParent,QDialog * dialog )
 {
-	return ;
+	Q_UNUSED( dialog ) ;
 
 	if( utility::platformIsLinux() ){
 
 		*localParent = parent ;
 	}else{
-		*localParent = dialog ;
+		*localParent = parent ;
+		//*localParent = dialog ;
 	}
 }
