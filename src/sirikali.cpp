@@ -900,7 +900,7 @@ void sirikali::ecryptfsProperties()
 
 		if( it.mountPoint() == s ){
 
-			DialogMsg( this ).ShowUIInfo( tr( "INFORMATION" ),true,[ & ](){
+			DialogMsg( this,nullptr ).ShowUIInfo( tr( "INFORMATION" ),true,[ & ](){
 
 				auto s = it.mountOptions() ;
 
@@ -939,12 +939,12 @@ void sirikali::properties()
 
 	if( !vfs.valid ){
 
-		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Read Volume Properties" ) ) ;
+		DialogMsg( this,nullptr ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Read Volume Properties" ) ) ;
 
 		return this->enableAll() ;
 	}
 
-	DialogMsg( this ).ShowUIInfo( tr( "INFORMATION" ),true,[ & ](){
+	DialogMsg( this,nullptr ).ShowUIInfo( tr( "INFORMATION" ),true,[ & ](){
 
 		auto _prettify = []( quint64 s ){
 
@@ -1270,7 +1270,7 @@ void sirikali::showMoungDialog( const volumeInfo& v )
 {
 	if( v.isNotValid() ){
 
-		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),
+		DialogMsg( this,nullptr ).ShowUIOK( tr( "ERROR" ),
 					    tr( "Permission To Access The Volume Was Denied\nOr\nThe Volume Is Not Supported" ) ) ;
 
 		this->enableAll() ;
@@ -1385,7 +1385,7 @@ void sirikali::pbUmount()
 			m_mountInfo.eventHappened() ;
 			siritask::deleteMountFolder( b ) ;
 		}else{
-			DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Unmount %1 Volume" ).arg( type ) ) ;
+			DialogMsg( this,nullptr ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Unmount %1 Volume" ).arg( type ) ) ;
 
 			this->enableAll() ;
 		}

@@ -259,7 +259,7 @@ void favorites::cancel()
 
 void favorites::add()
 {
-	DialogMsg msg( m_parentWidget ) ;
+	DialogMsg msg( m_parentWidget,this ) ;
 
 	auto dev = m_ui->lineEditEncryptedFolderPath->text() ;
 	auto path = m_ui->lineEditMountPath->text() ;

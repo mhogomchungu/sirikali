@@ -142,7 +142,7 @@ void options::pbOK()
 
 	if( !ok ){
 
-		DialogMsg( m_parentWidget ).ShowUIOK( tr( "ERROR" ),tr( "Idle Time Field Requires Digits Only If Not Empty." ) ) ;
+		DialogMsg( m_parentWidget,this ).ShowUIOK( tr( "ERROR" ),tr( "Idle Time Field Requires Digits Only If Not Empty." ) ) ;
 	}else{
 		m_setOptions( { e,m_ui->lineConfigFilePath->text() } ) ;
 

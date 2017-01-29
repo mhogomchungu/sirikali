@@ -107,7 +107,7 @@ void plugin::pbSetKey()
 
 	if( keyFile.isEmpty() ){
 
-		return DialogMsg( m_parentWidget ).ShowUIOK( tr( "ERROR" ),tr( "KeyFile Not Set" ) ) ;
+		return DialogMsg( m_parentWidget,this ).ShowUIOK( tr( "ERROR" ),tr( "KeyFile Not Set" ) ) ;
 	}
 
 	this->disableAll() ;
@@ -127,7 +127,7 @@ void plugin::pbSetKey()
 
 		if( m_key.isEmpty() ){
 
-			DialogMsg msg( m_parentWidget ) ;
+			DialogMsg msg( m_parentWidget,this ) ;
 
 			msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Generate Key" ) ) ;
 

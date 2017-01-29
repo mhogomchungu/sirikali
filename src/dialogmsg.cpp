@@ -26,8 +26,8 @@
 #include "utility.h"
 #include "dialogok.h"
 
-DialogMsg::DialogMsg( QWidget * parent ) :
-	QDialog( parent ),m_ui( new Ui::DialogMsg )
+DialogMsg::DialogMsg( QWidget * parent,QDialog * dialog ) :
+	QDialog( parent ),m_ui( new Ui::DialogMsg ),m_dialog( dialog )
 {
 	m_ui->setupUi( this ) ;
 
@@ -364,7 +364,11 @@ bool DialogMsg::ShowUIOKDoNotShowOption( const QString& title,const QString& msg
 
 DialogMsg::~DialogMsg()
 {
-	m_parent->raise() ;
-	m_parent->activateWindow() ;
+	if( m_dialog ){
+
+		m_dialog->show() ;
+		m_dialog->activateWindow() ;
+	}
+
 	delete m_ui ;
 }

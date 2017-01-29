@@ -33,7 +33,7 @@ class DialogMsg : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit DialogMsg( QWidget * parent = 0 ) ;
+	explicit DialogMsg( QWidget * parent,QDialog * ) ;
 	void ShowUIOK( const QString& title,const QString& msg ) ;
 	int  ShowUIYesNo( const QString& title,const QString& msg ) ;
 	int  ShowUIYesNoDefaultNo( const QString& title,const QString& msg ) ;
@@ -60,6 +60,7 @@ private:
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::DialogMsg * m_ui ;
 	QWidget * m_parent ;
+	QDialog * m_dialog ;
 	int m_status ;
 };
 

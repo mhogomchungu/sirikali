@@ -36,7 +36,7 @@ static QString _tr( const QStringList& l )
 
 static void _show( QObject * obj,bool autocheck,QWidget * w,const QVector< QStringList >& l )
 {
-	DialogMsg msg( w ) ;
+	DialogMsg msg( w,nullptr ) ;
 
 	bool show = false ;
 	QString e = "\n\n" ;

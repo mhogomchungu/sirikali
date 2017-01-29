@@ -203,7 +203,7 @@ void utility::openPath( const QString& path,const QString& opener,const QString&
 
 		if( failed && obj ){
 
-			DialogMsg( obj ).ShowUIOK( title,msg ) ;
+			DialogMsg( obj,nullptr ).ShowUIOK( title,msg ) ;
 		}
 	} ) ;
 }
@@ -490,7 +490,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the \
 GNU General Public License for more details.\n\
 " ).arg( VERSION_STRING ) ;
 
-	DialogMsg( parent ).ShowUIInfo( QObject::tr( "about SiriKali" ),true,license ) ;
+	DialogMsg( parent,nullptr ).ShowUIInfo( QObject::tr( "about SiriKali" ),true,license ) ;
 }
 
 static utility::array_t _default_dimensions( const char * defaults )

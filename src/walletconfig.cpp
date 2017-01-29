@@ -114,7 +114,7 @@ void walletconfig::itemClicked_0( QTableWidgetItem * item )
 
 	m_volumeID = m_ui->tableWidget->item( m_row,0 )->text() ;
 
-	int r = DialogMsg( m_parentWidget ).ShowUIYesNo( tr( "WARNING!" ),tr( "Are you sure you want to delete a volume with an id of \"%1\"?" ).arg( m_volumeID ) ) ;
+	int r = DialogMsg( m_parentWidget,this ).ShowUIYesNo( tr( "WARNING!" ),tr( "Are you sure you want to delete a volume with an id of \"%1\"?" ).arg( m_volumeID ) ) ;
 
 	if( r == QMessageBox::Yes ){
 
@@ -198,7 +198,7 @@ void walletconfig::pbAdd()
 
 				tablewidget::addRow( m_ui->tableWidget,{ m_volumeID,m_comment } ) ;
 			}else{
-				DialogMsg( m_parentWidget ).ShowUIOK( tr( "ERROR!" ),tr( "Failed To Add the Key In The Wallet." ) ) ;
+				DialogMsg( m_parentWidget,this ).ShowUIOK( tr( "ERROR!" ),tr( "Failed To Add the Key In The Wallet." ) ) ;
 			}
 
 			this->enableAll() ;
