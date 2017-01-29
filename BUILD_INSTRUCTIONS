@@ -5,16 +5,17 @@ Look in "debian.upstream" folder for information on how to build a debian packag
 
 3. For Qt4 build(libqt4-devel or a package that provides libqt4-network-devel,libqtcore4-devel,libqtgui4-devel)
    For Qt5 build(qt5-base-devel or a packages that provides Qt5Core-devel,Qt5Gui-devel,Qt5Network-devel)
-4. gcc
-5. gcc-c++
+4. gcc or any other C compiler
+5. gcc-c++ or any other C++ compiler
 7. cmake
 8. pwquality-devel( optional dependency used to measure the quality of a password when creating volumes )
 9. libgcrypt-devel or libgcrypt11-dev
-10.libsecret-devel or libsecret-1-dev( optional dependency to store keys in gnome's libsecret )
-11.kde-devel( optional dependency to store keys in kde's kwallet )
-12.pkg-config
-13.lxqt_wallet-devel( optional dependency used for secure storage of keys.An internal copy of this project will be
+10. libsecret-devel or libsecret-1-dev( optional dependency to store keys in gnome's libsecret )
+11. kde-devel( optional dependency to store keys in kde's kwallet )
+12. pkg-config
+13. lxqt_wallet-devel( optional dependency used for secure storage of keys.An internal copy of this project will be
    used if an external version is not present )
+14. xdg-utils( runtime dependency used call a file manager to display contents of an unlocked volume.
 
 To build SiriKali with default options,run these 5 commands from inside SiriKali source folder.
 

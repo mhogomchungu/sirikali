@@ -1112,7 +1112,7 @@ void utility::setParent( QWidget * parent,QWidget ** localParent,QDialog * dialo
 
 		*localParent = parent ;
 	}else{
-		*localParent = parent ;
-		//*localParent = dialog ;
+		//*localParent = parent ;
+		*localParent = dialog ;
 	}
 }
