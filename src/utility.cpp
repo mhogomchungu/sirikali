@@ -83,6 +83,11 @@ bool utility::platformIsLinux()
 	return true ;
 }
 
+bool utility::platformIsOSX()
+{
+	return false ;
+}
+
 #else
 
 #include <sys/param.h>
@@ -91,6 +96,11 @@ bool utility::platformIsLinux()
 bool utility::platformIsLinux()
 {
 	return false ;
+}
+
+bool utility::platformIsOSX()
+{
+	return true ;
 }
 
 #endif
@@ -1082,5 +1092,26 @@ int utility::checkForUpdateInterval()
 	}else{
 		_settings->setValue( "checkForUpdateInterval",int( 300 ) ) ;
 		return 300 * 1000 ;
+	}
+}
+
+void utility::setWindowOptions( QDialog * w )
+{
+	if( utility::platformIsOSX() ){
+
+		w->setWindowFlags( w->windowFlags() | Qt::WindowStaysOnTopHint ) ;
+		w->setWindowModality( Qt::WindowModal ) ;
+	}
+}
+
+void utility::setParent( QWidget * parent,QWidget ** localParent,QDialog * dialog )
+{
+	return ;
+
+	if( utility::platformIsLinux() ){
+
+		*localParent = parent ;
+	}else{
+		*localParent = dialog ;
 	}
 }

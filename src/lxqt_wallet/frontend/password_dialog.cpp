@@ -86,6 +86,8 @@ LXQt::Wallet::password_dialog::password_dialog( QWidget * parent,
 	this->installEventFilter( this ) ;
 
 	this->show() ;
+	this->raise() ;
+	this->activateWindow() ;
 }
 
 bool LXQt::Wallet::password_dialog::eventFilter( QObject * watched,QEvent * event )

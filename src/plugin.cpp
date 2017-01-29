@@ -42,7 +42,7 @@ plugin::plugin( QWidget * parent,plugins::plugin plugin,
 		const QString& e,const QVector<QString>& exe ) :
 	QDialog( parent ),m_ui( new Ui::plugin ),
 	m_function( std::move( function ) ),
-	m_pluginType( plugin ),m_exe( exe ),m_parentWidget( parent )
+	m_pluginType( plugin ),m_exe( exe )
 {
 	m_ui->setupUi( this ) ;
 
@@ -50,6 +50,8 @@ plugin::plugin( QWidget * parent,plugins::plugin plugin,
 
 		m_ui->label->setText( e ) ;
 	}
+
+	utility::setParent( parent,&m_parentWidget,this ) ;
 
 	this->setFixedSize( this->size() ) ;
 	this->setFont( parent->font() ) ;
@@ -61,6 +63,8 @@ plugin::plugin( QWidget * parent,plugins::plugin plugin,
 	m_ui->pbKeyFile->setIcon( QIcon( ":/file.png" ) ) ;
 
 	m_ui->lineEdit->setFocus() ;
+
+	utility::setWindowOptions( this ) ;
 
 	this->ShowUI() ;
 }
@@ -84,6 +88,8 @@ plugin::~plugin()
 void plugin::ShowUI()
 {
 	this->show() ;
+	this->raise() ;
+	this->activateWindow() ;
 }
 
 void plugin::HideUI()

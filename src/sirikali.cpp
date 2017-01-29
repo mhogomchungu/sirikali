@@ -336,7 +336,7 @@ void sirikali::setUpAppMenu()
 					     "AutoMount Favorite Volumes When Available",
 					     SLOT( autoMountWhenAvailable( bool ) ) ) ;
 
-			if( !utility::platformIsLinux() ){
+			if( utility::platformIsOSX() ){
 
 				s->setChecked( false ) ;
 				s->setEnabled( false ) ;

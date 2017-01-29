@@ -101,6 +101,8 @@ void LXQt::Wallet::changePassWordDialog::ShowUI_1( std::function< void( bool ) >
 	connect( m_ui->pushButtonOK,SIGNAL( clicked() ),this,SLOT( ok() ) ) ;
 
 	this->show() ;
+	this->raise() ;
+	this->activateWindow() ;
 }
 
 void LXQt::Wallet::changePassWordDialog::ShowUI( std::function< void( const QString&,bool ) >&& create )
@@ -121,6 +123,8 @@ void LXQt::Wallet::changePassWordDialog::ShowUI( std::function< void( const QStr
 	m_ui->lineEditCurrentPassWord->setEnabled( false ) ;
 
 	this->show() ;
+	this->raise() ;
+	this->activateWindow() ;
 }
 
 LXQt::Wallet::changePassWordDialog::~changePassWordDialog()

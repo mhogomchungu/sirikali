@@ -33,7 +33,7 @@
 #include "tablewidget.h"
 
 favorites::favorites( QWidget * parent ) : QDialog( parent ),
-	m_ui( new Ui::favorites ),m_parentWidget( parent )
+	m_ui( new Ui::favorites )
 {
 	m_ui->setupUi( this ) ;
 
@@ -80,6 +80,10 @@ favorites::favorites( QWidget * parent ) : QDialog( parent ),
 	}() ) ;
 
 	this->installEventFilter( this ) ;
+
+	utility::setParent( parent,&m_parentWidget,this ) ;
+
+	utility::setWindowOptions( this ) ;
 
 	this->ShowUI() ;
 }
@@ -137,6 +141,8 @@ void favorites::ShowUI()
 	m_ui->tableWidget->setFocus() ;
 
 	this->show() ;
+	this->raise() ;
+	this->activateWindow() ;
 }
 
 void favorites::HideUI()

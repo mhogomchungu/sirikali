@@ -184,7 +184,7 @@ static QString _args( const QString& exe,const siritask::options& opt,
 				return e.arg( exe,configPath,cipherFolder ) ;
 			}else{
 
-				if( !utility::platformIsLinux() ){
+				if( utility::platformIsOSX() ){
 
 					mode += " -o fsname=gocryptfs@" + cipherFolder ;
 				}

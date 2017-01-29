@@ -233,6 +233,11 @@ namespace utility
 	Task::future< utility::fsInfo >& fileSystemInfo( const QString& ) ;
 
 	bool platformIsLinux() ;
+	bool platformIsOSX() ;
+
+	void setParent( QWidget * parent,QWidget ** localParent,QDialog * dialog ) ;
+
+	void setWindowOptions( QDialog * ) ;
 
 	utility::walletBackEnd autoMountBackEnd( void ) ;
 

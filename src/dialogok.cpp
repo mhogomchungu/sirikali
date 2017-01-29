@@ -20,6 +20,7 @@
 #include "dialogok.h"
 #include "ui_dialogok.h"
 #include <QMessageBox>
+#include "utility.h"
 
 dialogok::dialogok(  QWidget  * parent,bool s,bool q,const QString& e,const QString& f ) :
 	QDialog( parent ),m_ui( new Ui::dialogok )
@@ -27,8 +28,6 @@ dialogok::dialogok(  QWidget  * parent,bool s,bool q,const QString& e,const QStr
 	m_ui->setupUi( this ) ;
 
 	m_ui->label->setText( f ) ;
-
-	this->setWindowFlags( this->windowFlags() | Qt::WindowStaysOnTopHint ) ;
 
 	this->setWindowTitle( e ) ;
 
@@ -53,6 +52,8 @@ dialogok::dialogok(  QWidget  * parent,bool s,bool q,const QString& e,const QStr
 	}else{
 		m_ui->pbOK->setFocus() ;
 	}
+
+	utility::setWindowOptions( this ) ;
 }
 
 void dialogok::ok()
@@ -83,5 +84,8 @@ dialogok::~dialogok()
 int dialogok::Show()
 {
 	this->show() ;
+	this->raise() ;
+	this->activateWindow() ;
+
 	return this->exec() ;
 }

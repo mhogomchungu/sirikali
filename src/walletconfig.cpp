@@ -38,13 +38,13 @@
 
 walletconfig::walletconfig( QWidget * parent,secrets::wallet&& wallet ) :
 	QDialog( parent ),m_ui( new Ui::walletconfig ),
-	m_wallet( std::move( wallet ) ),m_parentWidget( parent )
+	m_wallet( std::move( wallet ) )
 {
 	m_ui->setupUi( this ) ;
 
 	this->setFixedSize( this->size() ) ;
 
-	this->setWindowFlags( this->windowFlags() | Qt::WindowStaysOnTopHint ) ;
+	utility::setParent( parent,&m_parentWidget,this ) ;
 
 	this->setFont( parent->font() ) ;
 
@@ -208,6 +208,8 @@ void walletconfig::pbAdd()
 	},[ this ](){
 
 		this->enableAll() ;
+		this->raise() ;
+		this->activateWindow() ;
 	} ) ;
 }
 
@@ -215,7 +217,11 @@ void walletconfig::accessWallet()
 {
 	using walletKeys = decltype( m_wallet->readAllKeyValues() ) ;
 
+	utility::setWindowOptions( this ) ;
+
 	this->show() ;
+	this->raise() ;
+	this->activateWindow() ;
 
 	Task::run<walletKeys>( [ this ](){
 

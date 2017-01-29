@@ -36,8 +36,6 @@ options::options( QWidget * parent,bool r,const QStringList& l,
 {
 	m_ui->setupUi( this ) ;
 
-	this->setWindowFlags( this->windowFlags() | Qt::WindowStaysOnTopHint ) ;
-
 	this->setFixedSize( this->size() ) ;
 
         m_ui->pushButton->setIcon( QIcon( ":/file.png" ) ) ;
@@ -53,7 +51,12 @@ options::options( QWidget * parent,bool r,const QStringList& l,
 	m_ui->lineEditIdleTime->setText( l.at( 0 ) ) ;
 	m_ui->lineConfigFilePath->setText( l.at( 1 ) ) ;
 
+	utility::setWindowOptions( this ) ;
+	utility::setParent( parent,&m_parentWidget,this ) ;
+
 	this->show() ;
+	this->raise() ;
+	this->activateWindow() ;
 }
 
 void options::pushButton()

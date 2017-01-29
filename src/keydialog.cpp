@@ -67,13 +67,11 @@ keyDialog::keyDialog( QWidget * parent,
 {
 	m_ui->setupUi( this ) ;
 
-	this->setWindowFlags( this->windowFlags() | Qt::WindowStaysOnTopHint ) ;
-
 	this->setUIVisible( true ) ;
 
 	m_ui->pbOK->setText( tr( "&OK" ) ) ;
 
-	m_parentWidget = parent ;
+	utility::setParent( parent,&m_parentWidget,this ) ;
 
 	m_configFile = e.configFilePath() ;
 	m_options    = e.idleTimeOut() ;
@@ -193,11 +191,9 @@ keyDialog::keyDialog( QWidget * parent,
 		}() ) ;
 	}
 
-
 	m_ui->pbOpenFolderPath->setIcon( QIcon( ":/folder.png" ) ) ;
 
 	this->setFixedSize( this->size() ) ;
-	this->setWindowFlags( Qt::Window | Qt::Dialog ) ;
 	this->setFont( parent->font() ) ;
 
 	m_ui->checkBoxOpenReadOnly->setChecked( utility::getOpenVolumeReadOnlyOption() ) ;
@@ -243,6 +239,8 @@ keyDialog::keyDialog( QWidget * parent,
 		m_ui->lineEditKey->setText( m_key ) ;
 		m_ui->pbOpen->setFocus() ;
 	}
+
+	utility::setWindowOptions( this ) ;
 }
 
 void keyDialog::windowSetTitle( const QString& s )
@@ -945,7 +943,10 @@ void keyDialog::pbCancel()
 
 void keyDialog::ShowUI()
 {
+	utility::setWindowOptions( this ) ;
 	this->show() ;
+	this->raise() ;
+	this->activateWindow() ;
 }
 
 void keyDialog::HideUI()

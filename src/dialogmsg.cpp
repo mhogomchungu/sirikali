@@ -27,22 +27,21 @@
 #include "dialogok.h"
 
 DialogMsg::DialogMsg( QWidget * parent ) :
-	QDialog( parent ),m_ui( new Ui::DialogMsg ),m_parent( parent )
+	QDialog( parent ),m_ui( new Ui::DialogMsg )
 {
 	m_ui->setupUi( this ) ;
 
-	this->setWindowFlags( this->windowFlags() | Qt::WindowStaysOnTopHint ) ;
+	this->setFont( parent->font() ) ;
 
-	if( parent ){
-
-		this->setFont( parent->font() ) ;
-	}
+	utility::setParent( parent,&m_parent,this ) ;
 
 	connect( m_ui->pbNo,SIGNAL( clicked() ),this,SLOT( pbNo() ) ) ;
 	connect( m_ui->pbYes,SIGNAL( clicked() ),this,SLOT( pbYes() ) ) ;
 	connect( m_ui->pbOk,SIGNAL( clicked() ),this,SLOT( pbOK() ) ) ;
 
 	this->installEventFilter( this ) ;
+
+	utility::setWindowOptions( this ) ;
 }
 
 bool DialogMsg::eventFilter( QObject * watched,QEvent * event )
@@ -87,7 +86,8 @@ void DialogMsg::ShowUI( const QString& title,const QString& msg )
 	this->setWindowTitle( title ) ;
 
 	this->show() ;
-
+	this->raise() ;
+	this->activateWindow() ;
 	this->exec() ;
 }
 

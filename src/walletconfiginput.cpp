@@ -37,8 +37,6 @@ walletconfiginput::walletconfiginput( QWidget * parent,
 
 	this->setFixedSize( this->size() ) ;
 
-	this->setWindowFlags( this->windowFlags() | Qt::WindowStaysOnTopHint ) ;
-
 	if( parent ){
 
 		this->setFont( parent->font() ) ;
@@ -60,7 +58,11 @@ walletconfiginput::walletconfiginput( QWidget * parent,
 
 	m_ui->pushButtonVolume->setVisible( false ) ;
 
-	this->show() ;
+	utility::setWindowOptions( this ) ;
+
+	utility::setParent( parent,&m_parentWidget,this ) ;
+
+	this->ShowUI() ;
 }
 
 bool walletconfiginput::eventFilter( QObject * watched,QEvent * event )
@@ -76,6 +78,8 @@ walletconfiginput::~walletconfiginput()
 void walletconfiginput::ShowUI()
 {
 	this->show() ;
+	this->raise() ;
+	this->activateWindow() ;
 }
 
 void walletconfiginput::HideUI()
