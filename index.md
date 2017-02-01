@@ -1,4 +1,4 @@
-## SiriKali
+## SiriKali works on Linux and OSX
 
 SiriKali is a Qt/C++ GUI application that manages <a href="http://ecryptfs.org/">ecryptfs</a>,<a href="https://www.cryfs.org/">cryfs</a>,<a href="http://www.arg0.net/#!encfs/c1awt">encfs</a>,<a href="https://nuetzlich.net/gocryptfs">gocryptfs</a> and <a href="https://github.com/netheril96/securefs">securefs</a> based encrypted folders. These projects are compared <a href="https://nuetzlich.net/gocryptfs/comparison/">here.</a>
 
@@ -12,7 +12,7 @@ SiriKali is a Qt/C++ GUI application that manages <a href="http://ecryptfs.org/"
 
 ```securefs``` binary application is required to be installed for SiriKali to gain support for securefs volumes.
 
-Encrypted container ```folders``` have an advantage over encrypted container ```files``` like the ones that are created by <a href="http://mhogomchungu.github.io/zuluCrypt/">zuluCrypt</a>,TrueCrypt,VeraCrypt among other projects that use file based encrypted containers. 
+Encrypted container ```folders``` have an advantage over encrypted container ```files``` like the ones that are created by <a href="http://mhogomchungu.github.io/zuluCrypt/">zuluCrypt</a>,TrueCrypt,VeraCrypt among other projects that use file based encrypted containers.
 
 #### Advantages are:
 
@@ -31,9 +31,9 @@ Most frequently asked questions are answered <a href="https://github.com/mhogomc
 
 ## Download link
 
-Latest released version is 1.2.3 and it can be downloaded by clicking below link.
+Latest released version is 1.2.4 and it can be downloaded by clicking below link.
 
-<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.2.3/SiriKali-1.2.3.tar.xz">SiriKali-1.2.3.tar.xz</a>
+<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.2.4/SiriKali-1.2.4.tar.xz">SiriKali-1.2.4.tar.xz</a>
 
 Older versions can be downloaded <a href="https://github.com/mhogomchungu/sirikali/releases">here.</a>
 
