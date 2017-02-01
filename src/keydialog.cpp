@@ -667,15 +667,11 @@ void keyDialog::showErrorMessage( const QString& e )
 	m_ui->labelMsg->setText( e ) ;
 
 	m_ui->pbOK->setFocus() ;
-
-	m_eventLoop.exec() ;
-
-	this->setUIVisible( true ) ;
 }
 
 void keyDialog::pbOK()
 {
-	m_eventLoop.exit() ;
+	this->setUIVisible( true ) ;
 }
 
 void keyDialog::encryptedFolderCreate()

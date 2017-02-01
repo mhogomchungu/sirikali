@@ -159,8 +159,6 @@ private :
 	QString m_configFile ;
 	QString m_exe ;
 
-	QEventLoop m_eventLoop ;
-
 	QStringList m_keyFiles ;
 
 	QTableWidget * m_table ;

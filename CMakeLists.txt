@@ -57,7 +57,7 @@ file( WRITE ${PROJECT_BINARY_DIR}/locale_path.h "\n#define TRANSLATION_PATH \"${
 
 file( WRITE  ${PROJECT_BINARY_DIR}/install_prefix.h "\n#define INSTALL_PREFIX \"${CMAKE_INSTALL_PREFIX}/\"\n" )
 
-set( PGR_VERSION "1.2.3" )
+set( PGR_VERSION "1.2.4" )
 
 file( WRITE ${PROJECT_BINARY_DIR}/version.h "
 #ifndef THIS_VERSION
