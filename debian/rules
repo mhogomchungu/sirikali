@@ -18,12 +18,9 @@ override_dh_auto_configure:
 %:
 	dh $@ --parallel
 
-CHDATE = $(shell grep "^ \-\-" debian/changelog | head -1 | sed 's/.\+, //' | sed 's/...\:.\+//' )
-DT = $(shell date -d "${CHDATE}" "+%Y-%m-%d")
-
 override_dh_auto_build:
 	dh_auto_build
-	ronn --date=${DT} debian/*.ronn
+	pandoc debian/sirikali.1.md -s -t man -o debian/sirikali.1
 
 get-orig-source:  $(info I: $(PKG)_$(VER))
 	@echo "# Downloading..."
