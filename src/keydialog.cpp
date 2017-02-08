@@ -100,6 +100,8 @@ keyDialog::keyDialog( QWidget * parent,
 		 this,SLOT( cbActicated( QString ) ) ) ;
 	connect( m_ui->pbOK,SIGNAL( clicked( bool ) ),
 		 this,SLOT( pbOK() ) ) ;
+	connect( m_ui->checkBoxVisibleKey,SIGNAL( stateChanged( int ) ),
+		 this,SLOT( cbVisibleKeyStateChanged( int ) ) ) ;
 
 	if( m_create ){
 
@@ -239,6 +241,9 @@ keyDialog::keyDialog( QWidget * parent,
 		m_ui->lineEditKey->setText( m_key ) ;
 		m_ui->pbOpen->setFocus() ;
 	}
+
+	m_ui->checkBoxVisibleKey->setVisible( true ) ;
+	m_ui->pbkeyOption->setVisible( false ) ;
 
 	utility::setWindowOptions( this ) ;
 }
@@ -405,15 +410,17 @@ void keyDialog::enableAll()
 	auto enable = index == keyDialog::keyfile || index == keyDialog::keyKeyFile ;
 
 	m_ui->pbkeyOption->setEnabled( enable ) ;
+	m_ui->checkBoxVisibleKey->setEnabled( index == keyDialog::Key ) ;
 
 	m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
 
 	m_ui->lineEditFolderPath->setEnabled( false ) ;
-	m_ui->label_3->setEnabled( true ) ;
+	m_ui->label_3->setEnabled( true ) ;	
 }
 
 void keyDialog::disableAll()
 {
+	m_ui->checkBoxVisibleKey->setEnabled( false ) ;
 	m_ui->pbMountPoint->setEnabled( false ) ;
 	m_ui->cbKeyType->setEnabled( false ) ;
 	m_ui->pbOptions->setEnabled( false ) ;
@@ -434,7 +441,6 @@ void keyDialog::setUIVisible( bool e )
 {
 	m_ui->pbOK->setVisible( !e ) ;
 	m_ui->labelMsg->setVisible( !e ) ;
-
 	m_ui->cbKeyType->setVisible( e ) ;
 	m_ui->pbOptions->setVisible( e ) ;
 	m_ui->pbkeyOption->setVisible( e ) ;
@@ -444,6 +450,8 @@ void keyDialog::setUIVisible( bool e )
 	m_ui->pbCancel->setVisible( e ) ;
 	m_ui->pbOpen->setVisible( e ) ;
 	m_ui->label->setVisible( e ) ;
+	m_ui->checkBoxVisibleKey->setVisible( e ) ;
+	m_ui->pbkeyOption->setVisible( e ) ;
 
 	if( e ){
 
@@ -671,7 +679,18 @@ void keyDialog::showErrorMessage( const QString& e )
 
 void keyDialog::pbOK()
 {
+	m_ui->checkBoxVisibleKey->setChecked( false ) ;
+
 	this->setUIVisible( true ) ;
+
+	if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
+
+		m_ui->checkBoxVisibleKey->setVisible( true ) ;
+		m_ui->pbkeyOption->setVisible( false ) ;
+	}else{
+		m_ui->checkBoxVisibleKey->setVisible( false ) ;
+		m_ui->pbkeyOption->setVisible( true ) ;
+	}
 }
 
 void keyDialog::encryptedFolderCreate()
@@ -774,7 +793,7 @@ void keyDialog::encryptedFolderMount()
 
 		this->HideUI() ;
 	}else{
-		m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
+		//m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
 
 		m_ui->lineEditKey->clear() ;
 
@@ -834,23 +853,54 @@ void keyDialog::openVolume()
 	}
 }
 
+void keyDialog::cbVisibleKeyStateChanged( int s )
+{
+	if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
+
+		if( s == Qt::Checked ){
+
+			m_ui->lineEditKey->setEchoMode( QLineEdit::Normal ) ;
+		}else{
+			m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
+		}
+
+		m_ui->lineEditKey->setFocus() ;
+	}
+}
+
 void keyDialog::cbActicated( QString e )
 {
 	e.remove( '&' ) ;
+
+	auto _showVisibleKeyOption = [ this ]( bool e ){
+
+		m_ui->checkBoxVisibleKey->setEnabled( e ) ;
+		m_ui->checkBoxVisibleKey->setChecked( false ) ;
+		m_ui->checkBoxVisibleKey->setVisible( e ) ;
+		m_ui->pbkeyOption->setVisible( !e ) ;
+	} ;
 
 	if( e == tr( "Key" ).remove( '&' ) ){
 
 		this->key() ;
 
+		_showVisibleKeyOption( true ) ;
+
 	}else if( e == tr( "KeyFile" ).remove( '&' ) ){
+
+		_showVisibleKeyOption( false ) ;
 
 		this->keyFile() ;
 
 	}else if( e == tr( "Key+KeyFile" ).remove( '&' ) ){
 
+		_showVisibleKeyOption( false ) ;
+
 		this->keyAndKeyFile() ;
 
 	}else if( e == tr( "HMAC+KeyFile" ).remove( '&' ) ){
+
+		_showVisibleKeyOption( false ) ;
 
 		this->HMACKeyFile() ;
 	}else{
@@ -868,6 +918,8 @@ void keyDialog::cbActicated( QString e )
 
 			m_ui->lineEditKey->setText( _internalWallet() ) ;
 		}
+
+		_showVisibleKeyOption( false ) ;
 	}
 }
 
@@ -915,8 +967,10 @@ void keyDialog::key()
 	m_ui->pbkeyOption->setEnabled( false ) ;
 	m_ui->label->setText( tr( "Key" ) ) ;
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
+	m_ui->checkBoxVisibleKey->setChecked( false ) ;
 	m_ui->lineEditKey->clear() ;
 	m_ui->lineEditKey->setEnabled( true ) ;
+	m_ui->lineEditKey->setFocus() ;
 }
 
 void keyDialog::keyFile()

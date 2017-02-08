@@ -120,6 +120,7 @@ signals:
 	void mounted( QString ) ;
 	void cryptoOpen( QString ) ;
 private slots:
+	void cbVisibleKeyStateChanged( int ) ;
 	void textChanged( QString ) ;
 	void passWordTextChanged( QString ) ;
 	void cbActicated( QString ) ;
