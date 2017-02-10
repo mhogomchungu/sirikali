@@ -198,7 +198,7 @@ static QString _args( const QString& exe,const siritask::options& opt,
 				auto e = QString( "%1 create %2 %3" ) ;
 				return e.arg( exe,configPath,cipherFolder ) ;
 			}else{
-				auto e = QString( "%1 mount -b %2 %3 -o fsname=securefs@%4 -o subtype=securefs %5 %6" ) ;
+				auto e = QString( "%1 mount -b --log /dev/stdout %2 %3 -o fsname=securefs@%4 -o subtype=securefs %5 %6" ) ;
 				return e.arg( exe,configPath,mode,cipherFolder,cipherFolder,mountPoint ) ;
 			}
 		}
@@ -313,13 +313,11 @@ static cs _cmd( bool create,const siritask::options& opt,
 			}else{
 				auto a = _taskOutput() ;
 
-				auto b = "password incorrect" ;
-				auto c = "Password incorrect" ;
-				auto d = "Invalid password" ;
-				auto e = "Did you enter the correct password?" ;
-				auto f = "error: mount failed" ;
+				auto b = "password" ;
+				auto c = "Password" ;
+				auto d = "error: mount failed" ;
 
-				if( utility::containsAtleastOne( a,b,c,d,e,f ) ){
+				if( utility::containsAtleastOne( a,b,c,d ) ){
 
 					utility::debug() << a ;
 
