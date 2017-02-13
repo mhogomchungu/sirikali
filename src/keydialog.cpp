@@ -836,6 +836,7 @@ void keyDialog::openVolume()
 		if( m_key.contains( '\n' ) ){
 
 			this->showErrorMessage( tr( "KeyFile Contents Will Be Trancated On The First Encountered NewLine Character." ) ) ;
+			return this->enableAll() ;
 		}
 
 	}else if( keyType == keyDialog::Plugin ){
