@@ -148,8 +148,11 @@ namespace siritask
 	Task::future< bool >& encryptedFolderUnMount( const QString& cipherFolder,
 						      const QString& mountPoint,
 						      const QString& fileSystem ) ;
-	Task::future< siritask::status >& encryptedFolderMount( const options&,bool = false ) ;
-	Task::future< siritask::status >& encryptedFolderCreate( const options& ) ;
+
+	using cmdStatus = std::pair< siritask::status,QString > ;
+
+	Task::future< cmdStatus >& encryptedFolderMount( const options&,bool = false ) ;
+	Task::future< cmdStatus >& encryptedFolderCreate( const options& ) ;
 }
 
 #endif // ZULUMOUNTTASK_H

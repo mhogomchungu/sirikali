@@ -140,7 +140,9 @@ private slots:
 	void encryptedFolderMount( void ) ;
 	void encryptedFolderCreate( void ) ;
 private :
+	void showErrorMessage( siritask::cmdStatus ) ;
 	void showErrorMessage( const QString& ) ;
+
 	void setUIVisible( bool ) ;
 	void keyAndKeyFile( void ) ;
 	void openVolume( void ) ;
@@ -148,7 +150,7 @@ private :
 	void disableAll( void ) ;
 	void windowSetTitle( const QString& = QString() ) ;
 	void closeEvent( QCloseEvent * ) ;
-	bool completed( siritask::status ) ;
+	bool completed( siritask::cmdStatus ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 
 	Ui::keyDialog * m_ui ;

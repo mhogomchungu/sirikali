@@ -244,7 +244,7 @@ keyDialog::keyDialog( QWidget * parent,
 
 	m_ui->checkBoxVisibleKey->setVisible( true ) ;
 	m_ui->pbkeyOption->setVisible( false ) ;
-
+	m_ui->textEdit->setVisible( false ) ;
 	utility::setWindowOptions( this ) ;
 }
 
@@ -584,11 +584,11 @@ void keyDialog::pbOpen()
 	}
 }
 
-bool keyDialog::completed( siritask::status s )
+bool keyDialog::completed( siritask::cmdStatus s )
 {
 	QString msg ;
 
-	switch( s ){
+	switch( s.first ){
 
 	case siritask::status::success :
 
@@ -655,15 +655,18 @@ bool keyDialog::completed( siritask::status s )
 		break;
 
 	case siritask::status::backendFail :
-
-		msg = tr( "Failed To Complete The Task.\nBackend Not Responding." ) ;
-		break;
 	default:
-		msg = tr( "Failed To Complete The Task.\nAn Unknown Error Has Occured." ) ;
-		break;
+		msg = [ & ](){
+
+			auto e = tr( "Failed To Complete The Task And Below Is Generated Logs By The Backend.\n" ) ;
+
+			return e + "\n-----------------------------------------------------\n" + s.second ;
+		}() ;
 	}
 
-	this->showErrorMessage( msg ) ;
+	s.second = msg ;
+
+	this->showErrorMessage( s ) ;
 
 	return false ;
 }
@@ -677,11 +680,28 @@ void keyDialog::showErrorMessage( const QString& e )
 	m_ui->pbOK->setFocus() ;
 }
 
+void keyDialog::showErrorMessage( siritask::cmdStatus e )
+{
+	if( e.first == siritask::status::backendFail ){
+
+		this->setUIVisible( false ) ;
+
+		m_ui->textEdit->setVisible( true ) ;
+		m_ui->labelMsg->setVisible( false ) ;
+
+		m_ui->textEdit->setText( e.second ) ;
+	}else{
+		this->showErrorMessage( e.second ) ;
+	}
+}
+
 void keyDialog::pbOK()
 {
 	m_ui->checkBoxVisibleKey->setChecked( false ) ;
 
 	this->setUIVisible( true ) ;
+
+	m_ui->textEdit->setVisible( false ) ;
 
 	if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
 
