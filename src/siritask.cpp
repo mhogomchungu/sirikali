@@ -198,7 +198,7 @@ static QString _args( const QString& exe,const siritask::options& opt,
 				auto e = QString( "%1 create %2 %3" ) ;
 				return e.arg( exe,configPath,cipherFolder ) ;
 			}else{
-				auto e = QString( "%1 mount -b --log /dev/stdout %2 %3 -o fsname=securefs@%4 -o subtype=securefs %5 %6" ) ;
+				auto e = QString( "%1 mount -b %2 %3 -o fsname=securefs@%4 -o subtype=securefs %5 %6" ) ;
 				return e.arg( exe,configPath,mode,cipherFolder,cipherFolder,mountPoint ) ;
 			}
 		}
