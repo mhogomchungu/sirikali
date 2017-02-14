@@ -245,6 +245,9 @@ keyDialog::keyDialog( QWidget * parent,
 	m_ui->checkBoxVisibleKey->setVisible( true ) ;
 	m_ui->pbkeyOption->setVisible( false ) ;
 	m_ui->textEdit->setVisible( false ) ;
+
+	m_ui->checkBoxVisibleKey->setToolTip( tr( "Check This Box To Make Password Visible" ) ) ;
+
 	utility::setWindowOptions( this ) ;
 }
 
@@ -917,13 +920,23 @@ void keyDialog::cbActicated( QString e )
 
 		_showVisibleKeyOption( false ) ;
 
-		this->keyAndKeyFile() ;
+		QString s ;
+		utility::pluginKey( m_secrets.parent(),this,&s,"hmac" ) ;
+
+		m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
+
+		m_ui->lineEditKey->setText( s ) ;
 
 	}else if( e == tr( "HMAC+KeyFile" ).remove( '&' ) ){
 
 		_showVisibleKeyOption( false ) ;
 
-		this->HMACKeyFile() ;
+		QString s ;
+		utility::pluginKey( m_secrets.parent(),this,&s,"hmac" ) ;
+
+		m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
+
+		m_ui->lineEditKey->setText( s ) ;
 	}else{
 		this->plugIn() ;
 
