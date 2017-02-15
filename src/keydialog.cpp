@@ -856,9 +856,9 @@ void keyDialog::openVolume()
 
 		m_key = f.readAll() ;
 
-		if( m_key.contains( '\n' ) ){
+		if( utility::containsAtleastOne( m_key,'\n','\0','\r' ) ){
 
-			this->showErrorMessage( tr( "KeyFile Contents Will Be Trancated On The First Encountered NewLine Character." ) ) ;
+			this->showErrorMessage( tr( "Not Supported KeyFile Encountered Since It Contains AtLeast One Illegal Character('\\n','\\0','\\r').\n\nPlease Use a Hash Of The KeyFile Through \"HMAC+KeyFile\" Option." ) ) ;
 			return this->enableAll() ;
 		}
 
@@ -915,6 +915,8 @@ void keyDialog::cbActicated( QString e )
 		_showVisibleKeyOption( false ) ;
 
 		this->keyFile() ;
+
+		this->KeyFile() ;
 
 	}else if( e == tr( "Key+KeyFile" ).remove( '&' ) ){
 
