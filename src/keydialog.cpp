@@ -922,8 +922,12 @@ void keyDialog::cbActicated( QString e )
 
 		_showVisibleKeyOption( false ) ;
 
+		this->disableAll() ;
+
 		QString s ;
 		utility::pluginKey( m_secrets.parent(),this,&s,"hmac" ) ;
+
+		this->enableAll() ;
 
 		m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
 
@@ -939,10 +943,11 @@ void keyDialog::cbActicated( QString e )
 
 		if( !q.isEmpty() ){
 
-			Task::await( [ & ](){
+			this->disableAll() ;
 
-				s = plugins::hmac_key( q,QString() ) ;
-			} ) ;
+			Task::await( [ & ](){ s = plugins::hmac_key( q,QString() ) ; } ) ;
+
+			this->enableAll() ;
 		}
 
 		m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
