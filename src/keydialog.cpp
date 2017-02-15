@@ -204,8 +204,8 @@ keyDialog::keyDialog( QWidget * parent,
 
 	m_ui->cbKeyType->addItem( tr( "Key" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "KeyFile" ) ) ;
-	m_ui->cbKeyType->addItem( tr( "HMAC+KeyFile" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "Key+KeyFile" ) ) ;
+	m_ui->cbKeyType->addItem( tr( "HMAC+KeyFile" ) ) ;
 
 	m_ui->cbKeyType->addItem( _internalWallet() ) ;
 
@@ -931,8 +931,17 @@ void keyDialog::cbActicated( QString e )
 
 		_showVisibleKeyOption( false ) ;
 
+		auto q = QFileDialog::getOpenFileName( this,tr( "Select A KeyFile" ),QDir::homePath() ) ;
+
 		QString s ;
-		utility::pluginKey( m_secrets.parent(),this,&s,"hmac" ) ;
+
+		if( !q.isEmpty() ){
+
+			Task::await( [ & ](){
+
+				s = plugins::hmac_key( q,QString() ) ;
+			} ) ;
+		}
 
 		m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
 
