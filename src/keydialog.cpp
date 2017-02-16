@@ -931,7 +931,7 @@ void keyDialog::cbActicated( QString e )
 
 		m_ui->lineEditKey->setText( s ) ;
 
-		if( m_keyStrength ){
+		if( m_keyStrength && m_create ){
 
 			this->setWindowTitle( tr( "Passphrase Quality: 100%" ) ) ;
 		}
@@ -957,7 +957,7 @@ void keyDialog::cbActicated( QString e )
 
 		m_ui->lineEditKey->setText( s ) ;
 
-		if( m_keyStrength ){
+		if( m_keyStrength && m_create ){
 
 			this->setWindowTitle( tr( "Passphrase Quality: 100%" ) ) ;
 		}
