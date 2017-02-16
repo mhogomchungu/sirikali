@@ -1,3 +1,10 @@
+sirikali (1.2.5-1) UNRELEASED; urgency=low
+  [Mhogo Mchungu]
+  * New Features
+     -- Display backend error message to the user when SiriKali fails to figure out why requested operation failed.
+
+ -- Mhogo Mchungu <mhogomchungu@gmail.com>  Sat, 18 Feb 2016 16:38:48 +0000
+
 sirikali (1.2.4-1) UNRELEASED; urgency=low
   [Mhogo Mchungu]
   * New Features

@@ -65,3 +65,6 @@ version 1.2.3
 
 version 1.2.4
 -- Add OSX support.
+
+version 1.2.5
+-- Display backend error message to the user when SiriKali fails to figure out why requested operation failed.

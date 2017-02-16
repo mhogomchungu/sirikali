@@ -255,14 +255,9 @@ static QString _args( const QString& exe,const siritask::options& opt,
 	}
 }
 
-static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
-		const QString& password,const QString& configFilePath )
+static siritask::status _getStatus( const siritask::volumeType& app,bool s )
 {
-	const auto& app = opt.type ;
-
-	auto exe = app.executableFullPath() ;
-
-	if( exe.isEmpty() ){
+	if( s ){
 
 		if( app == "cryfs" ){
 
@@ -282,6 +277,38 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 		}else{
 			return cs::gocryptfsNotFound ;
 		}
+	}else{
+		if( app == "cryfs" ){
+
+			return cs::cryfs ;
+
+		}else if( app == "encfs" ){
+
+			return cs::encfs ;
+
+		}else if( app == "securefs" ){
+
+			return cs::securefs ;
+
+		}else if( app.startsWith( "ecryptfs" ) ){
+
+			return cs::ecryptfs ;
+		}else{
+			return cs::gocryptfs ;
+		}
+	}
+}
+
+static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
+		const QString& password,const QString& configFilePath )
+{
+	const auto& app = opt.type ;
+
+	auto exe = app.executableFullPath() ;
+
+	if( exe.isEmpty() ){
+
+		return _getStatus( app,true ) ;
 	}else{
 		auto e = utility::Task( _args( exe,opt,configFilePath,create ),20000,[](){
 
@@ -323,24 +350,7 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 					utility::debug() << output ;
 
-					if( app == "cryfs" ){
-
-						return cs::cryfs ;
-
-					}else if( app == "encfs" ){
-
-						return cs::encfs ;
-
-					}else if( app == "securefs" ){
-
-						return cs::securefs ;
-
-					}else if( app.startsWith( "ecryptfs" ) ){
-
-						return cs::ecryptfs ;
-					}else{
-						return cs::gocryptfs ;
-					}
+					return _getStatus( app,false ) ;
 				}
 			}
 		}
