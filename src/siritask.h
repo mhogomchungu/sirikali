@@ -149,13 +149,32 @@ namespace siritask
 		cmdStatus()
 		{
 		}
+		cmdStatus( const siritask::cmdStatus& s,const QString& e = QString() )
+		{
+			m_status = s.status() ;
+
+			if( e.isEmpty() ){
+
+				m_message = s.msg() ;
+			}else{
+				m_message = e ;
+			}
+		}
 		cmdStatus( siritask::status s,const QString& e = QString() ) :
 			m_status( s ),m_message( e )
 		{
 		}
-		siritask::status code() const
+		siritask::status status() const
 		{
 			return m_status ;
+		}
+		bool operator==( siritask::status s ) const
+		{
+			return m_status == s ;
+		}
+		bool operator!=( siritask::status s ) const
+		{
+			return m_status != s ;
 		}
 		const QString& msg() const
 		{

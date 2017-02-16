@@ -376,7 +376,7 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const optio
 
 				auto e = _cmd( false,opt,opt.key,configFilePath ) ;
 
-				if( e.code() == cs::success ){
+				if( e == cs::success ){
 
 					opt.openFolder( opt.plainFolder ) ;
 				}else{
@@ -481,13 +481,13 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderCreate( const opti
 					}
 				}() ) ;
 
-				if( e.code() == cs::success ){
+				if( e == cs::success ){
 
 					if( opt.type.isOneOf( "gocryptfs","securefs" ) ){
 
 						e = siritask::encryptedFolderMount( opt,true ).get() ;
 
-						if( e.code() != cs::success ){
+						if( e != cs::success ){
 
 							_deleteFolders( opt.cipherFolder,opt.plainFolder ) ;
 						}

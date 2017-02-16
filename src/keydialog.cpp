@@ -591,7 +591,7 @@ bool keyDialog::completed( const siritask::cmdStatus& s )
 {
 	QString msg ;
 
-	switch( s.code() ){
+	switch( s.status() ){
 
 	case siritask::status::success :
 
@@ -667,7 +667,7 @@ bool keyDialog::completed( const siritask::cmdStatus& s )
 		}() ;
 	}
 
-	this->showErrorMessage( { s.code(),msg } ) ;
+	this->showErrorMessage( { s,msg } ) ;
 
 	return false ;
 }
@@ -683,7 +683,7 @@ void keyDialog::showErrorMessage( const QString& e )
 
 void keyDialog::showErrorMessage( const siritask::cmdStatus& e )
 {
-	if( e.code() == siritask::status::backendFail ){
+	if( e == siritask::status::backendFail ){
 
 		this->setUIVisible( false ) ;
 

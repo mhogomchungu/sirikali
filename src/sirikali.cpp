@@ -756,7 +756,7 @@ void sirikali::unlockVolume( const QString& volume,const QString& mountPath,
 
 				auto& e = siritask::encryptedFolderMount( { volume,m,w.key,mOpt,cPath,QString(),mode } ) ;
 
-				if( e.await().code() == siritask::status::success ){
+				if( e.await() == siritask::status::success ){
 
 					QCoreApplication::exit( 0 ) ;
 				}else{
@@ -839,7 +839,7 @@ QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorite
 
 				s.then( [ this ]( siritask::cmdStatus s ){
 
-					if( s.code() == siritask::status::success ){
+					if( s == siritask::status::success ){
 
 						m_mountInfo.eventHappened() ;
 					}
