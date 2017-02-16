@@ -24,11 +24,16 @@
 
 mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& f ) :
 	QThread( parent ),m_stop( std::move( f ) ),m_announceEvents( e ),
-	m_linux( utility::platformIsLinux() ),m_oldMountList( this->mountedVolumes() )
+	m_linux( utility::platformIsLinux() )
 {
 	m_babu = parent ;
 	m_baba = this ;
 	m_main = this ;
+
+	if( m_linux ){
+
+		m_oldMountList = this->mountedVolumes() ;
+	}
 }
 
 mountinfo::mountinfo() : m_linux( utility::platformIsLinux() )
@@ -140,6 +145,16 @@ void mountinfo::announceEvents( bool s )
 void mountinfo::eventHappened()
 {
 	if( !m_linux && m_announceEvents ){
+
+		/*
+		 * Suspend for a bit to give mount command time to
+		 * properly populate its mounted list before calling it.
+		 *
+		 * Sometimes,mount events do not get registered and i suspect its
+		 * because we call mount too soon.
+		 */
+
+		utility::Task::suspendForOneSecond() ;
 
 		emit gotEvent() ;
 	}
