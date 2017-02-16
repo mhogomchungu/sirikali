@@ -57,7 +57,7 @@ public:
 		return pwquality_check( m_handle,e.toLatin1().constData(),
 					nullptr,nullptr,nullptr ) ;
 	}
-	bool canCheckQuality()
+	operator bool()
 	{
 		return true ;
 	}
@@ -79,7 +79,7 @@ public:
 		Q_UNUSED( e ) ;
 		return 0 ;
 	}
-	bool canCheckQuality()
+	operator bool()
 	{
 		return false ;
 	}
@@ -140,7 +140,7 @@ private slots:
 	void encryptedFolderMount( void ) ;
 	void encryptedFolderCreate( void ) ;
 private :
-	void showErrorMessage( siritask::cmdStatus ) ;
+	void showErrorMessage( const siritask::cmdStatus& ) ;
 	void showErrorMessage( const QString& ) ;
 
 	void setUIVisible( bool ) ;
@@ -150,7 +150,7 @@ private :
 	void disableAll( void ) ;
 	void windowSetTitle( const QString& = QString() ) ;
 	void closeEvent( QCloseEvent * ) ;
-	bool completed( siritask::cmdStatus ) ;
+	bool completed( const siritask::cmdStatus& ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 
 	Ui::keyDialog * m_ui ;

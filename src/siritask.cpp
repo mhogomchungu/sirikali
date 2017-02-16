@@ -266,21 +266,21 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 		if( app == "cryfs" ){
 
-			return { cs::cryfsNotFound,QString() } ;
+			return cs::cryfsNotFound ;
 
 		}else if( app == "encfs" ){
 
-			return { cs::encfsNotFound,QString() } ;
+			return cs::encfsNotFound ;
 
 		}else if( app == "securefs" ){
 
-			return { cs::securefsNotFound,QString() } ;
+			return cs::securefsNotFound ;
 
 		}else if( app.startsWith( "ecryptfs" ) ){
 
-			return { cs::ecryptfs_simpleNotFound,QString() } ;
+			return cs::ecryptfs_simpleNotFound ;
 		}else{
-			return { cs::gocryptfsNotFound,QString() } ;
+			return cs::gocryptfsNotFound ;
 		}
 	}else{
 		auto e = utility::Task( _args( exe,opt,configFilePath,create ),20000,[](){
@@ -312,47 +312,40 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 		if( e.finished() ){
 
-			auto status = [ & ](){
+			if( e.success() ){
 
-				if( e.success() ){
+				return cs::success ;
+			}else{
+				bool m = output.toLower().contains( "password" ) ;
+				bool s = output.contains( "error: mount failed" ) ;
 
-					return cs::success ;
-				}else{
-					bool m = output.toLower().contains( "password" ) ;
-					bool s = output.contains( "error: mount failed" ) ;
+				if( m || s ){
 
-					if( m || s ){
+					utility::debug() << output ;
 
-						utility::debug() << output ;
+					if( app == "cryfs" ){
 
-						if( app == "cryfs" ){
+						return cs::cryfs ;
 
-							return cs::cryfs ;
+					}else if( app == "encfs" ){
 
-						}else if( app == "encfs" ){
+						return cs::encfs ;
 
-							return cs::encfs ;
+					}else if( app == "securefs" ){
 
-						}else if( app == "securefs" ){
+						return cs::securefs ;
 
-							return cs::securefs ;
+					}else if( app.startsWith( "ecryptfs" ) ){
 
-						}else if( app.startsWith( "ecryptfs" ) ){
-
-							return cs::ecryptfs ;
-						}else{
-							return cs::gocryptfs ;
-						}
+						return cs::ecryptfs ;
 					}else{
-						utility::debug() << output ;
-
-						return cs::backendFail ;
+						return cs::gocryptfs ;
 					}
 				}
-			}() ;
-
-			return { status,output } ;
+			}
 		}
+
+		utility::debug() << output ;
 
 		return { cs::backendFail,output } ;
 	}
@@ -383,7 +376,7 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const optio
 
 				auto e = _cmd( false,opt,opt.key,configFilePath ) ;
 
-				if( e.first == cs::success ){
+				if( e.code() == cs::success ){
 
 					opt.openFolder( opt.plainFolder ) ;
 				}else{
@@ -392,7 +385,7 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const optio
 
 				return e ;
 			}else{
-				return { cs::failedToCreateMountPoint,QString() } ;
+				return cs::failedToCreateMountPoint ;
 			}
 		} ;
 
@@ -422,7 +415,7 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const optio
 
 					return _mount( "encfs",opt,QString() ) ;
                                 }else{
-					return { cs::unknown,QString() } ;
+					return cs::unknown ;
                                 }
                         }
                 }else{
@@ -445,7 +438,7 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const optio
 					return _mount( "cryfs",opt,e ) ;
 				}
 			}else{
-				return { cs::unknown,QString() } ;
+				return cs::unknown ;
 			}
                 }
 	} ) ;
@@ -488,13 +481,13 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderCreate( const opti
 					}
 				}() ) ;
 
-				if( e.first == cs::success ){
+				if( e.code() == cs::success ){
 
 					if( opt.type.isOneOf( "gocryptfs","securefs" ) ){
 
 						e = siritask::encryptedFolderMount( opt,true ).get() ;
 
-						if( e.first != cs::success ){
+						if( e.code() != cs::success ){
 
 							_deleteFolders( opt.cipherFolder,opt.plainFolder ) ;
 						}
@@ -509,10 +502,10 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderCreate( const opti
 			}else{
 				_deleteFolders( opt.cipherFolder ) ;
 
-				return { cs::failedToCreateMountPoint,QString() } ;
+				return cs::failedToCreateMountPoint ;
 			}
 		}else{
-			return { cs::failedToCreateMountPoint,QString() } ;
+			return cs::failedToCreateMountPoint ;
 		}
 	} ) ;
 }

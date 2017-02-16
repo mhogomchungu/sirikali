@@ -143,13 +143,34 @@ namespace siritask
 		backendFail
 	};
 
+	class cmdStatus
+	{
+	public:
+		cmdStatus()
+		{
+		}
+		cmdStatus( siritask::status s,const QString& e = QString() ) :
+			m_status( s ),m_message( e )
+		{
+		}
+		siritask::status code() const
+		{
+			return m_status ;
+		}
+		const QString& msg() const
+		{
+			return m_message ;
+		}
+	private:
+		siritask::status m_status ;
+		QString m_message ;
+	};
+
 	bool deleteMountFolder( const QString& ) ;
 	Task::future< QVector< volumeInfo > >& updateVolumeList( void ) ;
 	Task::future< bool >& encryptedFolderUnMount( const QString& cipherFolder,
 						      const QString& mountPoint,
 						      const QString& fileSystem ) ;
-
-	using cmdStatus = std::pair< siritask::status,QString > ;
 
 	Task::future< cmdStatus >& encryptedFolderMount( const options&,bool = false ) ;
 	Task::future< cmdStatus >& encryptedFolderCreate( const options& ) ;

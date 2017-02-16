@@ -129,9 +129,7 @@ void plugin::pbSetKey()
 
 		if( m_key.isEmpty() ){
 
-			DialogMsg msg( m_parentWidget,this ) ;
-
-			msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Generate Key" ) ) ;
+			DialogMsg( m_parentWidget,this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Generate Key" ) ) ;
 
 			this->enableAll() ;
 		}else{
