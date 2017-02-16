@@ -114,7 +114,7 @@ void sirikali::setUpApp( const QString& volume )
 	connect( m_ui->tableWidget,SIGNAL( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ),
 		 this,SLOT( slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) ) ;
 
-	connect( m_ui->pbupdate,SIGNAL( clicked()),
+	connect( m_ui->pbupdate,SIGNAL( clicked() ),
 		 this,SLOT( pbUpdate() ) ) ;
 
 	connect( &m_mountInfo,SIGNAL( gotEvent() ),this,
@@ -696,10 +696,12 @@ void sirikali::Show()
 	}
 }
 
-void sirikali::unlockVolume( const QString& volume,const QString& mountPath,
+void sirikali::unlockVolume( const QString& vol,const QString& mountPath,
                              const QString& backEnd,const QString& mOpt,const QString& cPath,bool mode )
 {
-	if( volume.isEmpty() ){
+	auto volume = QDir( vol ).canonicalPath() ;
+
+	if( vol.isEmpty() ){
 
 		utility::debug() << tr( "ERROR: Volume Path Not Given." ) ;
 		QCoreApplication::exit( 1 ) ;
