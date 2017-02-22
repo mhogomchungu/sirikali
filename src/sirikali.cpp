@@ -1,4 +1,4 @@
-﻿/*
+/*
  *
  *  Copyright (c) 2012-2015
  *  name : Francis Banyikwa
@@ -1051,6 +1051,41 @@ void sirikali::properties()
 	this->enableAll() ;
 }
 
+void sirikali::securefsproperties()
+{
+	auto securefs = utility::executableFullPath( "securefs" ) ;
+
+	auto path = [ this ](){
+
+		auto row = m_ui->tableWidget->currentRow() ;
+
+		if( row < 0 ){
+
+			return QString() ;
+		}else{
+			return utility::Task::makePath( m_ui->tableWidget->item( row,0 )->text() ) ;
+		}
+	}() ;
+
+	this->disableAll() ;
+
+	if( securefs.isEmpty() ){
+
+		DialogMsg( this,nullptr ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Find Securefs Executable" ) ) ;
+	}else{
+		auto e = utility::Task::run( securefs + " info " + path ).await() ;
+
+		if( e.finished() && e.success() ){
+
+			DialogMsg( this,nullptr ).ShowUIInfo( tr( "INFORMATION" ),true,e.output() ) ;
+		}else{
+			DialogMsg( this,nullptr ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Get Volume Properties" ) ) ;
+		}
+	}
+
+	this->enableAll() ;
+}
+
 void sirikali::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 {
 	struct volumeType{ const char * slot ; bool enabled ; } ;
@@ -1094,6 +1129,10 @@ void sirikali::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 			}else if( e == "ecryptfs" ){
 
 				return { SLOT( ecryptfsProperties() ),true } ;
+
+			}else if( e == "securefs" ){
+
+				return { SLOT( securefsproperties() ),true } ;
 			}
 		}
 

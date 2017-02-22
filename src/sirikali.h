@@ -56,6 +56,7 @@ public slots:
 private slots:
 	void autoUpdateCheck( void ) ;
 	void ecryptfsProperties( void ) ;
+	void securefsproperties( void ) ;
 	void autoMountKeyStorage( void ) ;
 	void autoMountKeySource( QAction * ) ;
 	void showMountDialogWhenAutoMounting( bool ) ;
