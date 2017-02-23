@@ -124,7 +124,7 @@ static QString _get_app_version( const siritask::volumeType& e )
 
 						return a.at( 2 ) ;
 					}else{
-						return a.at( 1 ) ;
+						return a.at( 1 ).split( '\n' ).first() ;
 					}
 				}() ;
 
