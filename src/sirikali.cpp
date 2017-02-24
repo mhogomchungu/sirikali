@@ -62,10 +62,8 @@
 sirikali::sirikali( QWidget * parent ) :
 	QWidget( parent ),
 	m_secrets( this ),
-	m_settings( "SiriKali","SiriKali" ),
 	m_mountInfo( mountinfo::instance( this,true,[](){ QCoreApplication::quit() ; } ) )
 {
-	utility::setSettingsObject( &m_settings ) ;
 }
 
 /*

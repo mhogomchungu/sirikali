@@ -151,8 +151,6 @@ private:
 	QString m_sharedFolderPath ;
 	QString m_folderOpener ;
 
-	QSettings m_settings ;
-
 	QSystemTrayIcon m_trayIcon ;
 
 	mountinfo& m_mountInfo ;

@@ -36,6 +36,7 @@
 #include <QEventLoop>
 #include <QDebug>
 #include <QCoreApplication>
+#include <QApplication>
 #include <QByteArray>
 #include <QProcess>
 #include <QFile>
@@ -1129,4 +1130,40 @@ void utility::setParent( QWidget * parent,QWidget ** localParent,QDialog * dialo
 	}else{
 		*localParent = dialog ;
 	}
+}
+
+void utility::scaleGUI()
+{
+#if QT_VERSION >= 0x050600
+
+	bool e = [](){
+
+		if( _settings->contains( "EnableHighDpiScaling" ) ){
+
+			return _settings->value( "EnableHighDpiScaling" ).toBool() ;
+		}else{
+			bool s = false ;
+			_settings->setValue( "EnableHighDpiScaling",s ) ;
+			_settings->setValue( "EnabledHighDpiScalingFactor",QString( "1" ) ) ;
+			return s ;
+		}
+	}() ;
+
+	if( e ){
+
+		QApplication::setAttribute( Qt::AA_EnableHighDpiScaling ) ;
+
+		qputenv( "QT_SCALE_FACTOR",[](){
+
+			if( _settings->contains( "EnabledHighDpiScalingFactor" ) ){
+
+				return _settings->value( "EnabledHighDpiScalingFactor" ).toString().toLatin1() ;
+			}else{
+				_settings->setValue( "EnabledHighDpiScalingFactor",QString( "1" ) ) ;
+				return QByteArray( "1" ) ;
+			}
+		}() ) ;
+	}
+
+#endif
 }

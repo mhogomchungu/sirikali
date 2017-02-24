@@ -262,6 +262,8 @@ namespace utility
 	QString homePath() ;
 	QString mountPath( const QString& path ) ;
 
+	void scaleGUI( void ) ;
+
 	void setDefaultMountPointPrefix( const QString& path ) ;
 
 	void setSettingsObject( QSettings * ) ;

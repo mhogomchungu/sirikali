@@ -23,6 +23,11 @@
 
 int main( int argc,char * argv[] )
 {
+	QSettings settings( "SiriKali","SiriKali" ) ;
+	utility::setSettingsObject( &settings ) ;
+
+	utility::scaleGUI() ;
+
 	QApplication a( argc,argv ) ;
 
 	return utility::startApplication( "SiriKali",[ & ](){
