@@ -317,6 +317,8 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 			env.insert( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
 			env.insert( "CRYFS_FRONTEND","noninteractive" ) ;
 
+			env.insert( "LANG","C" ) ;
+
 			auto path = env.value( "PATH" ) ;
 
 			path += ":/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin" ;
