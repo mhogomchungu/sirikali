@@ -55,6 +55,7 @@ public slots:
 	void raiseWindow( QString ) ;
 private slots:
 	void autoUpdateCheck( void ) ;
+	void encfsproperties( void ) ;
 	void ecryptfsProperties( void ) ;
 	void securefsproperties( void ) ;
 	void autoMountKeyStorage( void ) ;

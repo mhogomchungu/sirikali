@@ -900,7 +900,7 @@ void sirikali::ecryptfsProperties()
 
 		if( it.mountPoint() == s ){
 
-			DialogMsg( this,nullptr ).ShowUIInfo( tr( "INFORMATION" ),true,[ & ](){
+			DialogMsg( this ).ShowUIInfo( tr( "INFORMATION" ),true,[ & ](){
 
 				auto s = it.mountOptions() ;
 
@@ -939,12 +939,12 @@ void sirikali::properties()
 
 	if( !vfs.valid ){
 
-		DialogMsg( this,nullptr ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Read Volume Properties" ) ) ;
+		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Read Volume Properties" ) ) ;
 
 		return this->enableAll() ;
 	}
 
-	DialogMsg( this,nullptr ).ShowUIInfo( tr( "INFORMATION" ),true,[ & ](){
+	DialogMsg( this ).ShowUIInfo( tr( "INFORMATION" ),true,[ & ](){
 
 		auto _prettify = []( quint64 s ){
 
@@ -1049,37 +1049,54 @@ void sirikali::properties()
 	this->enableAll() ;
 }
 
-void sirikali::securefsproperties()
+static void _volume_properties( const QString& e,const QString& arg,
+				QTableWidget * table,QWidget * w )
 {
-	auto securefs = utility::executableFullPath( "securefs" ) ;
+	auto exe = utility::executableFullPath( e ) ;
 
-	auto path = [ this ](){
+	auto path = [ table ](){
 
-		auto row = m_ui->tableWidget->currentRow() ;
+		auto row = table->currentRow() ;
 
 		if( row < 0 ){
 
 			return QString() ;
 		}else{
-			return utility::Task::makePath( m_ui->tableWidget->item( row,0 )->text() ) ;
+			return utility::Task::makePath( table->item( row,0 )->text() ) ;
 		}
 	}() ;
 
-	this->disableAll() ;
+	if( exe.isEmpty() ){
 
-	if( securefs.isEmpty() ){
-
-		DialogMsg( this,nullptr ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Find Securefs Executable" ) ) ;
+		DialogMsg( w ).ShowUIOK( QObject::tr( "ERROR" ),
+					 QObject::tr( "Failed To Find %1 Executable" ).arg( e ) ) ;
 	}else{
-		auto e = utility::Task::run( securefs + " info " + path ).await() ;
+		auto e = utility::Task::run( exe + arg + path ).await() ;
 
 		if( e.finished() && e.success() ){
 
-			DialogMsg( this,nullptr ).ShowUIInfo( tr( "INFORMATION" ),true,e.output() ) ;
+			DialogMsg( w ).ShowUIInfo( QObject::tr( "INFORMATION" ),true,e.output() ) ;
 		}else{
-			DialogMsg( this,nullptr ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Get Volume Properties" ) ) ;
+			DialogMsg( w ).ShowUIOK( QObject::tr( "ERROR" ),
+						 QObject::tr( "Failed To Get Volume Properties" ) ) ;
 		}
 	}
+}
+
+void sirikali::encfsproperties()
+{
+	this->disableAll() ;
+
+	_volume_properties( "encfsctl"," ",m_ui->tableWidget,this ) ;
+
+	this->enableAll() ;
+}
+
+void sirikali::securefsproperties()
+{
+	this->disableAll() ;
+
+	_volume_properties( "securefs"," info ",m_ui->tableWidget,this ) ;
 
 	this->enableAll() ;
 }
@@ -1131,6 +1148,10 @@ void sirikali::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 			}else if( e == "securefs" ){
 
 				return { SLOT( securefsproperties() ),true } ;
+
+			}else if( e == "encfs" ){
+
+				return { SLOT( encfsproperties() ),true } ;
 			}
 		}
 
@@ -1309,7 +1330,7 @@ void sirikali::showMoungDialog( const volumeInfo& v )
 {
 	if( v.isNotValid() ){
 
-		DialogMsg( this,nullptr ).ShowUIOK( tr( "ERROR" ),
+		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),
 					    tr( "Permission To Access The Volume Was Denied\nOr\nThe Volume Is Not Supported" ) ) ;
 
 		this->enableAll() ;
@@ -1424,7 +1445,7 @@ void sirikali::pbUmount()
 			m_mountInfo.eventHappened() ;
 			siritask::deleteMountFolder( b ) ;
 		}else{
-			DialogMsg( this,nullptr ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Unmount %1 Volume" ).arg( type ) ) ;
+			DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Unmount %1 Volume" ).arg( type ) ) ;
 
 			this->enableAll() ;
 		}
