@@ -94,35 +94,13 @@ void DialogMsg::ShowUI( const QString& title,const QString& msg )
 void DialogMsg::ShowPermissionProblem( const QString& device )
 {
 	Q_UNUSED( device ) ;
-	QString msg = tr( "\n\
-\"system volumes\" are volumes that either udev has identify them as such if udev is enabled \
-or have an entry in \"/etc/fstab\",\"/etc/crypttab\" or \"/etc/zuluCrypt/system_volumes.list\".\n\
-\n\
-If you prefer for a volume not to be considered a system volume,start the tool\
-from root account and then go to \"menu->options->manage non system partitions\" \
-and add the volume to the list and the volume will stop being considered as \"system\".\n\n\
-Alternatively,you can add yourself to group \"zulucrypt\" and \"zulumount\" and all restrictions will go away." ) ;
-
-	this->ShowUIInfo( tr( "INFORMATION" ),false,msg ) ;
+	this->ShowUIInfo( tr( "INFORMATION" ),false,QString() ) ;
 }
 
 void DialogMsg::ShowPermissionProblem( const QString& msg,const QString& device )
 {
-	QString msg1 ;
-
-	if( device.startsWith( "/dev/" ) ){
-
-		if( msg == "reading" ){
-
-			msg1 = tr( "Insufficient privilege to access a system device,\nonly root user or members of group zulucrypt can do that" ) ;
-		}else{
-			msg1 = tr( "Insufficient privilege to access a system device in read/write mode,\nonly root user or members of group zulucrypt-write can do that" ) ;
-		}
-	}else{
-		msg1 = tr( "You do not seem to have proper permissions to access the encrypted file in %1 mode,check file permissions and try again" ).arg( msg ) ;
-	}
-
-	this->ShowUIOK( tr( "INFORMATION"),msg1 ) ;
+	Q_UNUSED( msg ) ;
+	Q_UNUSED( device ) ;
 }
 
 void DialogMsg::setDimentions( const QString& msg )
