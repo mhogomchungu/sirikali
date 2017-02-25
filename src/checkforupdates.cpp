@@ -49,7 +49,7 @@ static void _show( QObject * obj,bool autocheck,QWidget * w,const QVector< QStri
 
 		const auto& b = it.at( 2 ) ;
 
-		if( a != "N/A" and b != "N/A" ){
+		if( a != "N/A" && b != "N/A" ){
 
 			show = ( a != b ) ;
 		}
