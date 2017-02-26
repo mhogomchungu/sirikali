@@ -882,6 +882,8 @@ QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorite
 
 void sirikali::ecryptfsProperties()
 {
+	this->disableAll() ;
+
 	auto s = [ this ](){
 
 		auto table = m_ui->tableWidget ;
@@ -915,9 +917,11 @@ void sirikali::ecryptfsProperties()
 			break ;
 		}
 	}
+
+	this->enableAll() ;
 }
 
-void sirikali::properties()
+void sirikali::cryfsProperties()
 {
 	this->disableAll() ;
 
@@ -1083,7 +1087,7 @@ static void _volume_properties( const QString& e,const QString& arg,
 	}
 }
 
-void sirikali::encfsproperties()
+void sirikali::encfsProperties()
 {
 	this->disableAll() ;
 
@@ -1092,7 +1096,7 @@ void sirikali::encfsproperties()
 	this->enableAll() ;
 }
 
-void sirikali::securefsproperties()
+void sirikali::securefsProperties()
 {
 	this->disableAll() ;
 
@@ -1139,7 +1143,7 @@ void sirikali::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 			if( e == "cryfs" ){
 
-				return { SLOT( properties() ),true } ;
+				return { SLOT( cryfsProperties() ),true } ;
 
 			}else if( e == "ecryptfs" ){
 
@@ -1147,11 +1151,11 @@ void sirikali::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 			}else if( e == "securefs" ){
 
-				return { SLOT( securefsproperties() ),true } ;
+				return { SLOT( securefsProperties() ),true } ;
 
 			}else if( e == "encfs" ){
 
-				return { SLOT( encfsproperties() ),true } ;
+				return { SLOT( encfsProperties() ),true } ;
 			}
 		}
 

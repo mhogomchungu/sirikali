@@ -55,15 +55,15 @@ public slots:
 	void raiseWindow( QString ) ;
 private slots:
 	void autoUpdateCheck( void ) ;
-	void encfsproperties( void ) ;
+	void cryfsProperties( void ) ;
+	void encfsProperties( void ) ;
 	void ecryptfsProperties( void ) ;
-	void securefsproperties( void ) ;
+	void securefsProperties( void ) ;
 	void autoMountKeyStorage( void ) ;
 	void autoMountKeySource( QAction * ) ;
 	void showMountDialogWhenAutoMounting( bool ) ;
 	void autoMountWhenAvailable( bool ) ;
 	void setDefaultMountPointPrefix( void ) ;
-	void properties( void ) ;
 	void autoCheckUpdates( bool ) ;
 	void reuseMountPoint( bool ) ;
 	void autoMountFavoritesOnStartUp( bool ) ;
