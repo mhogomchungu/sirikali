@@ -446,8 +446,12 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const optio
 				}else if( e.endsWith( "ecryptfs.config" ) ){
 
 					return _mount( "ecryptfs",opt,e ) ;
-				}else{
+
+				}else if( e.endsWith( "cryfs.config" ) ){
+
 					return _mount( "cryfs",opt,e ) ;
+				}else{
+					return cs::unknown ;
 				}
 			}else{
 				return cs::unknown ;
