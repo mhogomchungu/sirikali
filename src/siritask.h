@@ -152,6 +152,7 @@ namespace siritask
 		cmdStatus( const siritask::cmdStatus& s,const QString& e = QString() )
 		{
 			m_status = s.status() ;
+			m_exitCode = s.exitCode() ;
 
 			if( e.isEmpty() ){
 
@@ -162,6 +163,10 @@ namespace siritask
 		}
 		cmdStatus( siritask::status s,const QString& e = QString() ) :
 			m_status( s ),m_message( e )
+		{
+		}
+		cmdStatus( int s,const QByteArray& e ) :
+			m_exitCode( s ),m_message( e )
 		{
 		}
 		siritask::status status() const
@@ -176,12 +181,33 @@ namespace siritask
 		{
 			return m_status != s ;
 		}
+		cmdStatus& setExitCode( int s )
+		{
+			m_exitCode = s ;
+			return *this ;
+		}
+		cmdStatus& setStatus( siritask::status s )
+		{
+			m_status = s ;
+			return *this ;
+		}
+		template< typename T >
+		cmdStatus& setMessage( const T& e )
+		{
+			m_message = e ;
+			return *this ;
+		}
 		const QString& msg() const
 		{
 			return m_message ;
 		}
+		int exitCode() const
+		{
+			return m_exitCode ;
+		}
 	private:
-		siritask::status m_status ;
+		int m_exitCode = -1 ;
+		siritask::status m_status = siritask::status::backendFail ;
 		QString m_message ;
 	};
 

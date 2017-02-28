@@ -299,6 +299,57 @@ static siritask::status _getStatus( const siritask::volumeType& app,bool s )
 	}
 }
 
+static void _set_status( siritask::cmdStatus * e,siritask::status s )
+{
+	const auto msg = e->msg().toLower() ;
+
+	/*
+	 * We are currently parsing backend outputs to figure out what
+	 * error took place.
+	 *
+	 * In the future and when backends supports it,we will use exit
+	 * codes(e->exitCode()) since error codes are more reliable than
+	 * parsing strings.
+	 *
+	 */
+
+	if( s == siritask::status::ecryptfs ){
+
+		if( msg.contains( "error: mount failed" ) ){
+
+			e->setStatus( s ) ;
+		}
+
+	}else if( s == siritask::status::cryfs ){
+
+		if( msg.contains( "password" ) ){
+
+			e->setStatus( s ) ;
+		}
+
+	}else if( s == siritask::status::encfs ){
+
+		if( msg.contains( "password" ) ){
+
+			e->setStatus( s ) ;
+		}
+
+	}else if( s == siritask::status::gocryptfs ){
+
+		if( msg.contains( "password" ) ){
+
+			e->setStatus( s ) ;
+		}
+
+	}else if( s == siritask::status::securefs ){
+
+		if( msg.contains( "password" ) ){
+
+			e->setStatus( s ) ;
+		}
+	}
+}
+
 static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 		const QString& password,const QString& configFilePath )
 {
@@ -339,27 +390,26 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 			}
 		}() ;
 
+		siritask::cmdStatus status = { e.exitCode(),output } ;
+
 		if( e.finished() ){
 
 			if( e.success() ){
 
 				return cs::success ;
 			}else{
-				bool m = output.toLower().contains( "password" ) ;
-				bool s = output.contains( "error: mount failed" ) ;
-
-				if( m || s ){
-
-					utility::debug() << output ;
-
-					return _getStatus( app,false ) ;
-				}
+				_set_status( &status,_getStatus( app,false ) ) ;
 			}
 		}
 
-		utility::debug() << output ;
+		auto s = QString::number( status.exitCode() ) ;
 
-		return { cs::backendFail,output } ;
+		utility::debug() << "-------------------------" ;
+		utility::debug() << QString( "Backend Generated Output:\nExit Code: %1" ).arg( s ) ;
+		utility::debug() << status.msg() ;
+		utility::debug() << "-------------------------" ;
+
+		return status ;
 	}
 }
 
