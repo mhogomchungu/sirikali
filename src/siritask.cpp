@@ -302,14 +302,13 @@ static siritask::status _getStatus( const siritask::volumeType& app,bool s )
 static void _set_status( siritask::cmdStatus * e,siritask::status s )
 {
 	const auto msg = e->msg().toLower() ;
+	const auto exitCode = e->exitCode() ;
 
 	/*
-	 * We are currently parsing backend outputs to figure out what
-	 * error took place.
 	 *
-	 * In the future and when backends supports it,we will use exit
-	 * codes(e->exitCode()) since error codes are more reliable than
-	 * parsing strings.
+	 * When trying to figure out what error occured,check for status value
+	 * if the backend supports them and fallback to parsing output strings
+	 * if backend does not support error codes.
 	 *
 	 */
 
@@ -336,9 +335,17 @@ static void _set_status( siritask::cmdStatus * e,siritask::status s )
 
 	}else if( s == siritask::status::gocryptfs ){
 
-		if( msg.contains( "password" ) ){
+		/*
+		 * This error code was added in gocryptfs 1.2.1
+		 */
+		if( exitCode == 12 ){
 
 			e->setStatus( s ) ;
+		}else{
+			if( msg.contains( "password" ) ){
+
+				e->setStatus( s ) ;
+			}
 		}
 
 	}else if( s == siritask::status::securefs ){
@@ -403,10 +410,21 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 		}
 
 		auto s = QString::number( status.exitCode() ) ;
+		auto m = status.msg() ;
+
+		while( true ){
+
+			if( m.endsWith( '\n' ) ){
+
+				m.truncate( m.size() - 1 ) ;
+			}else{
+				break ;
+			}
+		}
 
 		utility::debug() << "-------------------------" ;
 		utility::debug() << QString( "Backend Generated Output:\nExit Code: %1" ).arg( s ) ;
-		utility::debug() << status.msg() ;
+		utility::debug() << QString( "Exit String: \"%1\"" ).arg( m ) ;
 		utility::debug() << "-------------------------" ;
 
 		return status ;
