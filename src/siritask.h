@@ -149,7 +149,8 @@ namespace siritask
 		cmdStatus()
 		{
 		}
-		cmdStatus( const siritask::cmdStatus& s,const QString& e = QString() )
+		template< typename T = QString>
+		cmdStatus( const siritask::cmdStatus& s,const T& e = T() )
 		{
 			m_status = s.status() ;
 			m_exitCode = s.exitCode() ;
@@ -161,11 +162,13 @@ namespace siritask
 				m_message = e ;
 			}
 		}
-		cmdStatus( siritask::status s,const QString& e = QString() ) :
+		template< typename T = QString>
+		cmdStatus( siritask::status s,const T& e = T() ) :
 			m_status( s ),m_message( e )
 		{
 		}
-		cmdStatus( int s,const QByteArray& e ) :
+		template< typename T >
+		cmdStatus( int s,const T& e ) :
 			m_exitCode( s ),m_message( e )
 		{
 		}
