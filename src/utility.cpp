@@ -278,6 +278,25 @@ bool utility::eventFilter( QObject * gui,QObject * watched,QEvent * event,std::f
 	return false ;
 }
 
+QStringList utility::executableSearchPaths()
+{
+	return { "/usr/local/bin/",
+		"/usr/local/sbin/",
+		"/usr/bin/",
+		"/usr/sbin/",
+		"/bin/",
+		"/sbin/",
+		"/opt/local/bin/",
+		"/opt/local/sbin/",
+		"/opt/bin/",
+		"/opt/sbin/" } ;
+}
+
+QString utility::executableSearchPaths( const QString& e )
+{
+	return e + ":" + utility::executableSearchPaths().join( ":" ) ;
+}
+
 QString utility::executableFullPath( const QString& f )
 {
 	QString e = f ;
@@ -289,18 +308,7 @@ QString utility::executableFullPath( const QString& f )
 
 	QString exe ;
 
-	auto l = { "/usr/local/bin/",
-		   "/usr/local/sbin/",
-		   "/usr/bin/",
-		   "/usr/sbin/",
-		   "/bin/",
-		   "/sbin/",
-		   "/opt/local/bin/",
-		   "/opt/local/sbin/",
-		   "/opt/bin/",
-		   "/opt/sbin/" } ;
-
-	for( const auto& it : l ){
+	for( const auto& it : utility::executableSearchPaths() ){
 
 		exe = it + e ;
 

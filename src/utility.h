@@ -300,6 +300,8 @@ namespace utility
 	int checkForUpdateInterval( void ) ;
 
 	QStringList split( const QString&,char = '\n' ) ;
+	QStringList executableSearchPaths( void ) ;
+	QString executableSearchPaths( const QString& ) ;
 
 	void clearFavorites( void ) ;
 	void addToFavorite( const QStringList& ) ;

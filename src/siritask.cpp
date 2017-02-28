@@ -377,11 +377,7 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 			env.insert( "LANG","C" ) ;
 
-			auto path = env.value( "PATH" ) ;
-
-			path += ":/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin" ;
-
-			env.insert( "PATH",path ) ;
+			env.insert( "PATH",utility::executableSearchPaths( env.value( "PATH" ) ) ) ;
 
 			return env ;
 
