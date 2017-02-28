@@ -149,7 +149,7 @@ namespace siritask
 		cmdStatus()
 		{
 		}
-		template< typename T = QString>
+		template< typename T = QString >
 		cmdStatus( const siritask::cmdStatus& s,const T& e = T() )
 		{
 			m_status = s.status() ;
@@ -162,7 +162,7 @@ namespace siritask
 				m_message = e ;
 			}
 		}
-		template< typename T = QString>
+		template< typename T = QString >
 		cmdStatus( siritask::status s,const T& e = T() ) :
 			m_status( s ),m_message( e )
 		{
