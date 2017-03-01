@@ -294,7 +294,12 @@ QStringList utility::executableSearchPaths()
 
 QString utility::executableSearchPaths( const QString& e )
 {
-	return e + ":" + utility::executableSearchPaths().join( ":" ) ;
+	if( e.isEmpty() ){
+
+		return utility::executableSearchPaths().join( ":" ) ;
+	}else{
+		return e + ":" + utility::executableSearchPaths().join( ":" ) ;
+	}
 }
 
 QString utility::executableFullPath( const QString& f )
