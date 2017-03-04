@@ -65,6 +65,53 @@ class QEvent ;
 
 namespace utility
 {
+	void setUID( int ) ;
+
+	int getUID() ;
+	int getUserID() ;
+
+	QString getStringUserID() ;
+	QString appendUserUID( const QString& ) ;
+	QString homePath() ;
+
+	template< typename T >
+	void changePathOwner( const T& f )
+	{
+		int uid = utility::getUID() ;
+		int fd = f.handle() ;
+
+		if( uid != -1 && fd != -1 ){
+
+			if( fchown( fd,uid,uid ) ){;}
+		}
+	}
+
+	static inline void changePathOwner( const char * path )
+	{
+		int uid = utility::getUID() ;
+
+		if( uid != -1 ){
+
+			if( chown( path,uid,uid ) ){;}
+		}
+	}
+
+	static inline void changePathOwner( const QString& path )
+	{
+		utility::changePathOwner( path.toLatin1().constData() ) ;
+	}
+
+	template< typename T >
+	void changePathPermissions( const T& f,int mode = 0666 )
+	{
+		if( fchmod( f.handle(),mode ) ){;}
+	}
+
+	static inline void changePathPermissions( const QString& f,int mode = 0666 )
+	{
+		if( chmod( f.toLatin1().constData(),mode ) ){;}
+	}
+
 	class debug
 	{
 	public:
@@ -272,6 +319,7 @@ namespace utility
 	QString mountPathPostFix( const QString& prefix,const QString& path ) ;
 
 	bool pathIsReadable( const QString& ) ;
+	bool pathIsWritable( const QString& ) ;
 
 	bool autoOpenFolderOnMount() ;
 	void autoOpenFolderOnMount( bool ) ;
@@ -298,6 +346,21 @@ namespace utility
 	void autoMountFavoritesOnAvailable( bool ) ;
 
 	int checkForUpdateInterval( void ) ;
+
+	bool userIsRoot( void ) ;
+
+	void setUID( int ) ;
+	int getUID() ;
+	int getUserID() ;
+
+	void dropPrivileges( int = -1 ) ;
+	bool runningInMixedMode() ;
+	bool notRunningInMixedMode() ;
+
+	QString getStringUserID() ;
+	QString appendUserUID( const QString& ) ;
+	QString homePath() ;
+	QString userName() ;
 
 	QStringList split( const QString&,char = '\n' ) ;
 	QStringList executableSearchPaths( void ) ;

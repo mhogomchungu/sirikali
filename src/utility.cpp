@@ -50,7 +50,7 @@
 #include <pwd.h>
 #include <QTimer>
 #include <QEventLoop>
-
+#include <QFileInfo>
 #include <QEvent>
 #include <QKeyEvent>
 
@@ -107,6 +107,157 @@ bool utility::platformIsOSX()
 #endif
 
 static QSettings * _settings ;
+
+static int staticGlobalUserId = -1 ;
+
+void utility::setUID( int uid )
+{
+	if( utility::userIsRoot() ){
+
+		staticGlobalUserId = uid ;
+	}
+}
+
+bool utility::userIsRoot()
+{
+	return getuid() == 0 ;
+}
+
+int utility::getUID()
+{
+	return staticGlobalUserId ;
+}
+
+int utility::getUserID()
+{
+	if( staticGlobalUserId == -1 ){
+
+		return getuid() ;
+	}else{
+		return staticGlobalUserId ;
+	}
+}
+
+QString utility::getStringUserID()
+{
+	return QString::number( utility::getUserID() ) ;
+}
+
+QString utility::appendUserUID( const QString& e )
+{
+	if( staticGlobalUserId == -1 ){
+
+		return e ;
+	}else{
+		return e + " -K " + utility::getStringUserID() ;
+	}
+}
+
+static passwd * _getPassWd()
+{
+	return getpwuid( utility::getUserID() ) ;
+}
+
+QString utility::userName()
+{
+	return _getPassWd()->pw_name ;
+}
+
+QString utility::homePath()
+{
+	return getpwuid( utility::getUserID() )->pw_dir ;
+}
+
+void utility::dropPrivileges( int uid )
+{
+	if( uid == -1 ){
+
+		uid = utility::getUserID() ;
+	}
+
+	if( uid != -1 ){
+
+		auto id = getpwuid( uid ) ;
+
+		if( id ){
+
+			setenv( "LOGNAME",id->pw_name,1 ) ;
+			setenv( "HOME",id->pw_dir,1 ) ;
+			setenv( "USER",id->pw_name,1 ) ;
+			setenv( "USERNAME",id->pw_name,1 ) ;
+
+			auto s = QByteArray( id->pw_dir ) + "/tmp" ;
+
+			setenv( "TMP",s.constData(),1 ) ;
+			setenv( "TMPDIR",s.constData(),1 ) ;
+
+			auto e = utility::executableSearchPaths( getenv( "PATH" ) ) ;
+
+			setenv( "PATH",e.toLatin1(),1 ) ;
+
+			setenv( "CRYFS_NO_UPDATE_CHECK","TRUE",1 ) ;
+			setenv( "CRYFS_FRONTEND","noninteractive",1 ) ;
+
+			setenv( "LANG","C",1 ) ;
+		}
+
+		Q_UNUSED( setgid( uid ) ) ;
+		Q_UNUSED( setgroups( 1,reinterpret_cast< const gid_t * >( &uid ) ) ) ;
+		Q_UNUSED( setegid( uid ) ) ;
+		Q_UNUSED( setuid( uid ) ) ;
+	}
+}
+
+static bool _execute_process( const QString& m,const QString& exe,const QString& env,int uid )
+{
+	Q_UNUSED( env ) ;
+
+	if( exe.startsWith( "/" ) && utility::pathExists( exe ) ){
+
+		return utility::Task( exe + " " + utility::Task::makePath( m ),[ & ](){
+
+			return QProcessEnvironment() ;
+
+		}(),[ uid ](){
+
+			utility::dropPrivileges( uid ) ;
+
+		} ).success() ;
+	}else{
+		return false ;
+	}
+}
+
+::Task::future<bool>& utility::openPath( const QString& path,const QString& opener,const QString& env )
+{
+	return ::Task::run<bool>( [ env,path,opener ](){
+
+		return _execute_process( path,opener,env,utility::getUID() ) == false ;
+	} ) ;
+}
+
+void utility::openPath( const QString& path,const QString& opener,
+			const QString& env,QWidget * obj,const QString& title,const QString& msg )
+{
+	openPath( path,opener,env ).then( [ title,msg,obj ]( bool failed ){
+
+		if( failed && obj ){
+
+			DialogMsg m( obj ) ;
+			m.ShowUIOK( title,msg ) ;
+		}
+	} ) ;
+}
+
+bool utility::runningInMixedMode()
+{
+	return utility::userIsRoot() && utility::getUID() != -1 ;
+}
+
+bool utility::notRunningInMixedMode()
+{
+	return !utility::runningInMixedMode() ;
+}
 
 Task::future< utility::fsInfo >& utility::fileSystemInfo( const QString& q )
 {
@@ -172,41 +323,6 @@ int utility::startApplication( const char * appName,std::function<int()> start )
 	}else{
 		return start() ;
 	}
-}
-
-static bool _execute_process( const QString& m,const QString& exe,const QString& env )
-{
-	Q_UNUSED( env ) ;
-
-	if( exe.startsWith( "/" ) && utility::pathExists( exe ) ){
-
-		auto e = m ;
-
-		e.replace( "\"","\"\"\"" ) ;
-
-		return utility::Task( exe + " \"" + e + "\"" ).success() ;
-	}else{
-		return false ;
-	}
-}
-
-::Task::future<bool>& utility::openPath( const QString& path,const QString& opener,const QString& env )
-{
-	return ::Task::run<bool>( [ env,path,opener ](){
-
-		return _execute_process( path,opener,env ) == false ;
-	} ) ;
-}
-
-void utility::openPath( const QString& path,const QString& opener,const QString& env,QWidget * obj,const QString& title,const QString& msg )
-{
-	openPath( path,opener,env ).then( [ title,msg,obj ]( bool failed ){
-
-		if( failed && obj ){
-
-			DialogMsg( obj,nullptr ).ShowUIOK( title,msg ) ;
-		}
-	} ) ;
 }
 
 utility::wallet utility::getKey( const QString& keyID,LXQt::Wallet::Wallet& wallet )
@@ -808,14 +924,14 @@ QString utility::homeConfigPath( const QString& e )
 	return utility::homePath() + "/.SiriKali/" + e ;
 }
 
-QString utility::homePath()
-{
-	return QDir::homePath() ;
-}
-
 bool utility::pathIsReadable( const QString& path )
 {
-	return QDir( path ).isReadable() ;
+	return QFileInfo( path ).isReadable() ;
+}
+
+bool utility::pathIsWritable( const QString& path )
+{
+	return QFileInfo( path ).isWritable() ;
 }
 
 bool utility::pathExists( const QString& path )
@@ -856,7 +972,7 @@ QString utility::mountPath( const QString& path )
 
 		e = _settings->value( "MountPrefix" ).toString() ;
 	}else{
-		e = utility::homePath() + "/.SiriKali" ;
+		auto e = utility::homePath() + "/.SiriKali" ;
 
 		utility::setDefaultMountPointPrefix( e ) ;
 	}
@@ -1100,11 +1216,11 @@ void utility::showMountDialogWhenAutoMounting( bool e )
 
 int utility::checkForUpdateInterval()
 {
-	if( _settings->contains( "checkForUpdateInterval" ) ){
+	if( _settings->contains( "CheckForUpdateInterval" ) ){
 
-		return _settings->value( "checkForUpdateInterval" ).toInt() * 1000 ;
+		return _settings->value( "CheckForUpdateInterval" ).toInt() * 1000 ;
 	}else{
-		_settings->setValue( "checkForUpdateInterval",int( 300 ) ) ;
+		_settings->setValue( "CheckForUpdateInterval",int( 300 ) ) ;
 		return 300 * 1000 ;
 	}
 }
@@ -1120,12 +1236,12 @@ void utility::setWindowOptions( QDialog * w )
 
 static bool _use_default_widget_relationship()
 {
-	if( _settings->contains( "useDefaultWidgetRelationship" ) ){
+	if( _settings->contains( "UseDefaultWidgetRelationship" ) ){
 
-		return _settings->value( "useDefaultWidgetRelationship" ).toBool() ;
+		return _settings->value( "UseDefaultWidgetRelationship" ).toBool() ;
 	}else{
 		bool e = true ;
-		_settings->setValue( "useDefaultWidgetRelationship",e ) ;
+		_settings->setValue( "UseDefaultWidgetRelationship",e ) ;
 		return e ;
 	}
 }

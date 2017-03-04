@@ -31,7 +31,7 @@ oneinstance::oneinstance( QObject * parent,const char * socketPath,const char * 
 
 	this->setParent( parent ) ;
 
-	m_serverPath = utility::homePath() + "/.SiriKali/tmp/" ;
+	m_serverPath = utility::homePath() + "/.SiriKali/.tmp/" ;
 
 	m_methodName = methodName ;
 

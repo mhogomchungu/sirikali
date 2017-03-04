@@ -666,6 +666,8 @@ void sirikali::Show()
 	m_folderOpener = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
 	m_env          = utility::cmdArgumentValue( l,"-z","" ) ;
 
+	utility::setUID( utility::cmdArgumentValue( l,"-K","-1" ).toInt() ) ;
+
 	auto volume = utility::cmdArgumentValue( l,"-d" ) ;
 
 	auto b = utility::cmdArgumentValue( l,"-b","" ) ;
