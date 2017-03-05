@@ -62,6 +62,10 @@ This project depends on lxqt_wallet project and it ships with an internal copy o
 if you want SiriKali to unconditionally use the internal copy of the project or to "false" to make the build process
 use a system installed version if found.
 
-Build errors/test fails/feature requests/recommendations can be reported at: https://github.com/mhogomchungu/SiriKali/issues
+-DUSE_POLKIT=true
+This option when set invokes the application with polkit.Useful when supporting ecryptfs-simple backend installed
+without suid bit set.
+
+Build errors/test failures/feature requests/recommendations can be reported at: https://github.com/mhogomchungu/SiriKali/issues
 or using my private email address at: mhogomchungu@gmail.com
 
