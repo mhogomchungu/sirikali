@@ -177,7 +177,7 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 		}else if( type == "encfs" ){
 
-			return "-S" ;
+			return "--standard" ;
 		}else{
 			return "" ;
 		}
@@ -576,19 +576,11 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderCreate( const opti
 
 				auto e = _cmd( true,opt,[ & ]()->QString{
 
-					if( opt.type.isOneOf( "cryfs","gocryptfs" ) ){
-
-						return opt.key ;
-
-					}else if( opt.type == "securefs" ){
+					if( opt.type.isOneOf( "securefs","encfs" ) ){
 
 						return opt.key + "\n" + opt.key ;
-
-					}else if( opt.type == "ecryptfs" ){
-
-						return opt.key ;
 					}else{
-						return "p\n" + opt.key ;
+						return opt.key ;
 					}
 
 				}(),[ & ](){
