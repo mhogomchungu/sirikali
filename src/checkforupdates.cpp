@@ -144,12 +144,49 @@ static QString _get_app_version( const siritask::volumeType& e )
 	return "N/A" ;
 }
 
-static QStringList _get_versions( NetworkAccessManager& m,const QStringList& e )
+static QString _get_version( const QByteArray& data )
 {
-	const auto& exe  = e.at( 0 ) ;
-	const auto& link = e.at( 1 ) ;
-	const auto& host = e.at( 2 ) ;
+	auto _found_release = []( const QString& e ){
 
+		for( const auto& it : e ){
+
+			/*
+			 * A release version has version in format of "A.B.C"
+			 *
+			 * ie it only has dots and digits. Presence of any other
+			 * character makes the release assumed to be a beta/alpha
+			 * or prerelease version(something like "A.B.C-rc1" or
+			 * "A.B.C.beta6"
+			 */
+			if( it != '.' && !( it >= '0' && it <= '9' ) ){
+
+				return false ;
+			}
+		}
+
+		return true ;
+	} ;
+
+	for( const auto& it : nlohmann::json::parse( data.constData() ) ){
+
+		auto e = it.find( "tag_name" ) ;
+
+		if( e != it.end() ){
+
+			auto r = QString::fromStdString( e.value() ).remove( 'v' ) ;
+
+			if( _found_release( r ) ){
+
+				return r ;
+			}
+		}
+	}
+
+	return "N/A" ;
+}
+
+static QStringList _version( NetworkAccessManager& m,const QString& exe,const QString& e )
+{	
 	auto f = _get_app_version( exe ) ;
 
 	if( f == "N/A" ){
@@ -157,80 +194,22 @@ static QStringList _get_versions( NetworkAccessManager& m,const QStringList& e )
 		return { exe,"N/A","N/A" } ;
 	}
 
-	auto _request = [ & ]( const QStringList& s ){
+	QUrl url( "https://api.github.com/repos/" + e + "/releases" ) ;
 
-		QNetworkRequest e( QUrl( s.first() ) ) ;
+	QNetworkRequest networkRequest( url ) ;
 
-		e.setRawHeader( "Host",s.at( 1 ).toLatin1() ) ;
-		e.setRawHeader( "Accept-Encoding","text/plain" ) ;
-
-		return e ;
-	} ;
+	networkRequest.setRawHeader( "Host","api.github.com" ) ;
+	networkRequest.setRawHeader( "Accept-Encoding","text/plain" ) ;
 
 	return { exe,f,[ & ]()->QString{
 
 		try{
-			if( exe == "cryfs" ){
+			return _get_version( m.get( networkRequest )->readAll() ) ;
 
-				auto data = m.get( _request( { link,host } ) )->readAll() ;
-				auto json = nlohmann::json::parse( data.constData() ) ;
+		}catch( ... ){
 
-				auto it = json.find( "version_info" ) ;
-
-				if( it != json.end() ){
-
-					auto e = it.value() ;
-
-					auto r = e.find( "current" ) ;
-
-					if( r != e.end() ){
-
-						return QString::fromStdString( r.value() ) ;
-					}
-				}
-			}else{
-				auto data = m.get( _request( { link,host } ) )->readAll() ;
-
-				auto _found_release = []( const QString& e ){
-
-					for( const auto& it : e ){
-
-						/*
-						 * A release version has version in format of "A.B.C"
-						 *
-						 * ie it only has dots and digits. Presence of any other
-						 * character makes the release assumed to be a beta/alpha
-						 * or prerelease version(something like "A.B.C-rc1" or
-						 * "A.B.C.beta6"
-						 */
-						if( it != '.' && !( it >= '0' && it <= '9' ) ){
-
-							return false ;
-						}
-					}
-
-					return true ;
-				} ;
-
-				for( const auto& it : nlohmann::json::parse( data.constData() ) ){
-
-					auto e = it.find( "tag_name" ) ;
-
-					if( e != it.end() ){
-
-						auto r = QString::fromStdString( e.value() ).remove( 'v' ) ;
-
-						if( _found_release( r ) ){
-
-							return r ;
-						}
-					}
-				}
-			}
-
-		}catch( ... ){}
-
-		return "N/A" ;
+			return "N/A" ;
+		}
 	}() } ;
 }
 
@@ -239,32 +218,17 @@ checkForUpdates::checkForUpdates( QWidget * widget,bool autocheck ) :
 {
 	_show( this,m_autocheck,m_widget,[ & ]()->QVector< QStringList >{
 
-		auto _build = []( const QString& e ){
-
-			return "https://api.github.com/repos/" + e + "/releases" ;
-		} ;
-
 		auto& m = m_networkAccessManager ;
 
-		auto a = _get_versions( m,{ "SiriKali",
-					    _build( "mhogomchungu/sirikali" ),
-					    "api.github.com" } ) ;
+		auto a = _version( m,"SiriKali","mhogomchungu/sirikali" ) ;
 
-		auto b = _get_versions( m,{ "cryfs",
-					    "https://www.cryfs.org/version_info.json",
-					    "www.cryfs.org" } ) ;
+		auto b = _version( m,"cryfs","cryfs/cryfs" ) ;
 
-		auto c = _get_versions( m,{ "gocryptfs",
-					    _build( "rfjakob/gocryptfs" ),
-					    "api.github.com" } ) ;
+		auto c = _version( m,"gocryptfs","rfjakob/gocryptfs" ) ;
 
-		auto d = _get_versions( m,{ "securefs",
-					    _build( "netheril96/securefs" ),
-					    "api.github.com" } ) ;
+		auto d = _version( m,"securefs","netheril96/securefs" ) ;
 
-		auto e = _get_versions( m,{ "encfs",
-					    _build( "vgough/encfs" ),
-					    "api.github.com" } ) ;
+		auto e = _version( m,"encfs","vgough/encfs" ) ;
 
 		return { a,b,c,d,e } ;
 	}() ) ;
