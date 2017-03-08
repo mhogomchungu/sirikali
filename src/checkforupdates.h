@@ -37,8 +37,6 @@ public:
 
 	static void instance( QWidget *,bool ) ;
 private:
-	bool m_autocheck ;
-	QWidget * m_widget ;
 	NetworkAccessManager m_networkAccessManager ;
 };
 

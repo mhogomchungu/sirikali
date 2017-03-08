@@ -62,7 +62,7 @@ secrets::wallet secrets::walletBk( LXQt::Wallet::BackEnd e )
 {
 	if( e == LXQt::Wallet::BackEnd::internal ){
 
-		return *( this->internalWallet() ) ;
+		return this->internalWallet() ;
 	}else{
 		return LXQt::Wallet::getWalletBackend( e ) ;
 	}
@@ -94,6 +94,10 @@ secrets::wallet::wallet( LXQt::Wallet::Wallet * w ) : m_wallet( w )
 {
 }
 
+secrets::wallet::wallet( LXQt::Wallet::Wallet ** w ) : m_wallet( *w )
+{
+}
+
 secrets::wallet::~wallet()
 {
 	_delete( m_wallet ) ;
@@ -104,16 +108,4 @@ secrets::wallet::wallet( secrets::wallet&& w )
 	_delete( m_wallet ) ;
 	m_wallet = w.m_wallet ;
 	w.m_wallet = nullptr ;
-}
-
-secrets::wallet& secrets::wallet::operator=( secrets::wallet&& w )
-{
-	if( m_wallet != w.m_wallet ){
-
-		_delete( m_wallet ) ;
-		m_wallet = w.m_wallet ;
-		w.m_wallet = nullptr ;
-	}
-
-	return *this ;
 }

@@ -32,13 +32,12 @@ public:
 	{
 	public:
 		wallet( LXQt::Wallet::Wallet * ) ;
+		wallet( LXQt::Wallet::Wallet ** ) ;
 		wallet() ;
 
 		~wallet() ;
 
 		wallet( wallet&& ) ;
-
-		secrets::wallet& operator=( secrets::wallet&& ) ;
 
 		LXQt::Wallet::Wallet& bk()
 		{

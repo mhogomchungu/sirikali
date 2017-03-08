@@ -34,10 +34,8 @@ static QString _tr( const QStringList& l )
 	return e.arg( "",l.at( 0 ),l.at( 1 ),l.at( 2 ) ) ;
 }
 
-static void _show( QObject * obj,bool autocheck,QWidget * w,const QVector< QStringList >& l )
+static void _show( bool autocheck,QWidget * w,const QVector< QStringList >& l )
 {
-	DialogMsg msg( w,nullptr ) ;
-
 	bool show = false ;
 	QString e = "\n\n" ;
 
@@ -59,16 +57,14 @@ static void _show( QObject * obj,bool autocheck,QWidget * w,const QVector< QStri
 
 		if( show ){
 
-			msg.ShowUIInfo( QObject::tr( "Version Info" ),true,e + "\n" ) ;
+			DialogMsg( w ).ShowUIInfo( QObject::tr( "Version Info" ),true,e + "\n" ) ;
 		}
 	}else{
-		msg.ShowUIInfo( QObject::tr( "Version Info" ),true,e + "\n" ) ;
+		DialogMsg( w ).ShowUIInfo( QObject::tr( "Version Info" ),true,e + "\n" ) ;
 	}
-
-	obj->deleteLater() ;
 }
 
-static QString _get_app_version( const siritask::volumeType& e )
+static QString _version( const siritask::volumeType& e )
 {
 	if( e == "cryfs" ){
 
@@ -144,7 +140,7 @@ static QString _get_app_version( const siritask::volumeType& e )
 	return "N/A" ;
 }
 
-static QString _get_version( const QByteArray& data )
+static QString _version( const QByteArray& data )
 {
 	auto _found_release = []( const QString& e ){
 
@@ -187,36 +183,32 @@ static QString _get_version( const QByteArray& data )
 
 static QStringList _version( NetworkAccessManager& m,const QString& exe,const QString& e )
 {	
-	auto f = _get_app_version( exe ) ;
+	auto f = _version( exe ) ;
 
 	if( f == "N/A" ){
 
 		return { exe,"N/A","N/A" } ;
-	}
+	}else {
+		QUrl url( "https://api.github.com/repos/" + e + "/releases" ) ;
 
-	QUrl url( "https://api.github.com/repos/" + e + "/releases" ) ;
+		QNetworkRequest networkRequest( url ) ;
 
-	QNetworkRequest networkRequest( url ) ;
-
-	networkRequest.setRawHeader( "Host","api.github.com" ) ;
-	networkRequest.setRawHeader( "Accept-Encoding","text/plain" ) ;
-
-	return { exe,f,[ & ]()->QString{
+		networkRequest.setRawHeader( "Host","api.github.com" ) ;
+		networkRequest.setRawHeader( "Accept-Encoding","text/plain" ) ;
 
 		try{
-			return _get_version( m.get( networkRequest )->readAll() ) ;
+			return { exe,f,_version( m.get( networkRequest )->readAll() ) } ;
 
 		}catch( ... ){
 
-			return "N/A" ;
+			return { exe,f,"N/A" } ;
 		}
-	}() } ;
+	}
 }
 
-checkForUpdates::checkForUpdates( QWidget * widget,bool autocheck ) :
-	m_autocheck( autocheck ),m_widget( widget )
+checkForUpdates::checkForUpdates( QWidget * widget,bool autocheck )
 {
-	_show( this,m_autocheck,m_widget,[ & ]()->QVector< QStringList >{
+	_show( autocheck,widget,[ & ]()->QVector< QStringList >{
 
 		auto& m = m_networkAccessManager ;
 
@@ -232,6 +224,8 @@ checkForUpdates::checkForUpdates( QWidget * widget,bool autocheck ) :
 
 		return { a,b,c,d,e } ;
 	}() ) ;
+
+	this->deleteLater() ;
 }
 
 void checkForUpdates::instance( QWidget * widget,bool e )

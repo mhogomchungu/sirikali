@@ -66,7 +66,7 @@ file( WRITE ${PROJECT_BINARY_DIR}/version.h "
 \n
 #ifndef SIRIKALI_VERSION
 #define SIRIKALI_VERSION
-#define VERSION_STRING \"Version  : ${PGR_VERSION}\\nCopyright: 2017 Francis Banyikwa,mhogomchungu@gmail.com\\nLicense  : GPLv2+\"
+#define VERSION_STRING \"Version  : ${PGR_VERSION}\\nCopyright: 2016-2017 Francis Banyikwa,mhogomchungu@gmail.com\\nLicense  : GPLv2+\"
 #endif
 \n" )
 

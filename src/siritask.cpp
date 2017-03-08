@@ -341,10 +341,10 @@ static siritask::status _getStatus( const siritask::volumeType& app,bool s )
 	}
 }
 
-static void _set_status( siritask::cmdStatus * e,siritask::status s )
+static void _set_status( siritask::cmdStatus& e,siritask::status s )
 {
-	const auto msg = e->msg().toLower() ;
-	const auto exitCode = e->exitCode() ;
+	const auto msg = e.msg().toLower() ;
+	const auto exitCode = e.exitCode() ;
 
 	/*
 	 *
@@ -358,21 +358,21 @@ static void _set_status( siritask::cmdStatus * e,siritask::status s )
 
 		if( msg.contains( "error: mount failed" ) ){
 
-			e->setStatus( s ) ;
+			e.setStatus( s ) ;
 		}
 
 	}else if( s == siritask::status::cryfs ){
 
 		if( msg.contains( "password" ) ){
 
-			e->setStatus( s ) ;
+			e.setStatus( s ) ;
 		}
 
 	}else if( s == siritask::status::encfs ){
 
 		if( msg.contains( "password" ) ){
 
-			e->setStatus( s ) ;
+			e.setStatus( s ) ;
 		}
 
 	}else if( s == siritask::status::gocryptfs ){
@@ -382,11 +382,11 @@ static void _set_status( siritask::cmdStatus * e,siritask::status s )
 		 */
 		if( exitCode == 12 ){
 
-			e->setStatus( s ) ;
+			e.setStatus( s ) ;
 		}else{
 			if( msg.contains( "password" ) ){
 
-				e->setStatus( s ) ;
+				e.setStatus( s ) ;
 			}
 		}
 
@@ -394,7 +394,7 @@ static void _set_status( siritask::cmdStatus * e,siritask::status s )
 
 		if( msg.contains( "password" ) ){
 
-			e->setStatus( s ) ;
+			e.setStatus( s ) ;
 		}
 	}
 }
@@ -443,7 +443,7 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 				return cs::success ;
 			}else{
-				_set_status( &status,_getStatus( app,false ) ) ;
+				_set_status( status,_getStatus( app,false ) ) ;
 			}
 		}
 
