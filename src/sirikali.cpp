@@ -1307,7 +1307,7 @@ void sirikali::mount( const volumeInfo& entry,const QString& exe,const QByteArra
 
 		this->openMountPointPath( e ) ;
 
-	},exe,key ).ShowUI() ;
+	},exe,key ) ;
 }
 
 void sirikali::createVolume( QAction * ac )

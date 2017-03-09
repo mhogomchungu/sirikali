@@ -249,6 +249,8 @@ keyDialog::keyDialog( QWidget * parent,
 	m_ui->checkBoxVisibleKey->setToolTip( tr( "Check This Box To Make Password Visible" ) ) ;
 
 	utility::setWindowOptions( this ) ;
+
+	this->ShowUI() ;
 }
 
 void keyDialog::windowSetTitle( const QString& s )

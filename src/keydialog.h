@@ -114,8 +114,6 @@ public:
 		   const QString&,
 		   const QByteArray& ) ;
 	~keyDialog() ;
-	void ShowUI( void ) ;
-	void HideUI( void ) ;
 signals:
 	void mounted( QString ) ;
 	void cryptoOpen( QString ) ;
@@ -139,7 +137,10 @@ private slots:
 	void cbMountReadOnlyStateChanged( int ) ;
 	void encryptedFolderMount( void ) ;
 	void encryptedFolderCreate( void ) ;
-private :
+private :	
+	void ShowUI( void ) ;
+	void HideUI( void ) ;
+
 	void showErrorMessage( const siritask::cmdStatus& ) ;
 	void showErrorMessage( const QString& ) ;
 

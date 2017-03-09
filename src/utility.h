@@ -358,7 +358,6 @@ namespace utility
 	bool notRunningInMixedMode() ;
 
 	QString getStringUserID() ;
-	QString appendUserUID( const QString& ) ;
 	QString homePath() ;
 	QString userName() ;
 

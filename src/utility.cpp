@@ -143,16 +143,6 @@ QString utility::getStringUserID()
 	return QString::number( utility::getUserID() ) ;
 }
 
-QString utility::appendUserUID( const QString& e )
-{
-	if( staticGlobalUserId == -1 ){
-
-		return e ;
-	}else{
-		return e + " -K " + utility::getStringUserID() ;
-	}
-}
-
 static passwd * _getPassWd()
 {
 	return getpwuid( utility::getUserID() ) ;
