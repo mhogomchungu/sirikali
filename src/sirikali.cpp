@@ -64,6 +64,7 @@ sirikali::sirikali( QWidget * parent ) :
 	m_secrets( this ),
 	m_mountInfo( mountinfo::instance( this,true,[](){ QCoreApplication::quit() ; } ) )
 {
+	utility::createFolder( utility::homeConfigPath() ) ;
 }
 
 /*
@@ -177,14 +178,6 @@ void sirikali::setUpApp( const QString& volume )
 	m_trayIcon.setIcon( icon ) ;
 
 	m_trayIcon.show() ;
-
-	auto dirPath = utility::homeConfigPath() ;
-	QDir dir( dirPath ) ;
-
-	if( !dir.exists() ){
-
-		dir.mkpath( dirPath ) ;
-	}
 
 	this->disableAll() ;
 

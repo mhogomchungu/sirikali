@@ -31,13 +31,11 @@ oneinstance::oneinstance( QObject * parent,const char * socketPath,const char * 
 
 	this->setParent( parent ) ;
 
-	m_serverPath = utility::homePath() + "/.SiriKali/.tmp/" ;
+	m_serverPath = utility::homeConfigPath( ".tmp/" ) ;
+
+	utility::createFolder( m_serverPath ) ;
 
 	m_methodName = methodName ;
-
-	QDir d ;
-
-	d.mkpath( m_serverPath ) ;
 
 	m_serverPath += socketPath ;
 
@@ -105,14 +103,14 @@ void oneinstance::gotConnection()
 void oneinstance::errorOnConnect( QLocalSocket::LocalSocketError e )
 {
 	Q_UNUSED( e ) ;
-	qDebug() << tr( "Previous instance seem to have crashed,trying to clean up before starting" ) ;
+	utility::debug() << tr( "Previous instance seem to have crashed,trying to clean up before starting" ) ;
 	QFile::remove( m_serverPath ) ;
 	this->startInstance() ;
 }
 
 void oneinstance::connected()
 {
-	qDebug() << tr( "There seem to be another instance running,exiting this one" ) ;
+	utility::debug() << tr( "There seem to be another instance running,exiting this one" ) ;
 
 	if( !m_device.isEmpty() ){
 

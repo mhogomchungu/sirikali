@@ -34,15 +34,7 @@ static bool _create_folder( const QString& m )
 
 		return utility::reUseMountPoint() ;
 	}else{
-		if( QDir().mkpath( m ) ){
-
-			utility::changePathPermissions( m,0777 ) ;
-			utility::changePathOwner( m ) ;
-
-			return true ;
-		}else{
-			return false ;
-		}
+		return utility::createFolder( m ) ;
 	}
 }
 

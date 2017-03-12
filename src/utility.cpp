@@ -641,7 +641,7 @@ static utility::array_t _dimensions( const char * defaults,int size )
 
 		if( l.size() != size || size > int( p.size() ) ){
 
-			qDebug() << "failed to parse config option" ;
+			utility::debug() << "failed to parse config option" ;
 			return _default_dimensions( defaults ) ;
 		}
 
@@ -659,7 +659,7 @@ static utility::array_t _dimensions( const char * defaults,int size )
 
 				*( f + i ) = e ;
 			}else{
-				qDebug() << "failed to parse config option" ;
+				utility::debug() << "failed to parse config option" ;
 				return _default_dimensions( defaults ) ;
 			}
 		}
@@ -1285,4 +1285,17 @@ void utility::scaleGUI()
 	}
 
 #endif
+}
+
+bool utility::createFolder( const QString& m )
+{
+	if( QDir().mkpath( m ) ){
+
+		utility::changePathPermissions( m,0777 ) ;
+		utility::changePathOwner( m ) ;
+
+		return true ;
+	}else{
+		return false ;
+	}
 }

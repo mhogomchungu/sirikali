@@ -309,6 +309,8 @@ namespace utility
 	QString homePath() ;
 	QString mountPath( const QString& path ) ;
 
+	bool createFolder( const QString& ) ;
+
 	void scaleGUI( void ) ;
 
 	void setDefaultMountPointPrefix( const QString& path ) ;
