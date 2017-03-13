@@ -172,7 +172,12 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 		}else if( type == "encfs" ){
 
-			return "--standard" ;
+			if( create ){
+
+				return "-S --standard" ;
+			}else{
+				return "-S" ;
+			}
 		}else{
 			return "" ;
 		}
