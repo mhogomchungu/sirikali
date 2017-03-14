@@ -20,7 +20,11 @@
 #include "checkforupdates.h"
 
 #include <QFile>
+#include <QVector>
+#include <QObject>
+#include <QWidget>
 
+#include "networkAccessManager.hpp"
 #include "utility.h"
 #include "dialogmsg.h"
 #include "siritask.h"
@@ -206,11 +210,11 @@ static QStringList _version( NetworkAccessManager& m,const QString& exe,const QS
 	}
 }
 
-checkForUpdates::checkForUpdates( QWidget * widget,bool autocheck )
+static void _check( QWidget * widget,bool autocheck )
 {
 	_show( autocheck,widget,[ & ]()->QVector< QStringList >{
 
-		auto& m = m_networkAccessManager ;
+		NetworkAccessManager m ;
 
 		auto a = _version( m,"SiriKali","mhogomchungu/sirikali" ) ;
 
@@ -224,20 +228,18 @@ checkForUpdates::checkForUpdates( QWidget * widget,bool autocheck )
 
 		return { a,b,c,d,e } ;
 	}() ) ;
-
-	this->deleteLater() ;
 }
 
-void checkForUpdates::instance( QWidget * widget,bool e )
+void checkForUpdates::check( QWidget * widget,bool e )
 {
 	if( e ){
 
 		if( utility::autoCheck() ){
 
-			new checkForUpdates( widget,true ) ;
+			_check( widget,true ) ;
 		}
 	}else{
-		new checkForUpdates( widget,false ) ;
+		_check( widget,false ) ;
 	}
 }
 
@@ -249,8 +251,4 @@ bool checkForUpdates::autoCheck()
 void checkForUpdates::autoCheck( bool e )
 {
 	return utility::autoCheck( e ) ;
-}
-
-checkForUpdates::~checkForUpdates()
-{
 }

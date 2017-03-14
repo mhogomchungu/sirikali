@@ -529,12 +529,12 @@ void sirikali::licenseInfo()
 
 void sirikali::updateCheck()
 {
-	checkForUpdates::instance( this,false ) ;
+	checkForUpdates::check( this,false ) ;
 }
 
 void sirikali::autoUpdateCheck()
 {
-	checkForUpdates::instance( this,true ) ;
+	checkForUpdates::check( this,true ) ;
 }
 
 void sirikali::autoCheckUpdates( bool e )
