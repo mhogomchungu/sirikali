@@ -64,7 +64,6 @@ sirikali::sirikali( QWidget * parent ) :
 	m_secrets( this ),
 	m_mountInfo( mountinfo::instance( this,true,[](){ QCoreApplication::quit() ; } ) )
 {
-	utility::createFolder( utility::homeConfigPath() ) ;
 }
 
 /*
@@ -651,7 +650,7 @@ void sirikali::raiseWindow( QString volume )
 	this->showMoungDialog( volume ) ;
 }
 
-void sirikali::Show()
+void sirikali::start()
 {
 	auto l = QCoreApplication::arguments() ;
 
@@ -660,6 +659,7 @@ void sirikali::Show()
 	m_env          = utility::cmdArgumentValue( l,"-z","" ) ;
 
 	utility::setUID( utility::cmdArgumentValue( l,"-K","-1" ).toInt() ) ;
+	utility::createFolder( utility::homeConfigPath() ) ;
 
 	auto volume = utility::cmdArgumentValue( l,"-d" ) ;
 

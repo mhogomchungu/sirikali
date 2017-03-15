@@ -69,3 +69,8 @@ version 1.2.4
 version 1.2.5
 -- Display backend error message to the user when SiriKali fails to figure out why requested operation failed.
 -- Its now possible to view typed in password when creating/unlocking a volume.
+
+version 1.2.6
+-- With a build time option,make it possible to raise the GUI elevated using polkit to support ecryptfs-simple backend
+   built without "proper permissions".
+-- Default to not using a passward manager when unlocking volumes from favorites list.

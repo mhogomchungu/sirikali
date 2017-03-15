@@ -1167,8 +1167,8 @@ utility::walletBackEnd utility::autoMountBackEnd()
 			return utility::walletBackEnd() ;
 		}
 	}else{
-		_settings->setValue( "AutoMountPassWordBackEnd",QString( "internal" ) ) ;
-		return LXQt::Wallet::BackEnd::internal ;
+		_settings->setValue( "AutoMountPassWordBackEnd",QString( "none" ) ) ;
+		return utility::walletBackEnd() ;
 	}
 }
 

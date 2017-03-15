@@ -49,7 +49,7 @@ class sirikali : public QWidget
 public:
 	explicit sirikali( QWidget * parent = 0 ) ;
 	~sirikali() ;
-	void Show( void ) ;
+	void start( void ) ;
 public slots:
 	void raiseWindow( void ) ;
 	void raiseWindow( QString ) ;

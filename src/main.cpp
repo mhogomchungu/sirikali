@@ -33,7 +33,7 @@ int main( int argc,char * argv[] )
 	return utility::startApplication( "SiriKali",[ & ](){
 
 		sirikali e ;
-		e.Show() ;
+		e.start() ;
 
 		return a.exec() ;
 	} ) ;
