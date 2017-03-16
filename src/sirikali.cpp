@@ -783,7 +783,10 @@ void sirikali::autoMountFavoritesOnAvailable( QString m )
 			}
 		}
 
-		this->autoUnlockVolumes( e ) ;
+		for( const auto& it : this->autoUnlockVolumes( e ) ){
+
+			this->mount( it ) ;
+		}
 	}
 }
 

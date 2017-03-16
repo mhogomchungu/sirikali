@@ -65,5 +65,5 @@ FORMS += \
     lxqt_wallet/frontend/password_dialog.ui \
     lxqt_wallet/frontend/changepassworddialog.ui
 
-TRANSLATIONS = ../translations/en_US.ts
-TRANSLATIONS = ../translations/fr_FR.ts
+TRANSLATIONS = ../translations/en_US.ts \
+               ../translations/fr_FR.ts

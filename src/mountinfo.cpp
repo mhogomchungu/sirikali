@@ -101,6 +101,8 @@ void mountinfo::threadStopped()
 
 void mountinfo::updateVolume()
 {
+	m_newMountList = this->mountedVolumes() ;
+
 	auto _volumeWasMounted = [ & ](){
 
 		return m_oldMountList.size() < m_newMountList.size() ;
@@ -111,30 +113,28 @@ void mountinfo::updateVolume()
 		return !m_oldMountList.contains( e ) ;
 	} ;
 
-	m_newMountList = this->mountedVolumes() ;
+	if( m_announceEvents ){
 
-	if( _volumeWasMounted() ){
+		emit gotEvent() ;
 
-		for( const auto& it : m_newMountList ){
+		if( _volumeWasMounted() ){
 
-			if( _mountedVolume( it ) ){
+			for( const auto& it : m_newMountList ){
 
-				const auto e = utility::split( it,' ' ) ;
+				if( _mountedVolume( it ) ){
 
-				if( e.size() > 3 ){
+					const auto e = utility::split( it,' ' ) ;
 
-					gotEvent( e.at( 4 ) ) ;
+					if( e.size() > 3 ){
+
+						gotEvent( e.at( 4 ) ) ;
+					}
 				}
 			}
 		}
 	}
 
 	m_oldMountList = m_newMountList ;
-
-	if( m_announceEvents ){
-
-		emit gotEvent() ;
-	}
 }
 
 void mountinfo::announceEvents( bool s )
