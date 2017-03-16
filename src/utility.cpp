@@ -180,15 +180,6 @@ void utility::dropPrivileges( int uid )
 
 			setenv( "TMP",s.constData(),1 ) ;
 			setenv( "TMPDIR",s.constData(),1 ) ;
-
-			auto e = utility::executableSearchPaths( getenv( "PATH" ) ) ;
-
-			setenv( "PATH",e.toLatin1(),1 ) ;
-
-			setenv( "CRYFS_NO_UPDATE_CHECK","TRUE",1 ) ;
-			setenv( "CRYFS_FRONTEND","noninteractive",1 ) ;
-
-			setenv( "LANG","C",1 ) ;
 		}
 
 		Q_UNUSED( setgid( uid ) ) ;

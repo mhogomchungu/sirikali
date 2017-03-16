@@ -157,20 +157,22 @@ namespace siritask
 
 			if( e.isEmpty() ){
 
-				m_message = s.msg() ;
+				this->message( s.msg() ) ;
 			}else{
-				m_message = e ;
+				this->message( e ) ;
 			}
 		}
 		template< typename T = QString >
 		cmdStatus( siritask::status s,const T& e = T() ) :
-			m_status( s ),m_message( e )
+			m_status( s )
 		{
+			this->message( e ) ;
 		}
-		template< typename T >
-		cmdStatus( int s,const T& e ) :
-			m_exitCode( s ),m_message( e )
+		template< typename T = QString >
+		cmdStatus( int s,const T& e = T() ) :
+			m_exitCode( s )
 		{
+			this->message( e ) ;
 		}
 		siritask::status status() const
 		{
@@ -197,18 +199,47 @@ namespace siritask
 		template< typename T >
 		cmdStatus& setMessage( const T& e )
 		{
-			m_message = e ;
+			this->message( e ) ;
 			return *this ;
 		}
 		const QString& msg() const
 		{
 			return m_message ;
 		}
+		QString report() const
+		{
+			auto s = QString::number( m_exitCode ) ;
+
+			QString e ;
+
+			e+= "-------------------------" ;
+			e+= QString( "\nBackend Generated Output:\nExit Code: %1" ).arg( s ) ;
+			e+= QString( "\nExit String: \"%1\"" ).arg( m_message ) ;
+			e+= "\n-------------------------" ;
+
+			return e ;
+		}
 		int exitCode() const
 		{
 			return m_exitCode ;
 		}
 	private:
+		template< typename T >
+		void message( const T& e )
+		{
+			m_message = e ;
+
+			while( true ){
+
+				if( m_message.endsWith( '\n' ) ){
+
+					m_message.truncate( m_message.size() - 1 ) ;
+				}else{
+					break ;
+				}
+			}
+		}
+
 		int m_exitCode = -1 ;
 		siritask::status m_status = siritask::status::backendFail ;
 		QString m_message ;

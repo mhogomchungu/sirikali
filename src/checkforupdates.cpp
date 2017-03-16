@@ -87,7 +87,7 @@ static QString _version( const siritask::volumeType& e )
 
 					return env ;
 
-				}() ).output().split( ' ' ) ;
+				}() ).stdOut().split( ' ' ) ;
 
 				if( e.size() >= 3 ){
 

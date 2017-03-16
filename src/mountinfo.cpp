@@ -62,7 +62,7 @@ QStringList mountinfo::mountedVolumes()
 		QString fs ;
 		const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
 
-		auto z = utility::Task::run( "mount" ).await().output() ;
+		auto z = utility::Task::run( "mount" ).await().stdOut() ;
 
 		for( const auto& it : utility::split( z ) ){
 

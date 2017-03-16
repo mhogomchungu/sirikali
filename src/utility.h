@@ -536,18 +536,22 @@ namespace utility
 		{
 			if( stdOutput ){
 
-				return utility::split( m_data,token ) ;
+				return utility::split( m_stdOut,token ) ;
 			}else{
 				return utility::split( m_stdError,token ) ;
 			}
 		}
-		void output( const QByteArray& r )
+		void stdOut( const QByteArray& r )
 		{
-			m_data = r ;
+			m_stdOut = r ;
 		}
-		const QByteArray& output() const
+		void stdError( const QByteArray& r )
 		{
-			return m_data ;
+			m_stdError = r ;
+		}
+		const QByteArray& stdOut() const
+		{
+			return m_stdOut ;
 		}
 		const QByteArray& stdError() const
 		{
@@ -611,11 +615,11 @@ namespace utility
 			m_finished   = p.waitForFinished( waitTime ) ;
 			m_exitCode   = p.exitCode() ;
 			m_exitStatus = p.exitStatus() ;
-			m_data       = p.readAll() ;
+			m_stdOut     = p.readAllStandardOutput() ;
 			m_stdError   = p.readAllStandardError() ;
 		}
 
-		QByteArray m_data ;
+		QByteArray m_stdOut ;
 		QByteArray m_stdError ;
 		int m_exitCode ;
 		int m_exitStatus ;

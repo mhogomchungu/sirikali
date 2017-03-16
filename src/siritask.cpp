@@ -341,9 +341,17 @@ static siritask::status _status( const siritask::volumeType& app,bool s )
 	}
 }
 
-static siritask::cmdStatus _status( int q,siritask::status s,const QByteArray& msg )
+static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bool stdOut )
 {
-	siritask::cmdStatus e = { q,msg } ;
+	if( r.success() ){
+
+		return siritask::status::success ;
+	}
+
+	siritask::cmdStatus e = { r.exitCode(),
+				  stdOut ? r.stdOut() : r.stdError() } ;
+
+	auto msg = e.msg().toLower() ;
 
 	/*
 	 *
@@ -426,40 +434,14 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 		}(),password.toLatin1(),_drop_privileges( configFilePath ) ) ;
 
-		if( e.finished() && e.success() ){
+		auto s = _status( e,_status( app,false ),app == "encfs" ) ;
 
-			return cs::success ;
+		if( s != siritask::status::success ){
+
+			utility::debug() << s.report() ;
 		}
 
-		auto status = _status( e.exitCode(),_status( app,false ),[ & ](){
-
-			if( app == "encfs" ){
-
-				return e.output().toLower() ;
-			}else{
-				return e.stdError().toLower() ;
-			}
-		}() ) ;
-
-		auto s = QString::number( status.exitCode() ) ;
-		auto m = status.msg() ;
-
-		while( true ){
-
-			if( m.endsWith( '\n' ) ){
-
-				m.truncate( m.size() - 1 ) ;
-			}else{
-				break ;
-			}
-		}
-
-		utility::debug() << "-------------------------" ;
-		utility::debug() << QString( "Backend Generated Output:\nExit Code: %1" ).arg( s ) ;
-		utility::debug() << QString( "Exit String: \"%1\"" ).arg( m ) ;
-		utility::debug() << "-------------------------" ;
-
-		return status ;
+		return s ;
 	}
 }
 

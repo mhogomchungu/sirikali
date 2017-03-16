@@ -1074,7 +1074,7 @@ static void _volume_properties( const QString& e,const QString& arg,
 
 		if( e.finished() && e.success() ){
 
-			DialogMsg( w ).ShowUIInfo( QObject::tr( "INFORMATION" ),true,e.output() ) ;
+			DialogMsg( w ).ShowUIInfo( QObject::tr( "INFORMATION" ),true,e.stdOut() ) ;
 		}else{
 			DialogMsg( w ).ShowUIOK( QObject::tr( "ERROR" ),
 						 QObject::tr( "Failed To Get Volume Properties" ) ) ;
