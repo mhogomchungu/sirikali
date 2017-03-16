@@ -74,3 +74,4 @@ version 1.2.6
 -- With a build time option,make it possible to raise the GUI elevated using polkit to support ecryptfs-simple backend
    built without "proper permissions".
 -- Default to not using a passward manager when unlocking volumes from favorites list.
+-- Add an option to lock all unlocked volumes and quit the application on success.

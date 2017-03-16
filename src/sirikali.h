@@ -83,6 +83,7 @@ private slots:
 	void createVolume( QAction * = nullptr ) ;
 	void slotMount( void ) ;
 	void unMountAll( void ) ;
+	void unMountAllAndQuit( void ) ;
 	void pbUmount( void ) ;
 	void slotTrayClicked( QSystemTrayIcon::ActivationReason = QSystemTrayIcon::Trigger ) ;
 	void slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ;

@@ -301,6 +301,9 @@ void sirikali::setUpAppMenu()
 	m->addAction( _addAction( false,false,tr( "Unmount All" ),
 				  "Unmount All",SLOT( unMountAll() ) ) ) ;
 
+	m->addAction( _addAction( false,false,tr( "Unmount All And Quit" ),
+				  "Unmount All And Quit",SLOT( unMountAllAndQuit() ) ) ) ;
+
 	m->addMenu( [ this,m,&_addMenu,&_addAction,&_addWalletEntries ](){
 
 		auto e = _addMenu( m,tr( "AutoMount Favorites" ),"AutoMount Favorites",nullptr,nullptr ) ;
@@ -1491,6 +1494,16 @@ void sirikali::unMountAll()
 	this->enableAll() ;
 
 	m_mountInfo.announceEvents( true ) ;
+}
+
+void sirikali::unMountAllAndQuit()
+{
+	this->unMountAll() ;
+
+	if( m_ui->tableWidget->rowCount() == 0 ){
+
+		this->closeApplication() ;
+	}
 }
 
 void sirikali::pbUpdate()
