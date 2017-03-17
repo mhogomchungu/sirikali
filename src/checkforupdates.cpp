@@ -41,7 +41,7 @@ static QString _tr( const QStringList& l )
 static void _show( bool autocheck,QWidget * w,const QVector< QStringList >& l )
 {
 	bool show = false ;
-	QString e = "\n\n" ;
+	QString e = "\n" ;
 
 	for( const auto& it : l ){
 
@@ -70,78 +70,65 @@ static void _show( bool autocheck,QWidget * w,const QVector< QStringList >& l )
 
 static QString _version( const siritask::volumeType& e )
 {
-	if( e == "cryfs" ){
-
-		auto exe = e.executableFullPath() ;
-
-		if( !exe.isEmpty() ){
-
-			return Task::await< QString >( [ & ]()->QString{
-
-				auto e = utility::Task( exe,-1,[](){
-
-					QProcessEnvironment env ;
-
-					env.insert( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
-					env.insert( "CRYFS_FRONTEND","noninteractive" ) ;
-
-					return env ;
-
-				}() ).stdOut().split( ' ' ) ;
-
-				if( e.size() >= 3 ){
-
-					return e.at( 2 ).split( '\n' ).first() ;
-				}else{
-					return "N/A" ;
-				}
-			} ) ;
-		}
-
-	}else if( e.isOneOf( "gocryptfs","securefs","encfs" ) ){
-
-		auto exe = e.executableFullPath() ;
-
-		if( !exe.isEmpty() ){
-
-			auto args = [ & ]{
-
-				if( e.isOneOf( "gocryptfs","encfs" ) ){
-
-					return " --version" ;
-				}else{
-					return " version" ;
-				}
-			}() ;
-
-			auto a = utility::Task::run( exe + args ).await().splitOutput( ' ',e != "encfs" ) ;
-
-			if( a.size() > 2 ){
-
-				auto r = [ & ]()->QString{
-
-					if( e == "encfs" ){
-
-						return a.at( 2 ) ;
-					}else{
-						return a.at( 1 ).split( '\n' ).first() ;
-					}
-				}() ;
-
-				r.remove( ';' ) ;
-				r.remove( 'v' ) ;
-				r.remove( '\n' ) ;
-
-				return r ;
-			}
-		}
-
-	}else if( e == "SiriKali" ){
+	if( e == "sirikali" ){
 
 		return THIS_VERSION ;
 	}
 
-	return "N/A" ;
+	auto exe = e.executableFullPath() ;
+
+	if( exe.isEmpty() ){
+
+		return "N/A" ;
+	}
+
+	auto args = [ & ](){
+
+		if( e == "cryfs" ){
+
+			return exe ;
+
+		}else if( e == "securefs" ){
+
+			return exe + " version" ;
+		}else{
+			return exe + " --version" ;
+		}
+	}() ;
+
+	auto s = Task::await< QStringList >( [ & ](){
+
+		return utility::Task( args,-1,[ & ](){
+
+			QProcessEnvironment env ;
+
+			env.insert( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
+			env.insert( "CRYFS_FRONTEND","noninteractive" ) ;
+
+			return env ;
+
+		}() ).splitOutput( ' ',e != "encfs" ) ;
+	} ) ;
+
+	auto r = [ & ]()->QString{
+
+		if( e.isOneOf( "cryfs","encfs" ) ){
+
+			if( s.size() > 2 ){
+
+				return s.at( 2 ) ;
+			}
+		}else{
+			if( s.size() > 1 ){
+
+				return s.at( 1 ) ;
+			}
+		}
+
+		return "N/A" ;
+	}() ;
+
+	return r.split( '\n' ).first().remove( ';' ).remove( 'v' ).remove( '\n' ) ;
 }
 
 static QString _version( const QByteArray& data )
@@ -216,7 +203,7 @@ static void _check( QWidget * widget,bool autocheck )
 
 		NetworkAccessManager m ;
 
-		auto a = _version( m,"SiriKali","mhogomchungu/sirikali" ) ;
+		auto a = _version( m,"sirikali","mhogomchungu/sirikali" ) ;
 
 		auto b = _version( m,"cryfs","cryfs/cryfs" ) ;
 
@@ -226,7 +213,9 @@ static void _check( QWidget * widget,bool autocheck )
 
 		auto e = _version( m,"encfs","vgough/encfs" ) ;
 
-		return { a,b,c,d,e } ;
+		auto f = _version( m,"ecryptfs-simple","mhogomchungu/ecryptfs-simple" ) ;
+
+		return { a,b,c,d,e,f } ;
 	}() ) ;
 }
 
