@@ -658,7 +658,7 @@ void sirikali::start()
 	auto l = QCoreApplication::arguments() ;
 
 	m_startHidden  = l.contains( "-e" ) ;
-	m_folderOpener = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
+	m_folderOpener = utility::cmdArgumentValue( l,"-m",utility::fileManager() ) ;
 	m_env          = utility::cmdArgumentValue( l,"-z","" ) ;
 
 	utility::setUID( utility::cmdArgumentValue( l,"-K","-1" ).toInt() ) ;

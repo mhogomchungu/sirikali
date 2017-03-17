@@ -193,17 +193,13 @@ static bool _execute_process( const QString& m,const QString& exe,const QString&
 {
 	Q_UNUSED( env ) ;
 
-	if( exe.startsWith( "/" ) && utility::pathExists( exe ) ){
+	if( !exe.isEmpty() ){
 
 		return utility::Task( exe + " " + utility::Task::makePath( m ),[ & ](){
 
 			return QProcessEnvironment() ;
 
-		}(),[ uid ](){
-
-			utility::dropPrivileges( uid ) ;
-
-		} ).success() ;
+		}(),[ uid ](){ utility::dropPrivileges( uid ) ; } ).success() ;
 	}else{
 		return false ;
 	}
@@ -1300,5 +1296,25 @@ QString utility::runCommandOnMount()
 		_settings->setValue( "RunCommandOnMount",QString( "" ) ) ;
 
 		return "" ;
+	}
+}
+
+QString utility::fileManager()
+{
+	if( _settings->contains( "FileManager" ) ){
+
+		auto e = _settings->value( "FileManager" ).toString() ;
+
+		if( e.isEmpty() ){
+
+			_settings->setValue( "FileManager",QString( "xdg-open" ) ) ;
+			return "xdg-open" ;
+		}else{
+			return e ;
+		}
+	}else{
+		_settings->setValue( "FileManager",QString( "xdg-open" ) ) ;
+
+		return "xdg-open" ;
 	}
 }

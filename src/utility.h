@@ -297,6 +297,7 @@ namespace utility
 	QString cmdArgumentValue( const QStringList&,const QString& arg,const QString& defaulT = QString() ) ;
 
 	QString runCommandOnMount( void ) ;
+	QString fileManager( void ) ;
 
 	QIcon getIcon() ;
 
