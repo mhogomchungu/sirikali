@@ -348,8 +348,7 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 		return siritask::status::success ;
 	}
 
-	siritask::cmdStatus e = { r.exitCode(),
-				  stdOut ? r.stdOut() : r.stdError() } ;
+	siritask::cmdStatus e = { r.exitCode(),stdOut ? r.stdOut() : r.stdError() } ;
 
 	auto msg = e.msg().toLower() ;
 

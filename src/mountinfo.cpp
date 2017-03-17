@@ -127,7 +127,7 @@ void mountinfo::updateVolume()
 
 					if( e.size() > 3 ){
 
-						gotEvent( e.at( 4 ) ) ;
+						emit gotEvent( e.at( 4 ) ) ;
 					}
 				}
 			}
