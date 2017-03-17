@@ -43,7 +43,7 @@ static QString _makePath( const QString& e )
 	return utility::Task::makePath( e ) ;
 }
 
-static std::function< void() > _drop_privileges( const QString& e )
+static std::function< void() > _drop_privileges( const QString& e = QString() )
 {
 	if( e.endsWith( "ecryptfs.config" ) ){
 
@@ -66,6 +66,24 @@ static bool _deleteFolders( const T& ... m )
 	}
 
 	return s ;
+}
+
+static void _run_command_on_mount( const siritask::options& opt,const QString& app )
+{
+	auto exe = utility::runCommandOnMount() ;
+
+	if( !exe.isEmpty() ){
+
+		auto env = QProcessEnvironment::systemEnvironment() ;
+		env.insert( "PATH",utility::executableSearchPaths( env.value( "PATH" ) ) ) ;
+
+		auto a = _makePath( opt.cipherFolder ) ;
+		auto b = _makePath( opt.plainFolder ) ;
+
+		exe = QString( "%1 %2 %3 %4" ).arg( exe,a,b,app ) ;
+
+		utility::Task::exec( exe,env,_drop_privileges() ) ;
+	}
 }
 
 bool siritask::deleteMountFolder( const QString& m )
@@ -472,6 +490,8 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const optio
 				if( e == cs::success ){
 
 					opt.openFolder( opt.plainFolder ) ;
+
+					_run_command_on_mount( opt,app ) ;
 				}else{
 					siritask::deleteMountFolder( opt.plainFolder ) ;
 				}

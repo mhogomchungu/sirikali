@@ -1290,3 +1290,15 @@ bool utility::createFolder( const QString& m )
 		return false ;
 	}
 }
+
+QString utility::runCommandOnMount()
+{
+	if( _settings->contains( "RunCommandOnMount" ) ){
+
+		return _settings->value( "RunCommandOnMount" ).toString() ;
+	}else{
+		_settings->setValue( "RunCommandOnMount",QString( "" ) ) ;
+
+		return "" ;
+	}
+}

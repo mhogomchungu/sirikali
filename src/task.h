@@ -360,6 +360,12 @@ namespace Task
 	{
 		Task::exec( std::bind( std::move( function ),std::move( args ) ... ) ) ;
 	}
+
+	template< typename T >
+	void exec( Task::future<T>& e )
+	{
+		return e.start() ;
+	}
 }
 
 #if 0 // start example block

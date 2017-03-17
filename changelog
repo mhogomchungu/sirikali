@@ -75,3 +75,5 @@ version 1.2.6
    built without "proper permissions".
 -- Default to not using a passward manager when unlocking volumes from favorites list.
 -- Add an option to lock all unlocked volumes and quit the application on success.
+-- Add a config option to run arbitrary command on successful mount attempt(arguments to the command will be
+   cipher folder,plain folder and volume type).

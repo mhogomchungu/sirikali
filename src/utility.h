@@ -296,6 +296,8 @@ namespace utility
 
 	QString cmdArgumentValue( const QStringList&,const QString& arg,const QString& defaulT = QString() ) ;
 
+	QString runCommandOnMount( void ) ;
+
 	QIcon getIcon() ;
 
 	QStringList directoryList( const QString& e ) ;
@@ -482,9 +484,17 @@ namespace utility
 	class Task
 	{
 	public :
-		static ::Task::future< utility::Task >& run( const QString& exe )
+		static ::Task::future< utility::Task >& run( const QString& exe,
+							     const QProcessEnvironment& env = QProcessEnvironment(),
+							     std::function< void() > f = [](){} )
 		{
-			return ::Task::run< utility::Task >( [ exe ](){ return utility::Task( exe ) ; } ) ;
+			return ::Task::run< utility::Task >( [ = ](){ return utility::Task( exe,env,f ) ; } ) ;
+		}
+		static void exec( const QString& exe,
+				  const QProcessEnvironment& env = QProcessEnvironment(),
+				  std::function< void() > f = [](){} )
+		{
+			::Task::run< utility::Task >( [ = ](){ return utility::Task( exe,env,f ) ; } ).start() ;
 		}
 		static void wait( int s )
 		{
