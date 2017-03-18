@@ -299,6 +299,8 @@ namespace utility
 	QString runCommandOnMount( void ) ;
 	QString fileManager( void ) ;
 
+	QString readPassword( void ) ;
+
 	QIcon getIcon() ;
 
 	QStringList directoryList( const QString& e ) ;

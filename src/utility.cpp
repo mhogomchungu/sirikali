@@ -1,4 +1,4 @@
-﻿/*
+/*
  *
  *  Copyright ( c ) 2011-2015
  *  name : Francis Banyikwa
@@ -18,6 +18,7 @@
  */
 
 #include "utility.h"
+
 #include <iostream>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -25,13 +26,16 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdio.h>
-#include <QObject>
-#include <QDir>
+#include <cstdio>
 #include <pwd.h>
 #include <grp.h>
+#include <termios.h>
 
 #include <memory>
+#include <iostream>
 
+#include <QObject>
+#include <QDir>
 #include <QTranslator>
 #include <QEventLoop>
 #include <QDebug>
@@ -274,7 +278,9 @@ options:\n\
 	-z   Full path of the mount point to be used when the volume is opened from CLI.\n\
 	     This option is optional.\n\
 	-c   Set Volume Configuration File Path when a volume is opened from CLI.\n\
-	-i   Set inactivity timeout(in minutes) to dismount the volume when mounted from CLI.\n\n" ) ;
+	-i   Set inactivity timeout(in minutes) to dismount the volume when mounted from CLI.\n\
+	-f   Path to keyfile when calculating password hash.\n\
+	-s   Option to trigger generation of password hash" ) ;
 
 	return 0 ;
 }
@@ -1317,4 +1323,51 @@ QString utility::fileManager()
 
 		return "xdg-open" ;
 	}
+}
+
+static inline bool _terminalEchoOff( struct termios * old,struct termios * current )
+{
+	if( tcgetattr( 1,old ) != 0 ){
+
+		return false ;
+	}
+
+	*current = *old;
+	current->c_lflag &= ~ECHO;
+
+	if( tcsetattr( 1,TCSAFLUSH,current ) != 0 ){
+
+		return false ;
+	}else{
+		return true ;
+	}
+}
+
+QString utility::readPassword()
+{
+	utility::debug() << "Password:" ;
+
+	struct termios old ;
+	struct termios current ;
+
+	_terminalEchoOff( &old,&current ) ;
+
+	QString s ;
+	int e ;
+
+	for( int i = 0 ; i < 1024 ; i++ ){
+
+		e = std::getchar() ;
+
+		if( e == '\n' || e == -1 ){
+
+			break ;
+		}else{
+			s += static_cast< char >( e ) ;
+		}
+	}
+
+	tcsetattr( 1,TCSAFLUSH,&old ) ;
+
+	return s ;
 }

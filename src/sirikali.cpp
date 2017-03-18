@@ -42,6 +42,7 @@
 
 #include <utility>
 #include <initializer_list>
+#include <memory>
 
 #include <unistd.h>
 
@@ -55,7 +56,7 @@
 #include "checkforupdates.h"
 #include "favorites.h"
 #include "walletconfig.h"
-#include <memory>
+#include "plugins.h"
 
 #include "3rdParty/json.hpp"
 
@@ -653,9 +654,21 @@ void sirikali::raiseWindow( QString volume )
 	this->showMoungDialog( volume ) ;
 }
 
+void sirikali::printPasswordHash( const QString& e )
+{
+	utility::debug() << plugins::hmac_key( e,utility::readPassword() ) ;
+
+	QMetaObject::invokeMethod( this,"closeApplication",Qt::QueuedConnection ) ;
+}
+
 void sirikali::start()
 {
 	auto l = QCoreApplication::arguments() ;
+
+	if( l.contains( "-s" ) ){
+
+		return this->printPasswordHash( utility::cmdArgumentValue( l,"-f" ) ) ;
+	}
 
 	m_startHidden  = l.contains( "-e" ) ;
 	m_folderOpener = utility::cmdArgumentValue( l,"-m",utility::fileManager() ) ;

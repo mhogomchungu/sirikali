@@ -696,6 +696,11 @@ Task::future< QVector< volumeInfo > >& siritask::updateVolumeList()
 
 				const auto s = k.size() ;
 
+				if( s < 6 ){
+
+					continue ;
+				}
+
 				const auto& cf = k.at( s - 2 ) ;
 
 				const auto& m = k.at( 4 ) ;

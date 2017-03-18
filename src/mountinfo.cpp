@@ -29,6 +29,7 @@ mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& f ) :
 	m_babu = parent ;
 	m_baba = this ;
 	m_main = this ;
+	m_mtoto = nullptr ;
 
 	if( m_linux ){
 
@@ -88,7 +89,15 @@ std::function< void() > mountinfo::stop()
 {
 	if( m_linux ){
 
-		return [ this ](){ m_mtoto->terminate() ; } ;
+		return [ this ](){
+
+			if( m_mtoto ){
+
+				m_mtoto->terminate() ;
+			}else{
+				this->threadStopped() ;
+			}
+		} ;
 	}else{
 		return [ this ](){ m_stop() ; } ;
 	}
