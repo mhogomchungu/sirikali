@@ -739,6 +739,8 @@ void sirikali::cliCommand( const QStringList& l )
 					siritask::deleteMountFolder( b ) ;
 
 					return this->closeApplication( 0 ) ;
+				}else{
+					break ;
 				}
 			}
 		}
@@ -764,8 +766,8 @@ void sirikali::cliCommand( const QStringList& l )
 
 void sirikali::unlockVolume( const QStringList& l )
 {
-	auto vol = utility::cmdArgumentValue( l,"-d" ) ;
-	auto volume = QDir( vol ).canonicalPath() ;
+	auto vol       = utility::cmdArgumentValue( l,"-d" ) ;
+	auto volume    = QDir( vol ).canonicalPath() ;
 	auto mountPath = utility::cmdArgumentValue( l,"-z" ) ;
 	auto backEnd   = utility::cmdArgumentValue( l,"-b" ) ;
 	auto mode      = utility::cmdArgumentValue( l,"-k","rw" ) == "ro" ;

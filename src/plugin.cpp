@@ -38,11 +38,11 @@
 #include <memory>
 
 plugin::plugin( QWidget * parent,QDialog * dialog,plugins::plugin plugin,
-		std::function< void( const QString& ) > function,
-		const QString& e,const QVector<QString>& exe ) :
+		std::function< void( const QByteArray& ) > function,
+		const QString& e ) :
 	QDialog( parent ),m_ui( new Ui::plugin ),
 	m_function( std::move( function ) ),
-	m_pluginType( plugin ),m_exe( exe ),m_dialog( dialog )
+	m_pluginType( plugin ),m_dialog( dialog )
 {
 	m_ui->setupUi( this ) ;
 
@@ -104,7 +104,7 @@ void plugin::HideUI()
 
 void plugin::pbSetKey()
 {
-	auto passphrase = m_ui->lineEdit->text() ;
+	auto passphrase = m_ui->lineEdit->text().toLatin1() ;
 	auto keyFile    = m_ui->lineEdit_2->text() ;
 
 	if( keyFile.isEmpty() ){
@@ -119,6 +119,25 @@ void plugin::pbSetKey()
 		if( m_pluginType == plugins::plugin::hmac_key ){
 
 			return plugins::hmac_key( keyFile,passphrase ) ;
+
+		}else if( m_pluginType == plugins::plugin::externalExecutable ){
+
+			auto exe = utility::externalPluginExecutable() ;
+
+			if( exe.isEmpty() ){
+
+				return QByteArray() ;
+			}else{
+				exe = exe + " " + utility::Task::makePath( keyFile ) ;
+
+				auto env = QProcessEnvironment::systemEnvironment() ;
+
+				env.insert( "LANG","C" ) ;
+
+				env.insert( "PATH",utility::executableSearchPaths( env.value( "PATH" ) ) ) ;
+
+				return utility::Task( exe,20000,env,passphrase ).stdOut() ;
+			}
 		}else{
 			return QByteArray() ;
 		}

@@ -37,7 +37,7 @@ public:
 		}
 		mountinfo( const QStringList& l )
 		{
-			auto s = l.size() ;
+			const auto s = l.size() ;
 
 			if( s == 1 ){
 

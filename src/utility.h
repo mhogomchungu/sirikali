@@ -51,6 +51,7 @@
 #include "task.h"
 #include "lxqt_wallet.h"
 #include "favorites.h"
+#include "plugins.h"
 
 #include <QObject>
 #include <QLabel>
@@ -307,6 +308,8 @@ namespace utility
 
 	QString executableFullPath( const QString& ) ;
 
+	QString externalPluginExecutable() ;
+
 	bool reUseMountPoint( void ) ;
 	void reUseMountPoint( bool ) ;
 
@@ -397,7 +400,7 @@ namespace utility
 	utility::array_t getWindowDimensions() ;
 	void setWindowDimensions( const std::initializer_list<int>& ) ;
 
-	int pluginKey( QWidget *,QDialog *,QString *,const QString& ) ;
+	int pluginKey( QWidget *,QDialog *,QByteArray *,plugins::plugin ) ;
 
 	QFont getFont( QWidget * ) ;
 	void saveFont( const QFont& ) ;

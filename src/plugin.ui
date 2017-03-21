@@ -90,9 +90,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Create an encryption key that is made up of a passphrase and a keyfile.
-
-A volume created with a key generated here should be opened with &quot;hmac&quot; plugin.</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>

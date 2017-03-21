@@ -762,24 +762,24 @@ void utility::saveFont( const QFont& Font )
 	_settings->setValue( "Fonts",s ) ;
 }
 
-int utility::pluginKey( QWidget * w,QDialog * d,QString * key,const QString& p )
+int utility::pluginKey( QWidget * w,QDialog * d,QByteArray * key,plugins::plugin plugin )
 {
-	plugins::plugin pluginType ;
-	QString pluginString ;
-	QVector<QString> exe ;
+	QString s ;
 
-	if( p == "hmac" ){
+	if( plugin == plugins::plugin::hmac_key ){
 
-		pluginType   = plugins::plugin::hmac_key ;
-		pluginString = QObject::tr( "hmac plugin.\n\nThis plugin generates a key using below formular:\n\nkey = hmac(sha256,passphrase,keyfile contents)" ) ;
+		s = QObject::tr( "hmac plugin.\n\nThis plugin generates a key using below formular:\n\nkey = hmac(sha256,passphrase,keyfile contents)" ) ;
 
+	}else if( plugin == plugins::plugin::externalExecutable ){
+
+		s = QObject::tr( "This plugin delegates key generation to an external application" ) ;
 	}else{
 		return 1 ;
 	}
 
 	QEventLoop l ;
 
-	plugin::instance( w,d,pluginType,[ & ]( const QString& e ){
+	plugin::instance( w,d,plugin,[ & ]( const QByteArray& e ){
 
 		*key = e ;
 
@@ -790,7 +790,7 @@ int utility::pluginKey( QWidget * w,QDialog * d,QString * key,const QString& p )
 			l.exit( 0 ) ;
 		}
 
-	},pluginString,exe ) ;
+	},s ) ;
 
 	return l.exec() ;
 }
@@ -1382,4 +1382,16 @@ QString utility::readPassword( bool addNewLine )
 	}
 
 	return s ;
+}
+
+QString utility::externalPluginExecutable()
+{
+	if( _settings->contains( "ExternalPluginExecutable" ) ){
+
+		return _settings->value( "ExternalPluginExecutable" ).toString() ;
+	}else{
+		_settings->setValue( "ExternalPluginExecutable",QString( "" ) ) ;
+
+		return "" ;
+	}
 }

@@ -158,8 +158,9 @@ private :
 
 	Ui::keyDialog * m_ui ;
 
+	QByteArray m_key ;
+
 	QString m_path ;
-	QString m_key ;
 	QString m_deviceOffSet ;
 	QString m_options ;
 	QString m_configFile ;

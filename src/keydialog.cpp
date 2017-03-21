@@ -206,6 +206,7 @@ keyDialog::keyDialog( QWidget * parent,
 	m_ui->cbKeyType->addItem( tr( "KeyFile" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "Key+KeyFile" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "HMAC+KeyFile" ) ) ;
+	m_ui->cbKeyType->addItem( tr( "ExternalExecutable" ) ) ;
 
 	m_ui->cbKeyType->addItem( _internalWallet() ) ;
 
@@ -578,7 +579,7 @@ void keyDialog::pbOpen()
 
 				m_ui->lineEditKey->setEnabled( false ) ;
 			}else{
-				m_key = w.key ;
+				m_key = w.key.toLatin1() ;
 				this->openVolume() ;
 			}
 		}else{
@@ -832,11 +833,11 @@ void keyDialog::openVolume()
 
 	if( keyType == keyDialog::Key ){
 
-		m_key = m_ui->lineEditKey->text() ;
+		m_key = m_ui->lineEditKey->text().toLatin1() ;
 
 	}if( keyType == keyDialog::keyKeyFile ){
 
-		if( utility::pluginKey( m_secrets.parent(),this,&m_key,"hmac" ) ){
+		if( utility::pluginKey( m_secrets.parent(),this,&m_key,plugins::plugin::hmac_key ) ){
 
 			return this->enableAll() ;
 		}
@@ -923,20 +924,24 @@ void keyDialog::cbActicated( QString e )
 
 		this->KeyFile() ;
 
-	}else if( e == tr( "Key+KeyFile" ).remove( '&' ) ){
+	}else if( e == tr( "Key+KeyFile" ).remove( '&' ) || e == tr( "ExternalExecutable" ).remove( '&' ) ){
 
 		_showVisibleKeyOption( false ) ;
 
 		this->disableAll() ;
 
-		QString s ;
-		utility::pluginKey( m_secrets.parent(),this,&s,"hmac" ) ;
+		if( e == tr( "Key+KeyFile" ).remove( '&' ) ){
+
+			utility::pluginKey( m_secrets.parent(),this,&m_key,plugins::plugin::hmac_key ) ;
+		}else{
+			utility::pluginKey( m_secrets.parent(),this,&m_key,plugins::plugin::externalExecutable ) ;
+		}
 
 		this->enableAll() ;
 
 		m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
 
-		m_ui->lineEditKey->setText( s ) ;
+		m_ui->lineEditKey->setText( m_key ) ;
 
 		if( m_keyStrength && m_create ){
 
@@ -968,6 +973,7 @@ void keyDialog::cbActicated( QString e )
 
 			this->setWindowTitle( tr( "Passphrase Quality: 100%" ) ) ;
 		}
+
 	}else{
 		this->plugIn() ;
 

@@ -34,7 +34,7 @@
 namespace plugins
 {
 
-enum class plugin{ hmac_key } ;
+enum class plugin{ hmac_key,externalExecutable } ;
 
 class gcrypt_md_handle
 {
