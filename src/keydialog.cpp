@@ -858,7 +858,7 @@ void keyDialog::openVolume()
 
 		if( utility::containsAtleastOne( m_key,'\n','\0','\r' ) ){
 
-			this->showErrorMessage( tr( "Not Supported KeyFile Encountered Since It Contains AtLeast One Illegal Character('\\n','\\0','\\r').\n\nPlease Use a Hash Of The KeyFile Through \"HMAC+KeyFile\" Option." ) ) ;
+			this->showErrorMessage( keyDialog::keyFileError() ) ;
 			return this->enableAll() ;
 		}
 
@@ -875,6 +875,11 @@ void keyDialog::openVolume()
 	}else{
 		this->encryptedFolderMount() ;
 	}
+}
+
+QString keyDialog::keyFileError()
+{
+	return QObject::tr( "Not Supported KeyFile Encountered Since It Contains AtLeast One Illegal Character('\\n','\\0','\\r').\n\nPlease Use a Hash Of The KeyFile Through \"HMAC+KeyFile\" Option." ) ;
 }
 
 void keyDialog::cbVisibleKeyStateChanged( int s )

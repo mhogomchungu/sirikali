@@ -95,6 +95,8 @@ class keyDialog : public QDialog
 {
 	Q_OBJECT
 public:
+	static QString keyFileError() ;
+
 	static keyDialog& instance( QWidget * parent,
 				    QTableWidget * table,
 				    secrets& s,

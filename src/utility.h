@@ -299,7 +299,7 @@ namespace utility
 	QString runCommandOnMount( void ) ;
 	QString fileManager( void ) ;
 
-	QString readPassword( void ) ;
+	QString readPassword( bool = true ) ;
 
 	QIcon getIcon() ;
 

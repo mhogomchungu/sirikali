@@ -271,16 +271,23 @@ options:\n\
 	-m   Tool to use to open a default file manager(default tool is xdg-open).\n\
 	-e   Start the application without showing the GUI.\n\
 	-b   A name of a backend to retrieve a password from when a volume is open from CLI.\n\
-	     Supported backends are: \"internal\",\"kwallet\" and \"gnomewallet.\n\
-	     The first one is always present but the rest are compile time dependencies.\n\
+	     Supported backends are: \"internal\",\"stdin\",\"keyfile\",\"kwallet\" and \"gnomewallet.\n\
+	     The first three are always present but the rest are compile time dependencies.\n\
+	     \"internal\" option causes SiriKali to read password from lxqt-wallet internal backend.\n\
+	     \"stdin\" option causes SiriKali to read the password from standard input.\n\
+	     \"keyfile\" option causes SiriKali to read the password from a file.\n\
+	     \"libsecret\" option causes SiriKali to read password from lxqt-wallet libsecret backend.\n\
+	     \"kwallet\" option causes SiriKali to read password from lxqt-wallet kwallet backend.\n\
 	-k   When opening a volume from CLI,a value of \"rw\" will open the volume in read\\write\n\
 	     mode and a value of \"ro\" will open the volume in read only mode.\n\
 	-z   Full path of the mount point to be used when the volume is opened from CLI.\n\
 	     This option is optional.\n\
 	-c   Set Volume Configuration File Path when a volume is opened from CLI.\n\
 	-i   Set inactivity timeout(in minutes) to dismount the volume when mounted from CLI.\n\
-	-f   Path to keyfile when calculating password hash.\n\
-	-s   Option to trigger generation of password hash" ) ;
+	-f   Path to keyfile.\n\
+	-u   Unmount volume.\n\
+	-p   Print a list of unlocked volumes.\n\
+	-s   Option to trigger generation of password hash." ) ;
 
 	return 0 ;
 }
@@ -1343,9 +1350,9 @@ static inline bool _terminalEchoOff( struct termios * old,struct termios * curre
 	}
 }
 
-QString utility::readPassword()
+QString utility::readPassword( bool addNewLine )
 {
-	utility::debug() << "Password:" ;
+	std::cout << "Password: " << std::flush ;
 
 	struct termios old ;
 	struct termios current ;
@@ -1355,7 +1362,7 @@ QString utility::readPassword()
 	QString s ;
 	int e ;
 
-	for( int i = 0 ; i < 1024 ; i++ ){
+	for( int i = 0 ; i < 4096 ; i++ ){
 
 		e = std::getchar() ;
 
@@ -1368,6 +1375,11 @@ QString utility::readPassword()
 	}
 
 	tcsetattr( 1,TCSAFLUSH,&old ) ;
+
+	if( addNewLine ){
+
+		std::cout << std::endl ;
+	}
 
 	return s ;
 }

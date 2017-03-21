@@ -54,6 +54,7 @@ public slots:
 	void raiseWindow( void ) ;
 	void raiseWindow( QString ) ;
 private slots:
+	void cliCommand( const QStringList& ) ;
 	void autoUpdateCheck( void ) ;
 	void cryfsProperties( void ) ;
 	void encfsProperties( void ) ;
@@ -67,11 +68,11 @@ private slots:
 	void autoCheckUpdates( bool ) ;
 	void reuseMountPoint( bool ) ;
 	void autoMountFavoritesOnStartUp( bool ) ;
-	void unlockVolume( const QString&,const QString&,const QString&,
-			   const QString&,const QString&,bool ) ;
+	void unlockVolume( const QStringList& ) ;
 	void aboutToShowMenu( void ) ;
 	void changeInternalWalletPassWord( void ) ;
 	void closeApplication( void ) ;
+	void closeApplication( int,const QString& = QString() ) ;
 	void unlockVolume( void ) ;
 	void startGUI( void ) ;
 	void showMoungDialog( const volumeInfo& ) ;
@@ -113,7 +114,6 @@ private:
 	void updateVolumeList( const QVector< volumeInfo >& ) ;
 	void openMountPoint( const QString& ) ;
 	void setLocalizationLanguage( bool ) ;
-	void printPasswordHash( const QString& ) ;
 	void dragEnterEvent( QDragEnterEvent * ) ;
 	void dropEvent( QDropEvent * ) ;
 	void showContextMenu( QTableWidgetItem *,bool ) ;
@@ -152,6 +152,8 @@ private:
 	QString m_env ;
 	QString m_sharedFolderPath ;
 	QString m_folderOpener ;
+
+	int m_exitStatus = 0 ;
 
 	QSystemTrayIcon m_trayIcon ;
 
