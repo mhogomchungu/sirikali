@@ -107,7 +107,7 @@ void plugin::pbSetKey()
 	auto passphrase = m_ui->lineEdit->text().toLatin1() ;
 	auto keyFile    = m_ui->lineEdit_2->text() ;
 
-	if( keyFile.isEmpty() ){
+	if( keyFile.isEmpty() && m_pluginType == plugins::plugin::hmac_key ){
 
 		return DialogMsg( m_parentWidget,this ).ShowUIOK( tr( "ERROR" ),tr( "KeyFile Not Set" ) ) ;
 	}
