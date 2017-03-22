@@ -359,6 +359,8 @@ namespace utility
 
 	bool userIsRoot( void ) ;
 
+	bool enableRevealingPasswords( void ) ;
+
 	void setUID( int ) ;
 	int getUID() ;
 	int getUserID() ;

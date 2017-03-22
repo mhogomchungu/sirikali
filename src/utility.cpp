@@ -1395,3 +1395,17 @@ QString utility::externalPluginExecutable()
 		return "" ;
 	}
 }
+
+bool utility::enableRevealingPasswords()
+{
+	if( _settings->contains( "EnableRevealingPasswords" ) ){
+
+		return _settings->value( "EnableRevealingPasswords" ).toBool() ;
+	}else{
+		bool e = true ;
+
+		_settings->setValue( "EnableRevealingPasswords",e ) ;
+
+		return e ;
+	}
+}

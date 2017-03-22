@@ -249,6 +249,8 @@ keyDialog::keyDialog( QWidget * parent,
 
 	m_ui->checkBoxVisibleKey->setToolTip( tr( "Check This Box To Make Password Visible" ) ) ;
 
+	m_ui->checkBoxVisibleKey->setEnabled( utility::enableRevealingPasswords() ) ;
+
 	utility::setWindowOptions( this ) ;
 
 	this->ShowUI() ;
@@ -416,7 +418,11 @@ void keyDialog::enableAll()
 	auto enable = index == keyDialog::keyfile || index == keyDialog::keyKeyFile ;
 
 	m_ui->pbkeyOption->setEnabled( enable ) ;
-	m_ui->checkBoxVisibleKey->setEnabled( index == keyDialog::Key ) ;
+
+	if( utility::enableRevealingPasswords() ){
+
+		m_ui->checkBoxVisibleKey->setEnabled( index == keyDialog::Key ) ;
+	}
 
 	m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
 
@@ -904,7 +910,8 @@ void keyDialog::cbActicated( QString e )
 
 	auto _showVisibleKeyOption = [ this ]( bool e ){
 
-		m_ui->checkBoxVisibleKey->setEnabled( e ) ;
+		bool s = utility::enableRevealingPasswords() ;
+		m_ui->checkBoxVisibleKey->setEnabled( e && s ) ;
 		m_ui->checkBoxVisibleKey->setChecked( false ) ;
 		m_ui->checkBoxVisibleKey->setVisible( e ) ;
 		m_ui->pbkeyOption->setVisible( !e ) ;

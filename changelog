@@ -80,3 +80,4 @@ version 1.2.6
 -- All operations around locking and unlocking of volumes can now be done from CLI.
 -- Add a plugin that allows generation of a key using a key+keyfile combination through a user configured external application.
    A user for example can set gpg as an external application so that they can extract a key from a gpg encrypted keyfile.
+-- Add a config option to disable displaying of passwords.
