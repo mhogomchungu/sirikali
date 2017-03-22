@@ -49,12 +49,8 @@ class sirikali : public QWidget
 public:
 	explicit sirikali( QWidget * parent = 0 ) ;
 	~sirikali() ;
-	void start( void ) ;
-public slots:
-	void raiseWindow( void ) ;
-	void raiseWindow( QString ) ;
 private slots:
-	void cliCommand( const QStringList& ) ;
+	void start( void ) ;
 	void autoUpdateCheck( void ) ;
 	void cryfsProperties( void ) ;
 	void encfsProperties( void ) ;
@@ -111,6 +107,7 @@ private:
 
 	bool autoOpenFolderOnMount( void ) ;
 
+	void cliCommand( const QStringList& ) ;
 	void updateVolumeList( const QVector< volumeInfo >& ) ;
 	void openMountPoint( const QString& ) ;
 	void setLocalizationLanguage( bool ) ;
@@ -125,6 +122,7 @@ private:
 	void setUpFont( void ) ;
 	void setUpShortCuts( void ) ;
 	void setUpApp( const QString& ) ;
+	void raiseWindow( const QString& = QString() ) ;
 	void autoUnlockVolumes( void ) ;
 	QVector< favorites::entry > autoUnlockVolumes( const QVector< favorites::entry >& ) ;
 

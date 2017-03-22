@@ -18,6 +18,8 @@
  */
 
 #include <QApplication>
+#include <QMetaObject>
+
 #include "sirikali.h"
 #include "utility.h"
 
@@ -33,7 +35,7 @@ int main( int argc,char * argv[] )
 	return utility::startApplication( "SiriKali",[ & ](){
 
 		sirikali e ;
-		e.start() ;
+		QMetaObject::invokeMethod( &e,"start",Qt::QueuedConnection ) ;
 
 		return a.exec() ;
 	} ) ;

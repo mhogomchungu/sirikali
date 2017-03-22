@@ -204,6 +204,8 @@ void sirikali::setUpApp( const QString& volume )
 		this->showMoungDialog( volume ) ;
 	}
 
+	this->startGUI() ;
+
 	QTimer::singleShot( utility::checkForUpdateInterval(),this,SLOT( autoUpdateCheck() ) ) ;
 }
 
@@ -649,15 +651,7 @@ void sirikali::startGUI()
 	}
 }
 
-void sirikali::raiseWindow()
-{
-	this->setVisible( true ) ;
-	this->raise() ;
-	this->show() ;
-	this->setWindowState( Qt::WindowActive ) ;
-}
-
-void sirikali::raiseWindow( QString volume )
+void sirikali::raiseWindow( const QString& volume )
 {
 	this->setVisible( true ) ;
 	this->raise() ;
@@ -689,20 +683,18 @@ void sirikali::start()
 
 	if( _cliCommand ){
 
-		QMetaObject::invokeMethod( this,"cliCommand",
-					   Qt::QueuedConnection,
-					   Q_ARG( QStringList,l ) ) ;
+		this->cliCommand( l ) ;
 	}else{
-		oneinstance::instance( this,"SiriKali.socket","startGUI",
-				       volume,[ this,volume ]( QObject * instance ){
+		auto s = utility::homeConfigPath( ".tmp" ) ;
 
-			connect( instance,SIGNAL( raise() ),this,
-				 SLOT( raiseWindow() ) ) ;
-			connect( instance,SIGNAL( raiseWithDevice( QString ) ),
-				 this,SLOT( raiseWindow( QString ) ) ) ;
+		utility::createFolder( s ) ;
 
-			this->setUpApp( volume ) ;
-		} ) ;
+		oneinstance::instance( this,
+				       s + "/SiriKali.socket",
+				       volume,
+				       [ this ]( const QString& e ){ this->setUpApp( e ) ; },
+				       [ this ]( int s ){ this->closeApplication( s ) ;	},
+				       [ this ]( const QString& e ){ this->raiseWindow( e ) ; } ) ;
 	}
 }
 

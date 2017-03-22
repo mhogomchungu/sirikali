@@ -24,80 +24,47 @@
 #include <memory>
 #include <utility>
 
-oneinstance::oneinstance( QObject * parent,const char * socketPath,const char * methodName,
-			  const QString& device,std::function<void( QObject * )> start ) : m_firstInstance( std::move( start ) )
+oneinstance::oneinstance( QObject * parent,
+			  const QString& socketPath,
+			  const QString& argument,
+			  std::function< void( const QString& ) > start,
+			  std::function< void( int ) > exit,
+			  std::function< void( const QString& ) > event ) :
+	QObject( parent ),
+	m_serverPath( socketPath ),
+	m_argument( argument ),
+	m_start( std::move( start ) ),
+	m_exit( std::move( exit ) ),
+	m_event( std::move( event ) )
 {
-	m_device = device ;
-
-	this->setParent( parent ) ;
-
-	m_serverPath = utility::homeConfigPath( ".tmp/" ) ;
-
-	utility::createFolder( m_serverPath ) ;
-
-	m_methodName = methodName ;
-
-	m_serverPath += socketPath ;
-
 	if( QFile::exists( m_serverPath ) ){
 
-		m_localSocket = new QLocalSocket() ;
-
-		connect( m_localSocket,SIGNAL( destroyed( QObject * ) ),this,SLOT( Exit( QObject * ) ) ) ;
-		connect( m_localSocket,SIGNAL( connected() ),this,SLOT( connected() ) ) ;
-		connect( m_localSocket,SIGNAL( error( QLocalSocket::LocalSocketError ) ),
+		connect( &m_localSocket,SIGNAL( connected() ),this,SLOT( connected() ) ) ;
+		connect( &m_localSocket,SIGNAL( error( QLocalSocket::LocalSocketError ) ),
 			 this,SLOT( errorOnConnect( QLocalSocket::LocalSocketError ) ) ) ;
 
-		m_localSocket->connectToServer( m_serverPath ) ;
+		m_localSocket.connectToServer( m_serverPath ) ;
 	}else{
-		this->startInstance() ;
+		this->start() ;
 	}
 }
 
-void oneinstance::startInstance()
+void oneinstance::start()
 {
-	m_firstInstance( this ) ;
+	m_start( m_argument ) ;
 
-	QMetaObject::invokeMethod( this->parent(),m_methodName,Qt::QueuedConnection ) ;
+	connect( &m_localServer,SIGNAL( newConnection() ),this,SLOT( gotConnection() ) ) ;
 
-	m_localServer = new QLocalServer() ;
-
-	connect( m_localServer,SIGNAL( newConnection() ),this,SLOT( gotConnection() ) ) ;
-
-	m_localServer->listen( QString( m_serverPath ) ) ;
-}
-
-void oneinstance::Exit( QObject * e )
-{
-	Q_UNUSED( e ) ;
-	//QCoreApplication::exit( 200 ) ;
-	exit( 0 ) ;
-}
-
-void oneinstance::setDevice( QString device )
-{
-	m_device = device ;
-}
-
-void oneinstance::killProcess()
-{
-	QMetaObject::invokeMethod( this,"Exit",Qt::QueuedConnection ) ;
+	m_localServer.listen( m_serverPath ) ;
 }
 
 void oneinstance::gotConnection()
 {
-	std::unique_ptr<QLocalSocket> s( m_localServer->nextPendingConnection() ) ;
+	std::unique_ptr< QLocalSocket > s( m_localServer.nextPendingConnection() ) ;
 
 	s->waitForReadyRead() ;
 
-	auto data = s->readAll() ;
-
-	if( data.isEmpty() ){
-
-		emit raise() ;
-	}else{
-		emit raiseWithDevice( data ) ;
-	}
+	m_event( s->readAll() ) ;
 }
 
 void oneinstance::errorOnConnect( QLocalSocket::LocalSocketError e )
@@ -105,29 +72,29 @@ void oneinstance::errorOnConnect( QLocalSocket::LocalSocketError e )
 	Q_UNUSED( e ) ;
 	utility::debug() << tr( "Previous instance seem to have crashed,trying to clean up before starting" ) ;
 	QFile::remove( m_serverPath ) ;
-	this->startInstance() ;
+	this->start() ;
 }
 
 void oneinstance::connected()
 {
 	utility::debug() << tr( "There seem to be another instance running,exiting this one" ) ;
 
-	if( !m_device.isEmpty() ){
+	if( !m_argument.isEmpty() ){
 
-		m_localSocket->write( m_device.toLatin1() ) ;
-		m_localSocket->waitForBytesWritten() ;
+		m_localSocket.write( m_argument.toLatin1() ) ;
+		m_localSocket.waitForBytesWritten() ;
 	}
 
-	m_localSocket->close() ;
+	m_localSocket.close() ;
 
-	m_localSocket->deleteLater() ;
+	m_exit( 255 ) ;
 }
 
 oneinstance::~oneinstance()
 {
-	if( m_localServer ){
-		m_localServer->close() ;
-		delete m_localServer ;
+	if( m_localServer.isListening() ){
+
+		m_localServer.close() ;
 		QFile::remove( m_serverPath ) ;
 	}
 }

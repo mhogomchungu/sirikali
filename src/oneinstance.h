@@ -21,47 +21,46 @@
 #ifndef ONEINSTANCE_H
 #define ONEINSTANCE_H
 
-#include <Qt>
 #include <QObject>
 #include <QtNetwork/QLocalServer>
 #include <QtNetwork/QLocalSocket>
-#include <QFile>
-#include <QCoreApplication>
-#include <QMainWindow>
 #include <QString>
-#include <QMetaObject>
-#include <QDir>
+
 #include <functional>
-#include <QObject>
 
 class oneinstance : public QObject
 {
 	Q_OBJECT
 public:
-	static void instance( QObject * a,const char * b,const char * c,const QString& d,std::function<void( QObject * )> e )
+	static void instance( QObject * a,
+			      const QString& b,
+			      const QString& c,
+			      std::function< void( const QString& ) > d,
+			      std::function< void( int ) > e,
+			      std::function< void( const QString& ) > f )
 	{
-		new oneinstance( a,b,c,d,std::move( e ) ) ;
+		new oneinstance( a,b,c,std::move( d ),std::move( e ),std::move( f ) ) ;
 	}
-	explicit oneinstance( QObject *,const char *,const char *,const QString&,std::function<void( QObject * )> ) ;
+	oneinstance( QObject *,
+		     const QString&,
+		     const QString&,
+		     std::function< void( const QString& ) >,
+		     std::function< void( int ) >,
+		     std::function< void( const QString& ) > ) ;
 	~oneinstance() ;
-	void setDevice( QString ) ;
-signals:
-	void raise( void ) ;
-	void raiseWithDevice( QString ) ;
 private slots:
 	void connected( void ) ;
 	void gotConnection( void ) ;
 	void errorOnConnect( QLocalSocket::LocalSocketError ) ;
-	void Exit( QObject * ) ;
 private:
-	void startInstance( void ) ;
-	void killProcess( void ) ;
-	QLocalServer * m_localServer = nullptr ;
-	QLocalSocket * m_localSocket = nullptr ;
+	void start( void ) ;
+	QLocalServer m_localServer ;
+	QLocalSocket m_localSocket ;
 	QString m_serverPath ;
-	const char * m_methodName ;
-	QString m_device ;
-	std::function<void( QObject * )> m_firstInstance ;
+	QString m_argument ;
+	std::function< void( const QString& ) > m_start ;
+	std::function< void( int ) > m_exit ;
+	std::function< void( const QString& ) > m_event ;
 };
 
 #endif // ONEINSTANCE_H
