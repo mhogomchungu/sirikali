@@ -1332,6 +1332,20 @@ QString utility::fileManager()
 	}
 }
 
+static int _readPasswordMaximumLength()
+{
+	if( _settings->contains( "ReadPasswordMaximumLength" ) ){
+
+		return _settings->value( "ReadPasswordMaximumLength" ).toInt() ;
+	}else{
+		int s = 1024 ;
+
+		_settings->setValue( "ReadPasswordMaximumLength",s ) ;
+
+		return s ;
+	}
+}
+
 static inline bool _terminalEchoOff( struct termios * old,struct termios * current )
 {
 	if( tcgetattr( 1,old ) != 0 ){
@@ -1362,7 +1376,9 @@ QString utility::readPassword( bool addNewLine )
 	QString s ;
 	int e ;
 
-	for( int i = 0 ; i < 4096 ; i++ ){
+	int m = _readPasswordMaximumLength() ;
+
+	for( int i = 0 ; i < m ; i++ ){
 
 		e = std::getchar() ;
 

@@ -662,16 +662,15 @@ void sirikali::raiseWindow( const QString& volume )
 
 void sirikali::start()
 {
-	auto l = QCoreApplication::arguments() ;
+	const auto l = QCoreApplication::arguments() ;
+
+	utility::setUID( utility::cmdArgumentValue( l,"-K","-1" ).toInt() ) ;
 
 	m_startHidden  = l.contains( "-e" ) ;
 	m_folderOpener = utility::cmdArgumentValue( l,"-m",utility::fileManager() ) ;
-	m_env          = utility::cmdArgumentValue( l,"-z","" ) ;
+	m_env          = utility::cmdArgumentValue( l,"-z" ) ;
 
-	utility::setUID( utility::cmdArgumentValue( l,"-K","-1" ).toInt() ) ;
 	utility::createFolder( utility::homeConfigPath() ) ;
-
-	auto volume = utility::cmdArgumentValue( l,"-d" ) ;
 
 	auto _cliCommand = [ & ](){
 
@@ -691,7 +690,7 @@ void sirikali::start()
 
 		oneinstance::instance( this,
 				       s + "/SiriKali.socket",
-				       volume,
+				       utility::cmdArgumentValue( l,"-d" ),
 				       [ this ]( const QString& e ){ this->setUpApp( e ) ; },
 				       [ this ]( int s ){ this->closeApplication( s ) ;	},
 				       [ this ]( const QString& e ){ this->raiseWindow( e ) ; } ) ;
