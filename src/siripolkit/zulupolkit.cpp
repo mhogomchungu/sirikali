@@ -19,6 +19,7 @@
 
 
 #include "zulupolkit.h"
+#include "siriPolkit.h"
 #include "../task.h"
 
 #include "../3rdParty/json.hpp"
@@ -240,7 +241,7 @@ void zuluPolkit::gotConnection()
 			return ;
 		}
 
-		if( command.startsWith( "exit" ) ){
+		if( command == "exit" ){
 
 			QCoreApplication::quit() ;
 		}else{

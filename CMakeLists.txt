@@ -293,9 +293,9 @@ Categories=Security;Utility;Qt;X-MandrivaLinux-System-FileTools;\n")
 
 if( USE_POLKIT )
 
-ADD_SUBDIRECTORY( src/zuluPolkit )
+ADD_SUBDIRECTORY( src/siripolkit )
 
-file( WRITE ${PROJECT_BINARY_DIR}/siriPolkit.h "#define POLKIT_SUPPORT 1\n#define siriPolkitPath \"${CMAKE_INSTALL_PREFIX}/bin/siripoltik\"" )
+file( WRITE ${PROJECT_BINARY_DIR}/siriPolkit.h "#define POLKIT_SUPPORT 1" )
 
 file( WRITE ${PROJECT_BINARY_DIR}/siripolkit.policy
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
@@ -313,7 +313,6 @@ file( WRITE ${PROJECT_BINARY_DIR}/siripolkit.policy
       <allow_active>auth_admin</allow_active>
     </defaults>
     <annotate key=\"org.freedesktop.policykit.exec.path\">${CMAKE_INSTALL_PREFIX}/bin/siripolkit</annotate>
-    <annotate key=\"org.freedesktop.policykit.exec.allow_gui\">true</annotate>
   </action>
 
 </policyconfig>
@@ -321,6 +320,7 @@ file( WRITE ${PROJECT_BINARY_DIR}/siripolkit.policy
 
 	install ( FILES ${PROJECT_BINARY_DIR}/siripolkit.policy DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/polkit-1/actions )
 else()
-
-	file( WRITE ${PROJECT_BINARY_DIR}/siriPolkit.h "#define POLKIT_SUPPORT 0\n#define siriPolkitPath \"${CMAKE_INSTALL_PREFIX}/bin/siripoltik\"" )
+	file( WRITE ${PROJECT_BINARY_DIR}/siriPolkit.h "#define POLKIT_SUPPORT 0" )
 endif()
+
+file( APPEND ${PROJECT_BINARY_DIR}/siriPolkit.h "\n#define siriPolkitPath \"${CMAKE_INSTALL_PREFIX}/bin/siripolkit\"" )

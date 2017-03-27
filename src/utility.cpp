@@ -167,7 +167,7 @@ void utility::Task::execute( const QString& exe,int waitTime,
 
 				break ;
 
-			}else if( i == 10 ){
+			}else if( i == 3 ){
 
 				utility::debug() << "ERROR: Failed To Start Helper Application" ;
 				return ;
