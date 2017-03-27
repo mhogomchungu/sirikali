@@ -50,20 +50,17 @@ namespace utility
 		Task()
 		{
 		}
-		Task( const QString& exe,const QString& password = QByteArray() )
+		Task( const QString& exe,const QString& password )
 		{
 			QProcess p ;
 
 			p.start( exe ) ;
 
-			if( !password.isEmpty() ){
+			p.waitForStarted() ;
 
-				p.waitForStarted() ;
+			p.write( password.toLatin1() + '\n' ) ;
 
-				p.write( password.toLatin1() + '\n' ) ;
-
-				p.closeWriteChannel() ;
-			}
+			p.closeWriteChannel() ;
 
 			finished   = p.waitForFinished( -1 ) ;
 			exitCode   = p.exitCode() ;
