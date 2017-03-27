@@ -1,3 +1,20 @@
+sirikali (1.2.6-1) UNRELEASED; urgency=low
+  [Mhogo Mchungu]
+  * New Features
+     -- Add a build time option(-DUSE_POLKIT=true) to support ecryptfs-simple backend build without suid bit set.
+        This option will generate a polkit prompt on program start giving bad user experience. Enable it only if
+        ecryptfs-simple backend is a necessary backend to have and it has to be installed without suid bit.
+     -- Default to not using a passward manager when unlocking volumes from favorites list.
+     -- Add an option to lock all unlocked volumes and quit the application on success.
+     -- Add a config option to run arbitrary command on successful mount attempt(arguments to the command will be
+        cipher folder,plain folder and volume type).
+     -- All operations around locking and unlocking of volumes can now be done from CLI.
+     -- Add a plugin that allows generation of a key using a key+keyfile combination through a user configured external application.
+        A user for example can set gpg as an external application so that they can extract a key from a gpg encrypted keyfile.
+     -- Add a config option to disable displaying of passwords.
+
+ -- Mhogo Mchungu <mhogomchungu@gmail.com>  Sat, 1 Apr 2017 16:38:48 +0000
+
 sirikali (1.2.5-1) UNRELEASED; urgency=low
   [Mhogo Mchungu]
   * New Features

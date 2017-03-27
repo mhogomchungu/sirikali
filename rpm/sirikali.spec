@@ -37,7 +37,7 @@ BuildRequires: qt5-qtbase-devel
 %else
 #This package maybe named differently in your distribution.
 #What is required here is a package or packages that provides development packages for Qt5Core,Qt5GUI and Qt5Network
-BuildRequires: libqt5-qtbase-devel
+#BuildRequires: libqt5-qtbase-devel
 %endif
 
 %description
@@ -62,6 +62,7 @@ rm -rf $RPM_BUILD_DIR/sirikali
 %files
 %defattr(0755,root,root)
 %{_bindir}/sirikali
+%{_bindir}/sirikali.pkexec
 %{_datadir}/applications/sirikali.desktop
 
 %dir %{_datadir}/sirikali/translations
@@ -71,8 +72,10 @@ rm -rf $RPM_BUILD_DIR/sirikali
 %{_datadir}/icons/hicolor/48x48/apps/sirikali.png
 %{_datadir}/icons/hicolor/256x256/apps/sirikali.png
 %{_datadir}/pixmaps/sirikali.png
+%{_datadir}/icons/sirikali.png
 %{_datadir}/sirikali/translations/en_US.qm
 %{_datadir}/sirikali/translations/fr_FR.qm
+%{_datadir}/polkit-1/actions/sirikali.policy
 %defattr(0644,root,root)
 
 %changelog
