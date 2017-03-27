@@ -50,6 +50,7 @@
 #include <QMessageBox>
 #include <QTableWidgetItem>
 #include <QProcessEnvironment>
+#include <QtNetwork/QLocalSocket>
 #include <unistd.h>
 #include <pwd.h>
 #include <QTimer>
@@ -60,7 +61,7 @@
 
 #include "install_prefix.h"
 #include "locale_path.h"
-
+#include "3rdParty/json.hpp"
 #include "plugins.h"
 
 #include "readonlywarning.h"
@@ -76,6 +77,7 @@
 
 #include "dialogmsg.h"
 #include "plugin.h"
+#include "siriPolkit.h"
 
 #include "version.h"
 
@@ -114,9 +116,189 @@ static QSettings * _settings ;
 
 static int staticGlobalUserId = -1 ;
 
+static QByteArray _cookie ;
+
+::Task::future< utility::Task >& utility::Task::run( const QString& exe,bool e )
+{
+	return utility::Task::run( exe,-1,e ) ;
+}
+
+::Task::future< utility::Task >& utility::Task::run( const QString& exe,int s,bool e )
+{
+	return ::Task::run< utility::Task >( [ = ](){
+
+		auto env = QProcessEnvironment::systemEnvironment() ;
+
+		return utility::Task( exe,s,env,_cookie,[](){ umask( 0 ) ; },e ) ;
+	} ) ;
+}
+
+void utility::Task::execute( const QString& exe,int waitTime,
+			     const QProcessEnvironment& env,
+			     const QByteArray& password,
+			     const std::function< void() >& f,
+			     bool polkit )
+{
+	class Process : public QProcess{
+	public:
+		Process( const std::function< void() >& f ) : m_function( f )
+		{
+		}
+	protected:
+		void setupChildProcess()
+		{
+			m_function() ;
+		}
+	private:
+		std::function< void() > m_function ;
+	} p( f ) ;
+
+	p.setProcessEnvironment( env ) ;
+
+	if( polkit && utility::useZuluPolkit() ){
+
+		QLocalSocket s ;
+
+		s.connectToServer( utility::helperSocketPath() ) ;
+
+		for( int i = 0 ; ; i++ ){
+
+			if( s.waitForConnected() ){
+
+				break ;
+
+			}else if( i == 10 ){
+
+				utility::debug() << "ERROR: Failed To Start Helper Application" ;
+				return ;
+			}else{
+				utility::debug() << s.errorString() ;
+
+				utility::Task::suspendForOneSecond() ;
+			}
+		}
+
+		s.write( [ & ]()->QByteArray{
+
+			nlohmann::json json ;
+
+			json[ "cookie" ]     = _cookie.constData() ;
+			json[ "password" ]   = password.constData() ;
+			json[ "command" ]    = exe.toLatin1().constData() ;
+
+			return json.dump().c_str() ;
+		}() ) ;
+
+		s.waitForBytesWritten() ;
+
+		s.waitForReadyRead() ;
+
+		try{
+			auto json = nlohmann::json::parse( s.readAll().constData() ) ;
+
+			m_finished   = json[ "finished" ].get< bool >() ;
+			m_exitCode   = json[ "exitCode" ].get< int >() ;
+			m_exitStatus = json[ "exitStatus" ].get< int >() ;
+			m_stdError   = json[ "stdError" ].get< std::string >().c_str() ;
+			m_stdOut     = json[ "stdOut" ].get< std::string >().c_str() ;
+
+		}catch( ... ){}
+	}else{
+		p.start( exe ) ;
+
+		if( !password.isEmpty() ){
+
+			p.waitForStarted() ;
+
+			p.write( password + '\n' ) ;
+
+			p.closeWriteChannel() ;
+		}
+
+		m_finished   = p.waitForFinished( waitTime ) ;
+		m_exitCode   = p.exitCode() ;
+		m_exitStatus = p.exitStatus() ;
+		m_stdOut     = p.readAllStandardOutput() ;
+		m_stdError   = p.readAllStandardError() ;
+	}
+}
+
+void utility::startHelperExecutable( QWidget * obj,const QString& arg,const char * slot )
+{
+	if( !utility::useZuluPolkit() ){
+
+		QMetaObject::invokeMethod( obj,slot,Q_ARG( bool,true ),Q_ARG( QString,QString() ) ) ;
+
+		return ;
+	}
+
+	QFile f( "/dev/urandom" ) ;
+
+	f.open( QIODevice::ReadOnly ) ;
+
+	_cookie = f.read( 16 ).toHex() ;
+
+	auto exe = utility::executableFullPath( "pkexec" ) ;
+
+	if( !exe.isEmpty() ){
+
+		exe = QString( "%1 %2 %3 fork ").arg( exe,siriPolkitPath,utility::helperSocketPath() ) ;
+
+		::Task::exec( [ = ](){
+
+			auto e = utility::Task::run( exe,false ).get() ;
+
+			QMetaObject::invokeMethod( obj,
+						   slot,
+						   Q_ARG( bool,e.success() ),
+						   Q_ARG( QString,arg ) ) ;
+		} ) ;
+	}else{
+		DialogMsg( obj ).ShowUIOK( QObject::tr( "ERROR" ),QObject::tr( "Failed to locate pkexec executable" ) ) ;
+	}
+}
+
+QString utility::helperSocketPath()
+{
+	return utility::homeConfigPath() + ".tmp/SiriKali.polkit.socket" ;
+}
+
+bool utility::useZuluPolkit()
+{
+	return POLKIT_SUPPORT ;
+}
+
+void utility::quitHelper()
+{
+	auto e = utility::helperSocketPath() ;
+
+	if( utility::pathExists( e ) ){
+
+		QLocalSocket s ;
+
+		s.connectToServer( e ) ;
+
+		if( s.waitForConnected() ){
+
+			s.write( [ & ]()->QByteArray{
+
+				nlohmann::json json ;
+
+				json[ "cookie" ]     = _cookie.constData() ;
+				json[ "password" ]   = "" ;
+				json[ "command" ]    = "exit" ;
+
+				return json.dump().c_str() ;
+			}() ) ;
+
+			s.waitForBytesWritten() ;
+		}
+	}
+}
+
 void utility::setUID( int uid )
 {
-	if( utility::userIsRoot() ){
+	if( utility::userIsRoot() || utility::useZuluPolkit() ){
 
 		staticGlobalUserId = uid ;
 	}
@@ -162,65 +344,20 @@ QString utility::homePath()
 	return getpwuid( utility::getUserID() )->pw_dir ;
 }
 
-void utility::dropPrivileges( int uid )
+::Task::future<bool>& utility::openPath( const QString& path,const QString& opener )
 {
-	if( uid == -1 ){
+	return ::Task::run<bool>( [ = ](){
 
-		uid = utility::getUserID() ;
-	}
+		auto e = opener + " " + utility::Task::makePath( path ) ;
 
-	if( uid != -1 ){
-
-		auto id = getpwuid( uid ) ;
-
-		if( id ){
-
-			setenv( "LOGNAME",id->pw_name,1 ) ;
-			setenv( "HOME",id->pw_dir,1 ) ;
-			setenv( "USER",id->pw_name,1 ) ;
-			setenv( "USERNAME",id->pw_name,1 ) ;
-
-			auto s = QByteArray( id->pw_dir ) + "/tmp" ;
-
-			setenv( "TMP",s.constData(),1 ) ;
-			setenv( "TMPDIR",s.constData(),1 ) ;
-		}
-
-		Q_UNUSED( setgid( uid ) ) ;
-		Q_UNUSED( setgroups( 1,reinterpret_cast< const gid_t * >( &uid ) ) ) ;
-		Q_UNUSED( setegid( uid ) ) ;
-		Q_UNUSED( setuid( uid ) ) ;
-	}
-}
-
-static bool _execute_process( const QString& m,const QString& exe,const QString& env,int uid )
-{
-	Q_UNUSED( env ) ;
-
-	if( !exe.isEmpty() ){
-
-		return utility::Task( exe + " " + utility::Task::makePath( m ),[ & ](){
-
-			return QProcessEnvironment() ;
-
-		}(),[ uid ](){ utility::dropPrivileges( uid ) ; } ).success() ;
-	}else{
-		return false ;
-	}
-}
-
-::Task::future<bool>& utility::openPath( const QString& path,const QString& opener,const QString& env )
-{
-	return ::Task::run<bool>( [ env,path,opener ](){
-
-		return _execute_process( path,opener,env,utility::getUID() ) == false ;
+		return utility::Task::run( e,false ).get().failed() ;
 	} ) ;
 }
 
 void utility::openPath( const QString& path,const QString& opener,
-			const QString& env,QWidget * obj,const QString& title,const QString& msg )
+			QWidget * obj,const QString& title,const QString& msg )
 {
-	openPath( path,opener,env ).then( [ title,msg,obj ]( bool failed ){
+	openPath( path,opener ).then( [ title,msg,obj ]( bool failed ){
 
 		if( failed && obj ){
 
@@ -232,7 +369,7 @@ void utility::openPath( const QString& path,const QString& opener,
 
 bool utility::runningInMixedMode()
 {
-	return utility::userIsRoot() && utility::getUID() != -1 ;
+	return utility::useZuluPolkit() ;
 }
 
 bool utility::notRunningInMixedMode()

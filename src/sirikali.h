@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  *  Copyright (c) 2012-2015
  *  name : Francis Banyikwa
@@ -50,6 +50,7 @@ public:
 	explicit sirikali( QWidget * parent = 0 ) ;
 	~sirikali() ;
 private slots:
+	void setUpApp( bool,const QString& ) ;
 	void start( void ) ;
 	void autoUpdateCheck( void ) ;
 	void cryfsProperties( void ) ;
@@ -121,7 +122,6 @@ private:
 	void closeEvent( QCloseEvent * e ) ;
 	void setUpFont( void ) ;
 	void setUpShortCuts( void ) ;
-	void setUpApp( const QString& ) ;
 	void raiseWindow( const QString& = QString() ) ;
 	void autoUnlockVolumes( void ) ;
 	QVector< favorites::entry > autoUnlockVolumes( const QVector< favorites::entry >& ) ;
@@ -147,7 +147,6 @@ private:
 	bool m_autoOpenFolderOnMount ;
 	bool m_removeAllVolumes = false ;
 
-	QString m_env ;
 	QString m_sharedFolderPath ;
 	QString m_folderOpener ;
 

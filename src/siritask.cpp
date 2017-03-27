@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  *  Copyright (c) 2014-2015
  *  name : Francis Banyikwa
@@ -43,16 +43,6 @@ static QString _makePath( const QString& e )
 	return utility::Task::makePath( e ) ;
 }
 
-static std::function< void() > _drop_privileges( const QString& e = QString() )
-{
-	if( e.endsWith( "ecryptfs.config" ) ){
-
-		return [](){} ;
-	}else{
-		return [](){ utility::dropPrivileges() ; } ;
-	}
-}
-
 template< typename ... T >
 static bool _deleteFolders( const T& ... m )
 {
@@ -82,7 +72,7 @@ static void _run_command_on_mount( const siritask::options& opt,const QString& a
 
 		exe = QString( "%1 %2 %3 %4" ).arg( exe,a,b,app ) ;
 
-		utility::Task::exec( exe,env,_drop_privileges() ) ;
+		utility::Task::exec( exe,env ) ;
 	}
 }
 
@@ -143,7 +133,7 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 
 		for( int i = 0 ; i < 5 ; i++ ){
 
-			if( utility::Task( cmd,10000 ).success() ){
+			if( utility::Task::run( cmd,10000,fileSystem == "ecryptfs" ).get().success() ){
 
 				return true ;
 			}else{
@@ -449,7 +439,7 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 			return env ;
 
-		}(),password.toLatin1(),_drop_privileges( configFilePath ) ) ;
+		}(),password.toLatin1(),[](){},configFilePath.endsWith( "ecryptfs.config" ) ) ;
 
 		auto s = _status( e,_status( app,false ),app == "encfs" ) ;
 

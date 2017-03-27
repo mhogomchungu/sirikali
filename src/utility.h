@@ -365,7 +365,6 @@ namespace utility
 	int getUID() ;
 	int getUserID() ;
 
-	void dropPrivileges( int = -1 ) ;
 	bool runningInMixedMode() ;
 	bool notRunningInMixedMode() ;
 
@@ -377,6 +376,10 @@ namespace utility
 	QStringList executableSearchPaths( void ) ;
 	QString executableSearchPaths( const QString& ) ;
 
+	bool useZuluPolkit( void ) ;
+	void startHelperExecutable( QWidget *,const QString&,const char * ) ;
+	void quitHelper() ;
+	QString helperSocketPath() ;
 	void clearFavorites( void ) ;
 	void addToFavorite( const QStringList& ) ;
 	QVector< favorites::entry > readFavorites( void ) ;
@@ -407,9 +410,9 @@ namespace utility
 	QFont getFont( QWidget * ) ;
 	void saveFont( const QFont& ) ;
 
-	::Task::future< bool >& openPath( const QString& path,const QString& opener,const QString& env = QString() ) ;
+	::Task::future< bool >& openPath( const QString& path,const QString& opener ) ;
 
-	void openPath( const QString& path,const QString& opener,const QString& env,QWidget *,const QString&,const QString& ) ;
+	void openPath( const QString& path,const QString& opener,QWidget *,const QString&,const QString& ) ;
 }
 
 namespace utility
@@ -492,11 +495,13 @@ namespace utility
 	class Task
 	{
 	public :
-		static ::Task::future< utility::Task >& run( const QString& exe,
-							     const QProcessEnvironment& env = QProcessEnvironment(),
-							     std::function< void() > f = [](){} )
+		static ::Task::future< utility::Task >& run( const QString& exe,bool e ) ;
+
+		static ::Task::future< utility::Task >& run( const QString& exe,int,bool e ) ;
+
+		static ::Task::future< utility::Task >& run( const QString& exe )
 		{
-			return ::Task::run< utility::Task >( [ = ](){ return utility::Task( exe,env,f ) ; } ) ;
+			return ::Task::run< utility::Task >( [ exe ](){ return utility::Task( exe ) ; } ) ;
 		}
 		static void exec( const QString& exe,
 				  const QProcessEnvironment& env = QProcessEnvironment(),
@@ -542,13 +547,13 @@ namespace utility
 		{
 		}
 		Task( const QString& exe,int waitTime = -1,const QProcessEnvironment& env = QProcessEnvironment(),
-		      const QByteArray& password = QByteArray(),std::function< void() > f = [](){} )
+		      const QByteArray& password = QByteArray(),std::function< void() > f = [](){},bool e = true )
 		{
-			this->execute( exe,waitTime,env,password,std::move( f ) ) ;
+			this->execute( exe,waitTime,env,password,std::move( f ),e ) ;
 		}
-		Task( const QString& exe,const QProcessEnvironment& env,std::function< void() > f )
+		Task( const QString& exe,const QProcessEnvironment& env,std::function< void() > f,bool e = true )
 		{
-			this->execute( exe,-1,env,QByteArray(),std::move( f ) ) ;
+			this->execute( exe,-1,env,QByteArray(),std::move( f ),e ) ;
 		}
 		QStringList splitOutput( char token,bool stdOutput = true ) const
 		{
@@ -601,41 +606,7 @@ namespace utility
 		}
 	private:
 		void execute( const QString& exe,int waitTime,const QProcessEnvironment& env,
-			      const QByteArray& password,std::function< void() >&& f )
-		{
-			class Process : public QProcess{
-			public:
-				Process( std::function< void() >&& f ) : m_function( std::move( f ) )
-				{
-				}
-			protected:
-				void setupChildProcess()
-				{
-					m_function() ;
-				}
-			private:
-				std::function< void() > m_function ;
-			} p( std::move( f ) ) ;
-
-			p.setProcessEnvironment( env ) ;
-
-			p.start( exe ) ;
-
-			if( !password.isEmpty() ){
-
-				p.waitForStarted() ;
-
-				p.write( password + '\n' ) ;
-
-				p.closeWriteChannel() ;
-			}
-
-			m_finished   = p.waitForFinished( waitTime ) ;
-			m_exitCode   = p.exitCode() ;
-			m_exitStatus = p.exitStatus() ;
-			m_stdOut     = p.readAllStandardOutput() ;
-			m_stdError   = p.readAllStandardError() ;
-		}
+			      const QByteArray& password,const std::function< void() >& f,bool e ) ;
 
 		QByteArray m_stdOut ;
 		QByteArray m_stdError ;

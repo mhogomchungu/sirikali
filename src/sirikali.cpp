@@ -88,8 +88,13 @@ void sirikali::closeApplication( int s,const QString& e )
 	this->closeApplication() ;
 }
 
-void sirikali::setUpApp( const QString& volume )
+void sirikali::setUpApp( bool start,const QString& volume )
 {
+	if( !start ){
+
+		return this->closeApplication() ;
+	}
+
 	this->setLocalizationLanguage( true ) ;
 
 	m_ui = new Ui::sirikali ;
@@ -668,7 +673,6 @@ void sirikali::start()
 
 	m_startHidden  = l.contains( "-e" ) ;
 	m_folderOpener = utility::cmdArgumentValue( l,"-m",utility::fileManager() ) ;
-	m_env          = utility::cmdArgumentValue( l,"-z" ) ;
 
 	utility::createFolder( utility::homeConfigPath() ) ;
 
@@ -691,7 +695,7 @@ void sirikali::start()
 		oneinstance::instance( this,
 				       s + "/SiriKali.socket",
 				       utility::cmdArgumentValue( l,"-d" ),
-				       [ this ]( const QString& e ){ this->setUpApp( e ) ; },
+				       [ this ]( const QString& e ){ utility::startHelperExecutable( this,e,"setUpApp" ) ; },
 				       [ this ]( int s ){ this->closeApplication( s ) ;	},
 				       [ this ]( const QString& e ){ this->raiseWindow( e ) ; } ) ;
 	}
@@ -1324,7 +1328,7 @@ void sirikali::openMountPoint( const QString& m_point )
 	auto x = tr( "WARNING" ) ;
 	auto y = tr( "Could Not Open Mount Point Because \"%1\" Tool Does Not Appear To Be Working Correctly." ).arg( m_folderOpener ) ;
 
-	utility::openPath( m_point,m_folderOpener,m_env,this,x,y ) ;
+	utility::openPath( m_point,m_folderOpener,this,x,y ) ;
 }
 
 void sirikali::openMountPointPath( QString m )
@@ -1667,6 +1671,8 @@ void sirikali::enableAll_1()
 
 sirikali::~sirikali()
 {
+	utility::quitHelper() ;
+
 	if( m_ui ){
 
 		auto q = m_ui->tableWidget ;

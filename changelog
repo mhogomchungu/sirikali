@@ -71,8 +71,9 @@ version 1.2.5
 -- Its now possible to view typed in password when creating/unlocking a volume.
 
 version 1.2.6
--- With a build time option,make it possible to raise the GUI elevated using polkit to support ecryptfs-simple backend
-   built without "proper permissions".
+-- Add a build time option(-DUSE_POLKIT=true) to support ecryptfs-simple backend build without suid bit set.
+   This option will generate a polkit prompt on program start giving bad user experience. Enable it only if
+   ecryptfs-simple backend is a necessary backend to have and it has to be installed without suid bit.
 -- Default to not using a passward manager when unlocking volumes from favorites list.
 -- Add an option to lock all unlocked volumes and quit the application on success.
 -- Add a config option to run arbitrary command on successful mount attempt(arguments to the command will be

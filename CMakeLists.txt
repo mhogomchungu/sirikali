@@ -273,61 +273,6 @@ install( FILES translations/fr_FR.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirika
 
 #install( FILES sirikali.png DESTINATION share/icons/hicolor/32x32/apps )
 
-if( USE_POLKIT )
-
-file( WRITE ${PROJECT_BINARY_DIR}/sirikali.policy
-"<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-<!DOCTYPE policyconfig PUBLIC
- \"-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN\"
- \"http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd\">
-<policyconfig>
-
-  <action id=\"org.debian.pkexec.sirikali\">
-    <message>Authentication is required to run SiriKali</message>
-    <icon_name>sirikali.xpm</icon_name>
-    <defaults>
-      <allow_any>auth_admin</allow_any>
-      <allow_inactive>auth_admin</allow_inactive>
-      <allow_active>auth_admin</allow_active>
-    </defaults>
-    <annotate key=\"org.freedesktop.policykit.exec.path\">${CMAKE_INSTALL_PREFIX}/bin/sirikali</annotate>
-    <annotate key=\"org.freedesktop.policykit.exec.allow_gui\">true</annotate>
-  </action>
-
-</policyconfig>
-")
-
-file( WRITE ${PROJECT_BINARY_DIR}/sirikali.pkexec
-"#!/bin/bash
-pkexec ${CMAKE_INSTALL_FULL_BINDIR}/sirikali -K $UID $*
-")
-
-# desktop file section
-file( WRITE ${PROJECT_BINARY_DIR}/sirikali.desktop
-
-"[Desktop Entry]
-Comment[en_US]=
-Comment=
-Exec=${CMAKE_INSTALL_FULL_BINDIR}/sirikali.pkexec -d %U
-GenericName[en_US]=Encrypted Folder Manager
-GenericName=Encrypted Folder Manager
-Icon=sirikali
-Name[en_US]=SiriKali
-Name=SiriKali
-NoDisplay=false
-StartupNotify=true
-Terminal=false
-Type=Application
-Categories=Security;Utility;Qt;X-MandrivaLinux-System-FileTools;\n")
-
-install ( FILES ${PROJECT_BINARY_DIR}/sirikali.policy DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/polkit-1/actions )
-
-install ( FILES ${PROJECT_BINARY_DIR}/sirikali.pkexec
-          DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
-
-else()
-
 # desktop file section
 file( WRITE ${PROJECT_BINARY_DIR}/sirikali.desktop
 
@@ -346,4 +291,36 @@ Terminal=false
 Type=Application
 Categories=Security;Utility;Qt;X-MandrivaLinux-System-FileTools;\n")
 
+if( USE_POLKIT )
+
+ADD_SUBDIRECTORY( src/zuluPolkit )
+
+file( WRITE ${PROJECT_BINARY_DIR}/siriPolkit.h "#define POLKIT_SUPPORT 1\n#define siriPolkitPath \"${CMAKE_INSTALL_PREFIX}/bin/siripoltik\"" )
+
+file( WRITE ${PROJECT_BINARY_DIR}/siripolkit.policy
+"<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE policyconfig PUBLIC
+ \"-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN\"
+ \"http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd\">
+<policyconfig>
+
+  <action id=\"org.debian.pkexec.zulupolkit\">
+    <message>Authentication is required to run siripolkit</message>
+    <icon_name>zuluCrypt</icon_name>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin</allow_active>
+    </defaults>
+    <annotate key=\"org.freedesktop.policykit.exec.path\">${CMAKE_INSTALL_PREFIX}/bin/siripolkit</annotate>
+    <annotate key=\"org.freedesktop.policykit.exec.allow_gui\">true</annotate>
+  </action>
+
+</policyconfig>
+")
+
+	install ( FILES ${PROJECT_BINARY_DIR}/siripolkit.policy DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/polkit-1/actions )
+else()
+
+	file( WRITE ${PROJECT_BINARY_DIR}/siriPolkit.h "#define POLKIT_SUPPORT 0\n#define siriPolkitPath \"${CMAKE_INSTALL_PREFIX}/bin/siripoltik\"" )
 endif()
