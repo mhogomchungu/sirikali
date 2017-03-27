@@ -26,14 +26,10 @@
 
 #include <termios.h>
 #include <memory>
-#include <unistd.h>
-#include <stdlib.h>
-#include <sys/stat.h>
 
-#include <QTimer>
-#include <QDir>
 #include <QProcess>
 #include <QCoreApplication>
+#include <QFile>
 
 namespace utility
 {
@@ -76,6 +72,36 @@ namespace utility
 		int exitStatus = 255 ;
 		bool finished  = false ;
 	};
+	QStringList executableSearchPaths()
+	{
+		return { "/usr/local/bin/",
+			"/usr/local/sbin/",
+			"/usr/bin/",
+			"/usr/sbin/",
+			"/bin/",
+			"/sbin/",
+			"/opt/local/bin/",
+			"/opt/local/sbin/",
+			"/opt/bin/",
+			"/opt/sbin/" } ;
+	}
+
+	QString executableFullPath( const QString& e )
+	{
+		QString exe ;
+
+		for( const auto& it : utility::executableSearchPaths() ){
+
+			exe = it + e ;
+
+			if( QFile::exists( exe ) ){
+
+				return exe ;
+			}
+		}
+
+		return QString() ;
+	}
 }
 
 static bool _terminalEchoOff( struct termios * old,struct termios * current )
@@ -103,7 +129,7 @@ zuluPolkit::zuluPolkit( const QStringList& s ) : m_arguments( s )
 
 zuluPolkit::~zuluPolkit()
 {
-	QDir().remove( m_socketPath ) ;
+	QFile::remove( m_socketPath ) ;
 }
 
 void zuluPolkit::start()
@@ -114,7 +140,7 @@ void zuluPolkit::start()
 
 		m_socketPath = m_arguments.at( 1 ) ;
 
-		QDir().remove( m_socketPath ) ;
+		QFile::remove( m_socketPath ) ;
 
 		m_server.listen( m_socketPath ) ;
 	}
@@ -149,7 +175,7 @@ void zuluPolkit::gotConnection()
 		auto token    = QString::fromStdString( json[ "cookie" ].get< std::string >() ) ;
 		auto command  = QString::fromStdString( json[ "command" ].get< std::string >() ) ;
 
-		auto e = "/bin/su - -c \"/usr/bin/ecryptfs-simple " ;
+		auto e = "/bin/su - -c \"" ; utility::executableFullPath( "ecryptfs-simple" ) ;
 
 		if( command == "exit" ){
 
