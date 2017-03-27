@@ -37,122 +37,22 @@
 
 namespace utility
 {
-	QStringList split( const QString& e,char token )
+	struct Task
 	{
-		return e.split( token,QString::SkipEmptyParts ) ;
-	}
-	class Task
-	{
-	public :
-		static ::Task::future< utility::Task >& run( const QString& exe )
+		static ::Task::future< utility::Task >& run( const QString& exe,
+							     const QString& password )
 		{
-			return ::Task::run< utility::Task >( [ exe ](){ return utility::Task( exe ) ; } ) ;
-		}
-		static void wait( int s )
-		{
-			sleep( s ) ;
-		}
-		static void waitForOneSecond( void )
-		{
-			sleep( 1 ) ;
-		}
-		static void waitForTwoSeconds( void )
-		{
-			sleep( 2 ) ;
-		}
-		static void suspendForOneSecond( void )
-		{
-			utility::Task::suspend( 1 ) ;
-		}
-		static void suspend( int s )
-		{
-			QTimer t ;
+			return ::Task::run< utility::Task >( [ = ](){
 
-			QEventLoop l ;
-
-			QObject::connect( &t,SIGNAL( timeout() ),&l,SLOT( quit() ) ) ;
-
-			t.start( 1000 * s ) ;
-
-			l.exec() ;
-		}
-		static QString makePath( QString e )
-		{
-			e.replace( "\"","\"\"\"" ) ;
-
-			return "\"" + e + "\"" ;
+				return utility::Task( exe,password ) ;
+			} ) ;
 		}
 		Task()
 		{
 		}
-		Task( const QString& exe,int waitTime = -1,const QProcessEnvironment& env = QProcessEnvironment(),
-		      const QByteArray& password = QByteArray(),const std::function< void() >& f = [](){} )
+		Task( const QString& exe,const QString& password = QByteArray() )
 		{
-			this->execute( exe,waitTime,env,password,f ) ;
-		}
-		Task( const QString& exe,const QProcessEnvironment& env,const std::function< void() >& f )
-		{
-			this->execute( exe,-1,env,QByteArray(),f ) ;
-		}
-		QStringList splitOutput( char token ) const
-		{
-			return utility::split( m_stdOut,token ) ;
-		}
-		void stdOut( const QByteArray& r )
-		{
-			m_stdOut = r ;
-		}
-		const QByteArray& stdOut() const
-		{
-			return m_stdOut ;
-		}
-		const QByteArray& stdError() const
-		{
-			return m_stdError ;
-		}
-		int exitCode() const
-		{
-			return m_exitCode ;
-		}
-		int exitStatus() const
-		{
-			return m_exitStatus ;
-		}
-		bool success() const
-		{
-			return m_exitCode == 0 && m_exitStatus == QProcess::NormalExit && m_finished == true ;
-		}
-		bool failed() const
-		{
-			return !this->success() ;
-		}
-		bool finished() const
-		{
-			return m_finished ;
-		}
-		bool ok() const
-		{
-			return this->splitOutput( '\n' ).size() > 12 ;
-		}
-	private:
-		void execute( const QString& exe,int waitTime,const QProcessEnvironment& env,
-			      const QByteArray& password,const std::function< void() >& f )
-		{
-			class Process : public QProcess{
-			public:
-				Process( const std::function< void() >& f ) : m_function( f )
-				{
-				}
-			protected:
-				void setupChildProcess()
-				{
-					m_function() ;
-				}
-			private:
-				std::function< void() > m_function ;
-			} p( f ) ;
-
-			p.setProcessEnvironment( env ) ;
+			QProcess p ;
 
 			p.start( exe ) ;
 
@@ -160,24 +60,24 @@ namespace utility
 
 				p.waitForStarted() ;
 
-				p.write( password + '\n' ) ;
+				p.write( password.toLatin1() + '\n' ) ;
 
 				p.closeWriteChannel() ;
 			}
 
-			m_finished   = p.waitForFinished( waitTime ) ;
-			m_exitCode   = p.exitCode() ;
-			m_exitStatus = p.exitStatus() ;
-			m_stdOut     = p.readAllStandardOutput() ;
-			m_stdError   = p.readAllStandardError() ;
+			finished   = p.waitForFinished( -1 ) ;
+			exitCode   = p.exitCode() ;
+			exitStatus = p.exitStatus() ;
+			stdOut     = p.readAllStandardOutput() ;
+			stdError   = p.readAllStandardError() ;
 		}
 
-		QByteArray m_stdOut ;
-		QByteArray m_stdError ;
+		QByteArray stdOut ;
+		QByteArray stdError ;
 
-		int m_exitCode ;
-		int m_exitStatus ;
-		bool m_finished ;
+		int exitCode   = 255 ;
+		int exitStatus = 255 ;
+		bool finished  = false ;
 	};
 }
 
@@ -223,11 +123,27 @@ void zuluPolkit::start()
 	}
 }
 
+static void _respond( std::unique_ptr< QLocalSocket >& s,
+		      const utility::Task& e = utility::Task() )
+{
+	nlohmann::json json ;
+
+	json[ "stdOut" ]     = e.stdOut.constData() ;
+	json[ "stdError" ]   = e.stdError.constData() ;
+	json[ "exitCode" ]   = e.exitCode ;
+	json[ "exitStatus" ] = e.exitStatus ;
+	json[ "finished" ]   = e.finished ;
+
+	s->write( json.dump().c_str() ) ;
+
+	s->waitForBytesWritten() ;
+}
+
 void zuluPolkit::gotConnection()
 {
-	try{
-		std::unique_ptr< QLocalSocket > s( m_server.nextPendingConnection() ) ;
+	std::unique_ptr< QLocalSocket > s( m_server.nextPendingConnection() ) ;
 
+	try{
 		s->waitForReadyRead() ;
 
 		auto json = nlohmann::json::parse( s->readAll().constData() ) ;
@@ -236,35 +152,19 @@ void zuluPolkit::gotConnection()
 		auto token    = QString::fromStdString( json[ "cookie" ].get< std::string >() ) ;
 		auto command  = QString::fromStdString( json[ "command" ].get< std::string >() ) ;
 
-		if( token != m_token ){
-
-			return ;
-		}
+		auto e = "/bin/su - -c \"/usr/bin/ecryptfs-simple " ;
 
 		if( command == "exit" ){
 
-			QCoreApplication::quit() ;
-		}else{
-			auto e = utility::Task( command,
-						-1,
-						QProcessEnvironment::systemEnvironment(),
-						password.toLatin1(),
-						[](){} ) ;
+			return QCoreApplication::quit() ;
 
-			nlohmann::json json ;
+		}else if( token == m_token && command.startsWith( e ) ){
 
-			json[ "stdOut" ]     = e.stdOut().constData() ;
-			json[ "stdError" ]   = e.stdError().constData() ;
-			json[ "exitCode" ]   = e.exitCode() ;
-			json[ "exitStatus" ] = e.exitStatus() ;
-			json[ "finished" ]   = e.finished() ;
-
-			s->write( json.dump().c_str() ) ;
-
-			s->waitForBytesWritten() ;
+			return _respond( s,utility::Task( command,password ) ) ;
 		}
-
 	}catch( ... ){}
+
+	_respond( s ) ;
 }
 
 QString zuluPolkit::readStdin()
