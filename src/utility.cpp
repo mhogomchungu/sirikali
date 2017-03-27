@@ -266,7 +266,14 @@ QString utility::helperSocketPath()
 
 bool utility::useZuluPolkit()
 {
-	return POLKIT_SUPPORT ;
+	if( _settings->contains( "ElevatePrivileges" ) ){
+
+		return _settings->value( "ElevatePrivileges" ).toBool() ;
+	}else{
+		bool e = POLKIT_SUPPORT ;
+		_settings->setValue( "ElevatePrivileges",e ) ;
+		return e ;
+	}
 }
 
 void utility::quitHelper()
