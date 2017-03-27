@@ -223,7 +223,7 @@ void utility::Task::execute( const QString& exe,int waitTime,
 	}
 }
 
-void utility::startHelperExecutable( QWidget * obj,const QString& arg,const char * slot )
+void utility::startHelperExecutable( QWidget * obj,const QString& arg,const char * slot,const char * slot1 )
 {
 	if( !utility::useZuluPolkit() ){
 
@@ -255,6 +255,7 @@ void utility::startHelperExecutable( QWidget * obj,const QString& arg,const char
 		} ) ;
 	}else{
 		DialogMsg( obj ).ShowUIOK( QObject::tr( "ERROR" ),QObject::tr( "Failed to locate pkexec executable" ) ) ;
+		QMetaObject::invokeMethod( obj,slot1 ) ;
 	}
 }
 

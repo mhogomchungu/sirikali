@@ -695,7 +695,10 @@ void sirikali::start()
 		oneinstance::instance( this,
 				       s + "/SiriKali.socket",
 				       utility::cmdArgumentValue( l,"-d" ),
-				       [ this ]( const QString& e ){ utility::startHelperExecutable( this,e,"setUpApp" ) ; },
+				       [ this ]( const QString& e ){ utility::startHelperExecutable( this,
+												     e,
+												     "setUpApp",
+												     "closeApplication" ) ; },
 				       [ this ]( int s ){ this->closeApplication( s ) ;	},
 				       [ this ]( const QString& e ){ this->raiseWindow( e ) ; } ) ;
 	}
@@ -1186,7 +1189,7 @@ static void _volume_properties( const QString& e,const QString& arg,
 	}else{
 		auto e = utility::Task::run( exe + arg + path ).await() ;
 
-		if( e.finished() && e.success() ){
+		if( e.success() ){
 
 			DialogMsg( w ).ShowUIInfo( QObject::tr( "INFORMATION" ),true,e.stdOut() ) ;
 		}else{

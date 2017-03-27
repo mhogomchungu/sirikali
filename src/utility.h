@@ -377,7 +377,7 @@ namespace utility
 	QString executableSearchPaths( const QString& ) ;
 
 	bool useZuluPolkit( void ) ;
-	void startHelperExecutable( QWidget *,const QString&,const char * ) ;
+	void startHelperExecutable( QWidget *,const QString&,const char *,const char * ) ;
 	void quitHelper() ;
 	QString helperSocketPath() ;
 	void clearFavorites( void ) ;
