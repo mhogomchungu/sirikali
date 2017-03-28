@@ -25,7 +25,7 @@ mkdir build
 
 cd build
 
-cmake -DCMAKE_INSTALL_PREFIX=/usr -DQT5=true -DNOSECRETSUPPORT=false -DINTERNAL_LXQT_WALLET=false -DNOKDESUPPORT=false -DCMAKE_BUILD_TYPE=RELEASE . ..
+cmake -DCMAKE_INSTALL_PREFIX=/usr -DQT5=true -DCMAKE_BUILD_TYPE=RELEASE . ..
 
 make
 
@@ -35,7 +35,7 @@ make install( or sudo make install )
 
 The build system now uses GNUInstallDirs (https://cmake.org/cmake/help/v3.5/module/GNUInstallDirs.html), so pretty much all directories can be controlled properly.
 
-meaning of different options:
+available build options:
 
 -DCMAKE_INSTALL_PREFIX=/usr
 This option tells the build process to install project's files in "/usr/".

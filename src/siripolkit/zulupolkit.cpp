@@ -175,7 +175,7 @@ void zuluPolkit::gotConnection()
 		auto token    = QString::fromStdString( json[ "cookie" ].get< std::string >() ) ;
 		auto command  = QString::fromStdString( json[ "command" ].get< std::string >() ) ;
 
-		auto e = "/bin/su - -c \"" ; utility::executableFullPath( "ecryptfs-simple" ) ;
+		auto e = "/bin/su - -c \"" + utility::executableFullPath( "ecryptfs-simple" ) ;
 
 		if( command == "exit" ){
 
