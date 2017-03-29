@@ -300,6 +300,8 @@ endif()
 
 file( APPEND ${PROJECT_BINARY_DIR}/siriPolkit.h "\n#define siriPolkitPath \"${CMAKE_INSTALL_PREFIX}/bin/sirikali.pkexec\"" )
 
+if( NOT APPLE )
+
 ADD_SUBDIRECTORY( src/siripolkit )
 
 file( WRITE ${PROJECT_BINARY_DIR}/sirikali.policy
@@ -324,3 +326,5 @@ file( WRITE ${PROJECT_BINARY_DIR}/sirikali.policy
 ")
 
 install ( FILES ${PROJECT_BINARY_DIR}/sirikali.policy DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/polkit-1/actions )
+
+endif()
