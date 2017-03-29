@@ -198,6 +198,18 @@ set( SRC 	src/dialogok.cpp
 		src/secrets.cpp
 )
 
+if( APPLE )
+
+	SET( MACOSX_BUNDLE_BUNDLE_NAME "SiriKali" )
+	SET( MACOSX_BUNDLE_COPYRIGHT "(c)2016-2017,Francis Banyikwa,mhogomchungu@gmail.com" )
+	SET( MACOSX_BUNDLE_BUNDLE_VERSION "${PGR_VERSION}" )
+	SET( MACOSX_BUNDLE_GUI_IDENTIFIER "com.crypto.SiriKali" )
+	SET( MACOSX_BUNDLE_SHORT_VERSION_STRING "${PGR_VERSION}" )
+	SET( MACOSX_BUNDLE_LONG_VERSION_STRING "${PGR_VERSION}" )
+	SET( MACOSX_BUNDLE_ICON_FILE icons/256x256/sirikali.icns )
+	SET_SOURCE_FILES_PROPERTIES( icons/256x256/sirikali.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
+endif()
+
 if( QT5 )
 	find_package( Qt5Widgets REQUIRED )
 	find_package( Qt5Core REQUIRED )
@@ -216,7 +228,7 @@ if( QT5 )
 	INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 	INCLUDE_DIRECTORIES( ${GCRYPT_INCLUDE_PATH} )
 
-	add_executable( sirikali ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
+	add_executable( sirikali MACOSX_BUNDLE ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
 
 	link_directories( ${GCRYPT_LIBRARY_PATH} )
 
@@ -245,7 +257,7 @@ else()
 
 	link_directories( ${GCRYPT_LIBRARY_PATH} )
 
-	add_executable( sirikali ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
+	add_executable( sirikali MACOSX_BUNDLE ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
 
 	TARGET_LINK_LIBRARIES( sirikali -lQtCore -lQtGui -lQtNetwork ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet -L${GCRYPT_LIBRARY_PATH} )
 
@@ -256,13 +268,42 @@ endif()
 
 set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic" )
 
+if( USE_POLKIT )
+	file( WRITE ${PROJECT_BINARY_DIR}/siriPolkit.h "#define POLKIT_SUPPORT 1" )
+else()
+	file( WRITE ${PROJECT_BINARY_DIR}/siriPolkit.h "#define POLKIT_SUPPORT 0" )
+endif()
+
+file( APPEND ${PROJECT_BINARY_DIR}/siriPolkit.h "\n#define siriPolkitPath \"${CMAKE_INSTALL_PREFIX}/bin/sirikali.pkexec\"" )
+
+
+#if( APPLE )
+
+#SET( plugin_dest_dir sirikali.app/Contents/MacOS )
+#SET( qtconf_dest_dir sirikali.app/Contents/Resources )
+#SET( APPS "\${CMAKE_INSTALL_PREFIX}/sirikali.app" )
+
+#install( TARGETS sirikali BUNDLE DESTINATION . COMPONENT Runtime RUNTIME DESTINATION bin COMPONENT Runtime )
+
+#install( DIRECTORY "${QT_PLUGINS_DIR}/imageformats" DESTINATION ${plugin_dest_dir}/plugins COMPONENT Runtime )
+
+#install( CODE " file(WRITE \"\${CMAKE_INSTALL_PREFIX}/${qtconf_dest_dir}/qt.conf\" \"\")" COMPONENT Runtime )
+
+#SET( DIRS ${QT_LIBRARY_DIRS} )
+
+#INSTALL(CODE "
+#    file(GLOB_RECURSE QTPLUGINS
+#      \"\${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}/plugins/*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+#    include(BundleUtilities)
+#    fixup_bundle(\"${APPS}\" \"\${QTPLUGINS}\" \"${DIRS}\")
+#    " COMPONENT Runtime)
+
+#set( CPACK_BINARY_DRAGNDROP ON )
+#include( CPack )
+
+#else()
+
 install( TARGETS sirikali RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} )
-
-install( FILES ${PROJECT_BINARY_DIR}/sirikali.desktop
-DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications
-
-PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-)
 
 install( FILES icons/256x256/sirikali.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/256x256/apps/ )
 install( FILES icons/48x48/sirikali.png DESTINATION   ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps/ )
@@ -272,6 +313,7 @@ install( FILES src/sirikali.png DESTINATION           ${CMAKE_INSTALL_DATAROOTDI
 install( FILES translations/en_US.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 install( FILES translations/fr_FR.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 
+if( NOT APPLE )
 #install( FILES sirikali.png DESTINATION share/icons/hicolor/32x32/apps )
 
 # desktop file section
@@ -292,15 +334,10 @@ Terminal=false
 Type=Application
 Categories=Security;Utility;Qt;X-MandrivaLinux-System-FileTools;\n")
 
-if( USE_POLKIT )
-	file( WRITE ${PROJECT_BINARY_DIR}/siriPolkit.h "#define POLKIT_SUPPORT 1" )
-else()
-	file( WRITE ${PROJECT_BINARY_DIR}/siriPolkit.h "#define POLKIT_SUPPORT 0" )
-endif()
-
-file( APPEND ${PROJECT_BINARY_DIR}/siriPolkit.h "\n#define siriPolkitPath \"${CMAKE_INSTALL_PREFIX}/bin/sirikali.pkexec\"" )
-
-if( NOT APPLE )
+install( FILES ${PROJECT_BINARY_DIR}/sirikali.desktop
+	DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications
+	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+)
 
 ADD_SUBDIRECTORY( src/siripolkit )
 
