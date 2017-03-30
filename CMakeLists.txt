@@ -277,31 +277,31 @@ endif()
 file( APPEND ${PROJECT_BINARY_DIR}/siriPolkit.h "\n#define siriPolkitPath \"${CMAKE_INSTALL_PREFIX}/bin/sirikali.pkexec\"" )
 
 
-#if( APPLE )
+if( APPLE )
 
-#SET( plugin_dest_dir sirikali.app/Contents/MacOS )
-#SET( qtconf_dest_dir sirikali.app/Contents/Resources )
-#SET( APPS "\${CMAKE_INSTALL_PREFIX}/sirikali.app" )
+SET( plugin_dest_dir sirikali.app/Contents/MacOS )
+SET( qtconf_dest_dir sirikali.app/Contents/Resources )
+SET( APPS "\${CMAKE_INSTALL_PREFIX}/sirikali.app" )
 
-#install( TARGETS sirikali BUNDLE DESTINATION . COMPONENT Runtime RUNTIME DESTINATION bin COMPONENT Runtime )
+install( TARGETS sirikali BUNDLE DESTINATION . COMPONENT Runtime RUNTIME DESTINATION bin COMPONENT Runtime )
 
-#install( DIRECTORY "${QT_PLUGINS_DIR}/imageformats" DESTINATION ${plugin_dest_dir}/plugins COMPONENT Runtime )
+install( DIRECTORY "${QT_PLUGINS_DIR}/imageformats" DESTINATION ${plugin_dest_dir}/plugins COMPONENT Runtime )
 
-#install( CODE " file(WRITE \"\${CMAKE_INSTALL_PREFIX}/${qtconf_dest_dir}/qt.conf\" \"\")" COMPONENT Runtime )
+install( CODE " file(WRITE \"\${CMAKE_INSTALL_PREFIX}/${qtconf_dest_dir}/qt.conf\" \"\")" COMPONENT Runtime )
 
-#SET( DIRS ${QT_LIBRARY_DIRS} )
+SET( DIRS ${QT_LIBRARY_DIRS} )
 
-#INSTALL(CODE "
-#    file(GLOB_RECURSE QTPLUGINS
-#      \"\${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}/plugins/*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
-#    include(BundleUtilities)
-#    fixup_bundle(\"${APPS}\" \"\${QTPLUGINS}\" \"${DIRS}\")
-#    " COMPONENT Runtime)
+INSTALL(CODE "
+    file(GLOB_RECURSE QTPLUGINS
+      \"\${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}/plugins/*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+    include(BundleUtilities)
+    fixup_bundle(\"${APPS}\" \"\${QTPLUGINS}\" \"${DIRS}\")
+    " COMPONENT Runtime)
 
-#set( CPACK_BINARY_DRAGNDROP ON )
-#include( CPack )
+set( CPACK_BINARY_DRAGNDROP ON )
+include( CPack )
 
-#else()
+else()
 
 install( TARGETS sirikali RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} )
 
@@ -312,6 +312,8 @@ install( FILES src/sirikali.png DESTINATION           ${CMAKE_INSTALL_DATAROOTDI
 
 install( FILES translations/en_US.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 install( FILES translations/fr_FR.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
+
+endif()
 
 if( NOT APPLE )
 #install( FILES sirikali.png DESTINATION share/icons/hicolor/32x32/apps )
