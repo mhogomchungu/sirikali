@@ -1457,23 +1457,35 @@ QString utility::runCommandOnMount()
 	}
 }
 
+static QString _file_manager()
+{
+	if( utility::platformIsLinux() ){
+
+		return "xdg-open" ;
+	}else{
+		return "open" ;
+	}
+}
+
 QString utility::fileManager()
 {
+	auto s = _file_manager() ;
+
 	if( _settings->contains( "FileManager" ) ){
 
 		auto e = _settings->value( "FileManager" ).toString() ;
 
 		if( e.isEmpty() ){
 
-			_settings->setValue( "FileManager",QString( "xdg-open" ) ) ;
-			return "xdg-open" ;
+			_settings->setValue( "FileManager",s ) ;
+			return s ;
 		}else{
 			return e ;
 		}
 	}else{
-		_settings->setValue( "FileManager",QString( "xdg-open" ) ) ;
+		_settings->setValue( "FileManager",s ) ;
 
-		return "xdg-open" ;
+		return s ;
 	}
 }
 

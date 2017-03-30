@@ -198,7 +198,7 @@ set( SRC 	src/dialogok.cpp
 		src/secrets.cpp
 )
 
-if( APPLE )
+if( LINUX )
 
 	SET( MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/MacOSXBundleInfo.plist.in" )
 	SET( MACOSX_BUNDLE_BUNDLE_NAME "SiriKali" )
