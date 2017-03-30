@@ -200,6 +200,7 @@ set( SRC 	src/dialogok.cpp
 
 if( APPLE )
 
+	SET( MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/MacOSXBundleInfo.plist.in" )
 	SET( MACOSX_BUNDLE_BUNDLE_NAME "SiriKali" )
 	SET( MACOSX_BUNDLE_COPYRIGHT "(c)2016-2017,Francis Banyikwa,mhogomchungu@gmail.com" )
 	SET( MACOSX_BUNDLE_BUNDLE_VERSION "${PGR_VERSION}" )

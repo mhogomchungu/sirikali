@@ -119,11 +119,11 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 					return s ;
 				}
 			}else{
-				if( utility::platformIsLinux() ){
+				if( utility::platformIsOSX() ){
 
-					return "fusermount -u " + _makePath( mountPoint ) ;
-				}else{
 					return "umount " + _makePath( mountPoint ) ;
+				}else{
+					return "fusermount -u " + _makePath( mountPoint ) ;
 				}
 			}
 		}() ;
