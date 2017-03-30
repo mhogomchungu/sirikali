@@ -1475,19 +1475,19 @@ QString utility::fileManager()
 {
 	auto s = _file_manager() ;
 
-	if( _settings->contains( "FileManager" ) ){
+	if( _settings->contains( "FileManagerOpener" ) ){
 
-		auto e = _settings->value( "FileManager" ).toString() ;
+		auto e = _settings->value( "FileManagerOpener" ).toString() ;
 
 		if( e.isEmpty() ){
 
-			_settings->setValue( "FileManager",s ) ;
+			_settings->setValue( "FileManagerOpener",s ) ;
 			return s ;
 		}else{
 			return e ;
 		}
 	}else{
-		_settings->setValue( "FileManager",s ) ;
+		_settings->setValue( "FileManagerOpener",s ) ;
 
 		return s ;
 	}
