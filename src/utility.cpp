@@ -1459,11 +1459,15 @@ QString utility::runCommandOnMount()
 
 static QString _file_manager()
 {
-	if( utility::platformIsLinux() ){
+	auto s = utility::platformIsLinux() ? "xdg-open" : "open" ;
 
-		return "xdg-open" ;
+	auto e = utility::executableFullPath( s ) ;
+
+	if( e.isEmpty() ){
+
+		return s ;
 	}else{
-		return "open" ;
+		return e ;
 	}
 }
 
