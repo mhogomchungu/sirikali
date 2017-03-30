@@ -725,9 +725,11 @@ void keyDialog::pbOK()
 
 void keyDialog::encryptedFolderCreate()
 {
+	m_mountPointPath.clear() ;
+
 	auto path = m_ui->lineEditFolderPath->text() ;
 
-	m_mountPointPath = path.split( '/' ).last() ;
+	auto m = path.split( '/' ).last() ;
 
 	if( utility::pathExists( path ) ){
 
@@ -736,9 +738,9 @@ void keyDialog::encryptedFolderCreate()
 		return this->enableAll() ;
 	}
 
-	m_mountPointPath = utility::mountPath( utility::mountPathPostFix( m_mountPointPath ) ) ;
+	m = utility::mountPath( utility::mountPathPostFix( m ) ) ;
 
-	if( utility::pathExists( m_mountPointPath ) && !m_reUseMountPoint ){
+	if( utility::pathExists( m ) && !m_reUseMountPoint ){
 
 		this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
 
@@ -758,13 +760,15 @@ void keyDialog::encryptedFolderCreate()
 
 	m_working = true ;
 
-	auto& e = siritask::encryptedFolderCreate( { path,m_mountPointPath,m_key,m_options,m_configFile,
-						      m_exe.toLower(),false } ) ;
+	siritask::options s = { path,m,m_key,m_options,m_configFile,m_exe.toLower(),false } ;
+
+	auto& e = siritask::encryptedFolderCreate( s ) ;
 
 	m_working = false ;
 
 	if( this->completed( e.await() ) ){
 
+		m_mountPointPath = m ;
 		this->HideUI() ;
 	}else{
 		if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
@@ -780,11 +784,13 @@ void keyDialog::encryptedFolderCreate()
 
 void keyDialog::encryptedFolderMount()
 {
+	m_mountPointPath.clear() ;
+
 	auto ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
 
-	m_mountPointPath = m_ui->lineEditMountPoint->text() ;
+	auto m = m_ui->lineEditMountPoint->text() ;
 
-	if( m_mountPointPath.isEmpty() ){
+	if( m.isEmpty() ){
 
 		this->showErrorMessage( tr( "Atleast One Required Field Is Empty." ) ) ;
 
@@ -795,7 +801,7 @@ void keyDialog::encryptedFolderMount()
 		return ;
 	}
 
-	if( utility::pathExists( m_mountPointPath ) && !m_reUseMountPoint ){
+	if( utility::pathExists( m ) && !m_reUseMountPoint ){
 
 		this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
 
@@ -822,17 +828,17 @@ void keyDialog::encryptedFolderMount()
 
 	m_working = true ;
 
-	auto& e = siritask::encryptedFolderMount( { m_path,m_mountPointPath,m_key,m_options,
-						     m_configFile,m_exe,ro } ) ;
+	siritask::options s = { m_path,m,m_key,m_options,m_configFile,m_exe,ro } ;
+
+	auto& e = siritask::encryptedFolderMount( s ) ;
 
 	m_working = false ;
 
 	if( this->completed( e.await() ) ){
 
+		m_mountPointPath = m ;
 		this->HideUI() ;
 	}else{
-		m_mountPointPath.clear() ;
-
 		m_ui->lineEditKey->clear() ;
 
 		this->enableAll() ;
@@ -1090,17 +1096,12 @@ void keyDialog::HideUI()
 	if( !m_working ){
 
 		this->hide() ;
-
-		if( !m_mountPointPath.isEmpty() ){
-
-			m_success( m_mountPointPath ) ;
-		}
-
 		this->deleteLater() ;
 	}
 }
 
 keyDialog::~keyDialog()
-{
+{	
+	m_success( m_mountPointPath ) ;
 	delete m_ui ;
 }

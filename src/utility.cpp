@@ -365,14 +365,17 @@ QString utility::homePath()
 void utility::openPath( const QString& path,const QString& opener,
 			QWidget * obj,const QString& title,const QString& msg )
 {
-	openPath( path,opener ).then( [ title,msg,obj ]( bool failed ){
+	if( !path.isEmpty() ){
 
-		if( failed && obj ){
+		openPath( path,opener ).then( [ title,msg,obj ]( bool failed ){
 
-			DialogMsg m( obj ) ;
-			m.ShowUIOK( title,msg ) ;
-		}
-	} ) ;
+			if( failed && obj ){
+
+				DialogMsg m( obj ) ;
+				m.ShowUIOK( title,msg ) ;
+			}
+		} ) ;
+	}
 }
 
 bool utility::runningInMixedMode()
