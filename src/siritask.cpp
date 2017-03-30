@@ -481,8 +481,6 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const optio
 
 				if( e == cs::success ){
 
-					opt.openFolder( opt.plainFolder ) ;
-
 					_run_command_on_mount( opt,app ) ;
 				}else{
 					siritask::deleteMountFolder( opt.plainFolder ) ;
@@ -592,8 +590,6 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderCreate( const opti
 
 							_deleteFolders( opt.cipherFolder,opt.plainFolder ) ;
 						}
-					}else{
-						opt.openFolder( opt.plainFolder ) ;
 					}
 				}else{
 					_deleteFolders( opt.plainFolder,opt.cipherFolder ) ;

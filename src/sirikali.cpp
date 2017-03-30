@@ -797,6 +797,8 @@ void sirikali::unlockVolume( const QStringList& l )
 
 			if( e.await() == siritask::status::success ){
 
+				this->openMountPointPath( m ) ;
+
 				this->closeApplication( 0 ) ;
 			}else{
 				this->closeApplication( 1 ) ;
@@ -1334,12 +1336,17 @@ void sirikali::openMountPoint( const QString& m_point )
 	utility::openPath( m_point,m_folderOpener,this,x,y ) ;
 }
 
-void sirikali::openMountPointPath( QString m )
+void sirikali::openMountPointPath( const QString& m )
 {
 	if( m_autoOpenFolderOnMount ){
 
 		this->openMountPoint( m ) ;
 	}
+}
+
+void sirikali::hideWindow()
+{
+	this->hide() ;
 }
 
 void sirikali::setUpShortCuts()
@@ -1363,7 +1370,16 @@ void sirikali::setUpShortCuts()
 
 	this->addAction( _addAction( { Qt::Key_R },SLOT( pbUpdate() ) ) ) ;
 
-	this->addAction( _addAction( { Qt::Key_C },SLOT( closeApplication() ) ) ) ;
+	this->addAction( _addAction( { Qt::CTRL + Qt::Key::Key_Q },SLOT( closeApplication() ) ) ) ;
+
+	this->addAction( [ & ](){
+
+		auto e = _addAction( { Qt::CTRL + Qt::Key::Key_W },SLOT( hideWindow() ) ) ;
+
+		e->setMenuRole( QAction::QuitRole ) ;
+
+		return e ;
+	}() ) ;
 }
 
 void sirikali::setUpFont()

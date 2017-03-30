@@ -50,6 +50,7 @@ public:
 	explicit sirikali( QWidget * parent = 0 ) ;
 	~sirikali() ;
 private slots:
+	void hideWindow( void ) ;
 	void setUpApp( bool,const QString& ) ;
 	void start( void ) ;
 	void autoUpdateCheck( void ) ;
@@ -96,7 +97,7 @@ private slots:
 	void showFavorites( void ) ;
 	void favoriteClicked( QAction * ) ;
 	void keyManagerClicked( QAction * ) ;
-	void openMountPointPath( QString ) ;
+	void openMountPointPath( const QString& ) ;
 	void licenseInfo( void ) ;
 	void updateCheck( void ) ;
 	void languageMenu( QAction * ac ) ;

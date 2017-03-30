@@ -82,8 +82,7 @@ namespace siritask
 		using function_t = std::function< void( const QString& ) > ;
 
 		options( const favorites::entry& e,
-			 const QString& volumeKey = QString(),
-			 function_t folder_opener = []( const QString& e ){ Q_UNUSED( e ) ; } ) :
+			 const QString& volumeKey = QString() ) :
 
 			cipherFolder( e.volumePath ),
 			plainFolder( e.mountPointPath ),
@@ -91,8 +90,7 @@ namespace siritask
 			mOpt( e.idleTimeOut ),
 			configFilePath( e.configFilePath ),
 			type( QString() ),
-			ro( false ),
-			openFolder( folder_opener )
+			ro( false )
 		{
 		}
 		options( const QString& cipher_folder,
@@ -101,8 +99,7 @@ namespace siritask
 			 const QString& mount_options,
 			 const QString& config_file_path,
 			 const QString& volume_type,
-			 bool unlock_in_read_only,
-			 function_t folder_opener = []( const QString& e ){ Q_UNUSED( e ) ; } ) :
+			 bool unlock_in_read_only ) :
 
 			cipherFolder( cipher_folder ),
 			plainFolder( plain_folder ),
@@ -110,8 +107,7 @@ namespace siritask
 			mOpt( mount_options ),
 			configFilePath( config_file_path ),
 			type( volume_type ),
-			ro( unlock_in_read_only ),
-			openFolder( folder_opener )
+			ro( unlock_in_read_only )
 		{
 		}
 
@@ -122,7 +118,6 @@ namespace siritask
 		QString configFilePath ;
 		siritask::volumeType type ;
 		bool ro ;
-		function_t openFolder ;
 	};
 
 	enum class status

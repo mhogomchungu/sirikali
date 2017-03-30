@@ -165,7 +165,7 @@ private :
 	QString m_options ;
 	QString m_configFile ;
 	QString m_exe ;
-
+	QString m_mountPointPath ;
 	QStringList m_keyFiles ;
 
 	QTableWidget * m_table ;
