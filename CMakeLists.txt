@@ -289,17 +289,17 @@ install( TARGETS sirikali BUNDLE DESTINATION . COMPONENT Runtime RUNTIME DESTINA
 
 install( CODE " file(WRITE \"\${CMAKE_INSTALL_PREFIX}/${qtconf_dest_dir}/qt.conf\" \"\")" COMPONENT Runtime )
 
-SET( DIRS ${QT_LIBRARY_DIRS} )
+#SET( DIRS ${QT_LIBRARY_DIRS} )
 
-INSTALL(CODE "
-    file(GLOB_RECURSE QTPLUGINS
-      \"\${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}/plugins/*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
-    include(BundleUtilities)
-    fixup_bundle(\"${APPS}\" \"\${QTPLUGINS}\" \"${DIRS}\")
-    " COMPONENT Runtime)
+#INSTALL(CODE "
+#    file(GLOB_RECURSE QTPLUGINS
+#      \"\${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}/plugins/*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+#    include(BundleUtilities)
+#   fixup_bundle(\"${APPS}\" \"\${QTPLUGINS}\" \"${DIRS}\")
+#    " COMPONENT Runtime)
 
-set( CPACK_BINARY_DRAGNDROP ON )
-include( CPack )
+#set( CPACK_BINARY_DRAGNDROP ON )
+#include( CPack )
 
 else()
 
