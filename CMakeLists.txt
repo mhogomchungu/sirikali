@@ -287,7 +287,7 @@ install( TARGETS sirikali BUNDLE DESTINATION . COMPONENT Runtime RUNTIME DESTINA
 
 #install( DIRECTORY "${QT_PLUGINS_DIR}/imageformats" DESTINATION ${plugin_dest_dir}/plugins COMPONENT Runtime )
 
-install( CODE " file(WRITE \"\${CMAKE_INSTALL_PREFIX}/${qtconf_dest_dir}/qt.conf\" \"\")" COMPONENT Runtime )
+#install( CODE " file(WRITE \"\${CMAKE_INSTALL_PREFIX}/${qtconf_dest_dir}/qt.conf\" \"\")" COMPONENT Runtime )
 
 #SET( DIRS ${QT_LIBRARY_DIRS} )
 
