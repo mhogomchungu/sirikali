@@ -46,6 +46,7 @@
 
 #include <unistd.h>
 
+#include "filemanager.h"
 #include "keydialog.h"
 #include "dialogmsg.h"
 #include "tablewidget.h"
@@ -318,6 +319,9 @@ void sirikali::setUpAppMenu()
 	m->addAction( _addAction( false,false,tr( "Set Mount Point Prefix" ),
 				  "Set Mount Point Prefix",SLOT( setDefaultMountPointPrefix() ) ) ) ;
 
+	m->addAction( _addAction( false,false,tr( "Set File Manager" ),
+				  "Set File Manager",SLOT( setFileManager() ) ) ) ;
+
 	m->addAction( _addAction( false,false,tr( "Unmount All" ),
 				  "Unmount All",SLOT( unMountAll() ) ) ) ;
 
@@ -407,6 +411,11 @@ void sirikali::setUpAppMenu()
 
 	connect( &m_trayIcon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),
 		 this,SLOT( slotTrayClicked( QSystemTrayIcon::ActivationReason ) ) ) ;
+}
+
+void sirikali::setFileManager()
+{
+	fileManager::instance( this ) ;
 }
 
 void sirikali::autoMountKeyStorage()

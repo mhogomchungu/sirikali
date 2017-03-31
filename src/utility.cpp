@@ -1474,25 +1474,33 @@ static QString _file_manager()
 	}
 }
 
+void utility::setFileManager( const QString& e )
+{
+	if( e.isEmpty() ){
+
+		_settings->setValue( "FileManagerOpener",_file_manager() ) ;
+	}else{
+		_settings->setValue( "FileManagerOpener",e ) ;
+	}
+}
+
 QString utility::fileManager()
 {
-	auto s = _file_manager() ;
-
 	if( _settings->contains( "FileManagerOpener" ) ){
 
 		auto e = _settings->value( "FileManagerOpener" ).toString() ;
 
 		if( e.isEmpty() ){
 
-			_settings->setValue( "FileManagerOpener",s ) ;
-			return s ;
+			utility::setFileManager( QString() ) ;
+
+			return _settings->value( "FileManagerOpener" ).toString() ; ;
 		}else{
 			return e ;
 		}
 	}else{
-		_settings->setValue( "FileManagerOpener",s ) ;
-
-		return s ;
+		utility::setFileManager( QString() ) ;
+		return _settings->value( "FileManagerOpener" ).toString() ;
 	}
 }
 

@@ -159,6 +159,7 @@ set( UI_FILES 	src/sirikali.ui
 		src/walletconfiginput.ui
 		src/options.ui
 		src/dialogok.ui
+		src/filemanager.ui
 )
 
 set( MOC_FILES 	src/dialogok.h
@@ -176,6 +177,7 @@ set( MOC_FILES 	src/dialogok.h
 		src/options.h
 		src/networkAccessManager.hpp
 		src/task.h
+		src/filemanager.h
  )
 
 set( SRC 	src/dialogok.cpp
@@ -196,6 +198,7 @@ set( SRC 	src/dialogok.cpp
 		src/walletconfiginput.cpp
 		src/options.cpp
 		src/secrets.cpp
+		src/filemanager.cpp
 )
 
 if( LINUX )

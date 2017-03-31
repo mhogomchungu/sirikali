@@ -13,6 +13,7 @@ SOURCES += \
     oneinstance.cpp \
     utility.cpp  \
     sirikali.cpp  \
+    filemanager.cpp \
     keydialog.cpp  \
     plugin.cpp   \
     walletconfig.cpp   \
@@ -29,6 +30,7 @@ HEADERS += \
     dialogok.h \
     checkforupdates.h \
     favorites.h \
+    filemanager.h \
     oneinstance.h \
     utility.h  \
     sirikali.h  \
@@ -55,6 +57,7 @@ FORMS += \
     dialogok.ui \
     sirikali.ui \
     favorites.ui \
+    filemanager.ui \
     plugin.ui \
     walletconfiginput.ui \
     dialogmsg.ui \

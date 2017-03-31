@@ -299,6 +299,7 @@ namespace utility
 
 	QString runCommandOnMount( void ) ;
 	QString fileManager( void ) ;
+	void setFileManager( const QString& ) ;
 
 	QString readPassword( bool = true ) ;
 
