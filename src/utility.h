@@ -310,6 +310,7 @@ namespace utility
 	QString executableFullPath( const QString& ) ;
 
 	QString externalPluginExecutable() ;
+	void setExternalPluginExecutable( const QString& ) ;
 
 	bool reUseMountPoint( void ) ;
 	void reUseMountPoint( bool ) ;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="fr_FR">
+<TS version="2.1" language="fr_FR">
 <context>
     <name>DialogMsg</name>
     <message>
@@ -171,24 +171,24 @@ Please Use a Hash Of The KeyFile Through &quot;HMAC+KeyFile&quot; Option.</sourc
 Merci d&apos;utiliser un hashage de la clé de fichier au travers de l&apos;option &quot;HMAC+Fichier de clé&quot;.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1198"/>
-        <location filename="../src/sirikali.cpp" line="1207"/>
+        <location filename="../src/sirikali.cpp" line="1206"/>
+        <location filename="../src/sirikali.cpp" line="1215"/>
         <location filename="../src/utility.cpp" line="257"/>
         <source>ERROR</source>
         <translation>ERREUR</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1199"/>
+        <location filename="../src/sirikali.cpp" line="1207"/>
         <source>Failed To Find %1 Executable</source>
         <translation>Échec de la recherche de l&apos;exécutable %1</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1205"/>
+        <location filename="../src/sirikali.cpp" line="1213"/>
         <source>INFORMATION</source>
         <translation>INFORMATION</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1208"/>
+        <location filename="../src/sirikali.cpp" line="1216"/>
         <source>Failed To Get Volume Properties</source>
         <translation>Echec de l&apos;obtention des propriétés du volume</translation>
     </message>
@@ -405,8 +405,9 @@ p, li { white-space: pre-wrap; }
     <name>fileManager</name>
     <message>
         <location filename="../src/filemanager.ui" line="14"/>
+        <location filename="../src/filemanager.cpp" line="49"/>
         <source>Set File Manager</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Définir le gestionnaire de fichiers</translation>
     </message>
     <message>
         <location filename="../src/filemanager.ui" line="26"/>
@@ -419,8 +420,18 @@ p, li { white-space: pre-wrap; }
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/filemanager.cpp" line="36"/>
+        <location filename="../src/filemanager.cpp" line="40"/>
         <source>Enter Below The Name Of The Application You Want To Be Used To Open Mount Points.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/filemanager.cpp" line="51"/>
+        <source>Set Executable For &quot;ExternalExecutable&quot; Plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/filemanager.cpp" line="53"/>
+        <source>Enter Below The Name Of The External Executable And Its Arguments To Use When Invoking &quot;ExternalExecutable&quot; Plugin.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -947,48 +958,48 @@ p, li { white-space: pre-wrap; }
         <translation>Paramétrer le préfixe du point de montage</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="325"/>
+        <location filename="../src/sirikali.cpp" line="328"/>
         <source>Unmount All</source>
         <translation>Démonter tout</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="333"/>
+        <location filename="../src/sirikali.cpp" line="336"/>
         <source>AutoMount Favorites</source>
         <translation>Montage automatique des Favoris</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="345"/>
+        <location filename="../src/sirikali.cpp" line="348"/>
         <source>AutoMount Favorite Volumes At Start Up</source>
         <translation>Montage automatique des Volumes Favoris au démarrage</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="352"/>
+        <location filename="../src/sirikali.cpp" line="355"/>
         <source>AutoMount Favorite Volumes When Available</source>
         <translation>Montage automatique des Volumes Favoris lorsqu&apos;ils sont disponibles</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="302"/>
-        <location filename="../src/sirikali.cpp" line="374"/>
-        <location filename="../src/sirikali.cpp" line="425"/>
-        <location filename="../src/sirikali.cpp" line="460"/>
+        <location filename="../src/sirikali.cpp" line="377"/>
+        <location filename="../src/sirikali.cpp" line="433"/>
+        <location filename="../src/sirikali.cpp" line="468"/>
         <source>Internal Wallet</source>
         <translation>Trousseau interne</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="376"/>
+        <location filename="../src/sirikali.cpp" line="379"/>
         <source>Change Password</source>
         <translation>Changer le mot de passe</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="384"/>
+        <location filename="../src/sirikali.cpp" line="387"/>
         <source>Key Storage</source>
         <translation>Clé de stockage</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="303"/>
-        <location filename="../src/sirikali.cpp" line="426"/>
-        <location filename="../src/sirikali.cpp" line="462"/>
-        <location filename="../src/sirikali.cpp" line="542"/>
+        <location filename="../src/sirikali.cpp" line="434"/>
+        <location filename="../src/sirikali.cpp" line="470"/>
+        <location filename="../src/sirikali.cpp" line="550"/>
         <source>KDE Wallet</source>
         <translation>Trousseau KDE</translation>
     </message>
@@ -999,102 +1010,102 @@ p, li { white-space: pre-wrap; }
         <translation>%1 n&apos;est pas installé</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="335"/>
+        <location filename="../src/sirikali.cpp" line="338"/>
         <source>AutoMount Key Source</source>
         <translation>Source de la clé du Montage automatique</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="304"/>
-        <location filename="../src/sirikali.cpp" line="427"/>
-        <location filename="../src/sirikali.cpp" line="464"/>
-        <location filename="../src/sirikali.cpp" line="546"/>
+        <location filename="../src/sirikali.cpp" line="435"/>
+        <location filename="../src/sirikali.cpp" line="472"/>
+        <location filename="../src/sirikali.cpp" line="554"/>
         <source>Gnome Wallet</source>
         <translation>Trousseau Gnome</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="366"/>
+        <location filename="../src/sirikali.cpp" line="369"/>
         <source>Show Mount Dialog When AutoMounting</source>
         <translation>Montrer la fenêtre lors du Montage automatique</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="389"/>
+        <location filename="../src/sirikali.cpp" line="392"/>
         <source>Favorites</source>
         <translation>Favoris</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="393"/>
+        <location filename="../src/sirikali.cpp" line="396"/>
         <source>Select Language</source>
         <translation>Sélectionner la langue</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="396"/>
+        <location filename="../src/sirikali.cpp" line="399"/>
         <source>Check For Updates</source>
         <translation>Tester si la version du logiciel est à jour</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="399"/>
+        <location filename="../src/sirikali.cpp" line="402"/>
         <source>About</source>
         <translation>À propos</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="404"/>
+        <location filename="../src/sirikali.cpp" line="407"/>
         <source>Quit</source>
         <translation>Quitter</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="401"/>
+        <location filename="../src/sirikali.cpp" line="404"/>
         <source>Show/Hide</source>
         <translation>Montrer/Cacher</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="580"/>
-        <location filename="../src/sirikali.cpp" line="609"/>
+        <location filename="../src/sirikali.cpp" line="588"/>
+        <location filename="../src/sirikali.cpp" line="617"/>
         <source>Manage Favorites</source>
         <translation>Gérer les favoris</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="584"/>
-        <location filename="../src/sirikali.cpp" line="609"/>
+        <location filename="../src/sirikali.cpp" line="592"/>
+        <location filename="../src/sirikali.cpp" line="617"/>
         <source>Mount All</source>
         <translation>Monter tout</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="787"/>
+        <location filename="../src/sirikali.cpp" line="795"/>
         <source>ERROR: Volume Path Not Given.</source>
         <translation>ERREUR: Chemin du volume non fourni.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="884"/>
+        <location filename="../src/sirikali.cpp" line="892"/>
         <source>ERROR: Key Not Found In The Backend.</source>
         <translation>ERREUR: Clé non trouvée dans le Gestionnaire.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="889"/>
+        <location filename="../src/sirikali.cpp" line="897"/>
         <source>ERROR: Failed To Unlock Requested Backend.</source>
         <translation>ERREUR: Echec du déverrouillage du Gestionnaire sélectionné.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1069"/>
-        <location filename="../src/sirikali.cpp" line="1474"/>
-        <location filename="../src/sirikali.cpp" line="1589"/>
+        <location filename="../src/sirikali.cpp" line="1077"/>
+        <location filename="../src/sirikali.cpp" line="1484"/>
+        <location filename="../src/sirikali.cpp" line="1599"/>
         <source>ERROR</source>
         <translation>ERREUR</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1069"/>
+        <location filename="../src/sirikali.cpp" line="1077"/>
         <source>Failed To Read Volume Properties</source>
         <translation>Echec de la lecture des propriétés du volume</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1028"/>
-        <location filename="../src/sirikali.cpp" line="1074"/>
+        <location filename="../src/sirikali.cpp" line="1036"/>
+        <location filename="../src/sirikali.cpp" line="1082"/>
         <source>INFORMATION</source>
         <translation>INFORMATION</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="305"/>
-        <location filename="../src/sirikali.cpp" line="428"/>
-        <location filename="../src/sirikali.cpp" line="538"/>
+        <location filename="../src/sirikali.cpp" line="436"/>
+        <location filename="../src/sirikali.cpp" line="546"/>
         <source>None</source>
         <translation>Aucun</translation>
     </message>
@@ -1104,82 +1115,92 @@ p, li { white-space: pre-wrap; }
         <translation>Définir le gestionnaire de fichiers</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="328"/>
+        <location filename="../src/sirikali.cpp" line="325"/>
+        <source>Set External Plugin Executable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sirikali.cpp" line="331"/>
         <source>Unmount All And Quit</source>
         <translation>Démonter tout et quitter</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1113"/>
+        <location filename="../src/sirikali.cpp" line="1121"/>
         <source>Block Size: %1</source>
         <translation>Taille des blocs: %1</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1114"/>
+        <location filename="../src/sirikali.cpp" line="1122"/>
         <source>Used Blocks: %2</source>
         <translation>Blocs utilisés: %2</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1115"/>
+        <location filename="../src/sirikali.cpp" line="1123"/>
         <source>Free Blocks: %3</source>
         <translation>Blocs Libres: %3</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1116"/>
+        <location filename="../src/sirikali.cpp" line="1124"/>
         <source>Total Blocks %4</source>
         <translation>Total des Blocs %4</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1117"/>
+        <location filename="../src/sirikali.cpp" line="1125"/>
         <source>Used Space: %5</source>
         <translation>Espace Utilisé: %5</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1118"/>
+        <location filename="../src/sirikali.cpp" line="1126"/>
         <source>Free Space: %6</source>
         <translation>Espace Libre: %6</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1119"/>
+        <location filename="../src/sirikali.cpp" line="1127"/>
         <source>Total Space: %7</source>
         <translation>Espace Total: %7</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1120"/>
+        <location filename="../src/sirikali.cpp" line="1128"/>
         <source>Used %: %8</source>
         <translation>Utilisé %: %8</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1255"/>
+        <location filename="../src/sirikali.cpp" line="1263"/>
         <source>Unmount</source>
         <translation>Démonter</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1253"/>
+        <location filename="../src/sirikali.cpp" line="1261"/>
         <source>Open Folder</source>
         <translation>Ouvrir Répertoire</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1257"/>
+        <location filename="../src/sirikali.cpp" line="1265"/>
         <source>Properties</source>
         <translation>Propriétés</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1290"/>
+        <location filename="../src/sirikali.cpp" line="1298"/>
         <source>Close Menu</source>
         <translation>Fermer le Menu</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1342"/>
+        <location filename="../src/sirikali.cpp" line="1350"/>
         <source>WARNING</source>
         <translation>Attention</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1343"/>
+        <location filename="../src/sirikali.cpp" line="1351"/>
         <source>Could Not Open Mount Point Because &quot;%1&quot; Tool Does Not Appear To Be Working Correctly.</source>
         <translation>Impossible d&apos;ouvrir le point de montage parce que l&apos;outil &quot;%1&quot; ne semble pas fonctionner correctement.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1475"/>
+        <location filename="../src/sirikali.cpp" line="1398"/>
+        <source>&amp;Quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sirikali.cpp" line="1485"/>
         <source>Permission To Access The Volume Was Denied
 Or
 The Volume Is Not Supported</source>
@@ -1188,12 +1209,12 @@ ou
 le volume n&apos;est pas supporté</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1495"/>
+        <location filename="../src/sirikali.cpp" line="1505"/>
         <source>Select An Encrypted Volume Directory</source>
         <translation>Sélectionner un répertoire de volume</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1589"/>
+        <location filename="../src/sirikali.cpp" line="1599"/>
         <source>Failed To Unmount %1 Volume</source>
         <translation>Impossible de démonter le Volume %1</translation>
     </message>

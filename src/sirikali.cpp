@@ -322,6 +322,9 @@ void sirikali::setUpAppMenu()
 	m->addAction( _addAction( false,false,tr( "Set File Manager" ),
 				  "Set File Manager",SLOT( setFileManager() ) ) ) ;
 
+	m->addAction( _addAction( false,false,tr( "Set External Plugin Executable" ),
+				  "Set External Plugin Executable",SLOT( setPluginExecutable() ) ) ) ;
+
 	m->addAction( _addAction( false,false,tr( "Unmount All" ),
 				  "Unmount All",SLOT( unMountAll() ) ) ) ;
 
@@ -415,7 +418,12 @@ void sirikali::setUpAppMenu()
 
 void sirikali::setFileManager()
 {
-	fileManager::instance( this ) ;
+	fileManager::instance( this,m_folderOpener,true ) ;
+}
+
+void sirikali::setPluginExecutable()
+{
+	fileManager::instance( this,m_folderOpener,false ) ;
 }
 
 void sirikali::autoMountKeyStorage()

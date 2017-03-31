@@ -55,6 +55,16 @@
     <string>&amp;Set</string>
    </property>
   </widget>
+  <widget class="QLineEdit" name="lineEdit_2">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>150</y>
+     <width>501</width>
+     <height>29</height>
+    </rect>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

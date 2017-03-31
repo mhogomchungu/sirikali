@@ -1578,9 +1578,20 @@ QString utility::externalPluginExecutable()
 
 		return _settings->value( "ExternalPluginExecutable" ).toString() ;
 	}else{
-		_settings->setValue( "ExternalPluginExecutable",QString( "" ) ) ;
+		utility::setExternalPluginExecutable( QString() ) ;
 
-		return "" ;
+		return _settings->value( "ExternalPluginExecutable" ).toString() ;
+	}
+}
+
+void utility::setExternalPluginExecutable( const QString& e )
+{
+	if( e.isEmpty() ){
+
+		QString s = "gpg --no-tty --yes --no-mdc-warning --no-verbose --passphrase-fd 0 -d" ;
+		_settings->setValue( "ExternalPluginExecutable",s ) ;
+	}else{
+		_settings->setValue( "ExternalPluginExecutable",e ) ;
 	}
 }
 

@@ -50,6 +50,7 @@ public:
 	explicit sirikali( QWidget * parent = 0 ) ;
 	~sirikali() ;
 private slots:
+	void setPluginExecutable( void ) ;
 	void setFileManager( void ) ;
 	void hideWindow( void ) ;
 	void setUpApp( bool,const QString& ) ;
