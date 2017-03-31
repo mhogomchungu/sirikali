@@ -1387,6 +1387,8 @@ void sirikali::setUpShortCuts()
 
 		e->setMenuRole( QAction::QuitRole ) ;
 
+		e->setText( tr( "&Quit" ) ) ;
+
 		return e ;
 	}() ) ;
 }
