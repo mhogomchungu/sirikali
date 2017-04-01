@@ -72,7 +72,11 @@ static void _run_command_on_mount( const siritask::options& opt,const QString& a
 
 		exe = QString( "%1 %2 %3 %4" ).arg( exe,a,b,app ) ;
 
-		utility::Task::exec( exe,env ) ;
+		QProcess e ;
+
+		e.setEnvironment( env.toStringList() ) ;
+
+		e.startDetached( exe ) ;
 	}
 }
 

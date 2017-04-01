@@ -69,10 +69,11 @@ sirikali::sirikali( QWidget * parent ) :
 }
 
 /*
- * Below two should be the only function that closes the application
+ * Below 3 should be the only function that closes the application
  */
 void sirikali::closeApplication()
 {
+	utility::quitHelper() ;
 	this->hide() ;
 	m_mountInfo.stop()() ;
 }
@@ -86,7 +87,14 @@ void sirikali::closeApplication( int s,const QString& e )
 		utility::debug() << e ;
 	}
 
-	this->closeApplication() ;
+	this->hide() ;
+	m_mountInfo.stop()() ;
+}
+
+void sirikali::closeApplication_1( int s )
+{
+	Q_UNUSED( s ) ;
+	m_mountInfo.stop()() ;
 }
 
 void sirikali::setUpApp( bool start,const QString& volume )
@@ -716,7 +724,7 @@ void sirikali::start()
 												     e,
 												     "setUpApp",
 												     "closeApplication" ) ; },
-				       [ this ]( int s ){ this->closeApplication( s ) ;	},
+				       [ this ]( int s ){ this->closeApplication_1( s ) ; },
 				       [ this ]( const QString& e ){ this->raiseWindow( e ) ; } ) ;
 	}
 }
@@ -1709,8 +1717,6 @@ void sirikali::enableAll_1()
 
 sirikali::~sirikali()
 {
-	utility::quitHelper() ;
-
 	if( m_ui ){
 
 		auto q = m_ui->tableWidget ;
