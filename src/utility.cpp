@@ -1062,14 +1062,28 @@ QString utility::homeConfigPath( const QString& e )
 	return utility::homePath() + "/.SiriKali/" + e ;
 }
 
-bool utility::pathIsReadable( const QString& path )
+bool utility::pathIsReadable( const QString& path,bool isFolder )
 {
-	return QFileInfo( path ).isReadable() ;
+	QFileInfo s( path ) ;
+
+	if( isFolder ){
+
+		return s.isReadable() && s.isDir() ;
+	}else{
+		return s.isReadable() && s.isFile() ;
+	}
 }
 
-bool utility::pathIsWritable( const QString& path )
+bool utility::pathIsWritable( const QString& path,bool isFolder )
 {
-	return QFileInfo( path ).isWritable() ;
+	QFileInfo s( path ) ;
+
+	if( isFolder ){
+
+		return s.isWritable() && s.isDir() ;
+	}else{
+		return s.isWritable() && s.isFile() ;
+	}
 }
 
 bool utility::pathExists( const QString& path )

@@ -717,6 +717,13 @@ void sirikali::start()
 
 		utility::createFolder( s ) ;
 
+		if( !utility::pathIsWritable( s ) ){
+
+			DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "\"%1\" Folder Must Be Writable" ).arg( s ) ) ;
+
+			return this->closeApplication() ;
+		}
+
 		oneinstance::instance( this,
 				       s + "/SiriKali.socket",
 				       utility::cmdArgumentValue( l,"-d" ),

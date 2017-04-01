@@ -330,8 +330,8 @@ namespace utility
 	QString mountPathPostFix( const QString& path ) ;
 	QString mountPathPostFix( const QString& prefix,const QString& path ) ;
 
-	bool pathIsReadable( const QString& ) ;
-	bool pathIsWritable( const QString& ) ;
+	bool pathIsReadable( const QString&,bool isFolder = true ) ;
+	bool pathIsWritable( const QString&,bool isFolder = true ) ;
 
 	bool autoOpenFolderOnMount() ;
 	void autoOpenFolderOnMount( bool ) ;
