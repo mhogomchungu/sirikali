@@ -1,0 +1,51 @@
+
+Below are instructions on how to build SiriKali on OSX.
+
+1.  Clone git@github.com:mhogomchungu/sirikali.git. When you run git the first time on macOS you will be
+    prompted to install developer tools (which includes git) and be guided through it.
+2.  Install homebrew (https://brew.sh/)
+3.  Install dependencies with brew:
+3.1 brew install libgcrypt
+3.2 brew install qt5
+3.3 brew install pkg-config
+
+    # For encfs support, you also need:
+4.  brew cask install osxfuse
+5.  brew install homebrew/fuse/encfs
+
+    # Inside the directory of the cloned repository
+6.  mkdir build
+7.  cd build
+    #You need to specify the path to the qt5 you installed through homebrew:
+8.  export CMAKE_PREFIX_PATH=/usr/local/opt/qt5/
+    #Then you'll be able to compile Sirikali to $HOME/sirikali
+9.  cmake -DCMAKE_INSTALL_PREFIX=$HOME/sirikali -DQT5=true -DCMAKE_BUILD_TYPE=RELEASE . ..
+10. make
+11. make install
+12. "install" SiriKali by just dragging it (in the Finder) from the directory you
+    compiled it in to the "Application" directory.
+
+*****************************************************************************************************
+
+available build options:
+
+-DCMAKE_INSTALL_PREFIX=$HOME/sirikali
+This option tells the build process to install project's files in "$HOME/sirikali".
+
+This option tells the build process to build the project in release mode.This mode is most suitable for non developers.
+
+-DQT5=true
+This option tells the build process to build GUI components using Qt5.Set the option to "false" if you want to build using Qt4.
+
+-DNOSECRETSUPPORT=false
+This option tells the build process to add gnome's libsecret secure storage of passwords.Set this option to "true" if
+you do not want libsecret's support.
+
+-DINTERNAL_LXQT_WALLET=false
+This project depends on lxqt_wallet project and it ships with an internal copy of the project. Set this option to "true"
+if you want SiriKali to unconditionally use the internal copy of the project or to "false" to make the build process
+use a system installed version if found.
+
+Build errors/test failures/feature requests/recommendations can be reported at: https://github.com/mhogomchungu/SiriKali/issues
+or using my private email address at: mhogomchungu@gmail.com
+
