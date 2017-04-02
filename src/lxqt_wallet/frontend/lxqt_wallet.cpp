@@ -42,6 +42,10 @@
 #include "lxqt_libsecret.h"
 #endif
 
+//#ifdef __APPLE__
+#include "lxqt_osx_keychain.h"
+//#endif
+
 LXQt::Wallet::Wallet::Wallet()
 {
 }
@@ -60,19 +64,20 @@ LXQt::Wallet::Wallet * LXQt::Wallet::getWalletBackend( LXQt::Wallet::BackEnd bk 
 	if( bk == LXQt::Wallet::BackEnd::kwallet ){
 		#if HAS_KWALLET_SUPPORT
 			return new LXQt::Wallet::kwallet() ;
-		#else
-			return nullptr ;
 		#endif
 	}
 
 	if( bk == LXQt::Wallet::BackEnd::libsecret ){
 		#if HAS_SECRET_SUPPORT
 			return new LXQt::Wallet::libsecret() ;
-		#else
-			return nullptr ;
 		#endif
 	}
 
+	if( bk == LXQt::Wallet::BackEnd::osxkeychain ){
+		#ifdef __APPLE__
+			return new LXQt::Wallet::osxKeyChain() ;
+		#endif
+	}
 	return nullptr ;
 }
 
@@ -91,6 +96,13 @@ bool LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd bk )
 	if( bk == LXQt::Wallet::BackEnd::libsecret ){
 
 		return HAS_SECRET_SUPPORT ;
+	}
+
+	if( bk == LXQt::Wallet::BackEnd::osxkeychain ){
+
+		#ifdef __APPLE__
+		return true ;
+		#endif
 	}
 
 	return false ;
@@ -161,6 +173,11 @@ bool LXQt::Wallet::walletExists( LXQt::Wallet::BackEnd bk,
 	}
 
 	if( bk == LXQt::Wallet::BackEnd::libsecret ){
+
+		return false ;
+	}
+
+	if( bk == LXQt::Wallet::BackEnd::osxkeychain ){
 
 		return false ;
 	}
