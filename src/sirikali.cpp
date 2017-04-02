@@ -1402,11 +1402,11 @@ void sirikali::setUpShortCuts()
 
 	this->addAction( _addAction( { Qt::Key_R },SLOT( pbUpdate() ) ) ) ;
 
-	this->addAction( _addAction( { Qt::CTRL + Qt::Key::Key_Q },SLOT( closeApplication() ) ) ) ;
+	this->addAction( _addAction( { Qt::CTRL + Qt::Key::Key_W },SLOT( hideWindow() ) ) ) ;
 
 	this->addAction( [ & ](){
 
-		auto e = _addAction( { Qt::CTRL + Qt::Key::Key_W },SLOT( hideWindow() ) ) ;
+		auto e = _addAction( { Qt::CTRL + Qt::Key::Key_Q },SLOT( closeApplication() ) ) ;
 
 		e->setMenuRole( QAction::QuitRole ) ;
 
@@ -1414,6 +1414,8 @@ void sirikali::setUpShortCuts()
 
 		return e ;
 	}() ) ;
+
+
 }
 
 void sirikali::setUpFont()
