@@ -182,14 +182,16 @@ QByteArray LXQt::Wallet::osxKeyChain::readValue( const QString& key )
 	auto e = reinterpret_cast< const char * >( data ) ;
 	auto s = static_cast< int >( len ) ;
 
-	SecKeychainItemFreeContent( 0,data ) ;
+	auto r = QByteArray( e,s ) ;
+
+	SecKeychainItemFreeContent( nullptr,data ) ;
 
 	if( ref ){
 
 		CFRelease( ref ) ;
 	}
 
-	return QByteArray( e,s ) ;
+	return r ;
 }
 
 QVector< std::pair< QString,QByteArray > > LXQt::Wallet::osxKeyChain::readAllKeyValues()
