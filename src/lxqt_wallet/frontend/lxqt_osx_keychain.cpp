@@ -52,7 +52,7 @@ void LXQt::Wallet::osxKeyChain::open( const QString& walletName,
 				      const QString& password,
 				      const QString& displayApplicationName )
 {
-	m_walletName = "lxqt.Wallet." + walletName + "." + applicationName ;
+	m_walletName = "lxqt.Wallet." + walletName.toLatin1() + "." + applicationName.toLatin1() ;
 
 	function( true ) ;
 
@@ -76,7 +76,7 @@ bool LXQt::Wallet::osxKeyChain::open( const QString& walletName,
 				      const QString& password,
 				      const QString& displayApplicationName )
 {
-	m_walletName = "lxqt.Wallet." + walletName + "." + applicationName ;
+	m_walletName = "lxqt.Wallet." + walletName.toLatin1() + "." + applicationName.toLatin1() ;
 
 	Q_UNUSED( widget ) ;
 	Q_UNUSED( password ) ;
@@ -85,9 +85,33 @@ bool LXQt::Wallet::osxKeyChain::open( const QString& walletName,
 	return true ;
 }
 
-bool LXQt::Wallet::osxKeyChain::addKey( const QString& key,const QByteArray& value )
+static void _delete_key( const QString& key )
 {
+	void * data = nullptr ;
+	quint32 len = 0;
+	SecKeychainItemRef ref = 0 ;
 
+	auto status = SecKeychainFindGenericPassword( nullptr,
+						      m_walletName.size(),
+						      m_walletName.constData(),
+						      key.size(),
+						      key.toLatin1().constData(),
+						      &len,
+						      &data,
+						      ref ) ;
+	if( status == noErr ){
+
+		SecKeychainItemDelete( ref ) ;
+	}
+
+	if( ref ){
+
+		CFRelease( ref ) ;
+	}
+}
+
+static void _add_key( const QString& key,const QByteArray& value )
+{
 	auto status = SecKeychainAddGenericPassword( nullptr,
 						     m_walletName.size(),
 						     m_walletName.constData(),
@@ -97,24 +121,38 @@ bool LXQt::Wallet::osxKeyChain::addKey( const QString& key,const QByteArray& val
 						     value.constData(),
 						     nullptr ) ;
 
-	if( status == noErr ){
+	return status == noErr ;
+}
 
-		QString s = WALLET_KEYS ;
+static void _update_wallet_keys( const QStringList& s )
+{
+	_delete_key( WALLET_KEYS ) ;
+	_add_key( WALLET_KEYS,e.join( "\n" ) ) ;
+}
 
-		QString keys = this->readValue( s ) ;
+void LXQt::Wallet::osxKeyChain::deleteKey( const QString& key )
+{
+	_delete_key( key ) ;
 
-		keys += "\n" + key ;
+	QString s = this->readValue( WALLET_KEYS ) ;
 
-		this->deleteKey( s ) ;
+	auto e = s.split( '\n',QString::SkipEmptyParts ) ;
 
-		SecKeychainAddGenericPassword( nullptr,
-					       m_walletName.size(),
-					       m_walletName.constData(),
-					       s.size(),
-					       s.toLatin1().constData(),
-					       keys.size(),
-					       keys.toLatin1().constData(),
-					       nullptr ) ;
+	e.removeOne( key ) ;
+
+	_update_wallet_keys( e ) ;
+}
+
+bool LXQt::Wallet::osxKeyChain::addKey( const QString& key,const QByteArray& value )
+{	
+	if( _add_key( key,value ) ){
+
+		QString s = this->readValue( WALLET_KEYS ) ;
+
+		s += "\n" + key ;
+
+		_update_wallet_keys( s.split( "\n",QString::SkipEmptyParts ) ) ;
+
 		return true ;
 	}else{
 		return false ;
@@ -123,11 +161,12 @@ bool LXQt::Wallet::osxKeyChain::addKey( const QString& key,const QByteArray& val
 
 bool LXQt::Wallet::osxKeyChain::opened()
 {
-	return false ;
+	return true ;
 }
 
 QByteArray LXQt::Wallet::osxKeyChain::readValue( const QString& key )
 {
+	SecKeychainItemRef ref = 0 ;
 	void * data = nullptr ;
 	quint32 len = 0 ;
 
@@ -138,12 +177,17 @@ QByteArray LXQt::Wallet::osxKeyChain::readValue( const QString& key )
 					key.toLatin1().constData(),
 					&len,
 					&data,
-					0 ) ;
+					&ref ) ;
 
 	auto e = reinterpret_cast< const char * >( data ) ;
 	auto s = static_cast< int >( len ) ;
 
 	SecKeychainItemFreeContent( 0,data ) ;
+
+	if( ref ){
+
+		CFRelease( ref ) ;
+	}
 
 	return QByteArray( e,s ) ;
 }
@@ -185,42 +229,6 @@ QString LXQt::Wallet::osxKeyChain::localDefaultWalletName()
 QString LXQt::Wallet::osxKeyChain::networkDefaultWalletName()
 {
 	return QString() ;
-}
-
-void LXQt::Wallet::osxKeyChain::deleteKey( const QString& key )
-{
-	void * data = nullptr ;
-	quint32 len = 0;
-	SecKeychainItemRef ref = 0 ;
-
-	auto status = SecKeychainFindGenericPassword(
-
-		     NULL,                            // default keychain
-
-		     m_walletName.size(),             // length of service name
-
-		     m_walletName.constData(),        // service name
-
-		     key.size(),                      // length of account name
-
-		     key.toLatin1().constData(),      // account name
-
-		     &len,                            // length of password
-
-		     &data,                           // pointer to password data
-
-		     ref                              // the item reference
-	) ;
-
-	if( status == noErr ){
-
-		SecKeychainItemDelete( ref ) ;
-	}
-
-	if( ref ){
-
-		CFRelease( ref ) ;
-	}
 }
 
 void LXQt::Wallet::osxKeyChain::closeWallet( bool e )
