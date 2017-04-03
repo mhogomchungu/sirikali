@@ -52,7 +52,7 @@ void LXQt::Wallet::osxKeyChain::open( const QString& walletName,
 				      const QString& password,
 				      const QString& displayApplicationName )
 {
-	m_walletName = QByteArray( "lxqt.Wallet." ) + walletName.toLatin1() + "." + applicationName.toLatin1() ;
+	m_walletName = "lxqt.Wallet." + walletName.toLatin1() + "." + applicationName.toLatin1() ;
 
 	function( true ) ;
 
@@ -76,7 +76,7 @@ bool LXQt::Wallet::osxKeyChain::open( const QString& walletName,
 				      const QString& password,
 				      const QString& displayApplicationName )
 {
-	m_walletName = QByteArray( "lxqt.Wallet." ) + walletName.toLatin1() + "." + applicationName.toLatin1() ;
+	m_walletName = "lxqt.Wallet." + walletName.toLatin1() + "." + applicationName.toLatin1() ;
 
 	Q_UNUSED( widget ) ;
 	Q_UNUSED( password ) ;
@@ -85,15 +85,15 @@ bool LXQt::Wallet::osxKeyChain::open( const QString& walletName,
 	return true ;
 }
 
-static void _delete_key( const QString& key )
+static void _delete_key( const QString& key,const QByteArray& walletName )
 {
 	void * data = nullptr ;
 	quint32 len = 0;
 	SecKeychainItemRef ref = 0 ;
 
 	auto status = SecKeychainFindGenericPassword( nullptr,
-						      m_walletName.size(),
-						      m_walletName.constData(),
+						      walletName.size(),
+						      walletName.constData(),
 						      key.size(),
 						      key.toLatin1().constData(),
 						      &len,
@@ -110,11 +110,11 @@ static void _delete_key( const QString& key )
 	}
 }
 
-static void _add_key( const QString& key,const QByteArray& value )
+static bool _add_key( const QString& key,const QByteArray& value,const QByteArray& walletName )
 {
 	auto status = SecKeychainAddGenericPassword( nullptr,
-						     m_walletName.size(),
-						     m_walletName.constData(),
+						     walletName.size(),
+						     walletName.constData(),
 						     key.size(),
 						     key.toLatin1().constData(),
 						     value.size(),
@@ -124,15 +124,15 @@ static void _add_key( const QString& key,const QByteArray& value )
 	return status == noErr ;
 }
 
-static void _update_wallet_keys( const QStringList& s )
+static void _update_wallet_keys( const QStringList& s,const QByteArray& walletName )
 {
-	_delete_key( WALLET_KEYS ) ;
-	_add_key( WALLET_KEYS,e.join( "\n" ) ) ;
+	_delete_key( WALLET_KEYS,walletName ) ;
+	_add_key( WALLET_KEYS,s.join( "\n" ).toLatin1(),walletName ) ;
 }
 
 void LXQt::Wallet::osxKeyChain::deleteKey( const QString& key )
 {
-	_delete_key( key ) ;
+	_delete_key( key,m_walletName ) ;
 
 	QString s = this->readValue( WALLET_KEYS ) ;
 
@@ -140,18 +140,18 @@ void LXQt::Wallet::osxKeyChain::deleteKey( const QString& key )
 
 	e.removeOne( key ) ;
 
-	_update_wallet_keys( e ) ;
+	_update_wallet_keys( e,m_walletName ) ;
 }
 
 bool LXQt::Wallet::osxKeyChain::addKey( const QString& key,const QByteArray& value )
 {	
-	if( _add_key( key,value ) ){
+	if( _add_key( key,value,m_walletName ) ){
 
 		QString s = this->readValue( WALLET_KEYS ) ;
 
 		s += "\n" + key ;
 
-		_update_wallet_keys( s.split( "\n",QString::SkipEmptyParts ) ) ;
+		_update_wallet_keys( s.split( "\n",QString::SkipEmptyParts ),m_walletName ) ;
 
 		return true ;
 	}else{
