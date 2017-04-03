@@ -43,7 +43,7 @@
 
 #include <Security/Security.h>
 
-static const char * WALLET_KEYS = "lxqt.Wallet.WalletKeys" ;
+static const char * WALLET_KEYS = "LXQt.Wallet.WalletKeys" ;
 
 void LXQt::Wallet::osxKeyChain::open( const QString& walletName,
 				      const QString& applicationName,
@@ -52,11 +52,10 @@ void LXQt::Wallet::osxKeyChain::open( const QString& walletName,
 				      const QString& password,
 				      const QString& displayApplicationName )
 {
-	m_walletName = "lxqt.Wallet." + walletName.toLatin1() + "." + applicationName.toLatin1() ;
+	m_walletName = "LXQt.Wallet." + walletName.toLatin1() + "." + applicationName.toLatin1() ;
 
 	function( true ) ;
 
-	Q_UNUSED( function ) ;
 	Q_UNUSED( widget ) ;
 	Q_UNUSED( password ) ;
 	Q_UNUSED( displayApplicationName ) ;
@@ -76,7 +75,7 @@ bool LXQt::Wallet::osxKeyChain::open( const QString& walletName,
 				      const QString& password,
 				      const QString& displayApplicationName )
 {
-	m_walletName = "lxqt.Wallet." + walletName.toLatin1() + "." + applicationName.toLatin1() ;
+	m_walletName = "LXQt.Wallet." + walletName.toLatin1() + "." + applicationName.toLatin1() ;
 
 	Q_UNUSED( widget ) ;
 	Q_UNUSED( password ) ;
@@ -85,28 +84,47 @@ bool LXQt::Wallet::osxKeyChain::open( const QString& walletName,
 	return true ;
 }
 
-static void _delete_key( const QString& key,const QByteArray& walletName )
+struct passwordData
 {
+	~passwordData()
+	{
+		if( data ){
+
+			SecKeychainItemFreeContent( nullptr,data ) ;
+		}
+		if( ref ){
+
+			CFRelease( ref ) ;
+		}
+	}
 	void * data = nullptr ;
-	quint32 len = 0;
+	quint32 len = 0 ;
 	SecKeychainItemRef ref = 0 ;
 
-	auto status = SecKeychainFindGenericPassword( nullptr,
-						      walletName.size(),
-						      walletName.constData(),
-						      key.size(),
-						      key.toLatin1().constData(),
-						      &len,
-						      &data,
-						      &ref ) ;
-	if( status == noErr ){
+};
 
-		SecKeychainItemDelete( ref ) ;
-	}
+static passwordData _find_password( const QString& key,const QByteArray& walletName )
+{
+	passwordData s ;
 
-	if( ref ){
+	SecKeychainFindGenericPassword( nullptr,
+					walletName.size(),
+					walletName.constData(),
+					key.size(),
+					key.toLatin1().constData(),
+					&s.len,
+					&s.data,
+					&s.ref ) ;
+	return s ;
+}
 
-		CFRelease( ref ) ;
+static void _delete_key( const QString& key,const QByteArray& walletName )
+{
+	auto s = _find_password( key,walletName ) ;
+
+	if( s.ref ){
+
+		SecKeychainItemDelete( s.ref ) ;
 	}
 }
 
@@ -124,10 +142,19 @@ static bool _add_key( const QString& key,const QByteArray& value,const QByteArra
 	return status == noErr ;
 }
 
-static void _update_wallet_keys( const QStringList& s,const QByteArray& walletName )
+static void _update_wallet_keys( const QStringList& e,const QByteArray& walletName )
 {
-	_delete_key( WALLET_KEYS,walletName ) ;
-	_add_key( WALLET_KEYS,s.join( "\n" ).toLatin1(),walletName ) ;
+	auto s = _find_password( WALLET_KEYS,walletName ) ;
+
+	auto z = e.join( "\n" ).toLatin1() ;
+
+	if( s.ref ){
+
+		SecKeychainItemModifyContent( s.ref,
+					      nullptr,
+					      z.size(),
+					      z.constData() ) ;
+	}
 }
 
 void LXQt::Wallet::osxKeyChain::deleteKey( const QString& key )
@@ -166,32 +193,12 @@ bool LXQt::Wallet::osxKeyChain::opened()
 
 QByteArray LXQt::Wallet::osxKeyChain::readValue( const QString& key )
 {
-	SecKeychainItemRef ref = 0 ;
-	void * data = nullptr ;
-	quint32 len = 0 ;
+	auto s = _find_password( key,m_walletName ) ;
 
-	SecKeychainFindGenericPassword( nullptr,
-					m_walletName.size(),
-					m_walletName.constData(),
-					key.size(),
-					key.toLatin1().constData(),
-					&len,
-					&data,
-					&ref ) ;
+	auto e = reinterpret_cast< const char * >( s.data ) ;
+	auto z = static_cast< int >( s.len ) ;
 
-	auto e = reinterpret_cast< const char * >( data ) ;
-	auto s = static_cast< int >( len ) ;
-
-	auto r = QByteArray( e,s ) ;
-
-	SecKeychainItemFreeContent( nullptr,data ) ;
-
-	if( ref ){
-
-		CFRelease( ref ) ;
-	}
-
-	return r ;
+	return QByteArray( e,z ) ;
 }
 
 QVector< std::pair< QString,QByteArray > > LXQt::Wallet::osxKeyChain::readAllKeyValues()
