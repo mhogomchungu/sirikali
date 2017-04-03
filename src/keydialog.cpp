@@ -50,6 +50,11 @@ static QString _gnomeWallet()
 	return QObject::tr( "Gnome Wallet" ) ;
 }
 
+static QString _OSXKeyChain()
+{
+	return QObject::tr( "OSX KeyChain" ) ;
+}
+
 keyDialog::keyDialog( QWidget * parent,
 		      QTableWidget * table,
 		      secrets& s,
@@ -218,6 +223,11 @@ keyDialog::keyDialog( QWidget * parent,
 	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::kwallet ) ){
 
 		m_ui->cbKeyType->addItem( _kwallet() ) ;
+	}
+
+	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::osxkeychain ) ){
+
+		m_ui->cbKeyType->addItem( _OSXKeyChain() ) ;
 	}
 
 	if( m_create ){
@@ -546,16 +556,28 @@ void keyDialog::pbOpen()
 		auto kde      = wallet == _kwallet() ;
 		auto gnome    = wallet == _gnomeWallet() ;
 		auto internal = wallet == _internalWallet() ;
+		auto osx      = wallet == _OSXKeyChain() ;
 
-		if( kde || gnome ){
+		if( kde || gnome || osx ){
 
 			w = utility::getKey( m_path,m_secrets.walletBk( [ & ](){
 
-				if( kde ){
+				if( wallet == _kwallet() ){
 
 					return LXQt::Wallet::BackEnd::kwallet ;
-				}else{
+
+				}else if( wallet == _gnomeWallet() ){
+
 					return LXQt::Wallet::BackEnd::libsecret ;
+
+				}else if( wallet == _OSXKeyChain() ){
+
+					return LXQt::Wallet::BackEnd::osxkeychain ;
+				}else{
+					/*
+					 * We should not get here.
+					 */
+					return LXQt::Wallet::BackEnd::internal ;
 				}
 
 			}() ).bk() ) ;

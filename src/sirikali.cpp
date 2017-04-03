@@ -1,4 +1,4 @@
-﻿/*
+/*
  *
  *  Copyright (c) 2012-2015
  *  name : Francis Banyikwa
@@ -307,9 +307,13 @@ void sirikali::setUpAppMenu()
 			q->addAction( ac ) ;
 		} ;
 
+
 		_addOption( tr( "Internal Wallet" ),"Internal Wallet",bk::internal ) ;
 		_addOption( tr( "KDE Wallet" ),"KDE Wallet",bk::kwallet ) ;
 		_addOption( tr( "Gnome Wallet" ),"Gnome Wallet",bk::libsecret ) ;
+#if __APPLE__
+		_addOption( tr( "OSX KeyChain" ),"OSX KeyChain",bk::osxkeychain ) ;
+#endif
 		_addOption( tr( "None" ),"None",utility::walletBackEnd() ) ;
 
 		return q ;
@@ -562,6 +566,10 @@ void sirikali::keyManagerClicked( QAction * ac )
 			}else if( e == tr( "Gnome Wallet" ).remove( '&' ) ){
 
 				return LXQt::Wallet::BackEnd::libsecret ;
+
+			}else if( e == tr( "OSX KeyChain" ).remove( '&' ) ){
+
+				return LXQt::Wallet::BackEnd::osxkeychain ;
 			}else{
 				return LXQt::Wallet::BackEnd::internal ;
 			}

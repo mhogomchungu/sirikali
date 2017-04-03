@@ -20,6 +20,12 @@ add_definitions(-I${PROJECT_BINARY_DIR})
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 
+if( APPLE AND OSX_KEYCHAIN )
+	file( WRITE ${PROJECT_BINARY_DIR}/osx_keychain.h "#define OSX_KEYCHAIN 1" )
+else()
+	file( WRITE ${PROJECT_BINARY_DIR}/osx_keychain.h "#define OSX_KEYCHAIN 0" )
+endif()
+
 if(QT5)
 	find_package(Qt5Widgets REQUIRED)
 	find_package(Qt5Core REQUIRED)

@@ -210,7 +210,7 @@ if( APPLE )
 	SET( MACOSX_BUNDLE_GUI_IDENTIFIER "com.crypto.SiriKali" )
 	SET( MACOSX_BUNDLE_SHORT_VERSION_STRING "${PGR_VERSION}" )
 	SET( MACOSX_BUNDLE_LONG_VERSION_STRING "${PGR_VERSION}" )
-	SET( MACOSX_BUNDLE_ICON_FILE icons/256x256/sirikali.icns )
+	SET( MACOSX_BUNDLE_ICON_FILE sirikali.icns )
 	SET_SOURCE_FILES_PROPERTIES( icons/256x256/sirikali.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
 	SET_SOURCE_FILES_PROPERTIES( translations/en_US.qm PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
 	SET_SOURCE_FILES_PROPERTIES( translations/fr_FR.qm PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
@@ -242,7 +242,15 @@ if( QT5 )
 
 	link_directories( ${GCRYPT_LIBRARY_PATH} )
 
-	TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet -L${GCRYPT_LIBRARY_PATH})
+	if( APPLE AND OSX_KEYCHAIN )
+		find_library( COREFOUNDATION_LIBRARY CoreFoundation REQUIRED )
+
+		find_library( SECURITY_LIBRARY Security REQUIRED )
+
+		TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet -L${GCRYPT_LIBRARY_PATH} ${COREFOUNDATION_LIBRARY} ${SECURITY_LIBRARY} )
+	else()
+		TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet -L${GCRYPT_LIBRARY_PATH})
+	endif()
 
 	message( STATUS "---------------------------------------------------------------------------" )
 	message( STATUS "Building GUI components using Qt5" )
@@ -272,7 +280,16 @@ else()
 	else()
 		add_executable( sirikali ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
 	endif()
-	TARGET_LINK_LIBRARIES( sirikali -lQtCore -lQtGui -lQtNetwork ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet -L${GCRYPT_LIBRARY_PATH} )
+
+	if( APPLE AND OSX_KEYCHAIN )
+		find_library( COREFOUNDATION_LIBRARY CoreFoundation REQUIRED )
+
+		find_library( SECURITY_LIBRARY Security REQUIRED )
+
+		TARGET_LINK_LIBRARIES( sirikali -lQtCore -lQtGui -lQtNetwork ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet -L${GCRYPT_LIBRARY_PATH} ${COREFOUNDATION_LIBRARY} ${SECURITY_LIBRARY} )
+	else()
+		TARGET_LINK_LIBRARIES( sirikali -lQtCore -lQtGui -lQtNetwork ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet -L${GCRYPT_LIBRARY_PATH} )
+	endif()
 
 	message( STATUS "---------------------------------------------------------------------------" )
 	message( STATUS "Building GUI components using Qt4" )
@@ -288,7 +305,6 @@ else()
 endif()
 
 file( APPEND ${PROJECT_BINARY_DIR}/siriPolkit.h "\n#define siriPolkitPath \"${CMAKE_INSTALL_PREFIX}/bin/sirikali.pkexec\"" )
-
 
 if( APPLE )
 

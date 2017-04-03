@@ -42,9 +42,8 @@
 #include "lxqt_libsecret.h"
 #endif
 
-//#ifdef __APPLE__
 #include "lxqt_osx_keychain.h"
-//#endif
+#include "osx_keychain.h"
 
 LXQt::Wallet::Wallet::Wallet()
 {
@@ -74,7 +73,7 @@ LXQt::Wallet::Wallet * LXQt::Wallet::getWalletBackend( LXQt::Wallet::BackEnd bk 
 	}
 
 	if( bk == LXQt::Wallet::BackEnd::osxkeychain ){
-		#ifdef __APPLE__
+		#if OSX_KEYCHAIN
 			return new LXQt::Wallet::osxKeyChain() ;
 		#endif
 	}
@@ -100,9 +99,7 @@ bool LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd bk )
 
 	if( bk == LXQt::Wallet::BackEnd::osxkeychain ){
 
-		#ifdef __APPLE__
-		return true ;
-		#endif
+		return OSX_KEYCHAIN ;
 	}
 
 	return false ;

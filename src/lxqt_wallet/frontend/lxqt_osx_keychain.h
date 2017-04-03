@@ -91,6 +91,7 @@ public:
 	LXQt::Wallet::BackEnd backEnd( void ) ;
 	QObject * qObject( void ) ;
 private:
+	QByteArray m_walletName ;
 };
 
 }
