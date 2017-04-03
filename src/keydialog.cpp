@@ -1031,6 +1031,10 @@ void keyDialog::cbActicated( QString e )
 		}else if( e == _internalWallet() ){
 
 			m_ui->lineEditKey->setText( _internalWallet() ) ;
+
+		}else if( e == _OSXKeyChain() ){
+
+			m_ui->lineEditKey->setText( _OSXKeyChain() ) ;
 		}
 
 		_showVisibleKeyOption( false ) ;
