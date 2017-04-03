@@ -98,7 +98,7 @@ static void _delete_key( const QString& key,const QByteArray& walletName )
 						      key.toLatin1().constData(),
 						      &len,
 						      &data,
-						      ref ) ;
+						      &ref ) ;
 	if( status == noErr ){
 
 		SecKeychainItemDelete( ref ) ;
