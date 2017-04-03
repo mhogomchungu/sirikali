@@ -234,7 +234,11 @@ if( QT5 )
 	INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 	INCLUDE_DIRECTORIES( ${GCRYPT_INCLUDE_PATH} )
 
-	add_executable( sirikali MACOSX_BUNDLE ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
+	if( APPLE )
+		add_executable( sirikali MACOSX_BUNDLE ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} ${PROJECT_SOURCE_DIR}/icons/256x256/sirikali.icns )
+	else()
+		add_executable( sirikali ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
+	endif()
 
 	link_directories( ${GCRYPT_LIBRARY_PATH} )
 
@@ -263,8 +267,11 @@ else()
 
 	link_directories( ${GCRYPT_LIBRARY_PATH} )
 
-	add_executable( sirikali MACOSX_BUNDLE ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
-
+	if( APPLE )
+		add_executable( sirikali MACOSX_BUNDLE ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} ${PROJECT_SOURCE_DIR}/icons/256x256/sirikali.icns )
+	else()
+		add_executable( sirikali ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
+	endif()
 	TARGET_LINK_LIBRARIES( sirikali -lQtCore -lQtGui -lQtNetwork ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet -L${GCRYPT_LIBRARY_PATH} )
 
 	message( STATUS "---------------------------------------------------------------------------" )
@@ -292,6 +299,11 @@ SET( APPS "\${CMAKE_INSTALL_PREFIX}/sirikali.app" )
 set_target_properties( sirikali PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/MacOSXBundleInfo.plist.in" )
 
 install( TARGETS sirikali BUNDLE DESTINATION . COMPONENT Runtime RUNTIME DESTINATION bin COMPONENT Runtime )
+
+file( COPY icons/256x256/sirikali.icns DESTINATION "sirikali.app/Contents/Resources/" )
+file( COPY translations/fr_FR.qm DESTINATION "sirikali.app/Contents/Resources/" )
+file( COPY translations/en_US.qm DESTINATION "sirikali.app/Contents/Resources/" )
+file( COPY changelog DESTINATION "sirikali.app/Contents/Resources/" )
 
 #install( DIRECTORY "${QT_PLUGINS_DIR}/imageformats" DESTINATION ${plugin_dest_dir}/plugins COMPONENT Runtime )
 
