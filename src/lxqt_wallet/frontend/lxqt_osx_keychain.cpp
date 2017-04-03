@@ -43,7 +43,7 @@
 
 #include <Security/Security.h>
 
-static char * WALLET_KEYS = "lxqt.Wallet.WalletKeys" ;
+static const char * WALLET_KEYS = "lxqt.Wallet.WalletKeys" ;
 
 void LXQt::Wallet::osxKeyChain::open( const QString& walletName,
 				      const QString& applicationName,
@@ -52,7 +52,7 @@ void LXQt::Wallet::osxKeyChain::open( const QString& walletName,
 				      const QString& password,
 				      const QString& displayApplicationName )
 {
-	m_walletName = "lxqt.Wallet." + walletName.toLatin1() + "." + applicationName.toLatin1() ;
+	m_walletName = QByteArray( "lxqt.Wallet." ) + walletName.toLatin1() + "." + applicationName.toLatin1() ;
 
 	function( true ) ;
 
@@ -76,7 +76,7 @@ bool LXQt::Wallet::osxKeyChain::open( const QString& walletName,
 				      const QString& password,
 				      const QString& displayApplicationName )
 {
-	m_walletName = "lxqt.Wallet." + walletName.toLatin1() + "." + applicationName.toLatin1() ;
+	m_walletName = QByteArray( "lxqt.Wallet." ) + walletName.toLatin1() + "." + applicationName.toLatin1() ;
 
 	Q_UNUSED( widget ) ;
 	Q_UNUSED( password ) ;
