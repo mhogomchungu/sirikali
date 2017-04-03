@@ -97,33 +97,41 @@ struct passwordData
 			CFRelease( ref ) ;
 		}
 	}
+	OSStatus status = 0 ;
 	void * data = nullptr ;
 	quint32 len = 0 ;
 	SecKeychainItemRef ref = 0 ;
 };
 
+static bool _status( OSStatus e )
+{
+	return e == noErr || e == errSecSuccess ;
+}
+
 static passwordData _find_password( const QString& key,const QByteArray& walletName )
 {
 	passwordData s ;
 
-	SecKeychainFindGenericPassword( nullptr,
-					walletName.size(),
-					walletName.constData(),
-					key.size(),
-					key.toLatin1().constData(),
-					&s.len,
-					&s.data,
-					&s.ref ) ;
+	s.status = SecKeychainFindGenericPassword( nullptr,
+						   walletName.size(),
+						   walletName.constData(),
+						   key.size(),
+						   key.toLatin1().constData(),
+						   &s.len,
+						   &s.data,
+						   &s.ref ) ;
 	return s ;
 }
 
-static void _delete_key( const QString& key,const QByteArray& walletName )
+static bool _delete_key( const QString& key,const QByteArray& walletName )
 {
 	auto s = _find_password( key,walletName ) ;
 
 	if( s.ref ){
 
-		SecKeychainItemDelete( s.ref ) ;
+		return _status( SecKeychainItemDelete( s.ref ) ) ;
+	}else{
+		return false ;
 	}
 }
 
@@ -137,8 +145,7 @@ static bool _add_key( const QString& key,const QByteArray& value,const QByteArra
 						     value.size(),
 						     value.constData(),
 						     nullptr ) ;
-
-	return status == noErr ;
+	return _status( status ) ;
 }
 
 static void _update_wallet_keys( const QStringList& e,const QByteArray& walletName )
@@ -149,24 +156,22 @@ static void _update_wallet_keys( const QStringList& e,const QByteArray& walletNa
 
 	if( s.ref ){
 
-		SecKeychainItemModifyContent( s.ref,
-					      nullptr,
-					      z.size(),
-					      z.constData() ) ;
+		SecKeychainItemModifyContent( s.ref,nullptr,z.size(),z.constData() ) ;
 	}
 }
 
 void LXQt::Wallet::osxKeyChain::deleteKey( const QString& key )
 {
-	_delete_key( key,m_walletName ) ;
+	if( _delete_key( key,m_walletName ) ){
 
-	QString s = this->readValue( WALLET_KEYS ) ;
+		QString s = this->readValue( WALLET_KEYS ) ;
 
-	auto e = s.split( '\n',QString::SkipEmptyParts ) ;
+		auto e = s.split( '\n',QString::SkipEmptyParts ) ;
 
-	e.removeOne( key ) ;
+		e.removeOne( key ) ;
 
-	_update_wallet_keys( e,m_walletName ) ;
+		_update_wallet_keys( e,m_walletName ) ;
+	}
 }
 
 bool LXQt::Wallet::osxKeyChain::addKey( const QString& key,const QByteArray& value )
