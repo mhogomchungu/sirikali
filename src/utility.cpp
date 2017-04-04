@@ -1302,6 +1302,10 @@ void utility::autoMountBackEnd( const utility::walletBackEnd& e )
 		}else if( e == LXQt::Wallet::BackEnd::kwallet ){
 
 			return "kwallet" ;
+
+		}else if( e == LXQt::Wallet::BackEnd::osxkeychain ){
+
+			return "osxkeychain" ;
 		}else{
 			return "none" ;
 		}
@@ -1325,6 +1329,10 @@ utility::walletBackEnd utility::autoMountBackEnd()
 		}else if( e == "internal" ){
 
 			return LXQt::Wallet::BackEnd::internal ;
+
+		}else if( e == "osxkeychain" ){
+
+			return LXQt::Wallet::BackEnd::osxkeychain ;
 		}else{
 			return utility::walletBackEnd() ;
 		}
