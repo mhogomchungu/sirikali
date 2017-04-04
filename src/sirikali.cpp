@@ -399,9 +399,9 @@ void sirikali::setUpAppMenu()
 						SLOT( keyManagerClicked( QAction * ) ),
 						SLOT( aboutToShowMenu() ) ) ;
 
-	m_favorite_menu = _addMenu( m,tr( "Favorites" ),"Favorites",
+	m_ui->pbFavorites->setMenu( _addMenu( new QMenu( this ),tr( "Favorites" ),"Favorites",
 				    SLOT( favoriteClicked( QAction * ) ),
-				    SLOT( showFavorites() ) ) ;
+				    SLOT( showFavorites() ) ) ) ;
 
 	m_language_menu = _addMenu( m,tr( "Select Language" ),"Select Language",
 				    SLOT( languageMenu( QAction * ) ),nullptr ) ;
@@ -640,7 +640,7 @@ void sirikali::favoriteClicked( QAction * ac )
 
 void sirikali::showFavorites()
 {
-	utility::readFavorites( m_favorite_menu,true,tr( "Manage Favorites" ),tr( "Mount All" ) ) ;
+	utility::readFavorites( m_ui->pbFavorites->menu(),true,tr( "Manage Favorites" ),tr( "Mount All" ) ) ;
 }
 
 void sirikali::setLocalizationLanguage( bool translate )
