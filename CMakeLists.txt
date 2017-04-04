@@ -281,7 +281,7 @@ else()
 		add_executable( sirikali ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
 	endif()
 
-	if( APPLE AND OSX_KEYCHAIN )
+	if( APPLE )
 		find_library( COREFOUNDATION_LIBRARY CoreFoundation REQUIRED )
 
 		find_library( SECURITY_LIBRARY Security REQUIRED )
