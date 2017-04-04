@@ -311,9 +311,7 @@ void sirikali::setUpAppMenu()
 		_addOption( tr( "Internal Wallet" ),"Internal Wallet",bk::internal ) ;
 		_addOption( tr( "KDE Wallet" ),"KDE Wallet",bk::kwallet ) ;
 		_addOption( tr( "Gnome Wallet" ),"Gnome Wallet",bk::libsecret ) ;
-#if __APPLE__
 		_addOption( tr( "OSX KeyChain" ),"OSX KeyChain",bk::osxkeychain ) ;
-#endif
 		_addOption( tr( "None" ),"None",utility::walletBackEnd() ) ;
 
 		return q ;
@@ -446,6 +444,8 @@ void sirikali::autoMountKeyStorage()
 	auto b = tr( "KDE Wallet" ).remove( '&' ) ;
 	auto c = tr( "Gnome Wallet" ).remove( '&' ) ;
 	auto d = tr( "None" ).remove( '&' ) ;
+	auto f = tr( "OSX KeyChain" ).remove( '&' ) ;
+
 
 	for( const auto& it: m_autoMountKeyStorage->actions() ){
 
@@ -464,6 +464,10 @@ void sirikali::autoMountKeyStorage()
 			}else if( e == c ){
 
 				return s == LXQt::Wallet::BackEnd::libsecret ;
+
+			}else if( e == f ){
+
+				return s == LXQt::Wallet::BackEnd::osxkeychain ;
 			}else{
 				return e == d && s.isInvalid() ;
 			}
@@ -483,6 +487,8 @@ void sirikali::autoMountKeySource( QAction * e )
 
 		auto d = tr( "Gnome Wallet" ).remove( '&' ) ;
 
+		auto e = tr( "OSX KeyChain" ).remove( '&' ) ;
+
 		if( a == b ){
 
 			return LXQt::Wallet::BackEnd::internal ;
@@ -494,6 +500,10 @@ void sirikali::autoMountKeySource( QAction * e )
 		}else if( a == d ){
 
 			return LXQt::Wallet::BackEnd::libsecret ;
+
+		}else if( a == e ){
+
+			return LXQt::Wallet::BackEnd::osxkeychain ;
 		}else{
 			return utility::walletBackEnd() ;
 		}
@@ -901,6 +911,12 @@ void sirikali::unlockVolume( const QStringList& l )
 			}else if( _supported( wxt::BackEnd::kwallet,"kwallet" ) ){
 
 				auto s = m_secrets.walletBk( wxt::BackEnd::kwallet ) ;
+
+				return utility::getKey( volume,s.bk() ) ;
+
+			}else if( _supported( wxt::BackEnd::osxkeychain,"osxkeychain" ) ){
+
+				auto s = m_secrets.walletBk( wxt::BackEnd::osxkeychain ) ;
 
 				return utility::getKey( volume,s.bk() ) ;
 			}else{
