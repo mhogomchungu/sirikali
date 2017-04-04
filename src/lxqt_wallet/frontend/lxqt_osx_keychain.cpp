@@ -147,7 +147,7 @@ void LXQt::Wallet::osxKeyChain::open( const QString& walletName,
 
 	m_opened = true ;
 
-	function( true ) ;
+	function( m_opened ) ;
 }
 
 bool LXQt::Wallet::osxKeyChain::open( const QString& walletName,
@@ -240,6 +240,8 @@ static void _update_wallet_keys( const QStringList& e,const QByteArray& walletNa
 	if( s.ref ){
 
 		SecKeychainItemModifyContent( s.ref,nullptr,z.size(),z.constData() ) ;
+	}else{
+		_add_key( WALLET_KEYS,z,walletName ) ;
 	}
 }
 
