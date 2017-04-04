@@ -289,6 +289,12 @@ set_target_properties(lxqt-wallet PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=
 set_target_properties(lxqt-wallet PROPERTIES SOVERSION "${LIBRARY_VERSION}")
 TARGET_LINK_LIBRARIES(lxqt-wallet "${link_libraries}" lxqt-wallet-backend)
 
+if( APPLE )
+	find_library(COREFOUNDATION_LIBRARY CoreFoundation REQUIRED)
+	find_library(SECURITY_LIBRARY Security REQUIRED)
+	TARGET_LINK_LIBRARIES(lxqt-wallet ${COREFOUNDATION_LIBRARY} ${SECURITY_LIBRARY})
+endif()
+
 if(BUILD_SHARED)
 	install(TARGETS lxqt-wallet RUNTIME LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 

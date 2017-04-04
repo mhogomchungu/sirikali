@@ -242,15 +242,7 @@ if( QT5 )
 
 	link_directories( ${GCRYPT_LIBRARY_PATH} )
 
-	if( APPLE )
-		find_library( COREFOUNDATION_LIBRARY CoreFoundation REQUIRED )
-
-		find_library( SECURITY_LIBRARY Security REQUIRED )
-
-		TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet -L${GCRYPT_LIBRARY_PATH} ${COREFOUNDATION_LIBRARY} ${SECURITY_LIBRARY} )
-	else()
-		TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet -L${GCRYPT_LIBRARY_PATH})
-	endif()
+	TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet -L${GCRYPT_LIBRARY_PATH})
 
 	message( STATUS "---------------------------------------------------------------------------" )
 	message( STATUS "Building GUI components using Qt5" )
@@ -281,15 +273,7 @@ else()
 		add_executable( sirikali ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
 	endif()
 
-	if( APPLE )
-		find_library( COREFOUNDATION_LIBRARY CoreFoundation REQUIRED )
-
-		find_library( SECURITY_LIBRARY Security REQUIRED )
-
-		TARGET_LINK_LIBRARIES( sirikali -lQtCore -lQtGui -lQtNetwork ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet -L${GCRYPT_LIBRARY_PATH} ${COREFOUNDATION_LIBRARY} ${SECURITY_LIBRARY} )
-	else()
-		TARGET_LINK_LIBRARIES( sirikali -lQtCore -lQtGui -lQtNetwork ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet -L${GCRYPT_LIBRARY_PATH} )
-	endif()
+	TARGET_LINK_LIBRARIES( sirikali -lQtCore -lQtGui -lQtNetwork ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet -L${GCRYPT_LIBRARY_PATH} )
 
 	message( STATUS "---------------------------------------------------------------------------" )
 	message( STATUS "Building GUI components using Qt4" )
