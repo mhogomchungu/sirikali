@@ -40,7 +40,7 @@
  */
 
 #include <CoreFoundation/CoreFoundation.h>
-#include <Security/Security.h
+#include <Security/Security.h>
 
 #else
 
