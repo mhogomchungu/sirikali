@@ -242,7 +242,7 @@ if( QT5 )
 
 	link_directories( ${GCRYPT_LIBRARY_PATH} )
 
-	if( APPLE AND OSX_KEYCHAIN )
+	if( APPLE )
 		find_library( COREFOUNDATION_LIBRARY CoreFoundation REQUIRED )
 
 		find_library( SECURITY_LIBRARY Security REQUIRED )
