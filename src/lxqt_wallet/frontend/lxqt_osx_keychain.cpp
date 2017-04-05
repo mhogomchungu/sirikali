@@ -32,92 +32,19 @@
 #include "lxqt_osx_keychain.h"
 #include "osx_keychain.h"
 
-#if OSX_KEYCHAIN
-
 /*
  * https://developer.apple.com/library/content/documentation/Security/Conceptual/keychainServConcepts/03tasks/tasks.html#//apple_ref/doc/uid/TP30000897-CH205-TP9
  *
  */
+
+#if OSX_KEYCHAIN
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <Security/Security.h>
 
 #else
 
-using OSStatus = int ;
-
-class foo ;
-using SecKeychainItemRef = foo * ;
-
-#define noErr 0
-#define errSecSuccess 0
-
-void SecKeychainItemFreeContent( void * e,void * f )
-{
-	Q_UNUSED( e ) ;
-	Q_UNUSED( f ) ;
-}
-
-void CFRelease( void * e )
-{
-	Q_UNUSED( e ) ;
-}
-
-OSStatus SecKeychainItemDelete( void * e )
-{
-	Q_UNUSED( e ) ;
-	return 0 ;
-}
-
-OSStatus SecKeychainFindGenericPassword( void * foo,
-					 quint32 serviceNameLength,
-					 const char * serviceName,
-					 quint32 accountNameLength,
-					 const char *accountName,
-					 quint32 * passwordLength,
-					 void ** passwordData,
-					 SecKeychainItemRef * itemRef )
-{
-	Q_UNUSED( foo ) ;
-	Q_UNUSED( serviceNameLength ) ;
-	Q_UNUSED( serviceName ) ;
-	Q_UNUSED( passwordLength ) ;
-	Q_UNUSED( passwordData ) ;
-	Q_UNUSED( accountName ) ;
-	Q_UNUSED( accountNameLength ) ;
-	Q_UNUSED( itemRef ) ;
-
-	return 0 ;
-}
-
-OSStatus SecKeychainAddGenericPassword( void * foo,
-					quint32 serviceNameLength,
-					const char * serviceName,
-					quint32 accountNameLength,
-					const char * accountName,
-					quint32 passwordLength,
-					const void * passwordData,
-					SecKeychainItemRef * itemRef )
-{
-	Q_UNUSED( foo ) ;
-	Q_UNUSED( serviceNameLength ) ;
-	Q_UNUSED( serviceName ) ;
-	Q_UNUSED( passwordLength ) ;
-	Q_UNUSED( passwordData ) ;
-	Q_UNUSED( accountName ) ;
-	Q_UNUSED( accountNameLength ) ;
-	Q_UNUSED( itemRef ) ;
-
-	return 0 ;
-}
-
-void SecKeychainItemModifyContent( void * a,void * b,quint32 c,const void * d )
-{
-	Q_UNUSED( a ) ;
-	Q_UNUSED( b ) ;
-	Q_UNUSED( c ) ;
-	Q_UNUSED( d ) ;
-}
+#include "lxqt_osx_keychain_private.h"
 
 #endif
 
@@ -169,6 +96,18 @@ bool LXQt::Wallet::osxKeyChain::open( const QString& walletName,
 
 struct passwordData
 {
+	passwordData() = default ;
+
+	passwordData( passwordData&& other )
+	{
+		this->init( std::move( other  ) ) ;
+	}
+
+	passwordData& operator=( passwordData&& other )
+	{
+		return this->init( std::move( other  ) ) ;
+	}
+
 	~passwordData()
 	{
 		if( data ){
@@ -183,7 +122,23 @@ struct passwordData
 	OSStatus status = 0 ;
 	void * data = nullptr ;
 	quint32 len = 0 ;
-	SecKeychainItemRef ref = 0 ;
+	SecKeychainItemRef ref = nullptr ;
+
+private:
+	passwordData& init( passwordData&& other )
+	{
+		status = other.status ;
+
+		len    = other.len ;
+
+		data   = other.data ;
+		other.data = nullptr ;
+
+		ref = other.ref ;
+		other.ref = nullptr ;
+
+		return *this ;
+	}
 };
 
 static bool _status( OSStatus e )
@@ -260,7 +215,7 @@ void LXQt::Wallet::osxKeyChain::deleteKey( const QString& key )
 }
 
 bool LXQt::Wallet::osxKeyChain::addKey( const QString& key,const QByteArray& value )
-{	
+{
 	if( _add_key( key,value,m_walletName ) ){
 
 		QString s = this->readValue( WALLET_KEYS ) ;

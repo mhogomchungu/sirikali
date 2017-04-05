@@ -125,7 +125,7 @@ else()
 		include_directories( ${PROJECT_SOURCE_DIR}/src/lxqt_wallet/frontend )
 		include_directories( ${PROJECT_BINARY_DIR}/src/lxqt_wallet/frontend )
 	else()
-		if( LXQT_WALLET_VERSION VERSION_GREATER "2.0.0" AND QT5 )
+		if( LXQT_WALLET_VERSION VERSION_GREATER "3.0.0" AND QT5 )
 
 			include_directories( ${LXQT_WALLET_INCLUDEDIR} )
 			link_directories( ${LXQT_WALLET_LIBDIR} )
