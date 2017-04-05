@@ -100,12 +100,12 @@ struct passwordData
 
 	passwordData( passwordData&& other )
 	{
-		this->init( std::move( other  ) ) ;
+		this->init( std::move( other ) ) ;
 	}
 
 	passwordData& operator=( passwordData&& other )
 	{
-		return this->init( std::move( other  ) ) ;
+		return this->init( std::move( other ) ) ;
 	}
 
 	~passwordData()

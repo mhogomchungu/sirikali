@@ -1727,6 +1727,7 @@ void sirikali::disableAll()
 	m_ui->tableWidget->setEnabled( false ) ;
 	m_ui->pbunlockvolume->setEnabled( false ) ;
 	m_ui->pbcreate->setEnabled( false ) ;
+	m_ui->pbFavorites->setEnabled( false ) ;
 }
 
 void sirikali::enableAll()
@@ -1739,6 +1740,7 @@ void sirikali::enableAll()
 		m_ui->tableWidget->setFocus() ;
 		m_ui->pbunlockvolume->setEnabled( true ) ;
 		m_ui->pbcreate->setEnabled( true ) ;
+		m_ui->pbFavorites->setEnabled( true ) ;
 	}
 }
 
