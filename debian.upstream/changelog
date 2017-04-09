@@ -12,8 +12,9 @@ sirikali (1.2.6-1) UNRELEASED; urgency=low
      -- Add a plugin that allows generation of a key using a key+keyfile combination through a user configured external application.
         A user for example can set gpg as an external application so that they can extract a key from a gpg encrypted keyfile.
      -- Add a config option to disable displaying of passwords.
+     -- Add ability to store passwords in OSX keychain.
 
- -- Mhogo Mchungu <mhogomchungu@gmail.com>  Sat, 1 Apr 2017 16:38:48 +0000
+ -- Mhogo Mchungu <mhogomchungu@gmail.com>  Sun, 9 Apr 2017 16:38:48 +0000
 
 sirikali (1.2.5-1) UNRELEASED; urgency=low
   [Mhogo Mchungu]
