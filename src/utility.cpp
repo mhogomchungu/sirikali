@@ -242,7 +242,7 @@ void utility::startHelperExecutable( QWidget * obj,const QString& arg,const char
 
 	if( !exe.isEmpty() ){
 
-		exe = QString( "%1 %2 %3 fork ").arg( exe,siriPolkitPath,utility::helperSocketPath() ) ;
+		exe = QString( "%1 %2 %3 fork" ).arg( exe,siriPolkitPath,utility::helperSocketPath() ) ;
 
 		::Task::exec( [ = ](){
 
