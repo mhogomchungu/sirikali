@@ -419,7 +419,7 @@ options:\n\
 	-m   Tool to use to open a default file manager(default tool is xdg-open).\n\
 	-e   Start the application without showing the GUI.\n\
 	-b   A name of a backend to retrieve a password from when a volume is open from CLI.\n\
-	     Supported backends are: \"internal\",\"stdin\",\"keyfile\",\"kwallet\" and \"gnomewallet.\n\
+	     Supported backends are: \"internal\",\"stdin\",\"keyfile\",\"kwallet\" and \"libsecret.\n\
 	     The first three are always present but the rest are compile time dependencies.\n\
 	     \"internal\" option causes SiriKali to read password from lxqt-wallet internal backend.\n\
 	     \"stdin\" option causes SiriKali to read the password from standard input.\n\
