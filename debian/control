@@ -17,10 +17,7 @@ Vcs-Git: https://github.com/davesteele/sirikali.git -b debian
 Vcs-Browser: https://github.com/davesteele/sirikali
 
 Package: sirikali
-Architecture: amd64 armel arm64 armel armhf i386 mips mips64el
-              mipsel ppc64el s390x alpha hppa kfreebsd-amd64
-              kfreebsd-i386 m68k powerpc powerpcspe ppc64
-              sh4 sparc64 x32
+Architecture: amd64 armel arm64 armel armhf i386 mips mips64el mipsel ppc64el s390x alpha hppa kfreebsd-amd64 kfreebsd-i386 powerpc powerpcspe ppc64 sparc64 x32
 Depends: ${shlibs:Depends}, ${misc:Depends}, cryfs [!armel]
 Recommends: encfs [armel]
 Suggests: encfs [!armel]
