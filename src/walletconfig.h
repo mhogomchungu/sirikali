@@ -68,6 +68,7 @@ private:
 	QString m_volumeID ;
 	QString m_comment ;
 	QString m_key ;
+	QWidget * m_parentWidget ;
 };
 
 #endif // KWALLETCONFIG_H

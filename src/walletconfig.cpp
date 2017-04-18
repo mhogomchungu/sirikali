@@ -37,11 +37,15 @@
 #define COMMENT "-SiriKali_Comment_ID"
 
 walletconfig::walletconfig( QWidget * parent,secrets::wallet&& wallet ) :
-	QDialog( parent ),m_ui( new Ui::walletconfig ),m_wallet( std::move( wallet ) )
+	QDialog( parent ),m_ui( new Ui::walletconfig ),
+	m_wallet( std::move( wallet ) )
 {
 	m_ui->setupUi( this ) ;
 
 	this->setFixedSize( this->size() ) ;
+
+	utility::setParent( parent,&m_parentWidget,this ) ;
+
 	this->setFont( parent->font() ) ;
 
 	m_ui->tableWidget->setColumnWidth( 0,386 ) ;
@@ -110,7 +114,7 @@ void walletconfig::itemClicked_0( QTableWidgetItem * item )
 
 	m_volumeID = m_ui->tableWidget->item( m_row,0 )->text() ;
 
-	int r = DialogMsg( this ).ShowUIYesNo( tr( "WARNING!" ),tr( "Are you sure you want to delete a volume with an id of \"%1\"?" ).arg( m_volumeID ) ) ;
+	int r = DialogMsg( m_parentWidget,this ).ShowUIYesNo( tr( "WARNING!" ),tr( "Are you sure you want to delete a volume with an id of \"%1\"?" ).arg( m_volumeID ) ) ;
 
 	if( r == QMessageBox::Yes ){
 
@@ -150,7 +154,7 @@ void walletconfig::pbAdd()
 {
 	this->disableAll() ;
 
-	walletconfiginput::instance( this,[ this ]( const QString& volumeID,
+	walletconfiginput::instance( m_parentWidget,this,[ this ]( const QString& volumeID,
 				     const QString& comment,const QString& key ){
 
 		m_comment  = comment ;
@@ -194,16 +198,20 @@ void walletconfig::pbAdd()
 
 				tablewidget::addRow( m_ui->tableWidget,{ m_volumeID,m_comment } ) ;
 			}else{
-				DialogMsg( this ).ShowUIOK( tr( "ERROR!" ),tr( "Failed To Add the Key In The Wallet." ) ) ;
+				DialogMsg( m_parentWidget,this ).ShowUIOK( tr( "ERROR!" ),tr( "Failed To Add the Key In The Wallet." ) ) ;
 			}
 
 			this->enableAll() ;
+			this->raise() ;
+			this->activateWindow() ;
 			m_ui->tableWidget->setFocus() ;
 		} ) ;
 
 	},[ this ](){
 
 		this->enableAll() ;
+		this->raise() ;
+		this->activateWindow() ;
 	} ) ;
 }
 
@@ -211,7 +219,11 @@ void walletconfig::accessWallet()
 {
 	using walletKeys = decltype( m_wallet->readAllKeyValues() ) ;
 
+	utility::setWindowOptions( this ) ;
+
 	this->show() ;
+	this->raise() ;
+	this->activateWindow() ;
 
 	Task::run<walletKeys>( [ this ](){
 

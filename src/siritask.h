@@ -82,8 +82,7 @@ namespace siritask
 		using function_t = std::function< void( const QString& ) > ;
 
 		options( const favorites::entry& e,
-			 const QString& volumeKey = QString(),
-			 function_t folder_opener = []( const QString& e ){ Q_UNUSED( e ) ; } ) :
+			 const QString& volumeKey = QString() ) :
 
 			cipherFolder( e.volumePath ),
 			plainFolder( e.mountPointPath ),
@@ -91,8 +90,7 @@ namespace siritask
 			mOpt( e.idleTimeOut ),
 			configFilePath( e.configFilePath ),
 			type( QString() ),
-			ro( false ),
-			openFolder( folder_opener )
+			ro( false )
 		{
 		}
 		options( const QString& cipher_folder,
@@ -101,8 +99,7 @@ namespace siritask
 			 const QString& mount_options,
 			 const QString& config_file_path,
 			 const QString& volume_type,
-			 bool unlock_in_read_only,
-			 function_t folder_opener = []( const QString& e ){ Q_UNUSED( e ) ; } ) :
+			 bool unlock_in_read_only ) :
 
 			cipherFolder( cipher_folder ),
 			plainFolder( plain_folder ),
@@ -110,8 +107,7 @@ namespace siritask
 			mOpt( mount_options ),
 			configFilePath( config_file_path ),
 			type( volume_type ),
-			ro( unlock_in_read_only ),
-			openFolder( folder_opener )
+			ro( unlock_in_read_only )
 		{
 		}
 
@@ -122,7 +118,6 @@ namespace siritask
 		QString configFilePath ;
 		siritask::volumeType type ;
 		bool ro ;
-		function_t openFolder ;
 	};
 
 	enum class status
@@ -143,13 +138,116 @@ namespace siritask
 		backendFail
 	};
 
+	class cmdStatus
+	{
+	public:
+		cmdStatus()
+		{
+		}
+		template< typename T = QString >
+		cmdStatus( const siritask::cmdStatus& s,const T& e = T() )
+		{
+			m_status = s.status() ;
+			m_exitCode = s.exitCode() ;
+
+			if( e.isEmpty() ){
+
+				this->message( s.msg() ) ;
+			}else{
+				this->message( e ) ;
+			}
+		}
+		template< typename T = QString >
+		cmdStatus( siritask::status s,const T& e = T() ) :
+			m_status( s )
+		{
+			this->message( e ) ;
+		}
+		template< typename T = QString >
+		cmdStatus( int s,const T& e = T() ) :
+			m_exitCode( s )
+		{
+			this->message( e ) ;
+		}
+		siritask::status status() const
+		{
+			return m_status ;
+		}
+		bool operator==( siritask::status s ) const
+		{
+			return m_status == s ;
+		}
+		bool operator!=( siritask::status s ) const
+		{
+			return m_status != s ;
+		}
+		cmdStatus& setExitCode( int s )
+		{
+			m_exitCode = s ;
+			return *this ;
+		}
+		cmdStatus& setStatus( siritask::status s )
+		{
+			m_status = s ;
+			return *this ;
+		}
+		template< typename T >
+		cmdStatus& setMessage( const T& e )
+		{
+			this->message( e ) ;
+			return *this ;
+		}
+		const QString& msg() const
+		{
+			return m_message ;
+		}
+		QString report() const
+		{
+			auto s = QString::number( m_exitCode ) ;
+
+			QString e ;
+
+			e+= "-------------------------" ;
+			e+= QString( "\nBackend Generated Output:\nExit Code: %1" ).arg( s ) ;
+			e+= QString( "\nExit String: \"%1\"" ).arg( m_message ) ;
+			e+= "\n-------------------------" ;
+
+			return e ;
+		}
+		int exitCode() const
+		{
+			return m_exitCode ;
+		}
+	private:
+		template< typename T >
+		void message( const T& e )
+		{
+			m_message = e ;
+
+			while( true ){
+
+				if( m_message.endsWith( '\n' ) ){
+
+					m_message.truncate( m_message.size() - 1 ) ;
+				}else{
+					break ;
+				}
+			}
+		}
+
+		int m_exitCode = -1 ;
+		siritask::status m_status = siritask::status::backendFail ;
+		QString m_message ;
+	};
+
 	bool deleteMountFolder( const QString& ) ;
 	Task::future< QVector< volumeInfo > >& updateVolumeList( void ) ;
 	Task::future< bool >& encryptedFolderUnMount( const QString& cipherFolder,
 						      const QString& mountPoint,
 						      const QString& fileSystem ) ;
-	Task::future< siritask::status >& encryptedFolderMount( const options&,bool = false ) ;
-	Task::future< siritask::status >& encryptedFolderCreate( const options& ) ;
+
+	Task::future< cmdStatus >& encryptedFolderMount( const options&,bool = false ) ;
+	Task::future< cmdStatus >& encryptedFolderCreate( const options& ) ;
 }
 
 #endif // ZULUMOUNTTASK_H

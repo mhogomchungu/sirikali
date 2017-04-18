@@ -33,12 +33,11 @@ class DialogMsg : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit DialogMsg( QWidget * parent = 0 ) ;
+	DialogMsg( QWidget * parent = nullptr,QDialog * = nullptr ) ;
 	void ShowUIOK( const QString& title,const QString& msg ) ;
 	int  ShowUIYesNo( const QString& title,const QString& msg ) ;
 	int  ShowUIYesNoDefaultNo( const QString& title,const QString& msg ) ;
 	void ShowUIInfo( const QString& title,bool,const QString& msg ) ;
-	void ShowUIVolumeProperties( const QString& title,const QString& msg ) ;
 	bool ShowUIOKDoNotShowOption( const QString& title,const QString& msg ) ;
 	void ShowPermissionProblem( const QString& device ) ;
 	void ShowPermissionProblem( const QString&,const QString& device ) ;
@@ -60,6 +59,7 @@ private:
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::DialogMsg * m_ui ;
 	QWidget * m_parent ;
+	QDialog * m_dialog ;
 	int m_status ;
 };
 

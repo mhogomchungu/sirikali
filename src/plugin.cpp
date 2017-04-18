@@ -37,12 +37,12 @@
 
 #include <memory>
 
-plugin::plugin( QWidget * parent,plugins::plugin plugin,
-		std::function< void( const QString& ) > function,
-		const QString& e,const QVector<QString>& exe ) :
+plugin::plugin( QWidget * parent,QDialog * dialog,plugins::plugin plugin,
+		std::function< void( const QByteArray& ) > function,
+		const QString& e ) :
 	QDialog( parent ),m_ui( new Ui::plugin ),
 	m_function( std::move( function ) ),
-	m_pluginType( plugin ),m_exe( exe )
+	m_pluginType( plugin ),m_dialog( dialog )
 {
 	m_ui->setupUi( this ) ;
 
@@ -50,6 +50,8 @@ plugin::plugin( QWidget * parent,plugins::plugin plugin,
 
 		m_ui->label->setText( e ) ;
 	}
+
+	utility::setParent( parent,&m_parentWidget,this ) ;
 
 	this->setFixedSize( this->size() ) ;
 	this->setFont( parent->font() ) ;
@@ -61,6 +63,8 @@ plugin::plugin( QWidget * parent,plugins::plugin plugin,
 	m_ui->pbKeyFile->setIcon( QIcon( ":/file.png" ) ) ;
 
 	m_ui->lineEdit->setFocus() ;
+
+	utility::setWindowOptions( this ) ;
 
 	this->ShowUI() ;
 }
@@ -84,6 +88,8 @@ plugin::~plugin()
 void plugin::ShowUI()
 {
 	this->show() ;
+	this->raise() ;
+	this->activateWindow() ;
 }
 
 void plugin::HideUI()
@@ -91,17 +97,19 @@ void plugin::HideUI()
 	m_function( m_key ) ;
 
 	this->hide() ;
+	m_dialog->show() ;
+	m_dialog->activateWindow() ;
 	this->deleteLater() ;
 }
 
 void plugin::pbSetKey()
 {
-	auto passphrase = m_ui->lineEdit->text() ;
+	auto passphrase = m_ui->lineEdit->text().toLatin1() ;
 	auto keyFile    = m_ui->lineEdit_2->text() ;
 
-	if( keyFile.isEmpty() ){
+	if( keyFile.isEmpty() && m_pluginType == plugins::plugin::hmac_key ){
 
-		return DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "KeyFile Not Set" ) ) ;
+		return DialogMsg( m_parentWidget,this ).ShowUIOK( tr( "ERROR" ),tr( "KeyFile Not Set" ) ) ;
 	}
 
 	this->disableAll() ;
@@ -111,6 +119,25 @@ void plugin::pbSetKey()
 		if( m_pluginType == plugins::plugin::hmac_key ){
 
 			return plugins::hmac_key( keyFile,passphrase ) ;
+
+		}else if( m_pluginType == plugins::plugin::externalExecutable ){
+
+			auto exe = utility::externalPluginExecutable() ;
+
+			if( exe.isEmpty() ){
+
+				return QByteArray() ;
+			}else{
+				exe = exe + " " + utility::Task::makePath( keyFile ) ;
+
+				auto env = QProcessEnvironment::systemEnvironment() ;
+
+				env.insert( "LANG","C" ) ;
+
+				env.insert( "PATH",utility::executableSearchPaths( env.value( "PATH" ) ) ) ;
+
+				return utility::Task( exe,20000,env,passphrase ).stdOut() ;
+			}
 		}else{
 			return QByteArray() ;
 		}
@@ -121,9 +148,7 @@ void plugin::pbSetKey()
 
 		if( m_key.isEmpty() ){
 
-			DialogMsg msg( this ) ;
-
-			msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Generate Key" ) ) ;
+			DialogMsg( m_parentWidget,this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Generate Key" ) ) ;
 
 			this->enableAll() ;
 		}else{

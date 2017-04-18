@@ -58,6 +58,7 @@ private:
 	bool m_create ;
 	QString m_type ;
 	std::function< void( const QStringList& ) > m_setOptions ;
+	QWidget * m_parentWidget ;
 };
 
 #endif // OPTIONS_H

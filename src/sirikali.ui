@@ -117,6 +117,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="pbFavorites">
+          <property name="text">
+           <string>Favorites</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="pbmenu">
           <property name="text">
            <string>&amp;Menu</string>

@@ -27,10 +27,11 @@
 #include "utility.h"
 #include <QDebug>
 
-walletconfiginput::walletconfiginput( QWidget * parent,
+walletconfiginput::walletconfiginput( QWidget * parent,QDialog * dialog,
 				      std::function< void( const QString&,const QString&,const QString& ) > p,
 				      std::function< void() > q ) :
-	QDialog( parent ),m_ui( new Ui::walletconfiginput ),m_add( std::move( p ) ),m_cancel( std::move( q ) )
+	QDialog( parent ),m_ui( new Ui::walletconfiginput ),m_add( std::move( p ) ),m_cancel( std::move( q ) ),
+	m_parentWidget( parent ),m_dialog( dialog )
 {
 	m_ui->setupUi( this ) ;
 
@@ -57,7 +58,11 @@ walletconfiginput::walletconfiginput( QWidget * parent,
 
 	m_ui->pushButtonVolume->setVisible( false ) ;
 
-	this->show() ;
+	utility::setWindowOptions( this ) ;
+
+	utility::setParent( parent,&m_parentWidget,this ) ;
+
+	this->ShowUI() ;
 }
 
 bool walletconfiginput::eventFilter( QObject * watched,QEvent * event )
@@ -73,11 +78,15 @@ walletconfiginput::~walletconfiginput()
 void walletconfiginput::ShowUI()
 {
 	this->show() ;
+	this->raise() ;
+	this->activateWindow() ;
 }
 
 void walletconfiginput::HideUI()
 {
 	this->hide() ;
+	m_dialog->show() ;
+	m_dialog->activateWindow() ;
 	this->deleteLater() ;
 }
 
@@ -90,14 +99,14 @@ void walletconfiginput::pbAdd()
 
 	if( volumeID.isEmpty() || key.isEmpty() || repeatKey.isEmpty() ){
 
-		DialogMsg( this ).ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
+		DialogMsg( m_parentWidget,this ).ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
 
 		return ;
 	}
 
 	if( key != repeatKey ){
 
-		DialogMsg( this ).ShowUIOK( tr( "ERROR!" ),tr( "Passphrases do not match" ) ) ;
+		DialogMsg( m_parentWidget,this ).ShowUIOK( tr( "ERROR!" ),tr( "Passphrases do not match" ) ) ;
 
 		return ;
 	}

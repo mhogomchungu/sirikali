@@ -32,11 +32,11 @@
 #include "dialogmsg.h"
 #include "tablewidget.h"
 
-favorites::favorites( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::favorites )
+favorites::favorites( QWidget * parent ) : QDialog( parent ),
+	m_ui( new Ui::favorites )
 {
 	m_ui->setupUi( this ) ;
 
-	this->setWindowFlags( Qt::Window | Qt::Dialog ) ;
 	this->setFont( parent->font() ) ;
 
 	connect( m_ui->pbConfigFilePath,SIGNAL( clicked() ),this,SLOT( configPath() ) ) ;
@@ -79,6 +79,10 @@ favorites::favorites( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::favor
 	}() ) ;
 
 	this->installEventFilter( this ) ;
+
+	utility::setParent( parent,&m_parentWidget,this ) ;
+
+	utility::setWindowOptions( this ) ;
 
 	this->ShowUI() ;
 }
@@ -136,6 +140,8 @@ void favorites::ShowUI()
 	m_ui->tableWidget->setFocus() ;
 
 	this->show() ;
+	this->raise() ;
+	this->activateWindow() ;
 }
 
 void favorites::HideUI()
@@ -252,7 +258,7 @@ void favorites::cancel()
 
 void favorites::add()
 {
-	DialogMsg msg( this ) ;
+	DialogMsg msg( m_parentWidget,this ) ;
 
 	auto dev = m_ui->lineEditEncryptedFolderPath->text() ;
 	auto path = m_ui->lineEditMountPath->text() ;

@@ -1,6 +1,9 @@
+#ifndef ZULUPOLKIT_H
+#define ZULUPOLKIT_H
+
 /*
  *
- *  Copyright ( c ) 2016
+ *  Copyright ( c ) 2017
  *  name : Francis Banyikwa
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -17,32 +20,27 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DIALOGOK_H
-#define DIALOGOK_H
-
-#include <QDialog>
+#include <QObject>
 #include <QString>
-#include <QCloseEvent>
+#include <QStringList>
+#include <QtNetwork/QLocalServer>
+#include <QtNetwork/QLocalSocket>
 
-namespace Ui {
-class dialogok;
-}
-
-class dialogok : public QDialog
+class zuluPolkit : public QObject
 {
 	Q_OBJECT
 public:
-	dialogok( QWidget * parent,QDialog *,bool,bool,const QString& title,const QString& msg ) ;
-	~dialogok() ;
-	int Show() ;
+	zuluPolkit( const QStringList& ) ;
+	~zuluPolkit() ;
 private slots:
-	void ok() ;
-	void yes() ;
-	void no() ;
+	void start() ;
+	void gotConnection() ;
 private:
-	void closeEvent( QCloseEvent * ) ;
-	Ui::dialogok * m_ui ;
-	QDialog * m_dialog ;
-} ;
+	QStringList m_arguments ;
+	QString readStdin() ;
+	QString m_token ;
+	QLocalServer m_server ;
+	QString m_socketPath ;
+};
 
-#endif // DIALOGOK_H
+#endif // ZULUPOLKIT_H

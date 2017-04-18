@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright ( c ) 2016
+ *  Copyright ( c ) 2017
  *  name : Francis Banyikwa
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -17,32 +17,33 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DIALOGOK_H
-#define DIALOGOK_H
+#include <QCoreApplication>
+#include <QMetaObject>
+#include <QProcess>
 
-#include <QDialog>
-#include <QString>
-#include <QCloseEvent>
+#include "zulupolkit.h"
 
-namespace Ui {
-class dialogok;
-}
-
-class dialogok : public QDialog
+int main( int argc,char * argv[] )
 {
-	Q_OBJECT
-public:
-	dialogok( QWidget * parent,QDialog *,bool,bool,const QString& title,const QString& msg ) ;
-	~dialogok() ;
-	int Show() ;
-private slots:
-	void ok() ;
-	void yes() ;
-	void no() ;
-private:
-	void closeEvent( QCloseEvent * ) ;
-	Ui::dialogok * m_ui ;
-	QDialog * m_dialog ;
-} ;
+	QCoreApplication a( argc,argv ) ;
 
-#endif // DIALOGOK_H
+	auto s = QCoreApplication::arguments() ;
+
+	if( s.last().startsWith( "fork" ) ){
+
+		s.removeLast() ;
+
+		if( QProcess::startDetached( s.join( " " ) ) ){
+
+			return 0 ;
+		}else{
+			return 1 ;
+		}
+	}else{
+		zuluPolkit e( s ) ;
+
+		QMetaObject::invokeMethod( &e,"start",Qt::QueuedConnection ) ;
+
+		return a.exec();
+	}
+}

@@ -1,4 +1,4 @@
-﻿/*
+/*
  *
  *  Copyright ( c ) 2011-2015
  *  name : Francis Banyikwa
@@ -18,6 +18,7 @@
  */
 
 #include "utility.h"
+
 #include <iostream>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -25,17 +26,21 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdio.h>
-#include <QObject>
-#include <QDir>
+#include <cstdio>
 #include <pwd.h>
 #include <grp.h>
+#include <termios.h>
 
 #include <memory>
+#include <iostream>
 
+#include <QObject>
+#include <QDir>
 #include <QTranslator>
 #include <QEventLoop>
 #include <QDebug>
 #include <QCoreApplication>
+#include <QApplication>
 #include <QByteArray>
 #include <QProcess>
 #include <QFile>
@@ -45,17 +50,18 @@
 #include <QMessageBox>
 #include <QTableWidgetItem>
 #include <QProcessEnvironment>
+#include <QtNetwork/QLocalSocket>
 #include <unistd.h>
 #include <pwd.h>
 #include <QTimer>
 #include <QEventLoop>
-
+#include <QFileInfo>
 #include <QEvent>
 #include <QKeyEvent>
 
 #include "install_prefix.h"
 #include "locale_path.h"
-
+#include "3rdParty/json.hpp"
 #include "plugins.h"
 
 #include "readonlywarning.h"
@@ -71,10 +77,334 @@
 
 #include "dialogmsg.h"
 #include "plugin.h"
+#include "siriPolkit.h"
 
 #include "version.h"
 
+#ifdef __linux__
+
+#include <sys/vfs.h>
+
+bool utility::platformIsLinux()
+{
+	return true ;
+}
+
+bool utility::platformIsOSX()
+{
+	return false ;
+}
+
+#else
+
+#include <sys/param.h>
+#include <sys/mount.h>
+
+bool utility::platformIsLinux()
+{
+	return false ;
+}
+
+bool utility::platformIsOSX()
+{
+	return true ;
+}
+
+#endif
+
 static QSettings * _settings ;
+
+static int staticGlobalUserId = -1 ;
+
+static QByteArray _cookie ;
+
+::Task::future< utility::Task >& utility::Task::run( const QString& exe,bool e )
+{
+	return utility::Task::run( exe,-1,e ) ;
+}
+
+::Task::future< utility::Task >& utility::Task::run( const QString& exe,int s,bool e )
+{
+	return ::Task::run< utility::Task >( [ = ](){
+
+		auto env = QProcessEnvironment::systemEnvironment() ;
+
+		return utility::Task( exe,s,env,_cookie,[](){ umask( 0 ) ; },e ) ;
+	} ) ;
+}
+
+void utility::Task::execute( const QString& exe,int waitTime,
+			     const QProcessEnvironment& env,
+			     const QByteArray& password,
+			     const std::function< void() >& f,
+			     bool polkit )
+{
+	class Process : public QProcess{
+	public:
+		Process( const std::function< void() >& f ) : m_function( f )
+		{
+		}
+	protected:
+		void setupChildProcess()
+		{
+			m_function() ;
+		}
+	private:
+		std::function< void() > m_function ;
+	} p( f ) ;
+
+	p.setProcessEnvironment( env ) ;
+
+	if( polkit && utility::useZuluPolkit() ){
+
+		QLocalSocket s ;
+
+		s.connectToServer( utility::helperSocketPath() ) ;
+
+		for( int i = 0 ; ; i++ ){
+
+			if( s.waitForConnected() ){
+
+				break ;
+
+			}else if( i == 3 ){
+
+				utility::debug() << "ERROR: Failed To Start Helper Application" ;
+				return ;
+			}else{
+				utility::debug() << s.errorString() ;
+
+				utility::Task::suspendForOneSecond() ;
+			}
+		}
+
+		s.write( [ & ]()->QByteArray{
+
+			nlohmann::json json ;
+
+			json[ "cookie" ]     = _cookie.constData() ;
+			json[ "password" ]   = password.constData() ;
+			json[ "command" ]    = exe.toLatin1().constData() ;
+
+			return json.dump().c_str() ;
+		}() ) ;
+
+		s.waitForBytesWritten() ;
+
+		s.waitForReadyRead() ;
+
+		try{
+			auto json = nlohmann::json::parse( s.readAll().constData() ) ;
+
+			m_finished   = json[ "finished" ].get< bool >() ;
+			m_exitCode   = json[ "exitCode" ].get< int >() ;
+			m_exitStatus = json[ "exitStatus" ].get< int >() ;
+			m_stdError   = json[ "stdError" ].get< std::string >().c_str() ;
+			m_stdOut     = json[ "stdOut" ].get< std::string >().c_str() ;
+
+		}catch( ... ){}
+	}else{
+		p.start( exe ) ;
+
+		if( !password.isEmpty() ){
+
+			p.waitForStarted() ;
+
+			p.write( password + '\n' ) ;
+
+			p.closeWriteChannel() ;
+		}
+
+		m_finished   = p.waitForFinished( waitTime ) ;
+		m_exitCode   = p.exitCode() ;
+		m_exitStatus = p.exitStatus() ;
+		m_stdOut     = p.readAllStandardOutput() ;
+		m_stdError   = p.readAllStandardError() ;
+	}
+}
+
+void utility::startHelperExecutable( QWidget * obj,const QString& arg,const char * slot,const char * slot1 )
+{
+	if( !utility::useZuluPolkit() ){
+
+		QMetaObject::invokeMethod( obj,slot,Q_ARG( bool,true ),Q_ARG( QString,QString() ) ) ;
+
+		return ;
+	}
+
+	QFile f( "/dev/urandom" ) ;
+
+	f.open( QIODevice::ReadOnly ) ;
+
+	_cookie = f.read( 16 ).toHex() ;
+
+	auto exe = utility::executableFullPath( "pkexec" ) ;
+
+	if( !exe.isEmpty() ){
+
+		exe = QString( "%1 %2 %3 fork ").arg( exe,siriPolkitPath,utility::helperSocketPath() ) ;
+
+		::Task::exec( [ = ](){
+
+			auto e = utility::Task::run( exe,false ).get() ;
+
+			QMetaObject::invokeMethod( obj,
+						   slot,
+						   Q_ARG( bool,e.success() ),
+						   Q_ARG( QString,arg ) ) ;
+		} ) ;
+	}else{
+		DialogMsg( obj ).ShowUIOK( QObject::tr( "ERROR" ),QObject::tr( "Failed to locate pkexec executable" ) ) ;
+		QMetaObject::invokeMethod( obj,slot1 ) ;
+	}
+}
+
+QString utility::helperSocketPath()
+{
+	return utility::homeConfigPath() + ".tmp/SiriKali.polkit.socket" ;
+}
+
+bool utility::useZuluPolkit()
+{
+	if( _settings->contains( "ElevatePrivileges" ) ){
+
+		return _settings->value( "ElevatePrivileges" ).toBool() ;
+	}else{
+		bool e = POLKIT_SUPPORT ;
+		_settings->setValue( "ElevatePrivileges",e ) ;
+		return e ;
+	}
+}
+
+void utility::quitHelper()
+{
+	auto e = utility::helperSocketPath() ;
+
+	if( utility::pathExists( e ) ){
+
+		QLocalSocket s ;
+
+		s.connectToServer( e ) ;
+
+		if( s.waitForConnected() ){
+
+			s.write( [ & ]()->QByteArray{
+
+				nlohmann::json json ;
+
+				json[ "cookie" ]     = _cookie.constData() ;
+				json[ "password" ]   = "" ;
+				json[ "command" ]    = "exit" ;
+
+				return json.dump().c_str() ;
+			}() ) ;
+
+			s.waitForBytesWritten() ;
+		}
+	}
+}
+
+void utility::setUID( int uid )
+{
+	if( utility::userIsRoot() || utility::useZuluPolkit() ){
+
+		staticGlobalUserId = uid ;
+	}
+}
+
+bool utility::userIsRoot()
+{
+	return getuid() == 0 ;
+}
+
+int utility::getUID()
+{
+	return staticGlobalUserId ;
+}
+
+int utility::getUserID()
+{
+	if( staticGlobalUserId == -1 ){
+
+		return getuid() ;
+	}else{
+		return staticGlobalUserId ;
+	}
+}
+
+QString utility::getStringUserID()
+{
+	return QString::number( utility::getUserID() ) ;
+}
+
+static passwd * _getPassWd()
+{
+	return getpwuid( utility::getUserID() ) ;
+}
+
+QString utility::userName()
+{
+	return _getPassWd()->pw_name ;
+}
+
+QString utility::homePath()
+{
+	return getpwuid( utility::getUserID() )->pw_dir ;
+}
+
+::Task::future<bool>& utility::openPath( const QString& path,const QString& opener )
+{
+	return ::Task::run<bool>( [ = ](){
+
+		auto e = opener + " " + utility::Task::makePath( path ) ;
+
+		return utility::Task::run( e,false ).get().failed() ;
+	} ) ;
+}
+
+void utility::openPath( const QString& path,const QString& opener,
+			QWidget * obj,const QString& title,const QString& msg )
+{
+	if( !path.isEmpty() ){
+
+		openPath( path,opener ).then( [ title,msg,obj ]( bool failed ){
+
+			if( failed && obj ){
+
+				DialogMsg m( obj ) ;
+				m.ShowUIOK( title,msg ) ;
+			}
+		} ) ;
+	}
+}
+
+bool utility::runningInMixedMode()
+{
+	return utility::useZuluPolkit() ;
+}
+
+bool utility::notRunningInMixedMode()
+{
+	return !utility::runningInMixedMode() ;
+}
+
+Task::future< utility::fsInfo >& utility::fileSystemInfo( const QString& q )
+{
+	return ::Task::run< utility::fsInfo >( [ = ](){
+
+		struct statfs e ;
+		utility::fsInfo s ;
+
+		s.valid = statfs( q.toLatin1().constData(),&e ) == 0 ;
+
+		s.f_bavail = e.f_bavail ;
+		s.f_bfree  = e.f_bfree ;
+		s.f_blocks = e.f_blocks ;
+		s.f_bsize  = e.f_bsize ;
+
+		return s ;
+	} ) ;
+}
 
 void utility::setSettingsObject( QSettings * s )
 {
@@ -89,14 +419,23 @@ options:\n\
 	-m   Tool to use to open a default file manager(default tool is xdg-open).\n\
 	-e   Start the application without showing the GUI.\n\
 	-b   A name of a backend to retrieve a password from when a volume is open from CLI.\n\
-	     Supported backends are: \"internal\",\"kwallet\" and \"gnomewallet.\n\
-	     The first one is always present but the rest are compile time dependencies.\n\
+	     Supported backends are: \"internal\",\"stdin\",\"keyfile\",\"kwallet\" and \"gnomewallet.\n\
+	     The first three are always present but the rest are compile time dependencies.\n\
+	     \"internal\" option causes SiriKali to read password from lxqt-wallet internal backend.\n\
+	     \"stdin\" option causes SiriKali to read the password from standard input.\n\
+	     \"keyfile\" option causes SiriKali to read the password from a file.\n\
+	     \"libsecret\" option causes SiriKali to read password from lxqt-wallet libsecret backend.\n\
+	     \"kwallet\" option causes SiriKali to read password from lxqt-wallet kwallet backend.\n\
 	-k   When opening a volume from CLI,a value of \"rw\" will open the volume in read\\write\n\
 	     mode and a value of \"ro\" will open the volume in read only mode.\n\
 	-z   Full path of the mount point to be used when the volume is opened from CLI.\n\
 	     This option is optional.\n\
 	-c   Set Volume Configuration File Path when a volume is opened from CLI.\n\
-	-i   Set inactivity timeout(in minutes) to dismount the volume when mounted from CLI.\n\n" ) ;
+	-i   Set inactivity timeout(in minutes) to dismount the volume when mounted from CLI.\n\
+	-f   Path to keyfile.\n\
+	-u   Unmount volume.\n\
+	-p   Print a list of unlocked volumes.\n\
+	-s   Option to trigger generation of password hash." ) ;
 
 	return 0 ;
 }
@@ -122,41 +461,6 @@ int utility::startApplication( const char * appName,std::function<int()> start )
 	}else{
 		return start() ;
 	}
-}
-
-static bool _execute_process( const QString& m,const QString& exe,const QString& env )
-{
-	Q_UNUSED( env ) ;
-
-	if( exe.startsWith( "/" ) && utility::pathExists( exe ) ){
-
-		auto e = m ;
-
-		e.replace( "\"","\"\"\"" ) ;
-
-		return utility::Task( exe + " \"" + e + "\"" ).success() ;
-	}else{
-		return false ;
-	}
-}
-
-::Task::future<bool>& utility::openPath( const QString& path,const QString& opener,const QString& env )
-{
-	return ::Task::run<bool>( [ env,path,opener ](){
-
-		return _execute_process( path,opener,env ) == false ;
-	} ) ;
-}
-
-void utility::openPath( const QString& path,const QString& opener,const QString& env,QWidget * obj,const QString& title,const QString& msg )
-{
-	openPath( path,opener,env ).then( [ title,msg,obj ]( bool failed ){
-
-		if( failed && obj ){
-
-			DialogMsg( obj ).ShowUIOK( title,msg ) ;
-		}
-	} ) ;
 }
 
 utility::wallet utility::getKey( const QString& keyID,LXQt::Wallet::Wallet& wallet )
@@ -228,6 +532,30 @@ bool utility::eventFilter( QObject * gui,QObject * watched,QEvent * event,std::f
 	return false ;
 }
 
+QStringList utility::executableSearchPaths()
+{
+	return { "/usr/local/bin/",
+		"/usr/local/sbin/",
+		"/usr/bin/",
+		"/usr/sbin/",
+		"/bin/",
+		"/sbin/",
+		"/opt/local/bin/",
+		"/opt/local/sbin/",
+		"/opt/bin/",
+		"/opt/sbin/" } ;
+}
+
+QString utility::executableSearchPaths( const QString& e )
+{
+	if( e.isEmpty() ){
+
+		return utility::executableSearchPaths().join( ":" ) ;
+	}else{
+		return e + ":" + utility::executableSearchPaths().join( ":" ) ;
+	}
+}
+
 QString utility::executableFullPath( const QString& f )
 {
 	QString e = f ;
@@ -239,14 +567,7 @@ QString utility::executableFullPath( const QString& f )
 
 	QString exe ;
 
-	auto l = { "/usr/local/bin/",
-		   "/usr/local/sbin/",
-		   "/usr/bin/",
-		   "/usr/sbin/",
-		   "/bin/",
-		   "/sbin/" } ;
-
-	for( const auto& it : l ){
+	for( const auto& it : utility::executableSearchPaths() ){
 
 		exe = it + e ;
 
@@ -437,7 +758,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the \
 GNU General Public License for more details.\n\
 " ).arg( VERSION_STRING ) ;
 
-	DialogMsg( parent ).ShowUIInfo( QObject::tr( "about SiriKali" ),true,license ) ;
+	DialogMsg( parent,nullptr ).ShowUIInfo( QObject::tr( "about SiriKali" ),true,license ) ;
 }
 
 static utility::array_t _default_dimensions( const char * defaults )
@@ -468,7 +789,7 @@ static utility::array_t _dimensions( const char * defaults,int size )
 
 		if( l.size() != size || size > int( p.size() ) ){
 
-			qDebug() << "failed to parse config option" ;
+			utility::debug() << "failed to parse config option" ;
 			return _default_dimensions( defaults ) ;
 		}
 
@@ -486,7 +807,7 @@ static utility::array_t _dimensions( const char * defaults,int size )
 
 				*( f + i ) = e ;
 			}else{
-				qDebug() << "failed to parse config option" ;
+				utility::debug() << "failed to parse config option" ;
 				return _default_dimensions( defaults ) ;
 			}
 		}
@@ -589,24 +910,24 @@ void utility::saveFont( const QFont& Font )
 	_settings->setValue( "Fonts",s ) ;
 }
 
-int utility::pluginKey( QWidget * w,QString * key,const QString& p )
+int utility::pluginKey( QWidget * w,QDialog * d,QByteArray * key,plugins::plugin plugin )
 {
-	plugins::plugin pluginType ;
-	QString pluginString ;
-	QVector<QString> exe ;
+	QString s ;
 
-	if( p == "hmac" ){
+	if( plugin == plugins::plugin::hmac_key ){
 
-		pluginType   = plugins::plugin::hmac_key ;
-		pluginString = QObject::tr( "hmac plugin.\n\nThis plugin generates a key using below formular:\n\nkey = hmac(sha256,passphrase,keyfile contents)" ) ;
+		s = QObject::tr( "hmac plugin.\n\nThis plugin generates a key using below formular:\n\nkey = hmac(sha256,passphrase,keyfile contents)" ) ;
 
+	}else if( plugin == plugins::plugin::externalExecutable ){
+
+		s = QObject::tr( "This plugin delegates key generation to an external application" ) ;
 	}else{
 		return 1 ;
 	}
 
 	QEventLoop l ;
 
-	plugin::instance( w,pluginType,[ & ]( const QString& e ){
+	plugin::instance( w,d,plugin,[ & ]( const QByteArray& e ){
 
 		*key = e ;
 
@@ -617,7 +938,7 @@ int utility::pluginKey( QWidget * w,QString * key,const QString& p )
 			l.exit( 0 ) ;
 		}
 
-	},pluginString,exe ) ;
+	},s ) ;
 
 	return l.exec() ;
 }
@@ -741,14 +1062,28 @@ QString utility::homeConfigPath( const QString& e )
 	return utility::homePath() + "/.SiriKali/" + e ;
 }
 
-QString utility::homePath()
+bool utility::pathIsReadable( const QString& path,bool isFolder )
 {
-	return QDir::homePath() ;
+	QFileInfo s( path ) ;
+
+	if( isFolder ){
+
+		return s.isReadable() && s.isDir() ;
+	}else{
+		return s.isReadable() && s.isFile() ;
+	}
 }
 
-bool utility::pathIsReadable( const QString& path )
+bool utility::pathIsWritable( const QString& path,bool isFolder )
 {
-	return QDir( path ).isReadable() ;
+	QFileInfo s( path ) ;
+
+	if( isFolder ){
+
+		return s.isWritable() && s.isDir() ;
+	}else{
+		return s.isWritable() && s.isFile() ;
+	}
 }
 
 bool utility::pathExists( const QString& path )
@@ -789,7 +1124,7 @@ QString utility::mountPath( const QString& path )
 
 		e = _settings->value( "MountPrefix" ).toString() ;
 	}else{
-		e = utility::homePath() + "/.SiriKali" ;
+		auto e = utility::homePath() + "/.SiriKali" ;
 
 		utility::setDefaultMountPointPrefix( e ) ;
 	}
@@ -967,6 +1302,10 @@ void utility::autoMountBackEnd( const utility::walletBackEnd& e )
 		}else if( e == LXQt::Wallet::BackEnd::kwallet ){
 
 			return "kwallet" ;
+
+		}else if( e == LXQt::Wallet::BackEnd::osxkeychain ){
+
+			return "osxkeychain" ;
 		}else{
 			return "none" ;
 		}
@@ -990,12 +1329,16 @@ utility::walletBackEnd utility::autoMountBackEnd()
 		}else if( e == "internal" ){
 
 			return LXQt::Wallet::BackEnd::internal ;
+
+		}else if( e == "osxkeychain" ){
+
+			return LXQt::Wallet::BackEnd::osxkeychain ;
 		}else{
 			return utility::walletBackEnd() ;
 		}
 	}else{
-		_settings->setValue( "AutoMountPassWordBackEnd",QString( "internal" ) ) ;
-		return LXQt::Wallet::BackEnd::internal ;
+		_settings->setValue( "AutoMountPassWordBackEnd",QString( "none" ) ) ;
+		return utility::walletBackEnd() ;
 	}
 }
 
@@ -1033,11 +1376,257 @@ void utility::showMountDialogWhenAutoMounting( bool e )
 
 int utility::checkForUpdateInterval()
 {
-	if( _settings->contains( "checkForUpdateInterval" ) ){
+	if( _settings->contains( "CheckForUpdateInterval" ) ){
 
-		return _settings->value( "checkForUpdateInterval" ).toInt() * 1000 ;
+		return _settings->value( "CheckForUpdateInterval" ).toInt() * 1000 ;
 	}else{
-		_settings->setValue( "checkForUpdateInterval",int( 300 ) ) ;
+		_settings->setValue( "CheckForUpdateInterval",int( 300 ) ) ;
 		return 300 * 1000 ;
+	}
+}
+
+void utility::setWindowOptions( QDialog * w )
+{
+	if( utility::platformIsOSX() ){
+
+		w->setWindowFlags( w->windowFlags() | Qt::WindowStaysOnTopHint ) ;
+		w->setWindowModality( Qt::WindowModal ) ;
+	}
+}
+
+static bool _use_default_widget_relationship()
+{
+	if( _settings->contains( "UseDefaultWidgetRelationship" ) ){
+
+		return _settings->value( "UseDefaultWidgetRelationship" ).toBool() ;
+	}else{
+		bool e = true ;
+		_settings->setValue( "UseDefaultWidgetRelationship",e ) ;
+		return e ;
+	}
+}
+
+void utility::setParent( QWidget * parent,QWidget ** localParent,QDialog * dialog )
+{
+	if( utility::platformIsLinux() ){
+
+		if( _use_default_widget_relationship() ){
+
+			*localParent = parent ;
+		}else{
+			*localParent = dialog ;
+		}
+	}else{
+		*localParent = dialog ;
+	}
+}
+
+void utility::scaleGUI()
+{
+#if QT_VERSION >= 0x050600
+
+	bool e = [](){
+
+		if( _settings->contains( "EnableHighDpiScaling" ) ){
+
+			return _settings->value( "EnableHighDpiScaling" ).toBool() ;
+		}else{
+			bool s = false ;
+			_settings->setValue( "EnableHighDpiScaling",s ) ;
+			_settings->setValue( "EnabledHighDpiScalingFactor",QString( "1" ) ) ;
+			return s ;
+		}
+	}() ;
+
+	if( e ){
+
+		QApplication::setAttribute( Qt::AA_EnableHighDpiScaling ) ;
+
+		qputenv( "QT_SCALE_FACTOR",[](){
+
+			if( _settings->contains( "EnabledHighDpiScalingFactor" ) ){
+
+				return _settings->value( "EnabledHighDpiScalingFactor" ).toString().toLatin1() ;
+			}else{
+				_settings->setValue( "EnabledHighDpiScalingFactor",QString( "1" ) ) ;
+				return QByteArray( "1" ) ;
+			}
+		}() ) ;
+	}
+
+#endif
+}
+
+bool utility::createFolder( const QString& m )
+{
+	if( QDir().mkpath( m ) ){
+
+		utility::changePathPermissions( m,0777 ) ;
+		utility::changePathOwner( m ) ;
+
+		return true ;
+	}else{
+		return false ;
+	}
+}
+
+QString utility::runCommandOnMount()
+{
+	if( _settings->contains( "RunCommandOnMount" ) ){
+
+		return _settings->value( "RunCommandOnMount" ).toString() ;
+	}else{
+		_settings->setValue( "RunCommandOnMount",QString( "" ) ) ;
+
+		return "" ;
+	}
+}
+
+static QString _file_manager()
+{
+	auto s = utility::platformIsLinux() ? "xdg-open" : "open" ;
+
+	auto e = utility::executableFullPath( s ) ;
+
+	if( e.isEmpty() ){
+
+		return s ;
+	}else{
+		return e ;
+	}
+}
+
+void utility::setFileManager( const QString& e )
+{
+	if( e.isEmpty() ){
+
+		_settings->setValue( "FileManagerOpener",_file_manager() ) ;
+	}else{
+		_settings->setValue( "FileManagerOpener",e ) ;
+	}
+}
+
+QString utility::fileManager()
+{
+	if( _settings->contains( "FileManagerOpener" ) ){
+
+		auto e = _settings->value( "FileManagerOpener" ).toString() ;
+
+		if( e.isEmpty() ){
+
+			utility::setFileManager( QString() ) ;
+
+			return _settings->value( "FileManagerOpener" ).toString() ; ;
+		}else{
+			return e ;
+		}
+	}else{
+		utility::setFileManager( QString() ) ;
+		return _settings->value( "FileManagerOpener" ).toString() ;
+	}
+}
+
+static int _readPasswordMaximumLength()
+{
+	if( _settings->contains( "ReadPasswordMaximumLength" ) ){
+
+		return _settings->value( "ReadPasswordMaximumLength" ).toInt() ;
+	}else{
+		int s = 1024 ;
+
+		_settings->setValue( "ReadPasswordMaximumLength",s ) ;
+
+		return s ;
+	}
+}
+
+static inline bool _terminalEchoOff( struct termios * old,struct termios * current )
+{
+	if( tcgetattr( 1,old ) != 0 ){
+
+		return false ;
+	}
+
+	*current = *old;
+	current->c_lflag &= ~ECHO;
+
+	if( tcsetattr( 1,TCSAFLUSH,current ) != 0 ){
+
+		return false ;
+	}else{
+		return true ;
+	}
+}
+
+QString utility::readPassword( bool addNewLine )
+{
+	std::cout << "Password: " << std::flush ;
+
+	struct termios old ;
+	struct termios current ;
+
+	_terminalEchoOff( &old,&current ) ;
+
+	QString s ;
+	int e ;
+
+	int m = _readPasswordMaximumLength() ;
+
+	for( int i = 0 ; i < m ; i++ ){
+
+		e = std::getchar() ;
+
+		if( e == '\n' || e == -1 ){
+
+			break ;
+		}else{
+			s += static_cast< char >( e ) ;
+		}
+	}
+
+	tcsetattr( 1,TCSAFLUSH,&old ) ;
+
+	if( addNewLine ){
+
+		std::cout << std::endl ;
+	}
+
+	return s ;
+}
+
+QString utility::externalPluginExecutable()
+{
+	if( _settings->contains( "ExternalPluginExecutable" ) ){
+
+		return _settings->value( "ExternalPluginExecutable" ).toString() ;
+	}else{
+		utility::setExternalPluginExecutable( QString() ) ;
+
+		return _settings->value( "ExternalPluginExecutable" ).toString() ;
+	}
+}
+
+void utility::setExternalPluginExecutable( const QString& e )
+{
+	if( e.isEmpty() ){
+
+		QString s = "gpg --no-tty --yes --no-mdc-warning --no-verbose --passphrase-fd 0 -d" ;
+		_settings->setValue( "ExternalPluginExecutable",s ) ;
+	}else{
+		_settings->setValue( "ExternalPluginExecutable",e ) ;
+	}
+}
+
+bool utility::enableRevealingPasswords()
+{
+	if( _settings->contains( "EnableRevealingPasswords" ) ){
+
+		return _settings->value( "EnableRevealingPasswords" ).toBool() ;
+	}else{
+		bool e = true ;
+
+		_settings->setValue( "EnableRevealingPasswords",e ) ;
+
+		return e ;
 	}
 }

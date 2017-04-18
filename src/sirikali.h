@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  *  Copyright (c) 2012-2015
  *  name : Francis Banyikwa
@@ -49,27 +49,31 @@ class sirikali : public QWidget
 public:
 	explicit sirikali( QWidget * parent = 0 ) ;
 	~sirikali() ;
-	void Show( void ) ;
-public slots:
-	void raiseWindow( void ) ;
-	void raiseWindow( QString ) ;
 private slots:
+	void setPluginExecutable( void ) ;
+	void setFileManager( void ) ;
+	void hideWindow( void ) ;
+	void setUpApp( bool,const QString& ) ;
+	void start( void ) ;
 	void autoUpdateCheck( void ) ;
+	void cryfsProperties( void ) ;
+	void encfsProperties( void ) ;
 	void ecryptfsProperties( void ) ;
+	void securefsProperties( void ) ;
 	void autoMountKeyStorage( void ) ;
 	void autoMountKeySource( QAction * ) ;
 	void showMountDialogWhenAutoMounting( bool ) ;
 	void autoMountWhenAvailable( bool ) ;
 	void setDefaultMountPointPrefix( void ) ;
-	void properties( void ) ;
 	void autoCheckUpdates( bool ) ;
 	void reuseMountPoint( bool ) ;
 	void autoMountFavoritesOnStartUp( bool ) ;
-	void unlockVolume( const QString&,const QString&,const QString&,
-			   const QString&,const QString&,bool ) ;
+	void unlockVolume( const QStringList& ) ;
 	void aboutToShowMenu( void ) ;
 	void changeInternalWalletPassWord( void ) ;
+	void closeApplication_1( int ) ;
 	void closeApplication( void ) ;
+	void closeApplication( int,const QString& = QString() ) ;
 	void unlockVolume( void ) ;
 	void startGUI( void ) ;
 	void showMoungDialog( const volumeInfo& ) ;
@@ -81,6 +85,7 @@ private slots:
 	void createVolume( QAction * = nullptr ) ;
 	void slotMount( void ) ;
 	void unMountAll( void ) ;
+	void unMountAllAndQuit( void ) ;
 	void pbUmount( void ) ;
 	void slotTrayClicked( QSystemTrayIcon::ActivationReason = QSystemTrayIcon::Trigger ) ;
 	void slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ;
@@ -95,7 +100,7 @@ private slots:
 	void showFavorites( void ) ;
 	void favoriteClicked( QAction * ) ;
 	void keyManagerClicked( QAction * ) ;
-	void openMountPointPath( QString ) ;
+	void openMountPointPath( const QString& ) ;
 	void licenseInfo( void ) ;
 	void updateCheck( void ) ;
 	void languageMenu( QAction * ac ) ;
@@ -107,10 +112,10 @@ private:
 
 	bool autoOpenFolderOnMount( void ) ;
 
+	void cliCommand( const QStringList& ) ;
 	void updateVolumeList( const QVector< volumeInfo >& ) ;
 	void openMountPoint( const QString& ) ;
 	void setLocalizationLanguage( bool ) ;
-
 	void dragEnterEvent( QDragEnterEvent * ) ;
 	void dropEvent( QDropEvent * ) ;
 	void showContextMenu( QTableWidgetItem *,bool ) ;
@@ -121,7 +126,7 @@ private:
 	void closeEvent( QCloseEvent * e ) ;
 	void setUpFont( void ) ;
 	void setUpShortCuts( void ) ;
-	void setUpApp( const QString& ) ;
+	void raiseWindow( const QString& = QString() ) ;
 	void autoUnlockVolumes( void ) ;
 	QVector< favorites::entry > autoUnlockVolumes( const QVector< favorites::entry >& ) ;
 
@@ -129,7 +134,6 @@ private:
 
 	secrets m_secrets ;
 
-	QMenu * m_favorite_menu = nullptr ;
 	QMenu * m_hidden_volume_menu = nullptr ;
 	QMenu * m_not_hidden_volume_menu = nullptr ;
 	QMenu * m_key_manager_menu = nullptr ;
@@ -146,11 +150,10 @@ private:
 	bool m_autoOpenFolderOnMount ;
 	bool m_removeAllVolumes = false ;
 
-	QString m_env ;
 	QString m_sharedFolderPath ;
 	QString m_folderOpener ;
 
-	QSettings m_settings ;
+	int m_exitStatus = 0 ;
 
 	QSystemTrayIcon m_trayIcon ;
 

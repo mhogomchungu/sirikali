@@ -46,6 +46,8 @@ readOnlyWarning::readOnlyWarning( QWidget * parent,bool checked ) :
 	this->installEventFilter( this ) ;
 
 	this->setReadOnlyOption( m_checked ) ;
+
+	utility::setWindowOptions( this ) ;
 }
 
 void readOnlyWarning::pbOK()
@@ -83,7 +85,10 @@ void readOnlyWarning::ShowUI()
 {
 	if( m_checked && !this->showUIwarning() ){
 
+		utility::setWindowOptions( this ) ;
 		this->show() ;
+		this->raise() ;
+		this->activateWindow() ;
 	}else{
 		this->deleteLater() ;
 	}

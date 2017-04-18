@@ -57,7 +57,7 @@ public:
 		return pwquality_check( m_handle,e.toLatin1().constData(),
 					nullptr,nullptr,nullptr ) ;
 	}
-	bool canCheckQuality()
+	operator bool()
 	{
 		return true ;
 	}
@@ -79,7 +79,7 @@ public:
 		Q_UNUSED( e ) ;
 		return 0 ;
 	}
-	bool canCheckQuality()
+	operator bool()
 	{
 		return false ;
 	}
@@ -95,6 +95,8 @@ class keyDialog : public QDialog
 {
 	Q_OBJECT
 public:
+	static QString keyFileError() ;
+
 	static keyDialog& instance( QWidget * parent,
 				    QTableWidget * table,
 				    secrets& s,
@@ -114,12 +116,11 @@ public:
 		   const QString&,
 		   const QByteArray& ) ;
 	~keyDialog() ;
-	void ShowUI( void ) ;
-	void HideUI( void ) ;
 signals:
 	void mounted( QString ) ;
 	void cryptoOpen( QString ) ;
 private slots:
+	void cbVisibleKeyStateChanged( int ) ;
 	void textChanged( QString ) ;
 	void passWordTextChanged( QString ) ;
 	void cbActicated( QString ) ;
@@ -138,8 +139,13 @@ private slots:
 	void cbMountReadOnlyStateChanged( int ) ;
 	void encryptedFolderMount( void ) ;
 	void encryptedFolderCreate( void ) ;
-private :
+private :	
+	void ShowUI( void ) ;
+	void HideUI( void ) ;
+
+	void showErrorMessage( const siritask::cmdStatus& ) ;
 	void showErrorMessage( const QString& ) ;
+
 	void setUIVisible( bool ) ;
 	void keyAndKeyFile( void ) ;
 	void openVolume( void ) ;
@@ -147,20 +153,19 @@ private :
 	void disableAll( void ) ;
 	void windowSetTitle( const QString& = QString() ) ;
 	void closeEvent( QCloseEvent * ) ;
-	bool completed( siritask::status ) ;
+	bool completed( const siritask::cmdStatus& ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 
 	Ui::keyDialog * m_ui ;
 
+	QByteArray m_key ;
+
 	QString m_path ;
-	QString m_key ;
 	QString m_deviceOffSet ;
 	QString m_options ;
 	QString m_configFile ;
 	QString m_exe ;
-
-	QEventLoop m_eventLoop ;
-
+	QString m_mountPointPath ;
 	QStringList m_keyFiles ;
 
 	QTableWidget * m_table ;

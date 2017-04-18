@@ -20,7 +20,11 @@
 #include "checkforupdates.h"
 
 #include <QFile>
+#include <QVector>
+#include <QObject>
+#include <QWidget>
 
+#include "networkAccessManager.hpp"
 #include "utility.h"
 #include "dialogmsg.h"
 #include "siritask.h"
@@ -34,12 +38,10 @@ static QString _tr( const QStringList& l )
 	return e.arg( "",l.at( 0 ),l.at( 1 ),l.at( 2 ) ) ;
 }
 
-static void _show( QObject * obj,bool autocheck,QWidget * w,const QVector< QStringList >& l )
+static void _show( bool autocheck,QWidget * w,const QVector< QStringList >& l )
 {
-	DialogMsg msg( w ) ;
-
 	bool show = false ;
-	QString e = "\n\n" ;
+	QString e = "\n" ;
 
 	for( const auto& it : l ){
 
@@ -49,7 +51,7 @@ static void _show( QObject * obj,bool autocheck,QWidget * w,const QVector< QStri
 
 		const auto& b = it.at( 2 ) ;
 
-		if( a != "N/A" and b != "N/A" ){
+		if( a != "N/A" && b != "N/A" ){
 
 			show = ( a != b ) ;
 		}
@@ -59,227 +61,174 @@ static void _show( QObject * obj,bool autocheck,QWidget * w,const QVector< QStri
 
 		if( show ){
 
-			msg.ShowUIInfo( QObject::tr( "Version Info" ),true,e + "\n" ) ;
+			DialogMsg( w ).ShowUIInfo( QObject::tr( "Version Info" ),true,e + "\n" ) ;
 		}
 	}else{
-		msg.ShowUIInfo( QObject::tr( "Version Info" ),true,e + "\n" ) ;
+		DialogMsg( w ).ShowUIInfo( QObject::tr( "Version Info" ),true,e + "\n" ) ;
 	}
-
-	obj->deleteLater() ;
 }
 
-static QString _get_app_version( const siritask::volumeType& e )
+static QString _version( const siritask::volumeType& e )
 {
-	if( e == "cryfs" ){
+	if( e == "sirikali" ){
 
-		auto exe = e.executableFullPath() ;
+		return THIS_VERSION ;
+	}
 
-		if( !exe.isEmpty() ){
+	auto exe = e.executableFullPath() ;
 
-			return Task::await< QString >( [ & ]()->QString{
+	if( exe.isEmpty() ){
 
-				auto e = utility::Task( exe,-1,[](){
+		return "N/A" ;
+	}
 
-					QProcessEnvironment env ;
+	auto args = [ & ](){
 
-					env.insert( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
-					env.insert( "CRYFS_FRONTEND","noninteractive" ) ;
+		if( e == "cryfs" ){
 
-					return env ;
+			return exe ;
 
-				}() ).output().split( ' ' ) ;
+		}else if( e == "securefs" ){
 
-				if( e.size() >= 3 ){
+			return exe + " version" ;
+		}else{
+			return exe + " --version" ;
+		}
+	}() ;
 
-					return e.at( 2 ).split( '\n' ).first() ;
-				}else{
-					return "N/A" ;
-				}
-			} ) ;
+	auto s = Task::await< QStringList >( [ & ](){
+
+		return utility::Task( args,-1,[ & ](){
+
+			QProcessEnvironment env ;
+
+			env.insert( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
+			env.insert( "CRYFS_FRONTEND","noninteractive" ) ;
+
+			return env ;
+
+		}() ).splitOutput( ' ',e != "encfs" ) ;
+	} ) ;
+
+	auto r = [ & ]()->QString{
+
+		if( e.isOneOf( "cryfs","encfs" ) ){
+
+			if( s.size() > 2 ){
+
+				return s.at( 2 ) ;
+			}
+		}else{
+			if( s.size() > 1 ){
+
+				return s.at( 1 ) ;
+			}
 		}
 
-	}else if( e.isOneOf( "gocryptfs","securefs","encfs" ) ){
+		return "N/A" ;
+	}() ;
 
-		auto exe = e.executableFullPath() ;
+	return r.split( '\n' ).first().remove( ';' ).remove( 'v' ).remove( '\n' ) ;
+}
 
-		if( !exe.isEmpty() ){
+static QString _version( const QByteArray& data )
+{
+	auto _found_release = []( const QString& e ){
 
-			auto args = [ & ]{
+		for( const auto& it : e ){
 
-				if( e.isOneOf( "gocryptfs","encfs" ) ){
+			/*
+			 * A release version has version in format of "A.B.C"
+			 *
+			 * ie it only has dots and digits. Presence of any other
+			 * character makes the release assumed to be a beta/alpha
+			 * or prerelease version(something like "A.B.C-rc1" or
+			 * "A.B.C.beta6"
+			 */
+			if( it != '.' && !( it >= '0' && it <= '9' ) ){
 
-					return " --version" ;
-				}else{
-					return " version" ;
-				}
-			}() ;
+				return false ;
+			}
+		}
 
-			auto a = utility::Task::run( exe + args ).await().splitOutput( ' ',e != "encfs" ) ;
+		return true ;
+	} ;
 
-			if( a.size() > 2 ){
+	for( const auto& it : nlohmann::json::parse( data.constData() ) ){
 
-				auto r = [ & ]()->QString{
+		auto e = it.find( "tag_name" ) ;
 
-					if( e == "encfs" ){
+		if( e != it.end() ){
 
-						return a.at( 2 ) ;
-					}else{
-						return a.at( 1 ) ;
-					}
-				}() ;
+			auto r = QString::fromStdString( e.value() ).remove( 'v' ) ;
 
-				r.remove( ';' ) ;
-				r.remove( 'v' ) ;
-				r.remove( '\n' ) ;
+			if( _found_release( r ) ){
 
 				return r ;
 			}
 		}
-
-	}else if( e == "SiriKali" ){
-
-		return THIS_VERSION ;
 	}
 
 	return "N/A" ;
 }
 
-static QStringList _get_versions( NetworkAccessManager& m,const QStringList& e )
-{
-	const auto& exe  = e.at( 0 ) ;
-	const auto& link = e.at( 1 ) ;
-	const auto& host = e.at( 2 ) ;
-
-	auto f = _get_app_version( exe ) ;
+static QStringList _version( NetworkAccessManager& m,const QString& exe,const QString& e )
+{	
+	auto f = _version( exe ) ;
 
 	if( f == "N/A" ){
 
 		return { exe,"N/A","N/A" } ;
-	}
+	}else {
+		QUrl url( "https://api.github.com/repos/" + e + "/releases" ) ;
 
-	auto _request = [ & ]( const QStringList& s ){
+		QNetworkRequest networkRequest( url ) ;
 
-		QNetworkRequest e( QUrl( s.first() ) ) ;
-
-		e.setRawHeader( "Host",s.at( 1 ).toLatin1() ) ;
-		e.setRawHeader( "Accept-Encoding","text/plain" ) ;
-
-		return e ;
-	} ;
-
-	return { exe,f,[ & ]()->QString{
+		networkRequest.setRawHeader( "Host","api.github.com" ) ;
+		networkRequest.setRawHeader( "Accept-Encoding","text/plain" ) ;
 
 		try{
-			if( exe == "cryfs" ){
+			return { exe,f,_version( m.get( networkRequest )->readAll() ) } ;
 
-				auto data = m.get( _request( { link,host } ) )->readAll() ;
-				auto json = nlohmann::json::parse( data.constData() ) ;
+		}catch( ... ){
 
-				auto it = json.find( "version_info" ) ;
-
-				if( it != json.end() ){
-
-					auto e = it.value() ;
-
-					auto r = e.find( "current" ) ;
-
-					if( r != e.end() ){
-
-						return QString::fromStdString( r.value() ) ;
-					}
-				}
-			}else{
-				auto data = m.get( _request( { link,host } ) )->readAll() ;
-
-				auto _found_release = []( const QString& e ){
-
-					for( const auto& it : e ){
-
-						/*
-						 * A release version has version in format of "A.B.C"
-						 *
-						 * ie it only has dots and digits. Presence of any other
-						 * character makes the release assumed to be a beta/alpha
-						 * or prerelease version(something like "A.B.C-rc1" or
-						 * "A.B.C.beta6"
-						 */
-						if( it != '.' && !( it >= '0' && it <= '9' ) ){
-
-							return false ;
-						}
-					}
-
-					return true ;
-				} ;
-
-				for( const auto& it : nlohmann::json::parse( data.constData() ) ){
-
-					auto e = it.find( "tag_name" ) ;
-
-					if( e != it.end() ){
-
-						auto r = QString::fromStdString( e.value() ).remove( 'v' ) ;
-
-						if( _found_release( r ) ){
-
-							return r ;
-						}
-					}
-				}
-			}
-
-		}catch( ... ){}
-
-		return "N/A" ;
-	}() } ;
+			return { exe,f,"N/A" } ;
+		}
+	}
 }
 
-checkForUpdates::checkForUpdates( QWidget * widget,bool autocheck ) :
-	m_autocheck( autocheck ),m_widget( widget )
+static void _check( QWidget * widget,bool autocheck )
 {
-	_show( this,m_autocheck,m_widget,[ & ]()->QVector< QStringList >{
+	_show( autocheck,widget,[ & ]()->QVector< QStringList >{
 
-		auto _build = []( const QString& e ){
+		NetworkAccessManager m ;
 
-			return "https://api.github.com/repos/" + e + "/releases" ;
-		} ;
+		auto a = _version( m,"sirikali","mhogomchungu/sirikali" ) ;
 
-		auto& m = m_networkAccessManager ;
+		auto b = _version( m,"cryfs","cryfs/cryfs" ) ;
 
-		auto a = _get_versions( m,{ "SiriKali",
-					    _build( "mhogomchungu/sirikali" ),
-					    "api.github.com" } ) ;
+		auto c = _version( m,"gocryptfs","rfjakob/gocryptfs" ) ;
 
-		auto b = _get_versions( m,{ "cryfs",
-					    "https://www.cryfs.org/version_info.json",
-					    "www.cryfs.org" } ) ;
+		auto d = _version( m,"securefs","netheril96/securefs" ) ;
 
-		auto c = _get_versions( m,{ "gocryptfs",
-					    _build( "rfjakob/gocryptfs" ),
-					    "api.github.com" } ) ;
+		auto e = _version( m,"encfs","vgough/encfs" ) ;
 
-		auto d = _get_versions( m,{ "securefs",
-					    _build( "netheril96/securefs" ),
-					    "api.github.com" } ) ;
+		auto f = _version( m,"ecryptfs-simple","mhogomchungu/ecryptfs-simple" ) ;
 
-		auto e = _get_versions( m,{ "encfs",
-					    _build( "vgough/encfs" ),
-					    "api.github.com" } ) ;
-
-		return { a,b,c,d,e } ;
+		return { a,b,c,d,e,f } ;
 	}() ) ;
 }
 
-void checkForUpdates::instance( QWidget * widget,bool e )
+void checkForUpdates::check( QWidget * widget,bool e )
 {
 	if( e ){
 
 		if( utility::autoCheck() ){
 
-			new checkForUpdates( widget,true ) ;
+			_check( widget,true ) ;
 		}
 	}else{
-		new checkForUpdates( widget,false ) ;
+		_check( widget,false ) ;
 	}
 }
 
@@ -291,8 +240,4 @@ bool checkForUpdates::autoCheck()
 void checkForUpdates::autoCheck( bool e )
 {
 	return utility::autoCheck( e ) ;
-}
-
-checkForUpdates::~checkForUpdates()
-{
 }

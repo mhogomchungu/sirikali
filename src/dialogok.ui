@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>dialogok</class>
  <widget class="QDialog" name="dialogok">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -42,7 +45,7 @@
     <enum>QFrame::Raised</enum>
    </property>
    <property name="text">
-    <string>TextLabel</string>
+    <string/>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>

@@ -177,7 +177,7 @@ QByteArray LXQt::Wallet::libsecret::readValue( const QString& key )
 
 QVector< std::pair< QString,QByteArray > > LXQt::Wallet::libsecret::readAllKeyValues( void )
 {
-	QVector< std::pair <QString,QByteArray > > p ;
+	QVector< std::pair < QString,QByteArray > > p ;
 
 	for( const auto& it : this->readAllKeys() ){
 

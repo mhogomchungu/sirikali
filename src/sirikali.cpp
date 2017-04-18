@@ -1,4 +1,4 @@
-﻿/*
+/*
  *
  *  Copyright (c) 2012-2015
  *  name : Francis Banyikwa
@@ -42,10 +42,11 @@
 
 #include <utility>
 #include <initializer_list>
+#include <memory>
 
 #include <unistd.h>
-#include <sys/vfs.h>
 
+#include "filemanager.h"
 #include "keydialog.h"
 #include "dialogmsg.h"
 #include "tablewidget.h"
@@ -56,29 +57,53 @@
 #include "checkforupdates.h"
 #include "favorites.h"
 #include "walletconfig.h"
-#include <memory>
+#include "plugins.h"
 
 #include "3rdParty/json.hpp"
 
 sirikali::sirikali( QWidget * parent ) :
 	QWidget( parent ),
 	m_secrets( this ),
-	m_settings( "SiriKali","SiriKali" ),
-	m_mountInfo( mountinfo::instance( this,true,[](){ QCoreApplication::quit() ; } ) )
+	m_mountInfo( mountinfo::instance( this,true,[ & ](){ QCoreApplication::exit( m_exitStatus ) ; } ) )
 {
-	utility::setSettingsObject( &m_settings ) ;
 }
 
 /*
- * This should be the only function that closes the application
+ * Below 3 should be the only function that closes the application
  */
 void sirikali::closeApplication()
 {
+	utility::quitHelper() ;
+	this->hide() ;
 	m_mountInfo.stop()() ;
 }
 
-void sirikali::setUpApp( const QString& volume )
+void sirikali::closeApplication( int s,const QString& e )
 {
+	m_exitStatus = s ;
+
+	if( !e.isEmpty() ){
+
+		utility::debug() << e ;
+	}
+
+	this->hide() ;
+	m_mountInfo.stop()() ;
+}
+
+void sirikali::closeApplication_1( int s )
+{
+	Q_UNUSED( s ) ;
+	m_mountInfo.stop()() ;
+}
+
+void sirikali::setUpApp( bool start,const QString& volume )
+{
+	if( !start ){
+
+		return this->closeApplication() ;
+	}
+
 	this->setLocalizationLanguage( true ) ;
 
 	m_ui = new Ui::sirikali ;
@@ -114,7 +139,7 @@ void sirikali::setUpApp( const QString& volume )
 	connect( m_ui->tableWidget,SIGNAL( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ),
 		 this,SLOT( slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) ) ;
 
-	connect( m_ui->pbupdate,SIGNAL( clicked()),
+	connect( m_ui->pbupdate,SIGNAL( clicked() ),
 		 this,SLOT( pbUpdate() ) ) ;
 
 	connect( &m_mountInfo,SIGNAL( gotEvent() ),this,
@@ -180,14 +205,6 @@ void sirikali::setUpApp( const QString& volume )
 
 	m_trayIcon.show() ;
 
-	auto dirPath = utility::homeConfigPath() ;
-	QDir dir( dirPath ) ;
-
-	if( !dir.exists() ){
-
-		dir.mkpath( dirPath ) ;
-	}
-
 	this->disableAll() ;
 
 	this->startAutoMonitor() ;
@@ -200,6 +217,8 @@ void sirikali::setUpApp( const QString& volume )
 	}else{
 		this->showMoungDialog( volume ) ;
 	}
+
+	this->startGUI() ;
 
 	QTimer::singleShot( utility::checkForUpdateInterval(),this,SLOT( autoUpdateCheck() ) ) ;
 }
@@ -288,9 +307,11 @@ void sirikali::setUpAppMenu()
 			q->addAction( ac ) ;
 		} ;
 
+
 		_addOption( tr( "Internal Wallet" ),"Internal Wallet",bk::internal ) ;
 		_addOption( tr( "KDE Wallet" ),"KDE Wallet",bk::kwallet ) ;
 		_addOption( tr( "Gnome Wallet" ),"Gnome Wallet",bk::libsecret ) ;
+		_addOption( tr( "OSX KeyChain" ),"OSX KeyChain",bk::osxkeychain ) ;
 		_addOption( tr( "None" ),"None",utility::walletBackEnd() ) ;
 
 		return q ;
@@ -308,8 +329,17 @@ void sirikali::setUpAppMenu()
 	m->addAction( _addAction( false,false,tr( "Set Mount Point Prefix" ),
 				  "Set Mount Point Prefix",SLOT( setDefaultMountPointPrefix() ) ) ) ;
 
+	m->addAction( _addAction( false,false,tr( "Set File Manager" ),
+				  "Set File Manager",SLOT( setFileManager() ) ) ) ;
+
+	m->addAction( _addAction( false,false,tr( "Set External Plugin Executable" ),
+				  "Set External Plugin Executable",SLOT( setPluginExecutable() ) ) ) ;
+
 	m->addAction( _addAction( false,false,tr( "Unmount All" ),
 				  "Unmount All",SLOT( unMountAll() ) ) ) ;
+
+	m->addAction( _addAction( false,false,tr( "Unmount All And Quit" ),
+				  "Unmount All And Quit",SLOT( unMountAllAndQuit() ) ) ) ;
 
 	m->addMenu( [ this,m,&_addMenu,&_addAction,&_addWalletEntries ](){
 
@@ -329,10 +359,21 @@ void sirikali::setUpAppMenu()
 					  "AutoMount Favorite Volumes At Start Up",
 					   SLOT( autoMountFavoritesOnStartUp( bool ) ) ) ) ;
 
-		e->addAction( _addAction( true,utility::autoMountFavoritesOnAvailable(),
-					  tr( "AutoMount Favorite Volumes When Available" ),
-					  "AutoMount Favorite Volumes When Available",
-					  SLOT( autoMountWhenAvailable( bool ) ) ) ) ;
+		e->addAction( [ & ](){
+
+			auto s = _addAction( true,utility::autoMountFavoritesOnAvailable(),
+					     tr( "AutoMount Favorite Volumes When Available" ),
+					     "AutoMount Favorite Volumes When Available",
+					     SLOT( autoMountWhenAvailable( bool ) ) ) ;
+
+			if( utility::platformIsOSX() ){
+
+				s->setChecked( false ) ;
+				s->setEnabled( false ) ;
+			}
+
+			return s ;
+		}() ) ;
 
 		e->addAction( _addAction( true,utility::showMountDialogWhenAutoMounting(),
 					  tr( "Show Mount Dialog When AutoMounting" ),
@@ -358,9 +399,9 @@ void sirikali::setUpAppMenu()
 						SLOT( keyManagerClicked( QAction * ) ),
 						SLOT( aboutToShowMenu() ) ) ;
 
-	m_favorite_menu = _addMenu( m,tr( "Favorites" ),"Favorites",
+	m_ui->pbFavorites->setMenu( _addMenu( new QMenu( this ),tr( "Favorites" ),"Favorites",
 				    SLOT( favoriteClicked( QAction * ) ),
-				    SLOT( showFavorites() ) ) ;
+				    SLOT( showFavorites() ) ) ) ;
 
 	m_language_menu = _addMenu( m,tr( "Select Language" ),"Select Language",
 				    SLOT( languageMenu( QAction * ) ),nullptr ) ;
@@ -385,6 +426,16 @@ void sirikali::setUpAppMenu()
 		 this,SLOT( slotTrayClicked( QSystemTrayIcon::ActivationReason ) ) ) ;
 }
 
+void sirikali::setFileManager()
+{
+	fileManager::instance( this,m_folderOpener,true ) ;
+}
+
+void sirikali::setPluginExecutable()
+{
+	fileManager::instance( this,m_folderOpener,false ) ;
+}
+
 void sirikali::autoMountKeyStorage()
 {
 	auto s = utility::autoMountBackEnd() ;
@@ -393,6 +444,8 @@ void sirikali::autoMountKeyStorage()
 	auto b = tr( "KDE Wallet" ).remove( '&' ) ;
 	auto c = tr( "Gnome Wallet" ).remove( '&' ) ;
 	auto d = tr( "None" ).remove( '&' ) ;
+	auto f = tr( "OSX KeyChain" ).remove( '&' ) ;
+
 
 	for( const auto& it: m_autoMountKeyStorage->actions() ){
 
@@ -411,6 +464,10 @@ void sirikali::autoMountKeyStorage()
 			}else if( e == c ){
 
 				return s == LXQt::Wallet::BackEnd::libsecret ;
+
+			}else if( e == f ){
+
+				return s == LXQt::Wallet::BackEnd::osxkeychain ;
 			}else{
 				return e == d && s.isInvalid() ;
 			}
@@ -430,6 +487,8 @@ void sirikali::autoMountKeySource( QAction * e )
 
 		auto d = tr( "Gnome Wallet" ).remove( '&' ) ;
 
+		auto e = tr( "OSX KeyChain" ).remove( '&' ) ;
+
 		if( a == b ){
 
 			return LXQt::Wallet::BackEnd::internal ;
@@ -441,6 +500,10 @@ void sirikali::autoMountKeySource( QAction * e )
 		}else if( a == d ){
 
 			return LXQt::Wallet::BackEnd::libsecret ;
+
+		}else if( a == e ){
+
+			return LXQt::Wallet::BackEnd::osxkeychain ;
 		}else{
 			return utility::walletBackEnd() ;
 		}
@@ -479,7 +542,7 @@ void sirikali::setDefaultMountPointPrefix()
 
 void sirikali::startAutoMonitor()
 {
-	m_mountInfo.start() ;
+	m_mountInfo.anza() ;
 }
 
 void sirikali::aboutToShowMenu()
@@ -513,6 +576,10 @@ void sirikali::keyManagerClicked( QAction * ac )
 			}else if( e == tr( "Gnome Wallet" ).remove( '&' ) ){
 
 				return LXQt::Wallet::BackEnd::libsecret ;
+
+			}else if( e == tr( "OSX KeyChain" ).remove( '&' ) ){
+
+				return LXQt::Wallet::BackEnd::osxkeychain ;
 			}else{
 				return LXQt::Wallet::BackEnd::internal ;
 			}
@@ -527,12 +594,12 @@ void sirikali::licenseInfo()
 
 void sirikali::updateCheck()
 {
-	checkForUpdates::instance( this,false ) ;
+	checkForUpdates::check( this,false ) ;
 }
 
 void sirikali::autoUpdateCheck()
 {
-	checkForUpdates::instance( this,true ) ;
+	checkForUpdates::check( this,true ) ;
 }
 
 void sirikali::autoCheckUpdates( bool e )
@@ -573,7 +640,7 @@ void sirikali::favoriteClicked( QAction * ac )
 
 void sirikali::showFavorites()
 {
-	utility::readFavorites( m_favorite_menu,true,tr( "Manage Favorites" ),tr( "Mount All" ) ) ;
+	utility::readFavorites( m_ui->pbFavorites->menu(),true,tr( "Manage Favorites" ),tr( "Mount All" ) ) ;
 }
 
 void sirikali::setLocalizationLanguage( bool translate )
@@ -632,15 +699,7 @@ void sirikali::startGUI()
 	}
 }
 
-void sirikali::raiseWindow()
-{
-	this->setVisible( true ) ;
-	this->raise() ;
-	this->show() ;
-	this->setWindowState( Qt::WindowActive ) ;
-}
-
-void sirikali::raiseWindow( QString volume )
+void sirikali::raiseWindow( const QString& volume )
 {
 	this->setVisible( true ) ;
 	this->raise() ;
@@ -649,50 +708,184 @@ void sirikali::raiseWindow( QString volume )
 	this->showMoungDialog( volume ) ;
 }
 
-void sirikali::Show()
+void sirikali::start()
 {
-	auto l = QCoreApplication::arguments() ;
+	const auto l = QCoreApplication::arguments() ;
+
+	utility::setUID( utility::cmdArgumentValue( l,"-K","-1" ).toInt() ) ;
 
 	m_startHidden  = l.contains( "-e" ) ;
-	m_folderOpener = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
-	m_env          = utility::cmdArgumentValue( l,"-z","" ) ;
+	m_folderOpener = utility::cmdArgumentValue( l,"-m",utility::fileManager() ) ;
 
-	auto volume = utility::cmdArgumentValue( l,"-d" ) ;
+	utility::createFolder( utility::homeConfigPath() ) ;
 
-	auto b = utility::cmdArgumentValue( l,"-b","" ) ;
-	auto k = utility::cmdArgumentValue( l,"-k","rw" ) ;
-	auto z = utility::cmdArgumentValue( l,"-z","" ) ;
-	auto i = utility::cmdArgumentValue( l,"-i","" ) ;
-        auto c = utility::cmdArgumentValue( l,"-c","" ) ;
+	auto _cliCommand = [ & ](){
 
-	if( b.isEmpty() ){
+		return l.contains( "-s" ) ||
+		       l.contains( "-u" ) ||
+		       l.contains( "-p" ) ||
+		       !utility::cmdArgumentValue( l,"-b" ).isEmpty() ;
+	}() ;
 
-		oneinstance::instance( this,"SiriKali.socket","startGUI",
-				       volume,[ this,volume ]( QObject * instance ){
+	if( _cliCommand ){
 
-			connect( instance,SIGNAL( raise() ),this,
-				 SLOT( raiseWindow() ) ) ;
-			connect( instance,SIGNAL( raiseWithDevice( QString ) ),
-				 this,SLOT( raiseWindow( QString ) ) ) ;
-
-			this->setUpApp( volume ) ;
-		} ) ;
+		this->cliCommand( l ) ;
 	}else{
-		QMetaObject::invokeMethod( this,"unlockVolume",Qt::QueuedConnection,
-					   Q_ARG( QString,volume ),Q_ARG( QString,z ),
-					   Q_ARG( QString,b ),Q_ARG( QString,i ),
-                                           Q_ARG( QString,c ),Q_ARG( bool,k == "ro" ) ) ;
+		auto s = utility::homeConfigPath( ".tmp" ) ;
+
+		utility::createFolder( s ) ;
+
+		if( !utility::pathIsWritable( s ) ){
+
+			DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "\"%1\" Folder Must Be Writable" ).arg( s ) ) ;
+
+			return this->closeApplication() ;
+		}
+
+		oneinstance::instance( this,
+				       s + "/SiriKali.socket",
+				       utility::cmdArgumentValue( l,"-d" ),
+				       [ this ]( const QString& e ){ utility::startHelperExecutable( this,
+												     e,
+												     "setUpApp",
+												     "closeApplication" ) ; },
+				       [ this ]( int s ){ this->closeApplication_1( s ) ; },
+				       [ this ]( const QString& e ){ this->raiseWindow( e ) ; } ) ;
 	}
 }
 
-void sirikali::unlockVolume( const QString& volume,const QString& mountPath,
-                             const QString& backEnd,const QString& mOpt,const QString& cPath,bool mode )
+void sirikali::cliCommand( const QStringList& l )
 {
-	if( volume.isEmpty() ){
+	if( l.contains( "-s" ) ){
 
-		utility::debug() << tr( "ERROR: Volume Path Not Given." ) ;
-		QCoreApplication::exit( 1 ) ;
+		auto e = utility::cmdArgumentValue( l,"-f" ) ;
+
+		auto s = plugins::hmac_key( e,utility::readPassword() ) ;
+
+		if( s.isEmpty() ){
+
+			return this->closeApplication( 1 ) ;
+		}else{
+			return this->closeApplication( 0,s ) ;
+		}
+	}
+
+	if( l.contains( "-u" ) ){
+
+		auto volume = utility::cmdArgumentValue( l,"-d" ) ;
+
+		for( const auto& it : siritask::updateVolumeList().await() ){
+
+			const auto& a = it.volumePath() ;
+			const auto& b = it.mountPoint() ;
+			const auto& c = it.fileSystem() ;
+
+			if( a == volume || b == volume ){
+
+				if( siritask::encryptedFolderUnMount( a,b,c ).await() ){
+
+					siritask::deleteMountFolder( b ) ;
+
+					return this->closeApplication( 0 ) ;
+				}else{
+					break ;
+				}
+			}
+		}
+
+		return this->closeApplication( 1 ) ;
+	}
+
+	if( l.contains( "-p" ) ){
+
+		for( const volumeInfo& it : siritask::updateVolumeList().await() ){
+
+			it.printVolumeInfo() ;
+		}
+
+		return this->closeApplication( 0 ) ;
+	}
+
+	if( !utility::cmdArgumentValue( l,"-b" ).isEmpty() ){
+
+		this->unlockVolume( l ) ;
+	}
+}
+
+void sirikali::unlockVolume( const QStringList& l )
+{
+	auto vol       = utility::cmdArgumentValue( l,"-d" ) ;
+	auto volume    = QDir( vol ).canonicalPath() ;
+	auto mountPath = utility::cmdArgumentValue( l,"-z" ) ;
+	auto backEnd   = utility::cmdArgumentValue( l,"-b" ) ;
+	auto mode      = utility::cmdArgumentValue( l,"-k","rw" ) == "ro" ;
+	auto mOpt      = utility::cmdArgumentValue( l,"-i" ) ;
+	auto cPath     = utility::cmdArgumentValue( l,"-c" ) ;
+	auto keyFile   = utility::cmdArgumentValue( l,"-f" ) ;
+
+	if( vol.isEmpty() ){
+
+		this->closeApplication( 1,tr( "ERROR: Volume Path Not Given." ) ) ;
 	}else{
+		auto _unlockVolume = [ & ]( const QString& key ){
+
+			auto m = [ & ]()->QString{
+
+				if( mountPath.isEmpty() ){
+
+					auto e = utility::mountPathPostFix( volume.split( "/" ).last() ) ;
+
+					return utility::mountPath( e ) ;
+				}else{
+					return mountPath ;
+				}
+			}() ;
+
+			siritask::options s = { volume,m,key,mOpt,cPath,QString(),mode } ;
+
+			auto& e = siritask::encryptedFolderMount( s ) ;
+
+			if( e.await() == siritask::status::success ){
+
+				this->openMountPointPath( m ) ;
+
+				this->closeApplication( 0 ) ;
+			}else{
+				this->closeApplication( 1 ) ;
+			}
+		} ;
+
+		if( backEnd == "stdin" ){
+
+			return _unlockVolume( [ & ]()->QString{
+
+				auto e = utility::readPassword() ;
+
+				if( keyFile.isEmpty() ){ ;
+
+					return e ;
+				}else{
+					return plugins::hmac_key( keyFile,e ) ;
+				}
+			}() ) ;
+		}
+
+		if( backEnd == "keyfile" ){
+
+			QFile f( keyFile ) ;
+
+			f.open( QIODevice::ReadOnly ) ;
+
+			auto key = f.readAll() ;
+
+			if( utility::containsAtleastOne( key,'\n','\0','\r' ) ){
+
+				utility::debug() << keyDialog::keyFileError() ;
+			}
+
+			return _unlockVolume( key ) ;
+		}
+
 		auto w = [ & ](){
 
 			namespace wxt = LXQt::Wallet ;
@@ -708,7 +901,8 @@ void sirikali::unlockVolume( const QString& volume,const QString& mountPath,
 
 				return utility::getKey( volume,s.bk() ) ;
 
-			}else if( _supported( wxt::BackEnd::libsecret,"gnomewallet" ) ){
+			}else if( _supported( wxt::BackEnd::libsecret,"gnomewallet" ) ||
+				  _supported( wxt::BackEnd::libsecret,"libsecret" ) ){
 
 				auto s = m_secrets.walletBk( wxt::BackEnd::libsecret ) ;
 
@@ -717,6 +911,12 @@ void sirikali::unlockVolume( const QString& volume,const QString& mountPath,
 			}else if( _supported( wxt::BackEnd::kwallet,"kwallet" ) ){
 
 				auto s = m_secrets.walletBk( wxt::BackEnd::kwallet ) ;
+
+				return utility::getKey( volume,s.bk() ) ;
+
+			}else if( _supported( wxt::BackEnd::osxkeychain,"osxkeychain" ) ){
+
+				auto s = m_secrets.walletBk( wxt::BackEnd::osxkeychain ) ;
 
 				return utility::getKey( volume,s.bk() ) ;
 			}else{
@@ -728,34 +928,12 @@ void sirikali::unlockVolume( const QString& volume,const QString& mountPath,
 
 			if( w.key.isEmpty() ){
 
-				utility::debug() << tr( "ERROR: Key Not Found In The Backend." ) ;
-				QCoreApplication::exit( 1 ) ;
+				this->closeApplication( 1,tr( "ERROR: Key Not Found In The Backend." ) ) ;
 			}else{
-				auto m = [ & ]()->QString{
-
-					if( mountPath.isEmpty() ){
-
-						auto e = utility::mountPathPostFix( volume.split( "/" ).last() ) ;
-
-						return utility::mountPath( e ) ;
-					}else{
-						return mountPath ;
-					}
-				}() ;
-
-				auto& e = siritask::encryptedFolderMount( { volume,m,w.key,mOpt,cPath,QString(),mode } ) ;
-
-				if( e.await() == siritask::status::success ){
-
-					QCoreApplication::exit( 0 ) ;
-				}else{
-					utility::debug() << tr( "ERROR: Failed To Unlock Requested Volume." ) ;
-					QCoreApplication::exit( 1 ) ;
-				}
+				_unlockVolume( w.key ) ;
 			}
 		}else{
-			utility::debug() << tr( "ERROR: Failed To Unlock Requested Backend." ) ;
-			QCoreApplication::exit( 1 ) ;
+			this->closeApplication( 1,tr( "ERROR: Failed To Unlock Requested Backend." ) ) ;
 		}
 	}
 }
@@ -774,7 +952,10 @@ void sirikali::autoMountFavoritesOnAvailable( QString m )
 			}
 		}
 
-		this->autoUnlockVolumes( e ) ;
+		for( const auto& it : this->autoUnlockVolumes( e ) ){
+
+			this->mount( it ) ;
+		}
 	}
 }
 
@@ -824,7 +1005,15 @@ QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorite
 
 				this->mount( e,QString(),key ) ;
 			}else{
-				siritask::encryptedFolderMount( { e,key } ).start() ;
+				auto& s = siritask::encryptedFolderMount( { e,key } ) ;
+
+				s.then( [ this ]( siritask::cmdStatus s ){
+
+					if( s == siritask::status::success ){
+
+						m_mountInfo.eventHappened() ;
+					}
+				} ) ;
 			}
 		} ;
 
@@ -863,6 +1052,8 @@ QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorite
 
 void sirikali::ecryptfsProperties()
 {
+	this->disableAll() ;
+
 	auto s = [ this ](){
 
 		auto table = m_ui->tableWidget ;
@@ -896,9 +1087,11 @@ void sirikali::ecryptfsProperties()
 			break ;
 		}
 	}
+
+	this->enableAll() ;
 }
 
-void sirikali::properties()
+void sirikali::cryfsProperties()
 {
 	this->disableAll() ;
 
@@ -916,9 +1109,9 @@ void sirikali::properties()
 		}
 	}() ;
 
-	struct statfs vfs ;
+	auto vfs = utility::fileSystemInfo( m ).await() ;
 
-	if( Task::await< int >( [ & ](){ return statfs( m.constData(),&vfs ) ; } ) ){
+	if( !vfs.valid ){
 
 		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Read Volume Properties" ) ) ;
 
@@ -1030,6 +1223,58 @@ void sirikali::properties()
 	this->enableAll() ;
 }
 
+static void _volume_properties( const QString& e,const QString& arg,
+				QTableWidget * table,QWidget * w )
+{
+	auto exe = utility::executableFullPath( e ) ;
+
+	auto path = [ table ](){
+
+		auto row = table->currentRow() ;
+
+		if( row < 0 ){
+
+			return QString() ;
+		}else{
+			return utility::Task::makePath( table->item( row,0 )->text() ) ;
+		}
+	}() ;
+
+	if( exe.isEmpty() ){
+
+		DialogMsg( w ).ShowUIOK( QObject::tr( "ERROR" ),
+					 QObject::tr( "Failed To Find %1 Executable" ).arg( e ) ) ;
+	}else{
+		auto e = utility::Task::run( exe + arg + path ).await() ;
+
+		if( e.success() ){
+
+			DialogMsg( w ).ShowUIInfo( QObject::tr( "INFORMATION" ),true,e.stdOut() ) ;
+		}else{
+			DialogMsg( w ).ShowUIOK( QObject::tr( "ERROR" ),
+						 QObject::tr( "Failed To Get Volume Properties" ) ) ;
+		}
+	}
+}
+
+void sirikali::encfsProperties()
+{
+	this->disableAll() ;
+
+	_volume_properties( "encfsctl"," ",m_ui->tableWidget,this ) ;
+
+	this->enableAll() ;
+}
+
+void sirikali::securefsProperties()
+{
+	this->disableAll() ;
+
+	_volume_properties( "securefs"," info ",m_ui->tableWidget,this ) ;
+
+	this->enableAll() ;
+}
+
 void sirikali::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 {
 	struct volumeType{ const char * slot ; bool enabled ; } ;
@@ -1068,11 +1313,19 @@ void sirikali::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 			if( e == "cryfs" ){
 
-				return { SLOT( properties() ),true } ;
+				return { SLOT( cryfsProperties() ),true } ;
 
 			}else if( e == "ecryptfs" ){
 
 				return { SLOT( ecryptfsProperties() ),true } ;
+
+			}else if( e == "securefs" ){
+
+				return { SLOT( securefsProperties() ),true } ;
+
+			}else if( e == "encfs" ){
+
+				return { SLOT( encfsProperties() ),true } ;
 			}
 		}
 
@@ -1136,15 +1389,20 @@ void sirikali::openMountPoint( const QString& m_point )
 	auto x = tr( "WARNING" ) ;
 	auto y = tr( "Could Not Open Mount Point Because \"%1\" Tool Does Not Appear To Be Working Correctly." ).arg( m_folderOpener ) ;
 
-	utility::openPath( m_point,m_folderOpener,m_env,this,x,y ) ;
+	utility::openPath( m_point,m_folderOpener,this,x,y ) ;
 }
 
-void sirikali::openMountPointPath( QString m )
+void sirikali::openMountPointPath( const QString& m )
 {
 	if( m_autoOpenFolderOnMount ){
 
 		this->openMountPoint( m ) ;
 	}
+}
+
+void sirikali::hideWindow()
+{
+	this->hide() ;
 }
 
 void sirikali::setUpShortCuts()
@@ -1168,7 +1426,20 @@ void sirikali::setUpShortCuts()
 
 	this->addAction( _addAction( { Qt::Key_R },SLOT( pbUpdate() ) ) ) ;
 
-	this->addAction( _addAction( { Qt::Key_C },SLOT( closeApplication() ) ) ) ;
+	this->addAction( _addAction( { Qt::CTRL + Qt::Key::Key_W },SLOT( hideWindow() ) ) ) ;
+
+	this->addAction( [ & ](){
+
+		auto e = _addAction( { Qt::CTRL + Qt::Key::Key_Q },SLOT( closeApplication() ) ) ;
+
+		e->setMenuRole( QAction::QuitRole ) ;
+
+		e->setText( tr( "&Quit" ) ) ;
+
+		return e ;
+	}() ) ;
+
+
 }
 
 void sirikali::setUpFont()
@@ -1218,9 +1489,11 @@ void sirikali::mount( const volumeInfo& entry,const QString& exe,const QByteArra
 
 	},[ this ]( const QString& e ){
 
+		m_mountInfo.eventHappened() ;
+
 		this->openMountPointPath( e ) ;
 
-	},exe,key ).ShowUI() ;
+	},exe,key ) ;
 }
 
 void sirikali::createVolume( QAction * ac )
@@ -1361,6 +1634,7 @@ void sirikali::pbUmount()
 
 		if( siritask::encryptedFolderUnMount( a,b,c ).await() ){
 
+			m_mountInfo.eventHappened() ;
 			siritask::deleteMountFolder( b ) ;
 		}else{
 			DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Unmount %1 Volume" ).arg( type ) ) ;
@@ -1412,6 +1686,16 @@ void sirikali::unMountAll()
 	m_mountInfo.announceEvents( true ) ;
 }
 
+void sirikali::unMountAllAndQuit()
+{
+	this->unMountAll() ;
+
+	if( m_ui->tableWidget->rowCount() == 0 ){
+
+		this->closeApplication() ;
+	}
+}
+
 void sirikali::pbUpdate()
 {
 	this->disableAll() ;
@@ -1443,6 +1727,7 @@ void sirikali::disableAll()
 	m_ui->tableWidget->setEnabled( false ) ;
 	m_ui->pbunlockvolume->setEnabled( false ) ;
 	m_ui->pbcreate->setEnabled( false ) ;
+	m_ui->pbFavorites->setEnabled( false ) ;
 }
 
 void sirikali::enableAll()
@@ -1455,6 +1740,7 @@ void sirikali::enableAll()
 		m_ui->tableWidget->setFocus() ;
 		m_ui->pbunlockvolume->setEnabled( true ) ;
 		m_ui->pbcreate->setEnabled( true ) ;
+		m_ui->pbFavorites->setEnabled( true ) ;
 	}
 }
 

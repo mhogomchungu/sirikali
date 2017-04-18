@@ -18,17 +18,24 @@
  */
 
 #include <QApplication>
+#include <QMetaObject>
+
 #include "sirikali.h"
 #include "utility.h"
 
 int main( int argc,char * argv[] )
 {
+	QSettings settings( "SiriKali","SiriKali" ) ;
+	utility::setSettingsObject( &settings ) ;
+
+	utility::scaleGUI() ;
+
 	QApplication a( argc,argv ) ;
 
 	return utility::startApplication( "SiriKali",[ & ](){
 
 		sirikali e ;
-		e.Show() ;
+		QMetaObject::invokeMethod( &e,"start",Qt::QueuedConnection ) ;
 
 		return a.exec() ;
 	} ) ;

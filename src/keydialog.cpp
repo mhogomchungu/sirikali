@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  *  Copyright (c) 2012-2015
  *  name : Francis Banyikwa
@@ -50,6 +50,11 @@ static QString _gnomeWallet()
 	return QObject::tr( "Gnome Wallet" ) ;
 }
 
+static QString _OSXKeyChain()
+{
+	return QObject::tr( "OSX KeyChain" ) ;
+}
+
 keyDialog::keyDialog( QWidget * parent,
 		      QTableWidget * table,
 		      secrets& s,
@@ -71,7 +76,7 @@ keyDialog::keyDialog( QWidget * parent,
 
 	m_ui->pbOK->setText( tr( "&OK" ) ) ;
 
-	m_parentWidget = parent ;
+	utility::setParent( parent,&m_parentWidget,this ) ;
 
 	m_configFile = e.configFilePath() ;
 	m_options    = e.idleTimeOut() ;
@@ -100,6 +105,8 @@ keyDialog::keyDialog( QWidget * parent,
 		 this,SLOT( cbActicated( QString ) ) ) ;
 	connect( m_ui->pbOK,SIGNAL( clicked( bool ) ),
 		 this,SLOT( pbOK() ) ) ;
+	connect( m_ui->checkBoxVisibleKey,SIGNAL( stateChanged( int ) ),
+		 this,SLOT( cbVisibleKeyStateChanged( int ) ) ) ;
 
 	if( m_create ){
 
@@ -191,11 +198,9 @@ keyDialog::keyDialog( QWidget * parent,
 		}() ) ;
 	}
 
-
 	m_ui->pbOpenFolderPath->setIcon( QIcon( ":/folder.png" ) ) ;
 
 	this->setFixedSize( this->size() ) ;
-	this->setWindowFlags( Qt::Window | Qt::Dialog ) ;
 	this->setFont( parent->font() ) ;
 
 	m_ui->checkBoxOpenReadOnly->setChecked( utility::getOpenVolumeReadOnlyOption() ) ;
@@ -204,8 +209,9 @@ keyDialog::keyDialog( QWidget * parent,
 
 	m_ui->cbKeyType->addItem( tr( "Key" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "KeyFile" ) ) ;
-	m_ui->cbKeyType->addItem( tr( "HMAC+KeyFile" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "Key+KeyFile" ) ) ;
+	m_ui->cbKeyType->addItem( tr( "HMAC+KeyFile" ) ) ;
+	m_ui->cbKeyType->addItem( tr( "ExternalExecutable" ) ) ;
 
 	m_ui->cbKeyType->addItem( _internalWallet() ) ;
 
@@ -219,9 +225,14 @@ keyDialog::keyDialog( QWidget * parent,
 		m_ui->cbKeyType->addItem( _kwallet() ) ;
 	}
 
+	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::osxkeychain ) ){
+
+		m_ui->cbKeyType->addItem( _OSXKeyChain() ) ;
+	}
+
 	if( m_create ){
 
-		if( m_keyStrength.canCheckQuality() ){
+		if( m_keyStrength ){
 
 			connect( m_ui->lineEditKey,SIGNAL( textChanged( QString ) ),
 				 this,SLOT( passWordTextChanged( QString ) ) ) ;
@@ -241,6 +252,18 @@ keyDialog::keyDialog( QWidget * parent,
 		m_ui->lineEditKey->setText( m_key ) ;
 		m_ui->pbOpen->setFocus() ;
 	}
+
+	m_ui->checkBoxVisibleKey->setVisible( true ) ;
+	m_ui->pbkeyOption->setVisible( false ) ;
+	m_ui->textEdit->setVisible( false ) ;
+
+	m_ui->checkBoxVisibleKey->setToolTip( tr( "Check This Box To Make Password Visible" ) ) ;
+
+	m_ui->checkBoxVisibleKey->setEnabled( utility::enableRevealingPasswords() ) ;
+
+	utility::setWindowOptions( this ) ;
+
+	this->ShowUI() ;
 }
 
 void keyDialog::windowSetTitle( const QString& s )
@@ -289,7 +312,7 @@ void keyDialog::passWordTextChanged( QString e )
 			this->setWindowTitle( tr( "Passphrase Quality: %1%" ).arg( QString::number( r ) ) ) ;
 		}
 
-	}else if( m_keyType == keyDialog::keyKeyFile ){
+	}else if( m_keyType == keyDialog::keyKeyFile || m_keyType == keyDialog::hmacKeyFile ){
 
 		this->setWindowTitle( tr( "Passphrase Quality: 100%" ) ) ;
 	}else{
@@ -406,14 +429,20 @@ void keyDialog::enableAll()
 
 	m_ui->pbkeyOption->setEnabled( enable ) ;
 
+	if( utility::enableRevealingPasswords() ){
+
+		m_ui->checkBoxVisibleKey->setEnabled( index == keyDialog::Key ) ;
+	}
+
 	m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
 
 	m_ui->lineEditFolderPath->setEnabled( false ) ;
-	m_ui->label_3->setEnabled( true ) ;
+	m_ui->label_3->setEnabled( true ) ;	
 }
 
 void keyDialog::disableAll()
 {
+	m_ui->checkBoxVisibleKey->setEnabled( false ) ;
 	m_ui->pbMountPoint->setEnabled( false ) ;
 	m_ui->cbKeyType->setEnabled( false ) ;
 	m_ui->pbOptions->setEnabled( false ) ;
@@ -434,7 +463,6 @@ void keyDialog::setUIVisible( bool e )
 {
 	m_ui->pbOK->setVisible( !e ) ;
 	m_ui->labelMsg->setVisible( !e ) ;
-
 	m_ui->cbKeyType->setVisible( e ) ;
 	m_ui->pbOptions->setVisible( e ) ;
 	m_ui->pbkeyOption->setVisible( e ) ;
@@ -444,6 +472,8 @@ void keyDialog::setUIVisible( bool e )
 	m_ui->pbCancel->setVisible( e ) ;
 	m_ui->pbOpen->setVisible( e ) ;
 	m_ui->label->setVisible( e ) ;
+	m_ui->checkBoxVisibleKey->setVisible( e ) ;
+	m_ui->pbkeyOption->setVisible( e ) ;
 
 	if( e ){
 
@@ -526,16 +556,28 @@ void keyDialog::pbOpen()
 		auto kde      = wallet == _kwallet() ;
 		auto gnome    = wallet == _gnomeWallet() ;
 		auto internal = wallet == _internalWallet() ;
+		auto osx      = wallet == _OSXKeyChain() ;
 
-		if( kde || gnome ){
+		if( kde || gnome || osx ){
 
 			w = utility::getKey( m_path,m_secrets.walletBk( [ & ](){
 
-				if( kde ){
+				if( wallet == _kwallet() ){
 
 					return LXQt::Wallet::BackEnd::kwallet ;
-				}else{
+
+				}else if( wallet == _gnomeWallet() ){
+
 					return LXQt::Wallet::BackEnd::libsecret ;
+
+				}else if( wallet == _OSXKeyChain() ){
+
+					return LXQt::Wallet::BackEnd::osxkeychain ;
+				}else{
+					/*
+					 * We should not get here.
+					 */
+					return LXQt::Wallet::BackEnd::internal ;
 				}
 
 			}() ).bk() ) ;
@@ -565,7 +607,7 @@ void keyDialog::pbOpen()
 
 				m_ui->lineEditKey->setEnabled( false ) ;
 			}else{
-				m_key = w.key ;
+				m_key = w.key.toLatin1() ;
 				this->openVolume() ;
 			}
 		}else{
@@ -576,11 +618,11 @@ void keyDialog::pbOpen()
 	}
 }
 
-bool keyDialog::completed( siritask::status s )
+bool keyDialog::completed( const siritask::cmdStatus& s )
 {
 	QString msg ;
 
-	switch( s ){
+	switch( s.status() ){
 
 	case siritask::status::success :
 
@@ -647,15 +689,16 @@ bool keyDialog::completed( siritask::status s )
 		break;
 
 	case siritask::status::backendFail :
-
-		msg = tr( "Failed To Complete The Task.\nBackend Not Responding." ) ;
-		break;
 	default:
-		msg = tr( "Failed To Complete The Task.\nAn Unknown Error Has Occured." ) ;
-		break;
+		msg = [ & ](){
+
+			auto e = tr( "Failed To Complete The Task And Below Log was Generated By The Backend.\n" ) ;
+
+			return e + "\n----------------------------------------\n" + s.msg() ;
+		}() ;
 	}
 
-	this->showErrorMessage( msg ) ;
+	this->showErrorMessage( { s,msg } ) ;
 
 	return false ;
 }
@@ -667,19 +710,45 @@ void keyDialog::showErrorMessage( const QString& e )
 	m_ui->labelMsg->setText( e ) ;
 
 	m_ui->pbOK->setFocus() ;
+}
 
-	m_eventLoop.exec() ;
+void keyDialog::showErrorMessage( const siritask::cmdStatus& e )
+{
+	if( e == siritask::status::backendFail ){
 
-	this->setUIVisible( true ) ;
+		this->setUIVisible( false ) ;
+
+		m_ui->textEdit->setVisible( true ) ;
+		m_ui->labelMsg->setVisible( false ) ;
+
+		m_ui->textEdit->setText( e.msg() ) ;
+	}else{
+		this->showErrorMessage( e.msg() ) ;
+	}
 }
 
 void keyDialog::pbOK()
 {
-	m_eventLoop.exit() ;
+	m_ui->checkBoxVisibleKey->setChecked( false ) ;
+
+	this->setUIVisible( true ) ;
+
+	m_ui->textEdit->setVisible( false ) ;
+
+	if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
+
+		m_ui->checkBoxVisibleKey->setVisible( true ) ;
+		m_ui->pbkeyOption->setVisible( false ) ;
+	}else{
+		m_ui->checkBoxVisibleKey->setVisible( false ) ;
+		m_ui->pbkeyOption->setVisible( true ) ;
+	}
 }
 
 void keyDialog::encryptedFolderCreate()
 {
+	m_mountPointPath.clear() ;
+
 	auto path = m_ui->lineEditFolderPath->text() ;
 
 	auto m = path.split( '/' ).last() ;
@@ -711,11 +780,17 @@ void keyDialog::encryptedFolderCreate()
 		return ;
 	}
 
-	auto& e = siritask::encryptedFolderCreate( { path,m,m_key,m_options,m_configFile,
-						      m_exe.toLower(),false,m_success } ) ;
+	m_working = true ;
+
+	siritask::options s = { path,m,m_key,m_options,m_configFile,m_exe.toLower(),false } ;
+
+	auto& e = siritask::encryptedFolderCreate( s ) ;
+
+	m_working = false ;
 
 	if( this->completed( e.await() ) ){
 
+		m_mountPointPath = m ;
 		this->HideUI() ;
 	}else{
 		if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
@@ -731,6 +806,8 @@ void keyDialog::encryptedFolderCreate()
 
 void keyDialog::encryptedFolderMount()
 {
+	m_mountPointPath.clear() ;
+
 	auto ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
 
 	auto m = m_ui->lineEditMountPoint->text() ;
@@ -771,15 +848,19 @@ void keyDialog::encryptedFolderMount()
 		return ;
 	}
 
-	auto& e = siritask::encryptedFolderMount( { m_path,m,m_key,m_options,
-						     m_configFile,m_exe,ro,m_success } ) ;
+	m_working = true ;
+
+	siritask::options s = { m_path,m,m_key,m_options,m_configFile,m_exe,ro } ;
+
+	auto& e = siritask::encryptedFolderMount( s ) ;
+
+	m_working = false ;
 
 	if( this->completed( e.await() ) ){
 
+		m_mountPointPath = m ;
 		this->HideUI() ;
 	}else{
-		m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
-
 		m_ui->lineEditKey->clear() ;
 
 		this->enableAll() ;
@@ -794,11 +875,11 @@ void keyDialog::openVolume()
 
 	if( keyType == keyDialog::Key ){
 
-		m_key = m_ui->lineEditKey->text() ;
+		m_key = m_ui->lineEditKey->text().toLatin1() ;
 
 	}if( keyType == keyDialog::keyKeyFile ){
 
-		if( utility::pluginKey( m_secrets.parent(),&m_key,"hmac" ) ){
+		if( utility::pluginKey( m_secrets.parent(),this,&m_key,plugins::plugin::hmac_key ) ){
 
 			return this->enableAll() ;
 		}
@@ -818,9 +899,10 @@ void keyDialog::openVolume()
 
 		m_key = f.readAll() ;
 
-		if( m_key.contains( '\n' ) ){
+		if( utility::containsAtleastOne( m_key,'\n','\0','\r' ) ){
 
-			this->showErrorMessage( tr( "KeyFile Contents Will Be Trancated On The First Encountered NewLine Character." ) ) ;
+			this->showErrorMessage( keyDialog::keyFileError() ) ;
+			return this->enableAll() ;
 		}
 
 	}else if( keyType == keyDialog::Plugin ){
@@ -838,25 +920,103 @@ void keyDialog::openVolume()
 	}
 }
 
+QString keyDialog::keyFileError()
+{
+	return QObject::tr( "Not Supported KeyFile Encountered Since It Contains AtLeast One Illegal Character('\\n','\\0','\\r').\n\nPlease Use a Hash Of The KeyFile Through \"HMAC+KeyFile\" Option." ) ;
+}
+
+void keyDialog::cbVisibleKeyStateChanged( int s )
+{
+	if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
+
+		if( s == Qt::Checked ){
+
+			m_ui->lineEditKey->setEchoMode( QLineEdit::Normal ) ;
+		}else{
+			m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
+		}
+
+		m_ui->lineEditKey->setFocus() ;
+	}
+}
+
 void keyDialog::cbActicated( QString e )
 {
 	e.remove( '&' ) ;
+
+	auto _showVisibleKeyOption = [ this ]( bool e ){
+
+		bool s = utility::enableRevealingPasswords() ;
+		m_ui->checkBoxVisibleKey->setEnabled( e && s ) ;
+		m_ui->checkBoxVisibleKey->setChecked( false ) ;
+		m_ui->checkBoxVisibleKey->setVisible( e ) ;
+		m_ui->pbkeyOption->setVisible( !e ) ;
+	} ;
 
 	if( e == tr( "Key" ).remove( '&' ) ){
 
 		this->key() ;
 
+		_showVisibleKeyOption( true ) ;
+
 	}else if( e == tr( "KeyFile" ).remove( '&' ) ){
+
+		_showVisibleKeyOption( false ) ;
 
 		this->keyFile() ;
 
-	}else if( e == tr( "Key+KeyFile" ).remove( '&' ) ){
+		this->KeyFile() ;
 
-		this->keyAndKeyFile() ;
+	}else if( e == tr( "Key+KeyFile" ).remove( '&' ) || e == tr( "ExternalExecutable" ).remove( '&' ) ){
+
+		_showVisibleKeyOption( false ) ;
+
+		this->disableAll() ;
+
+		if( e == tr( "Key+KeyFile" ).remove( '&' ) ){
+
+			utility::pluginKey( m_secrets.parent(),this,&m_key,plugins::plugin::hmac_key ) ;
+		}else{
+			utility::pluginKey( m_secrets.parent(),this,&m_key,plugins::plugin::externalExecutable ) ;
+		}
+
+		this->enableAll() ;
+
+		m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
+
+		m_ui->lineEditKey->setText( m_key ) ;
+
+		if( m_keyStrength && m_create ){
+
+			this->setWindowTitle( tr( "Passphrase Quality: 100%" ) ) ;
+		}
 
 	}else if( e == tr( "HMAC+KeyFile" ).remove( '&' ) ){
 
-		this->HMACKeyFile() ;
+		_showVisibleKeyOption( false ) ;
+
+		auto q = QFileDialog::getOpenFileName( this,tr( "Select A KeyFile" ),QDir::homePath() ) ;
+
+		QString s ;
+
+		if( !q.isEmpty() ){
+
+			this->disableAll() ;
+
+			Task::await( [ & ](){ s = plugins::hmac_key( q,QString() ) ; } ) ;
+
+			this->enableAll() ;
+		}
+
+		m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
+
+		m_ui->lineEditKey->setText( s ) ;
+
+		if( m_keyStrength && m_create ){
+
+			this->setWindowTitle( tr( "Passphrase Quality: 100%" ) ) ;
+		}
+
 	}else{
 		this->plugIn() ;
 
@@ -871,7 +1031,13 @@ void keyDialog::cbActicated( QString e )
 		}else if( e == _internalWallet() ){
 
 			m_ui->lineEditKey->setText( _internalWallet() ) ;
+
+		}else if( e == _OSXKeyChain() ){
+
+			m_ui->lineEditKey->setText( _OSXKeyChain() ) ;
 		}
+
+		_showVisibleKeyOption( false ) ;
 	}
 }
 
@@ -919,8 +1085,10 @@ void keyDialog::key()
 	m_ui->pbkeyOption->setEnabled( false ) ;
 	m_ui->label->setText( tr( "Key" ) ) ;
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
+	m_ui->checkBoxVisibleKey->setChecked( false ) ;
 	m_ui->lineEditKey->clear() ;
 	m_ui->lineEditKey->setEnabled( true ) ;
+	m_ui->lineEditKey->setFocus() ;
 }
 
 void keyDialog::keyFile()
@@ -943,7 +1111,10 @@ void keyDialog::pbCancel()
 
 void keyDialog::ShowUI()
 {
+	utility::setWindowOptions( this ) ;
 	this->show() ;
+	this->raise() ;
+	this->activateWindow() ;
 }
 
 void keyDialog::HideUI()
@@ -956,6 +1127,7 @@ void keyDialog::HideUI()
 }
 
 keyDialog::~keyDialog()
-{
+{	
+	m_success( m_mountPointPath ) ;
 	delete m_ui ;
 }

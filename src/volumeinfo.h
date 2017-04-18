@@ -37,7 +37,7 @@ public:
 		}
 		mountinfo( const QStringList& l )
 		{
-			auto s = l.size() ;
+			const auto s = l.size() ;
 
 			if( s == 1 ){
 
@@ -130,6 +130,10 @@ public:
 	{
 		return m_mountinfo.mountPoint ;
 	}
+	const QString& fileSystem() const
+	{
+		return m_mountinfo.fileSystem ;
+	}
 	const QString& configFilePath() const
 	{
 		return m_configPath ;
@@ -145,6 +149,14 @@ public:
 	const volumeInfo::mountinfo& mountInfo() const
 	{
 		return m_mountinfo ;
+	}
+	void printVolumeInfo() const
+	{
+		std::cout << "\"" +
+		             m_mountinfo.volumePath.toStdString() +
+		             "\" \"" + m_mountinfo.mountPoint.toStdString() +
+		             "\" \"" + m_mountinfo.fileSystem.toStdString() +
+		             "\"" << std::endl ;
 	}
 	bool isValid() const
 	{

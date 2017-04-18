@@ -220,6 +220,19 @@
     <string>&amp;OK</string>
    </property>
   </widget>
+  <widget class="QCheckBox" name="checkBoxVisibleKey">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>140</y>
+     <width>31</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
   <widget class="QLabel" name="labelMsg">
    <property name="geometry">
     <rect>
@@ -232,10 +245,35 @@
    <property name="text">
     <string/>
    </property>
+   <property name="textFormat">
+    <enum>Qt::PlainText</enum>
+   </property>
+   <property name="scaledContents">
+    <bool>false</bool>
+   </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
    </property>
    <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QTextEdit" name="textEdit">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>10</y>
+     <width>441</width>
+     <height>171</height>
+    </rect>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Sunken</enum>
+   </property>
+   <property name="lineWidth">
+    <number>1</number>
+   </property>
+   <property name="readOnly">
     <bool>true</bool>
    </property>
   </widget>

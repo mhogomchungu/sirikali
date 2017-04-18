@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright ( c ) 2016
+ *  Copyright ( c ) 2017
  *  name : Francis Banyikwa
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -17,32 +17,34 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DIALOGOK_H
-#define DIALOGOK_H
+#ifndef FILEMANAGER_H
+#define FILEMANAGER_H
 
 #include <QDialog>
-#include <QString>
 #include <QCloseEvent>
+#include <QString>
 
 namespace Ui {
-class dialogok;
+class fileManager;
 }
 
-class dialogok : public QDialog
+class fileManager : public QDialog
 {
 	Q_OBJECT
 public:
-	dialogok( QWidget * parent,QDialog *,bool,bool,const QString& title,const QString& msg ) ;
-	~dialogok() ;
-	int Show() ;
+	static void instance( QWidget * w,QString& e,bool s )
+	{
+		new fileManager( w,e,s ) ;
+	}
+	explicit fileManager( QWidget * parent,QString&,bool ) ;
+	~fileManager();
 private slots:
-	void ok() ;
-	void yes() ;
-	void no() ;
+	void set( void ) ;
 private:
 	void closeEvent( QCloseEvent * ) ;
-	Ui::dialogok * m_ui ;
-	QDialog * m_dialog ;
-} ;
+	Ui::fileManager * m_ui ;
+	QString& m_fileManager ;
+	bool m_setFileManager ;
+};
 
-#endif // DIALOGOK_H
+#endif // FILEMANAGER_H

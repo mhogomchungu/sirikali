@@ -2,12 +2,15 @@
 <ui version="4.0">
  <class>walletconfiginput</class>
  <widget class="QDialog" name="walletconfiginput">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>603</width>
-    <height>192</height>
+    <height>184</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,9 +19,9 @@
   <widget class="QPushButton" name="pushButtonAdd">
    <property name="geometry">
     <rect>
-     <x>210</x>
-     <y>160</y>
-     <width>91</width>
+     <x>190</x>
+     <y>150</y>
+     <width>111</width>
      <height>31</height>
     </rect>
    </property>
@@ -30,8 +33,8 @@
    <property name="geometry">
     <rect>
      <x>300</x>
-     <y>160</y>
-     <width>91</width>
+     <y>150</y>
+     <width>111</width>
      <height>31</height>
     </rect>
    </property>
@@ -45,7 +48,7 @@
      <x>10</x>
      <y>10</y>
      <width>581</width>
-     <height>151</height>
+     <height>141</height>
     </rect>
    </property>
    <widget class="QLabel" name="label">

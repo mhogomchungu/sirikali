@@ -51,6 +51,7 @@
 #include "task.h"
 #include "lxqt_wallet.h"
 #include "favorites.h"
+#include "plugins.h"
 
 #include <QObject>
 #include <QLabel>
@@ -65,11 +66,83 @@ class QEvent ;
 
 namespace utility
 {
+	void setUID( int ) ;
+
+	int getUID() ;
+	int getUserID() ;
+
+	QString getStringUserID() ;
+	QString appendUserUID( const QString& ) ;
+	QString homePath() ;
+
+	template< typename T >
+	void changePathOwner( const T& f )
+	{
+		int uid = utility::getUID() ;
+		int fd = f.handle() ;
+
+		if( uid != -1 && fd != -1 ){
+
+			if( fchown( fd,uid,uid ) ){;}
+		}
+	}
+
+	static inline void changePathOwner( const char * path )
+	{
+		int uid = utility::getUID() ;
+
+		if( uid != -1 ){
+
+			if( chown( path,uid,uid ) ){;}
+		}
+	}
+
+	static inline void changePathOwner( const QString& path )
+	{
+		utility::changePathOwner( path.toLatin1().constData() ) ;
+	}
+
+	template< typename T >
+	void changePathPermissions( const T& f,int mode = 0666 )
+	{
+		if( fchmod( f.handle(),mode ) ){;}
+	}
+
+	static inline void changePathPermissions( const QString& f,int mode = 0666 )
+	{
+		if( chmod( f.toLatin1().constData(),mode ) ){;}
+	}
+
 	class debug
 	{
 	public:
-		debug( bool stdout = true ) : m_stdout( stdout )
+		debug( bool s = true ) : m_stdout( s )
 		{
+		}
+
+		template< typename T >
+		utility::debug operator<<( const T& e )
+		{
+			if( m_stdout ){
+
+				std::cout << e << std::endl ;
+			}else{
+				std::cerr << e << std::endl ;
+			}
+
+			return utility::debug( m_stdout ) ;
+		}
+
+		utility::debug operator<<( const QByteArray& e )
+		{
+			if( m_stdout ){
+
+				std::cout << e.constData() << std::endl ;
+			}else{
+				std::cerr << e.constData() << std::endl ;
+			}
+
+			return utility::debug( m_stdout ) ;
 		}
 
 		utility::debug operator<<( const QString& e )
@@ -79,6 +152,24 @@ namespace utility
 				std::cout << e.toLatin1().constData() << std::endl ;
 			}else{
 				std::cerr << e.toLatin1().constData() << std::endl ;
+			}
+
+			return utility::debug( m_stdout ) ;
+		}
+
+		utility::debug operator<<( const QStringList& e )
+		{
+			if( m_stdout ){
+
+				for( const auto& it : e ){
+
+					std::cout << it.toLatin1().constData() << std::endl ;
+				}
+			}else{
+				for( const auto& it : e ){
+
+					std::cerr << it.toLatin1().constData() << std::endl ;
+				}
 			}
 
 			return utility::debug( m_stdout ) ;
@@ -178,6 +269,24 @@ namespace utility
 		LXQt::Wallet::BackEnd m_storage ;
 	};
 
+	struct fsInfo
+	{
+		bool valid ;
+		u_int64_t f_blocks ;
+		u_int64_t f_bavail ;
+		u_int64_t f_bsize ;
+		u_int64_t f_bfree ;
+	};
+
+	Task::future< utility::fsInfo >& fileSystemInfo( const QString& ) ;
+
+	bool platformIsLinux() ;
+	bool platformIsOSX() ;
+
+	void setParent( QWidget * parent,QWidget ** localParent,QDialog * dialog ) ;
+
+	void setWindowOptions( QDialog * ) ;
+
 	utility::walletBackEnd autoMountBackEnd( void ) ;
 
 	void autoMountBackEnd( const utility::walletBackEnd& ) ;
@@ -188,11 +297,20 @@ namespace utility
 
 	QString cmdArgumentValue( const QStringList&,const QString& arg,const QString& defaulT = QString() ) ;
 
+	QString runCommandOnMount( void ) ;
+	QString fileManager( void ) ;
+	void setFileManager( const QString& ) ;
+
+	QString readPassword( bool = true ) ;
+
 	QIcon getIcon() ;
 
 	QStringList directoryList( const QString& e ) ;
 
 	QString executableFullPath( const QString& ) ;
+
+	QString externalPluginExecutable() ;
+	void setExternalPluginExecutable( const QString& ) ;
 
 	bool reUseMountPoint( void ) ;
 	void reUseMountPoint( bool ) ;
@@ -201,6 +319,10 @@ namespace utility
 	QString homePath() ;
 	QString mountPath( const QString& path ) ;
 
+	bool createFolder( const QString& ) ;
+
+	void scaleGUI( void ) ;
+
 	void setDefaultMountPointPrefix( const QString& path ) ;
 
 	void setSettingsObject( QSettings * ) ;
@@ -208,7 +330,8 @@ namespace utility
 	QString mountPathPostFix( const QString& path ) ;
 	QString mountPathPostFix( const QString& prefix,const QString& path ) ;
 
-	bool pathIsReadable( const QString& ) ;
+	bool pathIsReadable( const QString&,bool isFolder = true ) ;
+	bool pathIsWritable( const QString&,bool isFolder = true ) ;
 
 	bool autoOpenFolderOnMount() ;
 	void autoOpenFolderOnMount( bool ) ;
@@ -236,8 +359,29 @@ namespace utility
 
 	int checkForUpdateInterval( void ) ;
 
-	QStringList split( const QString&,char = '\n' ) ;
+	bool userIsRoot( void ) ;
 
+	bool enableRevealingPasswords( void ) ;
+
+	void setUID( int ) ;
+	int getUID() ;
+	int getUserID() ;
+
+	bool runningInMixedMode() ;
+	bool notRunningInMixedMode() ;
+
+	QString getStringUserID() ;
+	QString homePath() ;
+	QString userName() ;
+
+	QStringList split( const QString&,char = '\n' ) ;
+	QStringList executableSearchPaths( void ) ;
+	QString executableSearchPaths( const QString& ) ;
+
+	bool useZuluPolkit( void ) ;
+	void startHelperExecutable( QWidget *,const QString&,const char *,const char * ) ;
+	void quitHelper() ;
+	QString helperSocketPath() ;
 	void clearFavorites( void ) ;
 	void addToFavorite( const QStringList& ) ;
 	QVector< favorites::entry > readFavorites( void ) ;
@@ -263,14 +407,14 @@ namespace utility
 	utility::array_t getWindowDimensions() ;
 	void setWindowDimensions( const std::initializer_list<int>& ) ;
 
-	int pluginKey( QWidget *,QString *,const QString& ) ;
+	int pluginKey( QWidget *,QDialog *,QByteArray *,plugins::plugin ) ;
 
 	QFont getFont( QWidget * ) ;
 	void saveFont( const QFont& ) ;
 
-	::Task::future< bool >& openPath( const QString& path,const QString& opener,const QString& env = QString() ) ;
+	::Task::future< bool >& openPath( const QString& path,const QString& opener ) ;
 
-	void openPath( const QString& path,const QString& opener,const QString& env,QWidget *,const QString&,const QString& ) ;
+	void openPath( const QString& path,const QString& opener,QWidget *,const QString&,const QString& ) ;
 }
 
 namespace utility
@@ -353,9 +497,19 @@ namespace utility
 	class Task
 	{
 	public :
+		static ::Task::future< utility::Task >& run( const QString& exe,bool e ) ;
+
+		static ::Task::future< utility::Task >& run( const QString& exe,int,bool e ) ;
+
 		static ::Task::future< utility::Task >& run( const QString& exe )
 		{
 			return ::Task::run< utility::Task >( [ exe ](){ return utility::Task( exe ) ; } ) ;
+		}
+		static void exec( const QString& exe,
+				  const QProcessEnvironment& env = QProcessEnvironment(),
+				  std::function< void() > f = [](){} )
+		{
+			::Task::run< utility::Task >( [ = ](){ return utility::Task( exe,env,f ) ; } ).start() ;
 		}
 		static void wait( int s )
 		{
@@ -395,30 +549,34 @@ namespace utility
 		{
 		}
 		Task( const QString& exe,int waitTime = -1,const QProcessEnvironment& env = QProcessEnvironment(),
-		      const QByteArray& password = QByteArray(),std::function< void() > f = [](){} )
+		      const QByteArray& password = QByteArray(),std::function< void() > f = [](){},bool e = true )
 		{
-			this->execute( exe,waitTime,env,password,std::move( f ) ) ;
+			this->execute( exe,waitTime,env,password,std::move( f ),e ) ;
 		}
-		Task( const QString& exe,const QProcessEnvironment& env,std::function< void() > f )
+		Task( const QString& exe,const QProcessEnvironment& env,std::function< void() > f,bool e = true )
 		{
-			this->execute( exe,-1,env,QByteArray(),std::move( f ) ) ;
+			this->execute( exe,-1,env,QByteArray(),std::move( f ),e ) ;
 		}
 		QStringList splitOutput( char token,bool stdOutput = true ) const
 		{
 			if( stdOutput ){
 
-				return utility::split( m_data,token ) ;
+				return utility::split( m_stdOut,token ) ;
 			}else{
 				return utility::split( m_stdError,token ) ;
 			}
 		}
-		void output( const QByteArray& r )
+		void stdOut( const QByteArray& r )
 		{
-			m_data = r ;
+			m_stdOut = r ;
 		}
-		const QByteArray& output() const
+		void stdError( const QByteArray& r )
 		{
-			return m_data ;
+			m_stdError = r ;
+		}
+		const QByteArray& stdOut() const
+		{
+			return m_stdOut ;
 		}
 		const QByteArray& stdError() const
 		{
@@ -450,43 +608,9 @@ namespace utility
 		}
 	private:
 		void execute( const QString& exe,int waitTime,const QProcessEnvironment& env,
-			      const QByteArray& password,std::function< void() >&& f )
-		{
-			class Process : public QProcess{
-			public:
-				Process( std::function< void() >&& f ) : m_function( std::move( f ) )
-				{
-				}
-			protected:
-				void setupChildProcess()
-				{
-					m_function() ;
-				}
-			private:
-				std::function< void() > m_function ;
-			} p( std::move( f ) ) ;
+			      const QByteArray& password,const std::function< void() >& f,bool e ) ;
 
-			p.setProcessEnvironment( env ) ;
-
-			p.start( exe ) ;
-
-			if( !password.isEmpty() ){
-
-				p.waitForStarted() ;
-
-				p.write( password + '\n' ) ;
-
-				p.closeWriteChannel() ;
-			}
-
-			m_finished   = p.waitForFinished( waitTime ) ;
-			m_exitCode   = p.exitCode() ;
-			m_exitStatus = p.exitStatus() ;
-			m_data       = p.readAll() ;
-			m_stdError   = p.readAllStandardError() ;
-		}
-
-		QByteArray m_data ;
+		QByteArray m_stdOut ;
 		QByteArray m_stdError ;
 		int m_exitCode ;
 		int m_exitStatus ;

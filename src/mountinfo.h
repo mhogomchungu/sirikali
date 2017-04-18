@@ -28,6 +28,8 @@
 #include <functional>
 #include <memory>
 
+#include "task.h"
+
 class QObject ;
 class volumeInfo ;
 
@@ -35,15 +37,18 @@ class mountinfo : public QThread
 {
 	Q_OBJECT
 public:
-	static QStringList mountedVolumes() ;
+	QStringList mountedVolumes() ;
 
 	static mountinfo& instance( QObject * parent,bool b,std::function< void() >&& f )
 	{
 		return *( new mountinfo( parent,b,std::move( f ) ) ) ;
 	}
 	mountinfo( QObject * parent,bool,std::function< void() >&& ) ;
+	mountinfo() ;
 	std::function< void() > stop() ;
 	void announceEvents( bool ) ;
+	void eventHappened( void ) ;
+	void anza( void ) ;
 	~mountinfo() ;
 signals:
 	void gotEvent( void ) ;
@@ -51,15 +56,17 @@ signals:
 private slots:
 	void threadStopped( void ) ;
 private:
+	void updateVolume( void ) ;
 	void run( void ) ;
-	void failedToStart( void ) ;
 	QThread * m_baba ;
 	QThread * m_mtoto ;
 	QObject * m_babu ;
 	mountinfo * m_main ;
-	bool m_running ;
-	std::function< void() > m_stop ;
+	std::function< void() > m_stop = [](){} ;
 	bool m_announceEvents ;
+	bool m_linux ;
+	QStringList m_oldMountList ;
+	QStringList m_newMountList ;
 };
 
 #endif // MONITOR_MOUNTINFO_H
