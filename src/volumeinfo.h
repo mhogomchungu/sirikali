@@ -61,13 +61,22 @@ public:
 				fileSystem = l.at( 2 ) ;
 				mode       = l.at( 3 ) ;
 
-			}else if( s >= 5 ){
+			}else if( s == 5 ){
 
 				volumePath = l.at( 0 ) ;
 				mountPoint = l.at( 1 ) ;
 				fileSystem = l.at( 2 ) ;
 				mode       = l.at( 3 ) ;
-				mountOptions = l.at( 4 ) ;
+				idleTimeout = l.at( 4 ) ;
+
+			}else if( s == 6 ){
+
+				volumePath = l.at( 0 ) ;
+				mountPoint = l.at( 1 ) ;
+				fileSystem = l.at( 2 ) ;
+				mode       = l.at( 3 ) ;
+				idleTimeout = l.at( 4 ) ;
+				mountOptions = l.at( 5 ) ;
 			}
 		}
 		QStringList minimalList() const
@@ -78,12 +87,13 @@ public:
 		QStringList fullList() const
 		{
 			return { volumePath,mountPoint,
-				 fileSystem,mode,mountOptions } ;
+				 fileSystem,mode,idleTimeout,mountOptions } ;
 		}
 		QString volumePath ;
 		QString mountPoint ;
 		QString fileSystem ;
 		QString mode ;
+		QString idleTimeout ;
 		QString mountOptions ;
 	};
 
@@ -120,6 +130,11 @@ public:
 		if( e.idleTimeOut != "N/A" ){
 
 			m_idleTime = e.idleTimeOut ;
+		}
+
+		if( e.mountOptions != "N/A" ){
+
+			m_mountinfo.mountOptions = e.mountOptions ;
 		}
 	}
 	const QString& volumePath() const

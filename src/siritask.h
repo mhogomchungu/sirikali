@@ -87,37 +87,41 @@ namespace siritask
 			cipherFolder( e.volumePath ),
 			plainFolder( e.mountPointPath ),
 			key( volumeKey ),
-			mOpt( e.idleTimeOut ),
+			idleTimeout( e.idleTimeOut ),
 			configFilePath( e.configFilePath ),
 			type( QString() ),
-			ro( false )
+			ro( false ),
+			mountOptions( e.mountOptions )
 		{
 		}
 		options( const QString& cipher_folder,
 			 const QString& plain_folder,
 			 const QString& volume_key,
-			 const QString& mount_options,
+			 const QString& idle_timeout,
 			 const QString& config_file_path,
 			 const QString& volume_type,
-			 bool unlock_in_read_only ) :
+			 bool unlock_in_read_only,
+			 const QString& mount_options ) :
 
 			cipherFolder( cipher_folder ),
 			plainFolder( plain_folder ),
 			key( volume_key ),
-			mOpt( mount_options ),
+			idleTimeout( idle_timeout ),
 			configFilePath( config_file_path ),
 			type( volume_type ),
-			ro( unlock_in_read_only )
+			ro( unlock_in_read_only ),
+			mountOptions( mount_options )
 		{
 		}
 
 		QString cipherFolder ;
 		QString plainFolder ;
 		QString key ;
-		QString mOpt ;
+		QString idleTimeout ;
 		QString configFilePath ;
 		siritask::volumeType type ;
 		bool ro ;
+		QString mountOptions ;
 	};
 
 	enum class status

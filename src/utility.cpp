@@ -658,6 +658,18 @@ void utility::replaceFavorite( const favorites::entry& e,const favorites::entry&
 	}
 }
 
+int utility::favoritesEntrySize()
+{
+	auto s = _settings->value( "FavoritesVolumes" ).toStringList() ;
+
+	if( s.size() == 0 ){
+
+		return 0 ;
+	}else{
+		return utility::split( s.first(),'\t' ).size() ;
+	}
+}
+
 void utility::addToFavorite( const QStringList& e )
 {
 	if( !e.isEmpty() ){

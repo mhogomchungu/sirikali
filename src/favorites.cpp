@@ -66,6 +66,7 @@ favorites::favorites( QWidget * parent ) : QDialog( parent ),
 	table->setColumnWidth( 2,100 ) ;
 	table->setColumnWidth( 3,140 ) ;
 	table->setColumnWidth( 4,115 ) ;
+	table->setColumnWidth( 5,115 ) ;
 
 	this->addAction( [ this ](){
 
@@ -84,7 +85,41 @@ favorites::favorites( QWidget * parent ) : QDialog( parent ),
 
 	utility::setWindowOptions( this ) ;
 
+	this->checkFavoritesConsistency() ;
+
 	this->ShowUI() ;
+}
+
+void favorites::checkFavoritesConsistency()
+{
+	int s = m_ui->tableWidget->columnCount() - utility::favoritesEntrySize() ;
+
+	if( s == 0 ){
+
+		/*
+		 * It is ok,the size of the table is the same as what is in favorites
+		 */
+	}else if( s > 0 ){
+
+		/*
+		 * We will get here when a column was added in the table and we need to update
+		 * favorites entries to accomodate it.
+		 */
+
+		auto e = utility::readFavorites() ;
+
+		utility::clearFavorites() ;
+
+		for( const auto& it : e ){
+
+			utility::addToFavorite( it.configStringList() ) ;
+		}
+	}else{
+		/*
+		 * We will get here when a column was removed from the table and we need to update
+		 * favorites entries to accomodate it.
+		 */
+	}
 }
 
 bool favorites::eventFilter( QObject * watched,QEvent * event )
@@ -298,7 +333,8 @@ void favorites::add()
 			  path,
 			  autoMount,
 			  _option( m_ui->lineEditConfigFilePath->text() ),
-			  _option( m_ui->lineEditIdleTimeOut->text() ) } ;
+			  _option( m_ui->lineEditIdleTimeOut->text() ),
+			  _option( m_ui->lineEditMountOptions->text() ) } ;
 
 	this->addEntries( e ) ;
 

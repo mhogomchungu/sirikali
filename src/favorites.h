@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  *  Copyright ( c ) 2011-2015
  *  name : Francis Banyikwa
@@ -63,7 +63,8 @@ public:
 					 mountPointPath,
 					 autoMountVolume,
 					 configFilePath,
-					 idleTimeOut } ;
+					 idleTimeOut,
+					 mountOptions } ;
 			}
 		}
 
@@ -84,12 +85,16 @@ public:
 				}
 			} ;
 
-			auto e = "%1\t%2\t%3\t%4\t%5\t" ;
+			auto e = "%1\t%2\t%3\t%4\t%5\t%6\t" ;
 
 			return QString( e ).arg( volumePath,mountPointPath,autoMountVolume,
-						 _opt( configFilePath ),_opt( idleTimeOut ) ) ;
+						 _opt( configFilePath ),_opt( idleTimeOut ),
+						 _opt( mountOptions ) ) ;
 		}
-
+		QStringList configStringList() const
+		{
+			return this->configString().split( "\t",QString::SkipEmptyParts ) ;
+		}
 		bool operator!=( const favorites::entry& other ) const
 		{
 			return !( *this == other ) ;
@@ -101,7 +106,8 @@ public:
 				this->mountPointPath  == other.mountPointPath &&
 				this->autoMountVolume == other.autoMountVolume &&
 				this->configFilePath  == other.configFilePath &&
-				this->idleTimeOut     == other.idleTimeOut ;
+				this->idleTimeOut     == other.idleTimeOut &&
+				this->mountOptions    == other.mountOptions ;
 		}
 
 		bool autoMount() const
@@ -114,11 +120,36 @@ public:
 		QString autoMountVolume ;
 		QString configFilePath ;
 		QString idleTimeOut ;
+		QString mountOptions ;
 
 	private:
 		void config( const QStringList& e )
 		{
-			if( e.size() > 4 ){
+			auto s = e.size() ;
+
+			if( s == 1 ){
+
+				volumePath      = e.at( 0 ) ;
+
+			}else if( s == 2 ){
+
+				volumePath      = e.at( 0 ) ;
+				mountPointPath  = e.at( 1 ) ;
+
+			}else if( s == 3 ){
+
+				volumePath      = e.at( 0 ) ;
+				mountPointPath  = e.at( 1 ) ;
+				autoMountVolume = e.at( 2 ) ;
+
+			}else if( s == 4 ){
+
+				volumePath      = e.at( 0 ) ;
+				mountPointPath  = e.at( 1 ) ;
+				autoMountVolume = e.at( 2 ) ;
+				configFilePath  = e.at( 3 ) ;
+
+			}else if( s == 5 ){
 
 				volumePath      = e.at( 0 ) ;
 				mountPointPath  = e.at( 1 ) ;
@@ -126,15 +157,29 @@ public:
 				configFilePath  = e.at( 3 ) ;
 				idleTimeOut     = e.at( 4 ) ;
 
-				if( configFilePath == "N/A" ){
+			}else if( s == 6 ){
 
-					configFilePath.clear() ;
-				}
+				volumePath      = e.at( 0 ) ;
+				mountPointPath  = e.at( 1 ) ;
+				autoMountVolume = e.at( 2 ) ;
+				configFilePath  = e.at( 3 ) ;
+				idleTimeOut     = e.at( 4 ) ;
+				mountOptions    = e.at( 5 ) ;
+			}
 
-				if( idleTimeOut == "N/A" ){
+			if( configFilePath == "N/A" ){
 
-					idleTimeOut.clear() ;
-				}
+				configFilePath.clear() ;
+			}
+
+			if( idleTimeOut == "N/A" ){
+
+				idleTimeOut.clear() ;
+			}
+
+			if( mountOptions == "N/A" ){
+
+				mountOptions.clear() ;
 			}
 		}
 	};
@@ -164,6 +209,7 @@ private slots:
 	void shortcutPressed( void ) ;
 	void devicePathTextChange( QString ) ;
 private:
+	void checkFavoritesConsistency() ;
 	favorites::entry getEntry( int ) ;
 	QString getExistingFile( const QString& ) ;
 	QString getExistingDirectory( const QString& ) ;

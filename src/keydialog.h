@@ -162,10 +162,11 @@ private :
 
 	QString m_path ;
 	QString m_deviceOffSet ;
-	QString m_options ;
+	QString m_idleTimeOut ;
 	QString m_configFile ;
 	QString m_exe ;
 	QString m_mountPointPath ;
+	QString m_mountOptions ;
 	QStringList m_keyFiles ;
 
 	QTableWidget * m_table ;

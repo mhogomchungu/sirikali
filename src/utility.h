@@ -388,7 +388,7 @@ namespace utility
 	void replaceFavorite( const favorites::entry&,const favorites::entry& ) ;
 	void readFavorites( QMenu *,bool,const QString&,const QString& ) ;
 	void removeFavoriteEntry( const favorites::entry& ) ;
-
+	int favoritesEntrySize() ;
 	QString getVolumeID( const QString&,bool = false ) ;
 	QString localizationLanguage() ;
 	QString localizationLanguagePath() ;

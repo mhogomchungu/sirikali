@@ -25,6 +25,7 @@
 #include <QStringList>
 
 #include <functional>
+#include <iostream>
 
 using count_t = decltype( QTableWidget().rowCount() ) ;
 
@@ -144,7 +145,7 @@ static void _manage_row( QTableWidget * table,const T& l,std::function< void()> 
 {
 	if( size_t( l.size() ) != size_t( table->columnCount() ) ){
 
-		qDebug() << "ERROR: Table column count is NOT the same as object size" ;
+		std::cerr << "ERROR: Table column count is NOT the same as object size" << std::endl ;
 	}else{
 		function() ;
 	}

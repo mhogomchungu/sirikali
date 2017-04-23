@@ -79,7 +79,8 @@ keyDialog::keyDialog( QWidget * parent,
 	utility::setParent( parent,&m_parentWidget,this ) ;
 
 	m_configFile = e.configFilePath() ;
-	m_options    = e.idleTimeOut() ;
+	m_idleTimeOut = e.idleTimeOut() ;
+	m_mountOptions = e.mountOptions() ;
 
 	m_table = table ;
 	m_path = e.volumePath() ;
@@ -283,10 +284,10 @@ void keyDialog::windowSetTitle( const QString& s )
 
 void keyDialog::pbOptions()
 {
-	options::instance( m_parentWidget,m_create,{ m_options,m_configFile,m_exe },
+	options::instance( m_parentWidget,m_create,{ m_idleTimeOut,m_configFile,m_exe },
 			   [ this ]( const QStringList& e ){
 
-		m_options = e.at( 0 ) ;
+		m_idleTimeOut = e.at( 0 ) ;
 
 		m_configFile = e.at( 1 ) ;
 
@@ -782,7 +783,7 @@ void keyDialog::encryptedFolderCreate()
 
 	m_working = true ;
 
-	siritask::options s = { path,m,m_key,m_options,m_configFile,m_exe.toLower(),false } ;
+	siritask::options s = { path,m,m_key,m_idleTimeOut,m_configFile,m_exe.toLower(),false,m_mountOptions } ;
 
 	auto& e = siritask::encryptedFolderCreate( s ) ;
 
@@ -850,7 +851,7 @@ void keyDialog::encryptedFolderMount()
 
 	m_working = true ;
 
-	siritask::options s = { m_path,m,m_key,m_options,m_configFile,m_exe,ro } ;
+	siritask::options s = { m_path,m,m_key,m_idleTimeOut,m_configFile,m_exe,ro,m_mountOptions } ;
 
 	auto& e = siritask::encryptedFolderMount( s ) ;
 
