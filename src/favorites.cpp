@@ -297,6 +297,7 @@ void favorites::add()
 
 	auto dev = m_ui->lineEditEncryptedFolderPath->text() ;
 	auto path = m_ui->lineEditMountPath->text() ;
+	auto mOpts = m_ui->lineEditMountOptions->text() ;
 
 	if( dev.isEmpty() ){
 
@@ -305,6 +306,13 @@ void favorites::add()
 	if( path.isEmpty() ){
 
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Mount Point Path Field Is Empty" ) ) ;
+	}
+	if( !mOpts.isEmpty() ){
+
+		if( mOpts.startsWith( "-" ) || mOpts.contains( ",-" ) ){
+
+			return msg.ShowUIOK( tr( "ERROR!" ),tr( "Mount Options Can Not Contain \"-\"" ) ) ;
+		}
 	}
 
 	m_ui->tableWidget->setEnabled( false ) ;
@@ -334,7 +342,7 @@ void favorites::add()
 			  autoMount,
 			  _option( m_ui->lineEditConfigFilePath->text() ),
 			  _option( m_ui->lineEditIdleTimeOut->text() ),
-			  _option( m_ui->lineEditMountOptions->text() ) } ;
+			  _option( mOpts ) } ;
 
 	this->addEntries( e ) ;
 

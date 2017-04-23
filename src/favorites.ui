@@ -211,7 +211,7 @@
    <item row="7" column="0">
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>Mount Options (Optional)</string>
+      <string>Mount Options (Optional And Comma Separated)</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
