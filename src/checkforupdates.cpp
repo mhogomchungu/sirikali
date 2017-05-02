@@ -53,7 +53,10 @@ static void _show( bool autocheck,QWidget * w,const QVector< QStringList >& l )
 
 		if( a != "N/A" && b != "N/A" ){
 
-			show = ( a != b ) ;
+			if( a != b ){
+
+				show = true ;
+			}
 		}
 	}
 

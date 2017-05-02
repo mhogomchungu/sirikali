@@ -1392,8 +1392,8 @@ int utility::checkForUpdateInterval()
 
 		return _settings->value( "CheckForUpdateInterval" ).toInt() * 1000 ;
 	}else{
-		_settings->setValue( "CheckForUpdateInterval",int( 300 ) ) ;
-		return 300 * 1000 ;
+		_settings->setValue( "CheckForUpdateInterval",int( 10 ) ) ;
+		return 10 * 1000 ;
 	}
 }
 
