@@ -65,7 +65,7 @@ sirikali::sirikali( QWidget * parent ) :
 	QWidget( parent ),
 	m_secrets( this ),
 	m_mountInfo( mountinfo::instance( this,true,[ & ](){ QCoreApplication::exit( m_exitStatus ) ; } ) )
-{
+{	
 }
 
 /*

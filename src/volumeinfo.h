@@ -37,47 +37,13 @@ public:
 		}
 		mountinfo( const QStringList& l )
 		{
-			const auto s = l.size() ;
-
-			if( s == 1 ){
-
-				volumePath = l.at( 0 ) ;
-
-			}else if( s == 2 ){
-
-				volumePath = l.at( 0 ) ;
-				mountPoint = l.at( 1 ) ;
-
-			}else if( s == 3 ){
-
-				volumePath = l.at( 0 ) ;
-				mountPoint = l.at( 1 ) ;
-				fileSystem = l.at( 2 ) ;
-
-			}else if( s == 4 ){
-
-				volumePath = l.at( 0 ) ;
-				mountPoint = l.at( 1 ) ;
-				fileSystem = l.at( 2 ) ;
-				mode       = l.at( 3 ) ;
-
-			}else if( s == 5 ){
-
-				volumePath = l.at( 0 ) ;
-				mountPoint = l.at( 1 ) ;
-				fileSystem = l.at( 2 ) ;
-				mode       = l.at( 3 ) ;
-				idleTimeout = l.at( 4 ) ;
-
-			}else if( s == 6 ){
-
-				volumePath = l.at( 0 ) ;
-				mountPoint = l.at( 1 ) ;
-				fileSystem = l.at( 2 ) ;
-				mode       = l.at( 3 ) ;
-				idleTimeout = l.at( 4 ) ;
-				mountOptions = l.at( 5 ) ;
-			}
+			favorites::stringListToStrings( l,
+			                                volumePath,
+			                                mountPoint,
+			                                fileSystem,
+			                                mode,
+			                                idleTimeout,
+			                                mountOptions ) ;
 		}
 		QStringList minimalList() const
 		{

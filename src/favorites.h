@@ -37,6 +37,31 @@ class favorites : public QDialog
 {
 	Q_OBJECT
 public:
+	template< typename E,typename F,typename ... T >
+	static void _stringListToStrings( const F& s,int n,E& e )
+	{
+		if( n < s.size() ){
+
+			e = s.at( n ) ;
+		}
+	}
+
+	template< typename E,typename F,typename ... T >
+	static void _stringListToStrings( const E& s,int n,F& e,T& ... t )
+	{
+		if( n < s.size() ){
+
+			e = s.at( n ) ;
+			_stringListToStrings( s,n + 1,t ... ) ;
+		}
+	}
+
+	template< typename E,typename ... F >
+	static void stringListToStrings( const E& s,F& ... t )
+	{
+		_stringListToStrings( s,0,t ... ) ;
+	}
+
 	struct entry
 	{
 		entry()
@@ -125,47 +150,13 @@ public:
 	private:
 		void config( const QStringList& e )
 		{
-			auto s = e.size() ;
-
-			if( s == 1 ){
-
-				volumePath      = e.at( 0 ) ;
-
-			}else if( s == 2 ){
-
-				volumePath      = e.at( 0 ) ;
-				mountPointPath  = e.at( 1 ) ;
-
-			}else if( s == 3 ){
-
-				volumePath      = e.at( 0 ) ;
-				mountPointPath  = e.at( 1 ) ;
-				autoMountVolume = e.at( 2 ) ;
-
-			}else if( s == 4 ){
-
-				volumePath      = e.at( 0 ) ;
-				mountPointPath  = e.at( 1 ) ;
-				autoMountVolume = e.at( 2 ) ;
-				configFilePath  = e.at( 3 ) ;
-
-			}else if( s == 5 ){
-
-				volumePath      = e.at( 0 ) ;
-				mountPointPath  = e.at( 1 ) ;
-				autoMountVolume = e.at( 2 ) ;
-				configFilePath  = e.at( 3 ) ;
-				idleTimeOut     = e.at( 4 ) ;
-
-			}else if( s == 6 ){
-
-				volumePath      = e.at( 0 ) ;
-				mountPointPath  = e.at( 1 ) ;
-				autoMountVolume = e.at( 2 ) ;
-				configFilePath  = e.at( 3 ) ;
-				idleTimeOut     = e.at( 4 ) ;
-				mountOptions    = e.at( 5 ) ;
-			}
+			favorites::stringListToStrings( e,
+							volumePath,
+							mountPointPath,
+							autoMountVolume,
+							configFilePath,
+							idleTimeOut,
+							mountOptions ) ;
 
 			if( configFilePath == "N/A" ){
 
