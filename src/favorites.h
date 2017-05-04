@@ -37,7 +37,7 @@ class favorites : public QDialog
 {
 	Q_OBJECT
 public:
-	template< typename E,typename F,typename ... T >
+	template< typename E,typename F >
 	static void _stringListToStrings( const F& s,int n,E& e )
 	{
 		if( n < s.size() ){
