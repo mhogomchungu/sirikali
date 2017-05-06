@@ -38,28 +38,28 @@ class favorites : public QDialog
 	Q_OBJECT
 public:
 	template< typename E,typename F >
-	static void _stringListToStrings( const F& s,int n,E& e )
+	static void _stringListToStrings( const F& s,size_t n,size_t k,E& e )
 	{
-		if( n < s.size() ){
+		if( n < k ){
 
 			e = s.at( n ) ;
 		}
 	}
 
 	template< typename E,typename F,typename ... T >
-	static void _stringListToStrings( const E& s,int n,F& e,T& ... t )
+	static void _stringListToStrings( const E& s,size_t n,size_t k,F& e,T& ... t )
 	{
-		if( n < s.size() ){
+		if( n < k ){
 
 			e = s.at( n ) ;
-			_stringListToStrings( s,n + 1,t ... ) ;
+			_stringListToStrings( s,n + 1,k,t ... ) ;
 		}
 	}
 
 	template< typename E,typename ... F >
 	static void stringListToStrings( const E& s,F& ... t )
 	{
-		_stringListToStrings( s,0,t ... ) ;
+		_stringListToStrings( s,0,size_t( s.size() ),t ... ) ;
 	}
 
 	struct entry
