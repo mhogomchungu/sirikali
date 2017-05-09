@@ -35,9 +35,9 @@ public:
 		mountinfo()
 		{
 		}
-		mountinfo( const QStringList& l )
+		mountinfo( const QStringList& e )
 		{
-			favorites::stringListToStrings( l,
+			favorites::stringListToStrings( e,
 			                                volumePath,
 			                                mountPoint,
 			                                fileSystem,
@@ -61,6 +61,7 @@ public:
 		QString mode ;
 		QString idleTimeout ;
 		QString mountOptions ;
+		QString configPath ;
 	};
 
 	static bool supported( const QString& e )
@@ -90,12 +91,12 @@ public:
 
 		if( e.configFilePath != "N/A" ){
 
-			m_configPath = e.configFilePath ;
+			m_mountinfo.configPath = e.configFilePath ;
 		}
 
 		if( e.idleTimeOut != "N/A" ){
 
-			m_idleTime = e.idleTimeOut ;
+			m_mountinfo.idleTimeout = e.idleTimeOut ;
 		}
 
 		if( e.mountOptions != "N/A" ){
@@ -117,11 +118,11 @@ public:
 	}
 	const QString& configFilePath() const
 	{
-		return m_configPath ;
+		return m_mountinfo.configPath ;
 	}
 	const QString& idleTimeOut() const
 	{
-		return m_idleTime ;
+		return m_mountinfo.idleTimeout ;
 	}
 	const QString& mountOptions() const
 	{
@@ -149,8 +150,6 @@ public:
 	}
 private:
 	volumeInfo::mountinfo m_mountinfo ;
-	QString m_configPath ;
-	QString m_idleTime ;
 };
 
 #endif // VOLUMEENTRYPROPERTIES_H

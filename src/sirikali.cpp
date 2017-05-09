@@ -798,7 +798,7 @@ void sirikali::cliCommand( const QStringList& l )
 
 	if( l.contains( "-p" ) ){
 
-		for( const volumeInfo& it : siritask::updateVolumeList().await() ){
+		for( const auto& it : siritask::updateVolumeList().await() ){
 
 			it.printVolumeInfo() ;
 		}

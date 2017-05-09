@@ -748,7 +748,7 @@ Task::future< QVector< volumeInfo > >& siritask::updateVolumeList()
 				info.mountPoint   = _decode( m,false ) ;
 				info.fileSystem   = _fs( fs ) ;
 				info.mode         = _ro( k ) ;
-				info.idleTimeout = k.last() ;
+				info.idleTimeout  = k.last() ;
 
 				e.append( info ) ;
 			}
