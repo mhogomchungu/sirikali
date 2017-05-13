@@ -84,5 +84,5 @@ version 1.2.6
 -- Add a config option to disable displaying of passwords.
 -- Add ability to store passwords in OSX keychain.
 
-version 1.2.7(unreleased)
+version 1.2.7
 -- Add ability to add mount options to a favorite entry.
