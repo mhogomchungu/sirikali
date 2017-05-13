@@ -31,9 +31,9 @@ Most frequently asked questions are answered <a href="https://github.com/mhogomc
 
 ## Download link
 
-Latest released version is 1.2.6 and it can be downloaded by clicking below link.
+Latest released version is 1.2.7 and it can be downloaded by clicking below link.
 
-<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.2.6/SiriKali-1.2.6.tar.xz">SiriKali-1.2.6.tar.xz</a>
+<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.2.7/SiriKali-1.2.7.tar.xz">SiriKali-1.2.7.tar.xz</a>
 
 Older versions can be downloaded <a href="https://github.com/mhogomchungu/sirikali/releases">here.</a>
 
@@ -41,7 +41,7 @@ Older versions can be downloaded <a href="https://github.com/mhogomchungu/sirika
 
 ```Fedora,opensuse,ubuntu and debian``` users can install binary packages by following instructions on <a href="http://software.opensuse.org/download.html?project=home%3Amhogomchungu&package=sirikali">this</a> link.
 
-```Ubuntu 16.04 and 16.10``` packages have a known problem of causing ```synaptic/apt-get``` to complain about usage of SHA1. This is known problem solution and i am waiting for upstream to fix it.
+```Ubuntu and debian``` packages have a known problem of causing ```synaptic/apt-get``` to complain about usage of SHA1. This is known problem solution and i am waiting for upstream to fix it.
 
 ## Screenshots
 
