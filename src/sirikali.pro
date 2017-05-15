@@ -25,10 +25,12 @@ SOURCES += \
     monitor_mountinfo.cpp \
     tablewidget.cpp \
     options.cpp \
-    securefscreateoptions.cpp
+    securefscreateoptions.cpp \
+    cryfscreateoptions.cpp
 
 HEADERS += \
     securefscreateoptions.h \
+    cryfscreateoptions.h \
     dialogok.h \
     checkforupdates.h \
     favorites.h \
@@ -57,6 +59,7 @@ HEADERS += \
 
 FORMS += \
     securefscreateoptions.ui \
+    cryfscreateoptions.ui \
     dialogok.ui \
     sirikali.ui \
     favorites.ui \

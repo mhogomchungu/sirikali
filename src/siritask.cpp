@@ -317,6 +317,39 @@ static QString _args( const QString& exe,const siritask::options& opt,
 			}
 		}
 
+	}else if( type == "cryfs" ){
+
+		auto e = QString( "%1 %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ) ;
+
+		auto z = [ & ]()->QString{
+
+			if( create ){
+
+				return exe + " " + opt.createOptions ;
+			}else{
+				return exe ;
+			}
+		}() ;
+
+		auto opts = e.arg( z,cipherFolder,mountPoint,mountOptions,configPath,
+				   separator,type.name(),cipherFolder,type.name() ) ;
+
+		if( opt.mountOptions.isEmpty() ){
+
+			if( opt.ro ){
+
+				return opts + " -o ro" ;
+			}else{
+				return opts + " -o rw" ;
+			}
+		}else{
+			if( opt.ro ){
+
+				return opts + " -o ro -o " + opt.mountOptions ;
+			}else{
+				return opts + " -o rw -o " + opt.mountOptions ;
+			}
+		}
 	}else{
 		auto e = QString( "%1 %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ) ;
 

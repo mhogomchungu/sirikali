@@ -38,6 +38,8 @@ class QTableWidget ;
 #include "can_build_pwquality.h"
 #include "secrets.h"
 #include "securefscreateoptions.h"
+#include "cryfscreateoptions.h"
+
 #include <functional>
 #include <memory>
 

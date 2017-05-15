@@ -113,8 +113,10 @@ keyDialog::keyDialog( QWidget * parent,
 
 	if( m_create ){
 
-		if( m_exe != "Securefs" ){
+		if( m_exe == "Securefs" || m_exe == "Cryfs" ){
 
+			m_ui->pbOptions->setEnabled( true ) ;
+		}else{
 			m_ui->pbOptions->setEnabled( false ) ;
 		}
 
@@ -294,6 +296,14 @@ void keyDialog::pbOptions()
 		if( m_exe == "Securefs" ){
 
 			securefscreateoptions::instance( m_parentWidget,[ this ]( const QString& e ){
+
+				m_createOptions = e ;
+			} ) ;
+		}
+
+		if( m_exe == "Cryfs" ){
+
+			cryfscreateoptions::instance( m_parentWidget,[ this ]( const QString& e ){
 
 				m_createOptions = e ;
 			} ) ;

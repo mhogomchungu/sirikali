@@ -53,7 +53,7 @@ public:
 		QStringList fullList() const
 		{
 			return { volumePath,mountPoint,
-				 fileSystem,mode,idleTimeout,mountOptions } ;
+				 fileSystem,mode,idleTimeout,mountOptions,configPath } ;
 		}
 		QString volumePath ;
 		QString mountPoint ;

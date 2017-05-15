@@ -67,5 +67,5 @@ void securefscreateoptions::HideUI()
 void securefscreateoptions::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
-	this->HideUI() ;
+	this->pbCancel() ;
 }

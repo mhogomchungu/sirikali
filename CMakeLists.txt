@@ -161,6 +161,7 @@ set( UI_FILES 	src/sirikali.ui
 		src/dialogok.ui
 		src/filemanager.ui
 		src/securefscreateoptions.ui
+		src/cryfscreateoptions.ui
 )
 
 set( MOC_FILES 	src/dialogok.h
@@ -180,6 +181,7 @@ set( MOC_FILES 	src/dialogok.h
 		src/task.h
 		src/filemanager.h
 		src/securefscreateoptions.h
+		src/cryfscreateoptions.h
  )
 
 set( SRC 	src/dialogok.cpp
@@ -203,6 +205,7 @@ set( SRC 	src/dialogok.cpp
 		src/filemanager.cpp
 		src/securefscreateoptions.cpp
 		src/volumeinfo.cpp
+		src/cryfscreateoptions.cpp
 )
 
 if( APPLE )
