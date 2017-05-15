@@ -108,8 +108,15 @@ keyDialog::keyDialog( QWidget * parent,
 		 this,SLOT( pbOK() ) ) ;
 	connect( m_ui->checkBoxVisibleKey,SIGNAL( stateChanged( int ) ),
 		 this,SLOT( cbVisibleKeyStateChanged( int ) ) ) ;
+	connect( m_ui->pbOptions,SIGNAL( clicked() ),
+		 this,SLOT( pbOptions() ) ) ;
 
 	if( m_create ){
+
+		if( m_exe != "Securefs" ){
+
+			m_ui->pbOptions->setEnabled( false ) ;
+		}
 
 		connect( m_ui->lineEditMountPoint,SIGNAL( textChanged( QString ) ),
 			 this,SLOT( textChanged( QString ) ) ) ;
@@ -246,8 +253,6 @@ keyDialog::keyDialog( QWidget * parent,
 
 	this->installEventFilter( this ) ;
 
-	connect( m_ui->pbOptions,SIGNAL( clicked() ),this,SLOT( pbOptions() ) ) ;
-
 	if( !m_key.isEmpty() ){
 
 		m_ui->lineEditKey->setText( m_key ) ;
@@ -284,20 +289,31 @@ void keyDialog::windowSetTitle( const QString& s )
 
 void keyDialog::pbOptions()
 {
-	options::instance( m_parentWidget,m_create,{ m_idleTimeOut,m_configFile,m_exe },
-			   [ this ]( const QStringList& e ){
+	if( m_create ){
 
-		m_idleTimeOut = e.at( 0 ) ;
+		if( m_exe == "Securefs" ){
 
-		m_configFile = e.at( 1 ) ;
+			securefscreateoptions::instance( m_parentWidget,[ this ]( const QString& e ){
 
-		if( m_ui->lineEditKey->text().isEmpty() ){
-
-			m_ui->lineEditKey->setFocus() ;
-		}else{
-			m_ui->pbOpen->setFocus() ;
+				m_createOptions = e ;
+			} ) ;
 		}
-	} ) ;
+	}else{
+		options::instance( m_parentWidget,m_create,{ m_idleTimeOut,m_configFile,m_exe },
+				   [ this ]( const QStringList& e ){
+
+			m_idleTimeOut = e.at( 0 ) ;
+
+			m_configFile = e.at( 1 ) ;
+
+			if( m_ui->lineEditKey->text().isEmpty() ){
+
+				m_ui->lineEditKey->setFocus() ;
+			}else{
+				m_ui->pbOpen->setFocus() ;
+			}
+		} ) ;
+	}
 }
 
 void keyDialog::passWordTextChanged( QString e )
@@ -783,7 +799,8 @@ void keyDialog::encryptedFolderCreate()
 
 	m_working = true ;
 
-	siritask::options s = { path,m,m_key,m_idleTimeOut,m_configFile,m_exe.toLower(),false,m_mountOptions } ;
+	siritask::options s = { path,m,m_key,m_idleTimeOut,m_configFile,
+				m_exe.toLower(),false,m_mountOptions,m_createOptions } ;
 
 	auto& e = siritask::encryptedFolderCreate( s ) ;
 
@@ -851,7 +868,7 @@ void keyDialog::encryptedFolderMount()
 
 	m_working = true ;
 
-	siritask::options s = { m_path,m,m_key,m_idleTimeOut,m_configFile,m_exe,ro,m_mountOptions } ;
+	siritask::options s = { m_path,m,m_key,m_idleTimeOut,m_configFile,m_exe,ro,m_mountOptions,QString() } ;
 
 	auto& e = siritask::encryptedFolderMount( s ) ;
 

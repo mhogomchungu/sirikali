@@ -37,7 +37,7 @@ class QTableWidget ;
 #include "siritask.h"
 #include "can_build_pwquality.h"
 #include "secrets.h"
-
+#include "securefscreateoptions.h"
 #include <functional>
 #include <memory>
 
@@ -167,6 +167,7 @@ private :
 	QString m_exe ;
 	QString m_mountPointPath ;
 	QString m_mountOptions ;
+	QString m_createOptions ;
 	QStringList m_keyFiles ;
 
 	QTableWidget * m_table ;

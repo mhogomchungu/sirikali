@@ -841,7 +841,7 @@ void sirikali::unlockVolume( const QStringList& l )
 				}
 			}() ;
 
-			siritask::options s = { volume,m,key,mOpt,cPath,QString(),mode,QString() } ;
+			siritask::options s = { volume,m,key,mOpt,cPath,QString(),mode,QString(),QString() } ;
 
 			auto& e = siritask::encryptedFolderMount( s ) ;
 

@@ -24,9 +24,11 @@ SOURCES += \
     dialogmsg.cpp \
     monitor_mountinfo.cpp \
     tablewidget.cpp \
-    options.cpp
+    options.cpp \
+    securefscreateoptions.cpp
 
 HEADERS += \
+    securefscreateoptions.h \
     dialogok.h \
     checkforupdates.h \
     favorites.h \
@@ -54,6 +56,7 @@ HEADERS += \
     lxqt_wallet/frontend/changepassworddialog.h
 
 FORMS += \
+    securefscreateoptions.ui \
     dialogok.ui \
     sirikali.ui \
     favorites.ui \
