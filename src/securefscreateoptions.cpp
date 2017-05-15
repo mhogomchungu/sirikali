@@ -28,6 +28,8 @@ securefscreateoptions::securefscreateoptions( QWidget * parent,
 {
 	m_ui->setupUi( this ) ;
 
+	this->setFixedSize( this->window()->size() ) ;
+
 	connect( m_ui->pbOK,SIGNAL( clicked() ),this,SLOT( pbOK() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 
