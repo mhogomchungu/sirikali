@@ -370,6 +370,8 @@ namespace utility
 	bool runningInMixedMode() ;
 	bool notRunningInMixedMode() ;
 
+	QProcessEnvironment systemEnvironment() ;
+
 	QString getStringUserID() ;
 	QString homePath() ;
 	QString userName() ;

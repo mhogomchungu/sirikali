@@ -101,16 +101,8 @@ static QString _version( const siritask::volumeType& e )
 
 	auto s = Task::await< QStringList >( [ & ](){
 
-		return utility::Task( args,-1,[ & ](){
-
-			QProcessEnvironment env ;
-
-			env.insert( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
-			env.insert( "CRYFS_FRONTEND","noninteractive" ) ;
-
-			return env ;
-
-		}() ).splitOutput( ' ',e != "encfs" ) ;
+		auto s = utility::systemEnvironment() ;
+		return utility::Task( args,-1,s ).splitOutput( ' ',e != "encfs" ) ;
 	} ) ;
 
 	auto r = [ & ]()->QString{

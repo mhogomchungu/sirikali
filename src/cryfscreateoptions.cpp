@@ -27,16 +27,7 @@ static void _get_crypto_options( QComboBox * combobox )
 {
 	auto exe = utility::executableFullPath( "cryfs" ) + " --show-ciphers" ;
 
-	auto env = QProcessEnvironment::systemEnvironment() ;
-
-	env.insert( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
-	env.insert( "CRYFS_FRONTEND","noninteractive" ) ;
-
-	env.insert( "LANG","C" ) ;
-
-	env.insert( "PATH",utility::executableSearchPaths( env.value( "PATH" ) ) ) ;
-
-	auto e = utility::Task( exe,env,[](){},false ) ;
+	auto e = utility::Task( exe,utility::systemEnvironment(),[](){},false ) ;
 
 	if( e.success() ){
 
@@ -85,7 +76,14 @@ void cryfscreateoptions::pbOK()
 {
 	auto e = QString( "--cipher %1 --blocksize %2" ) ;
 
-	m_function( e.arg( m_ui->comboBox->currentText(),m_ui->lineEdit->text() ) ) ;
+	auto s = m_ui->lineEdit->text() ;
+
+	if( s.isEmpty() ){
+
+		s = "32768" ;
+	}
+
+	m_function( e.arg( m_ui->comboBox->currentText(),s ) ) ;
 
 	this->HideUI() ;
 }

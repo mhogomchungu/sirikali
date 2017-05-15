@@ -496,20 +496,12 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 		return _status( app,true ) ;
 	}else{
-		auto e = utility::Task( _args( exe,opt,configFilePath,create ),20000,[](){
-
-			auto env = QProcessEnvironment::systemEnvironment() ;
-
-			env.insert( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
-			env.insert( "CRYFS_FRONTEND","noninteractive" ) ;
-
-			env.insert( "LANG","C" ) ;
-
-			env.insert( "PATH",utility::executableSearchPaths( env.value( "PATH" ) ) ) ;
-
-			return env ;
-
-		}(),password.toLatin1(),[](){},configFilePath.endsWith( "ecryptfs.config" ) ) ;
+		auto e = utility::Task( _args( exe,opt,configFilePath,create ),
+					20000,
+					utility::systemEnvironment(),
+					password.toLatin1(),
+					[](){},
+					configFilePath.endsWith( "ecryptfs.config" ) ) ;
 
 		auto s = _status( e,_status( app,false ),app == "encfs" ) ;
 
