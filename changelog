@@ -86,3 +86,7 @@ version 1.2.6
 
 version 1.2.7
 -- Add ability to add mount options to a favorite entry.
+
+version 1.2.8(unreleased)
+-- Add a GUI way to set options when creating a securefs volume.
+-- Add a GUI way to set options when creating a cryfs volume.
