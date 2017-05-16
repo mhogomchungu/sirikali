@@ -33,6 +33,8 @@ securefscreateoptions::securefscreateoptions( QWidget * parent,
 	connect( m_ui->pbOK,SIGNAL( clicked() ),this,SLOT( pbOK() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 
+	m_ui->comboBox->setFocus() ;
+
 	this->show() ;
 }
 
@@ -47,7 +49,7 @@ void securefscreateoptions::pbOK()
 
 		m_function( "--format 2" ) ;
 	}else{
-		m_function( QString() ) ;
+		m_function( "--format 4" ) ;
 	}
 
 	this->HideUI() ;

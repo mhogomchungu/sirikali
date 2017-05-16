@@ -62,6 +62,8 @@ cryfscreateoptions::cryfscreateoptions( QWidget * parent,
 
 	m_ui->lineEdit->setText( "32768" ) ;
 
+	m_ui->comboBox->setFocus() ;
+
 	auto& e = Task::run( [ this ](){ _get_crypto_options( m_ui->comboBox ) ; } ) ;
 
 	e.then( [ this ](){ this->show() ; } ) ;
