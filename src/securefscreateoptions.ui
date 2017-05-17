@@ -17,15 +17,15 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>10</y>
+     <y>0</y>
      <width>561</width>
-     <height>241</height>
+     <height>251</height>
     </rect>
    </property>
    <property name="text">
     <string>The &quot;lite format&quot; simply encrypts filenames and file contents separately, similar to how encfs operates, although with more security.
 
-The &quot;full format&quot; maps files, directory and symlinks in the virtual filesystem all to regular files in the underlying filesystem. The directory structure is flattened and recorded as B-trees in files.
+The &quot;full format&quot; maps files, directories and symlinks in the virtual filesystem all to regular files in the underlying filesystem. The directory structure is flattened and recorded as B-trees in files.
 
 The lite format has become the default on Unix-like operating systems as it is much faster and features easier conflict resolution, especially when used with DropBox, Google Drive, etc. The full format, however, leaks fewer information about the filesystem hierarchy, runs relatively independent of the features of the underlying filesystem, and is in general more secure.</string>
    </property>

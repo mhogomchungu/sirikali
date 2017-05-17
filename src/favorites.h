@@ -37,8 +37,8 @@ class favorites : public QDialog
 {
 	Q_OBJECT
 public:
-	template< typename E,typename F >
-	static void _stringListToStrings( const F& s,size_t n,size_t k,E& e )
+	template< typename E,typename F,typename G >
+	static void _stringListToStrings( const F& s,G n,G k,E& e )
 	{
 		if( n < k ){
 
@@ -46,8 +46,8 @@ public:
 		}
 	}
 
-	template< typename E,typename F,typename ... T >
-	static void _stringListToStrings( const E& s,size_t n,size_t k,F& e,T& ... t )
+	template< typename E,typename F,typename G,typename ... T >
+	static void _stringListToStrings( const E& s,G n,G k,F& e,T& ... t )
 	{
 		if( n < k ){
 
@@ -59,7 +59,7 @@ public:
 	template< typename E,typename ... F >
 	static void stringListToStrings( const E& s,F& ... t )
 	{
-		_stringListToStrings( s,0,size_t( s.size() ),t ... ) ;
+		_stringListToStrings( s,static_cast< decltype( s.size() ) >( 0 ),s.size(),t ... ) ;
 	}
 
 	struct entry
