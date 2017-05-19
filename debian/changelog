@@ -1,13 +1,14 @@
-sirikali (1.2.6-1) UNRELEASED; urgency=medium
+sirikali (1.2.7-1) UNRELEASED; urgency=medium
 
   * New upstream release(s).
 
- -- David Steele <steele@debian.org>  Mon, 17 Apr 2017 23:22:09 -0400
+ -- David Steele <steele@debian.org>  Fri, 19 May 2017 11:20:25 -0400
 
 sirikali (1.2.3-1) unstable; urgency=medium
 
   * New upstream release.
   * Minor appstream fix.
+  * Update architecture list.
 
  -- David Steele <steele@debian.org>  Thu, 29 Dec 2016 21:24:41 -0500
 
