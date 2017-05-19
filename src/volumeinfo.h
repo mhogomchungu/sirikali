@@ -35,40 +35,15 @@ public:
 		mountinfo()
 		{
 		}
-		mountinfo( const QStringList& l )
+		mountinfo( const QStringList& e )
 		{
-			const auto s = l.size() ;
-
-			if( s == 1 ){
-
-				volumePath = l.at( 0 ) ;
-
-			}else if( s == 2 ){
-
-				volumePath = l.at( 0 ) ;
-				mountPoint = l.at( 1 ) ;
-
-			}else if( s == 3 ){
-
-				volumePath = l.at( 0 ) ;
-				mountPoint = l.at( 1 ) ;
-				fileSystem = l.at( 2 ) ;
-
-			}else if( s == 4 ){
-
-				volumePath = l.at( 0 ) ;
-				mountPoint = l.at( 1 ) ;
-				fileSystem = l.at( 2 ) ;
-				mode       = l.at( 3 ) ;
-
-			}else if( s >= 5 ){
-
-				volumePath = l.at( 0 ) ;
-				mountPoint = l.at( 1 ) ;
-				fileSystem = l.at( 2 ) ;
-				mode       = l.at( 3 ) ;
-				mountOptions = l.at( 4 ) ;
-			}
+			favorites::stringListToStrings( e,
+			                                volumePath,
+			                                mountPoint,
+			                                fileSystem,
+			                                mode,
+			                                idleTimeout,
+			                                mountOptions ) ;
 		}
 		QStringList minimalList() const
 		{
@@ -78,13 +53,15 @@ public:
 		QStringList fullList() const
 		{
 			return { volumePath,mountPoint,
-				 fileSystem,mode,mountOptions } ;
+				 fileSystem,mode,idleTimeout,mountOptions } ;
 		}
 		QString volumePath ;
 		QString mountPoint ;
 		QString fileSystem ;
 		QString mode ;
+		QString idleTimeout ;
 		QString mountOptions ;
+		QString configPath ;
 	};
 
 	static bool supported( const QString& e )
@@ -114,12 +91,17 @@ public:
 
 		if( e.configFilePath != "N/A" ){
 
-			m_configPath = e.configFilePath ;
+			m_mountinfo.configPath = e.configFilePath ;
 		}
 
 		if( e.idleTimeOut != "N/A" ){
 
-			m_idleTime = e.idleTimeOut ;
+			m_mountinfo.idleTimeout = e.idleTimeOut ;
+		}
+
+		if( e.mountOptions != "N/A" ){
+
+			m_mountinfo.mountOptions = e.mountOptions ;
 		}
 	}
 	const QString& volumePath() const
@@ -136,11 +118,11 @@ public:
 	}
 	const QString& configFilePath() const
 	{
-		return m_configPath ;
+		return m_mountinfo.configPath ;
 	}
 	const QString& idleTimeOut() const
 	{
-		return m_idleTime ;
+		return m_mountinfo.idleTimeout ;
 	}
 	const QString& mountOptions() const
 	{
@@ -168,8 +150,6 @@ public:
 	}
 private:
 	volumeInfo::mountinfo m_mountinfo ;
-	QString m_configPath ;
-	QString m_idleTime ;
 };
 
 #endif // VOLUMEENTRYPROPERTIES_H

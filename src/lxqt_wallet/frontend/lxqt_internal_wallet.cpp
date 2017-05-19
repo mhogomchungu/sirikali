@@ -71,7 +71,10 @@ void LXQt::Wallet::internalWallet::opened( bool opened )
 
 	if( m_opened ){
 
-		m_loop.exit() ;
+		if( m_loop.isRunning() ){
+
+			m_loop.exit() ;
+		}
 
 		this->walletIsOpen( m_opened ) ;
 	}

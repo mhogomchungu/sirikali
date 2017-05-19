@@ -44,6 +44,6 @@ int main( int argc,char * argv[] )
 
 		QMetaObject::invokeMethod( &e,"start",Qt::QueuedConnection ) ;
 
-		return a.exec();
+		return a.exec() ;
 	}
 }

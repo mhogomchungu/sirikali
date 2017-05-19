@@ -163,15 +163,15 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 	auto mountOptions = [ & ](){
 
-		if( !opt.mOpt.isEmpty() ){
+		if( !opt.idleTimeout.isEmpty() ){
 
 			if( type == "cryfs" ){
 
-				return QString( "--unmount-idle %1" ).arg( opt.mOpt ) ;
+				return QString( "--unmount-idle %1" ).arg( opt.idleTimeout ) ;
 
 			}else if( type == "encfs" ){
 
-				return QString( "--idle=%1" ).arg( opt.mOpt ) ;
+				return QString( "--idle=%1" ).arg( opt.idleTimeout ) ;
 			}
 		}
 
@@ -222,31 +222,41 @@ static QString _args( const QString& exe,const siritask::options& opt,
 			}
 		}() ;
 
-		if( type == "gocryptfs" ){
+		auto e = [ & ](){
 
-			if( create ){
+			if( type == "gocryptfs" ){
 
-				auto e = QString( "%1 --init -nosyslog %2 %3" ) ;
-				return e.arg( exe,configPath,cipherFolder ) ;
-			}else{
+				if( create ){
 
-				if( utility::platformIsOSX() ){
+					auto e = QString( "%1 --init -nosyslog %2 %3" ) ;
+					return e.arg( exe,configPath,cipherFolder ) ;
+				}else{
 
-					mode += " -o fsname=gocryptfs@" + cipherFolder ;
+					if( utility::platformIsOSX() ){
+
+						mode += " -o fsname=gocryptfs@" + cipherFolder ;
+					}
+
+					auto e = QString( "%1 -nosyslog %2 %3 %4 %5" ) ;
+					return e.arg( exe,mode,configPath,cipherFolder,mountPoint ) ;
 				}
-
-				auto e = QString( "%1 -nosyslog %2 %3 %4 %5" ) ;
-				return e.arg( exe,mode,configPath,cipherFolder,mountPoint ) ;
-			}
-		}else{
-			if( create ){
-
-				auto e = QString( "%1 create %2 %3" ) ;
-				return e.arg( exe,configPath,cipherFolder ) ;
 			}else{
-				auto e = QString( "%1 mount -b %2 %3 -o fsname=securefs@%4 -o subtype=securefs %5 %6" ) ;
-				return e.arg( exe,configPath,mode,cipherFolder,cipherFolder,mountPoint ) ;
+				if( create ){
+
+					auto e = QString( "%1 create %2 %3" ) ;
+					return e.arg( exe,configPath,cipherFolder ) ;
+				}else{
+					auto e = QString( "%1 mount -b %2 %3 -o fsname=securefs@%4 -o subtype=securefs %5 %6" ) ;
+					return e.arg( exe,configPath,mode,cipherFolder,cipherFolder,mountPoint ) ;
+				}
 			}
+		}() ;
+
+		if( opt.mountOptions.isEmpty() ){
+
+			return e ;
+		}else{
+			return e + " -o " + opt.mountOptions ;
 		}
 
 	}else if( type.startsWith( "ecryptfs" ) ){
@@ -290,23 +300,44 @@ static QString _args( const QString& exe,const siritask::options& opt,
 			}
 		}() ;
 
-		if( utility::runningInMixedMode() ){
+		if( opt.mountOptions.isEmpty() ){
 
-			return _wrap_su( s ) ;
+			if( utility::runningInMixedMode() ){
+
+				return _wrap_su( s ) ;
+			}else{
+				return s ;
+			}
 		}else{
-			return s ;
+			if( utility::runningInMixedMode() ){
+
+				return _wrap_su( s + " -o " + opt.mountOptions ) ;
+			}else{
+				return s + " -o " + opt.mountOptions;
+			}
 		}
+
 	}else{
 		auto e = QString( "%1 %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ) ;
 
 		auto opts = e.arg( exe,cipherFolder,mountPoint,mountOptions,configPath,
 				   separator,type.name(),cipherFolder,type.name() ) ;
 
-		if( opt.ro ){
+		if( opt.mountOptions.isEmpty() ){
 
-			return opts + " -o ro" ;
+			if( opt.ro ){
+
+				return opts + " -o ro" ;
+			}else{
+				return opts + " -o rw" ;
+			}
 		}else{
-			return opts + " -o rw" ;
+			if( opt.ro ){
+
+				return opts + " -o ro -o " + opt.mountOptions ;
+			}else{
+				return opts + " -o rw -o " + opt.mountOptions ;
+			}
 		}
 	}
 }

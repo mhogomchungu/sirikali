@@ -1,7 +1,9 @@
 
 Below are instructions on how to build SiriKali on OSX.
 
-1.  Clone git@github.com:mhogomchungu/sirikali.git. When you run git the first time on macOS you will be
+1.  Clone SiriKali repository with the following command:
+    "git clone https://github.com/mhogomchungu/sirikali.git"
+    When you run git the first time on macOS, you will be
     prompted to install developer tools (which includes git) and be guided through it.
 2.  Install homebrew (https://brew.sh/)
 3.  Install dependencies with brew:
@@ -9,9 +11,11 @@ Below are instructions on how to build SiriKali on OSX.
 3.2 brew install qt5
 3.3 brew install pkg-config
 
-    # For encfs support, you also need:
 4.  brew cask install osxfuse
-5.  brew install homebrew/fuse/encfs
+    # for encfs support
+5.1 brew install homebrew/fuse/encfs
+    # for securefs support
+5.2 brew install homebrew/fuse/securefs
 
     # Inside the directory of the cloned repository
 6.  mkdir build

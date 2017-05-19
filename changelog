@@ -83,3 +83,6 @@ version 1.2.6
    A user for example can set gpg as an external application so that they can extract a key from a gpg encrypted keyfile.
 -- Add a config option to disable displaying of passwords.
 -- Add ability to store passwords in OSX keychain.
+
+version 1.2.7
+-- Add ability to add mount options to a favorite entry.

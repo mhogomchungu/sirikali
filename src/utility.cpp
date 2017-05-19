@@ -242,7 +242,7 @@ void utility::startHelperExecutable( QWidget * obj,const QString& arg,const char
 
 	if( !exe.isEmpty() ){
 
-		exe = QString( "%1 %2 %3 fork ").arg( exe,siriPolkitPath,utility::helperSocketPath() ) ;
+		exe = QString( "%1 %2 %3 fork" ).arg( exe,siriPolkitPath,utility::helperSocketPath() ) ;
 
 		::Task::exec( [ = ](){
 
@@ -419,7 +419,7 @@ options:\n\
 	-m   Tool to use to open a default file manager(default tool is xdg-open).\n\
 	-e   Start the application without showing the GUI.\n\
 	-b   A name of a backend to retrieve a password from when a volume is open from CLI.\n\
-	     Supported backends are: \"internal\",\"stdin\",\"keyfile\",\"kwallet\" and \"gnomewallet.\n\
+	     Supported backends are: \"internal\",\"stdin\",\"keyfile\",\"kwallet\" and \"libsecret.\n\
 	     The first three are always present but the rest are compile time dependencies.\n\
 	     \"internal\" option causes SiriKali to read password from lxqt-wallet internal backend.\n\
 	     \"stdin\" option causes SiriKali to read the password from standard input.\n\
@@ -655,6 +655,18 @@ void utility::replaceFavorite( const favorites::entry& e,const favorites::entry&
 	if( !l.isEmpty() ){
 
 		_settings->setValue( "FavoritesVolumes",l ) ;
+	}
+}
+
+int utility::favoritesEntrySize()
+{
+	auto s = _settings->value( "FavoritesVolumes" ).toStringList() ;
+
+	if( s.size() == 0 ){
+
+		return 0 ;
+	}else{
+		return utility::split( s.first(),'\t' ).size() ;
 	}
 }
 
@@ -1380,8 +1392,8 @@ int utility::checkForUpdateInterval()
 
 		return _settings->value( "CheckForUpdateInterval" ).toInt() * 1000 ;
 	}else{
-		_settings->setValue( "CheckForUpdateInterval",int( 300 ) ) ;
-		return 300 * 1000 ;
+		_settings->setValue( "CheckForUpdateInterval",int( 10 ) ) ;
+		return 10 * 1000 ;
 	}
 }
 

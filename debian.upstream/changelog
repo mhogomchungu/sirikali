@@ -1,3 +1,10 @@
+sirikali (1.2.7-1) UNRELEASED; urgency=low
+  [Mhogo Mchungu]
+  * New Features
+     -- Add ability to add mount options to a favorite entry.
+
+ -- Mhogo Mchungu <mhogomchungu@gmail.com>  Sat, 13 May 2017 16:38:48 +0000
+
 sirikali (1.2.6-1) UNRELEASED; urgency=low
   [Mhogo Mchungu]
   * New Features

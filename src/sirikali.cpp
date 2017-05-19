@@ -798,7 +798,7 @@ void sirikali::cliCommand( const QStringList& l )
 
 	if( l.contains( "-p" ) ){
 
-		for( const volumeInfo& it : siritask::updateVolumeList().await() ){
+		for( const auto& it : siritask::updateVolumeList().await() ){
 
 			it.printVolumeInfo() ;
 		}
@@ -841,7 +841,7 @@ void sirikali::unlockVolume( const QStringList& l )
 				}
 			}() ;
 
-			siritask::options s = { volume,m,key,mOpt,cPath,QString(),mode } ;
+			siritask::options s = { volume,m,key,mOpt,cPath,QString(),mode,QString() } ;
 
 			auto& e = siritask::encryptedFolderMount( s ) ;
 
