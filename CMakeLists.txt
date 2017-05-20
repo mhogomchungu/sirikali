@@ -206,6 +206,7 @@ set( SRC 	src/dialogok.cpp
 		src/securefscreateoptions.cpp
 		src/volumeinfo.cpp
 		src/cryfscreateoptions.cpp
+		src/stringlisttostrings.cpp
 )
 
 if( APPLE )

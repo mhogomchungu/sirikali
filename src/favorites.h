@@ -24,6 +24,7 @@
 #include <QString>
 #include <QStringList>
 
+#include "stringlisttostrings.h"
 class QAction ;
 class QWidget ;
 class QTableWidgetItem ;
@@ -37,31 +38,6 @@ class favorites : public QDialog
 {
 	Q_OBJECT
 public:
-	template< typename E,typename F,typename G >
-	static void _stringListToStrings( const F& s,G n,G k,E& e )
-	{
-		if( n < k ){
-
-			e = s.at( n ) ;
-		}
-	}
-
-	template< typename E,typename F,typename G,typename ... T >
-	static void _stringListToStrings( const E& s,G n,G k,F& e,T& ... t )
-	{
-		if( n < k ){
-
-			e = s.at( n ) ;
-			_stringListToStrings( s,n + 1,k,t ... ) ;
-		}
-	}
-
-	template< typename E,typename ... F >
-	static void stringListToStrings( const E& s,F& ... t )
-	{
-		_stringListToStrings( s,static_cast< decltype( s.size() ) >( 0 ),s.size(),t ... ) ;
-	}
-
 	struct entry
 	{
 		entry()
@@ -150,13 +126,13 @@ public:
 	private:
 		void config( const QStringList& e )
 		{
-			favorites::stringListToStrings( e,
-							volumePath,
-							mountPointPath,
-							autoMountVolume,
-							configFilePath,
-							idleTimeOut,
-							mountOptions ) ;
+			stringListToStrings::convert( e,
+						      volumePath,
+						      mountPointPath,
+						      autoMountVolume,
+						      configFilePath,
+						      idleTimeOut,
+						      mountOptions ) ;
 
 			if( configFilePath == "N/A" ){
 

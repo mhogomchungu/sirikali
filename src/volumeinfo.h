@@ -24,8 +24,8 @@
 
 #include <initializer_list>
 
-#include "favorites.h"
 #include "utility.h"
+#include "stringlisttostrings.h"
 
 class volumeInfo
 {
@@ -37,13 +37,13 @@ public:
 		}
 		mountinfo( const QStringList& e )
 		{
-			favorites::stringListToStrings( e,
-			                                volumePath,
-			                                mountPoint,
-			                                fileSystem,
-			                                mode,
-			                                idleTimeout,
-			                                mountOptions ) ;
+			stringListToStrings::convert( e,
+						      volumePath,
+						      mountPoint,
+						      fileSystem,
+						      mode,
+						      idleTimeout,
+						      mountOptions ) ;
 		}
 		QStringList minimalList() const
 		{
