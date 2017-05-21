@@ -350,8 +350,8 @@ if( NOT APPLE )
 file( WRITE ${PROJECT_BINARY_DIR}/sirikali.desktop
 
 "[Desktop Entry]
-Comment[en_US]=Manage Encrypted Volumes Hosted In Files
-Comment=Manage Encrypted Volumes Hosted In Files
+Comment[en_US]=Manage Encrypted Volumes Hosted In Folders
+Comment=Manage Encrypted Volumes Hosted In Folders
 Exec=${CMAKE_INSTALL_FULL_BINDIR}/sirikali -d %U
 GenericName[en_US]=Encrypted Folder Manager
 GenericName=Encrypted Folder Manager
