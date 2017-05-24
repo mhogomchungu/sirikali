@@ -1,4 +1,4 @@
-/*
+﻿/*
  * copyright: 2014-2017
  * name : Francis Banyikwa
  * email: mhogomchungu@gmail.com
@@ -47,7 +47,7 @@
 
 /*
  * This library wraps a function into a future where the result of the function
- * can be retrieved through the future's 3 public methods:
+ * can be retrieved through the future's below public methods:
  *
  * 1. .get().  This method runs the wrapped function on the current thread
  *             and could block the thread and hang GUI.
@@ -78,18 +78,23 @@
  *              when all tasks finish running. This method behaves like .then( [](){} ) if the future is
  *              managing only one task.
  *
- * 5. .cancel(). This is an additional API that can be used to cancel a future. It is important to know
+ * 5. .cancel(). This method can be used to cancel a future. It is important to know
  *               that this method does not terminate a running thread that is powering a future, it just
  *               releases memory used by a future and this method should be used if a future is to be discarded
  *               after it it is acquired but never used.
  *
- * 6. .thread(). This is an additional API and it returns a pointer to a thread that is powering a future.
- *               This pointer coud be a nullptr and it is owned by the future object and should NOT be
- *               deleted by users of the API.
+ * 6. .threads(). This method returns a vector of QThreads that are powering futures.
+ *                The vector will contain a single entry if this future powers its own task. If this future
+ *                manages other futures,then the returned vector will contain QThread pointers that are in
+ *                the same order as tasks/futures passed to Task::run().
  *
- * 7. .start(). This is an additional API and it is to be used if a future is to be run without caring about
- *              its result. Use this API if you want a future to run but dont want to use any of the above mentioned
+ * 7. .start(). This method is to be used if a future is to be run without caring about
+ *              its result. Use this method if you want a future to run but dont want to use any of the above mentioned
  *              methods.
+ *
+ * 8. .manages_multiple_futures(). This method can be used to check if a future powers
+ *    its own task or manages other futures.
+ *
  *
  * The future is of type "Task::future<T>&" and "std::reference_wrapper"[1]
  * class can be used if they are to be managed in a container that can not handle references.
@@ -151,7 +156,7 @@ namespace Task
 		}
 		void queue( std::function< void() > function = [](){} )
 		{
-			if( this->_multiple_futures() ){
+			if( this->manages_multiple_futures() ){
 
 				m_function_1 = std::move( function ) ;
 
@@ -162,7 +167,7 @@ namespace Task
 		}
 		T get()
 		{
-			if( this->_multiple_futures() ){
+			if( this->manages_multiple_futures() ){
 
 				for( auto& it : m_tasks ){
 
@@ -190,13 +195,17 @@ namespace Task
 
 			return q ;
 		}
-		QThread * thread()
+		bool manages_multiple_futures()
 		{
-			return m_thread ;
+			return m_tasks.size() > 0 ;
+		}
+		const std::vector< QThread * >& threads()
+		{
+			return m_threads ;
 		}
 		void start()
 		{
-			if( this->_multiple_futures() ){
+			if( this->manages_multiple_futures() ){
 
 				this->_start() ;
 			}else{
@@ -205,7 +214,7 @@ namespace Task
 		}
 		void cancel()
 		{
-			if( this->_multiple_futures() ){
+			if( this->manages_multiple_futures() ){
 
 				for( auto& it : m_tasks ){
 
@@ -235,6 +244,16 @@ namespace Task
 			m_cancel( std::move( cancel ) ),
 			m_get   ( std::move( get ) )
 		{
+			if( m_thread ){
+
+				m_threads.push_back( m_thread ) ;
+			}else{
+				/*
+				 * This object was created by "_private_future< T >()" class.
+				 * It has no QThread of its own because it only manages other futures.
+				 *
+				 */
+			}
 		}
 		void run( T&& r )
 		{
@@ -253,10 +272,6 @@ namespace Task
 					  Task::future< E >&,
 					  std::function< void( E ) >&& ) ;
 	private:
-		bool _multiple_futures()
-		{
-			return m_tasks.size() > 0 ;
-		}
 		void _queue()
 		{
 			m_tasks[ m_counter ].first->then( [ this ]( T&& e ){
@@ -315,6 +330,7 @@ namespace Task
 
 		QMutex m_mutex ;
 		std::vector< std::pair< Task::future< T > *,std::function< void( T ) > > > m_tasks ;
+		std::vector< QThread * > m_threads ;
 		decltype( m_tasks.size() ) m_counter = 0 ;
 	};
 
@@ -332,7 +348,7 @@ namespace Task
 		}
 		void get()
 		{
-			if( this->_multiple_futures() ){
+			if( this->manages_multiple_futures() ){
 
 				for( auto& it : m_tasks ){
 
@@ -355,13 +371,17 @@ namespace Task
 
 			p.exec() ;
 		}
-		QThread * thread()
+		bool manages_multiple_futures()
 		{
-			return m_thread ;
+			return m_tasks.size() > 0 ;
+		}
+		const std::vector< QThread * >& threads()
+		{
+			return m_threads ;
 		}
 		void start()
 		{
-			if( this->_multiple_futures() ){
+			if( this->manages_multiple_futures() ){
 
 				this->_start() ;
 			}else{
@@ -370,7 +390,7 @@ namespace Task
 		}
 		void cancel()
 		{
-			if( this->_multiple_futures() ){
+			if( this->manages_multiple_futures() ){
 
 				for( auto& it : m_tasks ){
 
@@ -384,7 +404,7 @@ namespace Task
 		}
 		void queue( std::function< void() > function = [](){} )
 		{
-			if( this->_multiple_futures() ){
+			if( this->manages_multiple_futures() ){
 
 				m_function = std::move( function ) ;
 
@@ -411,6 +431,16 @@ namespace Task
 			m_cancel( std::move( cancel ) ),
 			m_get   ( std::move( get ) )
 		{
+			if( m_thread ){
+
+				m_threads.push_back( m_thread ) ;
+			}else{
+				/*
+				 * This object was created by "_private_future< T >()" class.
+				 * It has no QThread of its own because it only manages other futures.
+				 *
+				 */
+			}
 		}
 
 		template< typename T >
@@ -422,10 +452,6 @@ namespace Task
 			m_function() ;
 		}
 	private:
-		bool _multiple_futures()
-		{
-			return m_tasks.size() > 0 ;
-		}
 		void _queue()
 		{
 			m_tasks[ m_counter ].first->then( [ this ](){
@@ -478,6 +504,7 @@ namespace Task
 
 		QMutex m_mutex ;
 		std::vector< std::pair< Task::future< void > *,std::function< void() > > > m_tasks ;
+		std::vector< QThread * > m_threads ;
 		decltype( m_tasks.size() ) m_counter = 0 ;
 	};
 
@@ -578,6 +605,7 @@ namespace Task
 			   std::function< void( T ) >&& c )
 	{
 		a.m_tasks.emplace_back( std::addressof( b ),std::move( c ) ) ;
+		a.m_threads.push_back( b.m_thread ) ;
 	}
 
 	template< typename T >
@@ -585,6 +613,7 @@ namespace Task
 				std::function< T() >&& c )
 	{
 		a.m_tasks.emplace_back( std::addressof( b ),std::move( c ) ) ;
+		a.m_threads.push_back( b.m_thread ) ;
 	}
 
 	template< typename T >
