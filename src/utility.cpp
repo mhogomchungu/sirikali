@@ -59,6 +59,7 @@
 #include <QEvent>
 #include <QKeyEvent>
 
+#include "executablesearchpath.h"
 #include "install_prefix.h"
 #include "locale_path.h"
 #include "3rdParty/json.hpp"
@@ -534,16 +535,7 @@ bool utility::eventFilter( QObject * gui,QObject * watched,QEvent * event,std::f
 
 QStringList utility::executableSearchPaths()
 {
-	return { "/usr/local/bin/",
-		"/usr/local/sbin/",
-		"/usr/bin/",
-		"/usr/sbin/",
-		"/bin/",
-		"/sbin/",
-		"/opt/local/bin/",
-		"/opt/local/sbin/",
-		"/opt/bin/",
-		"/opt/sbin/" } ;
+	return ::executableSearchPaths::values() ;
 }
 
 QString utility::executableSearchPaths( const QString& e )

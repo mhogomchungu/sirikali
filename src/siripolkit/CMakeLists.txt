@@ -11,6 +11,7 @@ set( sirikali.pkexecMOC_FILES
 set( sirikali.pkexecSRC
 	main.cpp
 	zulupolkit.cpp
+	../executablesearchpath.cpp
 )
 
 if( QT5 )

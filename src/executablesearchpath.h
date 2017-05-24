@@ -1,6 +1,3 @@
-#ifndef ZULUPOLKIT_H
-#define ZULUPOLKIT_H
-
 /*
  *
  *  Copyright ( c ) 2017
@@ -20,27 +17,14 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QObject>
-#include <QString>
+#ifndef EXECUTABLESEARCHPATH_H
+#define EXECUTABLESEARCHPATH_H
+
 #include <QStringList>
-#include <QtNetwork/QLocalServer>
-#include <QtNetwork/QLocalSocket>
 
-class zuluPolkit : public QObject
+namespace executableSearchPaths
 {
-	Q_OBJECT
-public:
-	zuluPolkit( const QStringList& ) ;
-	~zuluPolkit() ;
-private slots:
-	void start() ;
-	void gotConnection() ;
-private:
-	QStringList m_arguments ;
-	QString readStdin() ;
-	QString m_cookie ;
-	QLocalServer m_server ;
-	QString m_socketPath ;
-};
+	QStringList values() ;
+}
 
-#endif // ZULUPOLKIT_H
+#endif
