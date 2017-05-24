@@ -59,7 +59,7 @@
 #include <QEvent>
 #include <QKeyEvent>
 
-#include "executablesearchpath.h"
+#include "executablesearchpaths.h"
 #include "install_prefix.h"
 #include "locale_path.h"
 #include "3rdParty/json.hpp"

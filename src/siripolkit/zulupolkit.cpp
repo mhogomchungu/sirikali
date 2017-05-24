@@ -21,7 +21,7 @@
 #include "zulupolkit.h"
 #include "siriPolkit.h"
 #include "../task.h"
-#include "../executablesearchpath.h"
+#include "../executablesearchpaths.h"
 #include "../3rdParty/json.hpp"
 
 #include <termios.h>
