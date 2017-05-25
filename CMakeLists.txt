@@ -291,13 +291,7 @@ endif()
 
 set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic" )
 
-if( USE_POLKIT )
-	file( WRITE ${PROJECT_BINARY_DIR}/siriPolkit.h "#define POLKIT_SUPPORT 1" )
-else()
-	file( WRITE ${PROJECT_BINARY_DIR}/siriPolkit.h "#define POLKIT_SUPPORT 0" )
-endif()
-
-file( APPEND ${PROJECT_BINARY_DIR}/siriPolkit.h "\n#define siriPolkitPath \"${CMAKE_INSTALL_PREFIX}/bin/sirikali.pkexec\"" )
+file( WRITE ${PROJECT_BINARY_DIR}/siriPolkit.h "\n#define siriPolkitPath \"${CMAKE_INSTALL_PREFIX}/bin/sirikali.pkexec\"" )
 
 if( APPLE )
 
@@ -372,14 +366,14 @@ install( FILES ${PROJECT_BINARY_DIR}/sirikali.desktop
 
 ADD_SUBDIRECTORY( src/siripolkit )
 
-file( WRITE ${PROJECT_BINARY_DIR}/sirikali.policy
+file( WRITE ${PROJECT_BINARY_DIR}/org.sirikali.pkexec.policy
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <!DOCTYPE policyconfig PUBLIC
  \"-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN\"
  \"http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd\">
 <policyconfig>
 
-  <action id=\"org.debian.pkexec.sirikali\">
+  <action id=\"org.sirikali.pkexec\">
     <message>Authentication is required to run sirikali.pkexec</message>
     <icon_name>sirikali</icon_name>
     <defaults>
@@ -393,6 +387,6 @@ file( WRITE ${PROJECT_BINARY_DIR}/sirikali.policy
 </policyconfig>
 ")
 
-install ( FILES ${PROJECT_BINARY_DIR}/sirikali.policy DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/polkit-1/actions )
+install ( FILES ${PROJECT_BINARY_DIR}/org.sirikali.pkexec.policy DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/polkit-1/actions )
 
 endif()

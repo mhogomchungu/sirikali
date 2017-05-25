@@ -326,6 +326,14 @@ void sirikali::setUpAppMenu()
 	m->addAction( _addAction( true,checkForUpdates::autoCheck(),tr( "Autocheck For Updates" ),
 				  "Autocheck For Updates",SLOT( autoCheckUpdates( bool ) ) ) ) ;
 
+	if( utility::platformIsLinux() ){
+
+		m->addAction( _addAction( true,utility::enablePolkitSupport(),
+					  tr( "Enable Polkit Support" ),
+					  "Enable Polkit Support",
+					  SLOT( enablePolkitSupport( bool ) ) ) ) ;
+	}
+
 	m->addAction( _addAction( false,false,tr( "Set Mount Point Prefix" ),
 				  "Set Mount Point Prefix",SLOT( setDefaultMountPointPrefix() ) ) ) ;
 
@@ -676,6 +684,11 @@ void sirikali::reuseMountPoint( bool e )
 	utility::reUseMountPoint( e ) ;
 }
 
+void sirikali::enablePolkitSupport( bool e )
+{
+	utility::enablePolkitSupport( e ) ;
+}
+
 void sirikali::autoMountFavoritesOnStartUp( bool e )
 {
 	utility::autoMountFavoritesOnStartUp( e ) ;
@@ -711,8 +724,6 @@ void sirikali::raiseWindow( const QString& volume )
 void sirikali::start()
 {
 	const auto l = QCoreApplication::arguments() ;
-
-	utility::setUID( utility::cmdArgumentValue( l,"-K","-1" ).toInt() ) ;
 
 	m_startHidden  = l.contains( "-e" ) ;
 	m_folderOpener = utility::cmdArgumentValue( l,"-m",utility::fileManager() ) ;

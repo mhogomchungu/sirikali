@@ -115,8 +115,6 @@ bool utility::platformIsOSX()
 
 static QSettings * _settings ;
 
-static int staticGlobalUserId = -1 ;
-
 static QByteArray _cookie ;
 
 ::Task::future< utility::Task >& utility::Task::run( const QString& exe,bool e )
@@ -267,14 +265,24 @@ QString utility::helperSocketPath()
 
 bool utility::useZuluPolkit()
 {
-	if( _settings->contains( "ElevatePrivileges" ) ){
+	if( _settings->contains( "EnablePolkitSupport" ) ){
 
-		return _settings->value( "ElevatePrivileges" ).toBool() ;
+		return _settings->value( "EnablePolkitSupport" ).toBool() ;
 	}else{
-		bool e = POLKIT_SUPPORT ;
-		_settings->setValue( "ElevatePrivileges",e ) ;
+		bool e = false ;
+		_settings->setValue( "EnablePolkitSupport",e ) ;
 		return e ;
 	}
+}
+
+bool utility::enablePolkitSupport()
+{
+	return utility::useZuluPolkit() ;
+}
+
+void utility::enablePolkitSupport( bool e )
+{
+	_settings->setValue( "EnablePolkitSupport",e ) ;
 }
 
 void utility::quitHelper()
@@ -305,52 +313,9 @@ void utility::quitHelper()
 	}
 }
 
-void utility::setUID( int uid )
-{
-	if( utility::userIsRoot() || utility::useZuluPolkit() ){
-
-		staticGlobalUserId = uid ;
-	}
-}
-
-bool utility::userIsRoot()
-{
-	return getuid() == 0 ;
-}
-
-int utility::getUID()
-{
-	return staticGlobalUserId ;
-}
-
-int utility::getUserID()
-{
-	if( staticGlobalUserId == -1 ){
-
-		return getuid() ;
-	}else{
-		return staticGlobalUserId ;
-	}
-}
-
-QString utility::getStringUserID()
-{
-	return QString::number( utility::getUserID() ) ;
-}
-
-static passwd * _getPassWd()
-{
-	return getpwuid( utility::getUserID() ) ;
-}
-
-QString utility::userName()
-{
-	return _getPassWd()->pw_name ;
-}
-
 QString utility::homePath()
 {
-	return getpwuid( utility::getUserID() )->pw_dir ;
+	return QDir::homePath() ;
 }
 
 ::Task::future<bool>& utility::openPath( const QString& path,const QString& opener )

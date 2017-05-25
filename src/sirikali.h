@@ -67,6 +67,7 @@ private slots:
 	void setDefaultMountPointPrefix( void ) ;
 	void autoCheckUpdates( bool ) ;
 	void reuseMountPoint( bool ) ;
+	void enablePolkitSupport( bool ) ;
 	void autoMountFavoritesOnStartUp( bool ) ;
 	void unlockVolume( const QStringList& ) ;
 	void aboutToShowMenu( void ) ;

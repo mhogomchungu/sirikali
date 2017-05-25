@@ -701,8 +701,7 @@ namespace Task
 	{
 		auto& e = _private_future< void >().get() ;
 
-		_private_add_task( e,std::move( f ) ) ;
-		_private_add_task( e,std::move( t ) ... ) ;
+		_private_add_task( e,std::move( f ),std::move( t ) ... ) ;
 
 		return e ;
 	}
@@ -712,8 +711,7 @@ namespace Task
 	{
 		auto& e = _private_future< void >().get() ;
 
-		_private_add_future( e,s ) ;
-		_private_add_future( e,std::forward<T>( t ) ... ) ;
+		_private_add_future( e,s,std::forward<T>( t ) ... ) ;
 
 		return e ;
 	}
@@ -723,8 +721,7 @@ namespace Task
 	{
 		auto& e = _private_future< void >().get() ;
 
-		_private_add_pair_void( e,std::move( s ) ) ;
-		_private_add_pair_void( e,std::move( t ) ... ) ;
+		_private_add_pair_void( e,std::move( s ),std::move( t ) ... ) ;
 
 		return e ;
 	}
@@ -734,8 +731,7 @@ namespace Task
 	{
 		auto& e = _private_future< E >().get() ;
 
-		_private_add_pair( e,std::move( s ) ) ;
-		_private_add_pair( e,std::move( t ) ... ) ;
+		_private_add_pair( e,std::move( s ),std::move( t ) ... ) ;
 
 		return e ;
 	}

@@ -66,13 +66,11 @@ class QEvent ;
 
 namespace utility
 {
-	void setUID( int ) ;
+	static inline int getUID()
+	{
+		return getuid() ;
+	}
 
-	int getUID() ;
-	int getUserID() ;
-
-	QString getStringUserID() ;
-	QString appendUserUID( const QString& ) ;
 	QString homePath() ;
 
 	template< typename T >
@@ -315,6 +313,9 @@ namespace utility
 	bool reUseMountPoint( void ) ;
 	void reUseMountPoint( bool ) ;
 
+	bool enablePolkitSupport( void ) ;
+	void enablePolkitSupport( bool ) ;
+
 	QString homeConfigPath( const QString& = QString() ) ;
 	QString homePath() ;
 	QString mountPath( const QString& path ) ;
@@ -359,20 +360,13 @@ namespace utility
 
 	int checkForUpdateInterval( void ) ;
 
-	bool userIsRoot( void ) ;
-
 	bool enableRevealingPasswords( void ) ;
-
-	void setUID( int ) ;
-	int getUID() ;
-	int getUserID() ;
 
 	bool runningInMixedMode() ;
 	bool notRunningInMixedMode() ;
 
 	QProcessEnvironment systemEnvironment() ;
 
-	QString getStringUserID() ;
 	QString homePath() ;
 	QString userName() ;
 
