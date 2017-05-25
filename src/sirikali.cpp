@@ -687,6 +687,8 @@ void sirikali::reuseMountPoint( bool e )
 void sirikali::enablePolkitSupport( bool e )
 {
 	utility::enablePolkitSupport( e ) ;
+
+	DialogMsg( this ).ShowUIOK( tr( "Warning" ),tr( "A Restart Is Required For The Change To Take Effect." ) );
 }
 
 void sirikali::autoMountFavoritesOnStartUp( bool e )
