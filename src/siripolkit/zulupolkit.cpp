@@ -162,7 +162,9 @@ void zuluPolkit::gotConnection()
 		auto cookie   = QString::fromStdString( json[ "cookie" ].get< std::string >() ) ;
 		auto command  = QString::fromStdString( json[ "command" ].get< std::string >() ) ;
 
-		auto e = "/bin/su - -c \"" + utility::executableFullPath( "ecryptfs-simple" ) ;
+		auto su = utility::executableFullPath( "su" ) ;
+
+		auto e = su + " - -c \"" + utility::executableFullPath( "ecryptfs-simple" ) ;
 
 		if( cookie == m_cookie ){
 
