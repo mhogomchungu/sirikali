@@ -11,17 +11,17 @@
     <message>
         <location filename="../src/dialogmsg.ui" line="29"/>
         <source>&amp;Ok</source>
-        <translation>Ok</translation>
+        <translation>&amp;Ok</translation>
     </message>
     <message>
         <location filename="../src/dialogmsg.ui" line="42"/>
         <source>&amp;Yes</source>
-        <translation>Si</translation>
+        <translation>&amp;Si</translation>
     </message>
     <message>
         <location filename="../src/dialogmsg.ui" line="55"/>
         <source>&amp;No</source>
-        <translation>No</translation>
+        <translation>&amp;No</translation>
     </message>
     <message>
         <location filename="../src/dialogmsg.cpp" line="97"/>
@@ -86,25 +86,24 @@ Latest Version Is : %4.</source>
  última versión: %4.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1258"/>
-        <location filename="../src/sirikali.cpp" line="1267"/>
+        <location filename="../src/sirikali.cpp" line="1259"/>
+        <location filename="../src/sirikali.cpp" line="1268"/>
         <location filename="../src/utility.cpp" line="256"/>
         <source>ERROR</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1259"/>
+        <location filename="../src/sirikali.cpp" line="1260"/>
         <source>Failed To Find %1 Executable</source>
         <translation>No se pudo encontrar %1 Ejecutable</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1265"/>
-        <location filename="../src/sirikali.cpp" line="1305"/>
+        <location filename="../src/sirikali.cpp" line="1266"/>
         <source>INFORMATION</source>
         <translation>Información</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1268"/>
+        <location filename="../src/sirikali.cpp" line="1269"/>
         <source>Failed To Get Volume Properties</source>
         <translation>Error al obtener las propiedades del volumen</translation>
     </message>
@@ -246,7 +245,7 @@ key = hmac(sha256,passphrase,keyfile contents)</source>
     <message>
         <location filename="../src/lxqt_wallet/frontend/changepassworddialog.ui" line="167"/>
         <source>Re Enter New Password Below.</source>
-        <translation>Introduzca la contraseña nuevamente</translation>
+        <translation>Introduzca la contraseña nuevamente.</translation>
     </message>
     <message>
         <location filename="../src/lxqt_wallet/frontend/changepassworddialog.ui" line="186"/>
@@ -292,7 +291,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/cryfscreateoptions.ui" line="36"/>
         <source>Cipher To Use For Encryption.</source>
-        <translation>Cifrado a utilizar en el encriptado</translation>
+        <translation>Cifrado a utilizar en el encriptado.</translation>
     </message>
     <message>
         <location filename="../src/cryfscreateoptions.ui" line="55"/>
@@ -437,7 +436,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/favorites.cpp" line="308"/>
         <location filename="../src/favorites.cpp" line="314"/>
         <source>ERROR!</source>
-        <translation>ERROR</translation>
+        <translation>ERROR!</translation>
     </message>
     <message>
         <location filename="../src/favorites.cpp" line="304"/>
@@ -533,7 +532,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.ui" line="142"/>
         <source>Mount In &amp;Read Only Mode</source>
-        <translation>Modo de montaje en modo de sólo lectura</translation>
+        <translation>&amp;Modo de montaje en modo de sólo lectura</translation>
     </message>
     <message>
         <location filename="../src/keydialog.ui" line="220"/>
@@ -611,14 +610,14 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.cpp" line="337"/>
         <source>Passphrase Quality: %1%</source>
-        <translation type="unfinished"></translation>
+        <translation>Calidad de la contraseña: %1%</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="342"/>
         <location filename="../src/keydialog.cpp" line="1017"/>
         <location filename="../src/keydialog.cpp" line="1043"/>
         <source>Passphrase Quality: 100%</source>
-        <translation type="unfinished"></translation>
+        <translation>Calidad de la contraseña: 100%</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="393"/>
@@ -787,7 +786,7 @@ Not Supported Volume Encountered.</source>
     <message>
         <location filename="../src/options.ui" line="38"/>
         <source>&amp;OK</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/options.ui" line="93"/>
@@ -897,7 +896,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/plugin.ui" line="142"/>
         <location filename="../src/plugin.cpp" line="162"/>
         <source>KeyFile</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">KeyFile</translation>
     </message>
     <message>
         <location filename="../src/plugin.cpp" line="112"/>
@@ -968,7 +967,7 @@ The lite format has become the default on Unix-like operating systems as it is m
     <message>
         <location filename="../src/securefscreateoptions.ui" line="66"/>
         <source>&amp;OK</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/securefscreateoptions.ui" line="79"/>
@@ -1115,47 +1114,47 @@ The lite format has become the default on Unix-like operating systems as it is m
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="622"/>
-        <location filename="../src/sirikali.cpp" line="651"/>
+        <location filename="../src/sirikali.cpp" line="652"/>
         <source>Manage Favorites</source>
         <translation>Administrar Favoritos</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="626"/>
-        <location filename="../src/sirikali.cpp" line="651"/>
+        <location filename="../src/sirikali.cpp" line="652"/>
         <source>Mount All</source>
         <translation>Mount All</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="841"/>
+        <location filename="../src/sirikali.cpp" line="842"/>
         <source>ERROR: Volume Path Not Given.</source>
         <translation>ERROR:En el direcctorio del volumen.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="944"/>
+        <location filename="../src/sirikali.cpp" line="945"/>
         <source>ERROR: Key Not Found In The Backend.</source>
-        <translation>ERROR: Contraseña no encontrada</translation>
+        <translation>ERROR: Contraseña no encontrada.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="949"/>
+        <location filename="../src/sirikali.cpp" line="950"/>
         <source>ERROR: Failed To Unlock Requested Backend.</source>
         <translation>ERROR: Error al desbloquear el backend solicitado.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="753"/>
-        <location filename="../src/sirikali.cpp" line="1129"/>
-        <location filename="../src/sirikali.cpp" line="1560"/>
-        <location filename="../src/sirikali.cpp" line="1675"/>
+        <location filename="../src/sirikali.cpp" line="754"/>
+        <location filename="../src/sirikali.cpp" line="1130"/>
+        <location filename="../src/sirikali.cpp" line="1547"/>
+        <location filename="../src/sirikali.cpp" line="1662"/>
         <source>ERROR</source>
         <translation>ERROR</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1129"/>
+        <location filename="../src/sirikali.cpp" line="1130"/>
         <source>Failed To Read Volume Properties</source>
         <translation>Error al leer las propiedades del directorio</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1088"/>
-        <location filename="../src/sirikali.cpp" line="1134"/>
+        <location filename="../src/sirikali.cpp" line="1089"/>
+        <location filename="../src/sirikali.cpp" line="1135"/>
         <source>INFORMATION</source>
         <translation>Información</translation>
     </message>
@@ -1226,109 +1225,109 @@ The lite format has become the default on Unix-like operating systems as it is m
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="691"/>
+        <location filename="../src/sirikali.cpp" line="692"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="691"/>
+        <location filename="../src/sirikali.cpp" line="692"/>
         <source>A Restart Is Required For The Change To Take Effect.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="753"/>
+        <location filename="../src/sirikali.cpp" line="754"/>
         <source>&quot;%1&quot; Folder Must Be Writable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1173"/>
+        <location filename="../src/sirikali.cpp" line="1174"/>
         <source>Block Size: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1174"/>
+        <location filename="../src/sirikali.cpp" line="1175"/>
         <source>Used Blocks: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1175"/>
+        <location filename="../src/sirikali.cpp" line="1176"/>
         <source>Free Blocks: %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1176"/>
+        <location filename="../src/sirikali.cpp" line="1177"/>
         <source>Total Blocks %4</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1177"/>
+        <location filename="../src/sirikali.cpp" line="1178"/>
         <source>Used Space: %5</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1178"/>
+        <location filename="../src/sirikali.cpp" line="1179"/>
         <source>Free Space: %6</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1179"/>
+        <location filename="../src/sirikali.cpp" line="1180"/>
         <source>Total Space: %7</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1180"/>
+        <location filename="../src/sirikali.cpp" line="1181"/>
         <source>Used %: %8</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1333"/>
+        <location filename="../src/sirikali.cpp" line="1320"/>
         <source>Unmount</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1331"/>
+        <location filename="../src/sirikali.cpp" line="1318"/>
         <source>Open Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1335"/>
+        <location filename="../src/sirikali.cpp" line="1322"/>
         <source>Properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1372"/>
+        <location filename="../src/sirikali.cpp" line="1359"/>
         <source>Close Menu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1424"/>
+        <location filename="../src/sirikali.cpp" line="1411"/>
         <source>WARNING</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1425"/>
+        <location filename="../src/sirikali.cpp" line="1412"/>
         <source>Could Not Open Mount Point Because &quot;%1&quot; Tool Does Not Appear To Be Working Correctly.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1472"/>
+        <location filename="../src/sirikali.cpp" line="1459"/>
         <source>&amp;Quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1561"/>
+        <location filename="../src/sirikali.cpp" line="1548"/>
         <source>Permission To Access The Volume Was Denied
 Or
 The Volume Is Not Supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1581"/>
+        <location filename="../src/sirikali.cpp" line="1568"/>
         <source>Select An Encrypted Volume Directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1675"/>
+        <location filename="../src/sirikali.cpp" line="1662"/>
         <source>Failed To Unmount %1 Volume</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1343,7 +1342,7 @@ The Volume Is Not Supported</source>
     <message>
         <location filename="../src/walletconfig.ui" line="32"/>
         <source>&amp;Add</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Agregar</translation>
     </message>
     <message>
         <location filename="../src/walletconfig.ui" line="51"/>
@@ -1358,7 +1357,7 @@ The Volume Is Not Supported</source>
     <message>
         <location filename="../src/walletconfig.ui" line="111"/>
         <source>Volume ID</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ID del volumen</translation>
     </message>
     <message>
         <location filename="../src/walletconfig.ui" line="116"/>
@@ -1383,7 +1382,7 @@ The Volume Is Not Supported</source>
     <message>
         <location filename="../src/walletconfig.cpp" line="201"/>
         <source>ERROR!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ERROR</translation>
     </message>
     <message>
         <location filename="../src/walletconfig.cpp" line="201"/>
@@ -1401,7 +1400,7 @@ The Volume Is Not Supported</source>
     <message>
         <location filename="../src/walletconfiginput.ui" line="29"/>
         <source>&amp;Add</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Agregar</translation>
     </message>
     <message>
         <location filename="../src/walletconfiginput.ui" line="42"/>
@@ -1411,7 +1410,7 @@ The Volume Is Not Supported</source>
     <message>
         <location filename="../src/walletconfiginput.ui" line="64"/>
         <source>Volume ID</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ID del volumen</translation>
     </message>
     <message>
         <location filename="../src/walletconfiginput.ui" line="83"/>
@@ -1421,7 +1420,7 @@ The Volume Is Not Supported</source>
     <message>
         <location filename="../src/walletconfiginput.ui" line="102"/>
         <source>Key</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Contraseña</translation>
     </message>
     <message>
         <location filename="../src/walletconfiginput.ui" line="121"/>
@@ -1432,7 +1431,7 @@ The Volume Is Not Supported</source>
         <location filename="../src/walletconfiginput.cpp" line="102"/>
         <location filename="../src/walletconfiginput.cpp" line="109"/>
         <source>ERROR!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ERROR</translation>
     </message>
     <message>
         <location filename="../src/walletconfiginput.cpp" line="102"/>
