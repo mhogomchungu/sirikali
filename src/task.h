@@ -671,7 +671,7 @@ namespace Task
 	template< typename T >
 	struct _private_future
 	{
-		Task::future< T >& get()
+		Task::future< T >& operator()()
 		{
 			return *( new Task::future< T >( nullptr,
 							 [](){},
@@ -683,7 +683,7 @@ namespace Task
 	template<>
 	struct _private_future< void >
 	{
-		Task::future< void >& get()
+		Task::future< void >& operator()()
 		{
 			return *( new Task::future< void >( nullptr,
 							    [](){},
@@ -699,7 +699,7 @@ namespace Task
 	template< typename ... T >
 	Task::future< void >& run( std::function< void() > f,T ... t )
 	{
-		auto& e = _private_future< void >().get() ;
+		auto& e = _private_future< void >()() ;
 
 		_private_add_task( e,std::move( f ),std::move( t ) ... ) ;
 
@@ -709,7 +709,7 @@ namespace Task
 	template< typename ... T >
 	Task::future< void >& run( Task::future< void >& s,T&& ... t )
 	{
-		auto& e = _private_future< void >().get() ;
+		auto& e = _private_future< void >()() ;
 
 		_private_add_future( e,s,std::forward<T>( t ) ... ) ;
 
@@ -719,7 +719,7 @@ namespace Task
 	template< typename ... T >
 	Task::future< void >& run( void_pair s,T ... t )
 	{
-		auto& e = _private_future< void >().get() ;
+		auto& e = _private_future< void >()() ;
 
 		_private_add_pair_void( e,std::move( s ),std::move( t ) ... ) ;
 
@@ -729,7 +729,7 @@ namespace Task
 	template< typename E,typename ... T >
 	Task::future< E >& run( pair< E > s,T ... t )
 	{
-		auto& e = _private_future< E >().get() ;
+		auto& e = _private_future< E >()() ;
 
 		_private_add_pair( e,std::move( s ),std::move( t ) ... ) ;
 

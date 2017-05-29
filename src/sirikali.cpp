@@ -648,17 +648,18 @@ void sirikali::favoriteClicked( QAction * ac )
 
 void sirikali::showFavorites()
 {
-	utility::readFavorites( m_ui->pbFavorites->menu(),true,tr( "Manage Favorites" ),tr( "Mount All" ) ) ;
+	utility::readFavorites( m_ui->pbFavorites->menu(),true,
+				tr( "Manage Favorites" ),tr( "Mount All" ) ) ;
 }
 
 void sirikali::setLocalizationLanguage( bool translate )
 {
-	utility::setLocalizationLanguage( translate,m_language_menu ) ;
+	utility::setLocalizationLanguage( translate,m_language_menu,m_translator ) ;
 }
 
 void sirikali::languageMenu( QAction * ac )
 {
-	utility::languageMenu( this,m_language_menu,ac ) ;
+	utility::languageMenu( m_language_menu,ac,m_translator ) ;
 
 	m_ui->retranslateUi( this ) ;
 
@@ -1288,6 +1289,10 @@ void sirikali::securefsProperties()
 	this->enableAll() ;
 }
 
+void sirikali::gocryptfsProperties()
+{	
+}
+
 void sirikali::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 {
 	struct volumeType{ const char * slot ; bool enabled ; } ;
@@ -1339,6 +1344,10 @@ void sirikali::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 			}else if( e == "encfs" ){
 
 				return { SLOT( encfsProperties() ),true } ;
+
+			}else if( e == "gocryptfs" ){
+
+				return { SLOT( gocryptfsProperties() ),false } ;
 			}
 		}
 

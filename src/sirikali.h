@@ -31,6 +31,7 @@
 #include "volumeinfo.h"
 #include "utility.h"
 #include "secrets.h"
+#include "translator.h"
 
 #include "lxqt_wallet.h"
 
@@ -56,6 +57,7 @@ private slots:
 	void setUpApp( bool,const QString& ) ;
 	void start( void ) ;
 	void autoUpdateCheck( void ) ;
+	void gocryptfsProperties( void ) ;
 	void cryfsProperties( void ) ;
 	void encfsProperties( void ) ;
 	void ecryptfsProperties( void ) ;
@@ -134,6 +136,8 @@ private:
 	Ui::sirikali * m_ui = nullptr ;
 
 	secrets m_secrets ;
+
+	translator m_translator ;
 
 	QMenu * m_hidden_volume_menu = nullptr ;
 	QMenu * m_not_hidden_volume_menu = nullptr ;

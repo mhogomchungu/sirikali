@@ -175,7 +175,6 @@ set( MOC_FILES 	src/dialogok.h
 		src/readonlywarning.h
 		src/walletconfig.h
 		src/walletconfiginput.h
-		src/utility.h
 		src/options.h
 		src/networkAccessManager.hpp
 		src/task.h
@@ -208,6 +207,7 @@ set( SRC 	src/dialogok.cpp
 		src/cryfscreateoptions.cpp
 		src/stringlisttostrings.cpp
 		src/executablesearchpaths.cpp
+		src/translator.cpp
 )
 
 if( APPLE )
@@ -335,6 +335,7 @@ install( FILES src/sirikali.png DESTINATION           ${CMAKE_INSTALL_DATAROOTDI
 
 install( FILES translations/en_US.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 install( FILES translations/fr_FR.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
+install( FILES translations/sp.MX.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 
 endif()
 

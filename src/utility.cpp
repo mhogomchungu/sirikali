@@ -912,59 +912,26 @@ int utility::pluginKey( QWidget * w,QDialog * d,QByteArray * key,plugins::plugin
 	return l.exec() ;
 }
 
-class translator
-{
-public:
-	void set( const QByteArray& e )
-	{
-		QCoreApplication::installTranslator( [ & ](){
+template< typename T >
+static void _selectOption( QMenu * m,const T& opt )
+{	
+	for( const auto& it : m->actions() ){
 
-			if( m_translator ){
-
-				QCoreApplication::removeTranslator( m_translator ) ;
-
-				delete m_translator ;
-			}
-
-			m_translator = new QTranslator() ;
-
-			m_translator->load( e.constData(),utility::localizationLanguagePath() ) ;
-
-			return m_translator ;
-		}() ) ;
+		it->setChecked( opt == it->text().remove( "&" ) ) ;
 	}
-	~translator()
-	{
-		//QCoreApplication::removeTranslator( m_translator ) ;
-		delete m_translator ;
-	}
-
-private:
-	QTranslator * m_translator = nullptr ;
-} static _translator ;
-
-static void _selectOption( QMenu * m,const QString& opt )
-{
-	utility::selectMenuOption s( m,false ) ;
-	s.selectOption( opt ) ;
 }
 
-void utility::setLocalizationLanguage( bool translate,QMenu * m )
+void utility::setLocalizationLanguage( bool translate,QMenu * m,translator& e )
 {
 	auto r = utility::localizationLanguage().toLatin1() ;
 
 	if( translate ){
 
-		_translator.set( r ) ;
+		e.setLanguage( r ) ;
 	}else{
-		QDir d( utility::localizationLanguagePath() ) ;
+		auto e = utility::directoryList( utility::localizationLanguagePath() ) ;
 
-		auto t = d.entryList() ;
-
-		t.removeOne( "." ) ;
-		t.removeOne( ".." ) ;
-
-		for( auto& it : t ){
+		for( auto& it : e ){
 
 			m->addAction( it.remove( ".qm" ) )->setCheckable( true ) ;
 		}
@@ -973,15 +940,13 @@ void utility::setLocalizationLanguage( bool translate,QMenu * m )
 	}
 }
 
-void utility::languageMenu( QWidget * w,QMenu * m,QAction * ac )
+void utility::languageMenu( QMenu * m,QAction * ac,translator& s )
 {
-	Q_UNUSED( w ) ;
-
 	auto e = ac->text().remove( '&' ) ;
 
 	utility::setLocalizationLanguage( e ) ;
 
-	utility::setLocalizationLanguage( true,m ) ;
+	utility::setLocalizationLanguage( true,m,s ) ;
 
 	_selectOption( m,e ) ;
 }
@@ -1011,12 +976,12 @@ QStringList utility::directoryList( const QString& e )
 {
 	QDir d( e ) ;
 
-	auto l = d.entryList() ;
+	auto s = d.entryList() ;
 
-	l.removeOne( "." ) ;
-	l.removeOne( ".." ) ;
+	s.removeOne( "." ) ;
+	s.removeOne( ".." ) ;
 
-	return l ;
+	return s ;
 }
 
 QIcon utility::getIcon()

@@ -52,6 +52,7 @@
 #include "lxqt_wallet.h"
 #include "favorites.h"
 #include "plugins.h"
+#include "translator.h"
 
 #include <QObject>
 #include <QLabel>
@@ -175,48 +176,6 @@ namespace utility
 	private:
 		bool m_stdout ;
 	};
-
-	class selectMenuOption : public QObject
-	{
-		Q_OBJECT
-	public:
-		using function_t = std::function< void( const QString& e ) > ;
-
-		selectMenuOption( QMenu * m,bool e,
-				  function_t && f = []( const QString& e ){ Q_UNUSED( e ) } ) :
-		m_menu( m ),m_function( f )
-		{
-			if( e ){
-
-				this->setParent( m ) ;
-			}
-		}
-	public slots :
-		void selectOption( const QString& f )
-		{
-			for( const auto& it : m_menu->actions() ){
-
-				QString e = it->text() ;
-
-				e.remove( "&" ) ;
-
-				it->setChecked( f == e ) ;
-			}
-
-			m_function( f ) ;
-		}
-		void selectOption( QAction * ac )
-		{
-			auto e = ac->text() ;
-
-			e.remove( "&" ) ;
-
-			this->selectOption( e ) ;
-		}
-	private:
-		QMenu * m_menu ;
-		std::function< void( const QString& ) > m_function ;
-	};
 }
 
 namespace utility
@@ -327,6 +286,7 @@ namespace utility
 	void setDefaultMountPointPrefix( const QString& path ) ;
 
 	void setSettingsObject( QSettings * ) ;
+	void setTranlatorObject( translator * s ) ;
 
 	QString mountPathPostFix( const QString& path ) ;
 	QString mountPathPostFix( const QString& prefix,const QString& path ) ;
@@ -395,8 +355,8 @@ namespace utility
 	bool eventFilter( QObject * gui,QObject * watched,QEvent * event,std::function< void() > ) ;
 	void licenseInfo( QWidget * ) ;
 
-	void setLocalizationLanguage( bool translate,QMenu * m ) ;
-	void languageMenu( QWidget *,QMenu *,QAction * ) ;
+	void setLocalizationLanguage( bool translate,QMenu * m,translator& ) ;
+	void languageMenu( QMenu *,QAction *,translator& ) ;
 
 	using array_t = std::array< int,8 > ;
 
