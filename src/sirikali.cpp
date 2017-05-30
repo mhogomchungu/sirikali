@@ -1465,8 +1465,7 @@ void sirikali::setUpShortCuts()
 }
 
 void sirikali::setUpFont()
-{
-	this->setFont( utility::getFont( this ) ) ;
+{	
 }
 
 void sirikali::closeEvent( QCloseEvent * e )

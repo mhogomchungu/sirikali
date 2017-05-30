@@ -67,51 +67,6 @@ class QEvent ;
 
 namespace utility
 {
-	static inline int getUID()
-	{
-		return getuid() ;
-	}
-
-	QString homePath() ;
-
-	template< typename T >
-	void changePathOwner( const T& f )
-	{
-		int uid = utility::getUID() ;
-		int fd = f.handle() ;
-
-		if( uid != -1 && fd != -1 ){
-
-			if( fchown( fd,uid,uid ) ){;}
-		}
-	}
-
-	static inline void changePathOwner( const char * path )
-	{
-		int uid = utility::getUID() ;
-
-		if( uid != -1 ){
-
-			if( chown( path,uid,uid ) ){;}
-		}
-	}
-
-	static inline void changePathOwner( const QString& path )
-	{
-		utility::changePathOwner( path.toLatin1().constData() ) ;
-	}
-
-	template< typename T >
-	void changePathPermissions( const T& f,int mode = 0666 )
-	{
-		if( fchmod( f.handle(),mode ) ){;}
-	}
-
-	static inline void changePathPermissions( const QString& f,int mode = 0666 )
-	{
-		if( chmod( f.toLatin1().constData(),mode ) ){;}
-	}
-
 	class debug
 	{
 	public:
@@ -364,9 +319,6 @@ namespace utility
 	void setWindowDimensions( const std::initializer_list<int>& ) ;
 
 	int pluginKey( QWidget *,QDialog *,QByteArray *,plugins::plugin ) ;
-
-	QFont getFont( QWidget * ) ;
-	void saveFont( const QFont& ) ;
 
 	::Task::future< bool >& openPath( const QString& path,const QString& opener ) ;
 

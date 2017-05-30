@@ -809,77 +809,6 @@ void utility::setWindowDimensions( const std::initializer_list<int>& e )
 	}() ) ;
 }
 
-QFont utility::getFont( QWidget * widget )
-{
-	if( _settings->contains( "Fonts" ) ){
-
-		auto l = utility::split( _settings->value( "Fonts" ).toString() ) ;
-
-		if( l.size() >= 4 ){
-
-			QFont F ;
-
-			const QString& fontFamily = l.at( 0 ) ;
-			const QString& fontSize   = l.at( 1 ) ;
-			const QString& fontStyle  = l.at( 2 ) ;
-			const QString& fontWeight = l.at( 3 ) ;
-
-			F.setFamily( fontFamily ) ;
-
-			F.setPointSize( fontSize.toInt() ) ;
-
-			if( fontStyle == "normal" ){
-
-				F.setStyle( QFont::StyleNormal ) ;
-
-			}else if( fontStyle == "italic" ){
-
-				F.setStyle( QFont::StyleItalic ) ;
-			}else{
-				F.setStyle( QFont::StyleOblique ) ;
-			}
-
-			if( fontWeight == "normal" ){
-
-				F.setWeight( QFont::Normal ) ;
-			}else{
-				F.setWeight( QFont::Bold ) ;
-			}
-
-			return F ;
-		}else{
-			return widget->font() ;
-		}
-	}else{
-		return widget->font() ;
-	}
-}
-
-void utility::saveFont( const QFont& Font )
-{
-	auto s = QString( "%1\n%2\n" ).arg( Font.family(),QString::number( Font.pointSize() ) ) ;
-
-	if( Font.style() == QFont::StyleNormal ){
-
-		s = s + "normal\n" ;
-
-	}else if( Font.style() == QFont::StyleItalic ){
-
-		s = s + "italic\n" ;
-	}else{
-		s = s + "oblique\n" ;
-	}
-
-	if( Font.weight() == QFont::Normal ){
-
-		s = s + "normal\n" ;
-	}else{
-		s = s + "bold" ;
-	}
-
-	_settings->setValue( "Fonts",s ) ;
-}
-
 int utility::pluginKey( QWidget * w,QDialog * d,QByteArray * key,plugins::plugin plugin )
 {
 	QString s ;
@@ -958,8 +887,9 @@ QString utility::localizationLanguage()
 
 		return _settings->value( "Language" ).toString() ;
 	}else{
-		_settings->setValue( "Language",QString( "en_US" ) ) ;
-		return "en_US" ;
+		QString s = "en_US" ;
+		_settings->setValue( "Language",s ) ;
+		return s ;
 	}
 }
 
@@ -1144,8 +1074,9 @@ bool utility::autoOpenFolderOnMount()
 
 		return _settings->value( "AutoOpenFolderOnMount" ).toBool() ;
 	}else{
-		utility::autoOpenFolderOnMount( true ) ;
-		return true ;
+		bool s = true ;
+		utility::autoOpenFolderOnMount( s ) ;
+		return s ;
 	}
 }
 
@@ -1160,8 +1091,9 @@ bool utility::autoCheck()
 
 		return _settings->value( "AutoCheckForUpdates" ).toBool() ;
 	}else{
-		utility::autoCheck( false ) ;
-		return false ;
+		bool s = false ;
+		utility::autoCheck( s ) ;
+		return s ;
 	}
 }
 
@@ -1176,8 +1108,9 @@ bool utility::readOnlyWarning()
 
 		return _settings->value( "ReadOnlyWarning" ).toBool() ;
 	}else{
-		utility::readOnlyWarning( false ) ;
-		return false ;
+		bool s = false ;
+		utility::readOnlyWarning( s ) ;
+		return s ;
 	}
 }
 
@@ -1192,8 +1125,9 @@ bool utility::doNotShowReadOnlyWarning()
 
 		return _settings->value( "DoNotShowReadOnlyWarning" ).toBool() ;
 	}else{
-		utility::doNotShowReadOnlyWarning( false ) ;
-		return false ;
+		bool s = false ;
+		utility::doNotShowReadOnlyWarning( s ) ;
+		return s ;
 	}
 }
 
@@ -1208,8 +1142,9 @@ bool utility::autoMountFavoritesOnStartUp()
 
 		return _settings->value( "AutoMountFavoritesOnStartUp" ).toBool() ;
 	}else{
-		utility::autoMountFavoritesOnStartUp( false ) ;
-		return false ;
+		bool s = false ;
+		utility::autoMountFavoritesOnStartUp( s ) ;
+		return s ;
 	}
 }
 
@@ -1315,8 +1250,9 @@ int utility::checkForUpdateInterval()
 
 		return _settings->value( "CheckForUpdateInterval" ).toInt() * 1000 ;
 	}else{
-		_settings->setValue( "CheckForUpdateInterval",int( 10 ) ) ;
-		return 10 * 1000 ;
+		int s = 10 ;
+		_settings->setValue( "CheckForUpdateInterval",s ) ;
+		return s * 1000 ;
 	}
 }
 
@@ -1394,15 +1330,7 @@ void utility::scaleGUI()
 
 bool utility::createFolder( const QString& m )
 {
-	if( QDir().mkpath( m ) ){
-
-		utility::changePathPermissions( m,0777 ) ;
-		utility::changePathOwner( m ) ;
-
-		return true ;
-	}else{
-		return false ;
-	}
+	return QDir().mkpath( m ) ;
 }
 
 QString utility::runCommandOnMount()
@@ -1411,9 +1339,10 @@ QString utility::runCommandOnMount()
 
 		return _settings->value( "RunCommandOnMount" ).toString() ;
 	}else{
-		_settings->setValue( "RunCommandOnMount",QString( "" ) ) ;
+		QString s ;
+		_settings->setValue( "RunCommandOnMount",s ) ;
 
-		return "" ;
+		return s ;
 	}
 }
 
