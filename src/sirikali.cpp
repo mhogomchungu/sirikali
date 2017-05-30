@@ -1263,7 +1263,10 @@ static void _volume_properties( const QString& e,const QString& arg,
 
 		if( e.success() ){
 
-			DialogMsg( w ).ShowUIInfo( QObject::tr( "INFORMATION" ),true,e.stdOut() ) ;
+			auto s = e.stdOut() ;
+			s.replace( "Creator:      ","Creator: " ) ;
+
+			DialogMsg( w ).ShowUIInfo( QObject::tr( "INFORMATION" ),true,s ) ;
 		}else{
 			DialogMsg( w ).ShowUIOK( QObject::tr( "ERROR" ),
 						 QObject::tr( "Failed To Get Volume Properties" ) ) ;
@@ -1290,7 +1293,12 @@ void sirikali::securefsProperties()
 }
 
 void sirikali::gocryptfsProperties()
-{	
+{
+	this->disableAll() ;
+
+	_volume_properties( "gocryptfs"," -info ",m_ui->tableWidget,this ) ;
+
+	this->enableAll() ;
 }
 
 void sirikali::showContextMenu( QTableWidgetItem * item,bool itemClicked )
@@ -1347,7 +1355,7 @@ void sirikali::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 			}else if( e == "gocryptfs" ){
 
-				return { SLOT( gocryptfsProperties() ),false } ;
+				return { SLOT( gocryptfsProperties() ),true } ;
 			}
 		}
 
