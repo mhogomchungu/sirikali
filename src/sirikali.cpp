@@ -307,7 +307,6 @@ void sirikali::setUpAppMenu()
 			q->addAction( ac ) ;
 		} ;
 
-
 		_addOption( tr( "Internal Wallet" ),"Internal Wallet",bk::internal ) ;
 		_addOption( tr( "KDE Wallet" ),"KDE Wallet",bk::kwallet ) ;
 		_addOption( tr( "Gnome Wallet" ),"Gnome Wallet",bk::libsecret ) ;
@@ -833,9 +832,10 @@ void sirikali::unlockVolume( const QStringList& l )
 	auto mountPath = utility::cmdArgumentValue( l,"-z" ) ;
 	auto backEnd   = utility::cmdArgumentValue( l,"-b" ) ;
 	auto mode      = utility::cmdArgumentValue( l,"-k","rw" ) == "ro" ;
-	auto mOpt      = utility::cmdArgumentValue( l,"-i" ) ;
+	auto idleTime  = utility::cmdArgumentValue( l,"-i" ) ;
 	auto cPath     = utility::cmdArgumentValue( l,"-c" ) ;
 	auto keyFile   = utility::cmdArgumentValue( l,"-f" ) ;
+	auto mOpt      = utility::cmdArgumentValue( l,"-o" ) ;
 
 	if( vol.isEmpty() ){
 
@@ -855,7 +855,7 @@ void sirikali::unlockVolume( const QStringList& l )
 				}
 			}() ;
 
-			siritask::options s = { volume,m,key,mOpt,cPath,QString(),mode,QString(),QString() } ;
+			siritask::options s = { volume,m,key,idleTime,cPath,QString(),mode,mOpt,QString() } ;
 
 			auto& e = siritask::encryptedFolderMount( s ) ;
 

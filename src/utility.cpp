@@ -398,6 +398,7 @@ options:\n\
 	     This option is optional.\n\
 	-c   Set Volume Configuration File Path when a volume is opened from CLI.\n\
 	-i   Set inactivity timeout(in minutes) to dismount the volume when mounted from CLI.\n\
+	-o   Set mount options when mounting a volume from CLI.\n\
 	-f   Path to keyfile.\n\
 	-u   Unmount volume.\n\
 	-p   Print a list of unlocked volumes.\n\
@@ -914,10 +915,10 @@ int utility::pluginKey( QWidget * w,QDialog * d,QByteArray * key,plugins::plugin
 
 template< typename T >
 static void _selectOption( QMenu * m,const T& opt )
-{	
+{
 	for( const auto& it : m->actions() ){
 
-		it->setChecked( opt == it->text().remove( "&" ) ) ;
+		it->setChecked( it->text().remove( "&" ) == opt ) ;
 	}
 }
 
