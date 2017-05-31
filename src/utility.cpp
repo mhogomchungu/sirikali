@@ -59,7 +59,7 @@
 #include <QEvent>
 #include <QKeyEvent>
 
-#include "executablesearchpaths.h"
+#include "utility2.h"
 #include "install_prefix.h"
 #include "locale_path.h"
 #include "3rdParty/json.hpp"
@@ -501,7 +501,7 @@ bool utility::eventFilter( QObject * gui,QObject * watched,QEvent * event,std::f
 
 QStringList utility::executableSearchPaths()
 {
-	return ::executableSearchPaths::values() ;
+	return utility2::executableSearchPaths() ;
 }
 
 QString utility::executableSearchPaths( const QString& e )
@@ -851,7 +851,7 @@ static void _selectOption( QMenu * m,const T& opt )
 	}
 }
 
-void utility::setLocalizationLanguage( bool translate,QMenu * m,translator& e )
+void utility::setLocalizationLanguage( bool translate,QMenu * m,utility2::translator& e )
 {
 	auto r = utility::localizationLanguage().toLatin1() ;
 
@@ -870,7 +870,7 @@ void utility::setLocalizationLanguage( bool translate,QMenu * m,translator& e )
 	}
 }
 
-void utility::languageMenu( QMenu * m,QAction * ac,translator& s )
+void utility::languageMenu( QMenu * m,QAction * ac,utility2::translator& s )
 {
 	auto e = ac->text().remove( '&' ) ;
 

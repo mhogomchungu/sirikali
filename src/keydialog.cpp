@@ -32,7 +32,7 @@
 #include "task.h"
 #include "utility.h"
 #include "lxqt_wallet.h"
-#include "stringlisttostrings.h"
+#include "utility2.h"
 #include "plugin.h"
 
 static QString _kwallet()
@@ -312,7 +312,7 @@ void keyDialog::pbOptions()
 		options::instance( m_parentWidget,m_create,{ m_idleTimeOut,m_configFile,m_exe },
 				   [ this ]( const QStringList& e ){
 
-			stringListToStrings::convert( e,m_idleTimeOut,m_configFile ) ;
+			utility2::stringListToStrings( e,m_idleTimeOut,m_configFile ) ;
 
 			if( m_ui->lineEditKey->text().isEmpty() ){
 

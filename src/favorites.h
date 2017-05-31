@@ -24,7 +24,8 @@
 #include <QString>
 #include <QStringList>
 
-#include "stringlisttostrings.h"
+#include "utility2.h"
+
 class QAction ;
 class QWidget ;
 class QTableWidgetItem ;
@@ -126,7 +127,7 @@ public:
 	private:
 		void config( const QStringList& e )
 		{
-			stringListToStrings::convert( e,
+			utility2::stringListToStrings( e,
 						      volumePath,
 						      mountPointPath,
 						      autoMountVolume,

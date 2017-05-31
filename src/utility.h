@@ -52,7 +52,7 @@
 #include "lxqt_wallet.h"
 #include "favorites.h"
 #include "plugins.h"
-#include "translator.h"
+#include "utility2.h"
 
 #include <QObject>
 #include <QLabel>
@@ -241,7 +241,6 @@ namespace utility
 	void setDefaultMountPointPrefix( const QString& path ) ;
 
 	void setSettingsObject( QSettings * ) ;
-	void setTranlatorObject( translator * s ) ;
 
 	QString mountPathPostFix( const QString& path ) ;
 	QString mountPathPostFix( const QString& prefix,const QString& path ) ;
@@ -310,8 +309,8 @@ namespace utility
 	bool eventFilter( QObject * gui,QObject * watched,QEvent * event,std::function< void() > ) ;
 	void licenseInfo( QWidget * ) ;
 
-	void setLocalizationLanguage( bool translate,QMenu * m,translator& ) ;
-	void languageMenu( QMenu *,QAction *,translator& ) ;
+	void setLocalizationLanguage( bool translate,QMenu * m,utility2::translator& ) ;
+	void languageMenu( QMenu *,QAction *,utility2::translator& ) ;
 
 	using array_t = std::array< int,8 > ;
 

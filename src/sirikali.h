@@ -30,8 +30,8 @@
 
 #include "volumeinfo.h"
 #include "utility.h"
+#include "utility2.h"
 #include "secrets.h"
-#include "translator.h"
 
 #include "lxqt_wallet.h"
 
@@ -137,7 +137,7 @@ private:
 
 	secrets m_secrets ;
 
-	translator m_translator ;
+	utility2::translator m_translator ;
 
 	QMenu * m_hidden_volume_menu = nullptr ;
 	QMenu * m_not_hidden_volume_menu = nullptr ;

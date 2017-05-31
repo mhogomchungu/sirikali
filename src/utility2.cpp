@@ -17,35 +17,38 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef STRINGLISTTOSTRINGS_H
-#define STRINGLISTTOSTRINGS_H
+#include "utility2.h"
+#include "utility.h"
 
-namespace stringListToStrings
+#include <QByteArray>
+#include <QTranslator>
+
+#include <QCoreApplication>
+
+void utility2::translator::setLanguage( const QByteArray& e )
 {
-	template< typename E,typename F,typename G >
-	void _private_convert( const F& s,G n,G k,E& e )
-	{
-		if( n < k ){
+	QCoreApplication::installTranslator( [ & ](){
 
-			e = s.at( n ) ;
-		}
-	}
+		this->clear() ;
 
-	template< typename E,typename F,typename G,typename ... T >
-	void _private_convert( const E& s,G n,G k,F& e,T& ... t )
-	{
-		if( n < k ){
+		m_translator = new QTranslator() ;
 
-			e = s.at( n ) ;
-			_private_convert( s,n + 1,k,t ... ) ;
-		}
-	}
+		m_translator->load( e.constData(),utility::localizationLanguagePath() ) ;
 
-	template< typename E,typename ... F >
-	void convert( const E& s,F& ... t )
-	{
-		_private_convert( s,static_cast< decltype( s.size() ) >( 0 ),s.size(),t ... ) ;
-	}
+		return m_translator ;
+	}() ) ;
 }
 
-#endif
+utility2::translator::~translator()
+{
+	this->clear() ;
+}
+
+void utility2::translator::clear()
+{
+	if( m_translator ){
+
+		QCoreApplication::removeTranslator( m_translator ) ;
+		delete m_translator ;
+	}
+}

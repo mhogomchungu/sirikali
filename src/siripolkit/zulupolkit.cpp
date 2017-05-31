@@ -21,7 +21,7 @@
 #include "zulupolkit.h"
 #include "siriPolkit.h"
 #include "../task.h"
-#include "../executablesearchpaths.h"
+#include "../utility2.h"
 #include "../3rdParty/json.hpp"
 
 #include <termios.h>
@@ -77,7 +77,7 @@ namespace utility
 	{
 		QString exe ;
 
-		for( const auto& it : executableSearchPaths::values() ){
+		for( const auto& it : utility2::executableSearchPaths() ){
 
 			exe = it + e ;
 

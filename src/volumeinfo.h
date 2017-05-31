@@ -24,8 +24,9 @@
 
 #include <initializer_list>
 
+#include "utility2.h"
 #include "utility.h"
-#include "stringlisttostrings.h"
+#include "favorites.h"
 
 class volumeInfo
 {
@@ -37,7 +38,7 @@ public:
 		}
 		mountinfo( const QStringList& e )
 		{
-			stringListToStrings::convert( e,
+			utility2::stringListToStrings( e,
 						      volumePath,
 						      mountPoint,
 						      fileSystem,
@@ -67,10 +68,10 @@ public:
 	static bool supported( const QString& e )
 	{
 		return utility::containsAtleastOne( e," fuse.cryfs ",
-		                                    " fuse.encfs ",
-		                                    " fuse.gocryptfs ",
-		                                    " fuse.securefs ",
-		                                    " ecryptfs " ) ;
+						    " fuse.encfs ",
+						    " fuse.gocryptfs ",
+						    " fuse.securefs ",
+						    " ecryptfs " ) ;
 	}
 	volumeInfo()
 	{
@@ -135,10 +136,10 @@ public:
 	void printVolumeInfo() const
 	{
 		std::cout << "\"" +
-		             m_mountinfo.volumePath.toStdString() +
-		             "\" \"" + m_mountinfo.mountPoint.toStdString() +
-		             "\" \"" + m_mountinfo.fileSystem.toStdString() +
-		             "\"" << std::endl ;
+			     m_mountinfo.volumePath.toStdString() +
+			     "\" \"" + m_mountinfo.mountPoint.toStdString() +
+			     "\" \"" + m_mountinfo.fileSystem.toStdString() +
+			     "\"" << std::endl ;
 	}
 	bool isValid() const
 	{
