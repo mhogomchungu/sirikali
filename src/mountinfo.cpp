@@ -19,22 +19,32 @@
 
 #include "mountinfo.h"
 #include "utility.h"
-#include "task.h"
 #include "siritask.h"
 
+#include <QMetaObject>
+
+#include <memory>
+
 mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& f ) :
-	QThread( parent ),m_stop( std::move( f ) ),m_announceEvents( e ),
+	m_parent( parent ),
+	m_stop( std::move( f ) ),
+	m_announceEvents( e ),
 	m_linux( utility::platformIsLinux() )
 {
-	m_babu = parent ;
-	m_baba = this ;
-	m_main = this ;
-	m_mtoto = nullptr ;
-
 	if( m_linux ){
 
 		m_oldMountList = this->mountedVolumes() ;
+
+		m_task = std::addressof( Task::run( [ this ](){ this->run() ; } ) ) ;
+
+		connect( m_task->threads()[ 0 ],
+			 SIGNAL( finished() ),
+			 this,
+			 SLOT( threadStopped() ),
+			 Qt::QueuedConnection ) ;
 	}
+
+
 }
 
 mountinfo::mountinfo() : m_linux( utility::platformIsLinux() )
@@ -91,11 +101,13 @@ std::function< void() > mountinfo::stop()
 
 		return [ this ](){
 
-			if( m_mtoto ){
+			auto e = m_task->threads()[ 0 ] ;
 
-				m_mtoto->terminate() ;
+			if( e->isRunning() ){
+
+				e->terminate() ;
 			}else{
-				this->threadStopped() ;
+				m_stop() ;
 			}
 		} ;
 	}else{
@@ -124,21 +136,29 @@ void mountinfo::updateVolume()
 
 	if( m_announceEvents ){
 
-		emit gotEvent() ;
+		QMetaObject::invokeMethod( m_parent,"pbUpdate",Qt::QueuedConnection ) ;
 
 		if( _volumeWasMounted() ){
 
 			for( const auto& it : m_newMountList ){
 
-				if( _mountedVolume( it ) ){
+				if( !_mountedVolume( it ) ){
 
-					const auto e = utility::split( it,' ' ) ;
-
-					if( e.size() > 3 ){
-
-						emit gotEvent( e.at( 4 ) ) ;
-					}
+					continue ;
 				}
+
+				const auto e = utility::split( it,' ' ) ;
+
+				if( e.size() < 4 ){
+
+					continue ;
+
+				}
+
+				QMetaObject::invokeMethod( m_parent,
+							   "autoMountFavoritesOnAvailable",
+							   Qt::QueuedConnection,
+							   Q_ARG( QString,e.at( 4 ) ) ) ;
 			}
 		}
 	}
@@ -165,7 +185,9 @@ void mountinfo::eventHappened()
 
 		utility::Task::suspendForOneSecond() ;
 
-		emit gotEvent() ;
+		QMetaObject::invokeMethod( m_parent,
+					   "pbUpdate",
+					   Qt::QueuedConnection ) ;
 	}
 }
 
@@ -173,17 +195,12 @@ void mountinfo::anza()
 {
 	if( m_linux ){
 
-		this->start() ;
+		m_task->start() ;
 	}
 }
 
 void mountinfo::run()
 {
-	m_mtoto = this ;
-
-	connect( m_mtoto,SIGNAL( finished() ),m_main,SLOT( threadStopped() ) ) ;
-	connect( m_mtoto,SIGNAL( finished() ),m_mtoto,SLOT( deleteLater() ) ) ;
-
 	class mountEvent
 	{
 	public:

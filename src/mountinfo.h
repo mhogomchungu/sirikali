@@ -33,7 +33,7 @@
 class QObject ;
 class volumeInfo ;
 
-class mountinfo : public QThread
+class mountinfo : public QObject
 {
 	Q_OBJECT
 public:
@@ -45,28 +45,31 @@ public:
 	}
 	mountinfo( QObject * parent,bool,std::function< void() >&& ) ;
 	mountinfo() ;
+
 	std::function< void() > stop() ;
+
 	void announceEvents( bool ) ;
 	void eventHappened( void ) ;
 	void anza( void ) ;
+
 	~mountinfo() ;
-signals:
-	void gotEvent( void ) ;
-	void gotEvent( QString ) ;
 private slots:
 	void threadStopped( void ) ;
 private:
-	void updateVolume( void ) ;
 	void run( void ) ;
-	QThread * m_baba ;
-	QThread * m_mtoto ;
-	QObject * m_babu ;
+	void updateVolume( void ) ;
+
+	QObject * m_parent ;
+
 	mountinfo * m_main ;
 	std::function< void() > m_stop = [](){} ;
 	bool m_announceEvents ;
 	bool m_linux ;
+
 	QStringList m_oldMountList ;
 	QStringList m_newMountList ;
+
+	Task::future< void > * m_task = nullptr ;
 };
 
 #endif // MONITOR_MOUNTINFO_H

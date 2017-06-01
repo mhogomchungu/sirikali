@@ -131,6 +131,7 @@ namespace siritask
 	{
 		success,
 		cryfs,
+		cryfsMigrateFileSystem,
 		encfs,
 		gocryptfs,
 		securefs,

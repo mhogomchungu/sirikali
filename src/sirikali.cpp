@@ -142,12 +142,6 @@ void sirikali::setUpApp( bool start,const QString& volume )
 	connect( m_ui->pbupdate,SIGNAL( clicked() ),
 		 this,SLOT( pbUpdate() ) ) ;
 
-	connect( &m_mountInfo,SIGNAL( gotEvent() ),this,
-		 SLOT( pbUpdate() ),Qt::QueuedConnection ) ;
-
-	connect( &m_mountInfo,SIGNAL( gotEvent( QString ) ),
-		 this,SLOT( autoMountFavoritesOnAvailable( QString ) ),Qt::QueuedConnection ) ;
-
 	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),
 		 this,SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
 
@@ -1473,7 +1467,7 @@ void sirikali::setUpShortCuts()
 }
 
 void sirikali::setUpFont()
-{	
+{
 }
 
 void sirikali::closeEvent( QCloseEvent * e )

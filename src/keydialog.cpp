@@ -683,6 +683,11 @@ bool keyDialog::completed( const siritask::cmdStatus& s )
 		msg = tr( "Failed To Complete The Request.\nCryfs Executable Could Not Be Found." ) ;
 		break;
 
+	case siritask::status::cryfsMigrateFileSystem :
+
+		msg = tr( "SiriKali Can Not Unlock This Volume Because Its FileSystem Has To Manually Be Converted To The Version Of Cryfs You Are Using.\n\nRun Cryfs With This Volume To Manually Update This Volume's FileSystem." ) ;
+		break;
+
 	case siritask::status::encfsNotFound :
 
 		msg = tr( "Failed To Complete The Request.\nEncfs Executable Could Not Be Found." ) ;

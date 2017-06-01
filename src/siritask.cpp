@@ -447,9 +447,16 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 
 	}else if( s == siritask::status::cryfs ){
 
+		auto& m = e.msg() ;
+
 		if( msg.contains( "password" ) ){
 
 			e.setStatus( s ) ;
+
+		}else if( m.contains( "This filesystem is for CryFS" ) &&
+			  m.contains( "It has to be migrated" ) ){
+
+			e.setStatus( siritask::status::cryfsMigrateFileSystem ) ;
 		}
 
 	}else if( s == siritask::status::encfs ){

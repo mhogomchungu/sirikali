@@ -168,7 +168,6 @@ set( MOC_FILES 	src/dialogok.h
 		src/sirikali.h
 		src/keydialog.h
 		src/oneinstance.h
-		src/mountinfo.h
 		src/dialogmsg.h
 		src/plugin.h
 		src/favorites.h
@@ -181,6 +180,7 @@ set( MOC_FILES 	src/dialogok.h
 		src/filemanager.h
 		src/securefscreateoptions.h
 		src/cryfscreateoptions.h
+		src/mountinfo.h
  )
 
 set( SRC 	src/dialogok.cpp
