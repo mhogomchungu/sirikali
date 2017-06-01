@@ -685,7 +685,7 @@ bool keyDialog::completed( const siritask::cmdStatus& s )
 
 	case siritask::status::cryfsMigrateFileSystem :
 
-		msg = tr( "SiriKali Can Not Unlock This Volume Because Its FileSystem Has To Manually Be Converted To The Version Of Cryfs You Are Using.\n\nRun Cryfs With This Volume To Manually Update This Volume's FileSystem." ) ;
+		msg = tr( "SiriKali Can Not Unlock This Volume Because Its FileSystem Has To Manually Be Converted To The Version Of Cryfs That Is Currently In Use.\n\nRun Cryfs With This Volume To Manually Update This Volume's FileSystem." ) ;
 		break;
 
 	case siritask::status::encfsNotFound :

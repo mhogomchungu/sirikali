@@ -43,8 +43,6 @@ mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& f ) :
 			 SLOT( threadStopped() ),
 			 Qt::QueuedConnection ) ;
 	}
-
-
 }
 
 mountinfo::mountinfo() : m_linux( utility::platformIsLinux() )
@@ -152,7 +150,6 @@ void mountinfo::updateVolume()
 				if( e.size() < 4 ){
 
 					continue ;
-
 				}
 
 				QMetaObject::invokeMethod( m_parent,
