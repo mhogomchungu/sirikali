@@ -35,13 +35,11 @@ mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& f ) :
 
 		m_oldMountList = this->mountedVolumes() ;
 
-		m_task = std::addressof( Task::run( [ this ](){ this->run() ; } ) ) ;
+		auto& e = Task::run( [ this ](){ this->run() ; } ) ;
 
-		connect( m_task->threads()[ 0 ],
-			 SIGNAL( finished() ),
-			 this,
-			 SLOT( threadStopped() ),
-			 Qt::QueuedConnection ) ;
+		e.then( [ this ](){ m_stop() ; } ) ;
+
+		m_task = std::addressof( e ) ;
 	}
 }
 
@@ -111,11 +109,6 @@ std::function< void() > mountinfo::stop()
 	}else{
 		return [ this ](){ m_stop() ; } ;
 	}
-}
-
-void mountinfo::threadStopped()
-{
-	m_stop() ;
 }
 
 void mountinfo::updateVolume()

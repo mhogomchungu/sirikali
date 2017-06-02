@@ -33,9 +33,8 @@
 class QObject ;
 class volumeInfo ;
 
-class mountinfo : public QObject
+class mountinfo
 {
-	Q_OBJECT
 public:
 	QStringList mountedVolumes() ;
 
@@ -53,16 +52,14 @@ public:
 	void anza( void ) ;
 
 	~mountinfo() ;
-private slots:
-	void threadStopped( void ) ;
 private:
 	void run( void ) ;
 	void updateVolume( void ) ;
 
 	QObject * m_parent ;
 
-	mountinfo * m_main ;
 	std::function< void() > m_stop = [](){} ;
+
 	bool m_announceEvents ;
 	bool m_linux ;
 

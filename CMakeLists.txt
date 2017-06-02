@@ -180,7 +180,6 @@ set( MOC_FILES 	src/dialogok.h
 		src/filemanager.h
 		src/securefscreateoptions.h
 		src/cryfscreateoptions.h
-		src/mountinfo.h
  )
 
 set( SRC 	src/dialogok.cpp
