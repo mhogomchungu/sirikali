@@ -83,10 +83,10 @@
  *               releases memory used by a future and this method should be used if a future is to be discarded
  *               after it it is acquired but never used.
  *
- * 6. .threads(). This method returns a vector of QThreads that are powering futures.
- *                The vector will contain a single entry if this future powers its own task. If this future
- *                manages other futures,then the returned vector will contain QThread pointers that are in
- *                the same order as tasks/futures passed to Task::run().
+ * 6. .all_threads(). This method returns a vector of QThreads that are powering futures.
+ *                    The vector will contain a single entry if this future powers its own task. If this future
+ *                    manages other futures,then the returned vector will contain QThread pointers that are in
+ *                    the same order as tasks/futures passed to Task::run().
  *
  * 7. .start(). This method is to be used if a future is to be run without caring about
  *              its result. Use this method if you want a future to run but dont want to use any of the above mentioned
@@ -199,9 +199,17 @@ namespace Task
 		{
 			return m_tasks.size() > 0 ;
 		}
-		const std::vector< QThread * >& threads()
+		const std::vector< QThread * >& all_threads()
 		{
 			return m_threads ;
+		}
+		QThread * first_thread()
+		{
+			return this->threads()[ 0 ] ;
+		}
+		QThread * thread_at( size_t s )
+		{
+			return this->threads()[ s ] ;
 		}
 		void start()
 		{
@@ -378,6 +386,14 @@ namespace Task
 		const std::vector< QThread * >& threads()
 		{
 			return m_threads ;
+		}
+		QThread * first_thread()
+		{
+			return this->threads()[ 0 ] ;
+		}
+		QThread * thread_at( size_t s )
+		{
+			return this->threads()[ s ] ;
 		}
 		void start()
 		{

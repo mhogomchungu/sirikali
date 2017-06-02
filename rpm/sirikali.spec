@@ -76,6 +76,7 @@ rm -rf $RPM_BUILD_DIR/sirikali
 %{_datadir}/sirikali/translations/en_US.qm
 %{_datadir}/sirikali/translations/fr_FR.qm
 %{_datadir}/polkit-1/actions/sirikali.policy
+%{_datadir}/man/man1/sirikali.1
 %defattr(0644,root,root)
 
 %changelog

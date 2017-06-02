@@ -97,7 +97,7 @@ std::function< void() > mountinfo::stop()
 
 		return [ this ](){
 
-			auto e = m_task->threads()[ 0 ] ;
+			auto e = m_task->first_thread() ;
 
 			if( e->isRunning() ){
 
