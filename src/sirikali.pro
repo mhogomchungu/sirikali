@@ -76,4 +76,4 @@ FORMS += \
 
 TRANSLATIONS = ../translations/en_US.ts \
                ../translations/fr_FR.ts \
-               ../translations/sp.MX.ts
+               ../translations/es.MX.ts
