@@ -59,7 +59,7 @@
 #include "walletconfig.h"
 #include "plugins.h"
 
-#include "3rdParty/json.hpp"
+#include "3rdParty/json/json.hpp"
 
 sirikali::sirikali( QWidget * parent ) :
 	QWidget( parent ),

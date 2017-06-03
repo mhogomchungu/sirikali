@@ -22,7 +22,7 @@
 #include "siriPolkit.h"
 #include "../task.h"
 #include "../utility2.h"
-#include "../3rdParty/json.hpp"
+#include "../3rdParty/json/json.hpp"
 
 #include <termios.h>
 #include <memory>

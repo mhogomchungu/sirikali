@@ -108,9 +108,9 @@ if( INTERNAL_LXQT_WALLET )
 	message( STATUS "lxqt wallet support will be provided by an internal library" )
 	message( STATUS "---------------------------------------------------------------------------" )
 
-	ADD_SUBDIRECTORY( src/lxqt_wallet )
-	include_directories( ${PROJECT_SOURCE_DIR}/src/lxqt_wallet/frontend )
-	include_directories( ${PROJECT_BINARY_DIR}/src/lxqt_wallet/frontend )
+	ADD_SUBDIRECTORY( src/3rdParty/lxqt_wallet )
+	include_directories( ${PROJECT_SOURCE_DIR}/src/3rdParty/lxqt_wallet/frontend )
+	include_directories( ${PROJECT_BINARY_DIR}/src/3rdParty/lxqt_wallet/frontend )
 else()
 	pkg_check_modules( LXQT_WALLET lxqt-wallet )
 
@@ -121,9 +121,9 @@ else()
 		message( STATUS "lxqt wallet support will be provided by an internal library" )
 		message( STATUS "---------------------------------------------------------------------------" )
 
-		ADD_SUBDIRECTORY( src/lxqt_wallet )
-		include_directories( ${PROJECT_SOURCE_DIR}/src/lxqt_wallet/frontend )
-		include_directories( ${PROJECT_BINARY_DIR}/src/lxqt_wallet/frontend )
+		ADD_SUBDIRECTORY( src/3rdParty/lxqt_wallet )
+		include_directories( ${PROJECT_SOURCE_DIR}/src/3rdParty/lxqt_wallet/frontend )
+		include_directories( ${PROJECT_BINARY_DIR}/src/3rdParty/lxqt_wallet/frontend )
 	else()
 		if( LXQT_WALLET_VERSION VERSION_GREATER "3.0.0" AND QT5 )
 
@@ -140,9 +140,9 @@ else()
 			message( STATUS "with external lxqt_wallet while building with Qt4" )
 			message( STATUS "---------------------------------------------------------------------------" )
 
-			ADD_SUBDIRECTORY( src/lxqt_wallet )
-			include_directories( ${PROJECT_SOURCE_DIR}/src/lxqt_wallet/frontend )
-			include_directories( ${PROJECT_BINARY_DIR}/src/lxqt_wallet/frontend )
+			ADD_SUBDIRECTORY( src/3rdParty/lxqt_wallet )
+			include_directories( ${PROJECT_SOURCE_DIR}/src/3rdParty/lxqt_wallet/frontend )
+			include_directories( ${PROJECT_BINARY_DIR}/src/3rdParty/lxqt_wallet/frontend )
 		endif()
 	endif()
 endif()
@@ -176,10 +176,10 @@ set( MOC_FILES 	src/dialogok.h
 		src/walletconfiginput.h
 		src/options.h
 		src/networkAccessManager.hpp
-		src/task.h
 		src/filemanager.h
 		src/securefscreateoptions.h
 		src/cryfscreateoptions.h
+		src/3rdParty/tasks/task.h
  )
 
 set( SRC 	src/dialogok.cpp

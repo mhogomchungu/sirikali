@@ -30,7 +30,7 @@
 #include "siritask.h"
 #include "version.h"
 
-#include "3rdParty/json.hpp"
+#include "3rdParty/json/json.hpp"
 
 static QString _tr( const QStringList& l )
 {
@@ -168,7 +168,7 @@ static QString _version( const QByteArray& data )
 }
 
 static QStringList _version( NetworkAccessManager& m,const QString& exe,const QString& e )
-{	
+{
 	auto f = _version( exe ) ;
 
 	if( f == "N/A" ){
