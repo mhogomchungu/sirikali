@@ -51,7 +51,8 @@ public:
 	~options() ;
 private slots:
         void pushButton( void ) ;
-	void pbOK( void ) ;
+	void pbSet( void ) ;
+	void pbCancel( void ) ;
 private:
 	void closeEvent( QCloseEvent * ) ;
 	Ui::options * m_ui ;

@@ -177,6 +177,7 @@ private :
 	bool m_working ;
 	bool m_create ;
 	bool m_reUseMountPoint ;
+	bool m_checked = false ;
 
 	secrets& m_secrets ;
 

@@ -295,6 +295,7 @@ namespace utility
 	void clearFavorites( void ) ;
 	void addToFavorite( const QStringList& ) ;
 	QVector< favorites::entry > readFavorites( void ) ;
+	favorites::entry readFavorite( const QString& ) ;
 	void replaceFavorite( const favorites::entry&,const favorites::entry& ) ;
 	void readFavorites( QMenu *,bool,const QString&,const QString& ) ;
 	void removeFavoriteEntry( const favorites::entry& ) ;

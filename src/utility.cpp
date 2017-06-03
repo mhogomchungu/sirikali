@@ -667,6 +667,19 @@ QVector< favorites::entry > utility::readFavorites()
 	}
 }
 
+favorites::entry utility::readFavorite( const QString& e )
+{
+	for( const auto& it : utility::readFavorites() ){
+
+		if( it.volumePath == e ){
+
+			return it ;
+		}
+	}
+
+	return {} ;
+}
+
 void utility::removeFavoriteEntry( const favorites::entry& e )
 {
 	_settings->setValue( "FavoritesVolumes",[ & ](){

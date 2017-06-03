@@ -205,11 +205,11 @@ namespace Task
 		}
 		QThread * first_thread()
 		{
-			return this->threads()[ 0 ] ;
+			return m_threads[ 0 ] ;
 		}
-		QThread * thread_at( size_t s )
+		QThread * thread_at( std::vector< QThread * >::size_type s )
 		{
-			return this->threads()[ s ] ;
+			return m_threads[ s ] ;
 		}
 		void start()
 		{
@@ -389,11 +389,11 @@ namespace Task
 		}
 		QThread * first_thread()
 		{
-			return this->threads()[ 0 ] ;
+			return m_threads[ 0 ] ;
 		}
-		QThread * thread_at( size_t s )
+		QThread * thread_at( std::vector< QThread * >::size_type s )
 		{
-			return this->threads()[ s ] ;
+			return m_threads[ s ] ;
 		}
 		void start()
 		{

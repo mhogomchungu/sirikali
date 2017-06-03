@@ -309,10 +309,22 @@ void keyDialog::pbOptions()
 			} ) ;
 		}
 	}else{
-		options::instance( m_parentWidget,m_create,{ m_idleTimeOut,m_configFile,m_exe },
-				   [ this ]( const QStringList& e ){
+		if( !m_checked ){
 
-			utility2::stringListToStrings( e,m_idleTimeOut,m_configFile ) ;
+			m_checked = true ;
+
+			auto f = utility::readFavorite( m_path ) ;
+
+			m_idleTimeOut  = f.idleTimeOut ;
+			m_configFile   = f.configFilePath ;
+			m_mountOptions = f.mountOptions ;
+		}
+
+		QStringList e{ m_idleTimeOut,m_configFile,m_mountOptions,m_exe } ;
+
+		options::instance( m_parentWidget,m_create,e,[ this ]( const QStringList& e ){
+
+			utility2::stringListToStrings( e,m_idleTimeOut,m_configFile,m_mountOptions ) ;
 
 			if( m_ui->lineEditKey->text().isEmpty() ){
 
