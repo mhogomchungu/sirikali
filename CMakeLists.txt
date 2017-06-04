@@ -334,7 +334,7 @@ install( FILES translations/en_US.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirika
 install( FILES translations/fr_FR.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 install( FILES translations/es_MX.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 
-install( FILES src/sirikali.1 DESTINATION ${CMAKE_INSTALL_DATADIR}/man/man1/ )
+install( FILES src/sirikali.1.gz DESTINATION ${CMAKE_INSTALL_DATADIR}/man/man1/ )
 
 endif()
 
