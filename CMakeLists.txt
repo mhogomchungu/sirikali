@@ -202,7 +202,6 @@ set( SRC 	src/dialogok.cpp
 		src/secrets.cpp
 		src/filemanager.cpp
 		src/securefscreateoptions.cpp
-		src/volumeinfo.cpp
 		src/cryfscreateoptions.cpp
 		src/utility2.cpp
 )
@@ -335,6 +334,7 @@ install( FILES translations/fr_FR.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirika
 install( FILES translations/es_MX.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 
 install( FILES src/sirikali.1.gz DESTINATION ${CMAKE_INSTALL_DATADIR}/man/man1/ )
+install( FILES src/sirikali.pkexec.1.gz DESTINATION ${CMAKE_INSTALL_DATADIR}/man/man1/ )
 
 endif()
 
