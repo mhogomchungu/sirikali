@@ -39,9 +39,8 @@ Older versions can be downloaded <a href="https://github.com/mhogomchungu/sirika
 
 ## Binary packages
 
-```Fedora,opensuse,ubuntu and debian``` users can install binary packages by following instructions on <a href="http://software.opensuse.org/download.html?project=home%3Amhogomchungu&package=sirikali">this</a> link.
+```Fedora,opensuse,ubuntu and debian``` users can install binary packages by following instructions on <a href="http://software.opensuse.org//download.html?project=home%3Aobs_mhogomchungu&package=sirikali">this</a> link.
 
-```Ubuntu and debian``` packages have a known problem of causing ```synaptic/apt-get``` to complain about usage of SHA1. This is a known problem and i am waiting for upstream to fix it.
 
 ## Screenshots
 
