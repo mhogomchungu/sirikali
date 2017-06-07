@@ -55,6 +55,8 @@ public:
 private:
 	void run( void ) ;
 	void updateVolume( void ) ;
+	void pbUpdate( void ) ;
+	void autoMount( const QString& ) ;
 
 	QObject * m_parent ;
 

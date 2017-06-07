@@ -127,33 +127,36 @@ void mountinfo::updateVolume()
 
 	if( m_announceEvents ){
 
-		QMetaObject::invokeMethod( m_parent,"pbUpdate",Qt::QueuedConnection ) ;
+		this->pbUpdate() ;
 
 		if( _volumeWasMounted() ){
 
 			for( const auto& it : m_newMountList ){
 
-				if( !_mountedVolume( it ) ){
-
-					continue ;
-				}
-
 				const auto e = utility::split( it,' ' ) ;
 
-				if( e.size() < 4 ){
+				if( _mountedVolume( it ) && e.size() > 3 ){
 
-					continue ;
+					this->autoMount( e.at( 4 ) ) ;
 				}
-
-				QMetaObject::invokeMethod( m_parent,
-							   "autoMountFavoritesOnAvailable",
-							   Qt::QueuedConnection,
-							   Q_ARG( QString,e.at( 4 ) ) ) ;
 			}
 		}
 	}
 
 	m_oldMountList = m_newMountList ;
+}
+
+void mountinfo::pbUpdate()
+{
+	QMetaObject::invokeMethod( m_parent,"pbUpdate",Qt::QueuedConnection ) ;
+}
+
+void mountinfo::autoMount( const QString& e )
+{
+	QMetaObject::invokeMethod( m_parent,
+				   "autoMountFavoritesOnAvailable",
+				   Qt::QueuedConnection,
+				   Q_ARG( QString,e ) ) ;
 }
 
 void mountinfo::announceEvents( bool s )
@@ -175,9 +178,7 @@ void mountinfo::eventHappened()
 
 		utility::Task::suspendForOneSecond() ;
 
-		QMetaObject::invokeMethod( m_parent,
-					   "pbUpdate",
-					   Qt::QueuedConnection ) ;
+		this->pbUpdate() ;
 	}
 }
 
