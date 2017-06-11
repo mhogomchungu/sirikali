@@ -27,6 +27,7 @@
 #include <QSystemTrayIcon>
 #include <QVector>
 #include <QSettings>
+#include <QApplication>
 
 #include "volumeinfo.h"
 #include "utility.h"
@@ -48,14 +49,15 @@ class sirikali : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit sirikali( QWidget * parent = 0 ) ;
+	explicit sirikali() ;
+	int start( QApplication& ) ;
 	~sirikali() ;
 private slots:
 	void setPluginExecutable( void ) ;
 	void setFileManager( void ) ;
 	void hideWindow( void ) ;
 	void setUpApp( bool,const QString& ) ;
-	void start( void ) ;
+	void start( const QStringList& ) ;
 	void autoUpdateCheck( void ) ;
 	void gocryptfsProperties( void ) ;
 	void cryfsProperties( void ) ;

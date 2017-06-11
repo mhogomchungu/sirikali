@@ -203,7 +203,9 @@ namespace utility
 
 	void autoMountBackEnd( const utility::walletBackEnd& ) ;
 
-	int startApplication( const char * appName,std::function<int()> ) ;
+	int startApplication( std::function< int() > ) ;
+
+	bool printVersionOrHelpInfo( const QStringList& ) ;
 
 	wallet getKey( const QString& keyID,LXQt::Wallet::Wallet& ) ;
 

@@ -61,8 +61,7 @@
 
 #include "3rdParty/json/json.hpp"
 
-sirikali::sirikali( QWidget * parent ) :
-	QWidget( parent ),
+sirikali::sirikali() :
 	m_secrets( this ),
 	m_mountInfo( mountinfo::instance( this,true,[ & ](){ QCoreApplication::exit( m_exitStatus ) ; } ) )
 {
@@ -717,10 +716,26 @@ void sirikali::raiseWindow( const QString& volume )
 	this->showMoungDialog( volume ) ;
 }
 
-void sirikali::start()
+int sirikali::start( QApplication& e )
 {
+	QCoreApplication::setApplicationName( "SiriKali" ) ;
+
 	const auto l = QCoreApplication::arguments() ;
 
+	if( utility::printVersionOrHelpInfo( l ) ){
+
+		return 0 ;
+	}else{
+		QMetaObject::invokeMethod( this,
+					   "start",
+					   Qt::QueuedConnection,
+					   Q_ARG( QStringList,l ) ) ;
+		return e.exec() ;
+	}
+}
+
+void sirikali::start( const QStringList& l )
+{
 	m_startHidden  = l.contains( "-e" ) ;
 	m_folderOpener = utility::cmdArgumentValue( l,"-m",utility::fileManager() ) ;
 

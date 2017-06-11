@@ -827,11 +827,11 @@ void keyDialog::encryptedFolderCreate()
 	siritask::options s = { path,m,m_key,m_idleTimeOut,m_configFile,
 				m_exe.toLower(),false,m_mountOptions,m_createOptions } ;
 
-	auto& e = siritask::encryptedFolderCreate( s ) ;
+	auto e = siritask::encryptedFolderCreate( s ).await() ;
 
 	m_working = false ;
 
-	if( this->completed( e.await() ) ){
+	if( this->completed( e ) ){
 
 		m_mountPointPath = m ;
 		this->HideUI() ;

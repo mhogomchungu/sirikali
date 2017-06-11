@@ -377,7 +377,7 @@ void utility::setSettingsObject( QSettings * s )
 	_settings = s ;
 }
 
-static int _help()
+static bool _help()
 {
 	utility::debug() << VERSION_STRING << QObject::tr( "\n\
 options:\n\
@@ -404,29 +404,26 @@ options:\n\
 	-p   Print a list of unlocked volumes.\n\
 	-s   Option to trigger generation of password hash." ) ;
 
-	return 0 ;
+	return true ;
 }
 
-static bool _printHelpOrVersionInfo()
+bool _printHelpOrVersionInfo( const QStringList& e )
 {
-	QStringList q = QCoreApplication::arguments() ;
-	return q.contains( "-h" )        ||
-	       q.contains( "-help" )     ||
-	       q.contains( "--help" )    ||
-	       q.contains( "-v" )        ||
-	       q.contains(  "-version" ) ||
-	       q.contains( "--version" ) ;
+	return  e.contains( "-h" )        ||
+		e.contains( "-help" )     ||
+		e.contains( "--help" )    ||
+		e.contains( "-v" )        ||
+		e.contains(  "-version" ) ||
+		e.contains( "--version" ) ;
 }
 
-int utility::startApplication( const char * appName,std::function<int()> start )
+bool utility::printVersionOrHelpInfo( const QStringList& e )
 {
-	QCoreApplication::setApplicationName( appName ) ;
-
-	if( _printHelpOrVersionInfo() ){
+	if( _printHelpOrVersionInfo( e ) ){
 
 		return _help() ;
 	}else{
-		return start() ;
+		return false ;
 	}
 }
 

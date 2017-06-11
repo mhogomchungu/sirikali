@@ -30,13 +30,7 @@ int main( int argc,char * argv[] )
 
 	utility::scaleGUI() ;
 
-	QApplication a( argc,argv ) ;
+	QApplication SiriKali( argc,argv ) ;
 
-	return utility::startApplication( "SiriKali",[ & ](){
-
-		sirikali e ;
-		QMetaObject::invokeMethod( &e,"start",Qt::QueuedConnection ) ;
-
-		return a.exec() ;
-	} ) ;
+	return sirikali().start( SiriKali ) ;
 }
