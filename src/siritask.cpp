@@ -64,9 +64,6 @@ static void _run_command_on_mount( const siritask::options& opt,const QString& a
 
 	if( !exe.isEmpty() ){
 
-		auto env = QProcessEnvironment::systemEnvironment() ;
-		env.insert( "PATH",utility::executableSearchPaths( env.value( "PATH" ) ) ) ;
-
 		auto a = _makePath( opt.cipherFolder ) ;
 		auto b = _makePath( opt.plainFolder ) ;
 
@@ -74,7 +71,7 @@ static void _run_command_on_mount( const siritask::options& opt,const QString& a
 
 		QProcess e ;
 
-		e.setEnvironment( env.toStringList() ) ;
+		e.setProcessEnvironment( utility::systemEnvironment() ) ;
 
 		e.startDetached( exe ) ;
 	}
