@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  *  Copyright (c) 2012-2015
  *  name : Francis Banyikwa
@@ -25,9 +25,8 @@
 
 #include <memory>
 
-mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& f ) :
+mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& stop ) :
 	m_parent( parent ),
-	m_stop( std::move( f ) ),
 	m_announceEvents( e ),
 	m_linux( utility::platformIsLinux() )
 {
@@ -35,11 +34,13 @@ mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& f ) :
 
 		m_oldMountList = this->mountedVolumes() ;
 
-		auto& e = Task::run( [ this ](){ this->run() ; } ) ;
+		auto e = std::addressof( Task::run( [ this ](){ this->run() ; } ) ) ;
 
-		e.then( [ this ](){ m_stop() ; } ) ;
+		e->then( std::move( stop ) ) ;
 
-		m_task = std::addressof( e ) ;
+		m_stop = [ e ](){ e->first_thread()->terminate() ; } ;
+	}else{
+		m_stop = std::move( stop ) ;
 	}
 }
 
@@ -93,22 +94,7 @@ QStringList mountinfo::mountedVolumes()
 
 std::function< void() > mountinfo::stop()
 {
-	if( m_linux ){
-
-		return [ this ](){
-
-			auto e = m_task->first_thread() ;
-
-			if( e->isRunning() ){
-
-				e->terminate() ;
-			}else{
-				m_stop() ;
-			}
-		} ;
-	}else{
-		return [ this ](){ m_stop() ; } ;
-	}
+	return std::move( m_stop ) ;
 }
 
 void mountinfo::updateVolume()
@@ -179,14 +165,6 @@ void mountinfo::eventHappened()
 		utility::Task::suspendForOneSecond() ;
 
 		this->pbUpdate() ;
-	}
-}
-
-void mountinfo::anza()
-{
-	if( m_linux ){
-
-		m_task->start() ;
 	}
 }
 

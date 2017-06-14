@@ -74,7 +74,7 @@ void sirikali::closeApplication()
 {
 	utility::quitHelper() ;
 	this->hide() ;
-	m_mountInfo.stop()() ;
+	m_mountInfo->stop()() ;
 }
 
 void sirikali::closeApplication( int s,const QString& e )
@@ -87,13 +87,13 @@ void sirikali::closeApplication( int s,const QString& e )
 	}
 
 	this->hide() ;
-	m_mountInfo.stop()() ;
+	m_mountInfo->stop()() ;
 }
 
 void sirikali::closeApplication_1( int s )
 {
 	Q_UNUSED( s ) ;
-	m_mountInfo.stop()() ;
+	m_mountInfo->stop()() ;
 }
 
 void sirikali::setUpApp( bool start,const QString& volume )
@@ -542,7 +542,6 @@ void sirikali::setDefaultMountPointPrefix()
 
 void sirikali::startAutoMonitor()
 {
-	m_mountInfo.anza() ;
 }
 
 void sirikali::aboutToShowMenu()
@@ -1034,7 +1033,7 @@ QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorite
 
 					if( s == siritask::status::success ){
 
-						m_mountInfo.eventHappened() ;
+						m_mountInfo->eventHappened() ;
 					}
 				} ) ;
 			}
@@ -1527,7 +1526,7 @@ void sirikali::mount( const volumeInfo& entry,const QString& exe,const QByteArra
 
 	},[ this ]( const QString& e ){
 
-		m_mountInfo.eventHappened() ;
+		m_mountInfo->eventHappened() ;
 
 		this->openMountPointPath( e ) ;
 
@@ -1672,7 +1671,7 @@ void sirikali::pbUmount()
 
 		if( siritask::encryptedFolderUnMount( a,b,c ).await() ){
 
-			m_mountInfo.eventHappened() ;
+			m_mountInfo->eventHappened() ;
 			siritask::deleteMountFolder( b ) ;
 		}else{
 			DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Unmount %1 Volume" ).arg( type ) ) ;
@@ -1684,7 +1683,7 @@ void sirikali::pbUmount()
 
 void sirikali::unMountAll()
 {
-	m_mountInfo.announceEvents( false ) ;
+	m_mountInfo->announceEvents( false ) ;
 
 	this->disableAll() ;
 
@@ -1721,7 +1720,7 @@ void sirikali::unMountAll()
 
 	this->enableAll() ;
 
-	m_mountInfo.announceEvents( true ) ;
+	m_mountInfo->announceEvents( true ) ;
 }
 
 void sirikali::unMountAllAndQuit()

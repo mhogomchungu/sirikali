@@ -38,9 +38,11 @@ class mountinfo
 public:
 	QStringList mountedVolumes() ;
 
-	static mountinfo& instance( QObject * parent,bool b,std::function< void() >&& f )
+	static std::unique_ptr< mountinfo > instance( QObject * parent,
+						      bool b,
+						      std::function< void() >&& f )
 	{
-		return *( new mountinfo( parent,b,std::move( f ) ) ) ;
+		return std::unique_ptr< mountinfo >( new mountinfo( parent,b,std::move( f ) ) ) ;
 	}
 	mountinfo( QObject * parent,bool,std::function< void() >&& ) ;
 	mountinfo() ;
@@ -49,7 +51,6 @@ public:
 
 	void announceEvents( bool ) ;
 	void eventHappened( void ) ;
-	void anza( void ) ;
 
 	~mountinfo() ;
 private:
@@ -60,15 +61,13 @@ private:
 
 	QObject * m_parent ;
 
-	std::function< void() > m_stop = [](){} ;
+	std::function< void() > m_stop ;
 
 	bool m_announceEvents ;
 	bool m_linux ;
 
 	QStringList m_oldMountList ;
 	QStringList m_newMountList ;
-
-	Task::future< void > * m_task = nullptr ;
 };
 
 #endif // MONITOR_MOUNTINFO_H
