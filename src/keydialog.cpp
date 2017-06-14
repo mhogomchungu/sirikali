@@ -685,6 +685,11 @@ bool keyDialog::completed( const siritask::cmdStatus& s )
 		msg = tr( "Failed To Unlock An Ecryptfs Volume.\nWrong Password Entered." ) ;
 		break;
 
+	case siritask::status::ecryptfsIllegalPath :
+
+		msg = tr( "A Space Character Is Not Allowed When Using Polkit Support." ) ;
+		break;
+
 	case siritask::status::securefs :
 
 		msg = tr( "Failed To Unlock A Securefs Volume.\nWrong Password Entered." ) ;
@@ -723,7 +728,7 @@ bool keyDialog::completed( const siritask::cmdStatus& s )
 	case siritask::status::failedToCreateMountPoint :
 
 		msg = tr( "Failed To Create Mount Point." ) ;
-		break;
+		break;		
 
 	case siritask::status::unknown :
 

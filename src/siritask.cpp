@@ -43,6 +43,22 @@ static QString _makePath( const QString& e )
 	return utility::Task::makePath( e ) ;
 }
 
+template< typename T >
+static bool _ecryptfs( const T& e )
+{
+	return utility::equalsAtleastOne( e,"ecryptfs","ecryptfs-simple" ) ;
+}
+
+static bool _ecryptfs_illegal_path( const siritask::options& opts )
+{
+	if( _ecryptfs( opts.type ) && utility::useZuluPolkit() ){
+
+		return opts.cipherFolder.contains( " " ) || opts.mountOptions.contains( " " ) ;
+	}else{
+		return false ;
+	}
+}
+
 template< typename ... T >
 static bool _deleteFolders( const T& ... m )
 {
@@ -107,7 +123,7 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 
 		auto cmd = [ & ](){
 
-			if( fileSystem == "ecryptfs" ){
+			if( _ecryptfs( fileSystem ) ){
 
 				auto exe = utility::executableFullPath( "ecryptfs-simple" ) ;
 
@@ -136,7 +152,7 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 
 		for( int i = 0 ; i < 5 ; i++ ){
 
-			if( utility::Task::run( cmd,10000,fileSystem == "ecryptfs" ).get().success() ){
+			if( utility::Task::run( cmd,10000,_ecryptfs( fileSystem ) ).get().success() ){
 
 				return true ;
 			}else{
@@ -256,7 +272,7 @@ static QString _args( const QString& exe,const siritask::options& opt,
 			return e + " -o " + opt.mountOptions ;
 		}
 
-	}else if( type.startsWith( "ecryptfs" ) ){
+	}else if( _ecryptfs( type ) ){
 
 		auto _options = []( const std::initializer_list< const char * >& e ){
 
@@ -388,7 +404,7 @@ static siritask::status _status( const siritask::volumeType& app,bool s )
 
 			return cs::securefsNotFound ;
 
-		}else if( app.startsWith( "ecryptfs" ) ){
+		}else if( _ecryptfs( app ) ){
 
 			return cs::ecryptfs_simpleNotFound ;
 		}else{
@@ -407,7 +423,7 @@ static siritask::status _status( const siritask::volumeType& app,bool s )
 
 			return cs::securefs ;
 
-		}else if( app.startsWith( "ecryptfs" ) ){
+		}else if( _ecryptfs( app ) ){
 
 			return cs::ecryptfs ;
 		}else{
@@ -505,7 +521,7 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 					utility::systemEnvironment(),
 					password.toLatin1(),
 					[](){},
-					configFilePath.endsWith( "ecryptfs.config" ) ) ;
+					_ecryptfs( app ) ) ;
 
 		auto s = _status( e,_status( app,false ),app == "encfs" ) ;
 
@@ -528,12 +544,18 @@ static QString _configFilePath( const siritask::options& opt )
 	}
 }
 
-Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const options& opt,bool reUseMountPoint )
+Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const siritask::options& opt,
+								     bool reUseMountPoint )
 {
 	return Task::run< siritask::cmdStatus >( [ opt,reUseMountPoint ]()->siritask::cmdStatus{
 
-		auto _mount = [ reUseMountPoint ]( const QString& app,const options& copt,
+		auto _mount = [ reUseMountPoint ]( const QString& app,const siritask::options& copt,
 				const QString& configFilePath )->siritask::cmdStatus{
+
+			if( _ecryptfs_illegal_path( copt ) ){
+
+				return cs::ecryptfsIllegalPath ;
+			}
 
 			auto opt = copt ;
 
@@ -615,9 +637,14 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const optio
 	} ) ;
 }
 
-Task::future< siritask::cmdStatus >& siritask::encryptedFolderCreate( const options& opt )
+Task::future< siritask::cmdStatus >& siritask::encryptedFolderCreate( const siritask::options& opt )
 {
 	return Task::run< siritask::cmdStatus >( [ opt ]()->siritask::cmdStatus{
+
+		if( _ecryptfs_illegal_path( opt ) ){
+
+			return cs::ecryptfsIllegalPath ;
+		}
 
 		if( _create_folder( opt.cipherFolder ) ){
 

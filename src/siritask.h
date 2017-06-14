@@ -136,6 +136,7 @@ namespace siritask
 		gocryptfs,
 		securefs,
 		ecryptfs,
+		ecryptfsIllegalPath,
 		gocryptfsNotFound,
 		cryfsNotFound,
 		encfsNotFound,
@@ -254,8 +255,8 @@ namespace siritask
 						      const QString& mountPoint,
 						      const QString& fileSystem ) ;
 
-	Task::future< cmdStatus >& encryptedFolderMount( const options&,bool = false ) ;
-	Task::future< cmdStatus >& encryptedFolderCreate( const options& ) ;
+	Task::future< cmdStatus >& encryptedFolderMount( const siritask::options&,bool = false ) ;
+	Task::future< cmdStatus >& encryptedFolderCreate( const siritask::options& ) ;
 }
 
 #endif // ZULUMOUNTTASK_H
