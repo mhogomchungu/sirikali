@@ -385,13 +385,14 @@ options:\n\
 	-m   Tool to use to open a default file manager(default tool is xdg-open).\n\
 	-e   Start the application without showing the GUI.\n\
 	-b   A name of a backend to retrieve a password from when a volume is open from CLI.\n\
-	     Supported backends are: \"internal\",\"stdin\",\"keyfile\",\"kwallet\" and \"libsecret\".\n\
+	     Supported backends are: \"internal\",\"stdin\",\"keyfile\",\"osxkeychain\",\"kwallet\" and \"libsecret\".\n\
 	     The first three are always present but the rest are compile time dependencies.\n\
 	     \"internal\" option causes SiriKali to read password from lxqt-wallet internal backend.\n\
 	     \"stdin\" option causes SiriKali to read the password from standard input.\n\
 	     \"keyfile\" option causes SiriKali to read the password from a file.\n\
 	     \"libsecret\" option causes SiriKali to read password from lxqt-wallet libsecret backend.\n\
 	     \"kwallet\" option causes SiriKali to read password from lxqt-wallet kwallet backend.\n\
+	     \"osxkeychain\" option causes SiriKali to read password from lxqt-wallet OSX key chain backend.\n\
 	-k   When opening a volume from CLI,a value of \"rw\" will open the volume in read\\write\n\
 	     mode and a value of \"ro\" will open the volume in read only mode.\n\
 	-z   Full path of the mount point to be used when the volume is opened from CLI.\n\
