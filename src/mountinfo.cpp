@@ -1,4 +1,4 @@
-﻿/*
+/*
  *
  *  Copyright (c) 2012-2015
  *  name : Francis Banyikwa
@@ -32,23 +32,29 @@ mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& stop ) :
 	m_announceEvents( e ),
 	m_linux( utility::platformIsLinux() )
 {
-	if( m_linux || OSX_AUTOMONITOR ){
+	if( m_linux ){
 
 		m_oldMountList = this->mountedVolumes() ;
 
-		auto e = [ this ](){
-
-			if( m_linux ){
-
-				return std::addressof( Task::run( [ this ](){ this->linuxMonitor() ; } ) ) ;
-			}else{
-				return std::addressof( Task::run( [ this ](){ this->osxMonitor() ; } ) ) ;
-			}
-		}() ;
+		auto e = std::addressof( Task::run( [ this ](){ this->linuxMonitor() ; } ) ) ;
 
 		e->then( std::move( stop ) ) ;
 
 		m_stop = [ e ](){ e->first_thread()->terminate() ; } ;
+
+	}else if( mountinfo::OSXAutomonitor() ){
+
+		m_oldMountList = this->mountedVolumes() ;
+
+		Task::run( [ & ](){
+
+			QProcess s ;
+
+			m_stop = [ &s ](){ s.terminate() ; } ;
+
+			this->osxMonitor( s ) ;
+
+		} ).then( std::move( stop ) ) ;
 	}else{
 		m_stop = std::move( stop ) ;
 	}
@@ -60,6 +66,11 @@ mountinfo::mountinfo() : m_linux( utility::platformIsLinux() )
 
 mountinfo::~mountinfo()
 {
+}
+
+bool mountinfo::OSXAutomonitor()
+{
+	return OSX_AUTOMONITOR ;
 }
 
 QStringList mountinfo::mountedVolumes()
@@ -162,7 +173,7 @@ void mountinfo::announceEvents( bool s )
 
 void mountinfo::eventHappened()
 {
-	if( !m_linux && m_announceEvents && !OSX_AUTOMONITOR ){
+	if( !m_linux && m_announceEvents && !mountinfo::OSXAutomonitor() ){
 
 		/*
 		 * Suspend for a bit to give mount command time to
@@ -207,10 +218,8 @@ void mountinfo::linuxMonitor()
 
 #if OSX_AUTOMONITOR
 
-void mountinfo::osxMonitor()
+void mountinfo::osxMonitor( QProcess& e )
 {
-	QProcess e ;
-
 	QObject::connect( &e,&QProcess::readyReadStandardOutput,[ & ](){
 
 		/*
@@ -228,8 +237,9 @@ void mountinfo::osxMonitor()
 
 #else
 
-void mountinfo::osxMonitor()
+void mountinfo::osxMonitor( QProcess& e )
 {
+	Q_UNUSED( e ) ;
 }
 
 #endif

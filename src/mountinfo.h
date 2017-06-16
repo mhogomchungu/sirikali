@@ -30,12 +30,16 @@
 
 #include "task.h"
 
+class QProcess ;
 class QObject ;
+
 class volumeInfo ;
 
 class mountinfo
 {
 public:
+	static bool OSXAutomonitor() ;
+
 	QStringList mountedVolumes() ;
 
 	static std::unique_ptr< mountinfo > instance( QObject * parent,
@@ -55,7 +59,7 @@ public:
 	~mountinfo() ;
 private:
 	void linuxMonitor( void ) ;
-	void osxMonitor( void ) ;
+	void osxMonitor( QProcess& ) ;
 	void updateVolume( void ) ;
 	void pbUpdate( void ) ;
 	void autoMount( const QString& ) ;

@@ -112,6 +112,7 @@ void sirikali::setUpApp( bool start,const QString& volume )
 	m_ui->pbunlockvolume->setMinimumHeight( 31 ) ;
 	m_ui->pbmenu->setMinimumHeight( 31 ) ;
 	m_ui->pbupdate->setMinimumHeight( 31 ) ;
+	m_ui->pbFavorites->setMinimumHeight( 31 ) ;
 
 	auto f = utility::getWindowDimensions() ;
 
@@ -366,8 +367,8 @@ void sirikali::setUpAppMenu()
 
 			if( utility::platformIsOSX() ){
 
-				s->setChecked( false ) ;
-				s->setEnabled( false ) ;
+				s->setChecked( mountinfo::OSXAutomonitor() ) ;
+				s->setEnabled( mountinfo::OSXAutomonitor() ) ;
 			}
 
 			return s ;
