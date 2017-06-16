@@ -124,7 +124,6 @@ private:
 	void dragEnterEvent( QDragEnterEvent * ) ;
 	void dropEvent( QDropEvent * ) ;
 	void showContextMenu( QTableWidgetItem *,bool ) ;
-	void startAutoMonitor( void ) ;
 	void updateList( const volumeInfo& ) ;
 	void setUpAppMenu( void ) ;
 	void disableAll( void ) ;

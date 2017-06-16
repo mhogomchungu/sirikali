@@ -54,7 +54,8 @@ public:
 
 	~mountinfo() ;
 private:
-	void run( void ) ;
+	void linuxMonitor( void ) ;
+	void osxMonitor( void ) ;
 	void updateVolume( void ) ;
 	void pbUpdate( void ) ;
 	void autoMount( const QString& ) ;

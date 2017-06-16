@@ -200,8 +200,6 @@ void sirikali::setUpApp( bool start,const QString& volume )
 
 	this->disableAll() ;
 
-	this->startAutoMonitor() ;
-
 	this->updateVolumeList( siritask::updateVolumeList().await() ) ;
 
 	if( volume.isEmpty() ) {
@@ -538,10 +536,6 @@ void sirikali::setDefaultMountPointPrefix()
 
 		utility::setDefaultMountPointPrefix( e ) ;
 	}
-}
-
-void sirikali::startAutoMonitor()
-{
 }
 
 void sirikali::aboutToShowMenu()
@@ -1245,10 +1239,10 @@ void sirikali::cryfsProperties()
 	this->enableAll() ;
 }
 
-static void _volume_properties( const QString& e,const QString& arg,
+static void _volume_properties( const QString& cmd,const QString& arg,
 				QTableWidget * table,QWidget * w )
 {
-	auto exe = utility::executableFullPath( e ) ;
+	auto exe = utility::executableFullPath( cmd ) ;
 
 	auto path = [ table ](){
 
@@ -1265,14 +1259,18 @@ static void _volume_properties( const QString& e,const QString& arg,
 	if( exe.isEmpty() ){
 
 		DialogMsg( w ).ShowUIOK( QObject::tr( "ERROR" ),
-					 QObject::tr( "Failed To Find %1 Executable" ).arg( e ) ) ;
+					 QObject::tr( "Failed To Find %1 Executable" ).arg( cmd ) ) ;
 	}else{
 		auto e = utility::Task::run( exe + arg + path ).await() ;
 
 		if( e.success() ){
 
 			auto s = e.stdOut() ;
-			s.replace( "Creator:      ","Creator: " ) ;
+
+			if( cmd == "gocryptfs" ){
+
+				s.replace( "Creator:      ","Creator: " ).replace( "\n","\n\n" ) ;
+			}
 
 			DialogMsg( w ).ShowUIInfo( QObject::tr( "INFORMATION" ),true,s ) ;
 		}else{

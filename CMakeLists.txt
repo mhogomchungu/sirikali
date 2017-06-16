@@ -289,6 +289,13 @@ set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC
 
 file( WRITE ${PROJECT_BINARY_DIR}/siriPolkit.h "\n#define siriPolkitPath \"${CMAKE_INSTALL_PREFIX}/bin/sirikali.pkexec\"" )
 
+if( OSX_AUTOMONITOR AND QT5 )
+
+	file( WRITE ${PROJECT_BINARY_DIR}/auto_monitor.h "\n#define OSX_AUTOMONITOR 1" )
+else()
+	file( WRITE ${PROJECT_BINARY_DIR}/auto_monitor.h "\n#define OSX_AUTOMONITOR 0" )
+endif()
+
 if( APPLE )
 
 SET( plugin_dest_dir sirikali.app/Contents/MacOS )

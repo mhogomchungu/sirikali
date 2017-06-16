@@ -20,7 +20,9 @@
 #include "mountinfo.h"
 #include "utility.h"
 #include "siritask.h"
+#include "auto_monitor.h"
 
+#include <QProcess>
 #include <QMetaObject>
 
 #include <memory>
@@ -30,11 +32,19 @@ mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& stop ) :
 	m_announceEvents( e ),
 	m_linux( utility::platformIsLinux() )
 {
-	if( m_linux ){
+	if( m_linux || OSX_AUTOMONITOR ){
 
 		m_oldMountList = this->mountedVolumes() ;
 
-		auto e = std::addressof( Task::run( [ this ](){ this->run() ; } ) ) ;
+		auto e = [ this ](){
+
+			if( m_linux ){
+
+				return std::addressof( Task::run( [ this ](){ this->linuxMonitor() ; } ) ) ;
+			}else{
+				return std::addressof( Task::run( [ this ](){ this->osxMonitor() ; } ) ) ;
+			}
+		}() ;
 
 		e->then( std::move( stop ) ) ;
 
@@ -152,7 +162,7 @@ void mountinfo::announceEvents( bool s )
 
 void mountinfo::eventHappened()
 {
-	if( !m_linux && m_announceEvents ){
+	if( !m_linux && m_announceEvents && !OSX_AUTOMONITOR ){
 
 		/*
 		 * Suspend for a bit to give mount command time to
@@ -168,7 +178,7 @@ void mountinfo::eventHappened()
 	}
 }
 
-void mountinfo::run()
+void mountinfo::linuxMonitor()
 {
 	class mountEvent
 	{
@@ -194,3 +204,32 @@ void mountinfo::run()
 		this->updateVolume() ;
 	}
 }
+
+#if OSX_AUTOMONITOR
+
+void mountinfo::osxMonitor()
+{
+	QProcess e ;
+
+	QObject::connect( &e,&QProcess::readyReadStandardOutput,[ & ](){
+
+		/*
+		 * Clear the buffer,not sure if its necessary
+		 */
+		e.readAllStandardOutput() ;
+
+		this->updateVolume() ;
+	} ) ;
+
+	e.start( "diskutil activity" ) ;
+
+	e.waitForFinished( -1 ) ;
+}
+
+#else
+
+void mountinfo::osxMonitor()
+{
+}
+
+#endif
