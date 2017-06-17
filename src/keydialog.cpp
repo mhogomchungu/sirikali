@@ -474,7 +474,7 @@ void keyDialog::enableAll()
 	m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
 
 	m_ui->lineEditFolderPath->setEnabled( false ) ;
-	m_ui->label_3->setEnabled( true ) ;	
+	m_ui->label_3->setEnabled( true ) ;
 }
 
 void keyDialog::disableAll()
@@ -687,7 +687,7 @@ bool keyDialog::completed( const siritask::cmdStatus& s )
 
 	case siritask::status::ecryptfsIllegalPath :
 
-		msg = tr( "A Space Character Is Not Allowed When Using Polkit Support." ) ;
+		msg = tr( "A Space Character Is Not Allowed In Paths When Using Ecryptfs Backend And Polkit." ) ;
 		break;
 
 	case siritask::status::securefs :
@@ -728,7 +728,7 @@ bool keyDialog::completed( const siritask::cmdStatus& s )
 	case siritask::status::failedToCreateMountPoint :
 
 		msg = tr( "Failed To Create Mount Point." ) ;
-		break;		
+		break;
 
 	case siritask::status::unknown :
 
@@ -1175,7 +1175,7 @@ void keyDialog::HideUI()
 }
 
 keyDialog::~keyDialog()
-{	
+{
 	m_success( m_mountPointPath ) ;
 	delete m_ui ;
 }

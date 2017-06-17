@@ -552,14 +552,14 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const sirit
 		auto _mount = [ reUseMountPoint ]( const QString& app,const siritask::options& copt,
 				const QString& configFilePath )->siritask::cmdStatus{
 
-			if( _ecryptfs_illegal_path( copt ) ){
-
-				return cs::ecryptfsIllegalPath ;
-			}
-
 			auto opt = copt ;
 
 			opt.type = app ;
+
+			if( _ecryptfs_illegal_path( opt ) ){
+
+				return cs::ecryptfsIllegalPath ;
+			}
 
 			if( _create_folder( opt.plainFolder ) || reUseMountPoint ){
 
