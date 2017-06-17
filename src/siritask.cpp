@@ -453,7 +453,11 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 
 	if( s == siritask::status::ecryptfs ){
 
-		if( msg.contains( "error: mount failed" ) ){
+		if( msg.contains( "operation not permitted" ) ){
+
+			e.setStatus( siritask::status::ecrypfsBadExePermissions ) ;
+
+		}else if( msg.contains( "error: mount failed" ) ){
 
 			e.setStatus( s ) ;
 		}

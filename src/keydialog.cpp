@@ -690,6 +690,11 @@ bool keyDialog::completed( const siritask::cmdStatus& s )
 		msg = tr( "A Space Character Is Not Allowed In Paths When Using Ecryptfs Backend And Polkit." ) ;
 		break;
 
+	case siritask::status::ecrypfsBadExePermissions :
+
+		msg = tr( "The backend Seems To Not Have Its Suid Bit Set.\n\nSet \"Enable Polkit Support\" Option From The Menu And Try Again." ) ;
+		break;
+
 	case siritask::status::securefs :
 
 		msg = tr( "Failed To Unlock A Securefs Volume.\nWrong Password Entered." ) ;
