@@ -53,7 +53,7 @@ static bool _ecryptfs_illegal_path( const siritask::options& opts )
 {
 	if( _ecryptfs( opts.type ) && utility::useZuluPolkit() ){
 
-		return opts.cipherFolder.contains( " " ) || opts.mountOptions.contains( " " ) ;
+		return opts.cipherFolder.contains( " " ) || opts.plainFolder.contains( " " ) ;
 	}else{
 		return false ;
 	}
