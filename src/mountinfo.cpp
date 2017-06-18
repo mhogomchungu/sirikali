@@ -20,7 +20,6 @@
 #include "mountinfo.h"
 #include "utility.h"
 #include "siritask.h"
-#include "auto_monitor.h"
 
 #include <QProcess>
 #include <QMetaObject>
@@ -32,19 +31,13 @@ mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& stop ) :
 	m_announceEvents( e ),
 	m_linux( utility::platformIsLinux() )
 {
+	m_oldMountList = this->mountedVolumes() ;
+
 	if( m_linux ){
 
-		m_oldMountList = this->mountedVolumes() ;
-
 		this->linuxMonitor().then( std::move( stop ) ) ;
-
-	}else if( mountinfo::OSXAutomonitor() ){
-
-		m_oldMountList = this->mountedVolumes() ;
-
-		this->osxMonitor().then( std::move( stop ) ) ;
 	}else{
-		m_stop = std::move( stop ) ;
+		this->osxMonitor().then( std::move( stop ) ) ;
 	}
 }
 
@@ -54,11 +47,6 @@ mountinfo::mountinfo() : m_linux( utility::platformIsLinux() )
 
 mountinfo::~mountinfo()
 {
-}
-
-bool mountinfo::OSXAutomonitor()
-{
-	return OSX_AUTOMONITOR ;
 }
 
 QStringList mountinfo::mountedVolumes()
@@ -164,24 +152,6 @@ void mountinfo::announceEvents( bool s )
 	m_announceEvents = s ;
 }
 
-void mountinfo::eventHappened()
-{
-	if( !m_linux && m_announceEvents && !mountinfo::OSXAutomonitor() ){
-
-		/*
-		 * Suspend for a bit to give mount command time to
-		 * properly populate its mounted list before calling it.
-		 *
-		 * Sometimes,mount events do not get registered and i suspect its
-		 * because we call mount too soon.
-		 */
-
-		utility::Task::suspendForOneSecond() ;
-
-		this->pbUpdate() ;
-	}
-}
-
 Task::future< void >& mountinfo::linuxMonitor()
 {
 	class mountEvent
@@ -220,8 +190,6 @@ Task::future< void >& mountinfo::linuxMonitor()
 	return e ;
 }
 
-#if OSX_AUTOMONITOR
-
 Task::future< void >& mountinfo::osxMonitor()
 {
 	return Task::run( [ this ]{
@@ -229,6 +197,8 @@ Task::future< void >& mountinfo::osxMonitor()
 		QProcess e ;
 
 		m_stop = [ & ](){ e.terminate() ; } ;
+
+#if QT_VERSION > QT_VERSION_CHECK( 5,0,0 )
 
 		QObject::connect( &e,&QProcess::readyReadStandardOutput,[ & ](){
 
@@ -239,18 +209,9 @@ Task::future< void >& mountinfo::osxMonitor()
 
 			this->updateVolume() ;
 		} ) ;
-
+#endif
 		e.start( "diskutil activity" ) ;
 
 		e.waitForFinished( -1 ) ;
 	} ) ;
 }
-
-#else
-
-Task::future< void >& mountinfo::osxMonitor()
-{
-	return Task::run( [](){} ) ;
-}
-
-#endif

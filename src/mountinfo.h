@@ -37,8 +37,6 @@ class mountinfo : private QObject
 {
 	Q_OBJECT
 public:
-	static bool OSXAutomonitor() ;
-
 	QStringList mountedVolumes() ;
 
 	static std::unique_ptr< mountinfo > instance( QObject * parent,
@@ -53,7 +51,6 @@ public:
 	std::function< void() > stop() ;
 
 	void announceEvents( bool ) ;
-	void eventHappened( void ) ;
 
 	~mountinfo() ;
 private slots:

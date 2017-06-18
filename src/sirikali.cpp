@@ -360,21 +360,10 @@ void sirikali::setUpAppMenu()
 					  "AutoMount Favorite Volumes At Start Up",
 					   SLOT( autoMountFavoritesOnStartUp( bool ) ) ) ) ;
 
-		e->addAction( [ & ](){
-
-			auto s = _addAction( true,utility::autoMountFavoritesOnAvailable(),
+		e->addAction(  _addAction( true,utility::autoMountFavoritesOnAvailable(),
 					     tr( "AutoMount Favorite Volumes When Available" ),
 					     "AutoMount Favorite Volumes When Available",
-					     SLOT( autoMountWhenAvailable( bool ) ) ) ;
-
-			if( utility::platformIsOSX() ){
-
-				s->setChecked( mountinfo::OSXAutomonitor() ) ;
-				s->setEnabled( mountinfo::OSXAutomonitor() ) ;
-			}
-
-			return s ;
-		}() ) ;
+					     SLOT( autoMountWhenAvailable( bool ) ) ) ) ;
 
 		e->addAction( _addAction( true,utility::showMountDialogWhenAutoMounting(),
 					  tr( "Show Mount Dialog When AutoMounting" ),
@@ -1024,15 +1013,7 @@ QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorite
 
 				this->mount( e,QString(),key ) ;
 			}else{
-				auto& s = siritask::encryptedFolderMount( { e,key } ) ;
-
-				s.then( [ this ]( siritask::cmdStatus s ){
-
-					if( s == siritask::status::success ){
-
-						m_mountInfo->eventHappened() ;
-					}
-				} ) ;
+				siritask::encryptedFolderMount( { e,key } ).start() ;
 			}
 		} ;
 
@@ -1527,8 +1508,6 @@ void sirikali::mount( const volumeInfo& entry,const QString& exe,const QByteArra
 
 	},[ this ]( const QString& e ){
 
-		m_mountInfo->eventHappened() ;
-
 		this->openMountPointPath( e ) ;
 
 	},exe,key ) ;
@@ -1672,7 +1651,6 @@ void sirikali::pbUmount()
 
 		if( siritask::encryptedFolderUnMount( a,b,c ).await() ){
 
-			m_mountInfo->eventHappened() ;
 			siritask::deleteMountFolder( b ) ;
 		}else{
 			DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Unmount %1 Volume" ).arg( type ) ) ;
