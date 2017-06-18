@@ -27,7 +27,7 @@ cd build
 
 cmake -DCMAKE_INSTALL_PREFIX=/usr -DQT5=true -DCMAKE_BUILD_TYPE=RELEASE . ..
 
-make
+make -j$(nproc)
 
 make install( or sudo make install )
 
