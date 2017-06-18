@@ -177,6 +177,7 @@ set( MOC_FILES 	src/dialogok.h
 		src/options.h
 		src/networkAccessManager.hpp
 		src/filemanager.h
+		src/mountinfo.h
 		src/securefscreateoptions.h
 		src/cryfscreateoptions.h
 		src/3rdParty/tasks/task.h

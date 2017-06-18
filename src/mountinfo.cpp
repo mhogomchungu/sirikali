@@ -36,25 +36,13 @@ mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& stop ) :
 
 		m_oldMountList = this->mountedVolumes() ;
 
-		auto e = std::addressof( Task::run( [ this ](){ this->linuxMonitor() ; } ) ) ;
-
-		e->then( std::move( stop ) ) ;
-
-		m_stop = [ e ](){ e->first_thread()->terminate() ; } ;
+		this->linuxMonitor().then( std::move( stop ) ) ;
 
 	}else if( mountinfo::OSXAutomonitor() ){
 
 		m_oldMountList = this->mountedVolumes() ;
 
-		Task::run( [ & ](){
-
-			QProcess s ;
-
-			m_stop = [ &s ](){ s.terminate() ; } ;
-
-			this->osxMonitor( s ) ;
-
-		} ).then( std::move( stop ) ) ;
+		this->osxMonitor().then( std::move( stop ) ) ;
 	}else{
 		m_stop = std::move( stop ) ;
 	}
@@ -118,7 +106,7 @@ std::function< void() > mountinfo::stop()
 	return std::move( m_stop ) ;
 }
 
-void mountinfo::updateVolume()
+void mountinfo::volumeUpdate()
 {
 	m_newMountList = this->mountedVolumes() ;
 
@@ -151,6 +139,11 @@ void mountinfo::updateVolume()
 	}
 
 	m_oldMountList = m_newMountList ;
+}
+
+void mountinfo::updateVolume()
+{
+	QMetaObject::invokeMethod( this,"volumeUpdate",Qt::QueuedConnection ) ;
 }
 
 void mountinfo::pbUpdate()
@@ -189,7 +182,7 @@ void mountinfo::eventHappened()
 	}
 }
 
-void mountinfo::linuxMonitor()
+Task::future< void >& mountinfo::linuxMonitor()
 {
 	class mountEvent
 	{
@@ -208,38 +201,56 @@ void mountinfo::linuxMonitor()
 	private:
 		QFile m_handle ;
 		struct pollfd m_monitor ;
-	} event ;
+	} ;
 
-	while( event ){
+	auto& e = Task::run( [ & ](){
 
-		this->updateVolume() ;
-	}
+		mountEvent event ;
+
+		while( event ){
+
+			this->updateVolume() ;
+		}
+	} ) ;
+
+	auto s = std::addressof( e ) ;
+
+	m_stop = [ s ](){ s->first_thread()->terminate() ; } ;
+
+	return e ;
 }
 
 #if OSX_AUTOMONITOR
 
-void mountinfo::osxMonitor( QProcess& e )
+Task::future< void >& mountinfo::osxMonitor()
 {
-	QObject::connect( &e,&QProcess::readyReadStandardOutput,[ & ](){
+	return Task::run( [ this ]{
 
-		/*
-		 * Clear the buffer,not sure if its necessary
-		 */
-		e.readAllStandardOutput() ;
+		QProcess e ;
 
-		this->updateVolume() ;
+		m_stop = [ & ](){ e.terminate() ; } ;
+
+		QObject::connect( &e,&QProcess::readyReadStandardOutput,[ & ](){
+
+			/*
+			 * Clear the buffer,not sure if its necessary
+			 */
+			e.readAllStandardOutput() ;
+
+			this->updateVolume() ;
+		} ) ;
+
+		e.start( "diskutil activity" ) ;
+
+		e.waitForFinished( -1 ) ;
 	} ) ;
-
-	e.start( "diskutil activity" ) ;
-
-	e.waitForFinished( -1 ) ;
 }
 
 #else
 
-void mountinfo::osxMonitor( QProcess& e )
+Task::future< void >& mountinfo::osxMonitor()
 {
-	Q_UNUSED( e ) ;
+	return Task::run( [](){} ) ;
 }
 
 #endif

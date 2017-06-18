@@ -24,19 +24,18 @@
 #include <QThread>
 #include <QString>
 #include <QStringList>
+#include <QObject>
 
 #include <functional>
 #include <memory>
 
 #include "task.h"
 
-class QProcess ;
-class QObject ;
-
 class volumeInfo ;
 
-class mountinfo
+class mountinfo : private QObject
 {
+	Q_OBJECT
 public:
 	static bool OSXAutomonitor() ;
 
@@ -57,9 +56,11 @@ public:
 	void eventHappened( void ) ;
 
 	~mountinfo() ;
+private slots:
+	void volumeUpdate( void ) ;
 private:
-	void linuxMonitor( void ) ;
-	void osxMonitor( QProcess& ) ;
+	Task::future< void >& linuxMonitor( void ) ;
+	Task::future< void >& osxMonitor( void ) ;
 	void updateVolume( void ) ;
 	void pbUpdate( void ) ;
 	void autoMount( const QString& ) ;
