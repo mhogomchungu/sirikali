@@ -203,7 +203,11 @@ Task::future< void >& mountinfo::osxMonitor()
 		QObject::connect( &e,&QProcess::readyReadStandardOutput,[ & ](){
 
 			/*
-			 * Clear the buffer,not sure if its necessary
+			 * Clear the buffer,not sure if its necessary.
+			 *
+			 * In the future,we will examine the output and call this->updateVolume()
+			 * only when volumes are mounted/unmounted to get the same behavior
+			 * linux code path has.
 			 */
 			e.readAllStandardOutput() ;
 
