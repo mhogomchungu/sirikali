@@ -89,9 +89,9 @@ QStringList mountinfo::mountedVolumes()
 	}
 }
 
-std::function< void() > mountinfo::stop()
+std::function< void() >& mountinfo::stop()
 {
-	return std::move( m_stop ) ;
+	return m_stop ;
 }
 
 void mountinfo::volumeUpdate()
@@ -192,7 +192,7 @@ Task::future< void >& mountinfo::linuxMonitor()
 
 Task::future< void >& mountinfo::osxMonitor()
 {
-	return Task::run( [ this ]{
+	return Task::run( [ this ](){
 
 		QProcess e ;
 

@@ -6,7 +6,7 @@ set_property( GLOBAL PROPERTY ALLOW_DUPLICATE_CUSTOM_TARGETS ON )
 
 project( sirikali )
 
-set( PGR_VERSION "1.2.7" )
+set( PGR_VERSION "1.2.8" )
 
 add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic )
 
