@@ -31,9 +31,9 @@ Most frequently asked questions are answered <a href="https://github.com/mhogomc
 
 ## Download link
 
-Latest released version is 1.2.7 and it can be downloaded by clicking below link.
+Latest released version is 1.2.8 and it can be downloaded by clicking below link.
 
-<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.2.7/SiriKali-1.2.7.tar.xz">SiriKali-1.2.7.tar.xz</a>
+<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.2.8/SiriKali-1.2.8.tar.xz">SiriKali-1.2.8.tar.xz</a>
 
 Older versions can be downloaded <a href="https://github.com/mhogomchungu/sirikali/releases">here.</a>
 
