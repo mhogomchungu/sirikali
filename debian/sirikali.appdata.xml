@@ -27,8 +27,9 @@ allowing the user to create, mount, and unmount encrypted volumes.</p>
 </screenshots>
 <releases>
     <!-- Get timestamp with 'date +%s' -->
-    <release version="1.0.0" timestamp="1470931200"></release>
+    <release version="1.2.8" timestamp="1499017170"></release>
     <release version="1.1.0" timestamp="1472745600"></release>
+    <release version="1.0.0" timestamp="1470931200"></release>
 </releases>
 </component>
 
