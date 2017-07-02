@@ -24,47 +24,51 @@
 #include <QThread>
 #include <QString>
 #include <QStringList>
+#include <QObject>
 
 #include <functional>
 #include <memory>
 
 #include "task.h"
 
-class QObject ;
 class volumeInfo ;
 
-class mountinfo : public QThread
+class mountinfo : private QObject
 {
 	Q_OBJECT
 public:
 	QStringList mountedVolumes() ;
 
-	static mountinfo& instance( QObject * parent,bool b,std::function< void() >&& f )
+	static std::unique_ptr< mountinfo > instance( QObject * parent,
+						      bool b,
+						      std::function< void() >&& f )
 	{
-		return *( new mountinfo( parent,b,std::move( f ) ) ) ;
+		return std::unique_ptr< mountinfo >( new mountinfo( parent,b,std::move( f ) ) ) ;
 	}
 	mountinfo( QObject * parent,bool,std::function< void() >&& ) ;
 	mountinfo() ;
-	std::function< void() > stop() ;
+
+	std::function< void() >& stop() ;
+
 	void announceEvents( bool ) ;
-	void eventHappened( void ) ;
-	void anza( void ) ;
+
 	~mountinfo() ;
-signals:
-	void gotEvent( void ) ;
-	void gotEvent( QString ) ;
 private slots:
-	void threadStopped( void ) ;
+	void volumeUpdate( void ) ;
 private:
+	Task::future< void >& linuxMonitor( void ) ;
+	Task::future< void >& osxMonitor( void ) ;
 	void updateVolume( void ) ;
-	void run( void ) ;
-	QThread * m_baba ;
-	QThread * m_mtoto ;
-	QObject * m_babu ;
-	mountinfo * m_main ;
-	std::function< void() > m_stop = [](){} ;
+	void pbUpdate( void ) ;
+	void autoMount( const QString& ) ;
+
+	QObject * m_parent ;
+
+	std::function< void() > m_stop ;
+
 	bool m_announceEvents ;
 	bool m_linux ;
+
 	QStringList m_oldMountList ;
 	QStringList m_newMountList ;
 };

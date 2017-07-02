@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (c) 2012-2015
+ *  Copyright (c) 2014-2015
  *  name : Francis Banyikwa
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -16,21 +16,3 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-#include <QApplication>
-#include <QMetaObject>
-
-#include "sirikali.h"
-#include "utility.h"
-
-int main( int argc,char * argv[] )
-{
-	QSettings settings( "SiriKali","SiriKali" ) ;
-	utility::setSettingsObject( &settings ) ;
-
-	utility::scaleGUI() ;
-
-	QApplication SiriKali( argc,argv ) ;
-
-	return sirikali().start( SiriKali ) ;
-}

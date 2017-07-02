@@ -1,3 +1,15 @@
+sirikali (1.2.8-1) UNRELEASED; urgency=low
+  [Mhogo Mchungu]
+  * New Features
+     -- Add a GUI way to set options when creating a securefs volume.
+     -- Add a GUI way to set options when creating a cryfs volume.
+     -- Agg a GUI way to display gocryptfs volume properties.
+     -- Better mount/unmount events monitoring on OSX.
+     -- Set it as a run time option(off by default) to support ecryptfs-simple backend that does not have suid bit set.
+        A user will be asked to allow polkit support on first attempt.
+
+ -- Mhogo Mchungu <mhogomchungu@gmail.com>  Thu, 29 Jun 2017 16:38:48 +0000
+
 sirikali (1.2.7-1) UNRELEASED; urgency=low
   [Mhogo Mchungu]
   * New Features

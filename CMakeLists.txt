@@ -6,7 +6,7 @@ set_property( GLOBAL PROPERTY ALLOW_DUPLICATE_CUSTOM_TARGETS ON )
 
 project( sirikali )
 
-set( PGR_VERSION "1.2.7" )
+set( PGR_VERSION "1.2.8" )
 
 add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic )
 
@@ -108,9 +108,9 @@ if( INTERNAL_LXQT_WALLET )
 	message( STATUS "lxqt wallet support will be provided by an internal library" )
 	message( STATUS "---------------------------------------------------------------------------" )
 
-	ADD_SUBDIRECTORY( src/lxqt_wallet )
-	include_directories( ${PROJECT_SOURCE_DIR}/src/lxqt_wallet/frontend )
-	include_directories( ${PROJECT_BINARY_DIR}/src/lxqt_wallet/frontend )
+	ADD_SUBDIRECTORY( src/3rdParty/lxqt_wallet )
+	include_directories( ${PROJECT_SOURCE_DIR}/src/3rdParty/lxqt_wallet/frontend )
+	include_directories( ${PROJECT_BINARY_DIR}/src/3rdParty/lxqt_wallet/frontend )
 else()
 	pkg_check_modules( LXQT_WALLET lxqt-wallet )
 
@@ -121,9 +121,9 @@ else()
 		message( STATUS "lxqt wallet support will be provided by an internal library" )
 		message( STATUS "---------------------------------------------------------------------------" )
 
-		ADD_SUBDIRECTORY( src/lxqt_wallet )
-		include_directories( ${PROJECT_SOURCE_DIR}/src/lxqt_wallet/frontend )
-		include_directories( ${PROJECT_BINARY_DIR}/src/lxqt_wallet/frontend )
+		ADD_SUBDIRECTORY( src/3rdParty/lxqt_wallet )
+		include_directories( ${PROJECT_SOURCE_DIR}/src/3rdParty/lxqt_wallet/frontend )
+		include_directories( ${PROJECT_BINARY_DIR}/src/3rdParty/lxqt_wallet/frontend )
 	else()
 		if( LXQT_WALLET_VERSION VERSION_GREATER "3.0.0" AND QT5 )
 
@@ -140,9 +140,9 @@ else()
 			message( STATUS "with external lxqt_wallet while building with Qt4" )
 			message( STATUS "---------------------------------------------------------------------------" )
 
-			ADD_SUBDIRECTORY( src/lxqt_wallet )
-			include_directories( ${PROJECT_SOURCE_DIR}/src/lxqt_wallet/frontend )
-			include_directories( ${PROJECT_BINARY_DIR}/src/lxqt_wallet/frontend )
+			ADD_SUBDIRECTORY( src/3rdParty/lxqt_wallet )
+			include_directories( ${PROJECT_SOURCE_DIR}/src/3rdParty/lxqt_wallet/frontend )
+			include_directories( ${PROJECT_BINARY_DIR}/src/3rdParty/lxqt_wallet/frontend )
 		endif()
 	endif()
 endif()
@@ -160,24 +160,27 @@ set( UI_FILES 	src/sirikali.ui
 		src/options.ui
 		src/dialogok.ui
 		src/filemanager.ui
+		src/securefscreateoptions.ui
+		src/cryfscreateoptions.ui
 )
 
 set( MOC_FILES 	src/dialogok.h
 		src/sirikali.h
 		src/keydialog.h
 		src/oneinstance.h
-		src/mountinfo.h
 		src/dialogmsg.h
 		src/plugin.h
 		src/favorites.h
 		src/readonlywarning.h
 		src/walletconfig.h
 		src/walletconfiginput.h
-		src/utility.h
 		src/options.h
 		src/networkAccessManager.hpp
-		src/task.h
 		src/filemanager.h
+		src/mountinfo.h
+		src/securefscreateoptions.h
+		src/cryfscreateoptions.h
+		src/3rdParty/tasks/task.h
  )
 
 set( SRC 	src/dialogok.cpp
@@ -199,6 +202,9 @@ set( SRC 	src/dialogok.cpp
 		src/options.cpp
 		src/secrets.cpp
 		src/filemanager.cpp
+		src/securefscreateoptions.cpp
+		src/cryfscreateoptions.cpp
+		src/utility2.cpp
 )
 
 if( APPLE )
@@ -282,13 +288,7 @@ endif()
 
 set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic" )
 
-if( USE_POLKIT )
-	file( WRITE ${PROJECT_BINARY_DIR}/siriPolkit.h "#define POLKIT_SUPPORT 1" )
-else()
-	file( WRITE ${PROJECT_BINARY_DIR}/siriPolkit.h "#define POLKIT_SUPPORT 0" )
-endif()
-
-file( APPEND ${PROJECT_BINARY_DIR}/siriPolkit.h "\n#define siriPolkitPath \"${CMAKE_INSTALL_PREFIX}/bin/sirikali.pkexec\"" )
+file( WRITE ${PROJECT_BINARY_DIR}/siriPolkit.h "\n#define siriPolkitPath \"${CMAKE_INSTALL_PREFIX}/bin/sirikali.pkexec\"" )
 
 if( APPLE )
 
@@ -332,6 +332,10 @@ install( FILES src/sirikali.png DESTINATION           ${CMAKE_INSTALL_DATAROOTDI
 
 install( FILES translations/en_US.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 install( FILES translations/fr_FR.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
+install( FILES translations/es_MX.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
+
+install( FILES src/sirikali.1.gz DESTINATION ${CMAKE_INSTALL_DATADIR}/man/man1/ )
+install( FILES src/sirikali.pkexec.1.gz DESTINATION ${CMAKE_INSTALL_DATADIR}/man/man1/ )
 
 endif()
 
@@ -342,8 +346,8 @@ if( NOT APPLE )
 file( WRITE ${PROJECT_BINARY_DIR}/sirikali.desktop
 
 "[Desktop Entry]
-Comment[en_US]=
-Comment=
+Comment[en_US]=Manage Encrypted Volumes Hosted In Folders
+Comment=Manage Encrypted Volumes Hosted In Folders
 Exec=${CMAKE_INSTALL_FULL_BINDIR}/sirikali -d %U
 GenericName[en_US]=Encrypted Folder Manager
 GenericName=Encrypted Folder Manager
@@ -363,14 +367,14 @@ install( FILES ${PROJECT_BINARY_DIR}/sirikali.desktop
 
 ADD_SUBDIRECTORY( src/siripolkit )
 
-file( WRITE ${PROJECT_BINARY_DIR}/sirikali.policy
+file( WRITE ${PROJECT_BINARY_DIR}/org.sirikali.pkexec.policy
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <!DOCTYPE policyconfig PUBLIC
  \"-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN\"
  \"http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd\">
 <policyconfig>
 
-  <action id=\"org.debian.pkexec.sirikali\">
+  <action id=\"org.sirikali.pkexec\">
     <message>Authentication is required to run sirikali.pkexec</message>
     <icon_name>sirikali</icon_name>
     <defaults>
@@ -384,6 +388,6 @@ file( WRITE ${PROJECT_BINARY_DIR}/sirikali.policy
 </policyconfig>
 ")
 
-install ( FILES ${PROJECT_BINARY_DIR}/sirikali.policy DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/polkit-1/actions )
+install ( FILES ${PROJECT_BINARY_DIR}/org.sirikali.pkexec.policy DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/polkit-1/actions )
 
 endif()

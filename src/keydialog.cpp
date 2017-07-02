@@ -32,7 +32,7 @@
 #include "task.h"
 #include "utility.h"
 #include "lxqt_wallet.h"
-
+#include "utility2.h"
 #include "plugin.h"
 
 static QString _kwallet()
@@ -108,8 +108,17 @@ keyDialog::keyDialog( QWidget * parent,
 		 this,SLOT( pbOK() ) ) ;
 	connect( m_ui->checkBoxVisibleKey,SIGNAL( stateChanged( int ) ),
 		 this,SLOT( cbVisibleKeyStateChanged( int ) ) ) ;
+	connect( m_ui->pbOptions,SIGNAL( clicked() ),
+		 this,SLOT( pbOptions() ) ) ;
 
 	if( m_create ){
+
+		if( m_exe == "Securefs" || m_exe == "Cryfs" ){
+
+			m_ui->pbOptions->setEnabled( true ) ;
+		}else{
+			m_ui->pbOptions->setEnabled( false ) ;
+		}
 
 		connect( m_ui->lineEditMountPoint,SIGNAL( textChanged( QString ) ),
 			 this,SLOT( textChanged( QString ) ) ) ;
@@ -246,8 +255,6 @@ keyDialog::keyDialog( QWidget * parent,
 
 	this->installEventFilter( this ) ;
 
-	connect( m_ui->pbOptions,SIGNAL( clicked() ),this,SLOT( pbOptions() ) ) ;
-
 	if( !m_key.isEmpty() ){
 
 		m_ui->lineEditKey->setText( m_key ) ;
@@ -284,20 +291,49 @@ void keyDialog::windowSetTitle( const QString& s )
 
 void keyDialog::pbOptions()
 {
-	options::instance( m_parentWidget,m_create,{ m_idleTimeOut,m_configFile,m_exe },
-			   [ this ]( const QStringList& e ){
+	if( m_create ){
 
-		m_idleTimeOut = e.at( 0 ) ;
+		if( m_exe == "Securefs" ){
 
-		m_configFile = e.at( 1 ) ;
+			securefscreateoptions::instance( m_parentWidget,[ this ]( const QString& e ){
 
-		if( m_ui->lineEditKey->text().isEmpty() ){
-
-			m_ui->lineEditKey->setFocus() ;
-		}else{
-			m_ui->pbOpen->setFocus() ;
+				m_createOptions = e ;
+			} ) ;
 		}
-	} ) ;
+
+		if( m_exe == "Cryfs" ){
+
+			cryfscreateoptions::instance( m_parentWidget,[ this ]( const QString& e ){
+
+				m_createOptions = e ;
+			} ) ;
+		}
+	}else{
+		if( !m_checked ){
+
+			m_checked = true ;
+
+			auto f = utility::readFavorite( m_path ) ;
+
+			m_idleTimeOut  = f.idleTimeOut ;
+			m_configFile   = f.configFilePath ;
+			m_mountOptions = f.mountOptions ;
+		}
+
+		QStringList e{ m_idleTimeOut,m_configFile,m_mountOptions,m_exe } ;
+
+		options::instance( m_parentWidget,m_create,e,[ this ]( const QStringList& e ){
+
+			utility2::stringListToStrings( e,m_idleTimeOut,m_configFile,m_mountOptions ) ;
+
+			if( m_ui->lineEditKey->text().isEmpty() ){
+
+				m_ui->lineEditKey->setFocus() ;
+			}else{
+				m_ui->pbOpen->setFocus() ;
+			}
+		} ) ;
+	}
 }
 
 void keyDialog::passWordTextChanged( QString e )
@@ -438,7 +474,7 @@ void keyDialog::enableAll()
 	m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
 
 	m_ui->lineEditFolderPath->setEnabled( false ) ;
-	m_ui->label_3->setEnabled( true ) ;	
+	m_ui->label_3->setEnabled( true ) ;
 }
 
 void keyDialog::disableAll()
@@ -649,6 +685,16 @@ bool keyDialog::completed( const siritask::cmdStatus& s )
 		msg = tr( "Failed To Unlock An Ecryptfs Volume.\nWrong Password Entered." ) ;
 		break;
 
+	case siritask::status::ecryptfsIllegalPath :
+
+		msg = tr( "A Space Character Is Not Allowed In Paths When Using Ecryptfs Backend And Polkit." ) ;
+		break;
+
+	case siritask::status::ecrypfsBadExePermissions :
+
+		msg = tr( "The backend Seems To Not Have Its Suid Bit Set.\n\nSet \"Enable Polkit Support\" Option From The Menu And Try Again." ) ;
+		break;
+
 	case siritask::status::securefs :
 
 		msg = tr( "Failed To Unlock A Securefs Volume.\nWrong Password Entered." ) ;
@@ -657,6 +703,11 @@ bool keyDialog::completed( const siritask::cmdStatus& s )
 	case siritask::status::cryfsNotFound :
 
 		msg = tr( "Failed To Complete The Request.\nCryfs Executable Could Not Be Found." ) ;
+		break;
+
+	case siritask::status::cryfsMigrateFileSystem :
+
+		msg = tr( "SiriKali Can Not Unlock This Volume Because Its FileSystem Has To Manually Be Converted To The Version Of Cryfs That Is Currently In Use.\n\nRun Cryfs With This Volume To Manually Update This Volume's FileSystem." ) ;
 		break;
 
 	case siritask::status::encfsNotFound :
@@ -783,13 +834,14 @@ void keyDialog::encryptedFolderCreate()
 
 	m_working = true ;
 
-	siritask::options s = { path,m,m_key,m_idleTimeOut,m_configFile,m_exe.toLower(),false,m_mountOptions } ;
+	siritask::options s = { path,m,m_key,m_idleTimeOut,m_configFile,
+				m_exe.toLower(),false,m_mountOptions,m_createOptions } ;
 
-	auto& e = siritask::encryptedFolderCreate( s ) ;
+	auto e = siritask::encryptedFolderCreate( s ).await() ;
 
 	m_working = false ;
 
-	if( this->completed( e.await() ) ){
+	if( this->completed( e ) ){
 
 		m_mountPointPath = m ;
 		this->HideUI() ;
@@ -851,7 +903,7 @@ void keyDialog::encryptedFolderMount()
 
 	m_working = true ;
 
-	siritask::options s = { m_path,m,m_key,m_idleTimeOut,m_configFile,m_exe,ro,m_mountOptions } ;
+	siritask::options s = { m_path,m,m_key,m_idleTimeOut,m_configFile,m_exe,ro,m_mountOptions,QString() } ;
 
 	auto& e = siritask::encryptedFolderMount( s ) ;
 
@@ -1128,7 +1180,7 @@ void keyDialog::HideUI()
 }
 
 keyDialog::~keyDialog()
-{	
+{
 	m_success( m_mountPointPath ) ;
 	delete m_ui ;
 }

@@ -38,7 +38,7 @@ private slots:
 private:
 	QStringList m_arguments ;
 	QString readStdin() ;
-	QString m_token ;
+	QString m_cookie ;
 	QLocalServer m_server ;
 	QString m_socketPath ;
 };

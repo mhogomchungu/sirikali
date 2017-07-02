@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (c) 2012-2015
+ *  Copyright (c) 2017
  *  name : Francis Banyikwa
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -17,49 +17,38 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OPTIONS_H
-#define OPTIONS_H
-
-#include <QWidget>
-
-#include <QObject>
-#include <QString>
-#include <QStringList>
-#include <QFileDialog>
-#include <QFile>
-#include <QDir>
-#include <QAction>
-#include <QCloseEvent>
+#ifndef CRYFSCREATEOPTIONS_H
+#define CRYFSCREATEOPTIONS_H
 
 #include <functional>
+#include <utility>
+
+#include <QCloseEvent>
+#include <QString>
+#include <QDialog>
 
 namespace Ui {
-class options;
+class cryfscreateoptions;
 }
 
-class options : public QDialog
+class cryfscreateoptions : public QDialog
 {
 	Q_OBJECT
 public:
-	static void instance( QWidget * parent,bool r,const QStringList& l,
-			      std::function< void( const QStringList& ) >&& e )
+	static void instance( QWidget * parent,std::function< void( const QString& ) > function )
 	{
-		new options( parent,r,l,std::move( e ) ) ;
+		new cryfscreateoptions( parent,std::move( function ) ) ;
 	}
-
-	options( QWidget * parent,bool,const QStringList&,std::function< void( const QStringList& ) >&& ) ;
-	~options() ;
+	explicit cryfscreateoptions( QWidget * parent,std::function< void( const QString& ) > ) ;
+	~cryfscreateoptions() ;
 private slots:
-        void pushButton( void ) ;
-	void pbSet( void ) ;
-	void pbCancel( void ) ;
+	void pbOK() ;
+	void pbCancel() ;
 private:
+	void HideUI() ;
 	void closeEvent( QCloseEvent * ) ;
-	Ui::options * m_ui ;
-	bool m_create ;
-	QString m_type ;
-	std::function< void( const QStringList& ) > m_setOptions ;
-	QWidget * m_parentWidget ;
+	Ui::cryfscreateoptions * m_ui ;
+	std::function< void( const QString& ) > m_function ;
 };
 
-#endif // OPTIONS_H
+#endif // CRYFSCREATEOPTIONS_H

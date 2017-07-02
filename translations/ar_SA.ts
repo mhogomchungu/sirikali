@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="ar_SA">
 <context>
     <name>DialogMsg</name>
     <message>
         <location filename="../src/dialogmsg.ui" line="17"/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>نافذة رسالة</translation>
     </message>
     <message>
         <location filename="../src/dialogmsg.ui" line="29"/>
         <source>&amp;Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>نعم</translation>
     </message>
     <message>
         <location filename="../src/dialogmsg.ui" line="42"/>
         <source>&amp;Yes</source>
-        <translation type="unfinished"></translation>
+        <translation>نعم</translation>
     </message>
     <message>
         <location filename="../src/dialogmsg.ui" line="55"/>
         <source>&amp;No</source>
-        <translation type="unfinished"></translation>
+        <translation>لا</translation>
     </message>
     <message>
         <location filename="../src/dialogmsg.cpp" line="97"/>
         <source>INFORMATION</source>
-        <translation type="unfinished"></translation>
+        <translation>معلومة</translation>
     </message>
     <message>
         <location filename="../src/dialogmsg.cpp" line="237"/>
         <source>Do not show this dialog again</source>
-        <translation type="unfinished"></translation>
+        <translation>لا تظهر هذه الرسالة مرة أخرى</translation>
     </message>
 </context>
 <context>
@@ -39,33 +39,33 @@
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/changepassworddialog.cpp" line="112"/>
         <source>Create a new wallet</source>
-        <translation type="unfinished"></translation>
+        <translation>أنشئ خزاة جديدة</translation>
     </message>
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/changepassworddialog.cpp" line="114"/>
         <source>Create</source>
-        <translation type="unfinished"></translation>
+        <translation>أنشئ</translation>
     </message>
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/changepassworddialog.cpp" line="142"/>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/changepassworddialog.cpp" line="278"/>
         <source>Passwords do not match</source>
-        <translation type="unfinished"></translation>
+        <translation>كلمات السر غير متطابقة</translation>
     </message>
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/changepassworddialog.cpp" line="223"/>
         <source>Wallet password could not be changed</source>
-        <translation type="unfinished"></translation>
+        <translation>كلمة سر الخزانة لا يمكن تغييرها</translation>
     </message>
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/changepassworddialog.cpp" line="232"/>
         <source>Wallet could not be opened with the presented key</source>
-        <translation type="unfinished"></translation>
+        <translation>لا يمكن فتح الخزانة بكلمة السر المدخلة</translation>
     </message>
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/changepassworddialog.cpp" line="242"/>
         <source>New passwords do not match</source>
-        <translation type="unfinished"></translation>
+        <translation>كلمات السر الجديدة غير متطابقة</translation>
     </message>
 </context>
 <context>
@@ -73,7 +73,7 @@
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/password_dialog.cpp" line="72"/>
         <source>Wallet could not be opened with the presented key</source>
-        <translation type="unfinished"></translation>
+        <translation>لا يمكن فتح الخزانة بكلمة السر المدخلة</translation>
     </message>
 </context>
 <context>
@@ -99,7 +99,7 @@ Latest Version Is : %4.</source>
     <message>
         <location filename="../src/sirikali.cpp" line="1278"/>
         <source>INFORMATION</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">معلومة</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="1281"/>
@@ -198,37 +198,37 @@ key = hmac(sha256,passphrase,keyfile contents)</source>
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/changepassworddialog.ui" line="17"/>
         <source>Change Wallet&apos;s Password</source>
-        <translation type="unfinished"></translation>
+        <translation>غير كلمة سر الخزانة</translation>
     </message>
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/changepassworddialog.ui" line="45"/>
         <source>C&amp;hange</source>
-        <translation type="unfinished"></translation>
+        <translation>غير</translation>
     </message>
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/changepassworddialog.ui" line="58"/>
         <source>&amp;Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>نعم</translation>
     </message>
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/changepassworddialog.ui" line="129"/>
         <source>Enter Current Password Below.</source>
-        <translation type="unfinished"></translation>
+        <translation>أدخل كلمة السر الحالية بالأسفل</translation>
     </message>
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/changepassworddialog.ui" line="148"/>
         <source>Enter New Password Below.</source>
-        <translation type="unfinished"></translation>
+        <translation>أدخل كلمة السر الجديدة بالأسفل</translation>
     </message>
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/changepassworddialog.ui" line="167"/>
         <source>Re Enter New Password Below.</source>
-        <translation type="unfinished"></translation>
+        <translation>أعد إدخال كلمة السر الجديدة بالأسفل</translation>
     </message>
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/changepassworddialog.ui" line="186"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>ألغ</translation>
     </message>
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/changepassworddialog.ui" line="199"/>
@@ -238,7 +238,12 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Monospace&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;An application &apos;&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt; font-weight:600;&quot;&gt;%1&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;&apos; has made a request for a password of its wallet &apos;&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt; font-weight:600;&quot;&gt;%2&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;&apos; to be changed&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;التطبيق &apos;&lt;span style=&quot; font-weight:600;&quot;&gt;%1&lt;/span&gt;&apos; قام بطلب كلمة سر الخزانة &apos;&lt;span style=&quot; font-weight:600;&quot;&gt;%2&lt;/span&gt;&apos;لتغييرهd&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/changepassworddialog.ui" line="217"/>
@@ -247,7 +252,11 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Monospace&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;Enter password information below to create a new wallet &apos;&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt; font-weight:600;&quot;&gt;%1&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;&apos; for application &apos;&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt; font-weight:600;&quot;&gt;%2&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;&apos;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;أدخل معلومات كلمة السر بالأسفل لإنشاء خزانة جديدة &apos;&lt;span style=&quot; font-weight:600;&quot;&gt;%1&lt;/span&gt;&apos; for application &apos;&lt;span style=&quot; font-weight:600;&quot;&gt;%2&lt;/span&gt;&apos;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
 </context>
 <context>
@@ -276,7 +285,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/cryfscreateoptions.ui" line="95"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ألغ</translation>
     </message>
 </context>
 <context>
@@ -284,22 +293,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/dialogok.ui" line="17"/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">نافذة رسالة</translation>
     </message>
     <message>
         <location filename="../src/dialogok.ui" line="29"/>
         <source>&amp;Ok</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">نعم</translation>
     </message>
     <message>
         <location filename="../src/dialogok.ui" line="67"/>
         <source>&amp;Yes</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">نعم</translation>
     </message>
     <message>
         <location filename="../src/dialogok.ui" line="80"/>
         <source>&amp;No</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">لا</translation>
     </message>
 </context>
 <context>
@@ -481,7 +490,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.ui" line="45"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ألغ</translation>
     </message>
     <message>
         <location filename="../src/keydialog.ui" line="58"/>
@@ -793,7 +802,7 @@ Not Supported Volume Encountered.</source>
     <message>
         <location filename="../src/options.ui" line="170"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ألغ</translation>
     </message>
     <message>
         <location filename="../src/options.cpp" line="139"/>
@@ -854,7 +863,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/password_dialog.ui" line="144"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ألغ</translation>
     </message>
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/password_dialog.ui" line="157"/>
@@ -864,7 +873,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/password_dialog.ui" line="170"/>
         <source>&amp;Ok</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">نعم</translation>
     </message>
 </context>
 <context>
@@ -882,7 +891,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/plugin.ui" line="42"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ألغ</translation>
     </message>
     <message>
         <location filename="../src/plugin.ui" line="113"/>
@@ -932,7 +941,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/readonlywarning.ui" line="61"/>
         <source>&amp;Ok</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">نعم</translation>
     </message>
 </context>
 <context>
@@ -969,7 +978,7 @@ The lite format has become the default on Unix-like operating systems as it is m
     <message>
         <location filename="../src/securefscreateoptions.ui" line="79"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ألغ</translation>
     </message>
 </context>
 <context>
@@ -1154,7 +1163,7 @@ The lite format has become the default on Unix-like operating systems as it is m
         <location filename="../src/sirikali.cpp" line="1094"/>
         <location filename="../src/sirikali.cpp" line="1140"/>
         <source>INFORMATION</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">معلومة</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="103"/>
@@ -1409,7 +1418,7 @@ The Volume Is Not Supported</source>
     <message>
         <location filename="../src/walletconfiginput.ui" line="42"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ألغ</translation>
     </message>
     <message>
         <location filename="../src/walletconfiginput.ui" line="64"/>

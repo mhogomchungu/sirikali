@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (c) 2012-2015
+ *  Copyright (c) 2017
  *  name : Francis Banyikwa
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -17,20 +17,38 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QApplication>
-#include <QMetaObject>
-
-#include "sirikali.h"
+#include "utility2.h"
 #include "utility.h"
 
-int main( int argc,char * argv[] )
+#include <QByteArray>
+#include <QTranslator>
+
+#include <QCoreApplication>
+
+void utility2::translator::setLanguage( const QByteArray& e )
 {
-	QSettings settings( "SiriKali","SiriKali" ) ;
-	utility::setSettingsObject( &settings ) ;
+	QCoreApplication::installTranslator( [ & ](){
 
-	utility::scaleGUI() ;
+		this->clear() ;
 
-	QApplication SiriKali( argc,argv ) ;
+		m_translator = new QTranslator() ;
 
-	return sirikali().start( SiriKali ) ;
+		m_translator->load( e.constData(),utility::localizationLanguagePath() ) ;
+
+		return m_translator ;
+	}() ) ;
+}
+
+utility2::translator::~translator()
+{
+	this->clear() ;
+}
+
+void utility2::translator::clear()
+{
+	if( m_translator ){
+
+		QCoreApplication::removeTranslator( m_translator ) ;
+		delete m_translator ;
+	}
 }

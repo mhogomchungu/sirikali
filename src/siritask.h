@@ -101,7 +101,8 @@ namespace siritask
 			 const QString& config_file_path,
 			 const QString& volume_type,
 			 bool unlock_in_read_only,
-			 const QString& mount_options ) :
+			 const QString& mount_options,
+			 const QString& create_options ) :
 
 			cipherFolder( cipher_folder ),
 			plainFolder( plain_folder ),
@@ -110,7 +111,8 @@ namespace siritask
 			configFilePath( config_file_path ),
 			type( volume_type ),
 			ro( unlock_in_read_only ),
-			mountOptions( mount_options )
+			mountOptions( mount_options ),
+			createOptions( create_options )
 		{
 		}
 
@@ -122,16 +124,20 @@ namespace siritask
 		siritask::volumeType type ;
 		bool ro ;
 		QString mountOptions ;
+		QString createOptions ;
 	};
 
 	enum class status
 	{
 		success,
 		cryfs,
+		cryfsMigrateFileSystem,
 		encfs,
 		gocryptfs,
 		securefs,
 		ecryptfs,
+		ecryptfsIllegalPath,
+		ecrypfsBadExePermissions,
 		gocryptfsNotFound,
 		cryfsNotFound,
 		encfsNotFound,
@@ -250,8 +256,8 @@ namespace siritask
 						      const QString& mountPoint,
 						      const QString& fileSystem ) ;
 
-	Task::future< cmdStatus >& encryptedFolderMount( const options&,bool = false ) ;
-	Task::future< cmdStatus >& encryptedFolderCreate( const options& ) ;
+	Task::future< cmdStatus >& encryptedFolderMount( const siritask::options&,bool = false ) ;
+	Task::future< cmdStatus >& encryptedFolderCreate( const siritask::options& ) ;
 }
 
 #endif // ZULUMOUNTTASK_H

@@ -21,8 +21,8 @@
 #include "zulupolkit.h"
 #include "siriPolkit.h"
 #include "../task.h"
-
-#include "../3rdParty/json.hpp"
+#include "../utility2.h"
+#include "../3rdParty/json/json.hpp"
 
 #include <termios.h>
 #include <memory>
@@ -72,25 +72,12 @@ namespace utility
 		int exitStatus = 255 ;
 		bool finished  = false ;
 	};
-	QStringList executableSearchPaths()
-	{
-		return { "/usr/local/bin/",
-			"/usr/local/sbin/",
-			"/usr/bin/",
-			"/usr/sbin/",
-			"/bin/",
-			"/sbin/",
-			"/opt/local/bin/",
-			"/opt/local/sbin/",
-			"/opt/bin/",
-			"/opt/sbin/" } ;
-	}
 
 	QString executableFullPath( const QString& e )
 	{
 		QString exe ;
 
-		for( const auto& it : utility::executableSearchPaths() ){
+		for( const auto& it : utility2::executableSearchPaths() ){
 
 			exe = it + e ;
 
@@ -136,7 +123,7 @@ void zuluPolkit::start()
 {
 	if( m_arguments.size() > 1 ){
 
-		m_token = this->readStdin() ;
+		m_cookie = this->readStdin() ;
 
 		m_socketPath = m_arguments.at( 1 ) ;
 
@@ -172,19 +159,25 @@ void zuluPolkit::gotConnection()
 		auto json = nlohmann::json::parse( s->readAll().constData() ) ;
 
 		auto password = QString::fromStdString( json[ "password" ].get< std::string >() ) ;
-		auto token    = QString::fromStdString( json[ "cookie" ].get< std::string >() ) ;
+		auto cookie   = QString::fromStdString( json[ "cookie" ].get< std::string >() ) ;
 		auto command  = QString::fromStdString( json[ "command" ].get< std::string >() ) ;
 
-		auto e = "/bin/su - -c \"" + utility::executableFullPath( "ecryptfs-simple" ) ;
+		auto su = utility::executableFullPath( "su" ) ;
 
-		if( command == "exit" ){
+		auto e = su + " - -c \"" + utility::executableFullPath( "ecryptfs-simple" ) ;
 
-			return QCoreApplication::quit() ;
+		if( cookie == m_cookie ){
 
-		}else if( token == m_token && command.startsWith( e ) ){
+			if( command == "exit" ){
 
-			return _respond( s,utility::Task( command,password ) ) ;
+				return QCoreApplication::quit() ;
+
+			}else if( command.startsWith( e ) ){
+
+				return _respond( s,utility::Task( command,password ) ) ;
+			}
 		}
+
 	}catch( ... ){}
 
 	_respond( s ) ;

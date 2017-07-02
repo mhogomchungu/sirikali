@@ -19,21 +19,25 @@
 
 #include "mountinfo.h"
 #include "utility.h"
-#include "task.h"
 #include "siritask.h"
 
-mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& f ) :
-	QThread( parent ),m_stop( std::move( f ) ),m_announceEvents( e ),
+#include <QProcess>
+#include <QMetaObject>
+
+#include <memory>
+
+mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& stop ) :
+	m_parent( parent ),
+	m_announceEvents( e ),
 	m_linux( utility::platformIsLinux() )
 {
-	m_babu = parent ;
-	m_baba = this ;
-	m_main = this ;
-	m_mtoto = nullptr ;
+	m_oldMountList = this->mountedVolumes() ;
 
 	if( m_linux ){
 
-		m_oldMountList = this->mountedVolumes() ;
+		this->linuxMonitor().then( std::move( stop ) ) ;
+	}else{
+		this->osxMonitor().then( std::move( stop ) ) ;
 	}
 }
 
@@ -85,30 +89,12 @@ QStringList mountinfo::mountedVolumes()
 	}
 }
 
-std::function< void() > mountinfo::stop()
+std::function< void() >& mountinfo::stop()
 {
-	if( m_linux ){
-
-		return [ this ](){
-
-			if( m_mtoto ){
-
-				m_mtoto->terminate() ;
-			}else{
-				this->threadStopped() ;
-			}
-		} ;
-	}else{
-		return [ this ](){ m_stop() ; } ;
-	}
+	return m_stop ;
 }
 
-void mountinfo::threadStopped()
-{
-	m_stop() ;
-}
-
-void mountinfo::updateVolume()
+void mountinfo::volumeUpdate()
 {
 	m_newMountList = this->mountedVolumes() ;
 
@@ -124,20 +110,17 @@ void mountinfo::updateVolume()
 
 	if( m_announceEvents ){
 
-		emit gotEvent() ;
+		this->pbUpdate() ;
 
 		if( _volumeWasMounted() ){
 
 			for( const auto& it : m_newMountList ){
 
-				if( _mountedVolume( it ) ){
+				const auto e = utility::split( it,' ' ) ;
 
-					const auto e = utility::split( it,' ' ) ;
+				if( _mountedVolume( it ) && e.size() > 3 ){
 
-					if( e.size() > 3 ){
-
-						emit gotEvent( e.at( 4 ) ) ;
-					}
+					this->autoMount( e.at( 4 ) ) ;
 				}
 			}
 		}
@@ -146,44 +129,31 @@ void mountinfo::updateVolume()
 	m_oldMountList = m_newMountList ;
 }
 
+void mountinfo::updateVolume()
+{
+	QMetaObject::invokeMethod( this,"volumeUpdate",Qt::QueuedConnection ) ;
+}
+
+void mountinfo::pbUpdate()
+{
+	QMetaObject::invokeMethod( m_parent,"pbUpdate",Qt::QueuedConnection ) ;
+}
+
+void mountinfo::autoMount( const QString& e )
+{
+	QMetaObject::invokeMethod( m_parent,
+				   "autoMountFavoritesOnAvailable",
+				   Qt::QueuedConnection,
+				   Q_ARG( QString,e ) ) ;
+}
+
 void mountinfo::announceEvents( bool s )
 {
 	m_announceEvents = s ;
 }
 
-void mountinfo::eventHappened()
+Task::future< void >& mountinfo::linuxMonitor()
 {
-	if( !m_linux && m_announceEvents ){
-
-		/*
-		 * Suspend for a bit to give mount command time to
-		 * properly populate its mounted list before calling it.
-		 *
-		 * Sometimes,mount events do not get registered and i suspect its
-		 * because we call mount too soon.
-		 */
-
-		utility::Task::suspendForOneSecond() ;
-
-		emit gotEvent() ;
-	}
-}
-
-void mountinfo::anza()
-{
-	if( m_linux ){
-
-		this->start() ;
-	}
-}
-
-void mountinfo::run()
-{
-	m_mtoto = this ;
-
-	connect( m_mtoto,SIGNAL( finished() ),m_main,SLOT( threadStopped() ) ) ;
-	connect( m_mtoto,SIGNAL( finished() ),m_mtoto,SLOT( deleteLater() ) ) ;
-
 	class mountEvent
 	{
 	public:
@@ -201,10 +171,51 @@ void mountinfo::run()
 	private:
 		QFile m_handle ;
 		struct pollfd m_monitor ;
-	} event ;
+	} ;
 
-	while( event ){
+	auto& e = Task::run( [ & ](){
 
-		this->updateVolume() ;
-	}
+		mountEvent event ;
+
+		while( event ){
+
+			this->updateVolume() ;
+		}
+	} ) ;
+
+	auto s = std::addressof( e ) ;
+
+	m_stop = [ s ](){ s->first_thread()->terminate() ; } ;
+
+	return e ;
+}
+
+Task::future< void >& mountinfo::osxMonitor()
+{
+	return Task::run( [ this ](){
+
+		QProcess e ;
+
+		m_stop = [ & ](){ e.terminate() ; } ;
+
+#if QT_VERSION > QT_VERSION_CHECK( 5,0,0 )
+
+		QObject::connect( &e,&QProcess::readyReadStandardOutput,[ & ](){
+
+			/*
+			 * Clear the buffer,not sure if its necessary.
+			 *
+			 * In the future,we will examine the output and call this->updateVolume()
+			 * only when volumes are mounted/unmounted to get the same behavior
+			 * linux code path has.
+			 */
+			e.readAllStandardOutput() ;
+
+			this->updateVolume() ;
+		} ) ;
+#endif
+		e.start( "diskutil activity" ) ;
+
+		e.waitForFinished( -1 ) ;
+	} ) ;
 }

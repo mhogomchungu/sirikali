@@ -27,9 +27,11 @@
 #include <QSystemTrayIcon>
 #include <QVector>
 #include <QSettings>
+#include <QApplication>
 
 #include "volumeinfo.h"
 #include "utility.h"
+#include "utility2.h"
 #include "secrets.h"
 
 #include "lxqt_wallet.h"
@@ -47,15 +49,17 @@ class sirikali : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit sirikali( QWidget * parent = 0 ) ;
+	explicit sirikali() ;
+	int start( QApplication& ) ;
 	~sirikali() ;
 private slots:
 	void setPluginExecutable( void ) ;
 	void setFileManager( void ) ;
 	void hideWindow( void ) ;
 	void setUpApp( bool,const QString& ) ;
-	void start( void ) ;
+	void start( const QStringList& ) ;
 	void autoUpdateCheck( void ) ;
+	void gocryptfsProperties( void ) ;
 	void cryfsProperties( void ) ;
 	void encfsProperties( void ) ;
 	void ecryptfsProperties( void ) ;
@@ -67,6 +71,7 @@ private slots:
 	void setDefaultMountPointPrefix( void ) ;
 	void autoCheckUpdates( bool ) ;
 	void reuseMountPoint( bool ) ;
+	void enablePolkitSupport( bool ) ;
 	void autoMountFavoritesOnStartUp( bool ) ;
 	void unlockVolume( const QStringList& ) ;
 	void aboutToShowMenu( void ) ;
@@ -119,7 +124,6 @@ private:
 	void dragEnterEvent( QDragEnterEvent * ) ;
 	void dropEvent( QDropEvent * ) ;
 	void showContextMenu( QTableWidgetItem *,bool ) ;
-	void startAutoMonitor( void ) ;
 	void updateList( const volumeInfo& ) ;
 	void setUpAppMenu( void ) ;
 	void disableAll( void ) ;
@@ -133,6 +137,8 @@ private:
 	Ui::sirikali * m_ui = nullptr ;
 
 	secrets m_secrets ;
+
+	utility2::translator m_translator ;
 
 	QMenu * m_hidden_volume_menu = nullptr ;
 	QMenu * m_not_hidden_volume_menu = nullptr ;
@@ -157,7 +163,7 @@ private:
 
 	QSystemTrayIcon m_trayIcon ;
 
-	mountinfo& m_mountInfo ;
+	std::unique_ptr< mountinfo > m_mountInfo ;
 };
 
 #endif // MAINWINDOW_H

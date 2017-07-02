@@ -30,7 +30,7 @@
 #include "siritask.h"
 #include "version.h"
 
-#include "3rdParty/json.hpp"
+#include "3rdParty/json/json.hpp"
 
 static QString _tr( const QStringList& l )
 {
@@ -101,16 +101,8 @@ static QString _version( const siritask::volumeType& e )
 
 	auto s = Task::await< QStringList >( [ & ](){
 
-		return utility::Task( args,-1,[ & ](){
-
-			QProcessEnvironment env ;
-
-			env.insert( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
-			env.insert( "CRYFS_FRONTEND","noninteractive" ) ;
-
-			return env ;
-
-		}() ).splitOutput( ' ',e != "encfs" ) ;
+		auto s = utility::systemEnvironment() ;
+		return utility::Task( args,-1,s ).splitOutput( ' ',e != "encfs" ) ;
 	} ) ;
 
 	auto r = [ & ]()->QString{
@@ -176,7 +168,7 @@ static QString _version( const QByteArray& data )
 }
 
 static QStringList _version( NetworkAccessManager& m,const QString& exe,const QString& e )
-{	
+{
 	auto f = _version( exe ) ;
 
 	if( f == "N/A" ){

@@ -52,6 +52,7 @@
 #include "lxqt_wallet.h"
 #include "favorites.h"
 #include "plugins.h"
+#include "utility2.h"
 
 #include <QObject>
 #include <QLabel>
@@ -66,53 +67,6 @@ class QEvent ;
 
 namespace utility
 {
-	void setUID( int ) ;
-
-	int getUID() ;
-	int getUserID() ;
-
-	QString getStringUserID() ;
-	QString appendUserUID( const QString& ) ;
-	QString homePath() ;
-
-	template< typename T >
-	void changePathOwner( const T& f )
-	{
-		int uid = utility::getUID() ;
-		int fd = f.handle() ;
-
-		if( uid != -1 && fd != -1 ){
-
-			if( fchown( fd,uid,uid ) ){;}
-		}
-	}
-
-	static inline void changePathOwner( const char * path )
-	{
-		int uid = utility::getUID() ;
-
-		if( uid != -1 ){
-
-			if( chown( path,uid,uid ) ){;}
-		}
-	}
-
-	static inline void changePathOwner( const QString& path )
-	{
-		utility::changePathOwner( path.toLatin1().constData() ) ;
-	}
-
-	template< typename T >
-	void changePathPermissions( const T& f,int mode = 0666 )
-	{
-		if( fchmod( f.handle(),mode ) ){;}
-	}
-
-	static inline void changePathPermissions( const QString& f,int mode = 0666 )
-	{
-		if( chmod( f.toLatin1().constData(),mode ) ){;}
-	}
-
 	class debug
 	{
 	public:
@@ -176,48 +130,6 @@ namespace utility
 		}
 	private:
 		bool m_stdout ;
-	};
-
-	class selectMenuOption : public QObject
-	{
-		Q_OBJECT
-	public:
-		using function_t = std::function< void( const QString& e ) > ;
-
-		selectMenuOption( QMenu * m,bool e,
-				  function_t && f = []( const QString& e ){ Q_UNUSED( e ) } ) :
-		m_menu( m ),m_function( f )
-		{
-			if( e ){
-
-				this->setParent( m ) ;
-			}
-		}
-	public slots :
-		void selectOption( const QString& f )
-		{
-			for( const auto& it : m_menu->actions() ){
-
-				QString e = it->text() ;
-
-				e.remove( "&" ) ;
-
-				it->setChecked( f == e ) ;
-			}
-
-			m_function( f ) ;
-		}
-		void selectOption( QAction * ac )
-		{
-			auto e = ac->text() ;
-
-			e.remove( "&" ) ;
-
-			this->selectOption( e ) ;
-		}
-	private:
-		QMenu * m_menu ;
-		std::function< void( const QString& ) > m_function ;
 	};
 }
 
@@ -291,7 +203,9 @@ namespace utility
 
 	void autoMountBackEnd( const utility::walletBackEnd& ) ;
 
-	int startApplication( const char * appName,std::function<int()> ) ;
+	int startApplication( std::function< int() > ) ;
+
+	bool printVersionOrHelpInfo( const QStringList& ) ;
 
 	wallet getKey( const QString& keyID,LXQt::Wallet::Wallet& ) ;
 
@@ -314,6 +228,9 @@ namespace utility
 
 	bool reUseMountPoint( void ) ;
 	void reUseMountPoint( bool ) ;
+
+	bool enablePolkitSupport( void ) ;
+	void enablePolkitSupport( bool ) ;
 
 	QString homeConfigPath( const QString& = QString() ) ;
 	QString homePath() ;
@@ -359,18 +276,13 @@ namespace utility
 
 	int checkForUpdateInterval( void ) ;
 
-	bool userIsRoot( void ) ;
-
 	bool enableRevealingPasswords( void ) ;
-
-	void setUID( int ) ;
-	int getUID() ;
-	int getUserID() ;
 
 	bool runningInMixedMode() ;
 	bool notRunningInMixedMode() ;
 
-	QString getStringUserID() ;
+	QProcessEnvironment systemEnvironment() ;
+
 	QString homePath() ;
 	QString userName() ;
 
@@ -385,6 +297,7 @@ namespace utility
 	void clearFavorites( void ) ;
 	void addToFavorite( const QStringList& ) ;
 	QVector< favorites::entry > readFavorites( void ) ;
+	favorites::entry readFavorite( const QString& ) ;
 	void replaceFavorite( const favorites::entry&,const favorites::entry& ) ;
 	void readFavorites( QMenu *,bool,const QString&,const QString& ) ;
 	void removeFavoriteEntry( const favorites::entry& ) ;
@@ -399,8 +312,8 @@ namespace utility
 	bool eventFilter( QObject * gui,QObject * watched,QEvent * event,std::function< void() > ) ;
 	void licenseInfo( QWidget * ) ;
 
-	void setLocalizationLanguage( bool translate,QMenu * m ) ;
-	void languageMenu( QWidget *,QMenu *,QAction * ) ;
+	void setLocalizationLanguage( bool translate,QMenu * m,utility2::translator& ) ;
+	void languageMenu( QMenu *,QAction *,utility2::translator& ) ;
 
 	using array_t = std::array< int,8 > ;
 
@@ -408,9 +321,6 @@ namespace utility
 	void setWindowDimensions( const std::initializer_list<int>& ) ;
 
 	int pluginKey( QWidget *,QDialog *,QByteArray *,plugins::plugin ) ;
-
-	QFont getFont( QWidget * ) ;
-	void saveFont( const QFont& ) ;
 
 	::Task::future< bool >& openPath( const QString& path,const QString& opener ) ;
 

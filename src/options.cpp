@@ -22,6 +22,7 @@
 #include "dialogmsg.h"
 
 #include "utility.h"
+#include "utility2.h"
 
 #include <QFileDialog>
 
@@ -30,7 +31,6 @@ options::options( QWidget * parent,bool r,const QStringList& l,
 	QDialog( parent ),
 	m_ui( new Ui::options ),
 	m_create( r ),
-	m_type( l.at( 2 ).toLower() ),
 	m_setOptions( std::move( e ) ),
 	m_parentWidget( parent )
 {
@@ -44,12 +44,21 @@ options::options( QWidget * parent,bool r,const QStringList& l,
 
         connect( m_ui->pushButton,SIGNAL( clicked() ),this,SLOT( pushButton() ) ) ;
 
-	connect( m_ui->pbOK,SIGNAL( clicked() ),this,SLOT( pbOK() ) ) ;
+	connect( m_ui->pbOK,SIGNAL( clicked() ),this,SLOT( pbSet() ) ) ;
+	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 
-	m_ui->lineEditIdleTime->setFocus() ;
+	QString idleTimeOut ;
+	QString configFilePath ;
+	QString mountOptions ;
+	QString type ;
 
-	m_ui->lineEditIdleTime->setText( l.at( 0 ) ) ;
-	m_ui->lineConfigFilePath->setText( l.at( 1 ) ) ;
+	utility2::stringListToStrings( l,idleTimeOut,configFilePath,mountOptions,type ) ;
+
+	m_type = type.toLower() ;
+
+	m_ui->lineEditIdleTime->setText( idleTimeOut ) ;
+	m_ui->lineConfigFilePath->setText( configFilePath ) ;
+	m_ui->lineEditMountOptions->setText( mountOptions ) ;
 
 	utility::setWindowOptions( this ) ;
 	utility::setParent( parent,&m_parentWidget,this ) ;
@@ -57,6 +66,21 @@ options::options( QWidget * parent,bool r,const QStringList& l,
 	this->show() ;
 	this->raise() ;
 	this->activateWindow() ;
+
+	if( m_ui->lineEditIdleTime->text().isEmpty() ){
+
+		m_ui->lineEditIdleTime->setFocus() ;
+
+	}else if( m_ui->lineConfigFilePath->text().isEmpty() ){
+
+		m_ui->lineConfigFilePath->setFocus() ;
+
+	}else if( m_ui->lineEditMountOptions->text().isEmpty() ){
+
+		m_ui->lineEditMountOptions->setFocus() ;
+	}else{
+		m_ui->pbOK->setFocus() ;
+	}
 }
 
 void options::pushButton()
@@ -126,10 +150,10 @@ void options::pushButton()
 void options::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
-	this->pbOK() ;
+	this->pbCancel() ;
 }
 
-void options::pbOK()
+void options::pbSet()
 {
 	auto e = m_ui->lineEditIdleTime->text() ;
 
@@ -144,11 +168,17 @@ void options::pbOK()
 
 		DialogMsg( m_parentWidget,this ).ShowUIOK( tr( "ERROR" ),tr( "Idle Time Field Requires Digits Only If Not Empty." ) ) ;
 	}else{
-		m_setOptions( { e,m_ui->lineConfigFilePath->text() } ) ;
+		m_setOptions( { e,m_ui->lineConfigFilePath->text(),m_ui->lineEditMountOptions->text() } ) ;
 
 		this->hide() ;
 		this->deleteLater() ;
 	}
+}
+
+void options::pbCancel()
+{
+	this->hide() ;
+	this->deleteLater() ;
 }
 
 options::~options()

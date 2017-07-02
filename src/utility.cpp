@@ -59,9 +59,10 @@
 #include <QEvent>
 #include <QKeyEvent>
 
+#include "utility2.h"
 #include "install_prefix.h"
 #include "locale_path.h"
-#include "3rdParty/json.hpp"
+#include "3rdParty/json/json.hpp"
 #include "plugins.h"
 
 #include "readonlywarning.h"
@@ -113,8 +114,6 @@ bool utility::platformIsOSX()
 #endif
 
 static QSettings * _settings ;
-
-static int staticGlobalUserId = -1 ;
 
 static QByteArray _cookie ;
 
@@ -266,14 +265,24 @@ QString utility::helperSocketPath()
 
 bool utility::useZuluPolkit()
 {
-	if( _settings->contains( "ElevatePrivileges" ) ){
+	if( _settings->contains( "EnablePolkitSupport" ) ){
 
-		return _settings->value( "ElevatePrivileges" ).toBool() ;
+		return _settings->value( "EnablePolkitSupport" ).toBool() ;
 	}else{
-		bool e = POLKIT_SUPPORT ;
-		_settings->setValue( "ElevatePrivileges",e ) ;
+		bool e = false ;
+		_settings->setValue( "EnablePolkitSupport",e ) ;
 		return e ;
 	}
+}
+
+bool utility::enablePolkitSupport()
+{
+	return utility::useZuluPolkit() ;
+}
+
+void utility::enablePolkitSupport( bool e )
+{
+	_settings->setValue( "EnablePolkitSupport",e ) ;
 }
 
 void utility::quitHelper()
@@ -304,52 +313,9 @@ void utility::quitHelper()
 	}
 }
 
-void utility::setUID( int uid )
-{
-	if( utility::userIsRoot() || utility::useZuluPolkit() ){
-
-		staticGlobalUserId = uid ;
-	}
-}
-
-bool utility::userIsRoot()
-{
-	return getuid() == 0 ;
-}
-
-int utility::getUID()
-{
-	return staticGlobalUserId ;
-}
-
-int utility::getUserID()
-{
-	if( staticGlobalUserId == -1 ){
-
-		return getuid() ;
-	}else{
-		return staticGlobalUserId ;
-	}
-}
-
-QString utility::getStringUserID()
-{
-	return QString::number( utility::getUserID() ) ;
-}
-
-static passwd * _getPassWd()
-{
-	return getpwuid( utility::getUserID() ) ;
-}
-
-QString utility::userName()
-{
-	return _getPassWd()->pw_name ;
-}
-
 QString utility::homePath()
 {
-	return getpwuid( utility::getUserID() )->pw_dir ;
+	return QDir::homePath() ;
 }
 
 ::Task::future<bool>& utility::openPath( const QString& path,const QString& opener )
@@ -411,7 +377,7 @@ void utility::setSettingsObject( QSettings * s )
 	_settings = s ;
 }
 
-static int _help()
+static bool _help()
 {
 	utility::debug() << VERSION_STRING << QObject::tr( "\n\
 options:\n\
@@ -419,47 +385,46 @@ options:\n\
 	-m   Tool to use to open a default file manager(default tool is xdg-open).\n\
 	-e   Start the application without showing the GUI.\n\
 	-b   A name of a backend to retrieve a password from when a volume is open from CLI.\n\
-	     Supported backends are: \"internal\",\"stdin\",\"keyfile\",\"kwallet\" and \"libsecret.\n\
+	     Supported backends are: \"internal\",\"stdin\",\"keyfile\",\"osxkeychain\",\"kwallet\" and \"libsecret\".\n\
 	     The first three are always present but the rest are compile time dependencies.\n\
 	     \"internal\" option causes SiriKali to read password from lxqt-wallet internal backend.\n\
 	     \"stdin\" option causes SiriKali to read the password from standard input.\n\
 	     \"keyfile\" option causes SiriKali to read the password from a file.\n\
 	     \"libsecret\" option causes SiriKali to read password from lxqt-wallet libsecret backend.\n\
 	     \"kwallet\" option causes SiriKali to read password from lxqt-wallet kwallet backend.\n\
+	     \"osxkeychain\" option causes SiriKali to read password from lxqt-wallet OSX key chain backend.\n\
 	-k   When opening a volume from CLI,a value of \"rw\" will open the volume in read\\write\n\
 	     mode and a value of \"ro\" will open the volume in read only mode.\n\
 	-z   Full path of the mount point to be used when the volume is opened from CLI.\n\
 	     This option is optional.\n\
 	-c   Set Volume Configuration File Path when a volume is opened from CLI.\n\
 	-i   Set inactivity timeout(in minutes) to dismount the volume when mounted from CLI.\n\
+	-o   Set mount options when mounting a volume from CLI.\n\
 	-f   Path to keyfile.\n\
 	-u   Unmount volume.\n\
 	-p   Print a list of unlocked volumes.\n\
 	-s   Option to trigger generation of password hash." ) ;
 
-	return 0 ;
+	return true ;
 }
 
-static bool _printHelpOrVersionInfo()
+bool _printHelpOrVersionInfo( const QStringList& e )
 {
-	QStringList q = QCoreApplication::arguments() ;
-	return q.contains( "-h" )        ||
-	       q.contains( "-help" )     ||
-	       q.contains( "--help" )    ||
-	       q.contains( "-v" )        ||
-	       q.contains(  "-version" ) ||
-	       q.contains( "--version" ) ;
+	return  e.contains( "-h" )        ||
+		e.contains( "-help" )     ||
+		e.contains( "--help" )    ||
+		e.contains( "-v" )        ||
+		e.contains(  "-version" ) ||
+		e.contains( "--version" ) ;
 }
 
-int utility::startApplication( const char * appName,std::function<int()> start )
+bool utility::printVersionOrHelpInfo( const QStringList& e )
 {
-	QCoreApplication::setApplicationName( appName ) ;
-
-	if( _printHelpOrVersionInfo() ){
+	if( _printHelpOrVersionInfo( e ) ){
 
 		return _help() ;
 	}else{
-		return start() ;
+		return false ;
 	}
 }
 
@@ -534,16 +499,7 @@ bool utility::eventFilter( QObject * gui,QObject * watched,QEvent * event,std::f
 
 QStringList utility::executableSearchPaths()
 {
-	return { "/usr/local/bin/",
-		"/usr/local/sbin/",
-		"/usr/bin/",
-		"/usr/sbin/",
-		"/bin/",
-		"/sbin/",
-		"/opt/local/bin/",
-		"/opt/local/sbin/",
-		"/opt/bin/",
-		"/opt/sbin/" } ;
+	return utility2::executableSearchPaths() ;
 }
 
 QString utility::executableSearchPaths( const QString& e )
@@ -709,6 +665,19 @@ QVector< favorites::entry > utility::readFavorites()
 	}
 }
 
+favorites::entry utility::readFavorite( const QString& e )
+{
+	for( const auto& it : utility::readFavorites() ){
+
+		if( it.volumePath == e ){
+
+			return it ;
+		}
+	}
+
+	return {} ;
+}
+
 void utility::removeFavoriteEntry( const favorites::entry& e )
 {
 	_settings->setValue( "FavoritesVolumes",[ & ](){
@@ -851,77 +820,6 @@ void utility::setWindowDimensions( const std::initializer_list<int>& e )
 	}() ) ;
 }
 
-QFont utility::getFont( QWidget * widget )
-{
-	if( _settings->contains( "Fonts" ) ){
-
-		auto l = utility::split( _settings->value( "Fonts" ).toString() ) ;
-
-		if( l.size() >= 4 ){
-
-			QFont F ;
-
-			const QString& fontFamily = l.at( 0 ) ;
-			const QString& fontSize   = l.at( 1 ) ;
-			const QString& fontStyle  = l.at( 2 ) ;
-			const QString& fontWeight = l.at( 3 ) ;
-
-			F.setFamily( fontFamily ) ;
-
-			F.setPointSize( fontSize.toInt() ) ;
-
-			if( fontStyle == "normal" ){
-
-				F.setStyle( QFont::StyleNormal ) ;
-
-			}else if( fontStyle == "italic" ){
-
-				F.setStyle( QFont::StyleItalic ) ;
-			}else{
-				F.setStyle( QFont::StyleOblique ) ;
-			}
-
-			if( fontWeight == "normal" ){
-
-				F.setWeight( QFont::Normal ) ;
-			}else{
-				F.setWeight( QFont::Bold ) ;
-			}
-
-			return F ;
-		}else{
-			return widget->font() ;
-		}
-	}else{
-		return widget->font() ;
-	}
-}
-
-void utility::saveFont( const QFont& Font )
-{
-	auto s = QString( "%1\n%2\n" ).arg( Font.family(),QString::number( Font.pointSize() ) ) ;
-
-	if( Font.style() == QFont::StyleNormal ){
-
-		s = s + "normal\n" ;
-
-	}else if( Font.style() == QFont::StyleItalic ){
-
-		s = s + "italic\n" ;
-	}else{
-		s = s + "oblique\n" ;
-	}
-
-	if( Font.weight() == QFont::Normal ){
-
-		s = s + "normal\n" ;
-	}else{
-		s = s + "bold" ;
-	}
-
-	_settings->setValue( "Fonts",s ) ;
-}
-
 int utility::pluginKey( QWidget * w,QDialog * d,QByteArray * key,plugins::plugin plugin )
 {
 	QString s ;
@@ -955,59 +853,26 @@ int utility::pluginKey( QWidget * w,QDialog * d,QByteArray * key,plugins::plugin
 	return l.exec() ;
 }
 
-class translator
+template< typename T >
+static void _selectOption( QMenu * m,const T& opt )
 {
-public:
-	void set( const QByteArray& e )
-	{
-		QCoreApplication::installTranslator( [ & ](){
+	for( const auto& it : m->actions() ){
 
-			if( m_translator ){
-
-				QCoreApplication::removeTranslator( m_translator ) ;
-
-				delete m_translator ;
-			}
-
-			m_translator = new QTranslator() ;
-
-			m_translator->load( e.constData(),utility::localizationLanguagePath() ) ;
-
-			return m_translator ;
-		}() ) ;
+		it->setChecked( it->text().remove( "&" ) == opt ) ;
 	}
-	~translator()
-	{
-		//QCoreApplication::removeTranslator( m_translator ) ;
-		delete m_translator ;
-	}
-
-private:
-	QTranslator * m_translator = nullptr ;
-} static _translator ;
-
-static void _selectOption( QMenu * m,const QString& opt )
-{
-	utility::selectMenuOption s( m,false ) ;
-	s.selectOption( opt ) ;
 }
 
-void utility::setLocalizationLanguage( bool translate,QMenu * m )
+void utility::setLocalizationLanguage( bool translate,QMenu * m,utility2::translator& e )
 {
 	auto r = utility::localizationLanguage().toLatin1() ;
 
 	if( translate ){
 
-		_translator.set( r ) ;
+		e.setLanguage( r ) ;
 	}else{
-		QDir d( utility::localizationLanguagePath() ) ;
+		auto e = utility::directoryList( utility::localizationLanguagePath() ) ;
 
-		auto t = d.entryList() ;
-
-		t.removeOne( "." ) ;
-		t.removeOne( ".." ) ;
-
-		for( auto& it : t ){
+		for( auto& it : e ){
 
 			m->addAction( it.remove( ".qm" ) )->setCheckable( true ) ;
 		}
@@ -1016,15 +881,13 @@ void utility::setLocalizationLanguage( bool translate,QMenu * m )
 	}
 }
 
-void utility::languageMenu( QWidget * w,QMenu * m,QAction * ac )
+void utility::languageMenu( QMenu * m,QAction * ac,utility2::translator& s )
 {
-	Q_UNUSED( w ) ;
-
 	auto e = ac->text().remove( '&' ) ;
 
 	utility::setLocalizationLanguage( e ) ;
 
-	utility::setLocalizationLanguage( true,m ) ;
+	utility::setLocalizationLanguage( true,m,s ) ;
 
 	_selectOption( m,e ) ;
 }
@@ -1035,8 +898,9 @@ QString utility::localizationLanguage()
 
 		return _settings->value( "Language" ).toString() ;
 	}else{
-		_settings->setValue( "Language",QString( "en_US" ) ) ;
-		return "en_US" ;
+		QString s = "en_US" ;
+		_settings->setValue( "Language",s ) ;
+		return s ;
 	}
 }
 
@@ -1054,12 +918,12 @@ QStringList utility::directoryList( const QString& e )
 {
 	QDir d( e ) ;
 
-	auto l = d.entryList() ;
+	auto s = d.entryList() ;
 
-	l.removeOne( "." ) ;
-	l.removeOne( ".." ) ;
+	s.removeOne( "." ) ;
+	s.removeOne( ".." ) ;
 
-	return l ;
+	return s ;
 }
 
 QIcon utility::getIcon()
@@ -1221,8 +1085,9 @@ bool utility::autoOpenFolderOnMount()
 
 		return _settings->value( "AutoOpenFolderOnMount" ).toBool() ;
 	}else{
-		utility::autoOpenFolderOnMount( true ) ;
-		return true ;
+		bool s = true ;
+		utility::autoOpenFolderOnMount( s ) ;
+		return s ;
 	}
 }
 
@@ -1237,8 +1102,9 @@ bool utility::autoCheck()
 
 		return _settings->value( "AutoCheckForUpdates" ).toBool() ;
 	}else{
-		utility::autoCheck( false ) ;
-		return false ;
+		bool s = false ;
+		utility::autoCheck( s ) ;
+		return s ;
 	}
 }
 
@@ -1253,8 +1119,9 @@ bool utility::readOnlyWarning()
 
 		return _settings->value( "ReadOnlyWarning" ).toBool() ;
 	}else{
-		utility::readOnlyWarning( false ) ;
-		return false ;
+		bool s = false ;
+		utility::readOnlyWarning( s ) ;
+		return s ;
 	}
 }
 
@@ -1269,8 +1136,9 @@ bool utility::doNotShowReadOnlyWarning()
 
 		return _settings->value( "DoNotShowReadOnlyWarning" ).toBool() ;
 	}else{
-		utility::doNotShowReadOnlyWarning( false ) ;
-		return false ;
+		bool s = false ;
+		utility::doNotShowReadOnlyWarning( s ) ;
+		return s ;
 	}
 }
 
@@ -1285,8 +1153,9 @@ bool utility::autoMountFavoritesOnStartUp()
 
 		return _settings->value( "AutoMountFavoritesOnStartUp" ).toBool() ;
 	}else{
-		utility::autoMountFavoritesOnStartUp( false ) ;
-		return false ;
+		bool s = false ;
+		utility::autoMountFavoritesOnStartUp( s ) ;
+		return s ;
 	}
 }
 
@@ -1392,8 +1261,9 @@ int utility::checkForUpdateInterval()
 
 		return _settings->value( "CheckForUpdateInterval" ).toInt() * 1000 ;
 	}else{
-		_settings->setValue( "CheckForUpdateInterval",int( 10 ) ) ;
-		return 10 * 1000 ;
+		int s = 10 ;
+		_settings->setValue( "CheckForUpdateInterval",s ) ;
+		return s * 1000 ;
 	}
 }
 
@@ -1471,15 +1341,7 @@ void utility::scaleGUI()
 
 bool utility::createFolder( const QString& m )
 {
-	if( QDir().mkpath( m ) ){
-
-		utility::changePathPermissions( m,0777 ) ;
-		utility::changePathOwner( m ) ;
-
-		return true ;
-	}else{
-		return false ;
-	}
+	return QDir().mkpath( m ) ;
 }
 
 QString utility::runCommandOnMount()
@@ -1488,9 +1350,10 @@ QString utility::runCommandOnMount()
 
 		return _settings->value( "RunCommandOnMount" ).toString() ;
 	}else{
-		_settings->setValue( "RunCommandOnMount",QString( "" ) ) ;
+		QString s ;
+		_settings->setValue( "RunCommandOnMount",s ) ;
 
-		return "" ;
+		return s ;
 	}
 }
 
@@ -1641,4 +1504,18 @@ bool utility::enableRevealingPasswords()
 
 		return e ;
 	}
+}
+
+QProcessEnvironment utility::systemEnvironment()
+{
+	auto e = QProcessEnvironment::systemEnvironment() ;
+
+	e.insert( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
+	e.insert( "CRYFS_FRONTEND","noninteractive" ) ;
+
+	e.insert( "LANG","C" ) ;
+
+	e.insert( "PATH",utility::executableSearchPaths( e.value( "PATH" ) ) ) ;
+
+	return e ;
 }

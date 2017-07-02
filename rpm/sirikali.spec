@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 Name:           SiriKali
-Version:        1.2.7
+Version:        1.2.8
 Release:        0
 Summary:        SiriKali is a Qt/C++ GUI front end to encfs,cryfs,gocryptfs,ecryptfs and securefs.
 License:        GPL-2.0+
@@ -75,7 +75,10 @@ rm -rf $RPM_BUILD_DIR/sirikali
 %{_datadir}/icons/sirikali.png
 %{_datadir}/sirikali/translations/en_US.qm
 %{_datadir}/sirikali/translations/fr_FR.qm
-%{_datadir}/polkit-1/actions/sirikali.policy
+%{_datadir}/sirikali/translations/es_MX.qm
+%{_datadir}/polkit-1/actions/org.sirikali.pkexec.policy
+%{_datadir}/man/man1/sirikali.1.gz
+%{_datadir}/man/man1/sirikali.pkexec.1.gz
 %defattr(0644,root,root)
 
 %changelog

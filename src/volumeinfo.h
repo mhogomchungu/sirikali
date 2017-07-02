@@ -24,8 +24,9 @@
 
 #include <initializer_list>
 
-#include "favorites.h"
+#include "utility2.h"
 #include "utility.h"
+#include "favorites.h"
 
 class volumeInfo
 {
@@ -37,13 +38,13 @@ public:
 		}
 		mountinfo( const QStringList& e )
 		{
-			favorites::stringListToStrings( e,
-			                                volumePath,
-			                                mountPoint,
-			                                fileSystem,
-			                                mode,
-			                                idleTimeout,
-			                                mountOptions ) ;
+			utility2::stringListToStrings( e,
+						      volumePath,
+						      mountPoint,
+						      fileSystem,
+						      mode,
+						      idleTimeout,
+						      mountOptions ) ;
 		}
 		QStringList minimalList() const
 		{
@@ -53,7 +54,7 @@ public:
 		QStringList fullList() const
 		{
 			return { volumePath,mountPoint,
-				 fileSystem,mode,idleTimeout,mountOptions } ;
+				 fileSystem,mode,idleTimeout,mountOptions,configPath } ;
 		}
 		QString volumePath ;
 		QString mountPoint ;
@@ -67,10 +68,10 @@ public:
 	static bool supported( const QString& e )
 	{
 		return utility::containsAtleastOne( e," fuse.cryfs ",
-		                                    " fuse.encfs ",
-		                                    " fuse.gocryptfs ",
-		                                    " fuse.securefs ",
-		                                    " ecryptfs " ) ;
+						    " fuse.encfs ",
+						    " fuse.gocryptfs ",
+						    " fuse.securefs ",
+						    " ecryptfs " ) ;
 	}
 	volumeInfo()
 	{
@@ -135,10 +136,10 @@ public:
 	void printVolumeInfo() const
 	{
 		std::cout << "\"" +
-		             m_mountinfo.volumePath.toStdString() +
-		             "\" \"" + m_mountinfo.mountPoint.toStdString() +
-		             "\" \"" + m_mountinfo.fileSystem.toStdString() +
-		             "\"" << std::endl ;
+			     m_mountinfo.volumePath.toStdString() +
+			     "\" \"" + m_mountinfo.mountPoint.toStdString() +
+			     "\" \"" + m_mountinfo.fileSystem.toStdString() +
+			     "\"" << std::endl ;
 	}
 	bool isValid() const
 	{

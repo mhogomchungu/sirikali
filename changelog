@@ -86,3 +86,11 @@ version 1.2.6
 
 version 1.2.7
 -- Add ability to add mount options to a favorite entry.
+
+version 1.2.8
+-- Add a GUI way to set options when creating a securefs volume.
+-- Add a GUI way to set options when creating a cryfs volume.
+-- Agg a GUI way to display gocryptfs volume properties.
+-- Better mount/unmount events monitoring on OSX.
+-- Set it as a run time option(off by default) to support ecryptfs-simple backend that does not have suid bit set. A user
+   will be asked to allow polkit support on first attempt.
