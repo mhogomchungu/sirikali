@@ -1,9 +1,9 @@
-sirikali (1.2.8-1) UNRELEASED; urgency=medium
+sirikali (1.2.8-1) unstable; urgency=medium
 
   * Build-dep libgcrypt20-dev instead of libgcrypt11-dev (Closes: 864134).
   * New upstream version
 
- -- David Steele <steele@debian.org>  Sun, 02 Jul 2017 13:36:48 -0400
+ -- David Steele <steele@debian.org>  Sun, 02 Jul 2017 17:04:26 -0400
 
 sirikali (1.2.7-1) unstable; urgency=medium
 
