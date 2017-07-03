@@ -35,14 +35,6 @@ namespace utility
 {
 	struct Task
 	{
-		static ::Task::future< utility::Task >& run( const QString& exe,
-							     const QString& password )
-		{
-			return ::Task::run< utility::Task >( [ = ](){
-
-				return utility::Task( exe,password ) ;
-			} ) ;
-		}
 		Task()
 		{
 		}

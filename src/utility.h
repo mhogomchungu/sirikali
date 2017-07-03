@@ -467,9 +467,11 @@ namespace utility
 		{
 			this->execute( exe,-1,env,QByteArray(),std::move( f ),e ) ;
 		}
-		QStringList splitOutput( char token,bool stdOutput = true ) const
+
+		enum class channel{ stdOut,stdError } ;
+		QStringList splitOutput( char token,channel s = channel::stdOut ) const
 		{
-			if( stdOutput ){
+			if( s == channel::stdOut ){
 
 				return utility::split( m_stdOut,token ) ;
 			}else{
@@ -511,10 +513,6 @@ namespace utility
 		bool finished() const
 		{
 			return m_finished ;
-		}
-		bool ok() const
-		{
-			return this->splitOutput( '\n' ).size() > 12 ;
 		}
 	private:
 		void execute( const QString& exe,int waitTime,const QProcessEnvironment& env,
