@@ -33,9 +33,6 @@ static void _get_crypto_options( QComboBox * combobox )
 
 		auto s = e.splitOutput( '\n',false ) ;
 
-		s.removeFirst() ;
-		s.removeFirst() ;
-
 		if( s.isEmpty() ){
 
 			combobox->addItem( "aes-256-gcm" ) ;
