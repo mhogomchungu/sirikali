@@ -25,6 +25,7 @@
 #include <QString>
 #include <QStringList>
 #include <QObject>
+#include <QProcess>
 
 #include <functional>
 #include <memory>
@@ -56,15 +57,17 @@ public:
 private slots:
 	void volumeUpdate( void ) ;
 private:
-	Task::future< void >& linuxMonitor( void ) ;
-	Task::future< void >& osxMonitor( void ) ;
+	void linuxMonitor( void ) ;
+	void osxMonitor( void ) ;
 	void updateVolume( void ) ;
 	void pbUpdate( void ) ;
 	void autoMount( const QString& ) ;
 
 	QObject * m_parent ;
+	QProcess m_process ;
 
 	std::function< void() > m_stop ;
+	std::function< void() > m_quit ;
 
 	bool m_announceEvents ;
 	bool m_linux ;
