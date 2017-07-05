@@ -59,7 +59,7 @@
 #include "walletconfig.h"
 #include "plugins.h"
 
-#include "3rdParty/json/json.hpp"
+#include "json.h"
 
 sirikali::sirikali() :
 	m_secrets( this ),

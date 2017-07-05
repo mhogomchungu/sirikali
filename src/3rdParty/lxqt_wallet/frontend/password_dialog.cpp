@@ -43,7 +43,8 @@ LXQt::Wallet::password_dialog::password_dialog( QWidget * parent,
 
 	this->setFixedSize( this->size() ) ;
 
-	this->setWindowFlags( this->windowFlags() | Qt::WindowStaysOnTopHint ) ;
+	//this->setWindowFlags( this->windowFlags() | Qt::WindowStaysOnTopHint ) ;
+	this->setWindowFlags( this->windowFlags() ) ;
 
 	if( parent ){
 

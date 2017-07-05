@@ -78,6 +78,19 @@ if( NOT DEFINED QT5 )
 	set( QT5 "true" )
 endif()
 
+if( APPLE )
+	set( QT5 "true" )
+endif()
+
+find_file( JSON_HEADER_PATH "nlohmann/json.hpp" )
+
+if( NOT JSON_HEADER_PATH )
+	set( JSON_HEADER_PATH "${PROJECT_SOURCE_DIR}/src/3rdParty/json/nlohmann/json.hpp" )
+endif()
+
+file( WRITE ${PROJECT_BINARY_DIR}/json.h "\n#include \"${JSON_HEADER_PATH}\"" )
+MESSAGE( STATUS "found json.hpp header file at: ${JSON_HEADER_PATH}" )
+
 find_file( GCRYPT_INCLUDE_FILE gcrypt.h )
 find_path( GCRYPT_INCLUDE_PATH gcrypt.h )
 
@@ -88,15 +101,15 @@ find_library( GCRYPT_LIBRARY gcrypt )
 if( NOT GCRYPT_INCLUDE_FILE )
 	MESSAGE( FATAL_ERROR "could not find gcrypt header file" )
 else()
-	MESSAGE( STATUS "found gcrypt header file: ${GCRYPT_INCLUDE_FILE}" )
+	MESSAGE( STATUS "found gcrypt header file at: ${GCRYPT_INCLUDE_FILE}" )
 endif()
 
 if( NOT GCRYPT_LIBRARY )
-	MESSAGE( FATAL_ERROR "could not find gcrypt library(libgcrypt.so)" )
+	MESSAGE( FATAL_ERROR "could not find gcrypt library" )
 else()
 	get_filename_component( GCRYPT_LIBRARY_PATH ${GCRYPT_LIBRARY} DIRECTORY )
 
-	MESSAGE( STATUS "found gcrypt library: ${GCRYPT_LIBRARY}" )
+	MESSAGE( STATUS "found gcrypt library at: ${GCRYPT_LIBRARY}" )
 	MESSAGE( STATUS "adding library search path of: ${GCRYPT_LIBRARY_PATH}" )
 
 endif()

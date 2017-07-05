@@ -23,9 +23,9 @@
 
 #include <QMetaObject>
 
-mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& stop ) :
+mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& quit ) :
 	m_parent( parent ),
-	m_quit( std::move( stop ) ),
+	m_quit( std::move( quit ) ),
 	m_announceEvents( e ),
 	m_linux( utility::platformIsLinux() )
 {

@@ -30,7 +30,7 @@
 #include "siritask.h"
 #include "version.h"
 
-#include "3rdParty/json/json.hpp"
+#include "json.h"
 
 static QString _tr( const QStringList& l )
 {

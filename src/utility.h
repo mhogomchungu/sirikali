@@ -416,7 +416,7 @@ namespace utility
 			return ::Task::run< utility::Task >( [ exe ](){ return utility::Task( exe ) ; } ) ;
 		}
 		static void exec( const QString& exe,
-				  const QProcessEnvironment& env = QProcessEnvironment(),
+				  const QProcessEnvironment& env = utility::systemEnvironment(),
 				  std::function< void() > f = [](){} )
 		{
 			::Task::run< utility::Task >( [ = ](){ return utility::Task( exe,env,f ) ; } ).start() ;
