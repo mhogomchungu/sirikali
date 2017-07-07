@@ -39,6 +39,7 @@ Older versions can be downloaded <a href="https://github.com/mhogomchungu/sirika
 
 ## Binary packages
 
+Check first if SiriKali is present in your distribution's repositories and use that version if it is.
 ```Fedora,opensuse,ubuntu and debian``` users can install binary packages by following instructions on <a href="http://software.opensuse.org//download.html?project=home%3Aobs_mhogomchungu&package=sirikali">this</a> link.
 
 
