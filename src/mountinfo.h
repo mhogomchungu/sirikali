@@ -40,12 +40,6 @@ class mountinfo : private QObject
 public:
 	QStringList mountedVolumes() ;
 
-	static std::unique_ptr< mountinfo > instance( QObject * parent,
-						      bool b,
-						      std::function< void() >&& f )
-	{
-		return std::unique_ptr< mountinfo >( new mountinfo( parent,b,std::move( f ) ) ) ;
-	}
 	mountinfo( QObject * parent,bool,std::function< void() >&& ) ;
 	mountinfo() ;
 

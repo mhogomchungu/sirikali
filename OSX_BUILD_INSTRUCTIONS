@@ -39,9 +39,6 @@ This option tells the build process to install project's files in "$HOME/sirikal
 
 This option tells the build process to build the project in release mode.This mode is most suitable for non developers.
 
--DQT5=true
-This option tells the build process to build GUI components using Qt5.Set the option to "false" if you want to build using Qt4.
-
 -DNOSECRETSUPPORT=false
 This option tells the build process to add gnome's libsecret secure storage of passwords.Set this option to "true" if
 you do not want libsecret's support.
