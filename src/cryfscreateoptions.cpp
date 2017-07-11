@@ -23,30 +23,6 @@
 #include "utility.h"
 #include "task.h"
 
-static void _get_crypto_options( QComboBox * combobox )
-{
-	auto exe = utility::executableFullPath( "cryfs" ) + " --show-ciphers" ;
-
-	auto e = utility::Task( exe,utility::systemEnvironment(),[](){},false ) ;
-
-	if( e.success() ){
-
-		auto s = e.splitOutput( '\n',false ) ;
-
-		s.removeFirst() ;
-		s.removeFirst() ;
-
-		if( s.isEmpty() ){
-
-			combobox->addItem( "aes-256-gcm" ) ;
-		}else{
-			combobox->addItems( s ) ;
-		}
-	}else{
-		combobox->addItem( "aes-256-gcm" ) ;
-	}
-}
-
 cryfscreateoptions::cryfscreateoptions( QWidget * parent,
 					std::function< void( const QString& ) > function ) :
 	QDialog( parent ),
@@ -62,11 +38,32 @@ cryfscreateoptions::cryfscreateoptions( QWidget * parent,
 
 	m_ui->lineEdit->setText( "32768" ) ;
 
-	m_ui->comboBox->setFocus() ;
+	Task::run< utility::Task >( [](){
 
-	auto& e = Task::run( [ this ](){ _get_crypto_options( m_ui->comboBox ) ; } ) ;
+		auto exe = utility::executableFullPath( "cryfs" ) + " --show-ciphers" ;
 
-	e.then( [ this ](){ this->show() ; } ) ;
+		return utility::Task( exe,utility::systemEnvironment(),[](){},false ) ;
+
+	} ).then( [ this ]( const utility::Task& e ){
+
+		if( e.success() ){
+
+			auto s = e.splitOutput( '\n',utility::Task::channel::stdError ) ;
+
+			if( s.isEmpty() ){
+
+				m_ui->comboBox->addItem( "aes-256-gcm" ) ;
+			}else{
+				m_ui->comboBox->addItems( s ) ;
+			}
+		}else{
+			m_ui->comboBox->addItem( "aes-256-gcm" ) ;
+		}
+
+		m_ui->comboBox->setFocus() ;
+
+		this->show() ;
+	} ) ;
 }
 
 cryfscreateoptions::~cryfscreateoptions()

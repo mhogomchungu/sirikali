@@ -30,7 +30,7 @@
 #include "siritask.h"
 #include "version.h"
 
-#include "3rdParty/json/json.hpp"
+#include "json.h"
 
 static QString _tr( const QStringList& l )
 {
@@ -102,7 +102,13 @@ static QString _version( const siritask::volumeType& e )
 	auto s = Task::await< QStringList >( [ & ](){
 
 		auto s = utility::systemEnvironment() ;
-		return utility::Task( args,-1,s ).splitOutput( ' ',e != "encfs" ) ;
+
+		if( e != "encfs" ){
+
+			return utility::Task( args,-1,s ).splitOutput( ' ',utility::Task::channel::stdOut ) ;
+		}else{
+			return utility::Task( args,-1,s ).splitOutput( ' ',utility::Task::channel::stdError ) ;
+		}
 	} ) ;
 
 	auto r = [ & ]()->QString{

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  *  Copyright (c) 2012-2015
  *  name : Francis Banyikwa
@@ -21,13 +21,11 @@
 #include "utility.h"
 #include "siritask.h"
 
-#include <QProcess>
 #include <QMetaObject>
 
-#include <memory>
-
-mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& stop ) :
+mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& quit ) :
 	m_parent( parent ),
+	m_quit( std::move( quit ) ),
 	m_announceEvents( e ),
 	m_linux( utility::platformIsLinux() )
 {
@@ -35,9 +33,9 @@ mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& stop ) :
 
 	if( m_linux ){
 
-		this->linuxMonitor().then( std::move( stop ) ) ;
+		this->linuxMonitor() ;
 	}else{
-		this->osxMonitor().then( std::move( stop ) ) ;
+		this->osxMonitor() ;
 	}
 }
 
@@ -152,7 +150,7 @@ void mountinfo::announceEvents( bool s )
 	m_announceEvents = s ;
 }
 
-Task::future< void >& mountinfo::linuxMonitor()
+void mountinfo::linuxMonitor()
 {
 	class mountEvent
 	{
@@ -183,39 +181,44 @@ Task::future< void >& mountinfo::linuxMonitor()
 		}
 	} ) ;
 
+	e.then( std::move( m_quit ) ) ;
+
 	auto s = std::addressof( e ) ;
 
 	m_stop = [ s ](){ s->first_thread()->terminate() ; } ;
-
-	return e ;
 }
-
-Task::future< void >& mountinfo::osxMonitor()
-{
-	return Task::run( [ this ](){
-
-		QProcess e ;
-
-		m_stop = [ & ](){ e.terminate() ; } ;
 
 #if QT_VERSION > QT_VERSION_CHECK( 5,0,0 )
 
-		QObject::connect( &e,&QProcess::readyReadStandardOutput,[ & ](){
+void mountinfo::osxMonitor()
+{
+	m_stop = [ this ](){ m_process.terminate() ; } ;
 
-			/*
-			 * Clear the buffer,not sure if its necessary.
-			 *
-			 * In the future,we will examine the output and call this->updateVolume()
-			 * only when volumes are mounted/unmounted to get the same behavior
-			 * linux code path has.
-			 */
-			e.readAllStandardOutput() ;
+	auto s = static_cast< void( QProcess::* )( int ) >( &QProcess::finished ) ;
 
-			this->updateVolume() ;
-		} ) ;
-#endif
-		e.start( "diskutil activity" ) ;
+	connect( &m_process,s,[ this ]( int e ){ Q_UNUSED( e ) ; m_quit() ; } ) ;
 
-		e.waitForFinished( -1 ) ;
+	connect( &m_process,&QProcess::readyReadStandardOutput,[ & ](){
+
+		/*
+		 * Clear the buffer,not sure if its necessary.
+		 *
+		 * In the future,we will examine the output and call this->updateVolume()
+		 * only when we notice a volumes was mounted/unmounted to reduce noise if
+		 * "diskutil activity" is too chatty.
+		 */
+		m_process.readAllStandardOutput() ;
+
+		this->updateVolume() ;
 	} ) ;
+
+	m_process.start( "diskutil activity" ) ;
 }
+
+#else
+
+void mountinfo::osxMonitor()
+{
+}
+
+#endif

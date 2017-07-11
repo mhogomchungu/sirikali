@@ -416,7 +416,7 @@ namespace utility
 			return ::Task::run< utility::Task >( [ exe ](){ return utility::Task( exe ) ; } ) ;
 		}
 		static void exec( const QString& exe,
-				  const QProcessEnvironment& env = QProcessEnvironment(),
+				  const QProcessEnvironment& env = utility::systemEnvironment(),
 				  std::function< void() > f = [](){} )
 		{
 			::Task::run< utility::Task >( [ = ](){ return utility::Task( exe,env,f ) ; } ).start() ;
@@ -467,9 +467,11 @@ namespace utility
 		{
 			this->execute( exe,-1,env,QByteArray(),std::move( f ),e ) ;
 		}
-		QStringList splitOutput( char token,bool stdOutput = true ) const
+
+		enum class channel{ stdOut,stdError } ;
+		QStringList splitOutput( char token,channel s = channel::stdOut ) const
 		{
-			if( stdOutput ){
+			if( s == channel::stdOut ){
 
 				return utility::split( m_stdOut,token ) ;
 			}else{
@@ -511,10 +513,6 @@ namespace utility
 		bool finished() const
 		{
 			return m_finished ;
-		}
-		bool ok() const
-		{
-			return this->splitOutput( '\n' ).size() > 12 ;
 		}
 	private:
 		void execute( const QString& exe,int waitTime,const QProcessEnvironment& env,

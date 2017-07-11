@@ -25,6 +25,7 @@
 #include <QString>
 #include <QStringList>
 #include <QObject>
+#include <QProcess>
 
 #include <functional>
 #include <memory>
@@ -39,12 +40,6 @@ class mountinfo : private QObject
 public:
 	QStringList mountedVolumes() ;
 
-	static std::unique_ptr< mountinfo > instance( QObject * parent,
-						      bool b,
-						      std::function< void() >&& f )
-	{
-		return std::unique_ptr< mountinfo >( new mountinfo( parent,b,std::move( f ) ) ) ;
-	}
 	mountinfo( QObject * parent,bool,std::function< void() >&& ) ;
 	mountinfo() ;
 
@@ -56,15 +51,17 @@ public:
 private slots:
 	void volumeUpdate( void ) ;
 private:
-	Task::future< void >& linuxMonitor( void ) ;
-	Task::future< void >& osxMonitor( void ) ;
+	void linuxMonitor( void ) ;
+	void osxMonitor( void ) ;
 	void updateVolume( void ) ;
 	void pbUpdate( void ) ;
 	void autoMount( const QString& ) ;
 
 	QObject * m_parent ;
+	QProcess m_process ;
 
 	std::function< void() > m_stop ;
+	std::function< void() > m_quit ;
 
 	bool m_announceEvents ;
 	bool m_linux ;

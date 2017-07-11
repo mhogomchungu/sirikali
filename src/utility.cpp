@@ -62,9 +62,8 @@
 #include "utility2.h"
 #include "install_prefix.h"
 #include "locale_path.h"
-#include "3rdParty/json/json.hpp"
 #include "plugins.h"
-
+#include "json.h"
 #include "readonlywarning.h"
 
 #include <sys/types.h>

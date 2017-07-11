@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>502</width>
-    <height>214</height>
+    <height>183</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>90</x>
-     <y>60</y>
+     <y>50</y>
      <width>321</width>
      <height>29</height>
     </rect>
@@ -46,14 +46,13 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>100</y>
+     <y>80</y>
      <width>481</width>
-     <height>51</height>
+     <height>41</height>
     </rect>
    </property>
    <property name="text">
-    <string>The Block Size Used When Storing Ciphertext Blocks.
-(In Bytes)</string>
+    <string>Cipher Text Block Size In Bytes.</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -62,9 +61,9 @@
   <widget class="QLineEdit" name="lineEdit">
    <property name="geometry">
     <rect>
-     <x>150</x>
-     <y>150</y>
-     <width>201</width>
+     <x>90</x>
+     <y>120</y>
+     <width>321</width>
      <height>29</height>
     </rect>
    </property>
@@ -73,7 +72,7 @@
    <property name="geometry">
     <rect>
      <x>150</x>
-     <y>180</y>
+     <y>150</y>
      <width>101</width>
      <height>31</height>
     </rect>
@@ -86,7 +85,7 @@
    <property name="geometry">
     <rect>
      <x>250</x>
-     <y>180</y>
+     <y>150</y>
      <width>101</width>
      <height>31</height>
     </rect>

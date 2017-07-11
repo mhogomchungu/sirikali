@@ -94,3 +94,7 @@ version 1.2.8
 -- Better mount/unmount events monitoring on OSX.
 -- Set it as a run time option(off by default) to support ecryptfs-simple backend that does not have suid bit set. A user
    will be asked to allow polkit support on first attempt.
+
+version 1.2.9
+-- Fix a crash on exit in OSX.
+-- Show all crypto options when creating Cryfs volume.

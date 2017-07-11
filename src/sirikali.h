@@ -33,7 +33,7 @@
 #include "utility.h"
 #include "utility2.h"
 #include "secrets.h"
-
+#include "mountinfo.h"
 #include "lxqt_wallet.h"
 
 class QCloseEvent ;
@@ -163,7 +163,7 @@ private:
 
 	QSystemTrayIcon m_trayIcon ;
 
-	std::unique_ptr< mountinfo > m_mountInfo ;
+	mountinfo m_mountInfo ;
 };
 
 #endif // MAINWINDOW_H

@@ -1,3 +1,11 @@
+sirikali (1.2.9-1) UNRELEASED; urgency=low
+  [Mhogo Mchungu]
+  * New Features
+     -- Fix a crash on exit in OSX.
+     -- Show all crypto options when creating Cryfs volume.
+
+ -- Mhogo Mchungu <mhogomchungu@gmail.com>  Thu, 29 Jun 2017 16:38:48 +0000
+
 sirikali (1.2.8-1) UNRELEASED; urgency=low
   [Mhogo Mchungu]
   * New Features

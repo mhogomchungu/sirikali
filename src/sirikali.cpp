@@ -51,7 +51,6 @@
 #include "dialogmsg.h"
 #include "tablewidget.h"
 #include "oneinstance.h"
-#include "mountinfo.h"
 #include "utility.h"
 #include "siritask.h"
 #include "checkforupdates.h"
@@ -59,11 +58,11 @@
 #include "walletconfig.h"
 #include "plugins.h"
 
-#include "3rdParty/json/json.hpp"
+#include "json.h"
 
 sirikali::sirikali() :
 	m_secrets( this ),
-	m_mountInfo( mountinfo::instance( this,true,[ & ](){ QCoreApplication::exit( m_exitStatus ) ; } ) )
+	m_mountInfo( this,true,[ & ](){ QCoreApplication::exit( m_exitStatus ) ; } )
 {
 }
 
@@ -74,7 +73,7 @@ void sirikali::closeApplication()
 {
 	utility::quitHelper() ;
 	this->hide() ;
-	m_mountInfo->stop()() ;
+	m_mountInfo.stop()() ;
 }
 
 void sirikali::closeApplication( int s,const QString& e )
@@ -87,13 +86,13 @@ void sirikali::closeApplication( int s,const QString& e )
 	}
 
 	this->hide() ;
-	m_mountInfo->stop()() ;
+	m_mountInfo.stop()() ;
 }
 
 void sirikali::closeApplication_1( int s )
 {
 	Q_UNUSED( s ) ;
-	m_mountInfo->stop()() ;
+	m_mountInfo.stop()() ;
 }
 
 void sirikali::setUpApp( bool start,const QString& volume )
@@ -1662,7 +1661,7 @@ void sirikali::pbUmount()
 
 void sirikali::unMountAll()
 {
-	m_mountInfo->announceEvents( false ) ;
+	m_mountInfo.announceEvents( false ) ;
 
 	this->disableAll() ;
 
@@ -1699,7 +1698,7 @@ void sirikali::unMountAll()
 
 	this->enableAll() ;
 
-	m_mountInfo->announceEvents( true ) ;
+	m_mountInfo.announceEvents( true ) ;
 }
 
 void sirikali::unMountAllAndQuit()

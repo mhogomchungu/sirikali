@@ -22,7 +22,7 @@
 #include "siriPolkit.h"
 #include "../task.h"
 #include "../utility2.h"
-#include "../3rdParty/json/json.hpp"
+#include "json.h"
 
 #include <termios.h>
 #include <memory>
@@ -35,14 +35,6 @@ namespace utility
 {
 	struct Task
 	{
-		static ::Task::future< utility::Task >& run( const QString& exe,
-							     const QString& password )
-		{
-			return ::Task::run< utility::Task >( [ = ](){
-
-				return utility::Task( exe,password ) ;
-			} ) ;
-		}
 		Task()
 		{
 		}
