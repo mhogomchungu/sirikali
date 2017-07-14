@@ -27,10 +27,9 @@ mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& quit ) :
 	m_parent( parent ),
 	m_quit( std::move( quit ) ),
 	m_announceEvents( e ),
-	m_linux( utility::platformIsLinux() )
+	m_linux( utility::platformIsLinux() ),
+	m_oldMountList( this->mountedVolumes() )
 {
-	m_oldMountList = this->mountedVolumes() ;
-
 	if( m_linux ){
 
 		this->linuxMonitor() ;
@@ -87,9 +86,9 @@ QStringList mountinfo::mountedVolumes()
 	}
 }
 
-std::function< void() >& mountinfo::stop()
+void mountinfo::stop()
 {
-	return m_stop ;
+	m_stop() ;
 }
 
 void mountinfo::volumeUpdate()
@@ -124,7 +123,7 @@ void mountinfo::volumeUpdate()
 		}
 	}
 
-	m_oldMountList = m_newMountList ;
+	m_oldMountList = std::move( m_newMountList ) ;
 }
 
 void mountinfo::updateVolume()

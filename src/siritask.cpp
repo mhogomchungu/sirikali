@@ -145,11 +145,6 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 			}
 		}() ;
 
-		if( utility::platformIsLinux() ){
-
-			utility::Task::waitForOneSecond() ;
-		}
-
 		for( int i = 0 ; i < 5 ; i++ ){
 
 			if( utility::Task::run( cmd,10000,_ecryptfs( fileSystem ) ).get().success() ){

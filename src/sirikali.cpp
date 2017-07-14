@@ -73,7 +73,7 @@ void sirikali::closeApplication()
 {
 	utility::quitHelper() ;
 	this->hide() ;
-	m_mountInfo.stop()() ;
+	m_mountInfo.stop() ;
 }
 
 void sirikali::closeApplication( int s,const QString& e )
@@ -86,13 +86,13 @@ void sirikali::closeApplication( int s,const QString& e )
 	}
 
 	this->hide() ;
-	m_mountInfo.stop()() ;
+	m_mountInfo.stop() ;
 }
 
 void sirikali::closeApplication_1( int s )
 {
 	Q_UNUSED( s ) ;
-	m_mountInfo.stop()() ;
+	m_mountInfo.stop() ;
 }
 
 void sirikali::setUpApp( bool start,const QString& volume )
@@ -1648,6 +1648,8 @@ void sirikali::pbUmount()
 		auto b = table->item( row,1 )->text() ;
 		auto c = table->item( row,2 )->text() ;
 
+		utility::Task::suspendForOneSecond() ;
+
 		if( siritask::encryptedFolderUnMount( a,b,c ).await() ){
 
 			siritask::deleteMountFolder( b ) ;
@@ -1673,10 +1675,10 @@ void sirikali::unMountAll()
 
 	int r = cipherFolders.size() - 1 ;
 
-	if( r < 0 ){
+	utility::Task::suspendForOneSecond() ;
 
-		utility::Task::suspendForOneSecond() ;
-	}else{
+	if( r > 0 ){
+
 		do{
 			const auto& a = cipherFolders.at( r ) ;
 			const auto& b = mountPoints.at( r ) ;

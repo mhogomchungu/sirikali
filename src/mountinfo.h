@@ -43,7 +43,7 @@ public:
 	mountinfo( QObject * parent,bool,std::function< void() >&& ) ;
 	mountinfo() ;
 
-	std::function< void() >& stop() ;
+	void stop() ;
 
 	void announceEvents( bool ) ;
 
