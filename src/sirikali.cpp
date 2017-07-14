@@ -1669,33 +1669,26 @@ void sirikali::unMountAll()
 
 	auto table = m_ui->tableWidget ;
 
-	auto cipherFolders = tablewidget::columnEntries( table,0 ) ;
-	auto mountPoints   = tablewidget::columnEntries( table,1 ) ;
-	auto fileSystems   = tablewidget::columnEntries( table,2 ) ;
-
-	int r = cipherFolders.size() - 1 ;
+	const auto cipherFolders = tablewidget::columnEntries( table,0 ) ;
+	const auto mountPoints   = tablewidget::columnEntries( table,1 ) ;
+	const auto fileSystems   = tablewidget::columnEntries( table,2 ) ;
 
 	utility::Task::suspendForOneSecond() ;
 
-	if( r > 0 ){
+	for( auto r = cipherFolders.size() - 1 ; r >= 0 ; r-- ){
 
-		do{
-			const auto& a = cipherFolders.at( r ) ;
-			const auto& b = mountPoints.at( r ) ;
-			const auto& c = fileSystems.at( r ) ;
+		const auto& a = cipherFolders.at( r ) ;
+		const auto& b = mountPoints.at( r ) ;
+		const auto& c = fileSystems.at( r ) ;
 
-			if( siritask::encryptedFolderUnMount( a,b,c ).await() ){
+		if( siritask::encryptedFolderUnMount( a,b,c ).await() ){
 
-				tablewidget::deleteRow( table,b,1 ) ;
+			tablewidget::deleteRow( table,b,1 ) ;
 
-				siritask::deleteMountFolder( b ) ;
+			siritask::deleteMountFolder( b ) ;
 
-				utility::Task::suspendForOneSecond() ;
-			}
-
-			r -= 1 ;
-
-		}while( r >= 0 ) ;
+			utility::Task::suspendForOneSecond() ;
+		}
 	}
 
 	this->enableAll() ;
