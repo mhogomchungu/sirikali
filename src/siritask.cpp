@@ -383,9 +383,10 @@ static QString _args( const QString& exe,const siritask::options& opt,
 	}
 }
 
-static siritask::status _status( const siritask::volumeType& app,bool s )
+enum class status_type{ exeName,exeNotFound } ;
+static siritask::status _status( const siritask::volumeType& app,status_type s )
 {
-	if( s ){
+	if( s == status_type::exeNotFound ){
 
 		if( app == "cryfs" ){
 
@@ -436,7 +437,7 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 
 	siritask::cmdStatus e = { r.exitCode(),stdOut ? r.stdOut() : r.stdError() } ;
 
-	auto msg = e.msg().toLower() ;
+	const auto msg = e.msg().toLower() ;
 
 	/*
 	 *
@@ -513,7 +514,7 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 	if( exe.isEmpty() ){
 
-		return _status( app,true ) ;
+		return _status( app,status_type::exeNotFound ) ;
 	}else{
 		auto e = utility::Task( _args( exe,opt,configFilePath,create ),
 					20000,
@@ -522,7 +523,7 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 					[](){},
 					_ecryptfs( app ) ) ;
 
-		auto s = _status( e,_status( app,false ),app == "encfs" ) ;
+		auto s = _status( e,_status( app,status_type::exeName ),app == "encfs" ) ;
 
 		if( s != siritask::status::success ){
 

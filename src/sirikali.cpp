@@ -99,9 +99,7 @@ void sirikali::setUpApp( bool start,const QString& volume )
 {
 	if( !start ){
 
-		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Start Helper Application.\n\"org.sirikali.pkexec.policy\" polkit file is either misconfigured or sirikali.pkexec executable could not be found." ) ) ;
-
-		return this->closeApplication() ;
+		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Enable Polkit Support. \nIt Will Not Be Possible To Work With \"Ecryptfs-simple\" Backend If Its SUID Bit Is Not Set." ) ) ;
 	}
 
 	this->setLocalizationLanguage( true ) ;
@@ -753,8 +751,7 @@ void sirikali::start( const QStringList& l )
 				       utility::cmdArgumentValue( l,"-d" ),
 				       [ this ]( const QString& e ){ utility::startHelperExecutable( this,
 												     e,
-												     "setUpApp",
-												     "closeApplication" ) ; },
+												     "setUpApp" ) ; },
 				       [ this ]( int s ){ this->closeApplication_1( s ) ; },
 				       [ this ]( const QString& e ){ this->raiseWindow( e ) ; } ) ;
 	}

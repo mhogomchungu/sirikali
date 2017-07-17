@@ -291,7 +291,7 @@ namespace utility
 	QString executableSearchPaths( const QString& ) ;
 
 	bool useZuluPolkit( void ) ;
-	void startHelperExecutable( QWidget *,const QString&,const char *,const char * ) ;
+	void startHelperExecutable( QWidget *,const QString&,const char * ) ;
 	void quitHelper() ;
 	QString helperSocketPath() ;
 	void clearFavorites( void ) ;
@@ -419,7 +419,7 @@ namespace utility
 				  const QProcessEnvironment& env = utility::systemEnvironment(),
 				  std::function< void() > f = [](){} )
 		{
-			::Task::run< utility::Task >( [ = ](){ return utility::Task( exe,env,f ) ; } ).start() ;
+			::Task::exec( [ = ](){ utility::Task( exe,env,f ) ; } ) ;
 		}
 		static void wait( int s )
 		{
@@ -458,12 +458,12 @@ namespace utility
 		Task()
 		{
 		}
-		Task( const QString& exe,int waitTime = -1,const QProcessEnvironment& env = QProcessEnvironment(),
-		      const QByteArray& password = QByteArray(),std::function< void() > f = [](){},bool e = true )
+		Task( const QString& exe,int waitTime = -1,const QProcessEnvironment& env = utility::systemEnvironment(),
+		      const QByteArray& password = QByteArray(),std::function< void() > f = [](){},bool e = false )
 		{
 			this->execute( exe,waitTime,env,password,std::move( f ),e ) ;
 		}
-		Task( const QString& exe,const QProcessEnvironment& env,std::function< void() > f,bool e = true )
+		Task( const QString& exe,const QProcessEnvironment& env,std::function< void() > f,bool e = false )
 		{
 			this->execute( exe,-1,env,QByteArray(),std::move( f ),e ) ;
 		}

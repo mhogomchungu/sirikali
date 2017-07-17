@@ -125,9 +125,9 @@ static QByteArray _cookie ;
 {
 	return ::Task::run< utility::Task >( [ = ](){
 
-		auto env = QProcessEnvironment::systemEnvironment() ;
+		auto env = utility::systemEnvironment() ;
 
-		return utility::Task( exe,s,env,_cookie,[](){ umask( 0 ) ; },e ) ;
+		return utility::Task( exe,s,env,QByteArray(),[](){},e ) ;
 	} ) ;
 }
 
@@ -221,7 +221,7 @@ void utility::Task::execute( const QString& exe,int waitTime,
 	}
 }
 
-void utility::startHelperExecutable( QWidget * obj,const QString& arg,const char * slot,const char * slot1 )
+void utility::startHelperExecutable( QWidget * obj,const QString& arg,const char * slot )
 {
 	if( !utility::useZuluPolkit() ){
 
@@ -242,9 +242,7 @@ void utility::startHelperExecutable( QWidget * obj,const QString& arg,const char
 
 		exe = QString( "%1 %2 %3 fork" ).arg( exe,siriPolkitPath,utility::helperSocketPath() ) ;
 
-		::Task::exec( [ = ](){
-
-			auto e = utility::Task::run( exe,false ).get() ;
+		utility::Task::run( exe ).then( [ = ]( const utility::Task& e ){
 
 			QMetaObject::invokeMethod( obj,
 						   slot,
@@ -252,8 +250,7 @@ void utility::startHelperExecutable( QWidget * obj,const QString& arg,const char
 						   Q_ARG( QString,arg ) ) ;
 		} ) ;
 	}else{
-		DialogMsg( obj ).ShowUIOK( QObject::tr( "ERROR" ),QObject::tr( "Failed to locate pkexec executable" ) ) ;
-		QMetaObject::invokeMethod( obj,slot1 ) ;
+		DialogMsg( obj ).ShowUIOK( QObject::tr( "ERROR" ),QObject::tr( "Failed to locate pkexec executable, It Will Not Be Possible To Work With Ecryptfs-simple Backend If Its SUID Bit Is Not Set." ) ) ;
 	}
 }
 
@@ -323,7 +320,7 @@ QString utility::homePath()
 
 		auto e = opener + " " + utility::Task::makePath( path ) ;
 
-		return utility::Task::run( e,false ).get().failed() ;
+		return utility::Task::run( e ).get().failed() ;
 	} ) ;
 }
 
