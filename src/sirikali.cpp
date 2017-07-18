@@ -97,11 +97,6 @@ void sirikali::closeApplication_1( int s )
 
 void sirikali::setUpApp( bool start,const QString& volume )
 {
-	if( !start ){
-
-		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Enable Polkit Support. \nIt Will Not Be Possible To Work With \"Ecryptfs-simple\" Backend If Its SUID Bit Is Not Set." ) ) ;
-	}
-
 	this->setLocalizationLanguage( true ) ;
 
 	m_ui = new Ui::sirikali ;
@@ -212,6 +207,11 @@ void sirikali::setUpApp( bool start,const QString& volume )
 	this->startGUI() ;
 
 	QTimer::singleShot( utility::checkForUpdateInterval(),this,SLOT( autoUpdateCheck() ) ) ;
+
+	if( !start ){
+
+		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Enable Polkit Support. \n\"Ecryptfs-simple\" Support Is Broken." ) ) ;
+	}
 }
 
 void sirikali::setUpAppMenu()

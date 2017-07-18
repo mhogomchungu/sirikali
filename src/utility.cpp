@@ -155,6 +155,15 @@ void utility::Task::execute( const QString& exe,int waitTime,
 
 	if( polkit && utility::useZuluPolkit() ){
 
+		auto _report_error = [ this ](){
+
+			m_finished   = true ;
+			m_exitCode   = -1 ;
+			m_exitStatus = -1 ;
+			m_stdError   =  "SiriKali: Failed To Connect To Polkit Backend" ;
+			//m_stdOut     =  "" ;
+		} ;
+
 		QLocalSocket s ;
 
 		s.connectToServer( utility::helperSocketPath() ) ;
@@ -166,6 +175,8 @@ void utility::Task::execute( const QString& exe,int waitTime,
 				break ;
 
 			}else if( i == 3 ){
+
+				_report_error() ;
 
 				utility::debug() << "ERROR: Failed To Start Helper Application" ;
 				return ;
@@ -200,7 +211,10 @@ void utility::Task::execute( const QString& exe,int waitTime,
 			m_stdError   = json[ "stdError" ].get< std::string >().c_str() ;
 			m_stdOut     = json[ "stdOut" ].get< std::string >().c_str() ;
 
-		}catch( ... ){}
+		}catch( ... ){
+
+			_report_error() ;
+		}
 	}else{
 		p.start( exe ) ;
 
@@ -244,13 +258,23 @@ void utility::startHelperExecutable( QWidget * obj,const QString& arg,const char
 
 		utility::Task::run( exe ).then( [ = ]( const utility::Task& e ){
 
+			if( e.failed() ){
+
+				utility::debug() << "Failed to start polkit backend" ;
+			}
+
 			QMetaObject::invokeMethod( obj,
 						   slot,
 						   Q_ARG( bool,e.success() ),
 						   Q_ARG( QString,arg ) ) ;
 		} ) ;
 	}else{
-		DialogMsg( obj ).ShowUIOK( QObject::tr( "ERROR" ),QObject::tr( "Failed to locate pkexec executable, It Will Not Be Possible To Work With Ecryptfs-simple Backend If Its SUID Bit Is Not Set." ) ) ;
+		utility::debug() << "Failed to locate pkexec executable" ;
+
+		QMetaObject::invokeMethod( obj,
+					   slot,
+					   Q_ARG( bool,false ),
+					   Q_ARG( QString,QString() ) ) ;
 	}
 }
 
