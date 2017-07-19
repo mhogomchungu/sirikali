@@ -239,7 +239,7 @@ void utility::startHelper( QWidget * obj,const QString& arg,const char * slot )
 {
 	if( !utility::useZuluPolkit() ){
 
-		QMetaObject::invokeMethod( obj,slot,Q_ARG( bool,true ),Q_ARG( QString,QString() ) ) ;
+		QMetaObject::invokeMethod( obj,slot,Q_ARG( bool,true ),Q_ARG( QString,arg ) ) ;
 
 		return ;
 	}
