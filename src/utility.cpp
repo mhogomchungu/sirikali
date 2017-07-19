@@ -235,7 +235,7 @@ void utility::Task::execute( const QString& exe,int waitTime,
 	}
 }
 
-void utility::startHelperExecutable( QWidget * obj,const QString& arg,const char * slot )
+void utility::startHelper( QWidget * obj,const QString& arg,const char * slot )
 {
 	if( !utility::useZuluPolkit() ){
 

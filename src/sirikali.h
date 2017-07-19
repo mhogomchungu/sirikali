@@ -76,7 +76,7 @@ private slots:
 	void unlockVolume( const QStringList& ) ;
 	void aboutToShowMenu( void ) ;
 	void changeInternalWalletPassWord( void ) ;
-	void closeApplication_1( int ) ;
+	void closeApplication_1( void ) ;
 	void closeApplication( void ) ;
 	void closeApplication( int,const QString& = QString() ) ;
 	void unlockVolume( void ) ;

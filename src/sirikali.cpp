@@ -89,9 +89,8 @@ void sirikali::closeApplication( int s,const QString& e )
 	m_mountInfo.stop() ;
 }
 
-void sirikali::closeApplication_1( int s )
+void sirikali::closeApplication_1()
 {
-	Q_UNUSED( s ) ;
 	m_mountInfo.stop() ;
 }
 
@@ -739,21 +738,23 @@ void sirikali::start( const QStringList& l )
 
 		utility::createFolder( s ) ;
 
-		if( !utility::pathIsWritable( s ) ){
+		if( utility::pathIsWritable( s ) ){
 
+			oneinstance::callbacks cb = {
+
+				[ this ]( const QString& e ){ utility::startHelper( this,e,"setUpApp" ) ; },
+				[ this ](){ this->closeApplication_1() ; },
+				[ this ]( const QString& e ){ this->raiseWindow( e ) ; },
+			} ;
+
+			auto x = utility::cmdArgumentValue( l,"-d" ) ;
+
+			oneinstance::instance( this,s + "/SiriKali.socket",x,std::move( cb ) ) ;
+		}else{
 			DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "\"%1\" Folder Must Be Writable" ).arg( s ) ) ;
 
-			return this->closeApplication() ;
+			this->closeApplication() ;
 		}
-
-		oneinstance::instance( this,
-				       s + "/SiriKali.socket",
-				       utility::cmdArgumentValue( l,"-d" ),
-				       [ this ]( const QString& e ){ utility::startHelperExecutable( this,
-												     e,
-												     "setUpApp" ) ; },
-				       [ this ]( int s ){ this->closeApplication_1( s ) ; },
-				       [ this ]( const QString& e ){ this->raiseWindow( e ) ; } ) ;
 	}
 }
 

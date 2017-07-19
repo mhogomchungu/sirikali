@@ -32,21 +32,20 @@ class oneinstance : public QObject
 {
 	Q_OBJECT
 public:
-	static void instance( QObject * a,
-			      const QString& b,
-			      const QString& c,
-			      std::function< void( const QString& ) > d,
-			      std::function< void( int ) > e,
-			      std::function< void( const QString& ) > f )
+	struct callbacks{
+
+		std::function< void( const QString& ) > start ;
+		std::function< void() > exit ;
+		std::function< void( const QString& ) > event ;
+	};
+
+	static void instance( QObject * a,const QString& b,
+			      const QString& c,oneinstance::callbacks d )
 	{
-		new oneinstance( a,b,c,std::move( d ),std::move( e ),std::move( f ) ) ;
+		new oneinstance( a,b,c,std::move( d ) ) ;
 	}
-	oneinstance( QObject *,
-		     const QString&,
-		     const QString&,
-		     std::function< void( const QString& ) >,
-		     std::function< void( int ) >,
-		     std::function< void( const QString& ) > ) ;
+	oneinstance( QObject *,const QString&,
+		     const QString&,oneinstance::callbacks ) ;
 	~oneinstance() ;
 private slots:
 	void connected( void ) ;
@@ -58,9 +57,7 @@ private:
 	QLocalSocket m_localSocket ;
 	QString m_serverPath ;
 	QString m_argument ;
-	std::function< void( const QString& ) > m_start ;
-	std::function< void( int ) > m_exit ;
-	std::function< void( const QString& ) > m_event ;
+	oneinstance::callbacks m_callbacks ;
 };
 
 #endif // ONEINSTANCE_H
