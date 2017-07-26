@@ -411,10 +411,15 @@ namespace utility
 
 		static ::Task::future< utility::Task >& run( const QString& exe,int,bool e ) ;
 
-		static ::Task::future< utility::Task >& run( const QString& exe )
+		static ::Task::future< utility::Task >& run( const QString& exe,
+							     const QByteArray& password = QByteArray() )
 		{
-			return ::Task::run< utility::Task >( [ exe ](){ return utility::Task( exe ) ; } ) ;
+			return ::Task::run< utility::Task >( [ = ](){
+
+				return utility::Task( exe,-1,utility::systemEnvironment(),password ) ;
+			} ) ;
 		}
+
 		static void exec( const QString& exe,
 				  const QProcessEnvironment& env = utility::systemEnvironment(),
 				  std::function< void() > f = [](){} )

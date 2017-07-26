@@ -88,7 +88,12 @@ QStringList mountinfo::mountedVolumes()
 
 void mountinfo::stop()
 {
-	m_stop() ;
+	if( m_stop ){
+
+		m_stop() ;
+	}else{
+		m_quit() ;
+	}
 }
 
 void mountinfo::volumeUpdate()

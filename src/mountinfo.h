@@ -60,7 +60,7 @@ private:
 	QObject * m_parent ;
 	QProcess m_process ;
 
-	std::function< void() > m_stop ;
+	std::function< void() > m_stop = nullptr ;
 	std::function< void() > m_quit ;
 
 	bool m_announceEvents ;

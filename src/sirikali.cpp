@@ -66,18 +66,10 @@ sirikali::sirikali() :
 {
 }
 
-/*
- * Below 3 should be the only function that closes the application
- */
-void sirikali::closeApplication()
-{
-	utility::quitHelper() ;
-	this->hide() ;
-	m_mountInfo.stop() ;
-}
-
 void sirikali::closeApplication( int s,const QString& e )
 {
+	utility::quitHelper() ;
+
 	m_exitStatus = s ;
 
 	if( !e.isEmpty() ){
@@ -85,12 +77,6 @@ void sirikali::closeApplication( int s,const QString& e )
 		utility::debug() << e ;
 	}
 
-	this->hide() ;
-	m_mountInfo.stop() ;
-}
-
-void sirikali::closeApplication_1()
-{
 	m_mountInfo.stop() ;
 }
 
@@ -743,7 +729,7 @@ void sirikali::start( const QStringList& l )
 			oneinstance::callbacks cb = {
 
 				[ this ]( const QString& e ){ utility::startHelper( this,e,"setUpApp" ) ; },
-				[ this ](){ this->closeApplication_1() ; },
+				[ this ](){ this->closeApplication( 1 ) ; },
 				[ this ]( const QString& e ){ this->raiseWindow( e ) ; },
 			} ;
 
@@ -775,6 +761,8 @@ void sirikali::cliCommand( const QStringList& l )
 	}
 
 	if( l.contains( "-u" ) ){
+
+		m_mountInfo.announceEvents( false ) ;
 
 		auto volume = utility::cmdArgumentValue( l,"-d" ) ;
 
@@ -846,13 +834,15 @@ void sirikali::unlockVolume( const QStringList& l )
 				}
 			}() ;
 
+			m_mountInfo.announceEvents( false ) ;
+
 			siritask::options s = { volume,m,key,idleTime,cPath,QString(),mode,mOpt,QString() } ;
 
 			auto& e = siritask::encryptedFolderMount( s ) ;
 
 			if( e.await() == siritask::status::success ){
 
-				this->openMountPointPath( m ) ;
+				//this->openMountPointPath( m ) ;
 
 				this->closeApplication( 0 ) ;
 			}else{

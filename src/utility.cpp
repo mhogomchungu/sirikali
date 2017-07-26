@@ -134,12 +134,13 @@ static QByteArray _cookie ;
 void utility::Task::execute( const QString& exe,int waitTime,
 			     const QProcessEnvironment& env,
 			     const QByteArray& password,
-			     const std::function< void() >& f,
+			     const std::function< void() >& function,
 			     bool polkit )
 {
 	class Process : public QProcess{
 	public:
-		Process( const std::function< void() >& f ) : m_function( f )
+		Process( const std::function< void() >& function ) :
+			m_function( function )
 		{
 		}
 	protected:
@@ -148,8 +149,8 @@ void utility::Task::execute( const QString& exe,int waitTime,
 			m_function() ;
 		}
 	private:
-		std::function< void() > m_function ;
-	} p( f ) ;
+		const std::function< void() >& m_function ;
+	} p( function ) ;
 
 	p.setProcessEnvironment( env ) ;
 
@@ -256,7 +257,7 @@ void utility::startHelper( QWidget * obj,const QString& arg,const char * slot )
 
 		exe = QString( "%1 %2 %3 fork" ).arg( exe,siriPolkitPath,utility::helperSocketPath() ) ;
 
-		utility::Task::run( exe ).then( [ = ]( const utility::Task& e ){
+		utility::Task::run( exe,_cookie ).then( [ = ]( const utility::Task& e ){
 
 			if( e.failed() ){
 
