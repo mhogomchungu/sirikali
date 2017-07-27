@@ -236,6 +236,18 @@ void utility::Task::execute( const QString& exe,int waitTime,
 	}
 }
 
+static QByteArray _set_cookie()
+{
+	std::array< char,16 > buffer ;
+
+	auto data = buffer.data() ;
+	auto size = buffer.size() ;
+
+	gcry_randomize( data,size,GCRY_STRONG_RANDOM ) ;
+
+	return QByteArray::fromRawData( data,size ).toHex() ;
+}
+
 void utility::startHelper( QWidget * obj,const QString& arg,const char * slot )
 {
 	if( !utility::useZuluPolkit() ){
@@ -245,11 +257,7 @@ void utility::startHelper( QWidget * obj,const QString& arg,const char * slot )
 		return ;
 	}
 
-	QFile f( "/dev/urandom" ) ;
-
-	f.open( QIODevice::ReadOnly ) ;
-
-	_cookie = f.read( 16 ).toHex() ;
+	_cookie = _set_cookie() ;
 
 	auto exe = utility::executableFullPath( "pkexec" ) ;
 
