@@ -315,10 +315,24 @@ namespace utility
 	void setLocalizationLanguage( bool translate,QMenu * m,utility2::translator& ) ;
 	void languageMenu( QMenu *,QAction *,utility2::translator& ) ;
 
-	using array_t = std::array< int,8 > ;
+	class windowDimensions{
+	public:
+		static constexpr int size = 8 ;
+		windowDimensions( const QStringList& e ) ;
+		windowDimensions( const QString& e ) ;
+		windowDimensions( const std::array< int,size >& e ) ;
+		operator bool() ;
+		int columnWidthAt( std::array< int,size >::size_type ) ;
+		QRect geometry() const ;
+		QString dimensions() const ;
+	private:
+		void setDimensions( const QStringList& ) ;
+		std::array< int,size > m_array ;
+		bool m_ok = false ;
+	};
 
-	utility::array_t getWindowDimensions() ;
-	void setWindowDimensions( const std::initializer_list<int>& ) ;
+	utility::windowDimensions getWindowDimensions() ;
+	void setWindowDimensions( const utility::windowDimensions& ) ;
 
 	int pluginKey( QWidget *,QDialog *,QByteArray *,plugins::plugin ) ;
 

@@ -93,18 +93,16 @@ void sirikali::setUpApp( bool start,const QString& volume )
 	m_ui->pbupdate->setMinimumHeight( 31 ) ;
 	m_ui->pbFavorites->setMinimumHeight( 31 ) ;
 
-	auto f = utility::getWindowDimensions() ;
-
-	auto e = f.data() ;
-
-	this->window()->setGeometry( *( e + 0 ),*( e + 1 ),*( e + 2 ),*( e + 3 ) ) ;
-
 	auto table = m_ui->tableWidget ;
 
-	table->setColumnWidth( 0,*( e + 4 ) ) ;
-	table->setColumnWidth( 1,*( e + 5 ) ) ;
-	table->setColumnWidth( 2,*( e + 6 ) ) ;
-	table->setColumnWidth( 3,*( e + 7 ) ) ;
+	auto dimensions = utility::getWindowDimensions() ;
+
+	this->window()->setGeometry( dimensions.geometry() ) ;
+
+	table->setColumnWidth( 0,dimensions.columnWidthAt( 0 ) ) ;
+	table->setColumnWidth( 1,dimensions.columnWidthAt( 1 ) ) ;
+	table->setColumnWidth( 2,dimensions.columnWidthAt( 2 ) ) ;
+	table->setColumnWidth( 3,dimensions.columnWidthAt( 3 ) ) ;
 
 #if QT_VERSION < QT_VERSION_CHECK( 5,0,0 )
 	m_ui->tableWidget->verticalHeader()->setResizeMode( QHeaderView::ResizeToContents ) ;
@@ -1756,14 +1754,14 @@ sirikali::~sirikali()
 
 		const auto& r = this->window()->geometry() ;
 
-		utility::setWindowDimensions( { r.x(),
-						r.y(),
-						r.width(),
-						r.height(),
-						q->columnWidth( 0 ),
-						q->columnWidth( 1 ),
-						q->columnWidth( 2 ),
-						q->columnWidth( 3 ) } ) ;
+		utility::setWindowDimensions( { { { r.x(),
+						    r.y(),
+						    r.width(),
+						    r.height(),
+						    q->columnWidth( 0 ),
+						    q->columnWidth( 1 ),
+						    q->columnWidth( 2 ),
+						    q->columnWidth( 3 ) } } } ) ;
 
 		delete m_ui ;
 	}

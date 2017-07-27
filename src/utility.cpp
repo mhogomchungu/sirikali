@@ -771,82 +771,30 @@ GNU General Public License for more details.\n\
 	DialogMsg( parent,nullptr ).ShowUIInfo( QObject::tr( "about SiriKali" ),true,license ) ;
 }
 
-static utility::array_t _default_dimensions( const char * defaults )
+utility::windowDimensions utility::getWindowDimensions()
 {
-	auto l = QString( defaults ).split( ' ' ) ;
+	QString defaults = "205 149 861 466 326 320 101 76" ;
 
-	utility::array_t e ;
-
-	auto f = e.data() ;
-
-	auto j = l.size() ;
-
-	for( int i = 0 ; i < j ; i++ ){
-
-		*( f + i ) = l.at( i ).toInt() ;
-	}
-
-	return e ;
-}
-
-static utility::array_t _dimensions( const char * defaults,int size )
-{
 	if( _settings->contains( "Dimensions" ) ){
 
-		auto l = utility::split( _settings->value( "Dimensions" ).toString(),' ' ) ;
+		utility::windowDimensions e( _settings->value( "Dimensions" ).toString() ) ;
 
-		utility::array_t p ;
+		if( e ){
 
-		if( l.size() != size || size > int( p.size() ) ){
-
+			return e ;
+		}else{
 			utility::debug() << "failed to parse config option" ;
-			return _default_dimensions( defaults ) ;
+			return defaults ;
 		}
-
-		auto f = p.data() ;
-
-		auto j = l.size() ;
-
-		for( int i = 0 ; i < j ; i++ ){
-
-			bool ok ;
-
-			int e = l.at( i ).toInt( &ok ) ;
-
-			if( ok ){
-
-				*( f + i ) = e ;
-			}else{
-				utility::debug() << "failed to parse config option" ;
-				return _default_dimensions( defaults ) ;
-			}
-		}
-
-		return p ;
 	}else{
-		_settings->setValue( "Dimensions",QString( defaults ) ) ;
-		return _default_dimensions( defaults ) ;
+		_settings->setValue( "Dimensions",defaults ) ;
+		return defaults ;
 	}
 }
 
-utility::array_t utility::getWindowDimensions()
+void utility::setWindowDimensions( const utility::windowDimensions& e )
 {
-	return _dimensions( "205 149 861 466 326 320 101 76",8 ) ;
-}
-
-void utility::setWindowDimensions( const std::initializer_list<int>& e )
-{
-	_settings->setValue( "Dimensions",[ & ](){
-
-		QString q ;
-
-		for( const auto& it : e ){
-
-			q += QString::number( it ) + " " ;
-		}
-
-		return q ;
-	}() ) ;
+	_settings->setValue( "Dimensions",e.dimensions() ) ;
 }
 
 int utility::pluginKey( QWidget * w,QDialog * d,QByteArray * key,plugins::plugin plugin )
@@ -1545,6 +1493,86 @@ QProcessEnvironment utility::systemEnvironment()
 	e.insert( "LANG","C" ) ;
 
 	e.insert( "PATH",utility::executableSearchPaths( e.value( "PATH" ) ) ) ;
+
+	return e ;
+}
+
+void utility::windowDimensions::setDimensions( const QStringList& e )
+{
+	m_ok = int( e.size() ) == int( m_array.size() ) ;
+
+	if( m_ok ){
+
+		using tp = decltype( m_array.size() ) ;
+
+		for( tp i = 0 ; i < m_array.size() ; i++ ){
+
+			m_array[ i ] = e.at( i ).toInt( &m_ok ) ;
+
+			if( !m_ok ){
+
+				break ;
+			}
+		}
+	}else{
+		utility::debug() << "window dimensions do not match data structure size" ;
+	}
+}
+
+utility::windowDimensions::windowDimensions( const QStringList& e )
+{
+	this->setDimensions( e ) ;
+}
+
+utility::windowDimensions::windowDimensions( const QString& e )
+{
+	this->setDimensions( utility::split( e,' ' ) ) ;
+}
+
+utility::windowDimensions::windowDimensions( const std::array< int,size >& e )
+	: m_array( e ),m_ok( true )
+{
+}
+
+utility::windowDimensions::operator bool()
+{
+	return m_ok ;
+}
+
+int utility::windowDimensions::columnWidthAt( std::array< int,size >::size_type s )
+{
+	auto e = s + 4 ;
+
+	if( e < m_array.size() ){
+
+		return m_array[ e ] ;
+	}else{
+		utility::debug() << "window dimension index out of range" ;
+		return 0 ;
+	}
+}
+
+QRect utility::windowDimensions::geometry() const
+{
+	auto e = m_array.data() ;
+
+	return { *( e + 0 ),*( e + 1 ),*( e + 2 ),*( e + 3 ) } ;
+}
+
+QString utility::windowDimensions::dimensions() const
+{
+	auto _number = []( const int * s,size_t n ){ return QString::number( *( s + n ) ) ; } ;
+
+	auto s = m_array.data() ;
+
+	auto e = _number( s,0 ) ;
+
+	using tp = decltype( m_array.size() ) ;
+
+	for( tp i = 1 ; i < m_array.size() ; i++ ){
+
+		e += " " + _number( s,i ) ;
+	}
 
 	return e ;
 }
