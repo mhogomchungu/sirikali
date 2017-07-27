@@ -38,6 +38,8 @@
 #include <QAction>
 #include <QIcon>
 #include <QSettings>
+#include <QRect>
+
 #include <functional>
 #include <memory>
 #include <array>
@@ -322,7 +324,7 @@ namespace utility
 		windowDimensions( const QString& e ) ;
 		windowDimensions( const std::array< int,size >& e ) ;
 		operator bool() ;
-		int columnWidthAt( std::array< int,size >::size_type ) ;
+		int columnWidthAt( std::array< int,size >::size_type ) const ;
 		QRect geometry() const ;
 		QString dimensions() const ;
 	private:

@@ -1539,7 +1539,7 @@ utility::windowDimensions::operator bool()
 	return m_ok ;
 }
 
-int utility::windowDimensions::columnWidthAt( std::array< int,size >::size_type s )
+int utility::windowDimensions::columnWidthAt( std::array< int,size >::size_type s ) const
 {
 	auto e = s + 4 ;
 
