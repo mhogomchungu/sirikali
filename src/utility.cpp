@@ -156,12 +156,12 @@ void utility::Task::execute( const QString& exe,int waitTime,
 
 	if( polkit && utility::useZuluPolkit() ){
 
-		auto _report_error = [ this ](){
+		auto _report_error = [ this ]( const char * msg ){
 
 			m_finished   = true ;
 			m_exitCode   = -1 ;
 			m_exitStatus = -1 ;
-			m_stdError   =  "SiriKali: Failed To Connect To Polkit Backend" ;
+			m_stdError   =  msg ;
 			//m_stdOut     =  "" ;
 		} ;
 
@@ -177,7 +177,7 @@ void utility::Task::execute( const QString& exe,int waitTime,
 
 			}else if( i == 3 ){
 
-				_report_error() ;
+				_report_error( "SiriKali: Failed To Connect To Polkit Backend" ) ;
 
 				utility::debug() << "ERROR: Failed To Start Helper Application" ;
 				return ;
@@ -214,7 +214,7 @@ void utility::Task::execute( const QString& exe,int waitTime,
 
 		}catch( ... ){
 
-			_report_error() ;
+			_report_error( "SiriKali: Failed To Parse Polkit Backend Output" ) ;
 		}
 	}else{
 		p.start( exe ) ;
