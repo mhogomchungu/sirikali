@@ -21,7 +21,6 @@
 #ifndef MONITOR_MOUNTINFO_H
 #define MONITOR_MOUNTINFO_H
 
-#include <QThread>
 #include <QString>
 #include <QStringList>
 #include <QObject>
@@ -30,18 +29,15 @@
 #include <functional>
 #include <memory>
 
-#include "task.h"
-
 class volumeInfo ;
 
 class mountinfo : private QObject
 {
 	Q_OBJECT
 public:
-	QStringList mountedVolumes() ;
+	static QStringList mountedVolumes() ;
 
 	mountinfo( QObject * parent,bool,std::function< void() >&& ) ;
-	mountinfo() ;
 
 	void stop() ;
 

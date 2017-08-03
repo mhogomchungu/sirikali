@@ -767,7 +767,7 @@ Task::future< QVector< volumeInfo > >& siritask::updateVolumeList()
 
 		volumeInfo::mountinfo info ;
 
-		for( const auto& it : mountinfo().mountedVolumes() ){
+		for( const auto& it : mountinfo::mountedVolumes() ){
 
 			if( volumeInfo::supported( it ) ){
 

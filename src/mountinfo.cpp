@@ -20,6 +20,7 @@
 #include "mountinfo.h"
 #include "utility.h"
 #include "siritask.h"
+#include "task.h"
 
 #include <QMetaObject>
 
@@ -38,17 +39,13 @@ mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& quit ) :
 	}
 }
 
-mountinfo::mountinfo() : m_linux( utility::platformIsLinux() )
-{
-}
-
 mountinfo::~mountinfo()
 {
 }
 
 QStringList mountinfo::mountedVolumes()
 {
-	if( m_linux ){
+	if( utility::platformIsLinux() ){
 
 		QFile f( "/proc/self/mountinfo" ) ;
 
