@@ -1066,7 +1066,7 @@ void sirikali::ecryptfsProperties()
 				s.replace( "rw\n\n","mode=read and write\n\n" ) ;
 				s.replace( "="," = " ) ;
 
-				return s;
+				return s ;
 			}() ) ;
 
 			break ;

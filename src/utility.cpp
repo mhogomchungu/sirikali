@@ -1267,16 +1267,11 @@ static bool _use_default_widget_relationship()
 
 void utility::setParent( QWidget * parent,QWidget ** localParent,QDialog * dialog )
 {
-	if( utility::platformIsLinux() ){
+	if( _use_default_widget_relationship() ){
 
-		if( _use_default_widget_relationship() ){
-
-			*localParent = parent ;
-		}else{
-			*localParent = dialog ;
-		}
-	}else{
 		*localParent = dialog ;
+	}else{
+		*localParent = parent ;
 	}
 }
 
