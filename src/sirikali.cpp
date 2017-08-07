@@ -95,7 +95,7 @@ void sirikali::setUpApp( bool start,const QString& volume )
 
 	auto table = m_ui->tableWidget ;
 
-	auto dimensions = utility::getWindowDimensions() ;
+	const auto dimensions = utility::getWindowDimensions() ;
 
 	this->window()->setGeometry( dimensions.geometry() ) ;
 

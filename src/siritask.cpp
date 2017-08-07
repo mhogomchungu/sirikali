@@ -236,12 +236,12 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 				if( create ){
 
-					auto e = QString( "%1 --init -q %2 %3" ) ;
+					auto e = QString( "%1 --init -q -- %2 %3" ) ;
 					return e.arg( exe,configPath,cipherFolder ) ;
 				}else{
 					mode += " -o fsname=gocryptfs@" + cipherFolder ;
 
-					auto e = QString( "%1 -q %2 %3 %4 %5" ) ;
+					auto e = QString( "%1 -q %2 %3 -- %4 %5" ) ;
 					return e.arg( exe,mode,configPath,cipherFolder,mountPoint ) ;
 				}
 			}else{
@@ -456,7 +456,7 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 
 	}else if( s == siritask::status::cryfs ){
 
-		auto& m = e.msg() ;
+		const auto& m = e.msg() ;
 
 		if( msg.contains( "password" ) ){
 

@@ -60,7 +60,9 @@ namespace utility2
 
 	static inline QStringList executableSearchPaths()
 	{
-		const auto s = QDir::homePath() + "/bin/" ;
+		const auto a = QDir::homePath().toLatin1() ;
+		const auto b = a + "/bin/" ;
+		const auto c = a + "/.bin/" ;
 
 		return { "/usr/local/bin/",
 			"/usr/local/sbin/",
@@ -72,7 +74,8 @@ namespace utility2
 			"/opt/local/sbin/",
 			"/opt/bin/",
 			"/opt/sbin/",
-			 s.toLatin1().constData() } ;
+			 b.constData(),
+			 c.constData() } ;
 	}
 
 	class translator
