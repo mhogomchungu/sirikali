@@ -1284,7 +1284,7 @@ void sirikali::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 	m.setFont( this->font() ) ;
 
-	auto _addAction = [ & ]( const QString& txt,const volumeType& e ){
+	auto _addAction = [ & ]( const auto& txt,const volumeType& e ){
 
 		auto ac = m.addAction( txt ) ;
 
@@ -1412,7 +1412,7 @@ void sirikali::hideWindow()
 
 void sirikali::setUpShortCuts()
 {
-	auto _addAction = [ this ]( std::initializer_list<QKeySequence> s,const char * slot ){
+	auto _addAction = [ this ]( std::initializer_list< QKeySequence > s,const char * slot ){
 
 		auto ac = new QAction( this ) ;
 

@@ -1253,21 +1253,21 @@ void utility::setWindowOptions( QDialog * w )
 	}
 }
 
-static bool _use_default_widget_relationship()
-{
-	if( _settings->contains( "UseDefaultWidgetRelationship" ) ){
-
-		return _settings->value( "UseDefaultWidgetRelationship" ).toBool() ;
-	}else{
-		bool e = true ;
-		_settings->setValue( "UseDefaultWidgetRelationship",e ) ;
-		return e ;
-	}
-}
-
 void utility::setParent( QWidget * parent,QWidget ** localParent,QDialog * dialog )
 {
-	if( _use_default_widget_relationship() ){
+	auto _default_parent = [](){
+
+		if( _settings->contains( "UseDefaultWidgetRelationship" ) ){
+
+			return _settings->value( "UseDefaultWidgetRelationship" ).toBool() ;
+		}else{
+			bool e = true ;
+			_settings->setValue( "UseDefaultWidgetRelationship",e ) ;
+			return e ;
+		}
+	}() ;
+
+	if( _default_parent ){
 
 		*localParent = dialog ;
 	}else{

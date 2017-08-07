@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 2.6 )
+cmake_minimum_required( VERSION 3.1 )
 cmake_policy( SET CMP0017 OLD )
 cmake_policy( SET CMP0002 OLD )
 
@@ -9,6 +9,9 @@ project( sirikali )
 set( PGR_VERSION "1.2.9" )
 
 add_definitions( -Wextra -Wall -pedantic )
+
+set( CMAKE_CXX_STANDARD 14 )
+set( CMAKE_CXX_STANDARD_REQUIRED ON )
 
 include_directories( ${PROJECT_BINARY_DIR} )
 
