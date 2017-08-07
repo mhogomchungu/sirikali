@@ -21,6 +21,7 @@
 #define UTILITY_TWO_H
 
 #include <QStringList>
+#include <QDir>
 
 class QByteArray ;
 class QTranslator ;
@@ -59,6 +60,8 @@ namespace utility2
 
 	static inline QStringList executableSearchPaths()
 	{
+		const auto s = QDir::homePath() + "/bin/" ;
+
 		return { "/usr/local/bin/",
 			"/usr/local/sbin/",
 			"/usr/bin/",
@@ -68,7 +71,8 @@ namespace utility2
 			"/opt/local/bin/",
 			"/opt/local/sbin/",
 			"/opt/bin/",
-			"/opt/sbin/" } ;
+			"/opt/sbin/",
+			 s.toLatin1().constData() } ;
 	}
 
 	class translator
