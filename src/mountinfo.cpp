@@ -182,11 +182,9 @@ void mountinfo::linuxMonitor()
 		}
 	} ) ;
 
+	m_stop = [ s = std::addressof( e ) ](){ s->first_thread()->terminate() ; } ;
+
 	e.then( std::move( m_quit ) ) ;
-
-	auto s = std::addressof( e ) ;
-
-	m_stop = [ s ](){ s->first_thread()->terminate() ; } ;
 }
 
 #if QT_VERSION > QT_VERSION_CHECK( 5,0,0 )
