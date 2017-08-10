@@ -24,7 +24,7 @@
 #include <QObject>
 #include <QWidget>
 
-#include "networkAccessManager.hpp"
+#include "3rdParty/NetworkAccessManager/networkAccessManager.hpp"
 #include "utility.h"
 #include "dialogmsg.h"
 #include "siritask.h"

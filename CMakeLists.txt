@@ -191,12 +191,12 @@ set( MOC_FILES 	src/dialogok.h
 		src/walletconfig.h
 		src/walletconfiginput.h
 		src/options.h
-		src/networkAccessManager.hpp
 		src/filemanager.h
 		src/mountinfo.h
 		src/securefscreateoptions.h
 		src/cryfscreateoptions.h
 		src/3rdParty/tasks/task.h
+		src/3rdParty/NetworkAccessManager/networkAccessManager.hpp
  )
 
 set( SRC 	src/dialogok.cpp
