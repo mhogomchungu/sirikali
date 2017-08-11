@@ -77,6 +77,12 @@ void sirikali::closeApplication( int s,const QString& e )
 		utility::debug() << e ;
 	}
 
+	if( m_ui ){
+
+		this->hide() ;
+		utility::Task::suspendForOneSecond() ;
+	}
+
 	m_mountInfo.stop() ;
 }
 
