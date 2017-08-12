@@ -184,7 +184,7 @@ void sirikali::setUpApp( bool start,const QString& volume )
 
 	this->disableAll() ;
 
-	this->updateVolumeList( siritask::updateVolumeList().await() ) ;
+	this->updateVolumeList( mountinfo::unlockedVolumes().await() ) ;
 
 	if( volume.isEmpty() ) {
 
@@ -770,7 +770,7 @@ void sirikali::cliCommand( const QStringList& l )
 
 		auto volume = utility::cmdArgumentValue( l,"-d" ) ;
 
-		for( const auto& it : siritask::updateVolumeList().await() ){
+		for( const auto& it : mountinfo::unlockedVolumes().await() ){
 
 			const auto& a = it.volumePath() ;
 			const auto& b = it.mountPoint() ;
@@ -794,7 +794,7 @@ void sirikali::cliCommand( const QStringList& l )
 
 	if( l.contains( "-p" ) ){
 
-		for( const auto& it : siritask::updateVolumeList().await() ){
+		for( const auto& it : mountinfo::unlockedVolumes().await() ){
 
 			it.printVolumeInfo() ;
 		}
@@ -1059,7 +1059,7 @@ void sirikali::ecryptfsProperties()
 		}
 	}() ;
 
-	for( const auto& it : siritask::updateVolumeList().await() ){
+	for( const auto& it : mountinfo::unlockedVolumes().await() ){
 
 		if( it.mountPoint() == s ){
 
@@ -1702,7 +1702,7 @@ void sirikali::pbUpdate()
 {
 	this->disableAll() ;
 
-	this->updateVolumeList( siritask::updateVolumeList().await() ) ;
+	this->updateVolumeList( mountinfo::unlockedVolumes().await() ) ;
 }
 
 void sirikali::updateVolumeList( const QVector< volumeInfo >& r )

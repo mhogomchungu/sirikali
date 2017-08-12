@@ -24,26 +24,8 @@
 
 #include <QMetaObject>
 
-mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& quit ) :
-	m_parent( parent ),
-	m_quit( std::move( quit ) ),
-	m_announceEvents( e ),
-	m_linux( utility::platformIsLinux() ),
-	m_oldMountList( this->mountedVolumes() )
-{
-	if( m_linux ){
-
-		this->linuxMonitor() ;
-	}else{
-		this->osxMonitor() ;
-	}
-}
-
-mountinfo::~mountinfo()
-{
-}
-
-QStringList mountinfo::mountedVolumes()
+enum class background_thread{ True,False } ;
+static QStringList _mounted_volumes( background_thread thread )
 {
 	if( utility::platformIsLinux() ){
 
@@ -61,7 +43,17 @@ QStringList mountinfo::mountedVolumes()
 		QString fs ;
 		const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
 
-		for( const auto& it : utility::Task::run( "mount" ).get().splitOutput( '\n' ) ){
+		auto list = [ & ](){
+
+			if( thread == background_thread::True ){
+
+				return utility::Task::run( "mount" ).get().splitOutput( '\n' ) ;
+			}else{
+				return utility::Task::run( "mount" ).await().splitOutput( '\n' ) ;
+			}
+		}() ;
+
+		for( const auto& it : list ){
 
 			auto e = utility::split( it,' ' ) ;
 
@@ -81,6 +73,141 @@ QStringList mountinfo::mountedVolumes()
 	}
 }
 
+mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& quit ) :
+	m_parent( parent ),
+	m_quit( std::move( quit ) ),
+	m_announceEvents( e ),
+	m_linux( utility::platformIsLinux() ),
+	m_oldMountList( _mounted_volumes( background_thread::False ) )
+{
+	if( m_linux ){
+
+		this->linuxMonitor() ;
+	}else{
+		this->osxMonitor() ;
+	}
+}
+
+mountinfo::~mountinfo()
+{
+}
+
+Task::future< QVector< volumeInfo > >& mountinfo::unlockedVolumes()
+{
+	return Task::run< QVector< volumeInfo > >( [](){
+
+		auto _hash = []( const QString& e ){
+
+			/*
+			 * jenkins one at a time hash function.
+			 *
+			 * https://en.wikipedia.org/wiki/Jenkins_hash_function
+			 */
+
+			uint32_t hash = 0 ;
+
+			auto p = e.toLatin1() ;
+
+			auto key = p.constData() ;
+
+			auto l = p.size() ;
+
+			for( decltype( l ) i = 0 ; i < l ; i++ ){
+
+				hash += *( key + i ) ;
+
+				hash += ( hash << 10 ) ;
+
+				hash ^= ( hash >> 6 ) ;
+			}
+
+			hash += ( hash << 3 ) ;
+
+			hash ^= ( hash >> 11 ) ;
+
+			hash += ( hash << 15 ) ;
+
+			return QString::number( hash ) ;
+		} ;
+
+		auto _decode = []( QString path,bool set_offset ){
+
+			path.replace( "\\012","\n" ) ;
+			path.replace( "\\040"," " ) ;
+			path.replace( "\\134","\\" ) ;
+			path.replace( "\\011","\\t" ) ;
+
+			if( set_offset ){
+
+				return path.mid( path.indexOf( '@' ) + 1 ) ;
+			}else{
+				return path ;
+			}
+		} ;
+
+		auto _fs = []( QString e ){
+
+			e.replace( "fuse.","" ) ;
+
+			return e ;
+		} ;
+
+		auto _ro = []( const QStringList& l ){
+
+			return l.at( 5 ).mid( 0,2 ) ;
+		} ;
+
+		QVector< volumeInfo > e ;
+
+		volumeInfo::mountinfo info ;
+
+		for( const auto& it : _mounted_volumes( background_thread::True ) ){
+
+			if( volumeInfo::supported( it ) ){
+
+				const auto& k = utility::split( it,' ' ) ;
+
+				const auto s = k.size() ;
+
+				if( s < 6 ){
+
+					continue ;
+				}
+
+				const auto& cf = k.at( s - 2 ) ;
+
+				const auto& m = k.at( 4 ) ;
+
+				const auto& fs = k.at( s - 3 ) ;
+
+				if( utility::startsWithAtLeastOne( cf,"encfs@",
+								   "cryfs@",
+								   "securefs@",
+								   "gocryptfs@" ) ){
+
+					info.volumePath = _decode( cf,true ) ;
+
+				}else if( utility::equalsAtleastOne( fs,"fuse.gocryptfs",
+								     "ecryptfs" ) ){
+
+					info.volumePath = _decode( cf,false ) ;
+				}else{
+					info.volumePath = _hash( m ) ;
+				}
+
+				info.mountPoint   = _decode( m,false ) ;
+				info.fileSystem   = _fs( fs ) ;
+				info.mode         = _ro( k ) ;
+				info.mountOptions = k.last() ;
+
+				e.append( info ) ;
+			}
+		}
+
+		return e ;
+	} ) ;
+}
+
 void mountinfo::stop()
 {
 	if( m_stop ){
@@ -93,7 +220,7 @@ void mountinfo::stop()
 
 void mountinfo::volumeUpdate()
 {
-	m_newMountList = this->mountedVolumes() ;
+	m_newMountList = _mounted_volumes( background_thread::False ) ;
 
 	auto _volumeWasMounted = [ & ](){
 

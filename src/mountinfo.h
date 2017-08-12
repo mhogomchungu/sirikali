@@ -25,17 +25,18 @@
 #include <QStringList>
 #include <QObject>
 #include <QProcess>
+#include <QVector>
 
 #include <functional>
 #include <memory>
 
-class volumeInfo ;
+#include "volumeinfo.h"
 
 class mountinfo : private QObject
 {
 	Q_OBJECT
 public:
-	static QStringList mountedVolumes() ;
+	static Task::future< QVector< volumeInfo > >& unlockedVolumes() ;
 
 	mountinfo( QObject * parent,bool,std::function< void() >&& ) ;
 
