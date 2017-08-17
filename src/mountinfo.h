@@ -61,7 +61,6 @@ private:
 	std::function< void() > m_quit ;
 
 	bool m_announceEvents ;
-	bool m_linux ;
 
 	QStringList m_oldMountList ;
 	QStringList m_newMountList ;

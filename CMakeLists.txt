@@ -6,7 +6,7 @@ set_property( GLOBAL PROPERTY ALLOW_DUPLICATE_CUSTOM_TARGETS ON )
 
 project( sirikali )
 
-set( PGR_VERSION "1.2.9" )
+set( PGR_VERSION "1.3.0" )
 
 add_definitions( -Wextra -Wall -pedantic )
 

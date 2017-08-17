@@ -25,7 +25,7 @@
 #include <QMetaObject>
 
 enum class background_thread{ True,False } ;
-static QStringList _mounted_volumes( background_thread thread )
+static QStringList _unlocked_volumes( background_thread thread )
 {
 	if( utility::platformIsLinux() ){
 
@@ -43,7 +43,7 @@ static QStringList _mounted_volumes( background_thread thread )
 		QString fs ;
 		const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
 
-		auto list = [ & ](){
+		auto e = [ & ](){
 
 			if( thread == background_thread::True ){
 
@@ -53,7 +53,7 @@ static QStringList _mounted_volumes( background_thread thread )
 			}
 		}() ;
 
-		for( const auto& it : list ){
+		for( const auto& it : e ){
 
 			auto e = utility::split( it,' ' ) ;
 
@@ -77,10 +77,9 @@ mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& quit ) :
 	m_parent( parent ),
 	m_quit( std::move( quit ) ),
 	m_announceEvents( e ),
-	m_linux( utility::platformIsLinux() ),
-	m_oldMountList( _mounted_volumes( background_thread::False ) )
+	m_oldMountList( _unlocked_volumes( background_thread::False ) )
 {
-	if( m_linux ){
+	if( utility::platformIsLinux() ){
 
 		this->linuxMonitor() ;
 	}else{
@@ -161,7 +160,7 @@ Task::future< QVector< volumeInfo > >& mountinfo::unlockedVolumes()
 
 		volumeInfo::mountinfo info ;
 
-		for( const auto& it : _mounted_volumes( background_thread::True ) ){
+		for( const auto& it : _unlocked_volumes( background_thread::True ) ){
 
 			if( volumeInfo::supported( it ) ){
 
@@ -220,7 +219,7 @@ void mountinfo::stop()
 
 void mountinfo::volumeUpdate()
 {
-	m_newMountList = _mounted_volumes( background_thread::False ) ;
+	m_newMountList = _unlocked_volumes( background_thread::False ) ;
 
 	auto _volumeWasMounted = [ & ](){
 
