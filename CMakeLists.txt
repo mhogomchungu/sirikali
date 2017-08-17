@@ -12,6 +12,7 @@ add_definitions( -Wextra -Wall -pedantic )
 
 set( CMAKE_CXX_STANDARD 14 )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 include_directories( ${PROJECT_BINARY_DIR} )
 
@@ -163,7 +164,7 @@ else()
 	endif()
 endif()
 
-add_definitions( -std=c++11 )
+add_definitions( -std=c++14 )
 
 set( UI_FILES 	src/sirikali.ui
 		src/keydialog.ui
