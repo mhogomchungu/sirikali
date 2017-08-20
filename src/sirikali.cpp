@@ -597,7 +597,7 @@ void sirikali::favoriteClicked( QAction * ac )
 
 				if( it.volumePath == e ){
 
-					if( !this->autoUnlockVolumes( { it } ).isEmpty() ){
+					if( !this->autoUnlockVolumes( { it },true ).isEmpty() ){
 
 						this->showMoungDialog( it ) ;
 					}
@@ -973,7 +973,8 @@ void sirikali::autoUnlockVolumes()
 	this->autoUnlockVolumes( e ) ;
 }
 
-QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorites::entry >& l )
+QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorites::entry >& l,
+							 bool autoOpenFolderOnMount )
 {
 	if( l.isEmpty() ){
 
@@ -998,13 +999,23 @@ QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorite
 
 		QVector< favorites::entry > e ;
 
-		auto _mount = [ this ]( const favorites::entry& e,const QByteArray& key,bool s ){
+		auto _mount = [ & ]( const favorites::entry& e,const QByteArray& key,bool s ){
 
 			if( s ){
 
 				this->mount( e,QString(),key ) ;
 			}else{
-				siritask::encryptedFolderMount( { e,key } ).start() ;
+				auto& s =siritask::encryptedFolderMount( { e,key } ) ;
+
+				s.then( [ this,autoOpenFolderOnMount,e = e.mountPointPath ]( siritask::cmdStatus s ){
+
+					if( s == siritask::status::success &&
+						 autoOpenFolderOnMount &&
+						 m_autoOpenFolderOnMount ){
+
+						this->openMountPointPath( e ) ;
+					}
+				} ) ;
 			}
 		} ;
 

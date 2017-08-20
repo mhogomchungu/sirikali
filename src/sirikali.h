@@ -130,7 +130,7 @@ private:
 	void setUpShortCuts( void ) ;
 	void raiseWindow( const QString& = QString() ) ;
 	void autoUnlockVolumes( void ) ;
-	QVector< favorites::entry > autoUnlockVolumes( const QVector< favorites::entry >& ) ;
+	QVector< favorites::entry > autoUnlockVolumes( const QVector< favorites::entry >&,bool = false ) ;
 
 	Ui::sirikali * m_ui = nullptr ;
 
