@@ -1005,13 +1005,11 @@ QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorite
 
 				this->mount( e,QString(),key ) ;
 			}else{
-				auto& s =siritask::encryptedFolderMount( { e,key } ) ;
+				auto& s = siritask::encryptedFolderMount( { e,key } ) ;
 
 				s.then( [ this,autoOpenFolderOnMount,e = e.mountPointPath ]( siritask::cmdStatus s ){
 
-					if( s == siritask::status::success &&
-						 autoOpenFolderOnMount &&
-						 m_autoOpenFolderOnMount ){
+					if( s == siritask::status::success && autoOpenFolderOnMount ){
 
 						this->openMountPointPath( e ) ;
 					}
