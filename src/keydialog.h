@@ -148,7 +148,6 @@ private :
 	void showErrorMessage( const siritask::cmdStatus& ) ;
 	void showErrorMessage( const QString& ) ;
 
-	void pluginKey( plugins::plugin,std::function< void( QByteArray ) > ) ;
 	void setUIVisible( bool ) ;
 	void keyAndKeyFile( void ) ;
 	void openVolume( void ) ;

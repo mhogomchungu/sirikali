@@ -764,22 +764,6 @@ void keyDialog::showErrorMessage( const QString& e )
 	m_ui->pbOK->setFocus() ;
 }
 
-void keyDialog::pluginKey( plugins::plugin plugin,std::function< void( QByteArray ) > function )
-{
-	QString s ;
-
-	if( plugin == plugins::plugin::hmac_key ){
-
-		s = QObject::tr( "hmac plugin.\n\nThis plugin generates a key using below formular:\n\nkey = hmac(sha256,passphrase,keyfile contents)" ) ;
-
-	}else if( plugin == plugins::plugin::externalExecutable ){
-
-		s = QObject::tr( "This plugin delegates key generation to an external application" ) ;
-	}
-
-	plugin::instance( m_parentWidget,this,plugin,std::move( function ),s ) ;
-}
-
 void keyDialog::showErrorMessage( const siritask::cmdStatus& e )
 {
 	if( e == siritask::status::backendFail ){
@@ -942,9 +926,21 @@ void keyDialog::openVolume()
 {
 	auto keyType = m_ui->cbKeyType->currentIndex() ;
 
+	auto _run = [ this ](){
+
+		if( m_create ){
+
+			this->encryptedFolderCreate() ;
+		}else{
+			this->encryptedFolderMount() ;
+		}
+	} ;
+
 	if( keyType == keyDialog::Key ){
 
 		m_key = m_ui->lineEditKey->text().toLatin1() ;
+
+		_run() ;
 
 	}if( keyType == keyDialog::keyKeyFile ){
 
@@ -960,27 +956,32 @@ void keyDialog::openVolume()
 
 	}else if( keyType == keyDialog::keyfile ){
 
-		m_key = utility::fileContents( m_ui->lineEditKey->text() ) ;
+		Task::run< QByteArray >( [ this ](){
 
-		if( utility::containsAtleastOne( m_key,'\n','\0','\r' ) ){
+			return utility::fileContents( m_ui->lineEditKey->text() ) ;
 
-			this->showErrorMessage( keyDialog::keyFileError() ) ;
-			return this->enableAll() ;
-		}
+		} ).then( [ this,_run = std::move( _run ) ]( QByteArray key ){
+
+			m_key = std::move( key ) ;
+
+			if( utility::containsAtleastOne( m_key,'\n','\0','\r' ) ){
+
+				this->showErrorMessage( keyDialog::keyFileError() ) ;
+				this->enableAll() ;
+			}else{
+				_run() ;
+			}
+		} ) ;
 
 	}else if( keyType == keyDialog::Plugin ){
 
 		/*
 		 * m_key is already set
 		 */
+		_run() ;
 	}
 
-	if( m_create ){
 
-		this->encryptedFolderCreate() ;
-	}else{
-		this->encryptedFolderMount() ;
-	}
 }
 
 QString keyDialog::keyFileError()
@@ -1035,23 +1036,27 @@ void keyDialog::cbActicated( QString e )
 		_showVisibleKeyOption( false ) ;
 
 		this->disableAll() ;
+		QString s ;
 
-		this->pluginKey( [ & ](){
+		auto plugin = [ & ](){
 
 			if( e == tr( "Key+KeyFile" ).remove( '&' ) ){
 
+				s = QObject::tr( "hmac plugin.\n\nThis plugin generates a key using below formular:\n\nkey = hmac(sha256,passphrase,keyfile contents)" ) ;
+
 				return plugins::plugin::hmac_key ;
 			}else{
+				s = QObject::tr( "This plugin delegates key generation to an external application" ) ;
+
 				return plugins::plugin::externalExecutable ;
 			}
+		}() ;
 
-		}(),[ this ]( QByteArray key ){
-
-			m_key = std::move( key ) ;
+		plugin::instance( m_parentWidget,this,plugin,s,[ this ]( const QByteArray& key ){
 
 			m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
 
-			m_ui->lineEditKey->setText( m_key ) ;
+			m_ui->lineEditKey->setText( key ) ;
 
 			if( m_keyStrength && m_create ){
 
@@ -1067,8 +1072,11 @@ void keyDialog::cbActicated( QString e )
 
 		auto q = QFileDialog::getOpenFileName( this,tr( "Select A KeyFile" ),QDir::homePath() ) ;
 
-		if( !q.isEmpty() ){
+		if( q.isEmpty() ){
 
+			m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
+			m_ui->lineEditKey->setText( QString() ) ;
+		}else{
 			this->disableAll() ;
 
 			Task::run< QByteArray >( [ q = std::move( q ) ](){
