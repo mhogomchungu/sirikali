@@ -834,27 +834,28 @@ void keyDialog::encryptedFolderCreate()
 
 	m_working = true ;
 
-	siritask::options s = { path,m,m_key,m_idleTimeOut,m_configFile,
-				m_exe.toLower(),false,m_mountOptions,m_createOptions } ;
+	siritask::options s{ path,m,m_key,m_idleTimeOut,m_configFile,
+			     m_exe.toLower(),false,m_mountOptions,m_createOptions } ;
 
-	auto e = siritask::encryptedFolderCreate( s ).await() ;
+	siritask::encryptedFolderCreate( s ).then( [ this,m = std::move( m ) ]( const siritask::cmdStatus& s ){
 
-	m_working = false ;
+		m_working = false ;
 
-	if( this->completed( e ) ){
+		if( this->completed( s ) ){
 
-		m_mountPointPath = m ;
-		this->HideUI() ;
-	}else{
-		if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
+			m_mountPointPath = m ;
+			this->HideUI() ;
+		}else{
+			if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
 
-			m_ui->lineEditKey->clear() ;
+				m_ui->lineEditKey->clear() ;
+			}
+
+			this->enableAll() ;
+
+			m_ui->lineEditKey->setFocus() ;
 		}
-
-		this->enableAll() ;
-
-		m_ui->lineEditKey->setFocus() ;
-	}
+	} ) ;
 }
 
 void keyDialog::encryptedFolderMount()
@@ -903,23 +904,24 @@ void keyDialog::encryptedFolderMount()
 
 	m_working = true ;
 
-	siritask::options s = { m_path,m,m_key,m_idleTimeOut,m_configFile,m_exe,ro,m_mountOptions,QString() } ;
+	siritask::options s{ m_path,m,m_key,m_idleTimeOut,m_configFile,m_exe,ro,m_mountOptions,QString() } ;
 
-	auto& e = siritask::encryptedFolderMount( s ) ;
+	siritask::encryptedFolderMount( s ).then( [ this,m = std::move( m ) ]( const siritask::cmdStatus& s ){
 
-	m_working = false ;
+		m_working = false ;
 
-	if( this->completed( e.await() ) ){
+		if( this->completed( s ) ){
 
-		m_mountPointPath = m ;
-		this->HideUI() ;
-	}else{
-		m_ui->lineEditKey->clear() ;
+			m_mountPointPath = m ;
+			this->HideUI() ;
+		}else{
+			m_ui->lineEditKey->clear() ;
 
-		this->enableAll() ;
+			this->enableAll() ;
 
-		m_ui->lineEditKey->setFocus() ;
-	}
+			m_ui->lineEditKey->setFocus() ;
+		}
+	} ) ;
 }
 
 void keyDialog::openVolume()
