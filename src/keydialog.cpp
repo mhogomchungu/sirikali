@@ -451,7 +451,6 @@ void keyDialog::enableAll()
 	m_ui->pbMountPoint->setEnabled( true ) ;
         m_ui->pbOptions->setEnabled( true ) ;
 	m_ui->label_2->setEnabled( true ) ;
-	m_ui->lineEditMountPoint->setEnabled( !m_create ) ;
 	m_ui->pbOpenFolderPath->setEnabled( true ) ;
 	m_ui->pbCancel->setEnabled( true ) ;
 	m_ui->pbOpen->setEnabled( true ) ;
@@ -475,6 +474,7 @@ void keyDialog::enableAll()
 
 	m_ui->lineEditFolderPath->setEnabled( false ) ;
 	m_ui->label_3->setEnabled( true ) ;
+	m_ui->lineEditMountPoint->setEnabled( true ) ;
 }
 
 void keyDialog::disableAll()
@@ -764,6 +764,22 @@ void keyDialog::showErrorMessage( const QString& e )
 	m_ui->pbOK->setFocus() ;
 }
 
+void keyDialog::pluginKey( plugins::plugin plugin,std::function< void( QByteArray ) > function )
+{
+	QString s ;
+
+	if( plugin == plugins::plugin::hmac_key ){
+
+		s = QObject::tr( "hmac plugin.\n\nThis plugin generates a key using below formular:\n\nkey = hmac(sha256,passphrase,keyfile contents)" ) ;
+
+	}else if( plugin == plugins::plugin::externalExecutable ){
+
+		s = QObject::tr( "This plugin delegates key generation to an external application" ) ;
+	}
+
+	plugin::instance( m_parentWidget,this,plugin,std::move( function ),s ) ;
+}
+
 void keyDialog::showErrorMessage( const siritask::cmdStatus& e )
 {
 	if( e == siritask::status::backendFail ){
@@ -932,25 +948,19 @@ void keyDialog::openVolume()
 
 	}if( keyType == keyDialog::keyKeyFile ){
 
-		if( utility::pluginKey( m_secrets.parent(),this,&m_key,plugins::plugin::hmac_key ) ){
-
-			return this->enableAll() ;
-		}
+		/*
+		 * Should not get here.
+		 */
 
 	}else if( keyType == keyDialog::hmacKeyFile ){
 
-		Task::await( [ this ](){
-
-			m_key = plugins::hmac_key( m_ui->lineEditKey->text(),QString() ) ;
-		} ) ;
+		/*
+		 * Should not get here.
+		 */
 
 	}else if( keyType == keyDialog::keyfile ){
 
-		QFile f( m_ui->lineEditKey->text() ) ;
-
-		f.open( QIODevice::ReadOnly ) ;
-
-		m_key = f.readAll() ;
+		m_key = utility::fileContents( m_ui->lineEditKey->text() ) ;
 
 		if( utility::containsAtleastOne( m_key,'\n','\0','\r' ) ){
 
@@ -1026,23 +1036,30 @@ void keyDialog::cbActicated( QString e )
 
 		this->disableAll() ;
 
-		if( e == tr( "Key+KeyFile" ).remove( '&' ) ){
+		this->pluginKey( [ & ](){
 
-			utility::pluginKey( m_secrets.parent(),this,&m_key,plugins::plugin::hmac_key ) ;
-		}else{
-			utility::pluginKey( m_secrets.parent(),this,&m_key,plugins::plugin::externalExecutable ) ;
-		}
+			if( e == tr( "Key+KeyFile" ).remove( '&' ) ){
 
-		this->enableAll() ;
+				return plugins::plugin::hmac_key ;
+			}else{
+				return plugins::plugin::externalExecutable ;
+			}
 
-		m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
+		}(),[ this ]( QByteArray key ){
 
-		m_ui->lineEditKey->setText( m_key ) ;
+			m_key = std::move( key ) ;
 
-		if( m_keyStrength && m_create ){
+			m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
 
-			this->setWindowTitle( tr( "Passphrase Quality: 100%" ) ) ;
-		}
+			m_ui->lineEditKey->setText( m_key ) ;
+
+			if( m_keyStrength && m_create ){
+
+				this->setWindowTitle( tr( "Passphrase Quality: 100%" ) ) ;
+			}
+
+			this->enableAll() ;
+		} ) ;
 
 	}else if( e == tr( "HMAC+KeyFile" ).remove( '&' ) ){
 
@@ -1050,26 +1067,30 @@ void keyDialog::cbActicated( QString e )
 
 		auto q = QFileDialog::getOpenFileName( this,tr( "Select A KeyFile" ),QDir::homePath() ) ;
 
-		QString s ;
-
 		if( !q.isEmpty() ){
 
 			this->disableAll() ;
 
-			Task::await( [ & ](){ s = plugins::hmac_key( q,QString() ) ; } ) ;
+			Task::run< QByteArray >( [ q = std::move( q ) ](){
 
-			this->enableAll() ;
+				return plugins::hmac_key( q,QString() ) ;
+
+			} ).then( [ this ]( QByteArray key ){
+
+				m_key = std::move( key ) ;
+
+				m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
+
+				m_ui->lineEditKey->setText( m_key ) ;
+
+				if( m_keyStrength && m_create ){
+
+					this->setWindowTitle( tr( "Passphrase Quality: 100%" ) ) ;
+				}
+
+				this->enableAll() ;
+			} ) ;
 		}
-
-		m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
-
-		m_ui->lineEditKey->setText( s ) ;
-
-		if( m_keyStrength && m_create ){
-
-			this->setWindowTitle( tr( "Passphrase Quality: 100%" ) ) ;
-		}
-
 	}else{
 		this->plugIn() ;
 

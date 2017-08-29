@@ -43,12 +43,12 @@ class plugin : public QDialog
 {
 	Q_OBJECT
 public:
-	static plugin& instance( QWidget * parent,QDialog * dialog,
-				  plugins::plugin t,
-				  std::function< void( const QByteArray& ) > e,
-				  const QString& f = QString() )
+	static void instance( QWidget * parent,QDialog * dialog,
+			      plugins::plugin t,
+			      std::function< void( const QByteArray& ) > e,
+			      const QString& f = QString() )
 	{
-		return *( new plugin( parent,dialog,t,e,f ) ) ;
+		new plugin( parent,dialog,t,e,f ) ;
 	}
 	plugin( QWidget * parent,QDialog * dialog,
 	      plugins::plugin,

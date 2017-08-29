@@ -797,39 +797,6 @@ void utility::setWindowDimensions( const utility::windowDimensions& e )
 	_settings->setValue( "Dimensions",e.dimensions() ) ;
 }
 
-int utility::pluginKey( QWidget * w,QDialog * d,QByteArray * key,plugins::plugin plugin )
-{
-	QString s ;
-
-	if( plugin == plugins::plugin::hmac_key ){
-
-		s = QObject::tr( "hmac plugin.\n\nThis plugin generates a key using below formular:\n\nkey = hmac(sha256,passphrase,keyfile contents)" ) ;
-
-	}else if( plugin == plugins::plugin::externalExecutable ){
-
-		s = QObject::tr( "This plugin delegates key generation to an external application" ) ;
-	}else{
-		return 1 ;
-	}
-
-	QEventLoop l ;
-
-	plugin::instance( w,d,plugin,[ & ]( const QByteArray& e ){
-
-		*key = e ;
-
-		if( e.isEmpty() ){
-
-			l.exit( 1 ) ;
-		}else{
-			l.exit( 0 ) ;
-		}
-
-	},s ) ;
-
-	return l.exec() ;
-}
-
 template< typename T >
 static void _selectOption( QMenu * m,const T& opt )
 {

@@ -336,8 +336,6 @@ namespace utility
 	utility::windowDimensions getWindowDimensions() ;
 	void setWindowDimensions( const utility::windowDimensions& ) ;
 
-	int pluginKey( QWidget *,QDialog *,QByteArray *,plugins::plugin ) ;
-
 	::Task::future< bool >& openPath( const QString& path,const QString& opener ) ;
 
 	void openPath( const QString& path,const QString& opener,QWidget *,const QString&,const QString& ) ;
@@ -345,6 +343,14 @@ namespace utility
 
 namespace utility
 {
+	template< typename T >
+	QByteArray fileContents( const T& e )
+	{
+		QFile file( e ) ;
+		file.open( QIODevice::ReadOnly ) ;
+		return file.readAll() ;
+	}
+
 	bool pathExists( const QString& ) ;
 
 	template< typename ... F >

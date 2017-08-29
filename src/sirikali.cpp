@@ -871,11 +871,7 @@ void sirikali::unlockVolume( const QStringList& l )
 
 		if( backEnd == "keyfile" ){
 
-			QFile f( keyFile ) ;
-
-			f.open( QIODevice::ReadOnly ) ;
-
-			auto key = f.readAll() ;
+			auto key = utility::fileContents( keyFile ) ;
 
 			if( utility::containsAtleastOne( key,'\n','\0','\r' ) ){
 

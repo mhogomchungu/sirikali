@@ -64,7 +64,7 @@ plugin::plugin( QWidget * parent,QDialog * dialog,plugins::plugin plugin,
 
 	m_ui->lineEdit->setFocus() ;
 
-	utility::setWindowOptions( this ) ;
+	//utility::setWindowOptions( this ) ;
 
 	this->ShowUI() ;
 }
@@ -142,9 +142,9 @@ void plugin::pbSetKey()
 			return QByteArray() ;
 		}
 
-	} ).then( [ this ]( const QByteArray& e ){
+	} ).then( [ this ]( QByteArray e ){
 
-		m_key = e ;
+		m_key = std::move( e ) ;
 
 		if( m_key.isEmpty() ){
 

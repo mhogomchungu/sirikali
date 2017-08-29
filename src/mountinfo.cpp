@@ -29,14 +29,7 @@ static QStringList _unlocked_volumes( background_thread thread )
 {
 	if( utility::platformIsLinux() ){
 
-		QFile f( "/proc/self/mountinfo" ) ;
-
-		if( f.open( QIODevice::ReadOnly ) ){
-
-			return utility::split( f.readAll() ) ;
-		}else{
-			return QStringList() ;
-		}
+		return utility::split( utility::fileContents( "/proc/self/mountinfo" ) ) ;
 	}else{
 		QStringList s ;
 		QString mode ;
