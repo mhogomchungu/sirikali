@@ -981,9 +981,9 @@ void keyDialog::openVolume()
 		 * m_key is already set
 		 */
 		_run() ;
+	}else{
+		_run() ;
 	}
-
-
 }
 
 QString keyDialog::keyFileError()
