@@ -65,7 +65,7 @@ plugin::plugin( QWidget * parent,
 
 	m_ui->lineEdit->setFocus() ;
 
-	//utility::setWindowOptions( this ) ;
+	utility::setWindowOptions( this ) ;
 
 	this->ShowUI() ;
 }

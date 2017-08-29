@@ -538,6 +538,8 @@ void keyDialog::KeyFile()
 		if( !e.isEmpty() ){
 
 			m_ui->lineEditKey->setText( e ) ;
+		}else{
+			m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
 		}
 	}
 }
@@ -843,7 +845,7 @@ void keyDialog::encryptedFolderCreate()
 
 		if( this->completed( s ) ){
 
-			m_mountPointPath = m ;
+			m_mountPointPath = std::move( m ) ;
 			this->HideUI() ;
 		}else{
 			if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
@@ -912,7 +914,7 @@ void keyDialog::encryptedFolderMount()
 
 		if( this->completed( s ) ){
 
-			m_mountPointPath = m ;
+			m_mountPointPath = std::move( m ) ;
 			this->HideUI() ;
 		}else{
 			m_ui->lineEditKey->clear() ;
