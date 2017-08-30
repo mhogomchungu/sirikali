@@ -886,10 +886,12 @@ void keyDialog::pbSetKeyKeyFile()
 
 void keyDialog::pbSetKey()
 {
-	Task::run< QByteArray >( [ this ](){
+	this->setKeyEnabled( false ) ;
 
-		auto keyFile    = m_ui->lineEditSetKeyKeyFile->text() ;
-		auto passphrase = m_ui->lineEditSetKeyPassword->text() ;
+	auto keyFile    = m_ui->lineEditSetKeyKeyFile->text() ;
+	auto passphrase = m_ui->lineEditSetKeyPassword->text() ;
+
+	Task::run< QByteArray >( [ = ](){
 
 		if( m_hmac ){
 
@@ -915,9 +917,11 @@ void keyDialog::pbSetKey()
 
 	} ).then( [ this ]( const QByteArray& e ){
 
+		this->setKeyEnabled( true ) ;
+
 		if( e.isEmpty() ){
 
-			m_ui->labelSetKey->setText( tr( "Failed To Generate Key, Probably Failed To Read KeyFile." ) ) ;
+			m_ui->labelSetKey->setText( tr( "Failed To Generate Key." ) ) ;
 		}else{
 			m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
 			m_ui->lineEditKey->setText( e ) ;
@@ -933,6 +937,18 @@ void keyDialog::pbSetKeyCancel()
 	this->SetUISetKey( false ) ;
 	this->setUIVisible( true ) ;
 	m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
+}
+
+void keyDialog::setKeyEnabled( bool e )
+{
+	m_ui->labelSetKeyKeyFile->setEnabled( e ) ;
+	m_ui->labelSetKeyPassword->setEnabled( e ) ;
+	m_ui->lineEditSetKeyKeyFile->setEnabled( e ) ;
+	m_ui->lineEditSetKeyPassword->setEnabled( e ) ;
+	m_ui->pbSetKey->setEnabled( e ) ;
+	m_ui->pbSetKeyCancel->setEnabled( e ) ;
+	m_ui->pbSetKeyKeyFile->setEnabled( e ) ;
+	m_ui->labelSetKey->setEnabled( e ) ;
 }
 
 void keyDialog::SetUISetKey( bool e )

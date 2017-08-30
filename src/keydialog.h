@@ -145,6 +145,7 @@ private slots:
 	void pbSetKey( void ) ;
 	void pbSetKeyCancel( void ) ;
 private :	
+	void setKeyEnabled( bool ) ;
 	void setDefaultUI( void ) ;
 	void SetUISetKey( bool ) ;
 	void ShowUI( void ) ;
