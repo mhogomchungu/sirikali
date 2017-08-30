@@ -141,7 +141,12 @@ private slots:
 	void cbMountReadOnlyStateChanged( int ) ;
 	void encryptedFolderMount( void ) ;
 	void encryptedFolderCreate( void ) ;
+	void pbSetKeyKeyFile( void ) ;
+	void pbSetKey( void ) ;
+	void pbSetKeyCancel( void ) ;
 private :	
+	void setDefaultUI( void ) ;
+	void SetUISetKey( bool ) ;
 	void ShowUI( void ) ;
 	void HideUI( void ) ;
 
@@ -178,6 +183,7 @@ private :
 	bool m_create ;
 	bool m_reUseMountPoint ;
 	bool m_checked = false ;
+	bool m_hmac ;
 
 	secrets& m_secrets ;
 
