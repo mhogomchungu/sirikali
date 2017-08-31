@@ -60,7 +60,7 @@ keyDialog::keyDialog( QWidget * parent,
 		      secrets& s,
 		      const volumeInfo& e,
 		      std::function< void() > p,
-		      std::function< void( const QString& ) > q,
+		      std::function< void( const QString& ) >& q,
 		      const QString& exe,const QByteArray& key ) :
 	QDialog( parent ),
 	m_ui( new Ui::keyDialog ),
@@ -68,13 +68,11 @@ keyDialog::keyDialog( QWidget * parent,
 	m_exe( exe ),
 	m_secrets( s ),
 	m_cancel( std::move( p ) ),
-	m_success( std::move( q ) )
+	m_openMountPath( q )
 {
 	m_ui->setupUi( this ) ;
 
 	this->setUIVisible( true ) ;
-
-	m_ui->pbOK->setText( tr( "&OK" ) ) ;
 
 	utility::setParent( parent,&m_parentWidget,this ) ;
 
@@ -234,8 +232,6 @@ keyDialog::keyDialog( QWidget * parent,
 		m_ui->lineEditKey->setFocus() ;
 	}
 
-	this->setDefaultUI() ;
-
 	this->installEventFilter( this ) ;
 
 	if( !m_key.isEmpty() ){
@@ -249,6 +245,8 @@ keyDialog::keyDialog( QWidget * parent,
 	m_ui->checkBoxVisibleKey->setEnabled( utility::enableRevealingPasswords() ) ;
 
 	this->SetUISetKey( false ) ;
+
+	this->setDefaultUI() ;
 
 	this->ShowUI() ;
 }
@@ -289,6 +287,8 @@ void keyDialog::setDefaultUI()
 		m_ui->pbOpenFolderPath->setVisible( false ) ;
 	}
 
+	m_ui->pbOK->setVisible( false ) ;
+	m_ui->pbOpen->setVisible( true ) ;
 	m_ui->checkBoxVisibleKey->setVisible( true ) ;
 	m_ui->pbkeyOption->setVisible( false ) ;
 	m_ui->textEdit->setVisible( false ) ;
@@ -677,13 +677,15 @@ void keyDialog::pbOpen()
 	}
 }
 
-bool keyDialog::completed( const siritask::cmdStatus& s )
+bool keyDialog::completed( const siritask::cmdStatus& s,const QString& m )
 {
 	QString msg ;
 
 	switch( s.status() ){
 
 	case siritask::status::success :
+
+		m_openMountPath( m ) ;
 
 		return true ;
 
@@ -821,8 +823,6 @@ void keyDialog::pbOK()
 
 void keyDialog::encryptedFolderCreate()
 {
-	m_mountPointPath.clear() ;
-
 	auto path = m_ui->lineEditFolderPath->text() ;
 
 	auto m = path.split( '/' ).last() ;
@@ -863,9 +863,8 @@ void keyDialog::encryptedFolderCreate()
 
 	m_working = false ;
 
-	if( this->completed( e ) ){
+	if( this->completed( e,m ) ){
 
-		m_mountPointPath = std::move( m ) ;
 		this->HideUI() ;
 	}else{
 		if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
@@ -963,16 +962,17 @@ void keyDialog::SetUISetKey( bool e )
 	m_ui->labelSetKey->setVisible( e ) ;
 	m_ui->pbOK->setVisible( e ) ;
 
-	if( !e ){
+	if( e ){
 
+		m_ui->pbOK->setVisible( false ) ;
+		m_ui->pbOpen->setVisible( false ) ;
+	}else{
 		this->setDefaultUI() ;
 	}
 }
 
 void keyDialog::encryptedFolderMount()
 {
-	m_mountPointPath.clear() ;
-
 	auto ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
 
 	auto m = m_ui->lineEditMountPoint->text() ;
@@ -1021,9 +1021,8 @@ void keyDialog::encryptedFolderMount()
 
 	m_working = false ;
 
-	if( this->completed( e ) ){
+	if( this->completed( e,m ) ){
 
-		m_mountPointPath = std::move( m ) ;
 		this->HideUI() ;
 	}else{
 		m_ui->lineEditKey->clear() ;
@@ -1167,8 +1166,8 @@ void keyDialog::cbActicated( QString e )
 
 		m_ui->labelMsg->clear() ;
 
-		this->SetUISetKey( true ) ;
 		this->setUIVisible( false ) ;
+		this->SetUISetKey( true ) ;
 
 	}else if( e == tr( "HMAC+KeyFile" ).remove( '&' ) ){
 
@@ -1291,8 +1290,8 @@ void keyDialog::keyFile()
 
 void keyDialog::pbCancel()
 {
-	this->HideUI() ;
 	m_cancel() ;
+	this->HideUI() ;
 }
 
 void keyDialog::ShowUI()
@@ -1314,6 +1313,5 @@ void keyDialog::HideUI()
 
 keyDialog::~keyDialog()
 {
-	m_success( m_mountPointPath ) ;
 	delete m_ui ;
 }

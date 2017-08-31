@@ -162,6 +162,8 @@ private:
 	QSystemTrayIcon m_trayIcon ;
 
 	mountinfo m_mountInfo ;
+
+	std::function< void( const QString& ) > m_openMountPath ;
 };
 
 #endif // MAINWINDOW_H

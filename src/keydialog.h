@@ -99,22 +99,22 @@ class keyDialog : public QDialog
 public:
 	static QString keyFileError() ;
 
-	static keyDialog& instance( QWidget * parent,
-				    QTableWidget * table,
-				    secrets& s,
-				    const volumeInfo& v,
-				    std::function< void() > cancel,
-				    std::function< void( const QString& ) > success,
-				    const QString& exe = QString(),const QByteArray& key = QByteArray() )
+	static void instance( QWidget * parent,
+			      QTableWidget * table,
+			      secrets& s,
+			      const volumeInfo& v,
+			      std::function< void() > cancel,
+			      std::function< void( const QString& ) >& openPath,
+			      const QString& exe = QString(),const QByteArray& key = QByteArray() )
 	{
-		return *( new keyDialog( parent,table,s,v,std::move( cancel ),std::move( success ),exe,key ) ) ;
+		new keyDialog( parent,table,s,v,std::move( cancel ),openPath,exe,key ) ;
 	}
 	keyDialog( QWidget * parent,
 		   QTableWidget *,
 		   secrets&,
 		   const volumeInfo&,
 		   std::function< void() >,
-		   std::function< void( const QString& ) >,
+		   std::function< void( const QString& ) >&,
 		   const QString&,
 		   const QByteArray& ) ;
 	~keyDialog() ;
@@ -161,7 +161,7 @@ private :
 	void disableAll( void ) ;
 	void windowSetTitle( const QString& = QString() ) ;
 	void closeEvent( QCloseEvent * ) ;
-	bool completed( const siritask::cmdStatus& ) ;
+	bool completed( const siritask::cmdStatus&,const QString& m ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 
 	Ui::keyDialog * m_ui ;
@@ -173,7 +173,6 @@ private :
 	QString m_idleTimeOut ;
 	QString m_configFile ;
 	QString m_exe ;
-	QString m_mountPointPath ;
 	QString m_mountOptions ;
 	QString m_createOptions ;
 	QStringList m_keyFiles ;
@@ -197,7 +196,7 @@ private :
 	QWidget * m_parentWidget ;
 
 	std::function< void() > m_cancel ;
-	std::function< void( const QString& ) > m_success ;
+	std::function< void( const QString& ) >& m_openMountPath ;
 };
 
 #endif // KEYDIALOG_H
