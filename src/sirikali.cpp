@@ -62,8 +62,7 @@
 
 sirikali::sirikali() :
 	m_secrets( this ),
-	m_mountInfo( this,true,[ & ](){ QCoreApplication::exit( m_exitStatus ) ; } ),
-	m_openMountPath( [ this ]( const QString& e ){ this->openMountPointPath( e ) ; } )
+	m_mountInfo( this,true,[ & ](){ QCoreApplication::exit( m_exitStatus ) ; } )
 {
 }
 
@@ -1503,7 +1502,7 @@ void sirikali::mount( const volumeInfo& entry,const QString& exe,const QByteArra
 
 		this->enableAll() ;
 
-	},m_openMountPath,exe,key ) ;
+	},m_autoOpenFolderOnMount,m_folderOpener,exe,key ) ;
 }
 
 void sirikali::createVolume( QAction * ac )

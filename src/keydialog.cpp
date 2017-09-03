@@ -60,15 +60,18 @@ keyDialog::keyDialog( QWidget * parent,
 		      secrets& s,
 		      const volumeInfo& e,
 		      std::function< void() > p,
-		      std::function< void( const QString& ) >& q,
-		      const QString& exe,const QByteArray& key ) :
+		      bool o,
+		      const QString& q,
+		      const QString& exe,
+		      const QByteArray& key ) :
 	QDialog( parent ),
 	m_ui( new Ui::keyDialog ),
 	m_key( key ),
 	m_exe( exe ),
+	m_fileManagerOpen( q ),
+	m_autoOpenMountPoint( o ),
 	m_secrets( s ),
-	m_cancel( std::move( p ) ),
-	m_openMountPath( q )
+	m_cancel( std::move( p ) )
 {
 	m_ui->setupUi( this ) ;
 
@@ -685,7 +688,12 @@ bool keyDialog::completed( const siritask::cmdStatus& s,const QString& m )
 
 	case siritask::status::success :
 
-		m_openMountPath( m ) ;
+		if( m_autoOpenMountPoint ){
+
+			auto s = m_fileManagerOpen + " " + utility::Task::makePath( m ) ;
+
+			utility::Task::run( s ).start() ;
+		}
 
 		return true ;
 

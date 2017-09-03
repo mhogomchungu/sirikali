@@ -104,17 +104,20 @@ public:
 			      secrets& s,
 			      const volumeInfo& v,
 			      std::function< void() > cancel,
-			      std::function< void( const QString& ) >& openPath,
-			      const QString& exe = QString(),const QByteArray& key = QByteArray() )
+			      bool o,
+			      const QString& m,
+			      const QString& exe = QString(),
+			      const QByteArray& key = QByteArray() )
 	{
-		new keyDialog( parent,table,s,v,std::move( cancel ),openPath,exe,key ) ;
+		new keyDialog( parent,table,s,v,std::move( cancel ),o,m,exe,key ) ;
 	}
 	keyDialog( QWidget * parent,
 		   QTableWidget *,
 		   secrets&,
 		   const volumeInfo&,
 		   std::function< void() >,
-		   std::function< void( const QString& ) >&,
+		   bool,
+		   const QString&,
 		   const QString&,
 		   const QByteArray& ) ;
 	~keyDialog() ;
@@ -175,10 +178,12 @@ private :
 	QString m_exe ;
 	QString m_mountOptions ;
 	QString m_createOptions ;
+	QString m_fileManagerOpen ;
 	QStringList m_keyFiles ;
 
 	QTableWidget * m_table ;
 
+	bool m_autoOpenMountPoint ;
 	bool m_working ;
 	bool m_create ;
 	bool m_reUseMountPoint ;
@@ -196,7 +201,6 @@ private :
 	QWidget * m_parentWidget ;
 
 	std::function< void() > m_cancel ;
-	std::function< void( const QString& ) >& m_openMountPath ;
 };
 
 #endif // KEYDIALOG_H
