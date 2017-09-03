@@ -966,7 +966,10 @@ void sirikali::autoUnlockVolumes()
 		}
 	}
 
-	this->autoUnlockVolumes( e ) ;
+	for( const auto& it : this->autoUnlockVolumes( e ) ){
+
+		this->mount( it ) ;
+	}
 }
 
 QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorites::entry >& l,
