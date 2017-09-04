@@ -278,6 +278,13 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e )
 
 	this->SetUISetKey( false ) ;
 
+	if( m_key.isEmpty() ){
+
+		m_ui->lineEditKey->setFocus() ;
+	}else{
+		m_ui->pbOpen->setFocus() ;
+	}
+
 	m_ui->lineEditMountPoint->setText( [ & ](){
 
 		auto m = e.mountPoint() ;
