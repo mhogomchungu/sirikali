@@ -35,6 +35,7 @@
 #include "secrets.h"
 #include "mountinfo.h"
 #include "lxqt_wallet.h"
+#include "keydialog.h"
 
 class QCloseEvent ;
 class QAction ;
@@ -109,6 +110,8 @@ private slots:
 	void languageMenu( QAction * ac ) ;
 	void autoMountFavoritesOnAvailable( QString ) ;
 private:
+	void mountMultipleVolumes( QVector< std::pair< favorites::entry,QByteArray > > ) ;
+
 	QString resolveFavoriteMountPoint( const QString& ) ;
 
 	QFont getSystemVolumeFont( void ) ;
@@ -130,7 +133,9 @@ private:
 	void setUpShortCuts( void ) ;
 	void raiseWindow( const QString& = QString() ) ;
 	void autoUnlockVolumes( void ) ;
-	QVector< favorites::entry > autoUnlockVolumes( const QVector< favorites::entry >&,bool = false ) ;
+
+	QVector< std::pair< favorites::entry,QByteArray > >
+	autoUnlockVolumes( QVector< std::pair< favorites::entry,QByteArray > >,bool = false ) ;
 
 	Ui::sirikali * m_ui = nullptr ;
 

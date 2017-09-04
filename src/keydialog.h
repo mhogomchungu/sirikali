@@ -100,7 +100,6 @@ public:
 	static QString keyFileError() ;
 
 	static void instance( QWidget * parent,
-			      QTableWidget * table,
 			      secrets& s,
 			      const volumeInfo& v,
 			      std::function< void() > cancel,
@@ -109,10 +108,22 @@ public:
 			      const QString& exe = QString(),
 			      const QByteArray& key = QByteArray() )
 	{
-		new keyDialog( parent,table,s,v,std::move( cancel ),o,m,exe,key ) ;
+		new keyDialog( parent,s,v,std::move( cancel ),o,m,exe,key ) ;
+	}
+	static void instance( QWidget * parent,
+			      secrets& s,
+			      bool o,
+			      const QString& m,
+			      QVector< std::pair< favorites::entry,QByteArray > > e )
+	{
+		new keyDialog( parent,s,o,m,std::move( e ) ) ;
 	}
 	keyDialog( QWidget * parent,
-		   QTableWidget *,
+		   secrets&,
+		   bool,
+		   const QString&,
+		   QVector< std::pair< favorites::entry,QByteArray > > ) ;
+	keyDialog( QWidget * parent,
 		   secrets&,
 		   const volumeInfo&,
 		   std::function< void() >,
@@ -148,6 +159,10 @@ private slots:
 	void pbSetKey( void ) ;
 	void pbSetKeyCancel( void ) ;
 private :	
+	void unlockVolume( void ) ;
+	void setVolume( const std::pair< favorites::entry,QByteArray >& ) ;
+	void setUpVolumeProperties( const volumeInfo& e ) ;
+	void setUpInitUI() ;
 	void setKeyEnabled( bool ) ;
 	void setDefaultUI( void ) ;
 	void SetUISetKey( bool ) ;
@@ -181,8 +196,6 @@ private :
 	QString m_fileManagerOpen ;
 	QStringList m_keyFiles ;
 
-	QTableWidget * m_table ;
-
 	bool m_autoOpenMountPoint ;
 	bool m_working ;
 	bool m_create ;
@@ -200,7 +213,9 @@ private :
 
 	QWidget * m_parentWidget ;
 
-	std::function< void() > m_cancel ;
+	std::function< void() > m_cancel = nullptr ;
+
+	QVector< std::pair< favorites::entry,QByteArray > > m_volumes ;
 };
 
 #endif // KEYDIALOG_H

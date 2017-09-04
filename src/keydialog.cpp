@@ -56,7 +56,51 @@ static QString _OSXKeyChain()
 }
 
 keyDialog::keyDialog( QWidget * parent,
-		      QTableWidget * table,
+		      secrets& s,
+		      bool o,
+		      const QString& q,
+		      QVector< std::pair< favorites::entry,QByteArray > > z ) :
+	QDialog( parent ),
+	m_ui( new Ui::keyDialog ),
+	m_fileManagerOpen( q ),
+	m_autoOpenMountPoint( o ),
+	m_create( false ),
+	m_secrets( s ),
+	m_volumes( std::move( z ) )
+{
+	m_ui->setupUi( this ) ;
+
+	utility::setParent( parent,&m_parentWidget,this ) ;
+
+	this->setFont( parent->font() ) ;
+
+	this->setUpInitUI() ;
+
+	if( m_volumes.isEmpty() ){
+
+		this->HideUI() ;
+	}else{
+		auto s = m_volumes.first() ;
+		m_volumes.removeFirst() ;
+		this->setVolume( s ) ;
+
+		this->ShowUI() ;
+	}
+}
+
+void keyDialog::unlockVolume()
+{
+	if( m_volumes.isEmpty() ){
+
+		this->HideUI() ;
+	}else{
+		auto s = m_volumes.first() ;
+		m_volumes.removeFirst() ;
+		this->setVolume( s ) ;
+	}
+}
+
+keyDialog::keyDialog( QWidget * parent,
 		      secrets& s,
 		      const volumeInfo& e,
 		      std::function< void() > p,
@@ -70,24 +114,33 @@ keyDialog::keyDialog( QWidget * parent,
 	m_exe( exe ),
 	m_fileManagerOpen( q ),
 	m_autoOpenMountPoint( o ),
+	m_create( e.isNotValid() ),
 	m_secrets( s ),
 	m_cancel( std::move( p ) )
 {
 	m_ui->setupUi( this ) ;
 
-	this->setUIVisible( true ) ;
-
 	utility::setParent( parent,&m_parentWidget,this ) ;
 
-	m_configFile = e.configFilePath() ;
-	m_idleTimeOut = e.idleTimeOut() ;
-	m_mountOptions = e.mountOptions() ;
+	this->setFont( parent->font() ) ;
 
-	m_table = table ;
-	m_path = e.volumePath() ;
-	m_working = false ;
+	this->setUpInitUI() ;
 
-	m_create = e.isNotValid() ;
+	this->setUpVolumeProperties( e ) ;
+
+	if( m_create ){
+
+		m_ui->lineEditMountPoint->setText( QString() ) ;
+	}
+
+	m_ui->lineEditKey->setText( m_key ) ;
+
+	this->ShowUI() ;
+}
+
+void keyDialog::setUpInitUI()
+{
+	this->setUIVisible( true ) ;
 
 	m_reUseMountPoint = utility::reUseMountPoint() ;
 
@@ -142,49 +195,6 @@ keyDialog::keyDialog( QWidget * parent,
 		m_ui->pbMountPoint->setIcon( QIcon( ":/folder.png" ) ) ;
 
 		m_ui->lineEditKey->setFocus() ;
-
-		m_ui->lineEditMountPoint->setText( [ & ](){
-
-			auto m = e.mountPoint() ;
-
-			if( m.startsWith( "/" ) ){
-
-				if( m_reUseMountPoint ){
-
-					return m ;
-				}else{
-					auto y = m ;
-					auto r = y.lastIndexOf( '/' ) ;
-
-					if( r != -1 ){
-
-						y.truncate( r ) ;
-					}
-
-					return y + "/" + utility::mountPathPostFix( m,m.split( '/' ).last() ) ;
-				}
-			}else{
-				if( m_reUseMountPoint ){
-
-					if( m.isEmpty() ){
-
-						return utility::mountPath( m_path.split( "/" ).last() ) ;
-					}else{
-						return utility::mountPath( m.split( "/" ).last() ) ;
-					}
-				}else{
-					return utility::mountPath( [ &m,this ](){
-
-						if( m.isEmpty() ){
-
-							return utility::mountPathPostFix( m_path.split( "/" ).last() ) ;
-						}else{
-							return utility::mountPathPostFix( m ) ;
-						}
-					}() ) ;
-				}
-			}
-		}() ) ;
 	}
 
 	QIcon folderIcon( ":/folder.png" ) ;
@@ -193,7 +203,6 @@ keyDialog::keyDialog( QWidget * parent,
 	m_ui->pbSetKeyKeyFile->setIcon( folderIcon ) ;
 
 	this->setFixedSize( this->size() ) ;
-	this->setFont( parent->font() ) ;
 
 	m_ui->checkBoxOpenReadOnly->setChecked( utility::getOpenVolumeReadOnlyOption() ) ;
 
@@ -246,12 +255,71 @@ keyDialog::keyDialog( QWidget * parent,
 	m_ui->checkBoxVisibleKey->setToolTip( tr( "Check This Box To Make Password Visible" ) ) ;
 
 	m_ui->checkBoxVisibleKey->setEnabled( utility::enableRevealingPasswords() ) ;
+}
+
+void keyDialog::setVolume( const std::pair< favorites::entry,QByteArray >& e )
+{
+	m_key = e.second ;
+	this->setUpVolumeProperties( e.first ) ;
+}
+
+void keyDialog::setUpVolumeProperties( const volumeInfo& e )
+{
+	m_path         = e.volumePath() ;
+
+	m_configFile   = e.configFilePath() ;
+	m_idleTimeOut  = e.idleTimeOut() ;
+	m_mountOptions = e.mountOptions() ;
+	m_working      = false ;
+
+	m_ui->lineEditKey->setText( m_key ) ;
+
+	this->setUIVisible( true ) ;
 
 	this->SetUISetKey( false ) ;
 
-	this->setDefaultUI() ;
+	m_ui->lineEditMountPoint->setText( [ & ](){
 
-	this->ShowUI() ;
+		auto m = e.mountPoint() ;
+
+		if( m.startsWith( "/" ) ){
+
+			if( m_reUseMountPoint ){
+
+				return m ;
+			}else{
+				auto y = m ;
+				auto r = y.lastIndexOf( '/' ) ;
+
+				if( r != -1 ){
+
+					y.truncate( r ) ;
+				}
+
+				return y + "/" + utility::mountPathPostFix( m,m.split( '/' ).last() ) ;
+			}
+		}else{
+			if( m_reUseMountPoint ){
+
+				if( m.isEmpty() ){
+
+					return utility::mountPath( m_path.split( "/" ).last() ) ;
+				}else{
+					return utility::mountPath( m.split( "/" ).last() ) ;
+				}
+			}else{
+				return utility::mountPath( [ &m,this ](){
+
+					if( m.isEmpty() ){
+
+						return utility::mountPathPostFix( m_path.split( "/" ).last() ) ;
+					}else{
+						return utility::mountPathPostFix( m ) ;
+					}
+				}() ) ;
+			}
+		}
+	}() ) ;
 }
 
 void keyDialog::setDefaultUI()
@@ -279,6 +347,8 @@ void keyDialog::setDefaultUI()
 
 		m_ui->pbkeyOption->setVisible( false ) ;
 	}else{
+		this->windowSetTitle( tr( "Unlocking \"%1\"" ).arg( m_path ) ) ;
+
 		m_ui->label_3->setVisible( false ) ;
 
 		m_ui->lineEditMountPoint->setEnabled( true ) ;
@@ -1031,7 +1101,8 @@ void keyDialog::encryptedFolderMount()
 
 	if( this->completed( e,m ) ){
 
-		this->HideUI() ;
+		this->enableAll() ;
+		this->unlockVolume() ;
 	}else{
 		m_ui->lineEditKey->clear() ;
 
@@ -1061,7 +1132,7 @@ void keyDialog::openVolume()
 
 		_run() ;
 
-	}if( keyType == keyDialog::keyKeyFile ){
+	}else if( keyType == keyDialog::keyKeyFile ){
 
 		/*
 		 * Should not get here.
@@ -1298,8 +1369,17 @@ void keyDialog::keyFile()
 
 void keyDialog::pbCancel()
 {
-	m_cancel() ;
-	this->HideUI() ;
+	if( m_volumes.isEmpty() ){
+
+		if( m_cancel ) {
+
+			m_cancel() ;
+		}
+
+		this->HideUI() ;
+	}else{
+		this->unlockVolume() ;
+	}
 }
 
 void keyDialog::ShowUI()
