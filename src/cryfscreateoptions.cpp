@@ -78,16 +78,20 @@ void cryfscreateoptions::pbOK()
 		s = "32768" ;
 	}
 
+	this->hide() ;
+
 	m_function( e.arg( m_ui->comboBox->currentText(),s ) ) ;
 
-	this->HideUI() ;
+	this->deleteLater() ;
 }
 
 void cryfscreateoptions::pbCancel()
 {
+	this->hide() ;
+
 	m_function( QString() ) ;
 
-	this->HideUI() ;
+	this->deleteLater() ;
 }
 
 void cryfscreateoptions::HideUI()

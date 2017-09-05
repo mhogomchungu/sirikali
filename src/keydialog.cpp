@@ -437,6 +437,8 @@ void keyDialog::pbOptions()
 
 		QStringList e{ m_idleTimeOut,m_configFile,m_mountOptions,m_exe } ;
 
+		this->hide() ;
+
 		options::instance( m_parentWidget,m_create,e,[ this ]( const QStringList& e ){
 
 			utility2::stringListToStrings( e,m_idleTimeOut,m_configFile,m_mountOptions ) ;
@@ -447,6 +449,8 @@ void keyDialog::pbOptions()
 			}else{
 				m_ui->pbOpen->setFocus() ;
 			}
+
+			this->ShowUI() ;
 		} ) ;
 	}
 }
