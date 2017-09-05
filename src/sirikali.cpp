@@ -1008,9 +1008,8 @@ sirikali::autoUnlockVolumes( const QVector< std::pair< favorites::entry,QByteArr
 				     const QByteArray& key,
 				     bool s ){
 			if( s ){
-				auto z = e ;
-				z.second = key ;
-				q.append( z ) ;
+
+				q.append( { e.first,key } ) ;
 			}else{
 				auto& s = siritask::encryptedFolderMount( { e.first,key } ) ;
 
