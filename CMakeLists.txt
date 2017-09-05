@@ -1,6 +1,4 @@
 cmake_minimum_required( VERSION 3.0 )
-cmake_policy( SET CMP0017 OLD )
-cmake_policy( SET CMP0002 OLD )
 
 set_property( GLOBAL PROPERTY ALLOW_DUPLICATE_CUSTOM_TARGETS ON )
 
@@ -375,6 +373,7 @@ NoDisplay=false
 StartupNotify=true
 Terminal=false
 Type=Application
+MimeType=inode/directory;
 Categories=Security;Utility;Qt;X-MandrivaLinux-System-FileTools;\n")
 
 install( FILES ${PROJECT_BINARY_DIR}/sirikali.desktop
