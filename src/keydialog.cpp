@@ -71,6 +71,7 @@ keyDialog::keyDialog( QWidget * parent,
 	m_ui->setupUi( this ) ;
 
 	utility::setParent( parent,&m_parentWidget,this ) ;
+	utility::setWindowOptions( this ) ;
 
 	this->setFont( parent->font() ) ;
 
@@ -121,6 +122,7 @@ keyDialog::keyDialog( QWidget * parent,
 	m_ui->setupUi( this ) ;
 
 	utility::setParent( parent,&m_parentWidget,this ) ;
+	utility::setWindowOptions( this ) ;
 
 	this->setFont( parent->font() ) ;
 
@@ -400,17 +402,25 @@ void keyDialog::pbOptions()
 
 		if( m_exe == "Securefs" ){
 
+			this->hide() ;
+
 			securefscreateoptions::instance( m_parentWidget,[ this ]( const QString& e ){
 
 				m_createOptions = e ;
+
+				this->ShowUI() ;
 			} ) ;
 		}
 
 		if( m_exe == "Cryfs" ){
 
+			this->hide() ;
+
 			cryfscreateoptions::instance( m_parentWidget,[ this ]( const QString& e ){
 
 				m_createOptions = e ;
+
+				this->ShowUI() ;
 			} ) ;
 		}
 	}else{
@@ -1396,7 +1406,6 @@ void keyDialog::pbCancel()
 
 void keyDialog::ShowUI()
 {
-	utility::setWindowOptions( this ) ;
 	this->show() ;
 	this->raise() ;
 	this->activateWindow() ;

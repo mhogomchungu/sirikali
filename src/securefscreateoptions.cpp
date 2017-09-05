@@ -57,6 +57,7 @@ void securefscreateoptions::pbOK()
 
 void securefscreateoptions::pbCancel()
 {
+	m_function( QString() ) ;
 	this->HideUI() ;
 }
 
