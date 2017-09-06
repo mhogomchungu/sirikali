@@ -600,12 +600,7 @@ void sirikali::favoriteClicked( QAction * ac )
 
 				if( it.volumePath == e ){
 
-					auto s = this->autoUnlockVolumes( { { it,QByteArray() } },true ) ;
-
-					if( !s.isEmpty() ){
-
-						this->mountMultipleVolumes( std::move( s ) ) ;
-					}
+					this->mountMultipleVolumes( this->autoUnlockVolumes( { { it,QByteArray() } },true ) ) ;
 
 					break ;
 				}
@@ -967,7 +962,7 @@ void sirikali::autoMountFavoritesOnAvailable( QString m )
 
 			if( it.volumePath.startsWith( m ) && it.autoMount() ){
 
-				e.append( { { it,QByteArray() } } ) ;
+				e.append( { it,QByteArray() } ) ;
 			}
 		}
 
@@ -983,7 +978,7 @@ void sirikali::autoUnlockVolumes()
 
 		if( it.autoMount() ){
 
-			e.append( { { it,QByteArray() } } ) ;
+			e.append( { it,QByteArray() } ) ;
 		}
 	}
 
