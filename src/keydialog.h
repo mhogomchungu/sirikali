@@ -114,15 +114,17 @@ public:
 			      secrets& s,
 			      bool o,
 			      const QString& m,
-			      QVector< std::pair< favorites::entry,QByteArray > > e )
+			      QVector< std::pair< favorites::entry,QByteArray > > e,
+			      std::function< void() > function )
 	{
-		new keyDialog( parent,s,o,m,std::move( e ) ) ;
+		new keyDialog( parent,s,o,m,std::move( e ),std::move( function ) ) ;
 	}
 	keyDialog( QWidget * parent,
 		   secrets&,
 		   bool,
 		   const QString&,
-		   QVector< std::pair< favorites::entry,QByteArray > > ) ;
+		   QVector< std::pair< favorites::entry,QByteArray > >,
+		   std::function< void() > ) ;
 	keyDialog( QWidget * parent,
 		   secrets&,
 		   const volumeInfo&,
@@ -213,7 +215,8 @@ private :
 
 	QWidget * m_parentWidget ;
 
-	std::function< void() > m_cancel = nullptr ;
+	std::function< void() > m_cancel = [](){} ;
+	std::function< void() > m_done = [](){} ;
 
 	QVector< std::pair< favorites::entry,QByteArray > > m_volumes ;
 };

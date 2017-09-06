@@ -59,13 +59,15 @@ keyDialog::keyDialog( QWidget * parent,
 		      secrets& s,
 		      bool o,
 		      const QString& q,
-		      QVector< std::pair< favorites::entry,QByteArray > > z ) :
+		      QVector< std::pair< favorites::entry,QByteArray > > z,
+		      std::function< void() > f ) :
 	QDialog( parent ),
 	m_ui( new Ui::keyDialog ),
 	m_fileManagerOpen( q ),
 	m_autoOpenMountPoint( o ),
 	m_create( false ),
 	m_secrets( s ),
+	m_done( std::move( f ) ),
 	m_volumes( std::move( z ) )
 {
 	m_ui->setupUi( this ) ;
@@ -1399,10 +1401,7 @@ void keyDialog::pbCancel()
 {
 	if( m_volumes.isEmpty() ){
 
-		if( m_cancel ) {
-
-			m_cancel() ;
-		}
+		m_cancel() ;
 
 		this->HideUI() ;
 	}else{
@@ -1420,6 +1419,8 @@ void keyDialog::ShowUI()
 void keyDialog::HideUI()
 {
 	if( !m_working ){
+
+		m_done() ;
 
 		this->hide() ;
 		this->deleteLater() ;

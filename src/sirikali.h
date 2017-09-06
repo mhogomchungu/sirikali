@@ -94,7 +94,6 @@ private slots:
 	void slotTrayClicked( QSystemTrayIcon::ActivationReason = QSystemTrayIcon::Trigger ) ;
 	void slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ;
 	void enableAll( void ) ;
-	void enableAll_1( void ) ;
 	void slotOpenFolder( void ) ;
 	void slotOpenSharedFolder( void ) ;
 	void addEntryToTable( const QStringList& ) ;
@@ -157,7 +156,7 @@ private:
 
 	bool m_startHidden ;
 	bool m_autoOpenFolderOnMount ;
-	bool m_removeAllVolumes = false ;
+	bool m_disableEnableAll = false ;
 
 	QString m_sharedFolderPath ;
 	QString m_folderOpener ;

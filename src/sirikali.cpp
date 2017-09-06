@@ -616,8 +616,10 @@ void sirikali::favoriteClicked( QAction * ac )
 
 void sirikali::showFavorites()
 {
-	utility::readFavorites( m_ui->pbFavorites->menu(),true,
-				tr( "Manage Favorites" ),tr( "Mount All" ) ) ;
+	utility::readFavorites( m_ui->pbFavorites->menu(),
+				true,
+				tr( "Manage Favorites" ),
+				tr( "Mount All" ) ) ;
 }
 
 void sirikali::setLocalizationLanguage( bool translate )
@@ -940,7 +942,16 @@ void sirikali::unlockVolume( const QStringList& l )
 
 void sirikali::mountMultipleVolumes( QVector< std::pair< favorites::entry,QByteArray > > e )
 {
-	keyDialog::instance( this,m_secrets,m_autoOpenFolderOnMount,m_folderOpener,std::move( e ) ) ;
+	m_disableEnableAll = true ;
+
+	this->disableAll() ;
+
+	keyDialog::instance( this,
+			     m_secrets,
+			     m_autoOpenFolderOnMount,
+			     m_folderOpener,
+			     std::move( e ),
+			     [ this ](){ m_disableEnableAll = false ; this->enableAll() ; } ) ;
 }
 
 void sirikali::autoMountFavoritesOnAvailable( QString m )
@@ -1464,8 +1475,6 @@ void sirikali::setUpShortCuts()
 
 		return e ;
 	}() ) ;
-
-
 }
 
 void sirikali::setUpFont()
@@ -1512,10 +1521,14 @@ void sirikali::mount( const volumeInfo& entry,const QString& exe,const QByteArra
 {
 	this->disableAll() ;
 
-	auto s = [ this ](){ this->enableAll() ; } ;
-
-	keyDialog::instance( this,m_secrets,entry,std::move( s ),
-			     m_autoOpenFolderOnMount,m_folderOpener,exe,key ) ;
+	keyDialog::instance( this,
+			     m_secrets,
+			     entry,
+			     [ this ](){ this->enableAll() ; },
+			     m_autoOpenFolderOnMount,
+			     m_folderOpener,
+			     exe,
+			     key ) ;
 }
 
 void sirikali::createVolume( QAction * ac )
@@ -1748,7 +1761,7 @@ void sirikali::disableAll()
 
 void sirikali::enableAll()
 {
-	if( !m_removeAllVolumes ){
+	if( !m_disableEnableAll ){
 
 		m_ui->pbmenu->setEnabled( true ) ;
 		m_ui->pbupdate->setEnabled( true ) ;
@@ -1758,12 +1771,6 @@ void sirikali::enableAll()
 		m_ui->pbcreate->setEnabled( true ) ;
 		m_ui->pbFavorites->setEnabled( true ) ;
 	}
-}
-
-void sirikali::enableAll_1()
-{
-	m_removeAllVolumes = false ;
-	this->enableAll() ;
 }
 
 sirikali::~sirikali()
