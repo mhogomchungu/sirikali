@@ -280,6 +280,8 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e )
 
 	this->SetUISetKey( false ) ;
 
+	m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
+
 	if( m_create ){
 
 		m_ui->lineEditMountPoint->setFocus() ;
