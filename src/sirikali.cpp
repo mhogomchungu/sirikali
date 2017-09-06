@@ -942,16 +942,19 @@ void sirikali::unlockVolume( const QStringList& l )
 
 void sirikali::mountMultipleVolumes( QVector< std::pair< favorites::entry,QByteArray > > e )
 {
-	m_disableEnableAll = true ;
+	if( !e.isEmpty() ){
 
-	this->disableAll() ;
+		m_disableEnableAll = true ;
 
-	keyDialog::instance( this,
-			     m_secrets,
-			     m_autoOpenFolderOnMount,
-			     m_folderOpener,
-			     std::move( e ),
-			     [ this ](){ m_disableEnableAll = false ; this->enableAll() ; } ) ;
+		this->disableAll() ;
+
+		keyDialog::instance( this,
+				     m_secrets,
+				     m_autoOpenFolderOnMount,
+				     m_folderOpener,
+				     std::move( e ),
+				     [ this ](){ m_disableEnableAll = false ; this->enableAll() ; } ) ;
+	}
 }
 
 void sirikali::autoMountFavoritesOnAvailable( QString m )
