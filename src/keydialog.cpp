@@ -79,13 +79,11 @@ keyDialog::keyDialog( QWidget * parent,
 
 	this->setUpInitUI() ;
 
-	if( m_volumes.isEmpty() ){
+	if( this->mountedAll() ){
 
 		this->HideUI() ;
 	}else{
-		auto s = m_volumes.first() ;
-		m_volumes.removeFirst() ;
-		this->setVolume( s ) ;
+		this->setVolumeToUnlock() ;
 
 		this->ShowUI() ;
 	}
@@ -93,13 +91,11 @@ keyDialog::keyDialog( QWidget * parent,
 
 void keyDialog::unlockVolume()
 {
-	if( m_volumes.isEmpty() ){
+	if( this->mountedAll() ){
 
 		this->HideUI() ;
 	}else{
-		auto s = m_volumes.first() ;
-		m_volumes.removeFirst() ;
-		this->setVolume( s ) ;
+		this->setVolumeToUnlock() ;
 	}
 }
 
@@ -113,7 +109,6 @@ keyDialog::keyDialog( QWidget * parent,
 		      const QByteArray& key ) :
 	QDialog( parent ),
 	m_ui( new Ui::keyDialog ),
-	m_key( key ),
 	m_exe( exe ),
 	m_fileManagerOpen( q ),
 	m_autoOpenMountPoint( o ),
@@ -130,14 +125,12 @@ keyDialog::keyDialog( QWidget * parent,
 
 	this->setUpInitUI() ;
 
-	this->setUpVolumeProperties( e ) ;
+	this->setUpVolumeProperties( e,key ) ;
 
 	if( m_create ){
 
 		m_ui->lineEditMountPoint->setText( QString() ) ;
 	}
-
-	m_ui->lineEditKey->setText( m_key ) ;
 
 	this->ShowUI() ;
 }
@@ -261,13 +254,24 @@ void keyDialog::setUpInitUI()
 	m_ui->checkBoxVisibleKey->setEnabled( utility::enableRevealingPasswords() ) ;
 }
 
-void keyDialog::setVolume( const std::pair< favorites::entry,QByteArray >& e )
+void keyDialog::setVolumeToUnlock()
 {
-	m_key = e.second ;
-	this->setUpVolumeProperties( e.first ) ;
+	const auto& m = m_volumes[ m_counter ] ;
+
+	m_counter++ ;
+
+	this->setUpVolumeProperties( m.first,m.second ) ;
+
+	auto a = QString::number( m_counter ) ;
+	auto b = QString::number( m_volumes.size() ) ;
+
+	if( m_volumes.size() > 1 ){
+
+		this->windowSetTitle( tr( "(%1/%2) Unlocking \"%3\"" ).arg( a,b,m_path ) ) ;
+	}
 }
 
-void keyDialog::setUpVolumeProperties( const volumeInfo& e )
+void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key )
 {
 	m_path         = e.volumePath() ;
 
@@ -276,7 +280,7 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e )
 	m_mountOptions = e.mountOptions() ;
 	m_working      = false ;
 
-	m_ui->lineEditKey->setText( m_key ) ;
+	m_ui->lineEditKey->setText( key ) ;
 
 	this->setUIVisible( true ) ;
 
@@ -288,7 +292,7 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e )
 
 		m_ui->lineEditMountPoint->setFocus() ;
 	}else{
-		if( m_key.isEmpty() ){
+		if( key.isEmpty() ){
 
 			m_ui->lineEditKey->setFocus() ;
 		}else{
@@ -682,6 +686,11 @@ void keyDialog::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
 	this->pbCancel() ;
+}
+
+bool keyDialog::mountedAll()
+{
+	return m_volumes.size() == m_counter ;
 }
 
 void keyDialog::pbOpen()
@@ -1399,7 +1408,7 @@ void keyDialog::keyFile()
 
 void keyDialog::pbCancel()
 {
-	if( m_volumes.isEmpty() ){
+	if( this->mountedAll() ){
 
 		m_cancel() ;
 

@@ -162,8 +162,8 @@ private slots:
 	void pbSetKeyCancel( void ) ;
 private :	
 	void unlockVolume( void ) ;
-	void setVolume( const std::pair< favorites::entry,QByteArray >& ) ;
-	void setUpVolumeProperties( const volumeInfo& e ) ;
+	void setVolumeToUnlock() ;
+	void setUpVolumeProperties( const volumeInfo& e,const QByteArray& ) ;
 	void setUpInitUI() ;
 	void setKeyEnabled( bool ) ;
 	void setDefaultUI( void ) ;
@@ -181,6 +181,8 @@ private :
 	void disableAll( void ) ;
 	void windowSetTitle( const QString& = QString() ) ;
 	void closeEvent( QCloseEvent * ) ;
+
+	bool mountedAll() ;
 	bool completed( const siritask::cmdStatus&,const QString& m ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 
@@ -219,6 +221,8 @@ private :
 	std::function< void() > m_done = [](){} ;
 
 	QVector< std::pair< favorites::entry,QByteArray > > m_volumes ;
+
+	decltype( m_volumes.size() ) m_counter = 0 ;
 };
 
 #endif // KEYDIALOG_H

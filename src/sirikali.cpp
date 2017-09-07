@@ -59,6 +59,18 @@
 
 #include "json.h"
 
+static QVector< std::pair< favorites::entry,QByteArray > > _readFavorites()
+{
+	QVector< std::pair< favorites::entry,QByteArray > > e ;
+
+	for( auto&& it : utility::readFavorites() ){
+
+		e.append( { std::move( it ),QByteArray() } ) ;
+	}
+
+	return e ;
+}
+
 sirikali::sirikali() :
 	m_secrets( this ),
 	m_mountInfo( this,true,[ & ](){ QCoreApplication::exit( m_exitStatus ) ; } )
@@ -587,20 +599,13 @@ void sirikali::favoriteClicked( QAction * ac )
 	}else{
 		if( e == tr( "Mount All" ).remove( '&' ) ){
 
-			QVector< std::pair< favorites::entry,QByteArray > > s ;
-
-			for( auto&& it : utility::readFavorites() ){
-
-				s.append( { std::move( it ),QByteArray() } ) ;
-			}
-
-			this->mountMultipleVolumes( std::move( s ) ) ;
+			this->mountMultipleVolumes( _readFavorites() ) ;
 		}else{
-			for( const auto& it : utility::readFavorites() ){
+			for( auto&& it : _readFavorites() ){
 
-				if( it.volumePath == e ){
+				if( it.first.volumePath == e ){
 
-					this->mountMultipleVolumes( this->autoUnlockVolumes( { { it,QByteArray() } },true ) ) ;
+					this->mountMultipleVolumes( this->autoUnlockVolumes( { std::move( it ) },true ) ) ;
 
 					break ;
 				}
@@ -958,11 +963,11 @@ void sirikali::autoMountFavoritesOnAvailable( QString m )
 
 		QVector< std::pair< favorites::entry,QByteArray > > e ;
 
-		for( const auto& it : utility::readFavorites() ){
+		for( auto&& it : _readFavorites() ){
 
-			if( it.volumePath.startsWith( m ) && it.autoMount() ){
+			if( it.first.volumePath.startsWith( m ) && it.first.autoMount() ){
 
-				e.append( { it,QByteArray() } ) ;
+				e.append( std::move( it ) ) ;
 			}
 		}
 
@@ -974,11 +979,11 @@ void sirikali::autoUnlockVolumes()
 {
 	QVector< std::pair< favorites::entry,QByteArray > > e ;
 
-	for( const auto& it : utility::readFavorites() ){
+	for( auto&& it : _readFavorites() ){
 
-		if( it.autoMount() ){
+		if( it.first.autoMount() ){
 
-			e.append( { it,QByteArray() } ) ;
+			e.append( std::move( it ) ) ;
 		}
 	}
 
