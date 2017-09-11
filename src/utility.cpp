@@ -366,8 +366,7 @@ void utility::openPath( const QString& path,const QString& opener,
 
 			if( failed && obj ){
 
-				DialogMsg m( obj ) ;
-				m.ShowUIOK( title,msg ) ;
+				DialogMsg( obj ).ShowUIOK( title,msg ) ;
 			}
 		} ) ;
 	}
@@ -925,7 +924,14 @@ QString utility::walletName( LXQt::Wallet::BackEnd s )
 {
 	if( s == LXQt::Wallet::BackEnd::kwallet ){
 
-		return "default" ;
+		if( _settings->contains( "KWalletName" ) ){
+
+			return _settings->value( "KWalletName" ).toString() ;
+		}else{
+			QString s = "default" ;
+			_settings->setValue( "KWalletName",s ) ;
+			return s ;
+		}
 	}else{
 		return utility::walletName() ;
 	}

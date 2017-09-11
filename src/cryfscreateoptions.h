@@ -45,7 +45,7 @@ private slots:
 	void pbOK() ;
 	void pbCancel() ;
 private:
-	void HideUI() ;
+	void HideUI( const QString& ) ;
 	void closeEvent( QCloseEvent * ) ;
 	Ui::cryfscreateoptions * m_ui ;
 	std::function< void( const QString& ) > m_function ;
