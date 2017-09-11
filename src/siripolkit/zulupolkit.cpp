@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  *  Copyright ( c ) 2017
  *  name : Francis Banyikwa
@@ -31,10 +31,17 @@
 #include <QCoreApplication>
 #include <QFile>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+
 namespace utility
 {
 	struct Task
 	{
+		template< typename T >
+		Task( const T& a ) : stdOut( a ),stdError( a )
+		{
+		}
 		Task()
 		{
 		}
@@ -62,7 +69,7 @@ namespace utility
 
 		int exitCode   = 255 ;
 		int exitStatus = 255 ;
-		bool finished  = false ;
+		bool finished  = true ;
 	};
 
 	QString executableFullPath( const QString& e )
@@ -121,7 +128,11 @@ void zuluPolkit::start()
 
 		QFile::remove( m_socketPath ) ;
 
+		auto s = umask( 0 ) ;
+
 		m_server.listen( m_socketPath ) ;
+
+		umask( s ) ;
 	}
 }
 
@@ -167,12 +178,16 @@ void zuluPolkit::gotConnection()
 			}else if( command.startsWith( e ) ){
 
 				return _respond( s,utility::Task( command,password ) ) ;
+			}else{
+				_respond( s,"SiriPolkit: Invalid Command" ) ;
 			}
+		}else{
+			_respond( s,"SiriPolkit: Failed To Authenticate Request" ) ;
 		}
+	}catch( ... ){
 
-	}catch( ... ){}
-
-	_respond( s ) ;
+		_respond( s,"SiriPolkit: Failed To Parse Request" ) ;
+	}
 }
 
 QString zuluPolkit::readStdin()

@@ -20,36 +20,14 @@
 #include "mountinfo.h"
 #include "utility.h"
 #include "siritask.h"
+#include "task.h"
 
 #include <QMetaObject>
 
-mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& quit ) :
-	m_parent( parent ),
-	m_quit( std::move( quit ) ),
-	m_announceEvents( e ),
-	m_linux( utility::platformIsLinux() )
+enum class background_thread{ True,False } ;
+static QStringList _unlocked_volumes( background_thread thread )
 {
-	m_oldMountList = this->mountedVolumes() ;
-
-	if( m_linux ){
-
-		this->linuxMonitor() ;
-	}else{
-		this->osxMonitor() ;
-	}
-}
-
-mountinfo::mountinfo() : m_linux( utility::platformIsLinux() )
-{
-}
-
-mountinfo::~mountinfo()
-{
-}
-
-QStringList mountinfo::mountedVolumes()
-{
-	if( m_linux ){
+	if( utility::platformIsLinux() ){
 
 		QFile f( "/proc/self/mountinfo" ) ;
 
@@ -65,9 +43,17 @@ QStringList mountinfo::mountedVolumes()
 		QString fs ;
 		const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
 
-		auto z = utility::Task::run( "mount" ).await().stdOut() ;
+		auto e = [ & ](){
 
-		for( const auto& it : utility::split( z ) ){
+			if( thread == background_thread::True ){
+
+				return utility::Task::run( "mount" ).get().splitOutput( '\n' ) ;
+			}else{
+				return utility::Task::run( "mount" ).await().splitOutput( '\n' ) ;
+			}
+		}() ;
+
+		for( const auto& it : e ){
 
 			auto e = utility::split( it,' ' ) ;
 
@@ -87,14 +73,153 @@ QStringList mountinfo::mountedVolumes()
 	}
 }
 
-std::function< void() >& mountinfo::stop()
+mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& quit ) :
+	m_parent( parent ),
+	m_quit( std::move( quit ) ),
+	m_announceEvents( e ),
+	m_oldMountList( _unlocked_volumes( background_thread::False ) )
 {
-	return m_stop ;
+	if( utility::platformIsLinux() ){
+
+		this->linuxMonitor() ;
+	}else{
+		this->osxMonitor() ;
+	}
+}
+
+mountinfo::~mountinfo()
+{
+}
+
+Task::future< QVector< volumeInfo > >& mountinfo::unlockedVolumes()
+{
+	return Task::run< QVector< volumeInfo > >( [](){
+
+		auto _hash = []( const QString& e ){
+
+			/*
+			 * jenkins one at a time hash function.
+			 *
+			 * https://en.wikipedia.org/wiki/Jenkins_hash_function
+			 */
+
+			uint32_t hash = 0 ;
+
+			auto p = e.toLatin1() ;
+
+			auto key = p.constData() ;
+
+			auto l = p.size() ;
+
+			for( decltype( l ) i = 0 ; i < l ; i++ ){
+
+				hash += *( key + i ) ;
+
+				hash += ( hash << 10 ) ;
+
+				hash ^= ( hash >> 6 ) ;
+			}
+
+			hash += ( hash << 3 ) ;
+
+			hash ^= ( hash >> 11 ) ;
+
+			hash += ( hash << 15 ) ;
+
+			return QString::number( hash ) ;
+		} ;
+
+		auto _decode = []( QString path,bool set_offset ){
+
+			path.replace( "\\012","\n" ) ;
+			path.replace( "\\040"," " ) ;
+			path.replace( "\\134","\\" ) ;
+			path.replace( "\\011","\\t" ) ;
+
+			if( set_offset ){
+
+				return path.mid( path.indexOf( '@' ) + 1 ) ;
+			}else{
+				return path ;
+			}
+		} ;
+
+		auto _fs = []( QString e ){
+
+			e.replace( "fuse.","" ) ;
+
+			return e ;
+		} ;
+
+		auto _ro = []( const QStringList& l ){
+
+			return l.at( 5 ).mid( 0,2 ) ;
+		} ;
+
+		QVector< volumeInfo > e ;
+
+		volumeInfo::mountinfo info ;
+
+		for( const auto& it : _unlocked_volumes( background_thread::True ) ){
+
+			if( volumeInfo::supported( it ) ){
+
+				const auto& k = utility::split( it,' ' ) ;
+
+				const auto s = k.size() ;
+
+				if( s < 6 ){
+
+					continue ;
+				}
+
+				const auto& cf = k.at( s - 2 ) ;
+
+				const auto& m = k.at( 4 ) ;
+
+				const auto& fs = k.at( s - 3 ) ;
+
+				if( utility::startsWithAtLeastOne( cf,"encfs@",
+								   "cryfs@",
+								   "securefs@",
+								   "gocryptfs@" ) ){
+
+					info.volumePath = _decode( cf,true ) ;
+
+				}else if( utility::equalsAtleastOne( fs,"fuse.gocryptfs",
+								     "ecryptfs" ) ){
+
+					info.volumePath = _decode( cf,false ) ;
+				}else{
+					info.volumePath = _hash( m ) ;
+				}
+
+				info.mountPoint   = _decode( m,false ) ;
+				info.fileSystem   = _fs( fs ) ;
+				info.mode         = _ro( k ) ;
+				info.mountOptions = k.last() ;
+
+				e.append( info ) ;
+			}
+		}
+
+		return e ;
+	} ) ;
+}
+
+void mountinfo::stop()
+{
+	if( m_stop ){
+
+		m_stop() ;
+	}else{
+		m_quit() ;
+	}
 }
 
 void mountinfo::volumeUpdate()
 {
-	m_newMountList = this->mountedVolumes() ;
+	m_newMountList = _unlocked_volumes( background_thread::False ) ;
 
 	auto _volumeWasMounted = [ & ](){
 
@@ -124,7 +249,7 @@ void mountinfo::volumeUpdate()
 		}
 	}
 
-	m_oldMountList = m_newMountList ;
+	m_oldMountList = std::move( m_newMountList ) ;
 }
 
 void mountinfo::updateVolume()
@@ -181,11 +306,9 @@ void mountinfo::linuxMonitor()
 		}
 	} ) ;
 
+	m_stop = [ s = std::addressof( e ) ](){ s->first_thread()->terminate() ; } ;
+
 	e.then( std::move( m_quit ) ) ;
-
-	auto s = std::addressof( e ) ;
-
-	m_stop = [ s ](){ s->first_thread()->terminate() ; } ;
 }
 
 #if QT_VERSION > QT_VERSION_CHECK( 5,0,0 )

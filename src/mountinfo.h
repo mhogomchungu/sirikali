@@ -21,29 +21,26 @@
 #ifndef MONITOR_MOUNTINFO_H
 #define MONITOR_MOUNTINFO_H
 
-#include <QThread>
 #include <QString>
 #include <QStringList>
 #include <QObject>
 #include <QProcess>
+#include <QVector>
 
 #include <functional>
 #include <memory>
 
-#include "task.h"
-
-class volumeInfo ;
+#include "volumeinfo.h"
 
 class mountinfo : private QObject
 {
 	Q_OBJECT
 public:
-	QStringList mountedVolumes() ;
+	static Task::future< QVector< volumeInfo > >& unlockedVolumes() ;
 
 	mountinfo( QObject * parent,bool,std::function< void() >&& ) ;
-	mountinfo() ;
 
-	std::function< void() >& stop() ;
+	void stop() ;
 
 	void announceEvents( bool ) ;
 
@@ -60,11 +57,10 @@ private:
 	QObject * m_parent ;
 	QProcess m_process ;
 
-	std::function< void() > m_stop ;
+	std::function< void() > m_stop = nullptr ;
 	std::function< void() > m_quit ;
 
 	bool m_announceEvents ;
-	bool m_linux ;
 
 	QStringList m_oldMountList ;
 	QStringList m_newMountList ;

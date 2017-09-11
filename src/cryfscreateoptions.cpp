@@ -38,13 +38,9 @@ cryfscreateoptions::cryfscreateoptions( QWidget * parent,
 
 	m_ui->lineEdit->setText( "32768" ) ;
 
-	Task::run< utility::Task >( [](){
+	auto exe = utility::executableFullPath( "cryfs" ) + " --show-ciphers" ;
 
-		auto exe = utility::executableFullPath( "cryfs" ) + " --show-ciphers" ;
-
-		return utility::Task( exe,utility::systemEnvironment(),[](){},false ) ;
-
-	} ).then( [ this ]( const utility::Task& e ){
+	utility::Task::run( exe ).then( [ this ]( const utility::Task& e ){
 
 		if( e.success() ){
 

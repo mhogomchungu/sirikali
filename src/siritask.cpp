@@ -145,11 +145,6 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 			}
 		}() ;
 
-		if( utility::platformIsLinux() ){
-
-			utility::Task::waitForOneSecond() ;
-		}
-
 		for( int i = 0 ; i < 5 ; i++ ){
 
 			if( utility::Task::run( cmd,10000,_ecryptfs( fileSystem ) ).get().success() ){
@@ -241,16 +236,12 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 				if( create ){
 
-					auto e = QString( "%1 --init %2 %3" ) ;
+					auto e = QString( "%1 --init -q -- %2 %3" ) ;
 					return e.arg( exe,configPath,cipherFolder ) ;
 				}else{
+					mode += " -o fsname=gocryptfs@" + cipherFolder ;
 
-					if( utility::platformIsOSX() ){
-
-						mode += " -o fsname=gocryptfs@" + cipherFolder ;
-					}
-
-					auto e = QString( "%1 %2 %3 %4 %5" ) ;
+					auto e = QString( "%1 -q %2 %3 -- %4 %5" ) ;
 					return e.arg( exe,mode,configPath,cipherFolder,mountPoint ) ;
 				}
 			}else{
@@ -388,9 +379,10 @@ static QString _args( const QString& exe,const siritask::options& opt,
 	}
 }
 
-static siritask::status _status( const siritask::volumeType& app,bool s )
+enum class status_type{ exeName,exeNotFound } ;
+static siritask::status _status( const siritask::volumeType& app,status_type s )
 {
-	if( s ){
+	if( s == status_type::exeNotFound ){
 
 		if( app == "cryfs" ){
 
@@ -441,7 +433,7 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 
 	siritask::cmdStatus e = { r.exitCode(),stdOut ? r.stdOut() : r.stdError() } ;
 
-	auto msg = e.msg().toLower() ;
+	const auto msg = e.msg().toLower() ;
 
 	/*
 	 *
@@ -464,7 +456,7 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 
 	}else if( s == siritask::status::cryfs ){
 
-		auto& m = e.msg() ;
+		const auto& m = e.msg() ;
 
 		if( msg.contains( "password" ) ){
 
@@ -518,7 +510,7 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 	if( exe.isEmpty() ){
 
-		return _status( app,true ) ;
+		return _status( app,status_type::exeNotFound ) ;
 	}else{
 		auto e = utility::Task( _args( exe,opt,configFilePath,create ),
 					20000,
@@ -527,7 +519,7 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 					[](){},
 					_ecryptfs( app ) ) ;
 
-		auto s = _status( e,_status( app,false ),app == "encfs" ) ;
+		auto s = _status( e,_status( app,status_type::exeName ),app == "encfs" ) ;
 
 		if( s != siritask::status::success ){
 
@@ -699,121 +691,5 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderCreate( const siri
 		}else{
 			return cs::failedToCreateMountPoint ;
 		}
-	} ) ;
-}
-
-Task::future< QVector< volumeInfo > >& siritask::updateVolumeList()
-{
-	return Task::run< QVector< volumeInfo > >( [](){
-
-		auto _hash = []( const QString& e ){
-
-			/*
-			 * jenkins one at a time hash function.
-			 *
-			 * https://en.wikipedia.org/wiki/Jenkins_hash_function
-			 */
-
-			uint32_t hash = 0 ;
-
-			auto p = e.toLatin1() ;
-
-			auto key = p.constData() ;
-
-			auto l = p.size() ;
-
-			for( decltype( l ) i = 0 ; i < l ; i++ ){
-
-				hash += *( key + i ) ;
-
-				hash += ( hash << 10 ) ;
-
-				hash ^= ( hash >> 6 ) ;
-			}
-
-			hash += ( hash << 3 ) ;
-
-			hash ^= ( hash >> 11 ) ;
-
-			hash += ( hash << 15 ) ;
-
-			return QString::number( hash ) ;
-		} ;
-
-		auto _decode = []( QString path,bool set_offset ){
-
-			path.replace( "\\012","\n" ) ;
-			path.replace( "\\040"," " ) ;
-			path.replace( "\\134","\\" ) ;
-			path.replace( "\\011","\\t" ) ;
-
-			if( set_offset ){
-
-				return path.mid( path.indexOf( '@' ) + 1 ) ;
-			}else{
-				return path ;
-			}
-		} ;
-
-		auto _fs = []( QString e ){
-
-			e.replace( "fuse.","" ) ;
-
-			return e ;
-		} ;
-
-		auto _ro = []( const QStringList& l ){
-
-			return l.at( 5 ).mid( 0,2 ) ;
-		} ;
-
-		QVector< volumeInfo > e ;
-
-		volumeInfo::mountinfo info ;
-
-		for( const auto& it : mountinfo().mountedVolumes() ){
-
-			if( volumeInfo::supported( it ) ){
-
-				const auto& k = utility::split( it,' ' ) ;
-
-				const auto s = k.size() ;
-
-				if( s < 6 ){
-
-					continue ;
-				}
-
-				const auto& cf = k.at( s - 2 ) ;
-
-				const auto& m = k.at( 4 ) ;
-
-				const auto& fs = k.at( s - 3 ) ;
-
-				if( utility::startsWithAtLeastOne( cf,"encfs@",
-								   "cryfs@",
-								   "securefs@",
-								   "gocryptfs@" ) ){
-
-					info.volumePath = _decode( cf,true ) ;
-
-				}else if( utility::equalsAtleastOne( fs,"fuse.gocryptfs",
-								     "ecryptfs" ) ){
-
-					info.volumePath = _decode( cf,false ) ;
-				}else{
-					info.volumePath = _hash( m ) ;
-				}
-
-				info.mountPoint   = _decode( m,false ) ;
-				info.fileSystem   = _fs( fs ) ;
-				info.mode         = _ro( k ) ;
-				info.mountOptions = k.last() ;
-
-				e.append( info ) ;
-			}
-		}
-
-		return e ;
 	} ) ;
 }

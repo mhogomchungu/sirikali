@@ -38,6 +38,8 @@
 #include <QAction>
 #include <QIcon>
 #include <QSettings>
+#include <QRect>
+
 #include <functional>
 #include <memory>
 #include <array>
@@ -291,7 +293,7 @@ namespace utility
 	QString executableSearchPaths( const QString& ) ;
 
 	bool useZuluPolkit( void ) ;
-	void startHelperExecutable( QWidget *,const QString&,const char *,const char * ) ;
+	void startHelper( QWidget *,const QString&,const char * ) ;
 	void quitHelper() ;
 	QString helperSocketPath() ;
 	void clearFavorites( void ) ;
@@ -315,10 +317,24 @@ namespace utility
 	void setLocalizationLanguage( bool translate,QMenu * m,utility2::translator& ) ;
 	void languageMenu( QMenu *,QAction *,utility2::translator& ) ;
 
-	using array_t = std::array< int,8 > ;
+	class windowDimensions{
+	public:
+		static constexpr int size = 8 ;
+		windowDimensions( const QStringList& e ) ;
+		windowDimensions( const QString& e ) ;
+		windowDimensions( const std::array< int,size >& e ) ;
+		operator bool() ;
+		int columnWidthAt( std::array< int,size >::size_type ) const ;
+		QRect geometry() const ;
+		QString dimensions() const ;
+	private:
+		void setDimensions( const QStringList& ) ;
+		std::array< int,size > m_array ;
+		bool m_ok = false ;
+	};
 
-	utility::array_t getWindowDimensions() ;
-	void setWindowDimensions( const std::initializer_list<int>& ) ;
+	utility::windowDimensions getWindowDimensions() ;
+	void setWindowDimensions( const utility::windowDimensions& ) ;
 
 	int pluginKey( QWidget *,QDialog *,QByteArray *,plugins::plugin ) ;
 
@@ -411,15 +427,20 @@ namespace utility
 
 		static ::Task::future< utility::Task >& run( const QString& exe,int,bool e ) ;
 
-		static ::Task::future< utility::Task >& run( const QString& exe )
+		static ::Task::future< utility::Task >& run( const QString& exe,
+							     const QByteArray& password = QByteArray() )
 		{
-			return ::Task::run< utility::Task >( [ exe ](){ return utility::Task( exe ) ; } ) ;
+			return ::Task::run< utility::Task >( [ = ](){
+
+				return utility::Task( exe,-1,utility::systemEnvironment(),password ) ;
+			} ) ;
 		}
+
 		static void exec( const QString& exe,
 				  const QProcessEnvironment& env = utility::systemEnvironment(),
 				  std::function< void() > f = [](){} )
 		{
-			::Task::run< utility::Task >( [ = ](){ return utility::Task( exe,env,f ) ; } ).start() ;
+			::Task::exec( [ = ](){ utility::Task( exe,env,f ) ; } ) ;
 		}
 		static void wait( int s )
 		{
@@ -458,12 +479,12 @@ namespace utility
 		Task()
 		{
 		}
-		Task( const QString& exe,int waitTime = -1,const QProcessEnvironment& env = QProcessEnvironment(),
-		      const QByteArray& password = QByteArray(),std::function< void() > f = [](){},bool e = true )
+		Task( const QString& exe,int waitTime = -1,const QProcessEnvironment& env = utility::systemEnvironment(),
+		      const QByteArray& password = QByteArray(),std::function< void() > f = [](){},bool e = false )
 		{
 			this->execute( exe,waitTime,env,password,std::move( f ),e ) ;
 		}
-		Task( const QString& exe,const QProcessEnvironment& env,std::function< void() > f,bool e = true )
+		Task( const QString& exe,const QProcessEnvironment& env,std::function< void() > f,bool e = false )
 		{
 			this->execute( exe,-1,env,QByteArray(),std::move( f ),e ) ;
 		}

@@ -125,21 +125,22 @@ static QByteArray _cookie ;
 {
 	return ::Task::run< utility::Task >( [ = ](){
 
-		auto env = QProcessEnvironment::systemEnvironment() ;
+		auto env = utility::systemEnvironment() ;
 
-		return utility::Task( exe,s,env,_cookie,[](){ umask( 0 ) ; },e ) ;
+		return utility::Task( exe,s,env,QByteArray(),[](){},e ) ;
 	} ) ;
 }
 
 void utility::Task::execute( const QString& exe,int waitTime,
 			     const QProcessEnvironment& env,
 			     const QByteArray& password,
-			     const std::function< void() >& f,
+			     const std::function< void() >& function,
 			     bool polkit )
 {
 	class Process : public QProcess{
 	public:
-		Process( const std::function< void() >& f ) : m_function( f )
+		Process( const std::function< void() >& function ) :
+			m_function( function )
 		{
 		}
 	protected:
@@ -148,12 +149,21 @@ void utility::Task::execute( const QString& exe,int waitTime,
 			m_function() ;
 		}
 	private:
-		std::function< void() > m_function ;
-	} p( f ) ;
+		const std::function< void() >& m_function ;
+	} p( function ) ;
 
 	p.setProcessEnvironment( env ) ;
 
 	if( polkit && utility::useZuluPolkit() ){
+
+		auto _report_error = [ this ]( const char * msg ){
+
+			m_finished   = true ;
+			m_exitCode   = -1 ;
+			m_exitStatus = -1 ;
+			m_stdError   =  msg ;
+			//m_stdOut     =  "" ;
+		} ;
 
 		QLocalSocket s ;
 
@@ -166,6 +176,8 @@ void utility::Task::execute( const QString& exe,int waitTime,
 				break ;
 
 			}else if( i == 3 ){
+
+				_report_error( "SiriKali: Failed To Connect To Polkit Backend" ) ;
 
 				utility::debug() << "ERROR: Failed To Start Helper Application" ;
 				return ;
@@ -200,7 +212,10 @@ void utility::Task::execute( const QString& exe,int waitTime,
 			m_stdError   = json[ "stdError" ].get< std::string >().c_str() ;
 			m_stdOut     = json[ "stdOut" ].get< std::string >().c_str() ;
 
-		}catch( ... ){}
+		}catch( ... ){
+
+			_report_error( "SiriKali: Failed To Parse Polkit Backend Output" ) ;
+		}
 	}else{
 		p.start( exe ) ;
 
@@ -221,20 +236,28 @@ void utility::Task::execute( const QString& exe,int waitTime,
 	}
 }
 
-void utility::startHelperExecutable( QWidget * obj,const QString& arg,const char * slot,const char * slot1 )
+static QByteArray _set_cookie()
+{
+	std::array< char,16 > buffer ;
+
+	auto data = buffer.data() ;
+	auto size = buffer.size() ;
+
+	gcry_randomize( data,size,GCRY_STRONG_RANDOM ) ;
+
+	return QByteArray::fromRawData( data,size ).toHex() ;
+}
+
+void utility::startHelper( QWidget * obj,const QString& arg,const char * slot )
 {
 	if( !utility::useZuluPolkit() ){
 
-		QMetaObject::invokeMethod( obj,slot,Q_ARG( bool,true ),Q_ARG( QString,QString() ) ) ;
+		QMetaObject::invokeMethod( obj,slot,Q_ARG( bool,true ),Q_ARG( QString,arg ) ) ;
 
 		return ;
 	}
 
-	QFile f( "/dev/urandom" ) ;
-
-	f.open( QIODevice::ReadOnly ) ;
-
-	_cookie = f.read( 16 ).toHex() ;
+	_cookie = _set_cookie() ;
 
 	auto exe = utility::executableFullPath( "pkexec" ) ;
 
@@ -242,9 +265,12 @@ void utility::startHelperExecutable( QWidget * obj,const QString& arg,const char
 
 		exe = QString( "%1 %2 %3 fork" ).arg( exe,siriPolkitPath,utility::helperSocketPath() ) ;
 
-		::Task::exec( [ = ](){
+		utility::Task::run( exe,_cookie ).then( [ = ]( const utility::Task& e ){
 
-			auto e = utility::Task::run( exe,false ).get() ;
+			if( e.failed() ){
+
+				utility::debug() << "Failed to start polkit backend" ;
+			}
 
 			QMetaObject::invokeMethod( obj,
 						   slot,
@@ -252,8 +278,12 @@ void utility::startHelperExecutable( QWidget * obj,const QString& arg,const char
 						   Q_ARG( QString,arg ) ) ;
 		} ) ;
 	}else{
-		DialogMsg( obj ).ShowUIOK( QObject::tr( "ERROR" ),QObject::tr( "Failed to locate pkexec executable" ) ) ;
-		QMetaObject::invokeMethod( obj,slot1 ) ;
+		utility::debug() << "Failed to locate pkexec executable" ;
+
+		QMetaObject::invokeMethod( obj,
+					   slot,
+					   Q_ARG( bool,false ),
+					   Q_ARG( QString,QString() ) ) ;
 	}
 }
 
@@ -323,7 +353,7 @@ QString utility::homePath()
 
 		auto e = opener + " " + utility::Task::makePath( path ) ;
 
-		return utility::Task::run( e,false ).get().failed() ;
+		return utility::Task::run( e ).get().failed() ;
 	} ) ;
 }
 
@@ -741,82 +771,30 @@ GNU General Public License for more details.\n\
 	DialogMsg( parent,nullptr ).ShowUIInfo( QObject::tr( "about SiriKali" ),true,license ) ;
 }
 
-static utility::array_t _default_dimensions( const char * defaults )
+utility::windowDimensions utility::getWindowDimensions()
 {
-	auto l = QString( defaults ).split( ' ' ) ;
+	QString defaults = "205 149 861 466 326 320 101 76" ;
 
-	utility::array_t e ;
-
-	auto f = e.data() ;
-
-	auto j = l.size() ;
-
-	for( int i = 0 ; i < j ; i++ ){
-
-		*( f + i ) = l.at( i ).toInt() ;
-	}
-
-	return e ;
-}
-
-static utility::array_t _dimensions( const char * defaults,int size )
-{
 	if( _settings->contains( "Dimensions" ) ){
 
-		auto l = utility::split( _settings->value( "Dimensions" ).toString(),' ' ) ;
+		utility::windowDimensions e( _settings->value( "Dimensions" ).toString() ) ;
 
-		utility::array_t p ;
+		if( e ){
 
-		if( l.size() != size || size > int( p.size() ) ){
-
+			return e ;
+		}else{
 			utility::debug() << "failed to parse config option" ;
-			return _default_dimensions( defaults ) ;
+			return defaults ;
 		}
-
-		auto f = p.data() ;
-
-		auto j = l.size() ;
-
-		for( int i = 0 ; i < j ; i++ ){
-
-			bool ok ;
-
-			int e = l.at( i ).toInt( &ok ) ;
-
-			if( ok ){
-
-				*( f + i ) = e ;
-			}else{
-				utility::debug() << "failed to parse config option" ;
-				return _default_dimensions( defaults ) ;
-			}
-		}
-
-		return p ;
 	}else{
-		_settings->setValue( "Dimensions",QString( defaults ) ) ;
-		return _default_dimensions( defaults ) ;
+		_settings->setValue( "Dimensions",defaults ) ;
+		return defaults ;
 	}
 }
 
-utility::array_t utility::getWindowDimensions()
+void utility::setWindowDimensions( const utility::windowDimensions& e )
 {
-	return _dimensions( "205 149 861 466 326 320 101 76",8 ) ;
-}
-
-void utility::setWindowDimensions( const std::initializer_list<int>& e )
-{
-	_settings->setValue( "Dimensions",[ & ](){
-
-		QString q ;
-
-		for( const auto& it : e ){
-
-			q += QString::number( it ) + " " ;
-		}
-
-		return q ;
-	}() ) ;
+	_settings->setValue( "Dimensions",e.dimensions() ) ;
 }
 
 int utility::pluginKey( QWidget * w,QDialog * d,QByteArray * key,plugins::plugin plugin )
@@ -1275,30 +1253,25 @@ void utility::setWindowOptions( QDialog * w )
 	}
 }
 
-static bool _use_default_widget_relationship()
-{
-	if( _settings->contains( "UseDefaultWidgetRelationship" ) ){
-
-		return _settings->value( "UseDefaultWidgetRelationship" ).toBool() ;
-	}else{
-		bool e = true ;
-		_settings->setValue( "UseDefaultWidgetRelationship",e ) ;
-		return e ;
-	}
-}
-
 void utility::setParent( QWidget * parent,QWidget ** localParent,QDialog * dialog )
 {
-	if( utility::platformIsLinux() ){
+	auto _default_parent = [](){
 
-		if( _use_default_widget_relationship() ){
+		if( _settings->contains( "UseDefaultWidgetRelationship" ) ){
 
-			*localParent = parent ;
+			return _settings->value( "UseDefaultWidgetRelationship" ).toBool() ;
 		}else{
-			*localParent = dialog ;
+			bool e = true ;
+			_settings->setValue( "UseDefaultWidgetRelationship",e ) ;
+			return e ;
 		}
-	}else{
+	}() ;
+
+	if( _default_parent ){
+
 		*localParent = dialog ;
+	}else{
+		*localParent = parent ;
 	}
 }
 
@@ -1515,6 +1488,86 @@ QProcessEnvironment utility::systemEnvironment()
 	e.insert( "LANG","C" ) ;
 
 	e.insert( "PATH",utility::executableSearchPaths( e.value( "PATH" ) ) ) ;
+
+	return e ;
+}
+
+void utility::windowDimensions::setDimensions( const QStringList& e )
+{
+	m_ok = int( e.size() ) == int( m_array.size() ) ;
+
+	if( m_ok ){
+
+		using tp = decltype( m_array.size() ) ;
+
+		for( tp i = 0 ; i < m_array.size() ; i++ ){
+
+			m_array[ i ] = e.at( i ).toInt( &m_ok ) ;
+
+			if( !m_ok ){
+
+				break ;
+			}
+		}
+	}else{
+		utility::debug() << "window dimensions do not match data structure size" ;
+	}
+}
+
+utility::windowDimensions::windowDimensions( const QStringList& e )
+{
+	this->setDimensions( e ) ;
+}
+
+utility::windowDimensions::windowDimensions( const QString& e )
+{
+	this->setDimensions( utility::split( e,' ' ) ) ;
+}
+
+utility::windowDimensions::windowDimensions( const std::array< int,size >& e )
+	: m_array( e ),m_ok( true )
+{
+}
+
+utility::windowDimensions::operator bool()
+{
+	return m_ok ;
+}
+
+int utility::windowDimensions::columnWidthAt( std::array< int,size >::size_type s ) const
+{
+	auto e = s + 4 ;
+
+	if( e < m_array.size() ){
+
+		return m_array[ e ] ;
+	}else{
+		utility::debug() << "window dimension index out of range" ;
+		return 0 ;
+	}
+}
+
+QRect utility::windowDimensions::geometry() const
+{
+	auto e = m_array.data() ;
+
+	return { *( e + 0 ),*( e + 1 ),*( e + 2 ),*( e + 3 ) } ;
+}
+
+QString utility::windowDimensions::dimensions() const
+{
+	auto _number = []( const int * s,size_t n ){ return QString::number( *( s + n ) ) ; } ;
+
+	auto s = m_array.data() ;
+
+	auto e = _number( s,0 ) ;
+
+	using tp = decltype( m_array.size() ) ;
+
+	for( tp i = 1 ; i < m_array.size() ; i++ ){
+
+		e += " " + _number( s,i ) ;
+	}
 
 	return e ;
 }

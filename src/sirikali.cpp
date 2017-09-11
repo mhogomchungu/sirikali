@@ -66,18 +66,10 @@ sirikali::sirikali() :
 {
 }
 
-/*
- * Below 3 should be the only function that closes the application
- */
-void sirikali::closeApplication()
-{
-	utility::quitHelper() ;
-	this->hide() ;
-	m_mountInfo.stop()() ;
-}
-
 void sirikali::closeApplication( int s,const QString& e )
 {
+	utility::quitHelper() ;
+
 	m_exitStatus = s ;
 
 	if( !e.isEmpty() ){
@@ -85,25 +77,17 @@ void sirikali::closeApplication( int s,const QString& e )
 		utility::debug() << e ;
 	}
 
-	this->hide() ;
-	m_mountInfo.stop()() ;
-}
+	if( m_ui ){
 
-void sirikali::closeApplication_1( int s )
-{
-	Q_UNUSED( s ) ;
-	m_mountInfo.stop()() ;
+		this->hide() ;
+		utility::Task::suspendForOneSecond() ;
+	}
+
+	m_mountInfo.stop() ;
 }
 
 void sirikali::setUpApp( bool start,const QString& volume )
 {
-	if( !start ){
-
-		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Start Helper Application.\n\"org.sirikali.pkexec.policy\" polkit file is either misconfigured or sirikali.pkexec executable could not be found." ) ) ;
-
-		return this->closeApplication() ;
-	}
-
 	this->setLocalizationLanguage( true ) ;
 
 	m_ui = new Ui::sirikali ;
@@ -115,18 +99,16 @@ void sirikali::setUpApp( bool start,const QString& volume )
 	m_ui->pbupdate->setMinimumHeight( 31 ) ;
 	m_ui->pbFavorites->setMinimumHeight( 31 ) ;
 
-	auto f = utility::getWindowDimensions() ;
-
-	auto e = f.data() ;
-
-	this->window()->setGeometry( *( e + 0 ),*( e + 1 ),*( e + 2 ),*( e + 3 ) ) ;
-
 	auto table = m_ui->tableWidget ;
 
-	table->setColumnWidth( 0,*( e + 4 ) ) ;
-	table->setColumnWidth( 1,*( e + 5 ) ) ;
-	table->setColumnWidth( 2,*( e + 6 ) ) ;
-	table->setColumnWidth( 3,*( e + 7 ) ) ;
+	const auto dimensions = utility::getWindowDimensions() ;
+
+	this->window()->setGeometry( dimensions.geometry() ) ;
+
+	table->setColumnWidth( 0,dimensions.columnWidthAt( 0 ) ) ;
+	table->setColumnWidth( 1,dimensions.columnWidthAt( 1 ) ) ;
+	table->setColumnWidth( 2,dimensions.columnWidthAt( 2 ) ) ;
+	table->setColumnWidth( 3,dimensions.columnWidthAt( 3 ) ) ;
 
 #if QT_VERSION < QT_VERSION_CHECK( 5,0,0 )
 	m_ui->tableWidget->verticalHeader()->setResizeMode( QHeaderView::ResizeToContents ) ;
@@ -202,7 +184,7 @@ void sirikali::setUpApp( bool start,const QString& volume )
 
 	this->disableAll() ;
 
-	this->updateVolumeList( siritask::updateVolumeList().await() ) ;
+	this->updateVolumeList( mountinfo::unlockedVolumes().await() ) ;
 
 	if( volume.isEmpty() ) {
 
@@ -214,6 +196,11 @@ void sirikali::setUpApp( bool start,const QString& volume )
 	this->startGUI() ;
 
 	QTimer::singleShot( utility::checkForUpdateInterval(),this,SLOT( autoUpdateCheck() ) ) ;
+
+	if( !start ){
+
+		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Enable Polkit Support. \n\"Ecryptfs-simple\" Support Is Broken." ) ) ;
+	}
 }
 
 void sirikali::setUpAppMenu()
@@ -741,22 +728,23 @@ void sirikali::start( const QStringList& l )
 
 		utility::createFolder( s ) ;
 
-		if( !utility::pathIsWritable( s ) ){
+		if( utility::pathIsWritable( s ) ){
 
+			oneinstance::callbacks cb = {
+
+				[ this ]( const QString& e ){ utility::startHelper( this,e,"setUpApp" ) ; },
+				[ this ](){ this->closeApplication( 1 ) ; },
+				[ this ]( const QString& e ){ this->raiseWindow( e ) ; },
+			} ;
+
+			auto x = utility::cmdArgumentValue( l,"-d" ) ;
+
+			oneinstance::instance( this,s + "/SiriKali.socket",x,std::move( cb ) ) ;
+		}else{
 			DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "\"%1\" Folder Must Be Writable" ).arg( s ) ) ;
 
-			return this->closeApplication() ;
+			this->closeApplication() ;
 		}
-
-		oneinstance::instance( this,
-				       s + "/SiriKali.socket",
-				       utility::cmdArgumentValue( l,"-d" ),
-				       [ this ]( const QString& e ){ utility::startHelperExecutable( this,
-												     e,
-												     "setUpApp",
-												     "closeApplication" ) ; },
-				       [ this ]( int s ){ this->closeApplication_1( s ) ; },
-				       [ this ]( const QString& e ){ this->raiseWindow( e ) ; } ) ;
 	}
 }
 
@@ -778,9 +766,11 @@ void sirikali::cliCommand( const QStringList& l )
 
 	if( l.contains( "-u" ) ){
 
+		m_mountInfo.announceEvents( false ) ;
+
 		auto volume = utility::cmdArgumentValue( l,"-d" ) ;
 
-		for( const auto& it : siritask::updateVolumeList().await() ){
+		for( const auto& it : mountinfo::unlockedVolumes().await() ){
 
 			const auto& a = it.volumePath() ;
 			const auto& b = it.mountPoint() ;
@@ -804,7 +794,7 @@ void sirikali::cliCommand( const QStringList& l )
 
 	if( l.contains( "-p" ) ){
 
-		for( const auto& it : siritask::updateVolumeList().await() ){
+		for( const auto& it : mountinfo::unlockedVolumes().await() ){
 
 			it.printVolumeInfo() ;
 		}
@@ -848,13 +838,15 @@ void sirikali::unlockVolume( const QStringList& l )
 				}
 			}() ;
 
+			m_mountInfo.announceEvents( false ) ;
+
 			siritask::options s = { volume,m,key,idleTime,cPath,QString(),mode,mOpt,QString() } ;
 
 			auto& e = siritask::encryptedFolderMount( s ) ;
 
 			if( e.await() == siritask::status::success ){
 
-				this->openMountPointPath( m ) ;
+				//this->openMountPointPath( m ) ;
 
 				this->closeApplication( 0 ) ;
 			}else{
@@ -1067,7 +1059,7 @@ void sirikali::ecryptfsProperties()
 		}
 	}() ;
 
-	for( const auto& it : siritask::updateVolumeList().await() ){
+	for( const auto& it : mountinfo::unlockedVolumes().await() ){
 
 		if( it.mountPoint() == s ){
 
@@ -1080,7 +1072,7 @@ void sirikali::ecryptfsProperties()
 				s.replace( "rw\n\n","mode=read and write\n\n" ) ;
 				s.replace( "="," = " ) ;
 
-				return s;
+				return s ;
 			}() ) ;
 
 			break ;
@@ -1298,7 +1290,7 @@ void sirikali::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 	m.setFont( this->font() ) ;
 
-	auto _addAction = [ & ]( const QString& txt,const volumeType& e ){
+	auto _addAction = [ & ]( const auto& txt,const volumeType& e ){
 
 		auto ac = m.addAction( txt ) ;
 
@@ -1426,7 +1418,7 @@ void sirikali::hideWindow()
 
 void sirikali::setUpShortCuts()
 {
-	auto _addAction = [ this ]( std::initializer_list<QKeySequence> s,const char * slot ){
+	auto _addAction = [ this ]( std::initializer_list< QKeySequence > s,const char * slot ){
 
 		auto ac = new QAction( this ) ;
 
@@ -1648,6 +1640,8 @@ void sirikali::pbUmount()
 		auto b = table->item( row,1 )->text() ;
 		auto c = table->item( row,2 )->text() ;
 
+		utility::Task::suspendForOneSecond() ;
+
 		if( siritask::encryptedFolderUnMount( a,b,c ).await() ){
 
 			siritask::deleteMountFolder( b ) ;
@@ -1667,33 +1661,26 @@ void sirikali::unMountAll()
 
 	auto table = m_ui->tableWidget ;
 
-	auto cipherFolders = tablewidget::columnEntries( table,0 ) ;
-	auto mountPoints   = tablewidget::columnEntries( table,1 ) ;
-	auto fileSystems   = tablewidget::columnEntries( table,2 ) ;
+	const auto cipherFolders = tablewidget::columnEntries( table,0 ) ;
+	const auto mountPoints   = tablewidget::columnEntries( table,1 ) ;
+	const auto fileSystems   = tablewidget::columnEntries( table,2 ) ;
 
-	int r = cipherFolders.size() - 1 ;
+	utility::Task::suspendForOneSecond() ;
 
-	if( r < 0 ){
+	for( auto r = cipherFolders.size() - 1 ; r >= 0 ; r-- ){
 
-		utility::Task::suspendForOneSecond() ;
-	}else{
-		do{
-			const auto& a = cipherFolders.at( r ) ;
-			const auto& b = mountPoints.at( r ) ;
-			const auto& c = fileSystems.at( r ) ;
+		const auto& a = cipherFolders.at( r ) ;
+		const auto& b = mountPoints.at( r ) ;
+		const auto& c = fileSystems.at( r ) ;
 
-			if( siritask::encryptedFolderUnMount( a,b,c ).await() ){
+		if( siritask::encryptedFolderUnMount( a,b,c ).await() ){
 
-				tablewidget::deleteRow( table,b,1 ) ;
+			tablewidget::deleteRow( table,b,1 ) ;
 
-				siritask::deleteMountFolder( b ) ;
+			siritask::deleteMountFolder( b ) ;
 
-				utility::Task::suspendForOneSecond() ;
-			}
-
-			r -= 1 ;
-
-		}while( r >= 0 ) ;
+			utility::Task::suspendForOneSecond() ;
+		}
 	}
 
 	this->enableAll() ;
@@ -1715,7 +1702,7 @@ void sirikali::pbUpdate()
 {
 	this->disableAll() ;
 
-	this->updateVolumeList( siritask::updateVolumeList().await() ) ;
+	this->updateVolumeList( mountinfo::unlockedVolumes().await() ) ;
 }
 
 void sirikali::updateVolumeList( const QVector< volumeInfo >& r )
@@ -1773,14 +1760,14 @@ sirikali::~sirikali()
 
 		const auto& r = this->window()->geometry() ;
 
-		utility::setWindowDimensions( { r.x(),
-						r.y(),
-						r.width(),
-						r.height(),
-						q->columnWidth( 0 ),
-						q->columnWidth( 1 ),
-						q->columnWidth( 2 ),
-						q->columnWidth( 3 ) } ) ;
+		utility::setWindowDimensions( { { { r.x(),
+						    r.y(),
+						    r.width(),
+						    r.height(),
+						    q->columnWidth( 0 ),
+						    q->columnWidth( 1 ),
+						    q->columnWidth( 2 ),
+						    q->columnWidth( 3 ) } } } ) ;
 
 		delete m_ui ;
 	}

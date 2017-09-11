@@ -27,15 +27,11 @@
 oneinstance::oneinstance( QObject * parent,
 			  const QString& socketPath,
 			  const QString& argument,
-			  std::function< void( const QString& ) > start,
-			  std::function< void( int ) > exit,
-			  std::function< void( const QString& ) > event ) :
+			  oneinstance::callbacks s ) :
 	QObject( parent ),
 	m_serverPath( socketPath ),
 	m_argument( argument ),
-	m_start( std::move( start ) ),
-	m_exit( std::move( exit ) ),
-	m_event( std::move( event ) )
+	m_callbacks( std::move( s ) )
 {
 	if( QFile::exists( m_serverPath ) ){
 
@@ -51,7 +47,7 @@ oneinstance::oneinstance( QObject * parent,
 
 void oneinstance::start()
 {
-	m_start( m_argument ) ;
+	m_callbacks.start( m_argument ) ;
 
 	connect( &m_localServer,SIGNAL( newConnection() ),this,SLOT( gotConnection() ) ) ;
 
@@ -64,7 +60,7 @@ void oneinstance::gotConnection()
 
 	s->waitForReadyRead() ;
 
-	m_event( s->readAll() ) ;
+	m_callbacks.event( s->readAll() ) ;
 }
 
 void oneinstance::errorOnConnect( QLocalSocket::LocalSocketError e )
@@ -87,7 +83,7 @@ void oneinstance::connected()
 
 	m_localSocket.close() ;
 
-	m_exit( 255 ) ;
+	m_callbacks.exit() ;
 }
 
 oneinstance::~oneinstance()

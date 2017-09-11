@@ -1,3 +1,11 @@
+sirikali (1.3.0-1) UNRELEASED; urgency=low
+  [Mhogo Mchungu]
+  * New Features
+     -- Add "~/bin" and "~/.bin" paths to list of folders to search for executables.
+     -- Fix random crashes on OSX.
+
+ -- Mhogo Mchungu <mhogomchungu@gmail.com>  Thu, 17 Aug 2017 16:38:48 +0000
+
 sirikali (1.2.9-1) UNRELEASED; urgency=low
   [Mhogo Mchungu]
   * New Features

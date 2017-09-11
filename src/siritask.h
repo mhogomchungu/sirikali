@@ -251,7 +251,6 @@ namespace siritask
 	};
 
 	bool deleteMountFolder( const QString& ) ;
-	Task::future< QVector< volumeInfo > >& updateVolumeList( void ) ;
 	Task::future< bool >& encryptedFolderUnMount( const QString& cipherFolder,
 						      const QString& mountPoint,
 						      const QString& fileSystem ) ;

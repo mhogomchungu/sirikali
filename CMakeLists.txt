@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 2.6 )
+cmake_minimum_required( VERSION 3.1 )
 cmake_policy( SET CMP0017 OLD )
 cmake_policy( SET CMP0002 OLD )
 
@@ -6,9 +6,12 @@ set_property( GLOBAL PROPERTY ALLOW_DUPLICATE_CUSTOM_TARGETS ON )
 
 project( sirikali )
 
-set( PGR_VERSION "1.2.9" )
+set( PGR_VERSION "1.3.0" )
 
 add_definitions( -Wextra -Wall -pedantic )
+
+set( CMAKE_CXX_STANDARD 14 )
+set( CMAKE_CXX_STANDARD_REQUIRED ON )
 
 include_directories( ${PROJECT_BINARY_DIR} )
 
@@ -188,12 +191,12 @@ set( MOC_FILES 	src/dialogok.h
 		src/walletconfig.h
 		src/walletconfiginput.h
 		src/options.h
-		src/networkAccessManager.hpp
 		src/filemanager.h
 		src/mountinfo.h
 		src/securefscreateoptions.h
 		src/cryfscreateoptions.h
 		src/3rdParty/tasks/task.h
+		src/3rdParty/NetworkAccessManager/networkAccessManager.hpp
  )
 
 set( SRC 	src/dialogok.cpp
