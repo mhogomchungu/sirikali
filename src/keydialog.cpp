@@ -799,9 +799,7 @@ bool keyDialog::completed( const siritask::cmdStatus& s,const QString& m )
 
 		if( m_autoOpenMountPoint ){
 
-			auto s = m_fileManagerOpen + " " + utility::Task::makePath( m ) ;
-
-			utility::Task::run( s ).start() ;
+			utility::Task::exec( m_fileManagerOpen + " " + utility::Task::makePath( m ) ) ;
 		}
 
 		return true ;
