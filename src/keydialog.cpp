@@ -831,7 +831,7 @@ bool keyDialog::completed( const siritask::cmdStatus& s,const QString& m )
 
 	case siritask::status::ecrypfsBadExePermissions :
 
-		msg = tr( "The backend Seems To Not Have Its Suid Bit Set.\n\nSet \"Enable Polkit Support\" Option From The Menu And Try Again." ) ;
+		msg = tr( "This backend Requires Root's Privileges And An attempt To Acquire Them Has Failed." ) ;
 		break;
 
 	case siritask::status::securefs :

@@ -116,6 +116,8 @@ static QSettings * _settings ;
 
 static QByteArray _cookie ;
 
+static bool _use_polkit = false ;
+
 ::Task::future< utility::Task >& utility::Task::run( const QString& exe,bool e )
 {
 	return utility::Task::run( exe,-1,e ) ;
@@ -236,7 +238,19 @@ void utility::Task::execute( const QString& exe,int waitTime,
 	}
 }
 
-static QByteArray _set_cookie()
+static QString siriPolkitExe()
+{
+	auto exe = utility::executableFullPath( "pkexec" ) ;
+
+	if( exe.isEmpty() ){
+
+		return QString() ;
+	}else{
+		return QString( "%1 %2 %3 fork" ).arg( exe,siriPolkitPath,utility::helperSocketPath() ) ;
+	}
+}
+
+static ::Task::future< utility::Task >& _start_siripolkit( const QString& e )
 {
 	std::array< char,16 > buffer ;
 
@@ -245,46 +259,57 @@ static QByteArray _set_cookie()
 
 	gcry_randomize( data,size,GCRY_STRONG_RANDOM ) ;
 
-	return QByteArray::fromRawData( data,size ).toHex() ;
+	_cookie = QByteArray::fromRawData( data,size ).toHex() ;
+
+	return ::Task::run< utility::Task >( [ = ]{
+
+		return utility::Task( e,
+				      -1,
+				      utility::systemEnvironment(),
+				      _cookie,
+				      [](){ umask( 0 ) ; },
+				      false ) ;
+	} ) ;
 }
 
-void utility::startHelper( QWidget * obj,const QString& arg,const char * slot )
+bool utility::enablePolkit( utility::background_thread thread )
 {
-	if( !utility::useZuluPolkit() ){
+	if( _use_polkit ){
 
-		QMetaObject::invokeMethod( obj,slot,Q_ARG( bool,true ),Q_ARG( QString,arg ) ) ;
-
-		return ;
+		return true ;
 	}
 
-	_cookie = _set_cookie() ;
-
-	auto exe = utility::executableFullPath( "pkexec" ) ;
+	auto exe = siriPolkitExe() ;
 
 	if( !exe.isEmpty() ){
 
-		exe = QString( "%1 %2 %3 fork" ).arg( exe,siriPolkitPath,utility::helperSocketPath() ) ;
+		auto socketPath = utility::helperSocketPath() ;
 
-		utility::Task::run( exe,_cookie ).then( [ = ]( const utility::Task& e ){
+		if( thread == utility::background_thread::True ){
 
-			if( e.failed() ){
+			if( _start_siripolkit( exe ).get().success() ){
 
-				utility::debug() << "Failed to start polkit backend" ;
+				_use_polkit = true ;
+
+				while( !utility::pathExists( socketPath ) ){
+
+					utility::Task::waitForOneSecond() ;
+				}
 			}
+		}else{
+			if( _start_siripolkit( exe ).await().success() ){
 
-			QMetaObject::invokeMethod( obj,
-						   slot,
-						   Q_ARG( bool,e.success() ),
-						   Q_ARG( QString,arg ) ) ;
-		} ) ;
-	}else{
-		utility::debug() << "Failed to locate pkexec executable" ;
+				_use_polkit = true ;
 
-		QMetaObject::invokeMethod( obj,
-					   slot,
-					   Q_ARG( bool,false ),
-					   Q_ARG( QString,QString() ) ) ;
+				while( !utility::pathExists( socketPath ) ){
+
+					utility::Task::suspendForOneSecond() ;
+				}
+			}
+		}
 	}
+
+	return _use_polkit ;
 }
 
 QString utility::helperSocketPath()
@@ -294,24 +319,7 @@ QString utility::helperSocketPath()
 
 bool utility::useZuluPolkit()
 {
-	if( _settings->contains( "EnablePolkitSupport" ) ){
-
-		return _settings->value( "EnablePolkitSupport" ).toBool() ;
-	}else{
-		bool e = false ;
-		_settings->setValue( "EnablePolkitSupport",e ) ;
-		return e ;
-	}
-}
-
-bool utility::enablePolkitSupport()
-{
-	return utility::useZuluPolkit() ;
-}
-
-void utility::enablePolkitSupport( bool e )
-{
-	_settings->setValue( "EnablePolkitSupport",e ) ;
+	return _use_polkit ;
 }
 
 void utility::quitHelper()

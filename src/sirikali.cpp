@@ -97,7 +97,7 @@ void sirikali::closeApplication( int s,const QString& e )
 	m_mountInfo.stop() ;
 }
 
-void sirikali::setUpApp( bool start,const QString& volume )
+void sirikali::setUpApp( const QString& volume )
 {
 	this->setLocalizationLanguage( true ) ;
 
@@ -207,11 +207,6 @@ void sirikali::setUpApp( bool start,const QString& volume )
 	this->startGUI() ;
 
 	QTimer::singleShot( utility::checkForUpdateInterval(),this,SLOT( autoUpdateCheck() ) ) ;
-
-	if( !start ){
-
-		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Enable Polkit Support. \n\"Ecryptfs-simple\" Support Is Broken." ) ) ;
-	}
 }
 
 void sirikali::setUpAppMenu()
@@ -315,14 +310,6 @@ void sirikali::setUpAppMenu()
 
 	m->addAction( _addAction( true,checkForUpdates::autoCheck(),tr( "Autocheck For Updates" ),
 				  "Autocheck For Updates",SLOT( autoCheckUpdates( bool ) ) ) ) ;
-
-	if( utility::platformIsLinux() ){
-
-		m->addAction( _addAction( true,utility::enablePolkitSupport(),
-					  tr( "Enable Polkit Support" ),
-					  "Enable Polkit Support",
-					  SLOT( enablePolkitSupport( bool ) ) ) ) ;
-	}
 
 	m->addAction( _addAction( false,false,tr( "Set Mount Point Prefix" ),
 				  "Set Mount Point Prefix",SLOT( setDefaultMountPointPrefix() ) ) ) ;
@@ -655,13 +642,6 @@ void sirikali::reuseMountPoint( bool e )
 	utility::reUseMountPoint( e ) ;
 }
 
-void sirikali::enablePolkitSupport( bool e )
-{
-	utility::enablePolkitSupport( e ) ;
-
-	DialogMsg( this ).ShowUIOK( tr( "Warning" ),tr( "A Restart Is Required For The Change To Take Effect." ) );
-}
-
 void sirikali::autoMountFavoritesOnStartUp( bool e )
 {
 	utility::autoMountFavoritesOnStartUp( e ) ;
@@ -739,7 +719,7 @@ void sirikali::start( const QStringList& l )
 
 			oneinstance::callbacks cb = {
 
-				[ this ]( const QString& e ){ utility::startHelper( this,e,"setUpApp" ) ; },
+				[ this ]( const QString& e ){ this->setUpApp( e ) ; },
 				[ this ](){ this->closeApplication( 1 ) ; },
 				[ this ]( const QString& e ){ this->raiseWindow( e ) ; },
 			} ;

@@ -447,11 +447,11 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 
 		if( msg.contains( "operation not permitted" ) ){
 
-			e.setStatus( siritask::status::ecrypfsBadExePermissions ) ;
+			e = siritask::status::ecrypfsBadExePermissions ;
 
 		}else if( msg.contains( "error: mount failed" ) ){
 
-			e.setStatus( s ) ;
+			e = s ;
 		}
 
 	}else if( s == siritask::status::cryfs ){
@@ -460,19 +460,19 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 
 		if( msg.contains( "password" ) ){
 
-			e.setStatus( s ) ;
+			e = s ;
 
 		}else if( m.contains( "This filesystem is for CryFS" ) &&
 			  m.contains( "It has to be migrated" ) ){
 
-			e.setStatus( siritask::status::cryfsMigrateFileSystem ) ;
+			e = siritask::status::cryfsMigrateFileSystem ;
 		}
 
 	}else if( s == siritask::status::encfs ){
 
 		if( msg.contains( "password" ) ){
 
-			e.setStatus( s ) ;
+			e = s ;
 		}
 
 	}else if( s == siritask::status::gocryptfs ){
@@ -482,11 +482,11 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 		 */
 		if( e.exitCode() == 12 ){
 
-			e.setStatus( s ) ;
+			e = s ;
 		}else{
 			if( msg.contains( "password" ) ){
 
-				e.setStatus( s ) ;
+				e = s ;
 			}
 		}
 
@@ -494,7 +494,7 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 
 		if( msg.contains( "password" ) ){
 
-			e.setStatus( s ) ;
+			e = s ;
 		}
 	}
 
@@ -512,14 +512,27 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 		return _status( app,status_type::exeNotFound ) ;
 	}else{
-		auto e = utility::Task( _args( exe,opt,configFilePath,create ),
-					20000,
-					utility::systemEnvironment(),
-					password.toLatin1(),
-					[](){},
-					_ecryptfs( app ) ) ;
+		auto _run = [ & ](){
 
-		auto s = _status( e,_status( app,status_type::exeName ),app == "encfs" ) ;
+			auto s = utility::Task( _args( exe,opt,configFilePath,create ),
+						20000,
+						utility::systemEnvironment(),
+						password.toLatin1(),
+						[](){},
+						_ecryptfs( app ) ) ;
+
+			return _status( s,_status( app,status_type::exeName ),app == "encfs" ) ;
+		} ;
+
+		auto s = _run() ;
+
+		if( s == siritask::status::ecrypfsBadExePermissions ){
+
+			if( utility::enablePolkit( utility::background_thread::True ) ){
+
+				s = _run() ;
+			}
+		}
 
 		if( s != siritask::status::success ){
 

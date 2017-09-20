@@ -57,7 +57,7 @@ private slots:
 	void setPluginExecutable( void ) ;
 	void setFileManager( void ) ;
 	void hideWindow( void ) ;
-	void setUpApp( bool,const QString& ) ;
+	void setUpApp( const QString& ) ;
 	void start( const QStringList& ) ;
 	void autoUpdateCheck( void ) ;
 	void gocryptfsProperties( void ) ;
@@ -72,7 +72,6 @@ private slots:
 	void setDefaultMountPointPrefix( void ) ;
 	void autoCheckUpdates( bool ) ;
 	void reuseMountPoint( bool ) ;
-	void enablePolkitSupport( bool ) ;
 	void autoMountFavoritesOnStartUp( bool ) ;
 	void unlockVolume( const QStringList& ) ;
 	void aboutToShowMenu( void ) ;

@@ -231,9 +231,6 @@ namespace utility
 	bool reUseMountPoint( void ) ;
 	void reUseMountPoint( bool ) ;
 
-	bool enablePolkitSupport( void ) ;
-	void enablePolkitSupport( bool ) ;
-
 	QString homeConfigPath( const QString& = QString() ) ;
 	QString homePath() ;
 	QString mountPath( const QString& path ) ;
@@ -280,6 +277,9 @@ namespace utility
 
 	bool enableRevealingPasswords( void ) ;
 
+	enum class background_thread{ True,False } ;
+	bool enablePolkit( utility::background_thread ) ;
+
 	bool runningInMixedMode() ;
 	bool notRunningInMixedMode() ;
 
@@ -293,7 +293,6 @@ namespace utility
 	QString executableSearchPaths( const QString& ) ;
 
 	bool useZuluPolkit( void ) ;
-	void startHelper( QWidget *,const QString&,const char * ) ;
 	void quitHelper() ;
 	QString helperSocketPath() ;
 	void clearFavorites( void ) ;
