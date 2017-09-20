@@ -51,7 +51,7 @@ static bool _ecryptfs( const T& e )
 
 static bool _ecryptfs_illegal_path( const siritask::options& opts )
 {
-	if( _ecryptfs( opts.type ) && utility::useZuluPolkit() ){
+	if( _ecryptfs( opts.type ) && utility::useSiriPolkit() ){
 
 		return opts.cipherFolder.contains( " " ) || opts.plainFolder.contains( " " ) ;
 	}else{
@@ -121,15 +121,17 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 {
 	return Task::run< bool >( [ = ](){
 
+		auto ecryptfs = _ecryptfs( fileSystem ) ;
+
 		auto cmd = [ & ](){
 
-			if( _ecryptfs( fileSystem ) ){
+			if( ecryptfs ){
 
 				auto exe = utility::executableFullPath( "ecryptfs-simple" ) ;
 
 				auto s = exe + " -k " + _makePath( cipherFolder ) ;
 
-				if( utility::runningInMixedMode() ){
+				if( utility::useSiriPolkit() ){
 
 					return _wrap_su( s ) ;
 				}else{
@@ -143,15 +145,50 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 					return "fusermount -u " + _makePath( mountPoint ) ;
 				}
 			}
-		}() ;
+		} ;
 
-		for( int i = 0 ; i < 5 ; i++ ){
+		const int max_count = 5 ;
 
-			if( utility::Task::run( cmd,10000,_ecryptfs( fileSystem ) ).get().success() ){
+		if( ecryptfs ){
 
-				return true ;
-			}else{
-				utility::Task::waitForOneSecond() ;
+			bool not_set = true ;
+
+			auto exe = cmd() ;
+
+			for( int i = 0 ; i < max_count ; i++ ){
+
+				auto s = utility::Task::run( exe,10000,true ).get() ;
+
+				if( s.success() ){
+
+					return true ;
+				}else{
+					if( not_set && s.stdError().contains( "error: failed to set gid" ) ){
+
+						if( utility::enablePolkit( utility::background_thread::True ) ){
+
+							not_set = false ;
+
+							exe = cmd() ;
+						}else{
+							return false ;
+						}
+					}else{
+						utility::Task::waitForOneSecond() ;
+					}
+				}
+			}
+		}else{
+			for( int i = 0 ; i < max_count ; i++ ){
+
+				auto s = utility::Task::run( cmd(),10000,false ).get() ;
+
+				if( s.success() ){
+
+					return true ;
+				}else{
+					utility::Task::waitForOneSecond() ;
+				}
 			}
 		}
 
@@ -306,14 +343,14 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 		if( opt.mountOptions.isEmpty() ){
 
-			if( utility::runningInMixedMode() ){
+			if( utility::useSiriPolkit() ){
 
 				return _wrap_su( s ) ;
 			}else{
 				return s ;
 			}
 		}else{
-			if( utility::runningInMixedMode() ){
+			if( utility::useSiriPolkit() ){
 
 				return _wrap_su( s + " -o " + opt.mountOptions ) ;
 			}else{

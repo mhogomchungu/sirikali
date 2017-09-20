@@ -139,24 +139,7 @@ void utility::Task::execute( const QString& exe,int waitTime,
 			     const std::function< void() >& function,
 			     bool polkit )
 {
-	class Process : public QProcess{
-	public:
-		Process( const std::function< void() >& function ) :
-			m_function( function )
-		{
-		}
-	protected:
-		void setupChildProcess()
-		{
-			m_function() ;
-		}
-	private:
-		const std::function< void() >& m_function ;
-	} p( function ) ;
-
-	p.setProcessEnvironment( env ) ;
-
-	if( polkit && utility::useZuluPolkit() ){
+	if( polkit && utility::useSiriPolkit() ){
 
 		auto _report_error = [ this ]( const char * msg ){
 
@@ -194,9 +177,9 @@ void utility::Task::execute( const QString& exe,int waitTime,
 
 			nlohmann::json json ;
 
-			json[ "cookie" ]     = _cookie.constData() ;
-			json[ "password" ]   = password.constData() ;
-			json[ "command" ]    = exe.toLatin1().constData() ;
+			json[ "cookie" ]   = _cookie.constData() ;
+			json[ "password" ] = password.constData() ;
+			json[ "command" ]  = exe.toLatin1().constData() ;
 
 			return json.dump().c_str() ;
 		}() ) ;
@@ -219,6 +202,23 @@ void utility::Task::execute( const QString& exe,int waitTime,
 			_report_error( "SiriKali: Failed To Parse Polkit Backend Output" ) ;
 		}
 	}else{
+		class Process : public QProcess{
+		public:
+			Process( const std::function< void() >& function,
+				 const QProcessEnvironment& env ) :
+				m_function( function )
+			{
+				this->setProcessEnvironment( env ) ;
+			}
+		protected:
+			void setupChildProcess()
+			{
+				m_function() ;
+			}
+		private:
+			const std::function< void() >& m_function ;
+		} p( function,env ) ;
+
 		p.start( exe ) ;
 
 		if( !password.isEmpty() ){
@@ -317,7 +317,7 @@ QString utility::helperSocketPath()
 	return utility::homeConfigPath() + ".tmp/SiriKali.polkit.socket" ;
 }
 
-bool utility::useZuluPolkit()
+bool utility::useSiriPolkit()
 {
 	return _use_polkit ;
 }
@@ -378,16 +378,6 @@ void utility::openPath( const QString& path,const QString& opener,
 			}
 		} ) ;
 	}
-}
-
-bool utility::runningInMixedMode()
-{
-	return utility::useZuluPolkit() ;
-}
-
-bool utility::notRunningInMixedMode()
-{
-	return !utility::runningInMixedMode() ;
 }
 
 Task::future< utility::fsInfo >& utility::fileSystemInfo( const QString& q )

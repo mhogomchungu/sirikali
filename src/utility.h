@@ -280,9 +280,6 @@ namespace utility
 	enum class background_thread{ True,False } ;
 	bool enablePolkit( utility::background_thread ) ;
 
-	bool runningInMixedMode() ;
-	bool notRunningInMixedMode() ;
-
 	QProcessEnvironment systemEnvironment() ;
 
 	QString homePath() ;
@@ -292,7 +289,7 @@ namespace utility
 	QStringList executableSearchPaths( void ) ;
 	QString executableSearchPaths( const QString& ) ;
 
-	bool useZuluPolkit( void ) ;
+	bool useSiriPolkit( void ) ;
 	void quitHelper() ;
 	QString helperSocketPath() ;
 	void clearFavorites( void ) ;
