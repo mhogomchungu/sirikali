@@ -951,7 +951,7 @@ void sirikali::autoMountFavoritesOnAvailable( QString m )
 			}
 		}
 
-		this->mountMultipleVolumes( this->autoUnlockVolumes( e ) ) ;
+		this->mountMultipleVolumes( this->autoUnlockVolumes( std::move( e ) ) ) ;
 	}
 }
 
@@ -967,7 +967,7 @@ void sirikali::autoUnlockVolumes()
 		}
 	}
 
-	this->mountMultipleVolumes( this->autoUnlockVolumes( e ) ) ;
+	this->mountMultipleVolumes( this->autoUnlockVolumes( std::move( e ) ) ) ;
 }
 
 QVector< std::pair< favorites::entry,QByteArray > >
