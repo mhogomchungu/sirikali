@@ -1358,6 +1358,25 @@ static int _readPasswordMaximumLength()
 	}
 }
 
+bool utility::startMinimized()
+{
+	if( _settings->contains( "StartMinimized" ) ){
+
+		return _settings->value( "StartMinimized" ).toBool() ;
+	}else{
+		bool s = false  ;
+
+		_settings->setValue( "StartMinimized",s ) ;
+
+		return s ;
+	}
+}
+
+void utility::setStartMinimized( bool e )
+{
+	_settings->setValue( "StartMinimized",e ) ;
+}
+
 static inline bool _terminalEchoOff( struct termios * old,struct termios * current )
 {
 	if( tcgetattr( 1,old ) != 0 ){

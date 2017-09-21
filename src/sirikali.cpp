@@ -311,6 +311,9 @@ void sirikali::setUpAppMenu()
 	m->addAction( _addAction( true,checkForUpdates::autoCheck(),tr( "Autocheck For Updates" ),
 				  "Autocheck For Updates",SLOT( autoCheckUpdates( bool ) ) ) ) ;
 
+	m->addAction( _addAction( true,utility::startMinimized(),tr( "Start Minimized" ),
+				  "Start Minimized",SLOT( startMinimized( bool ) ) ) ) ;
+
 	m->addAction( _addAction( false,false,tr( "Set Mount Point Prefix" ),
 				  "Set Mount Point Prefix",SLOT( setDefaultMountPointPrefix() ) ) ) ;
 
@@ -398,6 +401,11 @@ void sirikali::setUpAppMenu()
 
 	connect( &m_trayIcon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),
 		 this,SLOT( slotTrayClicked( QSystemTrayIcon::ActivationReason ) ) ) ;
+}
+
+void sirikali::startMinimized( bool e )
+{
+	utility::setStartMinimized( e ) ;
 }
 
 void sirikali::setFileManager()
@@ -695,6 +703,12 @@ int sirikali::start( QApplication& e )
 void sirikali::start( const QStringList& l )
 {
 	m_startHidden  = l.contains( "-e" ) ;
+
+	if( !m_startHidden ){
+
+		m_startHidden = utility::startMinimized() ;
+	}
+
 	m_folderOpener = utility::cmdArgumentValue( l,"-m",utility::fileManager() ) ;
 
 	utility::createFolder( utility::homeConfigPath() ) ;

@@ -273,6 +273,9 @@ namespace utility
 	bool autoMountFavoritesOnAvailable() ;
 	void autoMountFavoritesOnAvailable( bool ) ;
 
+	bool startMinimized() ;
+	void setStartMinimized( bool ) ;
+
 	int checkForUpdateInterval( void ) ;
 
 	bool enableRevealingPasswords( void ) ;

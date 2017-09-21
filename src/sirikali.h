@@ -54,6 +54,7 @@ public:
 	int start( QApplication& ) ;
 	~sirikali() ;
 private slots:
+	void startMinimized( bool ) ;
 	void setPluginExecutable( void ) ;
 	void setFileManager( void ) ;
 	void hideWindow( void ) ;
