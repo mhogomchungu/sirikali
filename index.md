@@ -28,8 +28,9 @@ More advantages/disadvantages are discussed <a href="https://www.cryfs.org/compa
 
 Most frequently asked questions are answered <a href="https://github.com/mhogomchungu/SiriKali/wiki/Frequently-Asked-Questions">here.</a>
 
+## DONATIONS
+
 ```
-DONATIONS
 Paypal does not work where i live(United Republic of Tanzani)
 and i accept donations only through Western Union and bank transfers.
 
