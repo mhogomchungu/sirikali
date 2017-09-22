@@ -391,7 +391,7 @@ file( WRITE ${PROJECT_BINARY_DIR}/org.sirikali.pkexec.policy
 <policyconfig>
 
   <action id=\"org.sirikali.pkexec\">
-    <message>Authentication is required to run sirikali.pkexec</message>
+    <message>Authentication is required to complete requested operation.</message>
     <icon_name>sirikali</icon_name>
     <defaults>
       <allow_any>auth_admin</allow_any>
