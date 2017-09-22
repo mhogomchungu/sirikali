@@ -50,7 +50,6 @@ Swift Code:	CORUTZTZ
 Account Number:	0152454497500
 ```
 
-
 ## Download link
 
 Latest released version is 1.3.0 and it can be downloaded by clicking below link.
