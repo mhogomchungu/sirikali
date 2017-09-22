@@ -252,14 +252,7 @@ static QString siriPolkitExe()
 
 static ::Task::future< utility::Task >& _start_siripolkit( const QString& e )
 {
-	std::array< char,16 > buffer ;
-
-	auto data = buffer.data() ;
-	auto size = buffer.size() ;
-
-	gcry_randomize( data,size,GCRY_STRONG_RANDOM ) ;
-
-	_cookie = QByteArray::fromRawData( data,size ).toHex() ;
+	_cookie = plugins::getRandomData( 16 ).toHex() ;
 
 	return ::Task::run< utility::Task >( [ = ]{
 

@@ -146,6 +146,21 @@ static inline QByteArray sha512( const QByteArray& e )
 	}
 }
 
+static inline QByteArray getRandomData( size_t s )
+{
+	if( gcry_control( GCRYCTL_INITIALIZATION_FINISHED_P ) == 0 ){
+
+		gcry_check_version( nullptr ) ;
+		gcry_control( GCRYCTL_INITIALIZATION_FINISHED,0 ) ;
+	}
+
+	QByteArray buffer( s,'\0' ) ;
+
+	gcry_randomize( buffer.data(),buffer.size(),GCRY_STRONG_RANDOM ) ;
+
+	return buffer ;
+}
+
 } //namespace plugins
 
 #endif // PLUGINS_H
