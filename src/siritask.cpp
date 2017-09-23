@@ -278,6 +278,11 @@ static QString _args( const QString& exe,const siritask::options& opt,
 				}else{
 					mode += " -o fsname=gocryptfs@" + cipherFolder ;
 
+					//if( utility::platformIsOSX() ){
+
+					//	mode += " -o volname=" + utility::split( opt.plainFolder,'/' ).last() ;
+					//}
+
 					auto e = QString( "%1 -q %2 %3 %4 %5" ) ;
 					return e.arg( exe,mode,configPath,cipherFolder,mountPoint ) ;
 				}
@@ -287,6 +292,11 @@ static QString _args( const QString& exe,const siritask::options& opt,
 					auto e = QString( "%1 create %2 %3 %4" ) ;
 					return e.arg( exe,opt.createOptions,configPath,cipherFolder ) ;
 				}else{
+					//if( utility::platformIsOSX() ){
+
+					//	mode += " -o volname=" + utility::split( opt.plainFolder,'/' ).last() ;
+					//}
+
 					auto e = QString( "%1 mount -b %2 %3 -o fsname=securefs@%4 -o subtype=securefs %5 %6" ) ;
 					return e.arg( exe,configPath,mode,cipherFolder,cipherFolder,mountPoint ) ;
 				}
@@ -362,6 +372,11 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 		auto e = QString( "%1 %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ) ;
 
+		//if( utility::platformIsOSX() ){
+
+		//	e += " -o volname=" + utility::split( opt.plainFolder,'/' ).last() ;
+		//}
+
 		auto z = [ & ]()->QString{
 
 			if( create ){
@@ -393,6 +408,11 @@ static QString _args( const QString& exe,const siritask::options& opt,
 		}
 	}else{
 		auto e = QString( "%1 %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ) ;
+
+		if( utility::platformIsOSX() ){
+
+			e += " -o volname=" + utility::split( opt.plainFolder,'/' ).last() ;
+		}
 
 		auto opts = e.arg( exe,cipherFolder,mountPoint,mountOptions,configPath,
 				   separator,type.name(),cipherFolder,type.name() ) ;
