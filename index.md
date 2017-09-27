@@ -77,6 +77,12 @@ Check first if SiriKali is present in your distribution's repositories and use t
 Name: Francis Banyikwa
 email: banyikwafb@gmail.com
 
+gpg key finderpring: E3AF84691424AD00E099003502FC64E8DEBF43A8
+
+The key can be retrieved with command: gpg --recv-keys 0x02FC64E8DEBF43A8
+
+The key is below:
+
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 
 mQINBFmVdDYBEAC/pVNcWOEw5PMLtGiCR9WhY5LOMnR7RlXX4l7JPTiYWGAq+WOV
