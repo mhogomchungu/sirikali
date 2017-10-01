@@ -26,6 +26,7 @@
 
 #include <termios.h>
 #include <memory>
+#include <iostream>
 
 #include <QProcess>
 #include <QCoreApplication>
