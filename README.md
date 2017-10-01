@@ -1,4 +1,4 @@
 SiriKali
 =========
 
-Project's main page is at: http://mhogomchungu.github.io/sirikali
+Project's main page is at: https://mhogomchungu.github.io/sirikali
