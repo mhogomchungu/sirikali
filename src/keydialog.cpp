@@ -757,7 +757,7 @@ void keyDialog::pbOpen()
 
 			using bk = LXQt::Wallet::BackEnd ;
 
-			w = utility::getKey( m_path,m_secrets.walletBk( bk::internal ).bk() ) ;
+			w = utility::getKey( m_path,m_secrets.walletBk( bk::internal ).bk(),this ) ;
 
 			if( w.notConfigured ){
 

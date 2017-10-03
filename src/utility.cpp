@@ -447,7 +447,7 @@ bool utility::printVersionOrHelpInfo( const QStringList& e )
 	}
 }
 
-utility::wallet utility::getKey( const QString& keyID,LXQt::Wallet::Wallet& wallet )
+utility::wallet utility::getKey( const QString& keyID,LXQt::Wallet::Wallet& wallet,QWidget * widget )
 {
 	auto _getKey = []( LXQt::Wallet::Wallet& wallet,const QString& volumeID ){
 
@@ -474,7 +474,17 @@ utility::wallet utility::getKey( const QString& keyID,LXQt::Wallet::Wallet& wall
 			}else{
 				wallet.setImage( QIcon( ":/sirikali" ) ) ;
 
-				w.opened = wallet.open( walletName,appName ) ;
+				if( widget ){
+
+					widget->hide() ;
+
+					w.opened = wallet.open( walletName,appName ) ;
+
+					widget->show() ;
+
+				}else{
+					w.opened = wallet.open( walletName,appName ) ;
+				}
 			}
 
 			if( w.opened ){

@@ -209,7 +209,7 @@ namespace utility
 
 	bool printVersionOrHelpInfo( const QStringList& ) ;
 
-	wallet getKey( const QString& keyID,LXQt::Wallet::Wallet& ) ;
+	wallet getKey( const QString& keyID,LXQt::Wallet::Wallet&,QWidget * = nullptr ) ;
 
 	QString cmdArgumentValue( const QStringList&,const QString& arg,const QString& defaulT = QString() ) ;
 
