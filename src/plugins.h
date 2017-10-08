@@ -36,19 +36,34 @@ namespace plugins
 
 enum class plugin{ hmac_key,externalExecutable } ;
 
-class gcrypt_md_handle
+class crypto
 {
 public:
-	gcrypt_md_handle( int algo,int flags )
+	crypto( int algo,int flags,const QString& key = QString() )
 	{
-		if( gcry_control( GCRYCTL_INITIALIZATION_FINISHED_P ) == 0 ){
-
-			gcry_check_version( nullptr ) ;
-			gcry_control( GCRYCTL_INITIALIZATION_FINISHED,0 ) ;
-		}
+		this->init() ;
 
 		m_algo = algo ;
 		m_error_status = gcry_md_open( &m_handle,algo,flags ) ;
+
+		if( !key.isEmpty() && m_error_status == GPG_ERR_NO_ERROR ){
+
+			this->setKey( key ) ;
+		}
+	}
+
+	crypto()
+	{
+		this->init() ;
+	}
+
+	QByteArray getRandomData( size_t s )
+	{
+		QByteArray buffer( s,'\0' ) ;
+
+		gcry_randomize( buffer.data(),buffer.size(),GCRY_STRONG_RANDOM ) ;
+
+		return buffer ;
 	}
 
 	void write( const void * buffer,size_t size )
@@ -81,19 +96,28 @@ public:
 		return { key,len } ;
 	}
 
-	~gcrypt_md_handle()
+	~crypto()
 	{
 		gcry_md_close( m_handle ) ;
 	}
 private:
+	void init()
+	{
+		if( gcry_control( GCRYCTL_INITIALIZATION_FINISHED_P ) == 0 ){
+
+			gcry_check_version( nullptr ) ;
+			gcry_control( GCRYCTL_INITIALIZATION_FINISHED,0 ) ;
+		}
+	}
+
 	int m_algo ;
 	int m_error_status ;
-	gcry_md_hd_t m_handle ;
+	gcry_md_hd_t m_handle = nullptr ;
 };
 
 static inline QByteArray hmac_key( const QString& keyFile,const QString& password )
 {
-	auto _getKey = []( gcrypt_md_handle& handle,const QString& keyFile ){
+	auto _getKey = []( crypto& handle,const QString& keyFile ){
 
 		QFile f( keyFile ) ;
 
@@ -119,46 +143,19 @@ static inline QByteArray hmac_key( const QString& keyFile,const QString& passwor
 		}
 	} ;
 
-	gcrypt_md_handle handle( GCRY_MD_SHA256,GCRY_MD_FLAG_HMAC ) ;
+	crypto handle( GCRY_MD_SHA256,GCRY_MD_FLAG_HMAC,password ) ;
 
 	if( handle ){
 
-		if( handle.setKey( password ) ){
-
-			return _getKey( handle,keyFile ) ;
-		}
+		return _getKey( handle,keyFile ) ;
 	}
 
 	return QByteArray() ;
 }
 
-static inline QByteArray sha512( const QByteArray& e )
-{
-	gcrypt_md_handle handle( GCRY_MD_SHA512,0 ) ;
-
-	if( handle ){
-
-		handle.write( e ) ;
-
-		return handle.result().toHex() ;
-	}else{
-		return QByteArray() ;
-	}
-}
-
 static inline QByteArray getRandomData( size_t s )
 {
-	if( gcry_control( GCRYCTL_INITIALIZATION_FINISHED_P ) == 0 ){
-
-		gcry_check_version( nullptr ) ;
-		gcry_control( GCRYCTL_INITIALIZATION_FINISHED,0 ) ;
-	}
-
-	QByteArray buffer( s,'\0' ) ;
-
-	gcry_randomize( buffer.data(),buffer.size(),GCRY_STRONG_RANDOM ) ;
-
-	return buffer ;
+	return crypto().getRandomData( s ) ;
 }
 
 } //namespace plugins
