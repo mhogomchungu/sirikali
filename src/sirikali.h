@@ -36,6 +36,7 @@
 #include "mountinfo.h"
 #include "lxqt_wallet.h"
 #include "keydialog.h"
+#include "checkforupdates.h"
 
 class QCloseEvent ;
 class QAction ;
@@ -166,6 +167,8 @@ private:
 	QSystemTrayIcon m_trayIcon ;
 
 	mountinfo m_mountInfo ;
+
+	checkUpdates m_checkUpdates ;
 };
 
 #endif // MAINWINDOW_H

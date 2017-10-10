@@ -73,7 +73,8 @@ static QVector< std::pair< favorites::entry,QByteArray > > _readFavorites()
 
 sirikali::sirikali() :
 	m_secrets( this ),
-	m_mountInfo( this,true,[ & ](){ QCoreApplication::exit( m_exitStatus ) ; } )
+	m_mountInfo( this,true,[ & ](){ QCoreApplication::exit( m_exitStatus ) ; } ),
+	m_checkUpdates( this )
 {
 }
 
@@ -571,12 +572,12 @@ void sirikali::licenseInfo()
 
 void sirikali::updateCheck()
 {
-	checkUpdates::run( this,false ) ;
+	m_checkUpdates.run( false ) ;
 }
 
 void sirikali::autoUpdateCheck()
 {
-	checkUpdates::run( this,true ) ;
+	m_checkUpdates.run( true ) ;
 }
 
 void sirikali::autoCheckUpdates( bool e )

@@ -19,8 +19,7 @@
 
 #include "checkforupdates.h"
 
-checkUpdates::checkUpdates( QWidget * widget,bool autocheck ) :
-		m_widget( widget ),m_autocheck( autocheck )
+checkUpdates::checkUpdates( QWidget * widget ) : m_widget( widget )
 {
 	m_networkRequest.setRawHeader( "Host","api.github.com" ) ;
 	m_networkRequest.setRawHeader( "Accept-Encoding","text/plain" ) ;
@@ -28,8 +27,26 @@ checkUpdates::checkUpdates( QWidget * widget,bool autocheck ) :
 	m_timer.setInterval( 1000 * utility::networkTimeOut() ) ;
 
 	connect( &m_timer,SIGNAL( timeout() ),this,SLOT( timeOut() ),Qt::QueuedConnection ) ;
+}
+
+void checkUpdates::check( bool e )
+{
+	m_autocheck = e ;
 
 	this->checkForUpdate( 0 ) ;
+}
+
+void checkUpdates::run( bool e )
+{
+	if( e ){
+
+		if( utility::autoCheck() ){
+
+			this->check( e ) ;
+		}
+	}else{
+		this->check( e ) ;
+	}
 }
 
 void checkUpdates::timeOut()
@@ -42,8 +59,6 @@ void checkUpdates::timeOut()
 		auto e = tr( "Network Request Failed To Respond Within %1 Seconds." ).arg( s ) ;
 
 		DialogMsg( m_widget ).ShowUIOK( tr( "ERROR" ),e ) ;
-
-		this->deleteLater() ;
 	}
 }
 
@@ -193,8 +208,6 @@ void checkUpdates::checkForUpdate( backends_t::size_type position )
 	if( position == m_backends.size() ){
 
 		this->showResult() ;
-
-		this->deleteLater() ;
 	}else{
 		const auto& e = m_backends[ position ] ;
 

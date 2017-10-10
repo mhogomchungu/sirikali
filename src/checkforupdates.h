@@ -40,19 +40,6 @@ class checkUpdates : public QObject
 {
 	Q_OBJECT
 public:
-	static void run( QWidget * widget,bool e )
-	{
-		if( e ){
-
-			if( utility::autoCheck() ){
-
-				new checkUpdates( widget,e ) ;
-			}
-		}else{
-			new checkUpdates( widget,e ) ;
-		}
-	}
-
 	static bool autoCheck( void )
 	{
 		return utility::autoCheck() ;
@@ -63,11 +50,15 @@ public:
 		utility::autoCheck( e ) ;
 	}
 
-	checkUpdates( QWidget * widget,bool autocheck ) ;
+	void run( bool e ) ;
+
+	checkUpdates( QWidget * widget ) ;
 
 private slots:
 	void timeOut() ;
 private:
+	void check( bool ) ;
+
 	void showResult() ;
 
 	QString InstalledVersion( const siritask::volumeType& e ) ;
