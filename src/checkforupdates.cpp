@@ -39,7 +39,7 @@ void checkUpdates::timeOut()
 	if( m_network.cancel( m_networkReply ) ){
 
 		auto s = QString::number( utility::networkTimeOut() ) ;
-		auto e = tr( "Network Request Failed To Respond Within %1 Seconds" ).arg( s ) ;
+		auto e = tr( "Network Request Failed To Respond Within %1 Seconds." ).arg( s ) ;
 
 		DialogMsg( m_widget ).ShowUIOK( tr( "ERROR" ),e ) ;
 
@@ -137,7 +137,7 @@ QString checkUpdates::InstalledVersion( const siritask::volumeType& e )
 		}else{
 			if( s.size() > 1 ){
 
-			return s.at( 1 ) ;
+				return s.at( 1 ) ;
 			}
 		}
 
