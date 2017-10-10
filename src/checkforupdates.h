@@ -20,14 +20,82 @@
 #ifndef CHECKFORUPDATES_H
 #define CHECKFORUPDATES_H
 
-class QWidget ;
+#include <QFile>
+#include <QVector>
+#include <QObject>
+#include <QWidget>
+#include <QTimer>
 
-namespace checkForUpdates
+#include "3rdParty/NetworkAccessManager/networkAccessManager.hpp"
+#include "utility.h"
+#include "dialogmsg.h"
+#include "siritask.h"
+#include "version.h"
+#include "json.h"
+
+#include <utility>
+
+class checkUpdates : public QObject
 {
-	bool autoCheck( void ) ;
-	void autoCheck( bool ) ;
+	Q_OBJECT
+public:
+	static void run( QWidget * widget,bool e )
+	{
+		if( e ){
 
-	void check( QWidget *,bool ) ;
-}
+			if( utility::autoCheck() ){
+
+				new checkUpdates( widget,e ) ;
+			}
+		}else{
+			new checkUpdates( widget,e ) ;
+		}
+	}
+
+	static bool autoCheck( void )
+	{
+		return utility::autoCheck() ;
+	}
+
+	static void autoCheck( bool e )
+	{
+		utility::autoCheck( e ) ;
+	}
+
+	checkUpdates( QWidget * widget,bool autocheck ) ;
+
+private slots:
+	void timeOut() ;
+private:
+	void showResult() ;
+
+	QString InstalledVersion( const siritask::volumeType& e ) ;
+	QString latestVersion( const QByteArray& data ) ;
+
+	void checkForUpdate( QVector< std::pair< QString,QString > >::size_type position ) ;
+
+	QWidget * m_widget ;
+
+	QNetworkReply * m_networkReply ;
+	QNetworkRequest m_networkRequest ;
+
+	NetworkAccessManager m_network ;
+
+	QVector< QStringList > m_results ;
+
+	QTimer m_timer ;
+
+	bool m_autocheck ;
+
+	QVector< std::pair< QString,QString > > m_backends = { {
+
+		{ "sirikali","mhogomchungu/sirikali" },
+		{ "cryfs","cryfs/cryfs" },
+		{ "gocryptfs","rfjakob/gocryptfs" },
+		{ "securefs","netheril96/securefs" },
+		{ "securefs","netheril96/securefs" },
+		{ "ecryptfs-simple","mhogomchungu/ecryptfs-simple" }
+	} } ;
+} ;
 
 #endif // CHECKFORUPDATES_H

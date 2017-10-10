@@ -162,9 +162,9 @@ public:
 
 		return { q,[]( QNetworkReply * e ){ e->deleteLater() ; } } ;
 	}
-	void cancel( QNetworkReply * e )
+	bool cancel( QNetworkReply * e )
 	{
-		this->find_network_reply( e,[]( auto& e,auto& p,auto s ){
+		return this->find_network_reply( e,[]( auto& e,auto& p,auto s ){
 
 			if( std::get< bool >( p[ s ] ) ){
 
@@ -178,7 +178,7 @@ public:
 		} ) ;
 	}
 private:
-	void find_network_reply( QNetworkReply * e,void( *function )( QNetworkReply&,entries_t&,position_t ) )
+	bool find_network_reply( QNetworkReply * e,void( *function )( QNetworkReply&,entries_t&,position_t ) )
 	{
 		for( position_t s = 0 ; s < m_entries.size() ; s++ ){
 
@@ -186,9 +186,11 @@ private:
 
 				function( *e,m_entries,s ) ;
 
-				break ;
+				return true ;
 			}
 		}
+
+		return false ;
 	}
 private slots:
 	void networkReply( QNetworkReply * e )

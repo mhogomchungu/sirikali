@@ -179,7 +179,9 @@ set( UI_FILES 	src/sirikali.ui
 		src/cryfscreateoptions.ui
 )
 
-set( MOC_FILES 	src/dialogok.h
+set( MOC_FILES
+                src/checkforupdates.h
+                src/dialogok.h
 		src/sirikali.h
 		src/keydialog.h
 		src/oneinstance.h

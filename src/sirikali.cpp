@@ -308,7 +308,7 @@ void sirikali::setUpAppMenu()
 	m->addAction( _addAction( true,utility::reUseMountPoint(),tr( "Reuse Mount Point" ),
 				  "Reuse Mount Point",SLOT( reuseMountPoint( bool ) ) ) ) ;
 
-	m->addAction( _addAction( true,checkForUpdates::autoCheck(),tr( "Autocheck For Updates" ),
+	m->addAction( _addAction( true,checkUpdates::autoCheck(),tr( "Autocheck For Updates" ),
 				  "Autocheck For Updates",SLOT( autoCheckUpdates( bool ) ) ) ) ;
 
 	m->addAction( _addAction( true,utility::startMinimized(),tr( "Start Minimized" ),
@@ -571,17 +571,17 @@ void sirikali::licenseInfo()
 
 void sirikali::updateCheck()
 {
-	checkForUpdates::check( this,false ) ;
+	checkUpdates::run( this,false ) ;
 }
 
 void sirikali::autoUpdateCheck()
 {
-	checkForUpdates::check( this,true ) ;
+	checkUpdates::run( this,true ) ;
 }
 
 void sirikali::autoCheckUpdates( bool e )
 {
-	checkForUpdates::autoCheck( e ) ;
+	checkUpdates::autoCheck( e ) ;
 }
 
 void sirikali::favoriteClicked( QAction * ac )

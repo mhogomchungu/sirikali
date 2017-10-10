@@ -285,6 +285,8 @@ namespace utility
 
 	QProcessEnvironment systemEnvironment() ;
 
+	int networkTimeOut() ;
+
 	QString homePath() ;
 	QString userName() ;
 

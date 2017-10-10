@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  *  Copyright (c) 2015
  *  name : Francis Banyikwa
@@ -19,31 +19,46 @@
 
 #include "checkforupdates.h"
 
-#include <QFile>
-#include <QVector>
-#include <QObject>
-#include <QWidget>
-
-#include "3rdParty/NetworkAccessManager/networkAccessManager.hpp"
-#include "utility.h"
-#include "dialogmsg.h"
-#include "siritask.h"
-#include "version.h"
-
-#include "json.h"
-
-static QString _tr( const QStringList& l )
+checkUpdates::checkUpdates( QWidget * widget,bool autocheck ) :
+		m_widget( widget ),m_autocheck( autocheck )
 {
-	auto e = QObject::tr( "%1\"%2\" Installed Version Is : %3.\nLatest Version Is : %4." ) ;
-	return e.arg( "",l.at( 0 ),l.at( 1 ),l.at( 2 ) ) ;
+	m_networkRequest.setRawHeader( "Host","api.github.com" ) ;
+	m_networkRequest.setRawHeader( "Accept-Encoding","text/plain" ) ;
+
+	m_timer.setInterval( 1000 * utility::networkTimeOut() ) ;
+
+	connect( &m_timer,SIGNAL( timeout() ),this,SLOT( timeOut() ),Qt::QueuedConnection ) ;
+
+	this->checkForUpdate( 0 ) ;
 }
 
-static void _show( bool autocheck,QWidget * w,const QVector< QStringList >& l )
+void checkUpdates::timeOut()
+{
+	m_timer.stop() ;
+
+	if( m_network.cancel( m_networkReply ) ){
+
+		auto s = QString::number( utility::networkTimeOut() ) ;
+		auto e = tr( "Network Request Failed To Respond Within %1 Seconds" ).arg( s ) ;
+
+		DialogMsg( m_widget ).ShowUIOK( tr( "ERROR" ),e ) ;
+
+		this->deleteLater() ;
+	}
+}
+
+void checkUpdates::showResult()
 {
 	bool show = false ;
 	QString e = "\n" ;
 
-	for( const auto& it : l ){
+	auto _tr = []( const QStringList& l ){
+
+		auto e = QObject::tr( "%1\"%2\" Installed Version Is : %3.\nLatest Version Is : %4." ) ;
+		return e.arg( "",l.at( 0 ),l.at( 1 ),l.at( 2 ) ) ;
+	} ;
+
+	for( const auto& it : m_results ){
 
 		e += _tr( it ) + "\n\n" ;
 
@@ -60,18 +75,18 @@ static void _show( bool autocheck,QWidget * w,const QVector< QStringList >& l )
 		}
 	}
 
-	if( autocheck ){
+	if( m_autocheck ){
 
 		if( show ){
 
-			DialogMsg( w ).ShowUIInfo( QObject::tr( "Version Info" ),true,e + "\n" ) ;
+			DialogMsg( m_widget ).ShowUIInfo( tr( "Version Info" ),true,e + "\n" ) ;
 		}
 	}else{
-		DialogMsg( w ).ShowUIInfo( QObject::tr( "Version Info" ),true,e + "\n" ) ;
+		DialogMsg( m_widget ).ShowUIInfo( tr( "Version Info" ),true,e + "\n" ) ;
 	}
 }
 
-static QString _version( const siritask::volumeType& e )
+QString checkUpdates::InstalledVersion( const siritask::volumeType& e )
 {
 	if( e == "sirikali" ){
 
@@ -122,7 +137,7 @@ static QString _version( const siritask::volumeType& e )
 		}else{
 			if( s.size() > 1 ){
 
-				return s.at( 1 ) ;
+			return s.at( 1 ) ;
 			}
 		}
 
@@ -132,7 +147,7 @@ static QString _version( const siritask::volumeType& e )
 	return r.split( '\n' ).first().remove( ';' ).remove( 'v' ).remove( '\n' ) ;
 }
 
-static QString _version( const QByteArray& data )
+QString checkUpdates::latestVersion( const QByteArray& data)
 {
 	auto _found_release = []( const QString& e ){
 
@@ -173,72 +188,49 @@ static QString _version( const QByteArray& data )
 	return "N/A" ;
 }
 
-static QStringList _version( NetworkAccessManager& m,const QString& exe,const QString& e )
+void checkUpdates::checkForUpdate( QVector< std::pair< QString,QString > >::size_type position )
 {
-	auto f = _version( exe ) ;
+	if( position == m_backends.size() ){
 
-	if( f == "N/A" ){
+		this->showResult() ;
 
-		return { exe,"N/A","N/A" } ;
-	}else {
-		QUrl url( "https://api.github.com/repos/" + e + "/releases" ) ;
-
-		QNetworkRequest networkRequest( url ) ;
-
-		networkRequest.setRawHeader( "Host","api.github.com" ) ;
-		networkRequest.setRawHeader( "Accept-Encoding","text/plain" ) ;
-
-		try{
-			return { exe,f,_version( m.get( networkRequest )->readAll() ) } ;
-
-		}catch( ... ){
-
-			return { exe,f,"N/A" } ;
-		}
-	}
-}
-
-static void _check( QWidget * widget,bool autocheck )
-{
-	_show( autocheck,widget,[ & ]()->QVector< QStringList >{
-
-		NetworkAccessManager m ;
-
-		auto a = _version( m,"sirikali","mhogomchungu/sirikali" ) ;
-
-		auto b = _version( m,"cryfs","cryfs/cryfs" ) ;
-
-		auto c = _version( m,"gocryptfs","rfjakob/gocryptfs" ) ;
-
-		auto d = _version( m,"securefs","netheril96/securefs" ) ;
-
-		auto e = _version( m,"encfs","vgough/encfs" ) ;
-
-		auto f = _version( m,"ecryptfs-simple","mhogomchungu/ecryptfs-simple" ) ;
-
-		return { a,b,c,d,e,f } ;
-	}() ) ;
-}
-
-void checkForUpdates::check( QWidget * widget,bool e )
-{
-	if( e ){
-
-		if( utility::autoCheck() ){
-
-			_check( widget,true ) ;
-		}
+		this->deleteLater() ;
 	}else{
-		_check( widget,false ) ;
+		const auto& e = m_backends.at( position ) ;
+
+		position++ ;
+
+		auto exe = e.first ;
+
+		auto f = this->InstalledVersion( exe ) ;
+
+		if( f == "N/A" ){
+
+			m_results += { exe,"N/A","N/A" } ;
+
+			this->checkForUpdate( position ) ;
+		}else {
+			QUrl url( "https://api.github.com/repos/" + e.second + "/releases" ) ;
+
+			m_networkRequest.setUrl( url ) ;
+
+			m_timer.start() ;
+
+			m_network.get( &m_networkReply,m_networkRequest,
+				       [ this,exe,f,position ]( QNetworkReply& e ){
+
+				m_timer.stop() ;
+
+				try{
+					m_results += { exe,f,this->latestVersion( e.readAll() ) } ;
+
+				}catch( ... ){
+
+					m_results += { exe,f,"N/A" } ;
+				}
+
+				this->checkForUpdate( position ) ;
+			} ) ;
+		}
 	}
-}
-
-bool checkForUpdates::autoCheck()
-{
-	return utility::autoCheck() ;
-}
-
-void checkForUpdates::autoCheck( bool e )
-{
-	return utility::autoCheck( e ) ;
 }

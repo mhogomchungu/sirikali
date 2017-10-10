@@ -1190,6 +1190,18 @@ bool utility::autoMountFavoritesOnAvailable()
 	}
 }
 
+int utility::networkTimeOut()
+{
+	if( _settings->contains( "NetworkTimeOut" ) ){
+
+		return _settings->value( "NetworkTimeOut" ).toInt() ;
+	}else{
+		int s = 10 ;
+		_settings->setValue( "NetworkTimeOut",s ) ;
+		return s ;
+	}
+}
+
 bool utility::showMountDialogWhenAutoMounting()
 {
 	if( _settings->contains( "ShowMountDialogWhenAutoMounting" ) ){
