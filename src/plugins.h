@@ -46,7 +46,7 @@ public:
 		m_algo = algo ;
 		m_error_status = gcry_md_open( &m_handle,algo,flags ) ;
 
-		if( !key.isEmpty() && m_error_status == GPG_ERR_NO_ERROR ){
+		if( m_error_status == GPG_ERR_NO_ERROR ){
 
 			this->setKey( key ) ;
 		}
