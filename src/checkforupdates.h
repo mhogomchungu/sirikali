@@ -81,6 +81,8 @@ private:
 
 	bool m_autocheck ;
 
+	bool m_running ;
+
 	backends_t m_backends = { {
 
 		{ "sirikali","mhogomchungu/sirikali" },

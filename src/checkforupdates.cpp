@@ -19,7 +19,7 @@
 
 #include "checkforupdates.h"
 
-checkUpdates::checkUpdates( QWidget * widget ) : m_widget( widget )
+checkUpdates::checkUpdates( QWidget * widget ) : m_widget( widget ),m_running( false )
 {
 	m_networkRequest.setRawHeader( "Host","api.github.com" ) ;
 	m_networkRequest.setRawHeader( "Accept-Encoding","text/plain" ) ;
@@ -33,25 +33,34 @@ void checkUpdates::check( bool e )
 {
 	m_autocheck = e ;
 
+	m_results.clear() ;
+
+	m_running = true ;
+
 	this->checkForUpdate( 0 ) ;
 }
 
 void checkUpdates::run( bool e )
 {
-	if( e ){
+	if( m_running == false ){
 
-		if( utility::autoCheck() ){
+		if( e ){
 
+			if( utility::autoCheck() ){
+
+				this->check( e ) ;
+			}
+		}else{
 			this->check( e ) ;
 		}
-	}else{
-		this->check( e ) ;
 	}
 }
 
 void checkUpdates::timeOut()
 {
 	m_timer.stop() ;
+
+	m_running = false ;
 
 	if( m_network.cancel( m_networkReply ) ){
 
@@ -64,6 +73,8 @@ void checkUpdates::timeOut()
 
 void checkUpdates::showResult()
 {
+	m_running = false ;
+
 	bool show = false ;
 	QString e = "\n" ;
 
