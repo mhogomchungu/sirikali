@@ -108,7 +108,7 @@ options:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="761"/>
+        <location filename="../src/utility.cpp" line="771"/>
         <source>about SiriKali</source>
         <translation>A propos de SiriKali</translation>
     </message>
@@ -130,17 +130,15 @@ key = hmac(sha256,passphrase,keyfile contents)</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/checkforupdates.cpp" line="37"/>
+        <location filename="../src/checkforupdates.cpp" line="57"/>
         <source>%1&quot;%2&quot; Installed Version Is : %3.
 Latest Version Is : %4.</source>
         <translation>%1&quot;%2&quot; version installée : %3.
 Dernière version disponible : %4.</translation>
     </message>
     <message>
-        <location filename="../src/checkforupdates.cpp" line="67"/>
-        <location filename="../src/checkforupdates.cpp" line="70"/>
         <source>Version Info</source>
-        <translation>Infos de Version</translation>
+        <translation type="vanished">Infos de Version</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="40"/>
@@ -264,6 +262,25 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Saisissez le mot de passe du trousseau ci-après pour créer un nouveau trousseau &apos;&lt;span style=&quot; font-weight:600;&quot;&gt;%1&lt;/span&gt;&apos; pour l&apos;application &apos;&lt;span style=&quot; font-weight:600;&quot;&gt;%2&lt;/span&gt;&apos;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+</context>
+<context>
+    <name>checkUpdates</name>
+    <message>
+        <location filename="../src/checkforupdates.cpp" line="42"/>
+        <source>Network Request Failed To Respond Within %1 Seconds.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/checkforupdates.cpp" line="44"/>
+        <source>ERROR</source>
+        <translation type="unfinished">ERREUR</translation>
+    </message>
+    <message>
+        <location filename="../src/checkforupdates.cpp" line="82"/>
+        <location filename="../src/checkforupdates.cpp" line="85"/>
+        <source>Version Info</source>
+        <translation type="unfinished">Infos de Version</translation>
     </message>
 </context>
 <context>

@@ -34,6 +34,7 @@
 #include "json.h"
 
 #include <utility>
+#include <array>
 
 class checkUpdates : public QObject
 {
@@ -72,7 +73,9 @@ private:
 	QString InstalledVersion( const siritask::volumeType& e ) ;
 	QString latestVersion( const QByteArray& data ) ;
 
-	void checkForUpdate( QVector< std::pair< QString,QString > >::size_type position ) ;
+	using backends_t = std::array< std::pair< QString,QString >,6 > ;
+
+	void checkForUpdate( backends_t::size_type position ) ;
 
 	QWidget * m_widget ;
 
@@ -87,13 +90,13 @@ private:
 
 	bool m_autocheck ;
 
-	QVector< std::pair< QString,QString > > m_backends = { {
+	backends_t m_backends = { {
 
 		{ "sirikali","mhogomchungu/sirikali" },
 		{ "cryfs","cryfs/cryfs" },
 		{ "gocryptfs","rfjakob/gocryptfs" },
 		{ "securefs","netheril96/securefs" },
-		{ "securefs","netheril96/securefs" },
+		{ "encfs","vgough/encfs" },
 		{ "ecryptfs-simple","mhogomchungu/ecryptfs-simple" }
 	} } ;
 } ;

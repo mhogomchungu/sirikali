@@ -188,7 +188,7 @@ QString checkUpdates::latestVersion( const QByteArray& data)
 	return "N/A" ;
 }
 
-void checkUpdates::checkForUpdate( QVector< std::pair< QString,QString > >::size_type position )
+void checkUpdates::checkForUpdate( backends_t::size_type position )
 {
 	if( position == m_backends.size() ){
 
@@ -196,7 +196,7 @@ void checkUpdates::checkForUpdate( QVector< std::pair< QString,QString > >::size
 
 		this->deleteLater() ;
 	}else{
-		const auto& e = m_backends.at( position ) ;
+		const auto& e = m_backends[ position ] ;
 
 		position++ ;
 
