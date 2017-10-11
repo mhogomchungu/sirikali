@@ -37,7 +37,7 @@ void checkUpdates::check( bool e )
 
 	m_running = true ;
 
-	this->checkForUpdate( 0 ) ;
+	this->checkForUpdate() ;
 }
 
 void checkUpdates::run( bool e )
@@ -60,8 +60,6 @@ void checkUpdates::timeOut()
 {
 	m_timer.stop() ;
 
-	m_running = false ;
-
 	if( m_network.cancel( m_networkReply ) ){
 
 		auto s = QString::number( utility::networkTimeOut() ) ;
@@ -69,6 +67,8 @@ void checkUpdates::timeOut()
 
 		DialogMsg( m_widget ).ShowUIOK( tr( "ERROR" ),e ) ;
 	}
+
+	m_running = false ;
 }
 
 void checkUpdates::showResult()
@@ -234,9 +234,7 @@ void checkUpdates::checkForUpdate( backends_t::size_type position )
 
 			this->checkForUpdate( position ) ;
 		}else {
-			QUrl url( "https://api.github.com/repos/" + e.second + "/releases" ) ;
-
-			m_networkRequest.setUrl( url ) ;
+			m_networkRequest.setUrl( QUrl( e.second ) ) ;
 
 			m_timer.start() ;
 

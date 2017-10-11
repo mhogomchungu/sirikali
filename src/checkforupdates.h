@@ -64,9 +64,9 @@ private:
 	QString InstalledVersion( const siritask::volumeType& e ) ;
 	QString latestVersion( const QByteArray& data ) ;
 
-	using backends_t = std::array< std::pair< QString,QString >,6 > ;
+	using backends_t = std::array< std::pair< const char *,const char * >,6 > ;
 
-	void checkForUpdate( backends_t::size_type position ) ;
+	void checkForUpdate( backends_t::size_type position = 0 ) ;
 
 	QWidget * m_widget ;
 
@@ -85,12 +85,12 @@ private:
 
 	backends_t m_backends = { {
 
-		{ "sirikali","mhogomchungu/sirikali" },
-		{ "cryfs","cryfs/cryfs" },
-		{ "gocryptfs","rfjakob/gocryptfs" },
-		{ "securefs","netheril96/securefs" },
-		{ "encfs","vgough/encfs" },
-		{ "ecryptfs-simple","mhogomchungu/ecryptfs-simple" }
+		{ "sirikali","https://api.github.com/repos/mhogomchungu/sirikali/releases" },
+		{ "cryfs","https://api.github.com/repos/cryfs/cryfs/releases" },
+		{ "gocryptfs","https://api.github.com/repos/rfjakob/gocryptfs/releases" },
+		{ "securefs","https://api.github.com/repos/netheril96/securefs/releases" },
+		{ "encfs","https://api.github.com/repos/vgough/encfs/releases" },
+		{ "ecryptfs-simple","https://api.github.com/repos/mhogomchungu/ecryptfs-simple/releases" }
 	} } ;
 } ;
 
