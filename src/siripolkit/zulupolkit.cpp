@@ -119,6 +119,34 @@ zuluPolkit::~zuluPolkit()
 	QFile::remove( m_socketPath ) ;
 }
 
+#if QT_VERSION > QT_VERSION_CHECK( 5,0,0 )
+	#define zuluPermission QFileDevice
+#else
+	#define zuluPermission QFile
+#endif
+
+static void _set_path_writable_by_others( const QString& e )
+{
+	QFile f( e ) ;
+
+	for( decltype( umask( 0 ) ) i = 0 ; i < 1000 ; i++ ){
+
+		umask( i ) ;
+
+		f.open( QIODevice::WriteOnly ) ;
+
+		if( f.permissions() & zuluPermission::WriteOther ){
+
+			f.close() ;
+			f.remove() ;
+			break ;
+		}else{
+			f.close() ;
+			f.remove() ;
+		}
+	}
+}
+
 void zuluPolkit::start()
 {
 	if( m_arguments.size() > 1 ){
@@ -129,11 +157,9 @@ void zuluPolkit::start()
 
 		QFile::remove( m_socketPath ) ;
 
-		auto s = umask( 0 ) ;
+		_set_path_writable_by_others( m_socketPath ) ;
 
 		m_server.listen( m_socketPath ) ;
-
-		umask( s ) ;
 	}
 }
 
