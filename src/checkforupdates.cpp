@@ -173,7 +173,7 @@ QString checkUpdates::InstalledVersion( const siritask::volumeType& e )
 	return r.split( '\n' ).first().remove( ';' ).remove( 'v' ).remove( '\n' ) ;
 }
 
-QString checkUpdates::latestVersion( const QByteArray& data)
+QString checkUpdates::latestVersion( const QByteArray& data )
 {
 	auto _found_release = []( const QString& e ){
 

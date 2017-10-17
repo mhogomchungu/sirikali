@@ -120,6 +120,8 @@ zuluPolkit::~zuluPolkit()
 }
 
 #if QT_VERSION > QT_VERSION_CHECK( 5,0,0 )
+	#include <QFileDevice>
+
 	#define zuluPermission QFileDevice
 #else
 	#define zuluPermission QFile
@@ -135,14 +137,14 @@ static void _set_path_writable_by_others( const QString& e )
 
 		f.open( QIODevice::WriteOnly ) ;
 
-		if( f.permissions() & zuluPermission::WriteOther ){
+		auto s = f.permissions() ;
 
-			f.close() ;
-			f.remove() ;
+		f.close() ;
+		f.remove() ;
+
+		if( s & zuluPermission::WriteOther ){
+
 			break ;
-		}else{
-			f.close() ;
-			f.remove() ;
 		}
 	}
 }
