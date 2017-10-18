@@ -13,14 +13,14 @@ using a lambda.
 ```
 void foo::bar()
 {
-	QNetworkRequest networRequest( QUrl( "https://foo.com" ) ) ;
+	QNetworkRequest networRequest( QUrl( "https://example.com" ) ) ;
 
-	networRequest.setRawHeader( "Host","foo.com" ) ;
+	networRequest.setRawHeader( "Host","example.com" ) ;
 	networRequest.setRawHeader( "Accept-Encoding","text/plain" ) ;
 
-	m_networkAccessManager.get( networRequest,[ this ]( NetworkAccessManager::NetworkReply e ){
+	m_networkAccessManager.get( networRequest,[ this ]( QNetworkReply& e ){
 
-		QByteArray result = e->readAll() ;
+		QByteArray result = e.readAll() ;
 
 		this->processResult( result ) ;
 	} ) ;
