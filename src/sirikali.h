@@ -55,6 +55,7 @@ public:
 	int start( QApplication& ) ;
 	~sirikali() ;
 private slots:
+	void polkitFailedWarning( void ) ;
 	void startMinimized( bool ) ;
 	void setPluginExecutable( void ) ;
 	void setFileManager( void ) ;

@@ -118,6 +118,13 @@ static QByteArray _cookie ;
 
 static bool _use_polkit = false ;
 
+static std::function< void() > _failed_to_connect_to_zulupolkit ;
+
+void utility::polkitFailedWarning( std::function< void() > e )
+{
+	_failed_to_connect_to_zulupolkit = std::move( e ) ;
+}
+
 ::Task::future< utility::Task >& utility::Task::run( const QString& exe,bool e )
 {
 	return utility::Task::run( exe,-1,e ) ;

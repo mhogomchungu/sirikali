@@ -294,6 +294,7 @@ namespace utility
 	QStringList executableSearchPaths( void ) ;
 	QString executableSearchPaths( const QString& ) ;
 
+	void polkitFailedWarning( std::function< void() > ) ;
 	bool useSiriPolkit( void ) ;
 	void quitHelper() ;
 	QString helperSocketPath() ;

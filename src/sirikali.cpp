@@ -701,6 +701,11 @@ int sirikali::start( QApplication& e )
 	}
 }
 
+void sirikali::polkitFailedWarning()
+{
+	DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "SiriKali Failed To Connect To siriPolkit.\nPlease Report This Serious Bug." ) ) ;
+}
+
 void sirikali::start( const QStringList& l )
 {
 	m_startHidden  = l.contains( "-e" ) ;
@@ -726,6 +731,11 @@ void sirikali::start( const QStringList& l )
 
 		this->cliCommand( l ) ;
 	}else{
+		utility::polkitFailedWarning( [ this ](){
+
+			QMetaObject::invokeMethod( this,"polkitFailedWarning",Qt::QueuedConnection ) ;
+		} ) ;
+
 		auto s = utility::homeConfigPath( ".tmp" ) ;
 
 		utility::createFolder( s ) ;
