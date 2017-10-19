@@ -55,6 +55,7 @@ public:
 	int start( QApplication& ) ;
 	~sirikali() ;
 private slots:
+	void showTrayIconWhenReady( void ) ;
 	void polkitFailedWarning( void ) ;
 	void startMinimized( bool ) ;
 	void setPluginExecutable( void ) ;
@@ -111,6 +112,7 @@ private slots:
 	void languageMenu( QAction * ac ) ;
 	void autoMountFavoritesOnAvailable( QString ) ;
 private:
+	void showTrayIcon() ;
 	void mountMultipleVolumes( QVector< std::pair< favorites::entry,QByteArray > > ) ;
 
 	QString resolveFavoriteMountPoint( const QString& ) ;

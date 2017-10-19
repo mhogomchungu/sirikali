@@ -192,7 +192,7 @@ void sirikali::setUpApp( const QString& volume )
 	m_trayIcon.setParent( this ) ;
 	m_trayIcon.setIcon( icon ) ;
 
-	m_trayIcon.show() ;
+	this->showTrayIcon() ;
 
 	this->disableAll() ;
 
@@ -208,6 +208,38 @@ void sirikali::setUpApp( const QString& volume )
 	this->startGUI() ;
 
 	QTimer::singleShot( utility::checkForUpdateInterval(),this,SLOT( autoUpdateCheck() ) ) ;
+}
+
+void sirikali::showTrayIconWhenReady()
+{
+	m_trayIcon.show() ;
+}
+
+void sirikali::showTrayIcon()
+{
+	::Task::exec( [ this ](){
+
+		auto _show_tray = [ & ]{
+
+			QMetaObject::invokeMethod( this,"showTrayIconWhenReady",Qt::QueuedConnection ) ;
+		} ;
+
+		for( int i = 0 ; i < 10 ; i++ ){
+
+			if( QSystemTrayIcon::isSystemTrayAvailable() ){
+
+				return _show_tray() ;
+			}else{
+				utility::Task::waitForOneSecond() ;
+			}
+		}
+
+		/*
+		 * The tray doesnt seem to be ready yet but we cant wait any longer,just display it and
+		 * hope for the best.
+		 */
+		_show_tray() ;
+	} ) ;
 }
 
 void sirikali::setUpAppMenu()
