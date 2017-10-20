@@ -267,7 +267,7 @@ static ::Task::future< utility::Task >& _start_siripolkit( const QString& e )
 				      -1,
 				      utility::systemEnvironment(),
 				      _cookie,
-				      [](){ umask( 0 ) ; },
+				      [](){},
 				      false ) ;
 	} ) ;
 }

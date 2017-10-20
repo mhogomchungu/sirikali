@@ -197,8 +197,7 @@ public:
 			e.abort() ;
 		} ) ;
 	}
-	NetworkAccessManagerTimeOutManager& timeOutManager( int s,QNetworkReply * e,
-						      std::function< void() > m )
+	NetworkAccessManagerTimeOutManager& timeOutManager( int s,QNetworkReply * e,std::function< void() > m )
 	{
 		auto a = [ this ]( QNetworkReply * e ){	return this->cancel( e ) ; } ;
 

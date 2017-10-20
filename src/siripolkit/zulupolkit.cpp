@@ -98,8 +98,8 @@ static bool _terminalEchoOff( struct termios * old,struct termios * current )
 		return false ;
 	}
 
-	*current = *old;
-	current->c_lflag &= ~ECHO;
+	*current = *old ;
+	current->c_lflag &= ~ECHO ;
 
 	if( tcsetattr( 1,TCSAFLUSH,current ) != 0 ){
 
