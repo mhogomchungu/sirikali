@@ -37,19 +37,20 @@
 
 #include <memory>
 
-plugin::plugin( QWidget * parent,QDialog * dialog,plugins::plugin plugin,
-		std::function< void( const QByteArray& ) > function,
-		const QString& e ) :
-	QDialog( parent ),m_ui( new Ui::plugin ),
+plugin::plugin( QWidget * parent,
+		QDialog * dialog,
+		plugins::plugin plugin,
+		const QString& e,
+		std::function< void( const QByteArray& ) > function ) :
+	QDialog( parent ),
+	m_ui( new Ui::plugin ),
 	m_function( std::move( function ) ),
-	m_pluginType( plugin ),m_dialog( dialog )
+	m_pluginType( plugin ),
+	m_dialog( dialog )
 {
 	m_ui->setupUi( this ) ;
 
-	if( !e.isEmpty() ){
-
-		m_ui->label->setText( e ) ;
-	}
+	m_ui->label->setText( e ) ;
 
 	utility::setParent( parent,&m_parentWidget,this ) ;
 
@@ -142,9 +143,9 @@ void plugin::pbSetKey()
 			return QByteArray() ;
 		}
 
-	} ).then( [ this ]( const QByteArray& e ){
+	} ).then( [ this ]( QByteArray e ){
 
-		m_key = e ;
+		m_key = std::move( e ) ;
 
 		if( m_key.isEmpty() ){
 

@@ -43,17 +43,19 @@ class plugin : public QDialog
 {
 	Q_OBJECT
 public:
-	static plugin& instance( QWidget * parent,QDialog * dialog,
-				  plugins::plugin t,
-				  std::function< void( const QByteArray& ) > e,
-				  const QString& f = QString() )
+	static void instance( QWidget * parent,
+			      QDialog * dialog,
+			      plugins::plugin t,
+			      const QString& f,
+			      std::function< void( const QByteArray& ) > e )
 	{
-		return *( new plugin( parent,dialog,t,e,f ) ) ;
+		new plugin( parent,dialog,t,f,e ) ;
 	}
-	plugin( QWidget * parent,QDialog * dialog,
-	      plugins::plugin,
-	      std::function< void( const QByteArray& ) >,
-	      const QString& = QString() ) ;
+	plugin( QWidget * parent,
+		QDialog * dialog,
+		plugins::plugin,
+		const QString&,
+		std::function< void( const QByteArray& ) > ) ;
 	~plugin() ;
 private slots:
 	void pbSetKey() ;

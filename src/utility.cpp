@@ -116,6 +116,8 @@ static QSettings * _settings ;
 
 static QByteArray _cookie ;
 
+static bool _use_polkit = false ;
+
 ::Task::future< utility::Task >& utility::Task::run( const QString& exe,bool e )
 {
 	return utility::Task::run( exe,-1,e ) ;
@@ -137,24 +139,7 @@ void utility::Task::execute( const QString& exe,int waitTime,
 			     const std::function< void() >& function,
 			     bool polkit )
 {
-	class Process : public QProcess{
-	public:
-		Process( const std::function< void() >& function ) :
-			m_function( function )
-		{
-		}
-	protected:
-		void setupChildProcess()
-		{
-			m_function() ;
-		}
-	private:
-		const std::function< void() >& m_function ;
-	} p( function ) ;
-
-	p.setProcessEnvironment( env ) ;
-
-	if( polkit && utility::useZuluPolkit() ){
+	if( polkit && utility::useSiriPolkit() ){
 
 		auto _report_error = [ this ]( const char * msg ){
 
@@ -192,9 +177,9 @@ void utility::Task::execute( const QString& exe,int waitTime,
 
 			nlohmann::json json ;
 
-			json[ "cookie" ]     = _cookie.constData() ;
-			json[ "password" ]   = password.constData() ;
-			json[ "command" ]    = exe.toLatin1().constData() ;
+			json[ "cookie" ]   = _cookie.constData() ;
+			json[ "password" ] = password.constData() ;
+			json[ "command" ]  = exe.toLatin1().constData() ;
 
 			return json.dump().c_str() ;
 		}() ) ;
@@ -217,6 +202,23 @@ void utility::Task::execute( const QString& exe,int waitTime,
 			_report_error( "SiriKali: Failed To Parse Polkit Backend Output" ) ;
 		}
 	}else{
+		class Process : public QProcess{
+		public:
+			Process( const std::function< void() >& function,
+				 const QProcessEnvironment& env ) :
+				m_function( function )
+			{
+				this->setProcessEnvironment( env ) ;
+			}
+		protected:
+			void setupChildProcess()
+			{
+				m_function() ;
+			}
+		private:
+			const std::function< void() >& m_function ;
+		} p( function,env ) ;
+
 		p.start( exe ) ;
 
 		if( !password.isEmpty() ){
@@ -236,55 +238,71 @@ void utility::Task::execute( const QString& exe,int waitTime,
 	}
 }
 
-static QByteArray _set_cookie()
+static QString siriPolkitExe()
 {
-	std::array< char,16 > buffer ;
+	auto exe = utility::executableFullPath( "pkexec" ) ;
 
-	auto data = buffer.data() ;
-	auto size = buffer.size() ;
+	if( exe.isEmpty() ){
 
-	gcry_randomize( data,size,GCRY_STRONG_RANDOM ) ;
-
-	return QByteArray::fromRawData( data,size ).toHex() ;
+		return QString() ;
+	}else{
+		return QString( "%1 %2 %3 fork" ).arg( exe,siriPolkitPath,utility::helperSocketPath() ) ;
+	}
 }
 
-void utility::startHelper( QWidget * obj,const QString& arg,const char * slot )
+static ::Task::future< utility::Task >& _start_siripolkit( const QString& e )
 {
-	if( !utility::useZuluPolkit() ){
+	_cookie = plugins::getRandomData( 16 ).toHex() ;
 
-		QMetaObject::invokeMethod( obj,slot,Q_ARG( bool,true ),Q_ARG( QString,arg ) ) ;
+	return ::Task::run< utility::Task >( [ = ]{
 
-		return ;
+		return utility::Task( e,
+				      -1,
+				      utility::systemEnvironment(),
+				      _cookie,
+				      [](){ umask( 0 ) ; },
+				      false ) ;
+	} ) ;
+}
+
+bool utility::enablePolkit( utility::background_thread thread )
+{
+	if( _use_polkit ){
+
+		return true ;
 	}
 
-	_cookie = _set_cookie() ;
-
-	auto exe = utility::executableFullPath( "pkexec" ) ;
+	auto exe = siriPolkitExe() ;
 
 	if( !exe.isEmpty() ){
 
-		exe = QString( "%1 %2 %3 fork" ).arg( exe,siriPolkitPath,utility::helperSocketPath() ) ;
+		auto socketPath = utility::helperSocketPath() ;
 
-		utility::Task::run( exe,_cookie ).then( [ = ]( const utility::Task& e ){
+		if( thread == utility::background_thread::True ){
 
-			if( e.failed() ){
+			if( _start_siripolkit( exe ).get().success() ){
 
-				utility::debug() << "Failed to start polkit backend" ;
+				_use_polkit = true ;
+
+				while( !utility::pathExists( socketPath ) ){
+
+					utility::Task::waitForOneSecond() ;
+				}
 			}
+		}else{
+			if( _start_siripolkit( exe ).await().success() ){
 
-			QMetaObject::invokeMethod( obj,
-						   slot,
-						   Q_ARG( bool,e.success() ),
-						   Q_ARG( QString,arg ) ) ;
-		} ) ;
-	}else{
-		utility::debug() << "Failed to locate pkexec executable" ;
+				_use_polkit = true ;
 
-		QMetaObject::invokeMethod( obj,
-					   slot,
-					   Q_ARG( bool,false ),
-					   Q_ARG( QString,QString() ) ) ;
+				while( !utility::pathExists( socketPath ) ){
+
+					utility::Task::suspendForOneSecond() ;
+				}
+			}
+		}
 	}
+
+	return _use_polkit ;
 }
 
 QString utility::helperSocketPath()
@@ -292,26 +310,9 @@ QString utility::helperSocketPath()
 	return utility::homeConfigPath() + ".tmp/SiriKali.polkit.socket" ;
 }
 
-bool utility::useZuluPolkit()
+bool utility::useSiriPolkit()
 {
-	if( _settings->contains( "EnablePolkitSupport" ) ){
-
-		return _settings->value( "EnablePolkitSupport" ).toBool() ;
-	}else{
-		bool e = false ;
-		_settings->setValue( "EnablePolkitSupport",e ) ;
-		return e ;
-	}
-}
-
-bool utility::enablePolkitSupport()
-{
-	return utility::useZuluPolkit() ;
-}
-
-void utility::enablePolkitSupport( bool e )
-{
-	_settings->setValue( "EnablePolkitSupport",e ) ;
+	return _use_polkit ;
 }
 
 void utility::quitHelper()
@@ -366,21 +367,10 @@ void utility::openPath( const QString& path,const QString& opener,
 
 			if( failed && obj ){
 
-				DialogMsg m( obj ) ;
-				m.ShowUIOK( title,msg ) ;
+				DialogMsg( obj ).ShowUIOK( title,msg ) ;
 			}
 		} ) ;
 	}
-}
-
-bool utility::runningInMixedMode()
-{
-	return utility::useZuluPolkit() ;
-}
-
-bool utility::notRunningInMixedMode()
-{
-	return !utility::runningInMixedMode() ;
 }
 
 Task::future< utility::fsInfo >& utility::fileSystemInfo( const QString& q )
@@ -797,39 +787,6 @@ void utility::setWindowDimensions( const utility::windowDimensions& e )
 	_settings->setValue( "Dimensions",e.dimensions() ) ;
 }
 
-int utility::pluginKey( QWidget * w,QDialog * d,QByteArray * key,plugins::plugin plugin )
-{
-	QString s ;
-
-	if( plugin == plugins::plugin::hmac_key ){
-
-		s = QObject::tr( "hmac plugin.\n\nThis plugin generates a key using below formular:\n\nkey = hmac(sha256,passphrase,keyfile contents)" ) ;
-
-	}else if( plugin == plugins::plugin::externalExecutable ){
-
-		s = QObject::tr( "This plugin delegates key generation to an external application" ) ;
-	}else{
-		return 1 ;
-	}
-
-	QEventLoop l ;
-
-	plugin::instance( w,d,plugin,[ & ]( const QByteArray& e ){
-
-		*key = e ;
-
-		if( e.isEmpty() ){
-
-			l.exit( 1 ) ;
-		}else{
-			l.exit( 0 ) ;
-		}
-
-	},s ) ;
-
-	return l.exec() ;
-}
-
 template< typename T >
 static void _selectOption( QMenu * m,const T& opt )
 {
@@ -958,7 +915,14 @@ QString utility::walletName( LXQt::Wallet::BackEnd s )
 {
 	if( s == LXQt::Wallet::BackEnd::kwallet ){
 
-		return "default" ;
+		if( _settings->contains( "KWalletName" ) ){
+
+			return _settings->value( "KWalletName" ).toString() ;
+		}else{
+			QString s = "default" ;
+			_settings->setValue( "KWalletName",s ) ;
+			return s ;
+		}
 	}else{
 		return utility::walletName() ;
 	}
@@ -1385,6 +1349,25 @@ static int _readPasswordMaximumLength()
 
 		return s ;
 	}
+}
+
+bool utility::startMinimized()
+{
+	if( _settings->contains( "StartMinimized" ) ){
+
+		return _settings->value( "StartMinimized" ).toBool() ;
+	}else{
+		bool s = false  ;
+
+		_settings->setValue( "StartMinimized",s ) ;
+
+		return s ;
+	}
+}
+
+void utility::setStartMinimized( bool e )
+{
+	_settings->setValue( "StartMinimized",e ) ;
 }
 
 static inline bool _terminalEchoOff( struct termios * old,struct termios * current )

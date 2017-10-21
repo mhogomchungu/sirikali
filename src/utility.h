@@ -231,9 +231,6 @@ namespace utility
 	bool reUseMountPoint( void ) ;
 	void reUseMountPoint( bool ) ;
 
-	bool enablePolkitSupport( void ) ;
-	void enablePolkitSupport( bool ) ;
-
 	QString homeConfigPath( const QString& = QString() ) ;
 	QString homePath() ;
 	QString mountPath( const QString& path ) ;
@@ -276,12 +273,15 @@ namespace utility
 	bool autoMountFavoritesOnAvailable() ;
 	void autoMountFavoritesOnAvailable( bool ) ;
 
+	bool startMinimized() ;
+	void setStartMinimized( bool ) ;
+
 	int checkForUpdateInterval( void ) ;
 
 	bool enableRevealingPasswords( void ) ;
 
-	bool runningInMixedMode() ;
-	bool notRunningInMixedMode() ;
+	enum class background_thread{ True,False } ;
+	bool enablePolkit( utility::background_thread ) ;
 
 	QProcessEnvironment systemEnvironment() ;
 
@@ -292,8 +292,7 @@ namespace utility
 	QStringList executableSearchPaths( void ) ;
 	QString executableSearchPaths( const QString& ) ;
 
-	bool useZuluPolkit( void ) ;
-	void startHelper( QWidget *,const QString&,const char * ) ;
+	bool useSiriPolkit( void ) ;
 	void quitHelper() ;
 	QString helperSocketPath() ;
 	void clearFavorites( void ) ;
@@ -336,8 +335,6 @@ namespace utility
 	utility::windowDimensions getWindowDimensions() ;
 	void setWindowDimensions( const utility::windowDimensions& ) ;
 
-	int pluginKey( QWidget *,QDialog *,QByteArray *,plugins::plugin ) ;
-
 	::Task::future< bool >& openPath( const QString& path,const QString& opener ) ;
 
 	void openPath( const QString& path,const QString& opener,QWidget *,const QString&,const QString& ) ;
@@ -345,6 +342,14 @@ namespace utility
 
 namespace utility
 {
+	template< typename T >
+	QByteArray fileContents( const T& e )
+	{
+		QFile file( e ) ;
+		file.open( QIODevice::ReadOnly ) ;
+		return file.readAll() ;
+	}
+
 	bool pathExists( const QString& ) ;
 
 	template< typename ... F >

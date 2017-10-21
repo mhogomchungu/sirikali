@@ -51,7 +51,7 @@ static bool _ecryptfs( const T& e )
 
 static bool _ecryptfs_illegal_path( const siritask::options& opts )
 {
-	if( _ecryptfs( opts.type ) && utility::useZuluPolkit() ){
+	if( _ecryptfs( opts.type ) && utility::useSiriPolkit() ){
 
 		return opts.cipherFolder.contains( " " ) || opts.plainFolder.contains( " " ) ;
 	}else{
@@ -121,15 +121,17 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 {
 	return Task::run< bool >( [ = ](){
 
+		auto ecryptfs = _ecryptfs( fileSystem ) ;
+
 		auto cmd = [ & ](){
 
-			if( _ecryptfs( fileSystem ) ){
+			if( ecryptfs ){
 
 				auto exe = utility::executableFullPath( "ecryptfs-simple" ) ;
 
 				auto s = exe + " -k " + _makePath( cipherFolder ) ;
 
-				if( utility::runningInMixedMode() ){
+				if( utility::useSiriPolkit() ){
 
 					return _wrap_su( s ) ;
 				}else{
@@ -143,15 +145,50 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 					return "fusermount -u " + _makePath( mountPoint ) ;
 				}
 			}
-		}() ;
+		} ;
 
-		for( int i = 0 ; i < 5 ; i++ ){
+		const int max_count = 5 ;
 
-			if( utility::Task::run( cmd,10000,_ecryptfs( fileSystem ) ).get().success() ){
+		if( ecryptfs ){
 
-				return true ;
-			}else{
-				utility::Task::waitForOneSecond() ;
+			bool not_set = true ;
+
+			auto exe = cmd() ;
+
+			for( int i = 0 ; i < max_count ; i++ ){
+
+				auto s = utility::Task::run( exe,10000,true ).get() ;
+
+				if( s.success() ){
+
+					return true ;
+				}else{
+					if( not_set && s.stdError().contains( "error: failed to set gid" ) ){
+
+						if( utility::enablePolkit( utility::background_thread::True ) ){
+
+							not_set = false ;
+
+							exe = cmd() ;
+						}else{
+							return false ;
+						}
+					}else{
+						utility::Task::waitForOneSecond() ;
+					}
+				}
+			}
+		}else{
+			for( int i = 0 ; i < max_count ; i++ ){
+
+				auto s = utility::Task::run( cmd(),10000,false ).get() ;
+
+				if( s.success() ){
+
+					return true ;
+				}else{
+					utility::Task::waitForOneSecond() ;
+				}
 			}
 		}
 
@@ -236,12 +273,17 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 				if( create ){
 
-					auto e = QString( "%1 --init -q -- %2 %3" ) ;
+					auto e = QString( "%1 --init -q %2 %3" ) ;
 					return e.arg( exe,configPath,cipherFolder ) ;
 				}else{
 					mode += " -o fsname=gocryptfs@" + cipherFolder ;
 
-					auto e = QString( "%1 -q %2 %3 -- %4 %5" ) ;
+					//if( utility::platformIsOSX() ){
+
+					//	mode += " -o volname=" + utility::split( opt.plainFolder,'/' ).last() ;
+					//}
+
+					auto e = QString( "%1 -q %2 %3 %4 %5" ) ;
 					return e.arg( exe,mode,configPath,cipherFolder,mountPoint ) ;
 				}
 			}else{
@@ -250,6 +292,11 @@ static QString _args( const QString& exe,const siritask::options& opt,
 					auto e = QString( "%1 create %2 %3 %4" ) ;
 					return e.arg( exe,opt.createOptions,configPath,cipherFolder ) ;
 				}else{
+					//if( utility::platformIsOSX() ){
+
+					//	mode += " -o volname=" + utility::split( opt.plainFolder,'/' ).last() ;
+					//}
+
 					auto e = QString( "%1 mount -b %2 %3 -o fsname=securefs@%4 -o subtype=securefs %5 %6" ) ;
 					return e.arg( exe,configPath,mode,cipherFolder,cipherFolder,mountPoint ) ;
 				}
@@ -306,14 +353,14 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 		if( opt.mountOptions.isEmpty() ){
 
-			if( utility::runningInMixedMode() ){
+			if( utility::useSiriPolkit() ){
 
 				return _wrap_su( s ) ;
 			}else{
 				return s ;
 			}
 		}else{
-			if( utility::runningInMixedMode() ){
+			if( utility::useSiriPolkit() ){
 
 				return _wrap_su( s + " -o " + opt.mountOptions ) ;
 			}else{
@@ -324,6 +371,11 @@ static QString _args( const QString& exe,const siritask::options& opt,
 	}else if( type == "cryfs" ){
 
 		auto e = QString( "%1 %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ) ;
+
+		//if( utility::platformIsOSX() ){
+
+		//	e += " -o volname=" + utility::split( opt.plainFolder,'/' ).last() ;
+		//}
 
 		auto z = [ & ]()->QString{
 
@@ -356,6 +408,11 @@ static QString _args( const QString& exe,const siritask::options& opt,
 		}
 	}else{
 		auto e = QString( "%1 %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ) ;
+
+		if( utility::platformIsOSX() ){
+
+			e += " -o volname=" + utility::split( opt.plainFolder,'/' ).last() ;
+		}
 
 		auto opts = e.arg( exe,cipherFolder,mountPoint,mountOptions,configPath,
 				   separator,type.name(),cipherFolder,type.name() ) ;
@@ -447,11 +504,11 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 
 		if( msg.contains( "operation not permitted" ) ){
 
-			e.setStatus( siritask::status::ecrypfsBadExePermissions ) ;
+			e = siritask::status::ecrypfsBadExePermissions ;
 
 		}else if( msg.contains( "error: mount failed" ) ){
 
-			e.setStatus( s ) ;
+			e = s ;
 		}
 
 	}else if( s == siritask::status::cryfs ){
@@ -460,19 +517,19 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 
 		if( msg.contains( "password" ) ){
 
-			e.setStatus( s ) ;
+			e = s ;
 
 		}else if( m.contains( "This filesystem is for CryFS" ) &&
 			  m.contains( "It has to be migrated" ) ){
 
-			e.setStatus( siritask::status::cryfsMigrateFileSystem ) ;
+			e = siritask::status::cryfsMigrateFileSystem ;
 		}
 
 	}else if( s == siritask::status::encfs ){
 
 		if( msg.contains( "password" ) ){
 
-			e.setStatus( s ) ;
+			e = s ;
 		}
 
 	}else if( s == siritask::status::gocryptfs ){
@@ -482,11 +539,11 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 		 */
 		if( e.exitCode() == 12 ){
 
-			e.setStatus( s ) ;
+			e = s ;
 		}else{
 			if( msg.contains( "password" ) ){
 
-				e.setStatus( s ) ;
+				e = s ;
 			}
 		}
 
@@ -494,7 +551,7 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 
 		if( msg.contains( "password" ) ){
 
-			e.setStatus( s ) ;
+			e = s ;
 		}
 	}
 
@@ -512,14 +569,27 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 		return _status( app,status_type::exeNotFound ) ;
 	}else{
-		auto e = utility::Task( _args( exe,opt,configFilePath,create ),
-					20000,
-					utility::systemEnvironment(),
-					password.toLatin1(),
-					[](){},
-					_ecryptfs( app ) ) ;
+		auto _run = [ & ](){
 
-		auto s = _status( e,_status( app,status_type::exeName ),app == "encfs" ) ;
+			auto s = utility::Task( _args( exe,opt,configFilePath,create ),
+						20000,
+						utility::systemEnvironment(),
+						password.toLatin1(),
+						[](){},
+						_ecryptfs( app ) ) ;
+
+			return _status( s,_status( app,status_type::exeName ),app == "encfs" ) ;
+		} ;
+
+		auto s = _run() ;
+
+		if( s == siritask::status::ecrypfsBadExePermissions ){
+
+			if( utility::enablePolkit( utility::background_thread::True ) ){
+
+				s = _run() ;
+			}
+		}
 
 		if( s != siritask::status::success ){
 

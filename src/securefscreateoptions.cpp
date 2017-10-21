@@ -45,6 +45,8 @@ securefscreateoptions::~securefscreateoptions()
 
 void securefscreateoptions::pbOK()
 {
+	this->hide() ;
+
 	if( m_ui->comboBox->currentIndex() == 1 ){
 
 		m_function( "--format 2" ) ;
@@ -52,12 +54,14 @@ void securefscreateoptions::pbOK()
 		m_function( "--format 4" ) ;
 	}
 
-	this->HideUI() ;
+	this->deleteLater() ;
 }
 
 void securefscreateoptions::pbCancel()
 {
-	this->HideUI() ;
+	this->hide() ;
+	m_function( QString() ) ;
+	this->deleteLater() ;
 }
 
 void securefscreateoptions::HideUI()

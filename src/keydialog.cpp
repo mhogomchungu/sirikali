@@ -56,37 +56,88 @@ static QString _OSXKeyChain()
 }
 
 keyDialog::keyDialog( QWidget * parent,
-		      QTableWidget * table,
 		      secrets& s,
-		      const volumeInfo& e,
-		      std::function< void() > p,
-		      std::function< void( const QString& ) > q,
-		      const QString& exe,const QByteArray& key ) :
+		      bool o,
+		      const QString& q,
+		      QVector< std::pair< favorites::entry,QByteArray > > z,
+		      std::function< void() > f ) :
 	QDialog( parent ),
 	m_ui( new Ui::keyDialog ),
-	m_key( key ),
-	m_exe( exe ),
+	m_fileManagerOpen( q ),
+	m_autoOpenMountPoint( o ),
+	m_create( false ),
 	m_secrets( s ),
-	m_cancel( std::move( p ) ),
-	m_success( std::move( q ) )
+	m_done( std::move( f ) ),
+	m_volumes( std::move( z ) )
 {
 	m_ui->setupUi( this ) ;
 
-	this->setUIVisible( true ) ;
+	utility::setParent( parent,&m_parentWidget,this ) ;
+	utility::setWindowOptions( this ) ;
 
-	m_ui->pbOK->setText( tr( "&OK" ) ) ;
+	this->setFont( parent->font() ) ;
+
+	this->setUpInitUI() ;
+
+	if( this->mountedAll() ){
+
+		this->HideUI() ;
+	}else{
+		this->setVolumeToUnlock() ;
+
+		this->ShowUI() ;
+	}
+}
+
+void keyDialog::unlockVolume()
+{
+	if( this->mountedAll() ){
+
+		this->HideUI() ;
+	}else{
+		this->setVolumeToUnlock() ;
+	}
+}
+
+keyDialog::keyDialog( QWidget * parent,
+		      secrets& s,
+		      const volumeInfo& e,
+		      std::function< void() > p,
+		      bool o,
+		      const QString& q,
+		      const QString& exe,
+		      const QByteArray& key ) :
+	QDialog( parent ),
+	m_ui( new Ui::keyDialog ),
+	m_exe( exe ),
+	m_fileManagerOpen( q ),
+	m_autoOpenMountPoint( o ),
+	m_create( e.isNotValid() ),
+	m_secrets( s ),
+	m_cancel( std::move( p ) )
+{
+	m_ui->setupUi( this ) ;
 
 	utility::setParent( parent,&m_parentWidget,this ) ;
+	utility::setWindowOptions( this ) ;
 
-	m_configFile = e.configFilePath() ;
-	m_idleTimeOut = e.idleTimeOut() ;
-	m_mountOptions = e.mountOptions() ;
+	this->setFont( parent->font() ) ;
 
-	m_table = table ;
-	m_path = e.volumePath() ;
-	m_working = false ;
+	this->setUpInitUI() ;
 
-	m_create = e.isNotValid() ;
+	this->setUpVolumeProperties( e,key ) ;
+
+	if( m_create ){
+
+		m_ui->lineEditMountPoint->setText( QString() ) ;
+	}
+
+	this->ShowUI() ;
+}
+
+void keyDialog::setUpInitUI()
+{
+	this->setUIVisible( true ) ;
 
 	m_reUseMountPoint = utility::reUseMountPoint() ;
 
@@ -110,15 +161,14 @@ keyDialog::keyDialog( QWidget * parent,
 		 this,SLOT( cbVisibleKeyStateChanged( int ) ) ) ;
 	connect( m_ui->pbOptions,SIGNAL( clicked() ),
 		 this,SLOT( pbOptions() ) ) ;
+	connect( m_ui->pbSetKeyKeyFile,SIGNAL( clicked() ),
+		 this,SLOT( pbSetKeyKeyFile() ) ) ;
+	connect( m_ui->pbSetKey,SIGNAL( clicked() ),
+		 this,SLOT( pbSetKey() ) ) ;
+	connect( m_ui->pbSetKeyCancel,SIGNAL( clicked() ),
+		 this,SLOT( pbSetKeyCancel() ) ) ;
 
 	if( m_create ){
-
-		if( m_exe == "Securefs" || m_exe == "Cryfs" ){
-
-			m_ui->pbOptions->setEnabled( true ) ;
-		}else{
-			m_ui->pbOptions->setEnabled( false ) ;
-		}
 
 		connect( m_ui->lineEditMountPoint,SIGNAL( textChanged( QString ) ),
 			 this,SLOT( textChanged( QString ) ) ) ;
@@ -127,18 +177,7 @@ keyDialog::keyDialog( QWidget * parent,
 
 		m_ui->label_2->setText( tr( "Volume Name" ) ) ;
 
-		m_ui->label_3->setVisible( true ) ;
-
-		m_ui->checkBoxOpenReadOnly->setVisible( false ) ;
-
-		m_ui->lineEditFolderPath->setVisible( true ) ;
-
-		m_ui->pbOpenFolderPath->setVisible( true ) ;
-
-		m_ui->pbMountPoint->setVisible( false ) ;
 		m_ui->lineEditFolderPath->setText( utility::homePath() + "/" ) ;
-
-		m_ui->lineEditFolderPath->setEnabled( false ) ;
 
 		m_ui->lineEditMountPoint->setFocus() ;
 
@@ -148,70 +187,19 @@ keyDialog::keyDialog( QWidget * parent,
 	}else{
 		this->windowSetTitle( tr( "Unlocking \"%1\"" ).arg( m_path ) ) ;
 
-		m_ui->lineEditMountPoint->setEnabled( true ) ;
-
 		m_ui->label_2->setText( tr( "Mount Path" ) ) ;
-
-		m_ui->label_3->setVisible( false ) ;
-
-		m_ui->lineEditFolderPath->setVisible( false ) ;
-
-		m_ui->checkBoxOpenReadOnly->setVisible( true ) ;
-
-		m_ui->pbOpenFolderPath->setVisible( false ) ;
 
 		m_ui->pbMountPoint->setIcon( QIcon( ":/folder.png" ) ) ;
 
 		m_ui->lineEditKey->setFocus() ;
-
-		m_ui->lineEditMountPoint->setText( [ & ](){
-
-			auto m = e.mountPoint() ;
-
-			if( m.startsWith( "/" ) ){
-
-				if( m_reUseMountPoint ){
-
-					return m ;
-				}else{
-					auto y = m ;
-					auto r = y.lastIndexOf( '/' ) ;
-
-					if( r != -1 ){
-
-						y.truncate( r ) ;
-					}
-
-					return y + "/" + utility::mountPathPostFix( m,m.split( '/' ).last() ) ;
-				}
-			}else{
-				if( m_reUseMountPoint ){
-
-					if( m.isEmpty() ){
-
-						return utility::mountPath( m_path.split( "/" ).last() ) ;
-					}else{
-						return utility::mountPath( m.split( "/" ).last() ) ;
-					}
-				}else{
-					return utility::mountPath( [ &m,this ](){
-
-						if( m.isEmpty() ){
-
-							return utility::mountPathPostFix( m_path.split( "/" ).last() ) ;
-						}else{
-							return utility::mountPathPostFix( m ) ;
-						}
-					}() ) ;
-				}
-			}
-		}() ) ;
 	}
 
-	m_ui->pbOpenFolderPath->setIcon( QIcon( ":/folder.png" ) ) ;
+	QIcon folderIcon( ":/folder.png" ) ;
+
+	m_ui->pbOpenFolderPath->setIcon( folderIcon ) ;
+	m_ui->pbSetKeyKeyFile->setIcon( folderIcon ) ;
 
 	this->setFixedSize( this->size() ) ;
-	this->setFont( parent->font() ) ;
 
 	m_ui->checkBoxOpenReadOnly->setChecked( utility::getOpenVolumeReadOnlyOption() ) ;
 
@@ -261,17 +249,144 @@ keyDialog::keyDialog( QWidget * parent,
 		m_ui->pbOpen->setFocus() ;
 	}
 
-	m_ui->checkBoxVisibleKey->setVisible( true ) ;
-	m_ui->pbkeyOption->setVisible( false ) ;
-	m_ui->textEdit->setVisible( false ) ;
-
 	m_ui->checkBoxVisibleKey->setToolTip( tr( "Check This Box To Make Password Visible" ) ) ;
 
 	m_ui->checkBoxVisibleKey->setEnabled( utility::enableRevealingPasswords() ) ;
+}
 
-	utility::setWindowOptions( this ) ;
+void keyDialog::setVolumeToUnlock()
+{
+	const auto& m = m_volumes[ m_counter ] ;
 
-	this->ShowUI() ;
+	m_counter++ ;
+
+	this->setUpVolumeProperties( m.first,m.second ) ;
+
+	auto a = QString::number( m_counter ) ;
+	auto b = QString::number( m_volumes.size() ) ;
+
+	if( m_volumes.size() > 1 ){
+
+		this->windowSetTitle( tr( "(%1/%2) Unlocking \"%3\"" ).arg( a,b,m_path ) ) ;
+	}
+}
+
+void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key )
+{
+	m_path         = e.volumePath() ;
+
+	m_configFile   = e.configFilePath() ;
+	m_idleTimeOut  = e.idleTimeOut() ;
+	m_mountOptions = e.mountOptions() ;
+	m_working      = false ;
+
+	m_ui->lineEditKey->setText( key ) ;
+
+	this->setUIVisible( true ) ;
+
+	this->SetUISetKey( false ) ;
+
+	m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
+
+	if( m_create ){
+
+		m_ui->lineEditMountPoint->setFocus() ;
+	}else{
+		if( key.isEmpty() ){
+
+			m_ui->lineEditKey->setFocus() ;
+		}else{
+			m_ui->pbOpen->setFocus() ;
+		}
+	}
+
+	m_ui->lineEditMountPoint->setText( [ & ](){
+
+		auto m = e.mountPoint() ;
+
+		if( m.startsWith( "/" ) ){
+
+			if( m_reUseMountPoint ){
+
+				return m ;
+			}else{
+				auto y = m ;
+				auto r = y.lastIndexOf( '/' ) ;
+
+				if( r != -1 ){
+
+					y.truncate( r ) ;
+				}
+
+				return y + "/" + utility::mountPathPostFix( m,m.split( '/' ).last() ) ;
+			}
+		}else{
+			if( m_reUseMountPoint ){
+
+				if( m.isEmpty() ){
+
+					return utility::mountPath( m_path.split( "/" ).last() ) ;
+				}else{
+					return utility::mountPath( m.split( "/" ).last() ) ;
+				}
+			}else{
+				return utility::mountPath( [ &m,this ](){
+
+					if( m.isEmpty() ){
+
+						return utility::mountPathPostFix( m_path.split( "/" ).last() ) ;
+					}else{
+						return utility::mountPathPostFix( m ) ;
+					}
+				}() ) ;
+			}
+		}
+	}() ) ;
+}
+
+void keyDialog::setDefaultUI()
+{
+	if( m_create ){
+
+		if( m_exe == "Securefs" || m_exe == "Cryfs" ){
+
+			m_ui->pbOptions->setEnabled( true ) ;
+		}else{
+			m_ui->pbOptions->setEnabled( false ) ;
+		}
+
+		m_ui->label_3->setVisible( true ) ;
+
+		m_ui->checkBoxOpenReadOnly->setVisible( false ) ;
+
+		m_ui->lineEditFolderPath->setVisible( true ) ;
+
+		m_ui->pbOpenFolderPath->setVisible( true ) ;
+
+		m_ui->pbMountPoint->setVisible( false ) ;
+
+		m_ui->lineEditFolderPath->setEnabled( false ) ;
+
+		m_ui->pbkeyOption->setVisible( false ) ;
+	}else{
+		this->windowSetTitle( tr( "Unlocking \"%1\"" ).arg( m_path ) ) ;
+
+		m_ui->label_3->setVisible( false ) ;
+
+		m_ui->lineEditMountPoint->setEnabled( true ) ;
+
+		m_ui->lineEditFolderPath->setVisible( false ) ;
+
+		m_ui->checkBoxOpenReadOnly->setVisible( true ) ;
+
+		m_ui->pbOpenFolderPath->setVisible( false ) ;
+	}
+
+	m_ui->pbOK->setVisible( false ) ;
+	m_ui->pbOpen->setVisible( true ) ;
+	m_ui->checkBoxVisibleKey->setVisible( true ) ;
+	m_ui->pbkeyOption->setVisible( false ) ;
+	m_ui->textEdit->setVisible( false ) ;
 }
 
 void keyDialog::windowSetTitle( const QString& s )
@@ -295,17 +410,25 @@ void keyDialog::pbOptions()
 
 		if( m_exe == "Securefs" ){
 
+			this->hide() ;
+
 			securefscreateoptions::instance( m_parentWidget,[ this ]( const QString& e ){
 
 				m_createOptions = e ;
+
+				this->ShowUI() ;
 			} ) ;
 		}
 
 		if( m_exe == "Cryfs" ){
 
+			this->hide() ;
+
 			cryfscreateoptions::instance( m_parentWidget,[ this ]( const QString& e ){
 
 				m_createOptions = e ;
+
+				this->ShowUI() ;
 			} ) ;
 		}
 	}else{
@@ -322,6 +445,8 @@ void keyDialog::pbOptions()
 
 		QStringList e{ m_idleTimeOut,m_configFile,m_mountOptions,m_exe } ;
 
+		this->hide() ;
+
 		options::instance( m_parentWidget,m_create,e,[ this ]( const QStringList& e ){
 
 			utility2::stringListToStrings( e,m_idleTimeOut,m_configFile,m_mountOptions ) ;
@@ -332,6 +457,8 @@ void keyDialog::pbOptions()
 			}else{
 				m_ui->pbOpen->setFocus() ;
 			}
+
+			this->ShowUI() ;
 		} ) ;
 	}
 }
@@ -451,7 +578,6 @@ void keyDialog::enableAll()
 	m_ui->pbMountPoint->setEnabled( true ) ;
         m_ui->pbOptions->setEnabled( true ) ;
 	m_ui->label_2->setEnabled( true ) ;
-	m_ui->lineEditMountPoint->setEnabled( !m_create ) ;
 	m_ui->pbOpenFolderPath->setEnabled( true ) ;
 	m_ui->pbCancel->setEnabled( true ) ;
 	m_ui->pbOpen->setEnabled( true ) ;
@@ -475,6 +601,7 @@ void keyDialog::enableAll()
 
 	m_ui->lineEditFolderPath->setEnabled( false ) ;
 	m_ui->label_3->setEnabled( true ) ;
+	m_ui->lineEditMountPoint->setEnabled( true ) ;
 }
 
 void keyDialog::disableAll()
@@ -538,6 +665,8 @@ void keyDialog::KeyFile()
 		if( !e.isEmpty() ){
 
 			m_ui->lineEditKey->setText( e ) ;
+		}else{
+			m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
 		}
 	}
 }
@@ -557,6 +686,11 @@ void keyDialog::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
 	this->pbCancel() ;
+}
+
+bool keyDialog::mountedAll()
+{
+	return m_volumes.size() == m_counter ;
 }
 
 void keyDialog::pbOpen()
@@ -655,13 +789,18 @@ void keyDialog::pbOpen()
 	}
 }
 
-bool keyDialog::completed( const siritask::cmdStatus& s )
+bool keyDialog::completed( const siritask::cmdStatus& s,const QString& m )
 {
 	QString msg ;
 
 	switch( s.status() ){
 
 	case siritask::status::success :
+
+		if( m_autoOpenMountPoint ){
+
+			utility::Task::exec( m_fileManagerOpen + " " + utility::Task::makePath( m ) ) ;
+		}
 
 		return true ;
 
@@ -692,7 +831,7 @@ bool keyDialog::completed( const siritask::cmdStatus& s )
 
 	case siritask::status::ecrypfsBadExePermissions :
 
-		msg = tr( "The backend Seems To Not Have Its Suid Bit Set.\n\nSet \"Enable Polkit Support\" Option From The Menu And Try Again." ) ;
+		msg = tr( "This Backend Requires Root's Privileges And An attempt To Acquire Them Has Failed." ) ;
 		break;
 
 	case siritask::status::securefs :
@@ -799,8 +938,6 @@ void keyDialog::pbOK()
 
 void keyDialog::encryptedFolderCreate()
 {
-	m_mountPointPath.clear() ;
-
 	auto path = m_ui->lineEditFolderPath->text() ;
 
 	auto m = path.split( '/' ).last() ;
@@ -834,16 +971,15 @@ void keyDialog::encryptedFolderCreate()
 
 	m_working = true ;
 
-	siritask::options s = { path,m,m_key,m_idleTimeOut,m_configFile,
-				m_exe.toLower(),false,m_mountOptions,m_createOptions } ;
+	siritask::options s{ path,m,m_key,m_idleTimeOut,m_configFile,
+			     m_exe.toLower(),false,m_mountOptions,m_createOptions } ;
 
 	auto e = siritask::encryptedFolderCreate( s ).await() ;
 
 	m_working = false ;
 
-	if( this->completed( e ) ){
+	if( this->completed( e,m ) ){
 
-		m_mountPointPath = m ;
 		this->HideUI() ;
 	}else{
 		if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
@@ -857,10 +993,101 @@ void keyDialog::encryptedFolderCreate()
 	}
 }
 
+void keyDialog::pbSetKeyKeyFile()
+{
+	m_ui->lineEditSetKeyKeyFile->setText( QFileDialog::getOpenFileName( this,tr( "KeyFile" ),utility::homePath(),0 ) ) ;
+}
+
+void keyDialog::pbSetKey()
+{
+	this->setKeyEnabled( false ) ;
+
+	auto keyFile    = m_ui->lineEditSetKeyKeyFile->text() ;
+	auto passphrase = m_ui->lineEditSetKeyPassword->text() ;
+
+	Task::run< QByteArray >( [ = ](){
+
+		if( m_hmac ){
+
+			return plugins::hmac_key( keyFile,passphrase ) ;
+		}else{
+			auto exe = utility::externalPluginExecutable() ;
+
+			if( exe.isEmpty() ){
+
+				return QByteArray() ;
+			}else{
+				exe = exe + " " + utility::Task::makePath( keyFile ) ;
+
+				auto env = utility::systemEnvironment() ;
+
+				env.insert( "LANG","C" ) ;
+
+				env.insert( "PATH",utility::executableSearchPaths( env.value( "PATH" ) ) ) ;
+
+				return utility::Task( exe,20000,env,passphrase.toLatin1() ).stdOut() ;
+			}
+		}
+
+	} ).then( [ this ]( const QByteArray& e ){
+
+		this->setKeyEnabled( true ) ;
+
+		if( e.isEmpty() ){
+
+			m_ui->labelSetKey->setText( tr( "Failed To Generate Key." ) ) ;
+		}else{
+			m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
+			m_ui->lineEditKey->setText( e ) ;
+			this->SetUISetKey( false ) ;
+			this->setUIVisible( true ) ;
+			m_ui->pbkeyOption->setVisible( false ) ;
+		}
+	} ) ;
+}
+
+void keyDialog::pbSetKeyCancel()
+{
+	this->SetUISetKey( false ) ;
+	this->setUIVisible( true ) ;
+	m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
+}
+
+void keyDialog::setKeyEnabled( bool e )
+{
+	m_ui->labelSetKeyKeyFile->setEnabled( e ) ;
+	m_ui->labelSetKeyPassword->setEnabled( e ) ;
+	m_ui->lineEditSetKeyKeyFile->setEnabled( e ) ;
+	m_ui->lineEditSetKeyPassword->setEnabled( e ) ;
+	m_ui->pbSetKey->setEnabled( e ) ;
+	m_ui->pbSetKeyCancel->setEnabled( e ) ;
+	m_ui->pbSetKeyKeyFile->setEnabled( e ) ;
+	m_ui->labelSetKey->setEnabled( e ) ;
+}
+
+void keyDialog::SetUISetKey( bool e )
+{
+	m_ui->labelSetKeyKeyFile->setVisible( e ) ;
+	m_ui->labelSetKeyPassword->setVisible( e ) ;
+	m_ui->lineEditSetKeyKeyFile->setVisible( e ) ;
+	m_ui->lineEditSetKeyPassword->setVisible( e ) ;
+	m_ui->pbSetKey->setVisible( e ) ;
+	m_ui->pbSetKeyCancel->setVisible( e ) ;
+	m_ui->pbSetKeyKeyFile->setVisible( e ) ;
+	m_ui->labelSetKey->setVisible( e ) ;
+	m_ui->pbOK->setVisible( e ) ;
+
+	if( e ){
+
+		m_ui->pbOK->setVisible( false ) ;
+		m_ui->pbOpen->setVisible( false ) ;
+	}else{
+		this->setDefaultUI() ;
+	}
+}
+
 void keyDialog::encryptedFolderMount()
 {
-	m_mountPointPath.clear() ;
-
 	auto ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
 
 	auto m = m_ui->lineEditMountPoint->text() ;
@@ -903,16 +1130,16 @@ void keyDialog::encryptedFolderMount()
 
 	m_working = true ;
 
-	siritask::options s = { m_path,m,m_key,m_idleTimeOut,m_configFile,m_exe,ro,m_mountOptions,QString() } ;
+	siritask::options s{ m_path,m,m_key,m_idleTimeOut,m_configFile,m_exe,ro,m_mountOptions,QString() } ;
 
-	auto& e = siritask::encryptedFolderMount( s ) ;
+	auto e = siritask::encryptedFolderMount( s ).await() ;
 
 	m_working = false ;
 
-	if( this->completed( e.await() ) ){
+	if( this->completed( e,m ) ){
 
-		m_mountPointPath = m ;
-		this->HideUI() ;
+		this->enableAll() ;
+		this->unlockVolume() ;
 	}else{
 		m_ui->lineEditKey->clear() ;
 
@@ -926,50 +1153,61 @@ void keyDialog::openVolume()
 {
 	auto keyType = m_ui->cbKeyType->currentIndex() ;
 
+	auto _run = [ this ](){
+
+		if( m_create ){
+
+			this->encryptedFolderCreate() ;
+		}else{
+			this->encryptedFolderMount() ;
+		}
+	} ;
+
 	if( keyType == keyDialog::Key ){
 
 		m_key = m_ui->lineEditKey->text().toLatin1() ;
 
-	}if( keyType == keyDialog::keyKeyFile ){
+		_run() ;
 
-		if( utility::pluginKey( m_secrets.parent(),this,&m_key,plugins::plugin::hmac_key ) ){
+	}else if( keyType == keyDialog::keyKeyFile ){
 
-			return this->enableAll() ;
-		}
+		/*
+		 * Should not get here.
+		 */
 
 	}else if( keyType == keyDialog::hmacKeyFile ){
 
-		Task::await( [ this ](){
-
-			m_key = plugins::hmac_key( m_ui->lineEditKey->text(),QString() ) ;
-		} ) ;
+		/*
+		 * Should not get here.
+		 */
 
 	}else if( keyType == keyDialog::keyfile ){
 
-		QFile f( m_ui->lineEditKey->text() ) ;
+		Task::run< QByteArray >( [ this ](){
 
-		f.open( QIODevice::ReadOnly ) ;
+			return utility::fileContents( m_ui->lineEditKey->text() ) ;
 
-		m_key = f.readAll() ;
+		} ).then( [ this,_run = std::move( _run ) ]( QByteArray key ){
 
-		if( utility::containsAtleastOne( m_key,'\n','\0','\r' ) ){
+			m_key = std::move( key ) ;
 
-			this->showErrorMessage( keyDialog::keyFileError() ) ;
-			return this->enableAll() ;
-		}
+			if( utility::containsAtleastOne( m_key,'\n','\0','\r' ) ){
+
+				this->showErrorMessage( keyDialog::keyFileError() ) ;
+				this->enableAll() ;
+			}else{
+				_run() ;
+			}
+		} ) ;
 
 	}else if( keyType == keyDialog::Plugin ){
 
 		/*
 		 * m_key is already set
 		 */
-	}
-
-	if( m_create ){
-
-		this->encryptedFolderCreate() ;
+		_run() ;
 	}else{
-		this->encryptedFolderMount() ;
+		_run() ;
 	}
 }
 
@@ -1022,27 +1260,30 @@ void keyDialog::cbActicated( QString e )
 
 	}else if( e == tr( "Key+KeyFile" ).remove( '&' ) || e == tr( "ExternalExecutable" ).remove( '&' ) ){
 
-		_showVisibleKeyOption( false ) ;
-
-		this->disableAll() ;
+		QString s ;
 
 		if( e == tr( "Key+KeyFile" ).remove( '&' ) ){
 
-			utility::pluginKey( m_secrets.parent(),this,&m_key,plugins::plugin::hmac_key ) ;
+			s = QObject::tr( "Effective Key Is Generated With Below Formula:\n\nkey = hmac_sha256(password,keyfile contents)" ) ;
+
+			m_hmac = true ;
 		}else{
-			utility::pluginKey( m_secrets.parent(),this,&m_key,plugins::plugin::externalExecutable ) ;
+			s = QObject::tr( "This plugin delegates key generation to an external application" ) ;
+
+			m_hmac = false ;
 		}
 
-		this->enableAll() ;
+		m_ui->labelSetKey->setText( s ) ;
 
-		m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
+		m_ui->lineEditSetKeyPassword->clear() ;
+		m_ui->lineEditSetKeyKeyFile->clear() ;
 
-		m_ui->lineEditKey->setText( m_key ) ;
+		m_ui->lineEditSetKeyPassword->setFocus() ;
 
-		if( m_keyStrength && m_create ){
+		m_ui->labelMsg->clear() ;
 
-			this->setWindowTitle( tr( "Passphrase Quality: 100%" ) ) ;
-		}
+		this->setUIVisible( false ) ;
+		this->SetUISetKey( true ) ;
 
 	}else if( e == tr( "HMAC+KeyFile" ).remove( '&' ) ){
 
@@ -1050,26 +1291,33 @@ void keyDialog::cbActicated( QString e )
 
 		auto q = QFileDialog::getOpenFileName( this,tr( "Select A KeyFile" ),QDir::homePath() ) ;
 
-		QString s ;
+		if( q.isEmpty() ){
 
-		if( !q.isEmpty() ){
-
+			m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
+			m_ui->lineEditKey->setText( QString() ) ;
+		}else{
 			this->disableAll() ;
 
-			Task::await( [ & ](){ s = plugins::hmac_key( q,QString() ) ; } ) ;
+			Task::run< QByteArray >( [ q = std::move( q ) ](){
 
-			this->enableAll() ;
+				return plugins::hmac_key( q,QString() ) ;
+
+			} ).then( [ this ]( QByteArray key ){
+
+				m_key = std::move( key ) ;
+
+				m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
+
+				m_ui->lineEditKey->setText( m_key ) ;
+
+				if( m_keyStrength && m_create ){
+
+					this->setWindowTitle( tr( "Passphrase Quality: 100%" ) ) ;
+				}
+
+				this->enableAll() ;
+			} ) ;
 		}
-
-		m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
-
-		m_ui->lineEditKey->setText( s ) ;
-
-		if( m_keyStrength && m_create ){
-
-			this->setWindowTitle( tr( "Passphrase Quality: 100%" ) ) ;
-		}
-
 	}else{
 		this->plugIn() ;
 
@@ -1158,13 +1406,18 @@ void keyDialog::keyFile()
 
 void keyDialog::pbCancel()
 {
-	this->HideUI() ;
-	m_cancel() ;
+	if( this->mountedAll() ){
+
+		m_cancel() ;
+
+		this->HideUI() ;
+	}else{
+		this->unlockVolume() ;
+	}
 }
 
 void keyDialog::ShowUI()
 {
-	utility::setWindowOptions( this ) ;
 	this->show() ;
 	this->raise() ;
 	this->activateWindow() ;
@@ -1174,6 +1427,8 @@ void keyDialog::HideUI()
 {
 	if( !m_working ){
 
+		m_done() ;
+
 		this->hide() ;
 		this->deleteLater() ;
 	}
@@ -1181,6 +1436,5 @@ void keyDialog::HideUI()
 
 keyDialog::~keyDialog()
 {
-	m_success( m_mountPointPath ) ;
 	delete m_ui ;
 }

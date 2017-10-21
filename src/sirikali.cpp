@@ -47,7 +47,6 @@
 #include <unistd.h>
 
 #include "filemanager.h"
-#include "keydialog.h"
 #include "dialogmsg.h"
 #include "tablewidget.h"
 #include "oneinstance.h"
@@ -59,6 +58,18 @@
 #include "plugins.h"
 
 #include "json.h"
+
+static QVector< std::pair< favorites::entry,QByteArray > > _readFavorites()
+{
+	QVector< std::pair< favorites::entry,QByteArray > > e ;
+
+	for( auto&& it : utility::readFavorites() ){
+
+		e.append( { std::move( it ),QByteArray() } ) ;
+	}
+
+	return e ;
+}
 
 sirikali::sirikali() :
 	m_secrets( this ),
@@ -86,7 +97,7 @@ void sirikali::closeApplication( int s,const QString& e )
 	m_mountInfo.stop() ;
 }
 
-void sirikali::setUpApp( bool start,const QString& volume )
+void sirikali::setUpApp( const QString& volume )
 {
 	this->setLocalizationLanguage( true ) ;
 
@@ -196,11 +207,6 @@ void sirikali::setUpApp( bool start,const QString& volume )
 	this->startGUI() ;
 
 	QTimer::singleShot( utility::checkForUpdateInterval(),this,SLOT( autoUpdateCheck() ) ) ;
-
-	if( !start ){
-
-		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Enable Polkit Support. \n\"Ecryptfs-simple\" Support Is Broken." ) ) ;
-	}
 }
 
 void sirikali::setUpAppMenu()
@@ -305,13 +311,8 @@ void sirikali::setUpAppMenu()
 	m->addAction( _addAction( true,checkForUpdates::autoCheck(),tr( "Autocheck For Updates" ),
 				  "Autocheck For Updates",SLOT( autoCheckUpdates( bool ) ) ) ) ;
 
-	if( utility::platformIsLinux() ){
-
-		m->addAction( _addAction( true,utility::enablePolkitSupport(),
-					  tr( "Enable Polkit Support" ),
-					  "Enable Polkit Support",
-					  SLOT( enablePolkitSupport( bool ) ) ) ) ;
-	}
+	m->addAction( _addAction( true,utility::startMinimized(),tr( "Start Minimized" ),
+				  "Start Minimized",SLOT( startMinimized( bool ) ) ) ) ;
 
 	m->addAction( _addAction( false,false,tr( "Set Mount Point Prefix" ),
 				  "Set Mount Point Prefix",SLOT( setDefaultMountPointPrefix() ) ) ) ;
@@ -400,6 +401,11 @@ void sirikali::setUpAppMenu()
 
 	connect( &m_trayIcon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),
 		 this,SLOT( slotTrayClicked( QSystemTrayIcon::ActivationReason ) ) ) ;
+}
+
+void sirikali::startMinimized( bool e )
+{
+	utility::setStartMinimized( e ) ;
 }
 
 void sirikali::setFileManager()
@@ -588,19 +594,13 @@ void sirikali::favoriteClicked( QAction * ac )
 	}else{
 		if( e == tr( "Mount All" ).remove( '&' ) ){
 
-			for( const auto& it : this->autoUnlockVolumes( utility::readFavorites() ) ){
-
-				this->showMoungDialog( it ) ;
-			}
+			this->mountMultipleVolumes( _readFavorites() ) ;
 		}else{
-			for( const auto& it : utility::readFavorites() ){
+			for( auto&& it : _readFavorites() ){
 
-				if( it.volumePath == e ){
+				if( it.first.volumePath == e ){
 
-					if( !this->autoUnlockVolumes( { it } ).isEmpty() ){
-
-						this->showMoungDialog( it ) ;
-					}
+					this->mountMultipleVolumes( this->autoUnlockVolumes( { std::move( it ) },true ) ) ;
 
 					break ;
 				}
@@ -611,8 +611,10 @@ void sirikali::favoriteClicked( QAction * ac )
 
 void sirikali::showFavorites()
 {
-	utility::readFavorites( m_ui->pbFavorites->menu(),true,
-				tr( "Manage Favorites" ),tr( "Mount All" ) ) ;
+	utility::readFavorites( m_ui->pbFavorites->menu(),
+				true,
+				tr( "Manage Favorites" ),
+				tr( "Mount All" ) ) ;
 }
 
 void sirikali::setLocalizationLanguage( bool translate )
@@ -646,13 +648,6 @@ void sirikali::autoOpenFolderOnMount( bool e )
 void sirikali::reuseMountPoint( bool e )
 {
 	utility::reUseMountPoint( e ) ;
-}
-
-void sirikali::enablePolkitSupport( bool e )
-{
-	utility::enablePolkitSupport( e ) ;
-
-	DialogMsg( this ).ShowUIOK( tr( "Warning" ),tr( "A Restart Is Required For The Change To Take Effect." ) );
 }
 
 void sirikali::autoMountFavoritesOnStartUp( bool e )
@@ -708,6 +703,12 @@ int sirikali::start( QApplication& e )
 void sirikali::start( const QStringList& l )
 {
 	m_startHidden  = l.contains( "-e" ) ;
+
+	if( !m_startHidden ){
+
+		m_startHidden = utility::startMinimized() ;
+	}
+
 	m_folderOpener = utility::cmdArgumentValue( l,"-m",utility::fileManager() ) ;
 
 	utility::createFolder( utility::homeConfigPath() ) ;
@@ -732,7 +733,7 @@ void sirikali::start( const QStringList& l )
 
 			oneinstance::callbacks cb = {
 
-				[ this ]( const QString& e ){ utility::startHelper( this,e,"setUpApp" ) ; },
+				[ this ]( const QString& e ){ this->setUpApp( e ) ; },
 				[ this ](){ this->closeApplication( 1 ) ; },
 				[ this ]( const QString& e ){ this->raiseWindow( e ) ; },
 			} ;
@@ -871,11 +872,7 @@ void sirikali::unlockVolume( const QStringList& l )
 
 		if( backEnd == "keyfile" ){
 
-			QFile f( keyFile ) ;
-
-			f.open( QIODevice::ReadOnly ) ;
-
-			auto key = f.readAll() ;
+			auto key = utility::fileContents( keyFile ) ;
 
 			if( utility::containsAtleastOne( key,'\n','\0','\r' ) ){
 
@@ -937,43 +934,59 @@ void sirikali::unlockVolume( const QStringList& l )
 	}
 }
 
+void sirikali::mountMultipleVolumes( QVector< std::pair< favorites::entry,QByteArray > > e )
+{
+	if( !e.isEmpty() ){
+
+		m_disableEnableAll = true ;
+
+		this->disableAll() ;
+
+		keyDialog::instance( this,
+				     m_secrets,
+				     m_autoOpenFolderOnMount,
+				     m_folderOpener,
+				     std::move( e ),
+				     [ this ](){ m_disableEnableAll = false ; this->enableAll() ; } ) ;
+	}
+}
+
 void sirikali::autoMountFavoritesOnAvailable( QString m )
 {
 	if( utility::autoMountFavoritesOnAvailable() ){
 
-		QVector< favorites::entry > e ;
+		QVector< std::pair< favorites::entry,QByteArray > > e ;
 
-		for( const auto& it : utility::readFavorites() ){
+		for( auto&& it : _readFavorites() ){
 
-			if( it.volumePath.startsWith( m ) && it.autoMount() ){
+			if( it.first.volumePath.startsWith( m ) && it.first.autoMount() ){
 
-				e.append( it ) ;
+				e.append( std::move( it ) ) ;
 			}
 		}
 
-		for( const auto& it : this->autoUnlockVolumes( e ) ){
-
-			this->mount( it ) ;
-		}
+		this->mountMultipleVolumes( this->autoUnlockVolumes( std::move( e ) ) ) ;
 	}
 }
 
 void sirikali::autoUnlockVolumes()
 {
-	QVector< favorites::entry > e ;
+	QVector< std::pair< favorites::entry,QByteArray > > e ;
 
-	for( const auto& it : utility::readFavorites() ){
+	for( auto&& it : _readFavorites() ){
 
-		if( it.autoMount() ){
+		if( it.first.autoMount() ){
 
-			e.append( it ) ;
+			e.append( std::move( it ) ) ;
 		}
 	}
 
-	this->autoUnlockVolumes( e ) ;
+	this->mountMultipleVolumes( this->autoUnlockVolumes( std::move( e ) ) ) ;
 }
 
-QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorites::entry >& l )
+QVector< std::pair< favorites::entry,QByteArray > >
+sirikali::autoUnlockVolumes( const QVector< std::pair< favorites::entry,QByteArray > > l,
+							 bool autoOpenFolderOnMount )
 {
 	if( l.isEmpty() ){
 
@@ -996,15 +1009,25 @@ QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorite
 
 	auto _mountVolumes = [ & ](){
 
-		QVector< favorites::entry > e ;
+		QVector< std::pair< favorites::entry,QByteArray > > e ;
 
-		auto _mount = [ this ]( const favorites::entry& e,const QByteArray& key,bool s ){
-
+		auto _mount = [ & ]( QVector< std::pair< favorites::entry,QByteArray > >& q,
+				     const std::pair< favorites::entry,QByteArray >& e,
+				     const QByteArray& key,
+				     bool s ){
 			if( s ){
 
-				this->mount( e,QString(),key ) ;
+				q.append( { e.first,key } ) ;
 			}else{
-				siritask::encryptedFolderMount( { e,key } ).start() ;
+				auto& s = siritask::encryptedFolderMount( { e.first,key } ) ;
+
+				s.then( [ this,autoOpenFolderOnMount,e = e.first.mountPointPath ]( siritask::cmdStatus s ){
+
+					if( s == siritask::status::success && autoOpenFolderOnMount ){
+
+						this->openMountPointPath( e ) ;
+					}
+				} ) ;
 			}
 		} ;
 
@@ -1012,13 +1035,13 @@ QVector< favorites::entry > sirikali::autoUnlockVolumes( const QVector< favorite
 
 		for( const auto& it : l ){
 
-			const auto key = m->readValue( it.volumePath ) ;
+			const auto key = m->readValue( it.first.volumePath ) ;
 
 			if( key.isEmpty() ){
 
 				e.append( it ) ;
 			}else{
-				_mount( it,key,s ) ;
+				_mount( e,it,key,s ) ;
 			}
 		}
 
@@ -1449,8 +1472,6 @@ void sirikali::setUpShortCuts()
 
 		return e ;
 	}() ) ;
-
-
 }
 
 void sirikali::setUpFont()
@@ -1483,25 +1504,28 @@ void sirikali::dragEnterEvent( QDragEnterEvent * e )
 
 void sirikali::dropEvent( QDropEvent * e )
 {
+	QVector< std::pair< favorites::entry,QByteArray > > s ;
+
 	for( const auto& it : e->mimeData()->urls() ){
 
-		this->showMoungDialog( it.path() ) ;
+		s.append( { it.path(),QByteArray() } ) ;
 	}
+
+	this->mountMultipleVolumes( std::move( s ) ) ;
 }
 
 void sirikali::mount( const volumeInfo& entry,const QString& exe,const QByteArray& key )
 {
 	this->disableAll() ;
 
-	keyDialog::instance( this,m_ui->tableWidget,m_secrets,entry,[ this ](){
-
-		this->enableAll() ;
-
-	},[ this ]( const QString& e ){
-
-		this->openMountPointPath( e ) ;
-
-	},exe,key ) ;
+	keyDialog::instance( this,
+			     m_secrets,
+			     entry,
+			     [ this ](){ this->enableAll() ; },
+			     m_autoOpenFolderOnMount,
+			     m_folderOpener,
+			     exe,
+			     key ) ;
 }
 
 void sirikali::createVolume( QAction * ac )
@@ -1734,7 +1758,7 @@ void sirikali::disableAll()
 
 void sirikali::enableAll()
 {
-	if( !m_removeAllVolumes ){
+	if( !m_disableEnableAll ){
 
 		m_ui->pbmenu->setEnabled( true ) ;
 		m_ui->pbupdate->setEnabled( true ) ;
@@ -1744,12 +1768,6 @@ void sirikali::enableAll()
 		m_ui->pbcreate->setEnabled( true ) ;
 		m_ui->pbFavorites->setEnabled( true ) ;
 	}
-}
-
-void sirikali::enableAll_1()
-{
-	m_removeAllVolumes = false ;
-	this->enableAll() ;
 }
 
 sirikali::~sirikali()

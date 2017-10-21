@@ -126,69 +126,16 @@ int tablewidget::columnHasEntry( QTableWidget * table,const QString& entry,int c
 	}
 }
 
-using list_t = std::initializer_list< QString > ;
-
-template< typename T >
-static const QString& _at( const T& e,count_t p )
-{
-	return e.at( p ) ;
-}
-
-template<>
-const QString& _at( const list_t& e,count_t p )
-{
-	return *( e.begin() + p ) ;
-}
-
-template< typename T >
-static void _manage_row( QTableWidget * table,const T& l,std::function< void()> function )
-{
-	if( size_t( l.size() ) != size_t( table->columnCount() ) ){
-
-		std::cerr << "ERROR: Table column count is NOT the same as object size" << std::endl ;
-	}else{
-		function() ;
-	}
-}
-
-template< typename T >
-static void _add_row( QTableWidget * table,const T& l,const QFont& font )
-{
-	_manage_row( table,l,[ & ](){
-
-		count_t row = table->rowCount() ;
-
-		table->insertRow( row ) ;
-
-		_for_each_column( table,row,[ & ]( count_t row,count_t col ){
-
-			auto e = _set_item( new QTableWidgetItem,_at( l,col ),font ) ;
-
-			table->setItem( row,col,e ) ;
-		} ) ;
-	} ) ;
-}
-
-template< typename T >
-static void _update_row( QTableWidget * table,const T& list,int row,const QFont& font )
-{
-	_manage_row( table,list,[ & ](){
-
-		_for_each_column( table,row,[ & ]( count_t row,count_t col ){
-
-			_set_item( table->item( row,col ),_at( list,col ),font ) ;
-		} ) ;
-	} ) ;
-}
-
 void tablewidget::addRow( QTableWidget * table,const QStringList& l,const QFont& font )
 {
-	_add_row( table,l,font ) ;
-}
+	count_t row = table->rowCount() ;
 
-void tablewidget::addRow( QTableWidget * table,const list_t& l,const QFont& font )
-{
-	_add_row( table,l,font ) ;
+	table->insertRow( row ) ;
+
+	_for_each_column( table,row,[ & ]( count_t row,count_t col ){
+
+		table->setItem( row,col,_set_item( new QTableWidgetItem,l.at( col ),font ) ) ;
+	} ) ;
 }
 
 int tablewidget::addRow( QTableWidget * table )
@@ -207,12 +154,10 @@ int tablewidget::addRow( QTableWidget * table )
 
 void tablewidget::updateRow( QTableWidget * table,const QStringList& list,int row,const QFont& font )
 {
-	_update_row( table,list,row,font ) ;
-}
+	_for_each_column( table,row,[ & ]( count_t row,count_t col ){
 
-void tablewidget::updateRow( QTableWidget * table,const list_t& list,int row,const QFont& font )
-{
-	_update_row( table,list,row,font ) ;
+		_set_item( table->item( row,col ),list.at( col ),font ) ;
+	} ) ;
 }
 
 void tablewidget::setFont( QTableWidget * table ,int row,const QFont& font )

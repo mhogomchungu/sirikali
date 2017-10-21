@@ -166,11 +166,16 @@ void options::pbSet()
 
 	if( !ok ){
 
+		this->hide() ;
+
 		DialogMsg( m_parentWidget,this ).ShowUIOK( tr( "ERROR" ),tr( "Idle Time Field Requires Digits Only If Not Empty." ) ) ;
+
+		this->show() ;
 	}else{
+		this->hide() ;
+
 		m_setOptions( { e,m_ui->lineConfigFilePath->text(),m_ui->lineEditMountOptions->text() } ) ;
 
-		this->hide() ;
 		this->deleteLater() ;
 	}
 }
@@ -178,6 +183,9 @@ void options::pbSet()
 void options::pbCancel()
 {
 	this->hide() ;
+
+	m_setOptions( QStringList() ) ;
+
 	this->deleteLater() ;
 }
 

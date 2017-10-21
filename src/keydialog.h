@@ -99,22 +99,38 @@ class keyDialog : public QDialog
 public:
 	static QString keyFileError() ;
 
-	static keyDialog& instance( QWidget * parent,
-				    QTableWidget * table,
-				    secrets& s,
-				    const volumeInfo& v,
-				    std::function< void() > cancel,
-				    std::function< void( const QString& ) > success,
-				    const QString& exe = QString(),const QByteArray& key = QByteArray() )
+	static void instance( QWidget * parent,
+			      secrets& s,
+			      const volumeInfo& v,
+			      std::function< void() > cancel,
+			      bool o,
+			      const QString& m,
+			      const QString& exe = QString(),
+			      const QByteArray& key = QByteArray() )
 	{
-		return *( new keyDialog( parent,table,s,v,std::move( cancel ),std::move( success ),exe,key ) ) ;
+		new keyDialog( parent,s,v,std::move( cancel ),o,m,exe,key ) ;
+	}
+	static void instance( QWidget * parent,
+			      secrets& s,
+			      bool o,
+			      const QString& m,
+			      QVector< std::pair< favorites::entry,QByteArray > > e,
+			      std::function< void() > function )
+	{
+		new keyDialog( parent,s,o,m,std::move( e ),std::move( function ) ) ;
 	}
 	keyDialog( QWidget * parent,
-		   QTableWidget *,
+		   secrets&,
+		   bool,
+		   const QString&,
+		   QVector< std::pair< favorites::entry,QByteArray > >,
+		   std::function< void() > ) ;
+	keyDialog( QWidget * parent,
 		   secrets&,
 		   const volumeInfo&,
 		   std::function< void() >,
-		   std::function< void( const QString& ) >,
+		   bool,
+		   const QString&,
 		   const QString&,
 		   const QByteArray& ) ;
 	~keyDialog() ;
@@ -141,7 +157,17 @@ private slots:
 	void cbMountReadOnlyStateChanged( int ) ;
 	void encryptedFolderMount( void ) ;
 	void encryptedFolderCreate( void ) ;
+	void pbSetKeyKeyFile( void ) ;
+	void pbSetKey( void ) ;
+	void pbSetKeyCancel( void ) ;
 private :	
+	void unlockVolume( void ) ;
+	void setVolumeToUnlock() ;
+	void setUpVolumeProperties( const volumeInfo& e,const QByteArray& ) ;
+	void setUpInitUI() ;
+	void setKeyEnabled( bool ) ;
+	void setDefaultUI( void ) ;
+	void SetUISetKey( bool ) ;
 	void ShowUI( void ) ;
 	void HideUI( void ) ;
 
@@ -155,7 +181,9 @@ private :
 	void disableAll( void ) ;
 	void windowSetTitle( const QString& = QString() ) ;
 	void closeEvent( QCloseEvent * ) ;
-	bool completed( const siritask::cmdStatus& ) ;
+
+	bool mountedAll() ;
+	bool completed( const siritask::cmdStatus&,const QString& m ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 
 	Ui::keyDialog * m_ui ;
@@ -167,17 +195,17 @@ private :
 	QString m_idleTimeOut ;
 	QString m_configFile ;
 	QString m_exe ;
-	QString m_mountPointPath ;
 	QString m_mountOptions ;
 	QString m_createOptions ;
+	QString m_fileManagerOpen ;
 	QStringList m_keyFiles ;
 
-	QTableWidget * m_table ;
-
+	bool m_autoOpenMountPoint ;
 	bool m_working ;
 	bool m_create ;
 	bool m_reUseMountPoint ;
 	bool m_checked = false ;
+	bool m_hmac ;
 
 	secrets& m_secrets ;
 
@@ -189,8 +217,12 @@ private :
 
 	QWidget * m_parentWidget ;
 
-	std::function< void() > m_cancel ;
-	std::function< void( const QString& ) > m_success ;
+	std::function< void() > m_cancel = [](){} ;
+	std::function< void() > m_done = [](){} ;
+
+	QVector< std::pair< favorites::entry,QByteArray > > m_volumes ;
+
+	decltype( m_volumes.size() ) m_counter = 0 ;
 };
 
 #endif // KEYDIALOG_H

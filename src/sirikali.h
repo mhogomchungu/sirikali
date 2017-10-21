@@ -35,6 +35,7 @@
 #include "secrets.h"
 #include "mountinfo.h"
 #include "lxqt_wallet.h"
+#include "keydialog.h"
 
 class QCloseEvent ;
 class QAction ;
@@ -53,10 +54,11 @@ public:
 	int start( QApplication& ) ;
 	~sirikali() ;
 private slots:
+	void startMinimized( bool ) ;
 	void setPluginExecutable( void ) ;
 	void setFileManager( void ) ;
 	void hideWindow( void ) ;
-	void setUpApp( bool,const QString& ) ;
+	void setUpApp( const QString& ) ;
 	void start( const QStringList& ) ;
 	void autoUpdateCheck( void ) ;
 	void gocryptfsProperties( void ) ;
@@ -71,7 +73,6 @@ private slots:
 	void setDefaultMountPointPrefix( void ) ;
 	void autoCheckUpdates( bool ) ;
 	void reuseMountPoint( bool ) ;
-	void enablePolkitSupport( bool ) ;
 	void autoMountFavoritesOnStartUp( bool ) ;
 	void unlockVolume( const QStringList& ) ;
 	void aboutToShowMenu( void ) ;
@@ -93,7 +94,6 @@ private slots:
 	void slotTrayClicked( QSystemTrayIcon::ActivationReason = QSystemTrayIcon::Trigger ) ;
 	void slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ;
 	void enableAll( void ) ;
-	void enableAll_1( void ) ;
 	void slotOpenFolder( void ) ;
 	void slotOpenSharedFolder( void ) ;
 	void addEntryToTable( const QStringList& ) ;
@@ -109,6 +109,8 @@ private slots:
 	void languageMenu( QAction * ac ) ;
 	void autoMountFavoritesOnAvailable( QString ) ;
 private:
+	void mountMultipleVolumes( QVector< std::pair< favorites::entry,QByteArray > > ) ;
+
 	QString resolveFavoriteMountPoint( const QString& ) ;
 
 	QFont getSystemVolumeFont( void ) ;
@@ -130,7 +132,9 @@ private:
 	void setUpShortCuts( void ) ;
 	void raiseWindow( const QString& = QString() ) ;
 	void autoUnlockVolumes( void ) ;
-	QVector< favorites::entry > autoUnlockVolumes( const QVector< favorites::entry >& ) ;
+
+	QVector< std::pair< favorites::entry,QByteArray > >
+	autoUnlockVolumes( QVector< std::pair< favorites::entry,QByteArray > >,bool = false ) ;
 
 	Ui::sirikali * m_ui = nullptr ;
 
@@ -152,7 +156,7 @@ private:
 
 	bool m_startHidden ;
 	bool m_autoOpenFolderOnMount ;
-	bool m_removeAllVolumes = false ;
+	bool m_disableEnableAll = false ;
 
 	QString m_sharedFolderPath ;
 	QString m_folderOpener ;

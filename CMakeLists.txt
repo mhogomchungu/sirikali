@@ -1,17 +1,16 @@
-cmake_minimum_required( VERSION 3.1 )
-cmake_policy( SET CMP0017 OLD )
-cmake_policy( SET CMP0002 OLD )
+cmake_minimum_required( VERSION 3.0 )
 
 set_property( GLOBAL PROPERTY ALLOW_DUPLICATE_CUSTOM_TARGETS ON )
 
 project( sirikali )
 
-set( PGR_VERSION "1.3.0" )
+set( PGR_VERSION "1.3.1" )
 
 add_definitions( -Wextra -Wall -pedantic )
 
 set( CMAKE_CXX_STANDARD 14 )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
+set( CMAKE_CXX_EXTENSIONS OFF)
 
 include_directories( ${PROJECT_BINARY_DIR} )
 
@@ -163,7 +162,7 @@ else()
 	endif()
 endif()
 
-add_definitions( -std=c++11 )
+add_definitions( -std=c++14 )
 
 set( UI_FILES 	src/sirikali.ui
 		src/keydialog.ui
@@ -374,6 +373,7 @@ NoDisplay=false
 StartupNotify=true
 Terminal=false
 Type=Application
+MimeType=inode/directory;
 Categories=Security;Utility;Qt;X-MandrivaLinux-System-FileTools;\n")
 
 install( FILES ${PROJECT_BINARY_DIR}/sirikali.desktop
@@ -391,7 +391,7 @@ file( WRITE ${PROJECT_BINARY_DIR}/org.sirikali.pkexec.policy
 <policyconfig>
 
   <action id=\"org.sirikali.pkexec\">
-    <message>Authentication is required to run sirikali.pkexec</message>
+    <message>Authentication is required to complete requested operation.</message>
     <icon_name>sirikali</icon_name>
     <defaults>
       <allow_any>auth_admin</allow_any>
