@@ -297,6 +297,7 @@ namespace utility
 	void polkitFailedWarning( std::function< void() > ) ;
 	bool useSiriPolkit( void ) ;
 	void quitHelper() ;
+	void initGlobals() ;
 	QString helperSocketPath() ;
 	void clearFavorites( void ) ;
 	void addToFavorite( const QStringList& ) ;

@@ -115,6 +115,7 @@ bool utility::platformIsOSX()
 static QSettings * _settings ;
 
 static QByteArray _cookie ;
+static QString _polkit_socket_path ;
 
 static bool _use_polkit = false ;
 
@@ -326,9 +327,17 @@ bool utility::enablePolkit( utility::background_thread thread )
 	return _use_polkit ;
 }
 
+void utility::initGlobals()
+{
+	QString a = QString::number( getuid() ) ;
+	QString b = plugins::getRandomData( 16 ).toHex() ;
+
+	_polkit_socket_path = QString( "/tmp/SiriKali.polkit-%1-%2.socket" ).arg( a,b ) ;
+}
+
 QString utility::helperSocketPath()
 {
-	return utility::socketPath() + "/SiriKali.polkit.socket" ;
+	return _polkit_socket_path ;
 }
 
 bool utility::useSiriPolkit()

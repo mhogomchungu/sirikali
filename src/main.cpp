@@ -28,6 +28,8 @@ int main( int argc,char * argv[] )
 	QSettings settings( "SiriKali","SiriKali" ) ;
 	utility::setSettingsObject( &settings ) ;
 
+	utility::initGlobals() ;
+
 	utility::scaleGUI() ;
 
 	QApplication SiriKali( argc,argv ) ;
