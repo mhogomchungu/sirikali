@@ -309,6 +309,7 @@ namespace utility
 	QString getVolumeID( const QString&,bool = false ) ;
 	QString localizationLanguage() ;
 	QString localizationLanguagePath() ;
+	QString socketPath() ;
 	void setLocalizationLanguage( const QString& ) ;
 	QString walletName( void ) ;
 	QString walletName( LXQt::Wallet::BackEnd ) ;

@@ -120,6 +120,20 @@ static bool _use_polkit = false ;
 
 static std::function< void() > _failed_to_connect_to_zulupolkit ;
 
+#if QT_VERSION > QT_VERSION_CHECK( 5,0,0 )
+	#include <QStandardPaths>
+	QString utility::socketPath()
+	{
+		return QStandardPaths::writableLocation( QStandardPaths::RuntimeLocation ) ;
+	}
+#else
+	#include <QDesktopServices>
+	QString utility::socketPath()
+	{
+		return QDesktopServices::storageLocation( QDesktopServices::DataLocation ) ;
+	}
+#endif
+
 void utility::polkitFailedWarning( std::function< void() > e )
 {
 	_failed_to_connect_to_zulupolkit = std::move( e ) ;
@@ -314,7 +328,7 @@ bool utility::enablePolkit( utility::background_thread thread )
 
 QString utility::helperSocketPath()
 {
-	return utility::homeConfigPath() + ".tmp/SiriKali.polkit.socket" ;
+	return utility::socketPath() + "/SiriKali.polkit.socket" ;
 }
 
 bool utility::useSiriPolkit()

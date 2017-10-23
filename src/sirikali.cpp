@@ -749,8 +749,6 @@ void sirikali::start( const QStringList& l )
 
 	m_folderOpener = utility::cmdArgumentValue( l,"-m",utility::fileManager() ) ;
 
-	utility::createFolder( utility::homeConfigPath() ) ;
-
 	auto _cliCommand = [ & ](){
 
 		return l.contains( "-s" ) ||
@@ -768,7 +766,7 @@ void sirikali::start( const QStringList& l )
 			QMetaObject::invokeMethod( this,"polkitFailedWarning",Qt::QueuedConnection ) ;
 		} ) ;
 
-		auto s = utility::homeConfigPath( ".tmp" ) ;
+		auto s = utility::socketPath() ;
 
 		utility::createFolder( s ) ;
 
