@@ -44,6 +44,7 @@
 #include <memory>
 #include <array>
 #include <utility>
+#include <vector>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -66,6 +67,11 @@
 
 class QByteArray ;
 class QEvent ;
+
+namespace utility
+{
+	using volumeList = std::vector< std::pair< favorites::entry,QByteArray > > ;
+}
 
 namespace utility
 {
@@ -301,7 +307,7 @@ namespace utility
 	QString helperSocketPath() ;
 	void clearFavorites( void ) ;
 	void addToFavorite( const QStringList& ) ;
-	QVector< favorites::entry > readFavorites( void ) ;
+	std::vector< favorites::entry > readFavorites( void ) ;
 	favorites::entry readFavorite( const QString& ) ;
 	void replaceFavorite( const favorites::entry&,const favorites::entry& ) ;
 	void readFavorites( QMenu *,bool,const QString&,const QString& ) ;

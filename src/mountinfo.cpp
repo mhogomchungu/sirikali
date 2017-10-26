@@ -84,9 +84,9 @@ mountinfo::~mountinfo()
 {
 }
 
-Task::future< QVector< volumeInfo > >& mountinfo::unlockedVolumes()
+Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 {
-	return Task::run< QVector< volumeInfo > >( [](){
+	return Task::run< std::vector< volumeInfo > >( [](){
 
 		auto _hash = []( const QString& e ){
 
@@ -149,7 +149,7 @@ Task::future< QVector< volumeInfo > >& mountinfo::unlockedVolumes()
 			return l.at( 5 ).mid( 0,2 ) ;
 		} ;
 
-		QVector< volumeInfo > e ;
+		std::vector< volumeInfo > e ;
 
 		volumeInfo::mountinfo info ;
 
@@ -192,7 +192,7 @@ Task::future< QVector< volumeInfo > >& mountinfo::unlockedVolumes()
 				info.mode         = _ro( k ) ;
 				info.mountOptions = k.last() ;
 
-				e.append( info ) ;
+				e.emplace_back( info ) ;
 			}
 		}
 

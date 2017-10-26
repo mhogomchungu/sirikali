@@ -693,7 +693,7 @@ void utility::addToFavorite( const QStringList& e )
 
 			auto q = utility::readFavorites() ;
 
-			q.append( e ) ;
+			q.emplace_back( e ) ;
 
 			QStringList l ;
 
@@ -707,15 +707,15 @@ void utility::addToFavorite( const QStringList& e )
 	}
 }
 
-QVector< favorites::entry > utility::readFavorites()
+std::vector< favorites::entry > utility::readFavorites()
 {
 	if( _settings->contains( "FavoritesVolumes" ) ){
 
-		QVector< favorites::entry > e ;
+		std::vector< favorites::entry > e ;
 
 		for( const auto& it : _settings->value( "FavoritesVolumes" ).toStringList() ){
 
-			e.append( it ) ;
+			e.emplace_back( it ) ;
 		}
 
 		return e ;

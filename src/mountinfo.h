@@ -29,6 +29,7 @@
 
 #include <functional>
 #include <memory>
+#include <vector>
 
 #include "volumeinfo.h"
 
@@ -36,7 +37,7 @@ class mountinfo : private QObject
 {
 	Q_OBJECT
 public:
-	static Task::future< QVector< volumeInfo > >& unlockedVolumes() ;
+	static Task::future< std::vector< volumeInfo > >& unlockedVolumes() ;
 
 	mountinfo( QObject * parent,bool,std::function< void() >&& ) ;
 

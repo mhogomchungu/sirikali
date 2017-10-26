@@ -59,7 +59,7 @@ keyDialog::keyDialog( QWidget * parent,
 		      secrets& s,
 		      bool o,
 		      const QString& q,
-		      QVector< std::pair< favorites::entry,QByteArray > > z,
+		      utility::volumeList z,
 		      std::function< void() > f ) :
 	QDialog( parent ),
 	m_ui( new Ui::keyDialog ),

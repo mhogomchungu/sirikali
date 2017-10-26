@@ -38,6 +38,8 @@
 #include "keydialog.h"
 #include "checkforupdates.h"
 
+#include <vector>
+
 class QCloseEvent ;
 class QAction ;
 class QTableWidgetItem ;
@@ -113,7 +115,8 @@ private slots:
 	void autoMountFavoritesOnAvailable( QString ) ;
 private:
 	void showTrayIcon() ;
-	void mountMultipleVolumes( QVector< std::pair< favorites::entry,QByteArray > > ) ;
+
+	void mountMultipleVolumes( utility::volumeList ) ;
 
 	QString resolveFavoriteMountPoint( const QString& ) ;
 
@@ -122,7 +125,7 @@ private:
 	bool autoOpenFolderOnMount( void ) ;
 
 	void cliCommand( const QStringList& ) ;
-	void updateVolumeList( const QVector< volumeInfo >& ) ;
+	void updateVolumeList( const std::vector< volumeInfo >& ) ;
 	void openMountPoint( const QString& ) ;
 	void setLocalizationLanguage( bool ) ;
 	void dragEnterEvent( QDragEnterEvent * ) ;
@@ -137,8 +140,7 @@ private:
 	void raiseWindow( const QString& = QString() ) ;
 	void autoUnlockVolumes( void ) ;
 
-	QVector< std::pair< favorites::entry,QByteArray > >
-	autoUnlockVolumes( QVector< std::pair< favorites::entry,QByteArray > >,bool = false ) ;
+	utility::volumeList autoUnlockVolumes( utility::volumeList,bool = false ) ;
 
 	Ui::sirikali * m_ui = nullptr ;
 
@@ -152,8 +154,8 @@ private:
 	QMenu * m_language_menu = nullptr ;
 	QMenu * m_autoMountKeyStorage = nullptr ;
 
-	QVector< std::pair< QAction *,const char * > > m_actionPair ;
-	QVector< std::pair< QMenu *,const char * > > m_menuPair ;
+	std::vector< std::pair< QAction *,const char * > > m_actionPair ;
+	std::vector< std::pair< QMenu *,const char * > > m_menuPair ;
 
 	QAction * m_unMountAll = nullptr ;
 	QAction * m_change_password_action = nullptr ;

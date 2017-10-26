@@ -59,13 +59,13 @@
 
 #include "json.h"
 
-static QVector< std::pair< favorites::entry,QByteArray > > _readFavorites()
+static utility::volumeList _readFavorites()
 {
-	QVector< std::pair< favorites::entry,QByteArray > > e ;
+	utility::volumeList e ;
 
 	for( auto&& it : utility::readFavorites() ){
 
-		e.append( { std::move( it ),QByteArray() } ) ;
+		e.emplace_back( std::move( it ),QByteArray() ) ;
 	}
 
 	return e ;
@@ -252,7 +252,7 @@ void sirikali::setUpAppMenu()
 
 		auto ac = new QAction( e,this ) ;
 
-		m_actionPair.append( { ac,z } ) ;
+		m_actionPair.emplace_back( ac,z ) ;
 
 		ac->setFont( this->font() ) ;
 
@@ -279,7 +279,7 @@ void sirikali::setUpAppMenu()
 
 		auto e = m->addMenu( r ) ;
 
-		m_menuPair.append( { e,z } ) ;
+		m_menuPair.emplace_back( e,z ) ;
 
 		e->setFont( this->font() ) ;
 
@@ -975,9 +975,9 @@ void sirikali::unlockVolume( const QStringList& l )
 	}
 }
 
-void sirikali::mountMultipleVolumes( QVector< std::pair< favorites::entry,QByteArray > > e )
+void sirikali::mountMultipleVolumes( utility::volumeList e )
 {
-	if( !e.isEmpty() ){
+	if( !e.empty() ){
 
 		m_disableEnableAll = true ;
 
@@ -996,13 +996,13 @@ void sirikali::autoMountFavoritesOnAvailable( QString m )
 {
 	if( utility::autoMountFavoritesOnAvailable() ){
 
-		QVector< std::pair< favorites::entry,QByteArray > > e ;
+		utility::volumeList e ;
 
 		for( auto&& it : _readFavorites() ){
 
 			if( it.first.volumePath.startsWith( m ) && it.first.autoMount() ){
 
-				e.append( std::move( it ) ) ;
+				e.emplace_back( std::move( it ) ) ;
 			}
 		}
 
@@ -1012,24 +1012,22 @@ void sirikali::autoMountFavoritesOnAvailable( QString m )
 
 void sirikali::autoUnlockVolumes()
 {
-	QVector< std::pair< favorites::entry,QByteArray > > e ;
+	utility::volumeList e ;
 
 	for( auto&& it : _readFavorites() ){
 
 		if( it.first.autoMount() ){
 
-			e.append( std::move( it ) ) ;
+			e.emplace_back( std::move( it ) ) ;
 		}
 	}
 
 	this->mountMultipleVolumes( this->autoUnlockVolumes( std::move( e ) ) ) ;
 }
 
-QVector< std::pair< favorites::entry,QByteArray > >
-sirikali::autoUnlockVolumes( const QVector< std::pair< favorites::entry,QByteArray > > l,
-							 bool autoOpenFolderOnMount )
+utility::volumeList sirikali::autoUnlockVolumes( utility::volumeList l,bool autoOpenFolderOnMount )
 {
-	if( l.isEmpty() ){
+	if( l.empty() ){
 
 		return l ;
 	}
@@ -1050,15 +1048,15 @@ sirikali::autoUnlockVolumes( const QVector< std::pair< favorites::entry,QByteArr
 
 	auto _mountVolumes = [ & ](){
 
-		QVector< std::pair< favorites::entry,QByteArray > > e ;
+		utility::volumeList e ;
 
-		auto _mount = [ & ]( QVector< std::pair< favorites::entry,QByteArray > >& q,
+		auto _mount = [ & ]( utility::volumeList& q,
 				     const std::pair< favorites::entry,QByteArray >& e,
 				     const QByteArray& key,
 				     bool s ){
 			if( s ){
 
-				q.append( { e.first,key } ) ;
+				q.emplace_back( e.first,key ) ;
 			}else{
 				auto& s = siritask::encryptedFolderMount( { e.first,key } ) ;
 
@@ -1080,7 +1078,7 @@ sirikali::autoUnlockVolumes( const QVector< std::pair< favorites::entry,QByteArr
 
 			if( key.isEmpty() ){
 
-				e.append( it ) ;
+				e.emplace_back( it ) ;
 			}else{
 				_mount( e,it,key,s ) ;
 			}
@@ -1545,11 +1543,11 @@ void sirikali::dragEnterEvent( QDragEnterEvent * e )
 
 void sirikali::dropEvent( QDropEvent * e )
 {
-	QVector< std::pair< favorites::entry,QByteArray > > s ;
+	utility::volumeList s ;
 
 	for( const auto& it : e->mimeData()->urls() ){
 
-		s.append( { it.path(),QByteArray() } ) ;
+		s.emplace_back( it.path(),QByteArray() ) ;
 	}
 
 	this->mountMultipleVolumes( std::move( s ) ) ;
@@ -1770,7 +1768,7 @@ void sirikali::pbUpdate()
 	this->updateVolumeList( mountinfo::unlockedVolumes().await() ) ;
 }
 
-void sirikali::updateVolumeList( const QVector< volumeInfo >& r )
+void sirikali::updateVolumeList( const std::vector< volumeInfo >& r )
 {
 	tablewidget::clearTable( m_ui->tableWidget ) ;
 

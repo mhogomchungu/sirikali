@@ -238,8 +238,7 @@ void checkUpdates::checkForUpdate( backends_t::size_type position )
 
 			m_timer.start() ;
 
-			m_networkReply = m_network.get( m_networkRequest,
-				       [ this,exe,f,position ]( QNetworkReply& e ){
+			m_networkReply = m_network.get( m_networkRequest,[ = ]( QNetworkReply& e ){
 
 				m_timer.stop() ;
 
