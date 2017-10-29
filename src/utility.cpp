@@ -327,12 +327,32 @@ bool utility::enablePolkit( utility::background_thread thread )
 	return _use_polkit ;
 }
 
+static void _delete_paths( const QString& folderPath,const QString& socketPath )
+{
+	QDir e ;
+
+	e.remove( socketPath ) ;
+	e.rmdir( folderPath ) ;
+}
+
 void utility::initGlobals()
 {
-	QString a = QString::number( getuid() ) ;
-	QString b = plugins::getRandomData( 16 ).toHex() ;
+	auto uid = getuid() ;
 
-	_polkit_socket_path = QString( "/tmp/SiriKali.polkit-%1-%2.socket" ).arg( a,b ) ;
+	QString a = "/tmp/SiriKali-" + QString::number( uid ) ;
+
+	_polkit_socket_path = a + "/siriPolkit.socket" ;
+
+	_delete_paths( a,_polkit_socket_path ) ;
+
+	QDir e ;
+
+	e.mkpath( a ) ;
+
+	auto s = a.toLatin1() ;
+
+	chown( s.constData(),uid,uid ) ;
+	chmod( s.constData(),0700 ) ;
 }
 
 QString utility::helperSocketPath()
@@ -361,9 +381,9 @@ void utility::quitHelper()
 
 				nlohmann::json json ;
 
-				json[ "cookie" ]     = _cookie.constData() ;
-				json[ "password" ]   = "" ;
-				json[ "command" ]    = "exit" ;
+				json[ "cookie" ]   = _cookie.constData() ;
+				json[ "password" ] = "" ;
+				json[ "command" ]  = "exit" ;
 
 				return json.dump().c_str() ;
 			}() ) ;
@@ -371,6 +391,10 @@ void utility::quitHelper()
 			s.waitForBytesWritten() ;
 		}
 	}
+
+	auto a = "/tmp/SiriKali-" + QString::number( getuid() ) ;
+
+	_delete_paths( a,_polkit_socket_path ) ;
 }
 
 QString utility::homePath()

@@ -34,6 +34,7 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 namespace utility
 {
@@ -156,6 +157,21 @@ void zuluPolkit::start()
 		m_cookie = this->readStdin() ;
 
 		m_socketPath = m_arguments.at( 1 ) ;
+
+		bool ok ;
+
+		auto uid = QProcessEnvironment::systemEnvironment().value( "PKEXEC_UID" ).toInt( &ok ) ;
+
+		if( ok ){
+
+			auto e = m_socketPath ;
+			e.remove( "/siriPolkit.socket" ) ;
+
+			auto s = e.toLatin1() ;
+
+			chown( s.constData(),uid,uid ) ;
+			chmod( s.constData(),0700 ) ;
+		}
 
 		QFile::remove( m_socketPath ) ;
 
