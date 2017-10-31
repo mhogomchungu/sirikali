@@ -1356,6 +1356,21 @@ bool utility::createFolder( const QString& m )
 	return QDir().mkpath( m ) ;
 }
 
+QString utility::preUnMountCommand()
+{
+	if( !_settings->contains( "PreUnMountCommand" ) ){
+
+		_settings->setValue( "PreUnMountCommand",QString() ) ;
+	}
+
+	return _settings->value( "PreUnMountCommand" ).toString() ;
+}
+
+void utility::preUnMountCommand( const QString& e )
+{
+	_settings->setValue( "PreUnMountCommand",e ) ;
+}
+
 QString utility::runCommandOnMount()
 {
 	if( _settings->contains( "RunCommandOnMount" ) ){

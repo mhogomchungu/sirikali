@@ -115,84 +115,114 @@ static QString _wrap_su( const QString& s )
 	}
 }
 
+std::pair< bool,utility::Task > _unmount_volume( const QString& exe,
+						 const QString& moutPoint,
+						 bool usePolkit )
+{
+	auto e = utility::preUnMountCommand() ;
+
+	if( !e.isEmpty() ){
+
+		if( utility::Task::run( e + " " + moutPoint,10000,false ).get().success() ){
+
+			return { true,utility::Task::run( exe,10000,usePolkit ).get() } ;
+		}else{
+			return { false,utility::Task() } ;
+		}
+	}else{
+		return { true,utility::Task::run( exe,10000,usePolkit ).get() } ;
+	}
+}
+
+static bool _unmount_ecryptfs( const QString& cipherFolder,
+			       const QString& mountPoint,
+			       int maxCount )
+{
+	bool not_set = true ;
+
+	auto cmd = [ & ](){
+
+		auto exe = utility::executableFullPath( "ecryptfs-simple" ) ;
+
+		auto s = exe + " -k " + cipherFolder ;
+
+		if( utility::useSiriPolkit() ){
+
+			return _wrap_su( s ) ;
+		}else{
+			return s ;
+		}
+	} ;
+
+	for( int i = 0 ; i < maxCount ; i++ ){
+
+		auto s = _unmount_volume( cmd(),mountPoint,true ) ;
+
+		if( s.first && s.second.success() ){
+
+			return true ;
+		}else{
+			if( not_set && s.second.stdError().contains( "error: failed to set gid" ) ){
+
+				if( utility::enablePolkit( utility::background_thread::True ) ){
+
+					not_set = false ;
+				}else{
+					return false ;
+				}
+			}else{
+				utility::Task::waitForOneSecond() ;
+			}
+		}
+	}
+
+	return false ;
+}
+
+static bool _unmount_rest( const QString& mountPoint,int maxCount )
+{
+	auto cmd = [ & ](){
+
+		if( utility::platformIsOSX() ){
+
+			return "umount " + mountPoint ;
+		}else{
+			return "fusermount -u " + mountPoint ;
+		}
+	}() ;
+
+	for( int i = 0 ; i < maxCount ; i++ ){
+
+		auto s = _unmount_volume( cmd,mountPoint,false ) ;
+
+		if( s.first && s.second.success() ){
+
+			return true ;
+		}else{
+			utility::Task::waitForOneSecond() ;
+		}
+	}
+
+	return false ;
+}
+
 Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFolder,
 							const QString& mountPoint,
 							const QString& fileSystem )
 {
 	return Task::run< bool >( [ = ](){
 
-		auto ecryptfs = _ecryptfs( fileSystem ) ;
-
-		auto cmd = [ & ](){
-
-			if( ecryptfs ){
-
-				auto exe = utility::executableFullPath( "ecryptfs-simple" ) ;
-
-				auto s = exe + " -k " + _makePath( cipherFolder ) ;
-
-				if( utility::useSiriPolkit() ){
-
-					return _wrap_su( s ) ;
-				}else{
-					return s ;
-				}
-			}else{
-				if( utility::platformIsOSX() ){
-
-					return "umount " + _makePath( mountPoint ) ;
-				}else{
-					return "fusermount -u " + _makePath( mountPoint ) ;
-				}
-			}
-		} ;
-
 		const int max_count = 5 ;
 
-		if( ecryptfs ){
+		if( _ecryptfs( fileSystem ) ){
 
-			bool not_set = true ;
+			auto a = _makePath( cipherFolder ) ;
+			auto b = _makePath( mountPoint ) ;
 
-			auto exe = cmd() ;
-
-			for( int i = 0 ; i < max_count ; i++ ){
-
-				auto s = utility::Task::run( exe,10000,true ).get() ;
-
-				if( s.success() ){
-
-					return true ;
-				}else{
-					if( not_set && s.stdError().contains( "error: failed to set gid" ) ){
-
-						if( utility::enablePolkit( utility::background_thread::True ) ){
-
-							not_set = false ;
-
-							exe = cmd() ;
-						}else{
-							return false ;
-						}
-					}else{
-						utility::Task::waitForOneSecond() ;
-					}
-				}
-			}
+			return _unmount_ecryptfs( a,b,max_count ) ;
 		}else{
-			for( int i = 0 ; i < max_count ; i++ ){
-
-				auto s = utility::Task::run( cmd(),10000,false ).get() ;
-
-				if( s.success() ){
-
-					return true ;
-				}else{
-					utility::Task::waitForOneSecond() ;
-				}
-			}
-		}
-
-		return false ;
+			return _unmount_rest( _makePath( mountPoint ),max_count ) ;
+		}		
 	} ) ;
 }
 

@@ -249,6 +249,9 @@ namespace utility
 
 	void setSettingsObject( QSettings * ) ;
 
+	void preUnMountCommand( const QString& ) ;
+	QString preUnMountCommand( void ) ;
+
 	QString mountPathPostFix( const QString& path ) ;
 	QString mountPathPostFix( const QString& prefix,const QString& path ) ;
 
@@ -557,9 +560,9 @@ namespace utility
 
 		QByteArray m_stdOut ;
 		QByteArray m_stdError ;
-		int m_exitCode ;
-		int m_exitStatus ;
-		bool m_finished ;
+		int m_exitCode = 255 ;
+		int m_exitStatus = 255 ;
+		bool m_finished = false ;
 	};
 }
 
