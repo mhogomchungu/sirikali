@@ -169,8 +169,8 @@ void zuluPolkit::start()
 
 			auto s = e.toLatin1() ;
 
-			chown( s.constData(),uid,uid ) ;
-			chmod( s.constData(),0700 ) ;
+			if( chown( s.constData(),uid,uid ) ){}
+			if( chmod( s.constData(),0700 ) ){}
 		}
 
 		QFile::remove( m_socketPath ) ;
