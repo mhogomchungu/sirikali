@@ -1,4 +1,4 @@
-﻿/*
+/*
  *
  *  Copyright (c) 2014-2015
  *  name : Francis Banyikwa
@@ -116,21 +116,21 @@ static QString _wrap_su( const QString& s )
 }
 
 std::pair< bool,utility::Task > _unmount_volume( const QString& exe,
-						 const QString& moutPoint,
+						 const QString& mountPoint,
 						 bool usePolkit )
 {
 	auto e = utility::preUnMountCommand() ;
 
-	if( !e.isEmpty() ){
+	if( e.isEmpty() ){
 
-		if( utility::Task::run( e + " " + moutPoint,10000,false ).get().success() ){
+		return { true,utility::Task::run( exe,10000,usePolkit ).get() } ;
+	}else{
+		if( utility::Task::run( e + " " + mountPoint,10000,false ).get().success() ){
 
 			return { true,utility::Task::run( exe,10000,usePolkit ).get() } ;
 		}else{
 			return { false,utility::Task() } ;
 		}
-	}else{
-		return { true,utility::Task::run( exe,10000,usePolkit ).get() } ;
 	}
 }
 
