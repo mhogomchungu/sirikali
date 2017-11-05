@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>503</width>
+    <width>522</width>
     <height>177</height>
    </rect>
   </property>
@@ -44,7 +44,7 @@
     <rect>
      <x>70</x>
      <y>110</y>
-     <width>361</width>
+     <width>381</width>
      <height>31</height>
     </rect>
    </property>
@@ -55,7 +55,7 @@
   <widget class="QPushButton" name="pbOpenPath">
    <property name="geometry">
     <rect>
-     <x>430</x>
+     <x>450</x>
      <y>110</y>
      <width>31</width>
      <height>33</height>
@@ -70,12 +70,12 @@
     <rect>
      <x>70</x>
      <y>10</y>
-     <width>391</width>
+     <width>381</width>
      <height>101</height>
     </rect>
    </property>
    <property name="text">
-    <string>Select A Folder To Create Config File In.</string>
+    <string>Select A Folder To Create Config File In(Optional).</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>

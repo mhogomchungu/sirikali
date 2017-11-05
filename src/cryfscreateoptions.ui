@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>502</width>
-    <height>242</height>
+    <height>253</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -72,7 +72,7 @@
    <property name="geometry">
     <rect>
      <x>150</x>
-     <y>210</y>
+     <y>220</y>
      <width>101</width>
      <height>31</height>
     </rect>
@@ -85,7 +85,7 @@
    <property name="geometry">
     <rect>
      <x>250</x>
-     <y>210</y>
+     <y>220</y>
      <width>101</width>
      <height>31</height>
     </rect>
@@ -100,11 +100,11 @@
      <x>10</x>
      <y>150</y>
      <width>481</width>
-     <height>31</height>
+     <height>41</height>
     </rect>
    </property>
    <property name="text">
-    <string>Select A Folder To Create Config File In.</string>
+    <string>Select A Folder To Create Config File In(Optional).</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -114,7 +114,7 @@
    <property name="geometry">
     <rect>
      <x>90</x>
-     <y>180</y>
+     <y>190</y>
      <width>321</width>
      <height>31</height>
     </rect>
@@ -130,7 +130,7 @@
    <property name="geometry">
     <rect>
      <x>410</x>
-     <y>180</y>
+     <y>190</y>
      <width>31</width>
      <height>33</height>
     </rect>
