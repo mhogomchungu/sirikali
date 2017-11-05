@@ -36,6 +36,7 @@
 
 #include <QObject>
 #include <QDir>
+#include <QFileDialog>
 #include <QTranslator>
 #include <QEventLoop>
 #include <QDebug>
@@ -1644,4 +1645,56 @@ QString utility::windowDimensions::dimensions() const
 	}
 
 	return e ;
+}
+
+QString utility::configFilePath( QWidget * s,const QString& e )
+{
+	return [ = ](){
+
+		QFileDialog dialog( s ) ;
+
+		dialog.setFileMode( QFileDialog::AnyFile ) ;
+
+		dialog.setDirectory( utility::homePath() ) ;
+
+		dialog.setAcceptMode( QFileDialog::AcceptSave ) ;
+
+		dialog.selectFile( [ = ](){
+
+			if( e == "cryfs" ){
+
+				return "cryfs.config" ;
+
+			}else if( e == "encfs" ){
+
+				return "encfs6.xml" ;
+
+			}else if( e == "gocryptfs" ){
+
+				return "gocryptfs.conf" ;
+
+			}else if( e == "securefs" ){
+
+				return "securefs.json" ;
+
+			}else if( e == "ecryptfs" ){
+
+				return "ecryptfs.config" ;
+			}else{
+				return "" ;
+			}
+		}() ) ;
+
+		if( dialog.exec() ){
+
+			auto q = dialog.selectedFiles() ;
+
+			if( !q.isEmpty() ){
+
+				return q.first() ;
+			}
+		}
+
+		return QString() ;
+	}() ;
 }

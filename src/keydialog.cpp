@@ -348,9 +348,14 @@ void keyDialog::setDefaultUI()
 {
 	if( m_create ){
 
-		if( m_exe == "Securefs" || m_exe == "Cryfs" ){
+		if( utility::equalsAtleastOne( m_exe,"Securefs","Cryfs","Gocryptfs","Ecryptfs" ) ){
 
 			m_ui->pbOptions->setEnabled( true ) ;
+
+			if( utility::equalsAtleastOne( m_exe,"Gocryptfs","Ecryptfs" ) ){
+
+				m_ui->pbOptions->setToolTip( tr( "Set A Path To Where The Volume's Configuration File Will Be Created." ) ) ;
+			}
 		}else{
 			m_ui->pbOptions->setEnabled( false ) ;
 		}
@@ -408,25 +413,31 @@ void keyDialog::pbOptions()
 {
 	if( m_create ){
 
-		if( m_exe == "Securefs" ){
+		if( m_exe == "Gocryptfs" ){
+
+			m_configFile = utility::configFilePath( this,"gocryptfs" ) ;
+
+		}else if( m_exe == "Ecryptfs" ){
+
+			m_configFile = utility::configFilePath( this,"ecryptfs" ) ;
+
+		}else if( m_exe == "Securefs" ){
 
 			this->hide() ;
 
-			securefscreateoptions::instance( m_parentWidget,[ this ]( const QString& e ){
+			securefscreateoptions::instance( m_parentWidget,[ this ]( const QStringList& e ){
 
-				m_createOptions = e ;
+				utility2::stringListToStrings( e,m_createOptions,m_configFile ) ;
 
 				this->ShowUI() ;
 			} ) ;
-		}
-
-		if( m_exe == "Cryfs" ){
+		}else if( m_exe == "Cryfs" ){
 
 			this->hide() ;
 
-			cryfscreateoptions::instance( m_parentWidget,[ this ]( const QString& e ){
+			cryfscreateoptions::instance( m_parentWidget,[ this ]( const QStringList& e ){
 
-				m_createOptions = e ;
+				utility2::stringListToStrings( e,m_createOptions,m_configFile ) ;
 
 				this->ShowUI() ;
 			} ) ;

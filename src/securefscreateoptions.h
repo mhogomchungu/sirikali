@@ -25,6 +25,7 @@
 
 #include <QCloseEvent>
 #include <QString>
+#include <QStringList>
 #include <QDialog>
 
 namespace Ui {
@@ -35,20 +36,21 @@ class securefscreateoptions : public QDialog
 {
 	Q_OBJECT
 public:
-	static void instance( QWidget * parent,std::function< void( const QString& ) > function )
+	static void instance( QWidget * parent,std::function< void( const QStringList& ) > function )
 	{
 		new securefscreateoptions( parent,std::move( function ) ) ;
 	}
-	explicit securefscreateoptions( QWidget * parent,std::function< void( const QString& ) > ) ;
+	explicit securefscreateoptions( QWidget * parent,std::function< void( const QStringList& ) > ) ;
 	~securefscreateoptions() ;
 private slots:
 	void pbOK() ;
 	void pbCancel() ;
+	void pbConfigFilePath() ;
 private:
 	void HideUI() ;
 	void closeEvent( QCloseEvent * ) ;
 	Ui::securefscreateoptions * m_ui ;
-	std::function< void( const QString& ) > m_function ;
+	std::function< void( const QStringList& ) > m_function ;
 };
 
 #endif // SECUREFSCREATEOPTIONS_H

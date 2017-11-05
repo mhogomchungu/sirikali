@@ -299,6 +299,8 @@ namespace utility
 	QString homePath() ;
 	QString userName() ;
 
+	QString configFilePath( QWidget *,const QString& ) ;
+
 	QStringList split( const QString&,char = '\n' ) ;
 	QStringList executableSearchPaths( void ) ;
 	QString executableSearchPaths( const QString& ) ;

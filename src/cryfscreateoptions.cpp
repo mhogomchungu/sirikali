@@ -24,7 +24,7 @@
 #include "task.h"
 
 cryfscreateoptions::cryfscreateoptions( QWidget * parent,
-					std::function< void( const QString& ) > function ) :
+					std::function< void( const QStringList& ) > function ) :
 	QDialog( parent ),
 	m_ui( new Ui::cryfscreateoptions ),
 	m_function( std::move( function ) )
@@ -35,6 +35,9 @@ cryfscreateoptions::cryfscreateoptions( QWidget * parent,
 
 	connect( m_ui->pbOK,SIGNAL( clicked() ),this,SLOT( pbOK() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
+	connect( m_ui->pbConfigPath,SIGNAL( clicked() ),this,SLOT( pbSelectConfigPath() ) ) ;
+
+	m_ui->pbConfigPath->setIcon( QIcon( ":/folder.png" ) ) ;
 
 	m_ui->lineEdit->setText( "32768" ) ;
 
@@ -67,6 +70,11 @@ cryfscreateoptions::~cryfscreateoptions()
 	delete m_ui ;
 }
 
+void cryfscreateoptions::pbSelectConfigPath()
+{
+	m_ui->lineEdit_2->setText( utility::configFilePath( this,"cryfs" ) ) ;
+}
+
 void cryfscreateoptions::pbOK()
 {
 	auto e = QString( "--cipher %1 --blocksize %2" ) ;
@@ -78,15 +86,17 @@ void cryfscreateoptions::pbOK()
 		s = "32768" ;
 	}
 
-	this->HideUI( e.arg( m_ui->comboBox->currentText(),s ) ) ;
+	e = e.arg( m_ui->comboBox->currentText(),s ) ;
+
+	this->HideUI( { e,m_ui->lineEdit_2->text() } ) ;
 }
 
 void cryfscreateoptions::pbCancel()
 {
-	this->HideUI( QString() ) ;
+	this->HideUI() ;
 }
 
-void cryfscreateoptions::HideUI( const QString& e )
+void cryfscreateoptions::HideUI( const QStringList& e )
 {
 	this->hide() ;
 

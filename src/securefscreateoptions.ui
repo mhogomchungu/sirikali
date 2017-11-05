@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>581</width>
-    <height>315</height>
+    <height>344</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,8 +19,11 @@
      <x>10</x>
      <y>0</y>
      <width>561</width>
-     <height>251</height>
+     <height>221</height>
     </rect>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
    </property>
    <property name="text">
     <string>The &quot;lite format&quot; simply encrypts filenames and file contents separately, similar to how encfs operates, although with more security.
@@ -36,9 +39,9 @@ The lite format has become the default on Unix-like operating systems as it is m
   <widget class="QComboBox" name="comboBox">
    <property name="geometry">
     <rect>
-     <x>210</x>
-     <y>250</y>
-     <width>161</width>
+     <x>180</x>
+     <y>220</y>
+     <width>221</width>
      <height>29</height>
     </rect>
    </property>
@@ -57,7 +60,7 @@ The lite format has become the default on Unix-like operating systems as it is m
    <property name="geometry">
     <rect>
      <x>180</x>
-     <y>280</y>
+     <y>310</y>
      <width>111</width>
      <height>31</height>
     </rect>
@@ -70,13 +73,52 @@ The lite format has become the default on Unix-like operating systems as it is m
    <property name="geometry">
     <rect>
      <x>290</x>
-     <y>280</y>
+     <y>310</y>
      <width>111</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
     <string>&amp;Cancel</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>43</x>
+     <y>250</y>
+     <width>491</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Select A Folder To Create Config File In.</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>280</y>
+     <width>421</width>
+     <height>31</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pbConfigFile">
+   <property name="geometry">
+    <rect>
+     <x>500</x>
+     <y>280</y>
+     <width>31</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
    </property>
   </widget>
  </widget>
