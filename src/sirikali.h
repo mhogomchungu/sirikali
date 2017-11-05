@@ -57,6 +57,7 @@ public:
 	int start( QApplication& ) ;
 	~sirikali() ;
 private slots:
+	void FAQ( void ) ;
 	void showTrayIconWhenReady( void ) ;
 	void polkitFailedWarning( void ) ;
 	void startMinimized( bool ) ;

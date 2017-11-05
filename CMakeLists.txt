@@ -174,6 +174,7 @@ set( UI_FILES 	src/sirikali.ui
 		src/walletconfiginput.ui
 		src/options.ui
 		src/dialogok.ui
+		src/help.ui
 		src/filemanager.ui
 		src/securefscreateoptions.ui
 		src/cryfscreateoptions.ui
@@ -184,6 +185,7 @@ set( MOC_FILES
                 src/configfileoption.h
                 src/checkforupdates.h
                 src/dialogok.h
+                src/help.h
 		src/sirikali.h
 		src/keydialog.h
 		src/oneinstance.h
@@ -208,6 +210,7 @@ set( SRC 	src/dialogok.cpp
 		src/sirikali.cpp
 		src/keydialog.cpp
 		src/siritask.cpp
+		src/help.cpp
 		src/oneinstance.cpp
 		src/mountinfo.cpp
 		src/utility.cpp

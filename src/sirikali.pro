@@ -27,7 +27,8 @@ SOURCES += \
     options.cpp \
     securefscreateoptions.cpp \
     cryfscreateoptions.cpp \
-    configfileoption.cpp
+    configfileoption.cpp \
+    help.cpp
 
 HEADERS += \
     securefscreateoptions.h \
@@ -42,6 +43,7 @@ HEADERS += \
     sirikali.h  \
     keydialog.h  \
     plugin.h   \
+    help.h \
     walletconfig.h   \
     siritask.h  \
     readonlywarning.h \
@@ -68,6 +70,7 @@ FORMS += \
     favorites.ui \
     filemanager.ui \
     plugin.ui \
+    help.ui \
     walletconfiginput.ui \
     dialogmsg.ui \
     keydialog.ui \

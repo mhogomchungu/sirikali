@@ -56,6 +56,7 @@
 #include "favorites.h"
 #include "walletconfig.h"
 #include "plugins.h"
+#include "help.h"
 
 #include "json.h"
 
@@ -418,6 +419,8 @@ void sirikali::setUpAppMenu()
 
 	m->addAction( _addAction( false,false,tr( "About" ),"About",SLOT( licenseInfo() ) ) ) ;
 
+	m->addAction( _addAction( false,false,tr( "FAQ" ),"FAQ",SLOT( FAQ() ) ) ) ;
+
 	m->addAction( _addAction( false,false,tr( "Show/Hide" ),
 				  "Show/Hide",SLOT( slotTrayClicked() ) ) ) ;
 
@@ -592,6 +595,12 @@ void sirikali::keyManagerClicked( QAction * ac )
 			}
 		}() ) ) ;
 	}
+}
+
+void sirikali::FAQ()
+{
+	this->disableAll() ;
+	help::instance( this,m_folderOpener,[ this ](){ this->enableAll() ; } ) ;
 }
 
 void sirikali::licenseInfo()
