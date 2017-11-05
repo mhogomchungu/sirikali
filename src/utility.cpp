@@ -1000,18 +1000,12 @@ QString utility::applicationName()
 
 QString utility::mountPath( const QString& path )
 {
-	QString e ;
+	if( !_settings->contains( "MountPrefix" ) ){
 
-	if( _settings->contains( "MountPrefix" ) ){
-
-		e = _settings->value( "MountPrefix" ).toString() ;
-	}else{
-		auto e = utility::homePath() + "/.SiriKali" ;
-
-		utility::setDefaultMountPointPrefix( e ) ;
+		_settings->setValue( "MountPrefix",utility::homePath() + "/.SiriKali" ) ;
 	}
 
-	return e + "/" + path ;
+	return _settings->value( "MountPrefix" ).toString() + "/" + path ;
 }
 
 void utility::setDefaultMountPointPrefix( const QString& path )
