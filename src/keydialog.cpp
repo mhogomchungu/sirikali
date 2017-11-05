@@ -34,6 +34,7 @@
 #include "lxqt_wallet.h"
 #include "utility2.h"
 #include "plugin.h"
+#include "configfileoption.h"
 
 static QString _kwallet()
 {
@@ -350,12 +351,7 @@ void keyDialog::setDefaultUI()
 
 		if( utility::equalsAtleastOne( m_exe,"Securefs","Cryfs","Gocryptfs","Ecryptfs" ) ){
 
-			m_ui->pbOptions->setEnabled( true ) ;
-
-			if( utility::equalsAtleastOne( m_exe,"Gocryptfs","Ecryptfs" ) ){
-
-				m_ui->pbOptions->setToolTip( tr( "Set A Path To Where The Volume's Configuration File Will Be Created." ) ) ;
-			}
+			m_ui->pbOptions->setEnabled( true ) ;			
 		}else{
 			m_ui->pbOptions->setEnabled( false ) ;
 		}
@@ -413,13 +409,16 @@ void keyDialog::pbOptions()
 {
 	if( m_create ){
 
-		if( m_exe == "Gocryptfs" ){
+		if( utility::equalsAtleastOne( m_exe,"Gocryptfs","Ecryptfs" ) ){
 
-			m_configFile = utility::configFilePath( this,"gocryptfs" ) ;
+			this->hide() ;
 
-		}else if( m_exe == "Ecryptfs" ){
+			configFileOption::instance( this,m_exe,[ this ]( const QStringList& e ){
 
-			m_configFile = utility::configFilePath( this,"ecryptfs" ) ;
+				utility2::stringListToStrings( e,m_configFile ) ;
+
+				this->ShowUI() ;
+			} ) ;
 
 		}else if( m_exe == "Securefs" ){
 

@@ -177,9 +177,11 @@ set( UI_FILES 	src/sirikali.ui
 		src/filemanager.ui
 		src/securefscreateoptions.ui
 		src/cryfscreateoptions.ui
+                src/configfileoption.ui
 )
 
 set( MOC_FILES
+                src/configfileoption.h
                 src/checkforupdates.h
                 src/dialogok.h
 		src/sirikali.h
@@ -202,6 +204,7 @@ set( MOC_FILES
 
 set( SRC 	src/dialogok.cpp
 		src/main.cpp
+                src/configfileoption.cpp
 		src/sirikali.cpp
 		src/keydialog.cpp
 		src/siritask.cpp
