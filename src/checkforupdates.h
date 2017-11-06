@@ -40,16 +40,6 @@ class checkUpdates : public QObject
 {
 	Q_OBJECT
 public:
-	static bool autoCheck( void )
-	{
-		return utility::autoCheck() ;
-	}
-
-	static void autoCheck( bool e )
-	{
-		utility::autoCheck( e ) ;
-	}
-
 	void run( bool e ) ;
 
 	checkUpdates( QWidget * widget ) ;

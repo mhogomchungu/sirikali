@@ -46,9 +46,6 @@ This option specifies the base directory where libraries should be installed. No
 -DCMAKE_BUILD_TYPE=RELEASE
 This option tells the build process to build the project in release mode.This mode is most suitable for non developers.
 
--DQT5=true
-This option tells the build process to build GUI components using Qt5.Set the option to "false" if you want to build using Qt4.
-
 -DNOSECRETSUPPORT=false
 This option tells the build process to add gnome's libsecret secure storage of passwords.Set this option to "true" if
 you do not want libsecret's support.

@@ -107,3 +107,9 @@ version 1.3.1
 -- Add a config option on the menu list to set the app to start minimized.
 -- Fix stability issues on MACOS.
 -- Fix gocryptfs not showing up on MACOS
+
+version 1.3.2
+-- Drop supported for Qt4
+-- Add a GUI window to manage options
+-- Add ability to specify a command to run before a volume is umounted. The specified command must return 0
+   for the unmount attempt to be carried out.

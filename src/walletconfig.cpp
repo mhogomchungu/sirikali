@@ -36,9 +36,11 @@
 
 #define COMMENT "-SiriKali_Comment_ID"
 
-walletconfig::walletconfig( QWidget * parent,secrets::wallet&& wallet ) :
-	QDialog( parent ),m_ui( new Ui::walletconfig ),
-	m_wallet( std::move( wallet ) )
+walletconfig::walletconfig( QWidget * parent,secrets::wallet&& wallet,std::function< void() > e ) :
+	QDialog( parent ),
+	m_ui( new Ui::walletconfig ),
+	m_wallet( std::move( wallet ) ),
+	m_function( std::move( e ) )
 {
 	m_ui->setupUi( this ) ;
 
@@ -296,6 +298,7 @@ void walletconfig::HideUI()
 {
 	this->hide() ;
 	this->deleteLater() ;
+	m_function() ;
 }
 
 void walletconfig::closeEvent( QCloseEvent * e )

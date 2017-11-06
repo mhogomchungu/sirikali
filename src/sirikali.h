@@ -57,12 +57,10 @@ public:
 	int start( QApplication& ) ;
 	~sirikali() ;
 private slots:
+	void configOptions( void ) ;
 	void FAQ( void ) ;
 	void showTrayIconWhenReady( void ) ;
 	void polkitFailedWarning( void ) ;
-	void startMinimized( bool ) ;
-	void setPluginExecutable( void ) ;
-	void setFileManager( void ) ;
 	void hideWindow( void ) ;
 	void setUpApp( const QString& ) ;
 	void start( const QStringList& ) ;
@@ -72,17 +70,7 @@ private slots:
 	void encfsProperties( void ) ;
 	void ecryptfsProperties( void ) ;
 	void securefsProperties( void ) ;
-	void autoMountKeyStorage( void ) ;
-	void autoMountKeySource( QAction * ) ;
-	void showMountDialogWhenAutoMounting( bool ) ;
-	void autoMountWhenAvailable( bool ) ;
-	void setDefaultMountPointPrefix( void ) ;
-	void autoCheckUpdates( bool ) ;
-	void reuseMountPoint( bool ) ;
-	void autoMountFavoritesOnStartUp( bool ) ;
 	void unlockVolume( const QStringList& ) ;
-	void aboutToShowMenu( void ) ;
-	void changeInternalWalletPassWord( void ) ;
 	void closeApplication( int = 0,const QString& = QString() ) ;
 	void unlockVolume( void ) ;
 	void startGUI( void ) ;
@@ -104,15 +92,12 @@ private slots:
 	void slotOpenSharedFolder( void ) ;
 	void addEntryToTable( const QStringList& ) ;
 	void addEntryToTable( const volumeInfo& ) ;
-	void autoOpenFolderOnMount( bool ) ;
 	void removeEntryFromTable( QString ) ;
 	void showFavorites( void ) ;
 	void favoriteClicked( QAction * ) ;
-	void keyManagerClicked( QAction * ) ;
 	void openMountPointPath( const QString& ) ;
 	void licenseInfo( void ) ;
 	void updateCheck( void ) ;
-	void languageMenu( QAction * ac ) ;
 	void autoMountFavoritesOnAvailable( QString ) ;
 private:
 	void showTrayIcon() ;
@@ -122,8 +107,6 @@ private:
 	QString resolveFavoriteMountPoint( const QString& ) ;
 
 	QFont getSystemVolumeFont( void ) ;
-
-	bool autoOpenFolderOnMount( void ) ;
 
 	void cliCommand( const QStringList& ) ;
 	void updateVolumeList( const std::vector< volumeInfo >& ) ;
@@ -153,7 +136,6 @@ private:
 	QMenu * m_not_hidden_volume_menu = nullptr ;
 	QMenu * m_key_manager_menu = nullptr ;
 	QMenu * m_language_menu = nullptr ;
-	QMenu * m_autoMountKeyStorage = nullptr ;
 
 	std::vector< std::pair< QAction *,const char * > > m_actionPair ;
 	std::vector< std::pair< QMenu *,const char * > > m_menuPair ;

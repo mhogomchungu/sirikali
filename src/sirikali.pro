@@ -28,12 +28,14 @@ SOURCES += \
     securefscreateoptions.cpp \
     cryfscreateoptions.cpp \
     configfileoption.cpp \
-    help.cpp
+    help.cpp \
+    configoptions.cpp
 
 HEADERS += \
     securefscreateoptions.h \
     cryfscreateoptions.h \
     dialogok.h \
+    configoptions.h \
     configfileoption.h \
     checkforupdates.h \
     favorites.h \
@@ -66,6 +68,7 @@ FORMS += \
     cryfscreateoptions.ui \
     dialogok.ui \
     sirikali.ui \
+    configoptions.ui \
     configfileoption.ui \
     favorites.ui \
     filemanager.ui \

@@ -24,18 +24,22 @@ secrets::secrets( QWidget * parent ) : m_parent( parent )
 {
 }
 
-void secrets::changeInternalWalletPassword( const QString& walletName,const QString& appName )
+void secrets::changeInternalWalletPassword( const QString& walletName,
+					    const QString& appName,
+					    std::function< void() > function )
 {
 	auto e = this->internalWallet() ;
 	auto f = *e ;
 
-	f->changeWalletPassWord( walletName,appName,[ e,f ]( bool q ){
+	f->changeWalletPassWord( walletName,appName,[ e,f,function = std::move( function ) ]( bool q ){
 
 		if( q ){
 
 			f->deleteLater() ;
 			*e = nullptr ;
 		}
+
+		function() ;
 	} ) ;
 }
 

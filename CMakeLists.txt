@@ -76,13 +76,11 @@ if( NOT DEFINED INTERNAL_LXQT_WALLET )
 	set( INTERNAL_LXQT_WALLET "false" )
 endif()
 
-if( NOT DEFINED QT5 )
-	set( QT5 "true" )
+if( DEFINED QT5 AND NOT QT5 )
+	message( FATAL_ERROR "Qt4 Build is no longer supported" )
 endif()
 
-if( APPLE )
-	set( QT5 "true" )
-endif()
+set( QT5 "true" )
 
 find_file( JSON_HEADER_PATH "nlohmann/json.hpp" )
 
@@ -179,9 +177,11 @@ set( UI_FILES 	src/sirikali.ui
 		src/securefscreateoptions.ui
 		src/cryfscreateoptions.ui
                 src/configfileoption.ui
+                src/configoptions.ui
 )
 
 set( MOC_FILES
+                src/configoptions.h
                 src/configfileoption.h
                 src/checkforupdates.h
                 src/dialogok.h
@@ -206,6 +206,7 @@ set( MOC_FILES
 
 set( SRC 	src/dialogok.cpp
 		src/main.cpp
+		src/configoptions.cpp
                 src/configfileoption.cpp
 		src/sirikali.cpp
 		src/keydialog.cpp
@@ -245,69 +246,36 @@ if( APPLE )
 	SET_SOURCE_FILES_PROPERTIES( translations/fr_FR.qm PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
 endif()
 
-if( QT5 )
-	find_package( Qt5Widgets REQUIRED )
-	find_package( Qt5Core REQUIRED )
-	find_package( Qt5Network REQUIRED )
+find_package( Qt5Widgets REQUIRED )
+find_package( Qt5Core REQUIRED )
+find_package( Qt5Network REQUIRED )
 
-	set( CMAKE_INCLUDE_CURRENT_DIR ON )
-	include_directories( ${Qt5Widgets_INCLUDE_DIRS} )
-	include_directories( ${Qt5Network_INCLUDE_DIRS} )
+set( CMAKE_INCLUDE_CURRENT_DIR ON )
+include_directories( ${Qt5Widgets_INCLUDE_DIRS} )
+include_directories( ${Qt5Network_INCLUDE_DIRS} )
 
-	add_definitions( ${Qt5Widgets_DEFINITIONS} )
+add_definitions( ${Qt5Widgets_DEFINITIONS} )
 
-	QT5_WRAP_UI( UI ${UI_FILES} )
-	QT5_WRAP_CPP( MOC ${MOC_FILES} )
-	QT5_ADD_RESOURCES( TRAY_RC_SRCS src/icon.qrc )
+QT5_WRAP_UI( UI ${UI_FILES} )
+QT5_WRAP_CPP( MOC ${MOC_FILES} )
+QT5_ADD_RESOURCES( TRAY_RC_SRCS src/icon.qrc )
 
-	INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
-	INCLUDE_DIRECTORIES( ${GCRYPT_INCLUDE_PATH} )
+INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
+INCLUDE_DIRECTORIES( ${GCRYPT_INCLUDE_PATH} )
 
-	if( APPLE )
-		add_executable( sirikali MACOSX_BUNDLE ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} ${PROJECT_SOURCE_DIR}/icons/256x256/sirikali.icns )
-	else()
-		add_executable( sirikali ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
-	endif()
-
-	link_directories( ${GCRYPT_LIBRARY_PATH} )
-
-	TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet -L${GCRYPT_LIBRARY_PATH})
-
-	message( STATUS "---------------------------------------------------------------------------" )
-	message( STATUS "Building GUI components using Qt5" )
-	message( STATUS "---------------------------------------------------------------------------\n\n" )
+if( APPLE )
+	add_executable( sirikali MACOSX_BUNDLE ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} ${PROJECT_SOURCE_DIR}/icons/256x256/sirikali.icns )
 else()
-	find_package( Qt4 REQUIRED )
-
-	add_definitions( -I${Qt4_INCLUDE_DIR} )
-	add_definitions( -I${QT_HEADERS_DIR} )
-
-	INCLUDE( ${QT_USE_FILE} )
-	INCLUDE( ${QT_USE_FILE} )
-
-	INCLUDE( ${QT_USE_FILE} )
-
-	QT4_WRAP_UI( UI ${UI_FILES} )
-	QT4_WRAP_CPP( MOC ${MOC_FILES} )
-	QT4_ADD_RESOURCES( TRAY_RC_SRCS src/icon.qrc )
-
-	INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
-	INCLUDE_DIRECTORIES( ${GCRYPT_INCLUDE_PATH} )
-
-	link_directories( ${GCRYPT_LIBRARY_PATH} )
-
-	if( APPLE )
-		add_executable( sirikali MACOSX_BUNDLE ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} ${PROJECT_SOURCE_DIR}/icons/256x256/sirikali.icns )
-	else()
-		add_executable( sirikali ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
-	endif()
-
-	TARGET_LINK_LIBRARIES( sirikali -lQtCore -lQtGui -lQtNetwork ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet -L${GCRYPT_LIBRARY_PATH} )
-
-	message( STATUS "---------------------------------------------------------------------------" )
-	message( STATUS "Building GUI components using Qt4" )
-	message( STATUS "---------------------------------------------------------------------------\n\n" )
+	add_executable( sirikali ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
 endif()
+
+link_directories( ${GCRYPT_LIBRARY_PATH} )
+
+TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet -L${GCRYPT_LIBRARY_PATH})
+
+message( STATUS "---------------------------------------------------------------------------" )
+message( STATUS "Building GUI components using Qt5" )
+message( STATUS "---------------------------------------------------------------------------\n\n" )
 
 set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic" )
 

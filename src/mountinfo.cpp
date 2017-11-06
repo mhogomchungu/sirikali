@@ -304,8 +304,6 @@ void mountinfo::linuxMonitor()
 	e.then( std::move( m_quit ) ) ;
 }
 
-#if QT_VERSION > QT_VERSION_CHECK( 5,0,0 )
-
 void mountinfo::osxMonitor()
 {
 	m_stop = [ this ](){ m_process.terminate() ; } ;
@@ -330,11 +328,3 @@ void mountinfo::osxMonitor()
 
 	m_process.start( "diskutil activity" ) ;
 }
-
-#else
-
-void mountinfo::osxMonitor()
-{
-}
-
-#endif

@@ -351,7 +351,7 @@ void keyDialog::setDefaultUI()
 
 		if( utility::equalsAtleastOne( m_exe,"Securefs","Cryfs","Gocryptfs","Ecryptfs" ) ){
 
-			m_ui->pbOptions->setEnabled( true ) ;			
+			m_ui->pbOptions->setEnabled( true ) ;
 		}else{
 			m_ui->pbOptions->setEnabled( false ) ;
 		}
@@ -430,6 +430,7 @@ void keyDialog::pbOptions()
 
 				this->ShowUI() ;
 			} ) ;
+
 		}else if( m_exe == "Cryfs" ){
 
 			this->hide() ;
@@ -807,7 +808,7 @@ bool keyDialog::completed( const siritask::cmdStatus& s,const QString& m )
 
 	case siritask::status::success :
 
-		if( m_autoOpenMountPoint ){
+		if( utility::autoOpenFolderOnMount() ){
 
 			utility::Task::exec( m_fileManagerOpen + " " + utility::Task::makePath( m ) ) ;
 		}
