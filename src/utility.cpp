@@ -998,12 +998,24 @@ QString utility::applicationName()
 	return "SiriKali" ;
 }
 
-QString utility::mountPath( const QString& path )
+static void _set_mount_default()
 {
 	if( !_settings->contains( "MountPrefix" ) ){
 
 		_settings->setValue( "MountPrefix",utility::homePath() + "/.SiriKali" ) ;
 	}
+}
+
+QString utility::mountPath()
+{
+	_set_mount_default() ;
+
+	return _settings->value( "MountPrefix" ).toString() ;
+}
+
+QString utility::mountPath( const QString& path )
+{
+	_set_mount_default() ;
 
 	return _settings->value( "MountPrefix" ).toString() + "/" + path ;
 }
@@ -1364,6 +1376,11 @@ QString utility::preUnMountCommand()
 void utility::preUnMountCommand( const QString& e )
 {
 	_settings->setValue( "PreUnMountCommand",e ) ;
+}
+
+void utility::runCommandOnMount( const QString& e )
+{
+	_settings->setValue( "RunCommandOnMount",e ) ;
 }
 
 QString utility::runCommandOnMount()

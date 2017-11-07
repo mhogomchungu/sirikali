@@ -80,7 +80,7 @@ configOptions::configOptions( QWidget * parent,
 		utility::setStartMinimized( e ) ;
 	} ) ;
 
-	m_ui->lineEditMountPointPrefix->setText( utility::mountPath( QString() ) ) ;
+	m_ui->lineEditMountPointPrefix->setText( utility::mountPath() ) ;
 
 	connect( m_ui->pbMountPointPrefix,&QPushButton::clicked,[ this ](){
 
@@ -88,7 +88,6 @@ configOptions::configOptions( QWidget * parent,
 							    QString(),
 							    QDir::homePath(),
 							    QFileDialog::ShowDirsOnly ) ;
-
 		if( !e.isEmpty() ){
 
 			while( true ){
@@ -101,10 +100,8 @@ configOptions::configOptions( QWidget * parent,
 				}
 			}
 
-			utility::setDefaultMountPointPrefix( e ) ;
+			m_ui->lineEditMountPointPrefix->setText( e ) ;
 		}
-
-		m_ui->lineEditMountPointPrefix->setText( utility::mountPath( QString() ) ) ;
 	} ) ;
 
 	m_ui->cbAutoMountAtStartUp->setChecked( utility::autoMountFavoritesOnStartUp() ) ;
@@ -285,8 +282,13 @@ configOptions::~configOptions()
 void configOptions::HideUI()
 {
 	m_function() ;
+
 	utility::setFileManager( m_ui->lineEditFileManager->text() ) ;
 	utility::setExternalPluginExecutable( m_ui->lineEditExecutableKeySource->text() ) ;
+	utility::preUnMountCommand( m_ui->lineEditBeforesUnMount->text() ) ;
+	utility::runCommandOnMount( m_ui->lineEditAfterMountCommand->text() ) ;
+	utility::setDefaultMountPointPrefix( m_ui->lineEditMountPointPrefix->text() ) ;
+
 	this->hide() ;
 	this->deleteLater() ;
 }

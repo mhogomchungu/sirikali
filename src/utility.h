@@ -219,6 +219,7 @@ namespace utility
 
 	QString cmdArgumentValue( const QStringList&,const QString& arg,const QString& defaulT = QString() ) ;
 
+	void runCommandOnMount( const QString& ) ;
 	QString runCommandOnMount( void ) ;
 	QString fileManager( void ) ;
 	void setFileManager( const QString& ) ;
@@ -240,6 +241,7 @@ namespace utility
 	QString homeConfigPath( const QString& = QString() ) ;
 	QString homePath() ;
 	QString mountPath( const QString& path ) ;
+	QString mountPath() ;
 
 	bool createFolder( const QString& ) ;
 
