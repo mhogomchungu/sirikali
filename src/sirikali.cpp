@@ -76,8 +76,37 @@ static utility::volumeList _readFavorites()
 sirikali::sirikali() :
 	m_secrets( this ),
 	m_mountInfo( this,true,[ & ](){ QCoreApplication::exit( m_exitStatus ) ; } ),
-	m_checkUpdates( this )
+	m_checkUpdates( this ),
+	m_configOptions( this,m_secrets,&m_language_menu,this->configOption() )
+{	
+}
+
+configOptions::functions sirikali::configOption()
 {
+	auto a = [ this ](){
+
+		this->enableAll() ;
+		m_folderOpener = utility::fileManager() ;
+	} ;
+
+	auto b = [ this ]( QAction * ac ){
+
+		utility::languageMenu( &m_language_menu,ac,m_translator ) ;
+
+		m_ui->retranslateUi( this ) ;
+
+		for( auto& it : m_actionPair ){
+
+			it.first->setText( tr( it.second ) ) ;
+		}
+
+		for( auto& it : m_menuPair ){
+
+			it.first->setTitle( tr( it.second ) ) ;
+		}
+	} ;
+
+	return { std::move( a ),std::move( b ) } ;
 }
 
 void sirikali::closeApplication( int s,const QString& e )
@@ -241,8 +270,6 @@ void sirikali::showTrayIcon()
 
 void sirikali::setUpAppMenu()
 {
-	m_language_menu = new QMenu( this ) ;
-
 	auto m = new QMenu( this ) ;
 
 	m->setFont( this->font() ) ;
@@ -309,11 +336,11 @@ void sirikali::setUpAppMenu()
 				    SLOT( showFavorites() ) ) ) ;
 
 	m->addAction( _addAction( false,false,tr( "Settings" ),"Settings",
-				  SLOT( configOptions() ) ) ) ;
+				  SLOT( configurationOptions() ) ) ) ;
 
 	m->addAction( _addAction( false,false,tr( "About" ),"About",SLOT( licenseInfo() ) ) ) ;
 
-	m->addAction( _addAction( false,false,tr( "FAQ" ),"FAQ",SLOT( FAQ() ) ) ) ;
+	//m->addAction( _addAction( false,false,tr( "FAQ" ),"FAQ",SLOT( FAQ() ) ) ) ;
 
 	m->addAction( _addAction( false,false,tr( "Show/Hide" ),
 				  "Show/Hide",SLOT( slotTrayClicked() ) ) ) ;
@@ -330,28 +357,10 @@ void sirikali::setUpAppMenu()
 		 this,SLOT( slotTrayClicked( QSystemTrayIcon::ActivationReason ) ) ) ;
 }
 
-void sirikali::configOptions()
+void sirikali::configurationOptions()
 {
-	::configOptions::instance( this,m_secrets,m_language_menu,[ this ](){
-
-		m_folderOpener = utility::fileManager() ;
-
-	},[ this ]( QAction * ac ){
-
-		utility::languageMenu( m_language_menu,ac,m_translator ) ;
-
-		m_ui->retranslateUi( this ) ;
-
-		for( auto& it : m_actionPair ){
-
-			it.first->setText( tr( it.second ) ) ;
-		}
-
-		for( auto& it : m_menuPair ){
-
-			it.first->setTitle( tr( it.second ) ) ;
-		}
-	} ) ;
+	this->disableAll() ;
+	m_configOptions.show() ;
 }
 
 void sirikali::FAQ()
@@ -410,7 +419,7 @@ void sirikali::showFavorites()
 
 void sirikali::setLocalizationLanguage( bool translate )
 {
-	utility::setLocalizationLanguage( translate,m_language_menu,m_translator ) ;
+	utility::setLocalizationLanguage( translate,&m_language_menu,m_translator ) ;
 }
 
 void sirikali::startGUI()

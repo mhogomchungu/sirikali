@@ -25,17 +25,13 @@
 
 #include <QFileDialog>
 
-static bool _actionNotSet = true ;
-
 configOptions::configOptions( QWidget * parent,
 			      secrets& a,
 			      QMenu * m,
-			      std::function< void() > function,
-			      std::function< void( QAction * ) > u ) :
+			      configOptions::functions f ) :
 	QDialog( parent ),
 	m_ui( new Ui::configOptions ),
-	m_function( std::move( function ) ),
-	m_updateLanguage( std::move( u ) ),
+	m_functions( std::move( f ) ),
 	m_secrets( a )
 {
 	m_ui->setupUi( this ) ;
@@ -89,6 +85,8 @@ configOptions::configOptions( QWidget * parent,
 		if( !e.isEmpty() ){
 
 			m_ui->lineEditMountPointPrefix->setText( e ) ;
+
+			utility::setDefaultMountPointPrefix( e ) ;
 		}
 	} ) ;
 
@@ -133,22 +131,17 @@ configOptions::configOptions( QWidget * parent,
 
 	m_ui->pbSelectLanguage->setMenu( m ) ;
 
-	if( _actionNotSet ){
+	connect( m,&QMenu::triggered,[ this ]( QAction * ac ){
 
-		_actionNotSet = false ;
+		m_functions.function_2( ac ) ;
 
-		connect( m,&QMenu::triggered,[ this ]( QAction * ac ){
+		m_ui->retranslateUi( this ) ;
 
-			m_updateLanguage( ac ) ;
+		for( auto& it : m_actionPair ){
 
-			m_ui->retranslateUi( this ) ;
-
-			for( auto& it : m_actionPair ){
-
-				it.first->setText( tr( it.second ) ) ;
-			}
-		} ) ;
-	}
+			it.first->setText( tr( it.second ) ) ;
+		}
+	} ) ;
 
 	m_ui->pbKeyStorage->setMenu( [ this ](){
 
@@ -258,8 +251,6 @@ configOptions::configOptions( QWidget * parent,
 
 		utility::autoMountBackEnd( utility::walletBackEnd() ) ;
 	} ) ;
-
-	this->show() ;
 }
 
 configOptions::~configOptions()
@@ -269,7 +260,7 @@ configOptions::~configOptions()
 
 void configOptions::HideUI()
 {
-	m_function() ;
+	m_functions.function_1() ;
 
 	utility::setFileManager( m_ui->lineEditFileManager->text() ) ;
 	utility::setExternalPluginExecutable( m_ui->lineEditExecutableKeySource->text() ) ;
@@ -278,7 +269,6 @@ void configOptions::HideUI()
 	utility::setDefaultMountPointPrefix( m_ui->lineEditMountPointPrefix->text() ) ;
 
 	this->hide() ;
-	this->deleteLater() ;
 }
 
 void configOptions::closeEvent( QCloseEvent * e )

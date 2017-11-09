@@ -37,27 +37,19 @@ class configOptions : public QDialog
 {
 	Q_OBJECT
 public:
-	static void instance( QWidget * e,
-			      secrets& a,
-			      QMenu * m,
-			      std::function< void() > s,
-			      std::function< void( QAction * ) > z )
-	{
-		new configOptions( e,a,m,std::move( s ),std::move( z ) ) ;
-	}
+	struct functions{
 
-	explicit configOptions( QWidget * parent,
-				secrets&,
-				QMenu *,
-				std::function< void() >,
-				std::function< void( QAction * ) > ) ;
+		std::function< void() > function_1 ;
+		std::function< void( QAction * ) > function_2 ;
+	};
+
+	explicit configOptions( QWidget * parent,secrets&,QMenu *,functions ) ;
 	~configOptions() ;
 private:
 	void HideUI() ;
 	void closeEvent( QCloseEvent * ) ;
 	Ui::configOptions * m_ui ;
-	std::function< void() > m_function ;
-	std::function< void( QAction * ) > m_updateLanguage ;
+	configOptions::functions m_functions ;
 	secrets& m_secrets ;
 	std::vector< std::pair< QAction *,const char * > > m_actionPair ;
 };

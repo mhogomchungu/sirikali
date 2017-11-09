@@ -37,6 +37,7 @@
 #include "lxqt_wallet.h"
 #include "keydialog.h"
 #include "checkforupdates.h"
+#include "configoptions.h"
 
 #include <vector>
 
@@ -57,7 +58,7 @@ public:
 	int start( QApplication& ) ;
 	~sirikali() ;
 private slots:
-	void configOptions( void ) ;
+	void configurationOptions( void ) ;
 	void FAQ( void ) ;
 	void showTrayIconWhenReady( void ) ;
 	void polkitFailedWarning( void ) ;
@@ -100,6 +101,8 @@ private slots:
 	void updateCheck( void ) ;
 	void autoMountFavoritesOnAvailable( QString ) ;
 private:
+	configOptions::functions configOption() ;
+
 	void showTrayIcon() ;
 
 	void mountMultipleVolumes( utility::volumeList ) ;
@@ -135,7 +138,8 @@ private:
 	QMenu * m_hidden_volume_menu = nullptr ;
 	QMenu * m_not_hidden_volume_menu = nullptr ;
 	QMenu * m_key_manager_menu = nullptr ;
-	QMenu * m_language_menu = nullptr ;
+
+	QMenu m_language_menu ;
 
 	std::vector< std::pair< QAction *,const char * > > m_actionPair ;
 	std::vector< std::pair< QMenu *,const char * > > m_menuPair ;
@@ -157,6 +161,8 @@ private:
 	mountinfo m_mountInfo ;
 
 	checkUpdates m_checkUpdates ;
+
+	configOptions m_configOptions ;
 };
 
 #endif // MAINWINDOW_H
