@@ -84,21 +84,9 @@ configOptions::configOptions( QWidget * parent,
 
 	connect( m_ui->pbMountPointPrefix,&QPushButton::clicked,[ this ](){
 
-		auto e = QFileDialog::getExistingDirectory( this,
-							    QString(),
-							    QDir::homePath(),
-							    QFileDialog::ShowDirsOnly ) ;
+		auto e = utility::getExistingDirectory( this,QString(),QDir::homePath() ) ;
+
 		if( !e.isEmpty() ){
-
-			while( true ){
-
-				if( e.endsWith( '/' ) ){
-
-					e.truncate( e.length() - 1 ) ;
-				}else{
-					break ;
-				}
-			}
 
 			m_ui->lineEditMountPointPrefix->setText( e ) ;
 		}

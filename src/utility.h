@@ -243,6 +243,8 @@ namespace utility
 	QString mountPath( const QString& path ) ;
 	QString mountPath() ;
 
+	QString getExistingDirectory( QWidget *,const QString& caption,const QString& dir ) ;
+
 	bool createFolder( const QString& ) ;
 
 	void scaleGUI( void ) ;

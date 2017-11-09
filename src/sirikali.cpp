@@ -1335,17 +1335,7 @@ void sirikali::unlockVolume()
 	this->disableAll() ;
 
 	auto e = tr( "Select An Encrypted Volume Directory" ) ;
-	auto path = QFileDialog::getExistingDirectory( this,e,utility::homePath(),QFileDialog::ShowDirsOnly ) ;
-
-	while( true ){
-
-		if( path.endsWith( '/' ) ){
-
-			path.truncate( path.length() - 1 ) ;
-		}else{
-			break ;
-		}
-	}
+	auto path = utility::getExistingDirectory( this,e,utility::homePath() ) ;
 
 	if( path.isEmpty() ){
 

@@ -55,7 +55,6 @@ favorites::favorites( QWidget * parent ) : QDialog( parent ),
 	m_ui->pbConfigFilePath->setIcon( QIcon( ":/file.png" ) ) ;
 
 	m_ui->lineEditEncryptedFolderPath->setEnabled( false ) ;
-	m_ui->lineEditConfigFilePath->setEnabled( false ) ;
 
 	m_ui->cbAutoMount->setChecked( false ) ;
 
@@ -380,19 +379,7 @@ QString favorites::getExistingFile( const QString& r )
 
 QString favorites::getExistingDirectory( const QString& r )
 {
-	auto e = QFileDialog::getExistingDirectory( this,r,QDir::homePath(),QFileDialog::ShowDirsOnly ) ;
-
-	while( true ){
-
-		if( e.endsWith( '/' ) ){
-
-			e.truncate( e.length() - 1 ) ;
-		}else{
-			break ;
-		}
-	}
-
-	return e ;
+	return utility::getExistingDirectory( this,r,QDir::homePath() ) ;
 }
 
 void favorites::folderPath()

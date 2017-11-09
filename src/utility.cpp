@@ -1709,3 +1709,24 @@ QString utility::configFilePath( QWidget * s,const QString& e )
 		return QString() ;
 	}() ;
 }
+
+QString utility::getExistingDirectory( QWidget * w,const QString& caption,const QString& dir )
+{
+	auto e = QFileDialog::getExistingDirectory( w,caption,dir,QFileDialog::ShowDirsOnly ) ;
+
+	while( true ){
+
+		if( e == "/" ){
+
+			break ;
+
+		}else if( e.endsWith( '/' ) ){
+
+			e.truncate( e.length() - 1 ) ;
+		}else{
+			break ;
+		}
+	}
+
+	return e ;
+}
