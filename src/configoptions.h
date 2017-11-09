@@ -43,7 +43,8 @@ public:
 		std::function< void( QAction * ) > function_2 ;
 	};
 
-	explicit configOptions( QWidget * parent,secrets&,QMenu *,functions ) ;
+	configOptions( QWidget * parent,secrets&,QMenu *,functions ) ;
+	void ShowUI() ;
 	~configOptions() ;
 private:
 	void HideUI() ;

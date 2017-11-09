@@ -321,6 +321,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configoptions.ui" line="42"/>
         <source>Auto Open Mount Point</source>
+        <translatorcomment>Ouverture automatique du point de montage</translatorcomment>
         <translation>Ouverture automatique du point de montage</translation>
     </message>
     <message>

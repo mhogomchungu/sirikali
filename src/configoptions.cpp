@@ -36,15 +36,7 @@ configOptions::configOptions( QWidget * parent,
 {
 	m_ui->setupUi( this ) ;
 
-	m_ui->tabWidget->setCurrentIndex( 0 ) ;
-
-	m_ui->lineEditFileManager->setText( utility::fileManager() ) ;
-
-	m_ui->lineEditExecutableKeySource->setText( utility::externalPluginExecutable() ) ;
-
-	m_ui->lineEditAfterMountCommand->setText( utility::runCommandOnMount() ) ;
-
-	m_ui->lineEditBeforesUnMount->setText( utility::preUnMountCommand() ) ;
+	m_ui->tabWidget->setCurrentIndex( 0 ) ;	
 
 	connect( m_ui->pushButton,&QPushButton::clicked,[ this ](){ this->HideUI() ; } ) ;
 
@@ -256,6 +248,19 @@ configOptions::configOptions( QWidget * parent,
 configOptions::~configOptions()
 {
 	delete m_ui ;
+}
+
+void configOptions::ShowUI()
+{
+	m_ui->lineEditFileManager->setText( utility::fileManager() ) ;
+
+	m_ui->lineEditExecutableKeySource->setText( utility::externalPluginExecutable() ) ;
+
+	m_ui->lineEditAfterMountCommand->setText( utility::runCommandOnMount() ) ;
+
+	m_ui->lineEditBeforesUnMount->setText( utility::preUnMountCommand() ) ;
+
+	this->show() ;
 }
 
 void configOptions::HideUI()

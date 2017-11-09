@@ -360,7 +360,7 @@ void sirikali::setUpAppMenu()
 void sirikali::configurationOptions()
 {
 	this->disableAll() ;
-	m_configOptions.show() ;
+	m_configOptions.ShowUI() ;
 }
 
 void sirikali::FAQ()
