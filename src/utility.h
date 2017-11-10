@@ -455,7 +455,7 @@ namespace utility
 		static ::Task::future< utility::Task >& run( const QString& exe,
 							     const QByteArray& password = QByteArray() )
 		{
-			return ::Task::run< utility::Task >( [ = ](){
+			return ::Task::run( [ = ](){
 
 				return utility::Task( exe,-1,utility::systemEnvironment(),password ) ;
 			} ) ;

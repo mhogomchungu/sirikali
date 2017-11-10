@@ -86,7 +86,7 @@ mountinfo::~mountinfo()
 
 Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 {
-	return Task::run< std::vector< volumeInfo > >( [](){
+	return Task::run( [](){
 
 		auto _hash = []( const QString& e ){
 

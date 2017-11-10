@@ -163,7 +163,7 @@ void walletconfig::pbAdd()
 		m_volumeID = volumeID ;
 		m_key      = key ;
 
-		Task::run< bool >( [ this ](){
+		Task::run( [ this ](){
 
 			auto _add = [ this ](){
 
@@ -227,7 +227,7 @@ void walletconfig::accessWallet()
 	this->raise() ;
 	this->activateWindow() ;
 
-	Task::run<walletKeys>( [ this ](){
+	Task::run( [ this ](){
 
 		return m_wallet->readAllKeyValues() ;
 

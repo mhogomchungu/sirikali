@@ -148,7 +148,7 @@ void utility::polkitFailedWarning( std::function< void() > e )
 
 ::Task::future< utility::Task >& utility::Task::run( const QString& exe,int s,bool e )
 {
-	return ::Task::run< utility::Task >( [ = ](){
+	return ::Task::run( [ = ](){
 
 		auto env = utility::systemEnvironment() ;
 
@@ -277,7 +277,7 @@ static ::Task::future< utility::Task >& _start_siripolkit( const QString& e )
 {
 	_cookie = plugins::getRandomData( 16 ).toHex() ;
 
-	return ::Task::run< utility::Task >( [ = ]{
+	return ::Task::run( [ = ]{
 
 		return utility::Task( e,
 				      -1,
@@ -405,7 +405,7 @@ QString utility::homePath()
 
 ::Task::future<bool>& utility::openPath( const QString& path,const QString& opener )
 {
-	return ::Task::run<bool>( [ = ](){
+	return ::Task::run( [ = ](){
 
 		auto e = opener + " " + utility::Task::makePath( path ) ;
 
@@ -430,7 +430,7 @@ void utility::openPath( const QString& path,const QString& opener,
 
 Task::future< utility::fsInfo >& utility::fileSystemInfo( const QString& q )
 {
-	return ::Task::run< utility::fsInfo >( [ = ](){
+	return ::Task::run( [ = ](){
 
 		struct statfs e ;
 		utility::fsInfo s ;

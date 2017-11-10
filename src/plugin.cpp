@@ -115,7 +115,7 @@ void plugin::pbSetKey()
 
 	this->disableAll() ;
 
-	Task::run< QByteArray >( [ this,passphrase,keyFile ](){
+	Task::run( [ this,passphrase,keyFile ](){
 
 		if( m_pluginType == plugins::plugin::hmac_key ){
 

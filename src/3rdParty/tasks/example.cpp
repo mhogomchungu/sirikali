@@ -327,6 +327,56 @@ static void _testing_checking_multiple_futures()
 
 void example::run()
 {
+	auto aa = []( int x ){ return x ; } ;
+
+	auto bb = [](){	return 6 ; } ;
+
+	auto cc = [](){} ;
+
+	auto dd = []( int x ){ if(x){} ; } ;
+
+	std::function< int(int) > aaa = aa ;
+
+	Task::run( aaa,4 ).get() ;
+	Task::run( aa,4 ).get() ;
+	Task::run( dd,4 ).get() ;
+
+	Task::run( bb ).get() ;
+	Task::run( cc ).get() ;
+
+	Task::await( bb ) ;
+	Task::await( bb ) ;
+
+	auto& tt = Task::run<int>( bb ) ;
+
+	Task::await( tt ) ;
+	Task::await( Task::run( cc ) ) ;
+
+	Task::await( aa,4 ) ;
+
+	Task::await( dd,4 ) ;
+
+	Task::await( bb ) ;
+	Task::await<int>( bb ) ;
+
+	Task::await( cc ) ;
+
+	auto& zz = Task::run<int>( bb ) ;
+
+	Task::await<int>( zz ) ;
+	Task::await( Task::run( cc ) ) ;
+
+	Task::exec( aaa,4 );
+	Task::exec( aa,4 ) ;
+	Task::exec( dd,4 ) ;
+
+	Task::exec( bb ) ;
+	Task::exec( cc ) ;
+
+	Task::run( bb,bb ).get() ;
+
+	Task::run( Task::run( cc ),Task::run( cc ) ).get() ;
+
 	_testing_checking_multiple_futures() ;
 
 	_testing_queue_with_no_results() ;

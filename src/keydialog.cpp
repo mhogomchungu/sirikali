@@ -996,7 +996,7 @@ void keyDialog::pbSetKey()
 	auto keyFile    = m_ui->lineEditSetKeyKeyFile->text() ;
 	auto passphrase = m_ui->lineEditSetKeyPassword->text() ;
 
-	Task::run< QByteArray >( [ = ](){
+	Task::run( [ = ](){
 
 		if( m_hmac ){
 
@@ -1174,7 +1174,7 @@ void keyDialog::openVolume()
 
 	}else if( keyType == keyDialog::keyfile ){
 
-		Task::run< QByteArray >( [ this ](){
+		Task::run( [ this ](){
 
 			return utility::fileContents( m_ui->lineEditKey->text() ) ;
 
@@ -1289,7 +1289,7 @@ void keyDialog::cbActicated( QString e )
 		}else{
 			this->disableAll() ;
 
-			Task::run< QByteArray >( [ q = std::move( q ) ](){
+			Task::run( [ q = std::move( q ) ](){
 
 				return plugins::hmac_key( q,QString() ) ;
 

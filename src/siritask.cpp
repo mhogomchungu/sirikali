@@ -210,7 +210,7 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 							const QString& mountPoint,
 							const QString& fileSystem )
 {
-	return Task::run< bool >( [ = ](){
+	return Task::run( [ = ](){
 
 		const int max_count = 5 ;
 
@@ -643,7 +643,7 @@ static QString _configFilePath( const siritask::options& opt )
 Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const siritask::options& opt,
 								     bool reUseMountPoint )
 {
-	return Task::run< siritask::cmdStatus >( [ opt,reUseMountPoint ]()->siritask::cmdStatus{
+	return Task::run( [ opt,reUseMountPoint ]()->siritask::cmdStatus{
 
 		auto _mount = [ reUseMountPoint ]( const QString& app,const siritask::options& copt,
 				const QString& configFilePath )->siritask::cmdStatus{
@@ -735,7 +735,7 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const sirit
 
 Task::future< siritask::cmdStatus >& siritask::encryptedFolderCreate( const siritask::options& opt )
 {
-	return Task::run< siritask::cmdStatus >( [ opt ]()->siritask::cmdStatus{
+	return Task::run( [ opt ]()->siritask::cmdStatus{
 
 		if( _ecryptfs_illegal_path( opt ) ){
 
