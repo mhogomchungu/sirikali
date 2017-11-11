@@ -66,9 +66,6 @@ Check first if SiriKali is present in your distribution's repositories and use t
 
 <a href="http://macdownload.informer.com/sirikali/" target="_blank"><img border="0" src="http://img.informer.com/awards/mi-award-epick4.png" alt="Mac Informer Editor's pick award" height="129" width="130" /></a>
 
-## Video review
-
-<script type="text/javascript" src="http://macdownload.informer.com/sirikali/js/video-1.3.js"></script>
 
 ## Screenshots
 
