@@ -31,12 +31,13 @@ Most frequently asked questions are answered <a href="https://github.com/mhogomc
 ## DONATIONS
 
 ```
-Paypal does not work where i live(United Republic of Tanzani)
+Paypal does not work where i live(United Republic of Tanzania)
 and i accept donations only through Western Union and bank transfers.
 
-1. Western Union information for donating through Western Union
-Name:  Francis Nkulu Banyikwa
-Email: banyikwafb@gmail.com
+1. Information for donating through western union
+Name:    Francis Nkulu Banyikwa
+Email:   banyikwafb@gmail.com
+Country: United Republic Of Tanzania
 
 The email address should be used to send tracking number(MTCN)
 
@@ -62,8 +63,6 @@ Older versions can be downloaded <a href="https://github.com/mhogomchungu/sirika
 
 Check first if SiriKali is present in your distribution's repositories and use that version if it is.
 ```Fedora,opensuse,ubuntu and debian``` users can install binary packages by following instructions on <a href="http://software.opensuse.org//download.html?project=home%3Aobs_mhogomchungu&package=sirikali">this</a> link.
-
-<a href="http://macdownload.informer.com/sirikali" target="_blank"><img src="images/mac informer 210x85.png" border="0"></a>
 
 <a href="http://macdownload.informer.com/sirikali/" target="_blank"><img border="0" src="http://img.informer.com/awards/mi-award-epick4.png" alt="Mac Informer Editor's pick award" height="129" width="130" /></a>
 
