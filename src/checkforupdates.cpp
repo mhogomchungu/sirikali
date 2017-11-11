@@ -26,7 +26,21 @@ checkUpdates::checkUpdates( QWidget * widget ) : m_widget( widget ),m_running( f
 
 	m_timer.setInterval( 1000 * utility::networkTimeOut() ) ;
 
-	connect( &m_timer,SIGNAL( timeout() ),this,SLOT( timeOut() ),Qt::QueuedConnection ) ;
+	connect( &m_timer,&QTimer::timeout,this,[ this ](){
+
+		m_timer.stop() ;
+
+		if( m_network.cancel( m_networkReply ) ){
+
+			auto s = QString::number( utility::networkTimeOut() ) ;
+			auto e = m_widget->tr( "Network Request Failed To Respond Within %1 Seconds." ).arg( s ) ;
+
+			DialogMsg( m_widget ).ShowUIOK( m_widget->tr( "ERROR" ),e ) ;
+		}
+
+		m_running = false ;
+
+	},Qt::QueuedConnection ) ;
 }
 
 void checkUpdates::check( bool e )
@@ -54,21 +68,6 @@ void checkUpdates::run( bool e )
 			this->check( e ) ;
 		}
 	}
-}
-
-void checkUpdates::timeOut()
-{
-	m_timer.stop() ;
-
-	if( m_network.cancel( m_networkReply ) ){
-
-		auto s = QString::number( utility::networkTimeOut() ) ;
-		auto e = tr( "Network Request Failed To Respond Within %1 Seconds." ).arg( s ) ;
-
-		DialogMsg( m_widget ).ShowUIOK( tr( "ERROR" ),e ) ;
-	}
-
-	m_running = false ;
 }
 
 void checkUpdates::showResult()

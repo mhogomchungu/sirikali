@@ -43,9 +43,6 @@ public:
 	void run( bool e ) ;
 
 	checkUpdates( QWidget * widget ) ;
-
-private slots:
-	void timeOut() ;
 private:
 	void check( bool ) ;
 
