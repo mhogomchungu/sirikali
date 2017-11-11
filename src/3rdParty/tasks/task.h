@@ -38,7 +38,7 @@
 #include <QThread>
 #include <QEventLoop>
 #include <QMutex>
-#include <iostream>
+#include <type_traits>
 
 /*
  *
@@ -602,15 +602,15 @@ namespace Task
 	}
 
 	template< typename Fn >
-	future<std::result_of_t<Fn()>>& run( Fn&& function )
+	future<typename std::result_of<Fn()>::type>& run( Fn&& function )
 	{
-		return ( new ThreadHelper<std::result_of_t<Fn()>>( std::forward<Fn>( function ) ) )->Future() ;
+		return ( new ThreadHelper<typename std::result_of<Fn()>::type>( std::forward<Fn>( function ) ) )->Future() ;
 	}
 
 	template< typename Fn,typename ... Args >
-	future<std::result_of_t<Fn(Args...)>>& run( Fn&& function, Args&& ... args )
+	future<typename std::result_of<Fn(Args...)>::type>& run( Fn&& function, Args&& ... args )
 	{
-		return Task::run<std::result_of_t< Fn(Args...)>>( std::bind( std::forward<Fn>( function ),std::forward<Args>( args ) ... ) ) ;
+		return Task::run<typename std::result_of<Fn(Args...)>::type>( std::bind( std::forward<Fn>( function ),std::forward<Args>( args ) ... ) ) ;
 	}
 
 	/*
@@ -759,13 +759,13 @@ namespace Task
 	}
 
 	template< typename Fn >
-	std::result_of_t<Fn()> await( Fn&& function )
+	typename std::result_of<Fn()>::type await( Fn&& function )
 	{
 		return Task::run( std::forward<Fn>( function ) ).await() ;
 	}
 
 	template< typename Fn,typename ... Args >
-	std::result_of_t<Fn(Args...)> await( Fn&& function,Args&& ... args )
+	typename std::result_of<Fn(Args...)>::type await( Fn&& function,Args&& ... args )
 	{
 		return Task::run( std::forward<Fn>( function ),std::forward<Args>( args ) ... ).await() ;
 	}
