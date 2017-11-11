@@ -340,7 +340,7 @@ void sirikali::setUpAppMenu()
 
 	m->addAction( _addAction( false,false,tr( "About" ),"About",SLOT( licenseInfo() ) ) ) ;
 
-	//m->addAction( _addAction( false,false,tr( "FAQ" ),"FAQ",SLOT( FAQ() ) ) ) ;
+	m->addAction( _addAction( false,false,tr( "FAQ" ),"FAQ",SLOT( FAQ() ) ) ) ;
 
 	m->addAction( _addAction( false,false,tr( "Show/Hide" ),
 				  "Show/Hide",SLOT( slotTrayClicked() ) ) ) ;
