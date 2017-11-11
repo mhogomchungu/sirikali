@@ -326,5 +326,7 @@ void mountinfo::osxMonitor()
 		this->updateVolume() ;
 	} ) ;
 
+	m_process.setProcessChannelMode( QProcess::MergedChannels ) ;
+
 	m_process.start( "diskutil activity" ) ;
 }
