@@ -113,3 +113,6 @@ version 1.3.2
 -- Add a GUI window to manage options
 -- Add ability to specify a command to run before a volume is umounted. The specified command must return 0
    for the unmount attempt to be carried out.
+
+version 1.3.3(unreleased)
+-- Add a GUI window to manage program options.
