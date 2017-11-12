@@ -183,6 +183,8 @@ void sirikali::setUpApp( const QString& volume )
 
 		auto _enable = []( QAction * ac,const QString& exe ){
 
+			ac->setObjectName( exe ) ;
+
 			if( utility::executableFullPath( exe.toLower() ).isEmpty() ){
 
 				ac->setEnabled( false ) ;
@@ -386,13 +388,13 @@ void sirikali::autoUpdateCheck()
 
 void sirikali::favoriteClicked( QAction * ac )
 {
-	auto e = ac->text().remove( '&' ) ;
+	auto e = ac->objectName() ;
 
-	if( e == tr( "Manage Favorites" ).remove( '&' ) ){
+	if( e == "Manage Favorites" ){
 
 		favorites::instance( this ) ;
 	}else{
-		if( e == tr( "Mount All" ).remove( '&' ) ){
+		if( e == "Mount All" ){
 
 			this->mountMultipleVolumes( _readFavorites() ) ;
 		}else{
@@ -411,10 +413,7 @@ void sirikali::favoriteClicked( QAction * ac )
 
 void sirikali::showFavorites()
 {
-	utility::readFavorites( m_ui->pbFavorites->menu(),
-				true,
-				tr( "Manage Favorites" ),
-				tr( "Mount All" ) ) ;
+	utility::readFavorites( m_ui->pbFavorites->menu() ) ;
 }
 
 void sirikali::setLocalizationLanguage( bool translate )
@@ -1300,7 +1299,7 @@ void sirikali::createVolume( QAction * ac )
 {
 	if( ac ){
 
-		this->mount( volumeInfo(),ac->text().remove( '&' ) ) ;
+		this->mount( volumeInfo(),ac->objectName() ) ;
 	}else{
 		this->mount( volumeInfo(),"Cryfs" ) ;
 	}

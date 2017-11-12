@@ -319,7 +319,7 @@ namespace utility
 	std::vector< favorites::entry > readFavorites( void ) ;
 	favorites::entry readFavorite( const QString& ) ;
 	void replaceFavorite( const favorites::entry&,const favorites::entry& ) ;
-	void readFavorites( QMenu *,bool,const QString&,const QString& ) ;
+	void readFavorites( QMenu * ) ;
 	void removeFavoriteEntry( const favorites::entry& ) ;
 	int favoritesEntrySize() ;
 	QString getVolumeID( const QString&,bool = false ) ;

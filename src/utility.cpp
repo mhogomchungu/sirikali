@@ -780,32 +780,30 @@ void utility::removeFavoriteEntry( const favorites::entry& e )
 	}() ) ;
 }
 
-void utility::readFavorites( QMenu * m,bool truncate ,const QString& a, const QString& b )
+void utility::readFavorites( QMenu * m )
 {
 	m->clear() ;
 
-	auto _add_action = [ m,truncate ]( const favorites::entry& e ){
+	auto _add_action = [ m ]( const QString& e,const QString& s ){
 
 		auto ac = new QAction( m ) ;
 
-		if( truncate ){
-
-			ac->setText( e.volumePath ) ;
-		}else{
-			ac->setText( e.string() ) ;
-		}
+		ac->setText( e ) ;
+		ac->setObjectName( s ) ;
 
 		return ac ;
 	} ;
 
-	m->addAction( new QAction( a,m ) ) ;
-	m->addAction( new QAction( b,m ) ) ;
+	m->addAction( _add_action( QObject::tr( "Manage Favorites" ),"Manage Favorites" ) ) ;
+	m->addAction( _add_action( QObject::tr( "Mount All" ),"Mount All" ) ) ;
 
 	m->addSeparator() ;
 
 	for( const auto& it : utility::readFavorites() ){
 
-		m->addAction( _add_action( it ) ) ;
+		const auto& e = it.volumePath ;
+
+		m->addAction( _add_action( e,e ) ) ;
 	}
 }
 
