@@ -115,9 +115,9 @@ static QString _wrap_su( const QString& s )
 	}
 }
 
-std::pair< bool,utility::Task > _unmount_volume( const QString& exe,
-						 const QString& mountPoint,
-						 bool usePolkit )
+static std::pair< bool,utility::Task > _unmount_volume( const QString& exe,
+							const QString& mountPoint,
+							bool usePolkit )
 {
 	auto e = utility::preUnMountCommand() ;
 
@@ -222,7 +222,7 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 			return _unmount_ecryptfs( a,b,max_count ) ;
 		}else{
 			return _unmount_rest( _makePath( mountPoint ),max_count ) ;
-		}		
+		}
 	} ) ;
 }
 
