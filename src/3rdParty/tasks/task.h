@@ -610,7 +610,7 @@ namespace Task
 	template< typename Fn,typename ... Args >
 	future<typename std::result_of<Fn(Args...)>::type>& run( Fn&& function, Args&& ... args )
 	{
-		return Task::run<typename std::result_of<Fn(Args...)>::type>( std::bind( std::forward<Fn>( function ),std::forward<Args>( args ) ... ) ) ;
+		return Task::run( std::bind( std::forward<Fn>( function ),std::forward<Args>( args ) ... ) ) ;
 	}
 
 	/*
@@ -660,7 +660,7 @@ namespace Task
 	template< typename ... T >
 	void _private_add_task( Task::future< void >& f,std::function< void() >&& e,T&& ... t )
 	{
-		_private_add_void( f,Task::run< void >( std::forward<std::function<void()>>( e ) ),
+		_private_add_void( f,Task::run( std::forward<std::function<void()>>( e ) ),
 				   std::function< void() >( [](){} ) ) ;
 
 		_private_add_task( f,std::forward<std::function<void()>>( t ) ... ) ;
@@ -685,7 +685,7 @@ namespace Task
 	template< typename F,typename ... T >
 	void _private_add_pair_void( Task::future< void >& f,F&& s,T&& ... t )
 	{
-		_private_add_void( f,Task::run< void >( std::forward<std::function<void()>>( s.first ) ),
+		_private_add_void( f,Task::run( std::forward<std::function<void()>>( s.first ) ),
 				   std::forward<std::function<void()>>( s.second ) ) ;
 
 		_private_add_pair_void( f,std::forward<T>( t ) ... ) ;

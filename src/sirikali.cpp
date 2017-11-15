@@ -936,7 +936,7 @@ void sirikali::cryfsProperties()
 			}
 		} ;
 
-		return QString( [ this ](){
+		return QString( [](){
 
 			auto l = { tr( "Block Size: %1" ),
 				   tr( "Used Blocks: %2" ),
