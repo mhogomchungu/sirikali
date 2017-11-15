@@ -1004,7 +1004,33 @@ void sirikali::cryfsProperties()
 	this->enableAll() ;
 }
 
-static void _volume_properties( const QString& cmd,const QString& arg,
+static std::pair< bool,QByteArray > _volume_properties( const QString& cmd,
+							const std::pair< QString,QString >& args,
+							const QString& path )
+{
+	auto e = utility::Task::run( cmd + args.first ).await() ;
+
+	if( e.success() ){
+
+		return { true,e.stdOut() } ;
+	}else{
+		for( auto& it : utility::readFavorites() ){
+
+			if( utility::Task::makePath( it.volumePath ) == path ){
+
+				auto s = utility::Task::makePath( it.configFilePath ) ;
+
+				e = utility::Task::run( cmd + args.first + args.second + s ).await() ;
+
+				return { e.success(),e.stdOut() } ;
+			}
+		}
+
+		return { false,QByteArray() } ;
+	}
+}
+
+static void _volume_properties( const QString& cmd,const std::pair<QString,QString>& args,
 				QTableWidget * table,QWidget * w )
 {
 	auto exe = utility::executableFullPath( cmd ) ;
@@ -1026,11 +1052,11 @@ static void _volume_properties( const QString& cmd,const QString& arg,
 		DialogMsg( w ).ShowUIOK( QObject::tr( "ERROR" ),
 					 QObject::tr( "Failed To Find %1 Executable" ).arg( cmd ) ) ;
 	}else{
-		auto e = utility::Task::run( exe + arg + path ).await() ;
+		auto e = _volume_properties( exe,args,path ) ;
 
-		if( e.success() ){
+		if( e.first ){
 
-			auto s = e.stdOut() ;
+			auto s = e.second ;
 
 			if( cmd == "gocryptfs" ){
 
@@ -1049,7 +1075,7 @@ void sirikali::encfsProperties()
 {
 	this->disableAll() ;
 
-	_volume_properties( "encfsctl"," ",m_ui->tableWidget,this ) ;
+	_volume_properties( "encfsctl",{ " ","" },m_ui->tableWidget,this ) ;
 
 	this->enableAll() ;
 }
@@ -1058,7 +1084,7 @@ void sirikali::securefsProperties()
 {
 	this->disableAll() ;
 
-	_volume_properties( "securefs"," info ",m_ui->tableWidget,this ) ;
+	_volume_properties( "securefs",{ " info "," " },m_ui->tableWidget,this ) ;
 
 	this->enableAll() ;
 }
@@ -1067,7 +1093,7 @@ void sirikali::gocryptfsProperties()
 {
 	this->disableAll() ;
 
-	_volume_properties( "gocryptfs"," -info ",m_ui->tableWidget,this ) ;
+	_volume_properties( "gocryptfs",{ " -info "," -config " },m_ui->tableWidget,this ) ;
 
 	this->enableAll() ;
 }
