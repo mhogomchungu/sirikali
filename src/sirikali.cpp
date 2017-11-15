@@ -1020,6 +1020,11 @@ static std::pair< bool,QByteArray > _volume_properties( const QString& cmd,
 
 				auto s = utility::Task::makePath( it.configFilePath ) ;
 
+				if( cmd.endsWith( "gocryptfs" ) ){
+
+					s += " " + it.volumePath ;
+				}
+
 				e = utility::Task::run( cmd + args.first + args.second + s ).await() ;
 
 				return { e.success(),e.stdOut() } ;
