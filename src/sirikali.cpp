@@ -1008,7 +1008,7 @@ static std::pair< bool,QByteArray > _volume_properties( const QString& cmd,
 							const std::pair< QString,QString >& args,
 							const QString& path )
 {
-	auto e = utility::Task::run( cmd + args.first ).await() ;
+	auto e = utility::Task::run( cmd + args.first + path ).await() ;
 
 	if( e.success() ){
 
@@ -1089,7 +1089,7 @@ void sirikali::securefsProperties()
 {
 	this->disableAll() ;
 
-	_volume_properties( "securefs",{ " info "," " },m_ui->tableWidget,this ) ;
+	_volume_properties( "securefs",{ " info ","" },m_ui->tableWidget,this ) ;
 
 	this->enableAll() ;
 }
