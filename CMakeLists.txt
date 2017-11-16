@@ -173,6 +173,7 @@ set( UI_FILES 	src/sirikali.ui
 		src/options.ui
 		src/dialogok.ui
 		src/help.ui
+		src/gocryptfscreateoptions.ui
 		src/filemanager.ui
 		src/securefscreateoptions.ui
 		src/cryfscreateoptions.ui
@@ -192,6 +193,7 @@ set( MOC_FILES
 		src/dialogmsg.h
 		src/plugin.h
 		src/favorites.h
+		src/gocryptfscreateoptions.h
 		src/readonlywarning.h
 		src/walletconfig.h
 		src/walletconfiginput.h
@@ -206,6 +208,7 @@ set( MOC_FILES
 
 set( SRC 	src/dialogok.cpp
 		src/main.cpp
+		src/gocryptfscreateoptions.cpp
 		src/configoptions.cpp
                 src/configfileoption.cpp
 		src/sirikali.cpp

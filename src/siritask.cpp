@@ -303,8 +303,8 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 				if( create ){
 
-					auto e = QString( "%1 --init -q %2 %3" ) ;
-					return e.arg( exe,configPath,cipherFolder ) ;
+					auto e = QString( "%1 --init -q %2 %3 %4" ) ;
+					return e.arg( exe,opt.createOptions,configPath,cipherFolder ) ;
 				}else{
 					mode += " -o fsname=gocryptfs@" + cipherFolder ;
 

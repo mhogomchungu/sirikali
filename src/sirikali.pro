@@ -22,6 +22,7 @@ SOURCES += \
     readonlywarning.cpp \
     walletconfiginput.cpp \
     dialogmsg.cpp \
+    gocryptfscreateoptions.cpp \
     monitor_mountinfo.cpp \
     tablewidget.cpp \
     options.cpp \
@@ -36,6 +37,7 @@ HEADERS += \
     cryfscreateoptions.h \
     dialogok.h \
     configoptions.h \
+    gocryptfscreateoptions.h \
     configfileoption.h \
     checkforupdates.h \
     favorites.h \
@@ -68,6 +70,7 @@ FORMS += \
     cryfscreateoptions.ui \
     dialogok.ui \
     sirikali.ui \
+    gocryptfscreateoptions.ui \
     configoptions.ui \
     configfileoption.ui \
     favorites.ui \

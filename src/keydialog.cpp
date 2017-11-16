@@ -409,13 +409,24 @@ void keyDialog::pbOptions()
 {
 	if( m_create ){
 
-		if( utility::equalsAtleastOne( m_exe,"Gocryptfs","Ecryptfs" ) ){
+		if( m_exe == "Ecryptfs" ){
 
 			this->hide() ;
 
 			configFileOption::instance( this,m_exe,[ this ]( const QStringList& e ){
 
 				utility2::stringListToStrings( e,m_configFile ) ;
+
+				this->ShowUI() ;
+			} ) ;
+
+		}else if( m_exe == "Gocryptfs" ){
+
+			this->hide() ;
+
+			gocryptfscreateoptions::instance( m_parentWidget,[ this ]( const QStringList& e ){
+
+				utility2::stringListToStrings( e,m_createOptions,m_configFile ) ;
 
 				this->ShowUI() ;
 			} ) ;
