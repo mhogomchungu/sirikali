@@ -720,12 +720,12 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/gocryptfscreateoptions.ui" line="138"/>
-        <source>Encrypt Filer Na&amp;mes</source>
+        <source>Encrypt File Na&amp;mes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/gocryptfscreateoptions.ui" line="151"/>
-        <source>Do Not Encrypt File Na&amp;mes</source>
+        <source>Do &amp;Not Encrypt File Names</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

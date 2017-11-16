@@ -135,7 +135,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Encrypt Filer Na&amp;mes</string>
+     <string>Encrypt File Na&amp;mes</string>
     </property>
    </widget>
    <widget class="QRadioButton" name="rbDoNotEncryptFileNames">
@@ -148,7 +148,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Do Not Encrypt File Na&amp;mes</string>
+     <string>Do &amp;Not Encrypt File Names</string>
     </property>
    </widget>
   </widget>
