@@ -116,3 +116,4 @@ version 1.3.2
 
 version 1.3.3(unreleased)
 -- Add a GUI window to manage program options.
+-- Add a GUI window to set crypto options when creating a gocryptfs volume.
