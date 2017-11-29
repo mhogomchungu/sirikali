@@ -89,4 +89,6 @@ FORMS += \
 TRANSLATIONS = ../translations/en_US.ts \
                ../translations/fr_FR.ts \
                ../translations/es_MX.ts \
-               ../translations/ar_SA.ts
+               ../translations/ar_SA.ts \
+               ../translations/de_DE.ts
+

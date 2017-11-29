@@ -145,13 +145,13 @@ uint64_t lxqt_wallet_wallet_entry_count( lxqt_wallet_t ) ;
 
 typedef struct{
 	const char * key ;
-    uint32_t key_size ;
+	uint32_t key_size ;
 	const char * key_value ;
-    uint32_t key_value_size ;
+	uint32_t key_value_size ;
 }lxqt_wallet_key_values_t ;
 
 typedef struct{
-    uint64_t iter_pos ;
+	uint64_t iter_pos ;
 	lxqt_wallet_key_values_t entry ;
 }lxqt_wallet_iterator_t ;
 

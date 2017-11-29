@@ -27,8 +27,9 @@
 #include <string.h>
 #include <stdio.h>
 #include <cstdio>
-//#include <termios.h>
-
+#ifndef _WIN32
+#include <termios.h>
+#endif
 #include <memory>
 #include <iostream>
 
@@ -95,10 +96,11 @@ bool utility::platformIsOSX()
 
 bool utility::platformIsWindows()
 {
-	return false
+	return false ;
 }
 
-#elseifdef __APPLE__
+#else
+#ifdef __APPLE__
 
 #include <sys/param.h>
 #include <sys/mount.h>
@@ -134,6 +136,7 @@ bool utility::platformIsWindows()
 {
 	return true ;
 }
+#endif
 #endif
 
 static QSettings * _settings ;
@@ -360,8 +363,6 @@ void utility::initGlobals()
 
 	_polkit_socket_path = a + "/siriPolkit.socket" ;
 
-	_delete_paths( a,_polkit_socket_path ) ;
-
 	QDir e ;
 
 	e.remove( a ) ;
@@ -416,7 +417,9 @@ void utility::quitHelper()
 
 	auto a = "/tmp/SiriKali-" + QString::number( getuid() ) ;
 
-	_delete_paths( a,_polkit_socket_path ) ;
+	QDir m ;
+	m.remove( a ) ;
+	m.rmdir( _polkit_socket_path ) ;
 #endif
 }
 
