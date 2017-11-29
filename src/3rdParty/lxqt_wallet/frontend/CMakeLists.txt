@@ -1,6 +1,10 @@
 
 cmake_minimum_required(VERSION 2.6)
 
+if( WIN32 )
+     cmake_policy(SET CMP0020 NEW)
+endif()
+
 INCLUDE(FindPkgConfig)
 
 #
@@ -284,7 +288,13 @@ endif()
 
 endif()
 
-set_target_properties(lxqt-wallet PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pedantic ")
+if( WIN32 )
+    set_target_properties(lxqt-wallet PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -pedantic ")
+else()
+    set_target_properties(lxqt-wallet PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic ")
+endif()
+
+
 set_target_properties(lxqt-wallet PROPERTIES SOVERSION "${LIBRARY_VERSION}")
 TARGET_LINK_LIBRARIES(lxqt-wallet "${link_libraries}" lxqt-wallet-backend)
 

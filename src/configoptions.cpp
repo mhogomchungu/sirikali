@@ -68,7 +68,15 @@ configOptions::configOptions( QWidget * parent,
 		utility::setStartMinimized( e ) ;
 	} ) ;
 
-	m_ui->lineEditMountPointPrefix->setText( utility::mountPath() ) ;
+	if( utility::platformIsWindows() ){
+
+		m_ui->lineEditMountPointPrefix->clear() ;
+		m_ui->lineEditMountPointPrefix->setEnabled( false ) ;
+		m_ui->pbMountPointPrefix->setEnabled( false ) ;
+		m_ui->lineEditFileManager->setEnabled( false ) ;
+	}else{
+		m_ui->lineEditMountPointPrefix->setText( utility::mountPath() ) ;
+	}
 
 	connect( m_ui->pbMountPointPrefix,&QPushButton::clicked,[ this ](){
 
@@ -150,6 +158,8 @@ configOptions::configOptions( QWidget * parent,
 						[ this ](){ this->show() ; } ) ;
 		} ) ;
 
+		ac->setEnabled( LXQt::Wallet::backEndIsSupported( bk::internal ) ) ;
+
 		m_actionPair.emplace_back( ac,"Internal Wallet" ) ;
 
 		ac = m->addAction( tr( "Libsecret" ),[ this ](){
@@ -157,12 +167,16 @@ configOptions::configOptions( QWidget * parent,
 			walletconfig::instance( this,m_secrets.walletBk( bk::libsecret ) ) ;
 		} ) ;
 
+		ac->setEnabled( LXQt::Wallet::backEndIsSupported( bk::libsecret ) ) ;
+
 		m_actionPair.emplace_back( ac,"Libsecret" ) ;
 
 		ac = m->addAction( tr( "KWallet" ),[ this ](){
 
 			walletconfig::instance( this,m_secrets.walletBk( bk::kwallet ) ) ;
 		} ) ;
+
+		ac->setEnabled( LXQt::Wallet::backEndIsSupported( bk::kwallet ) ) ;
 
 		m_actionPair.emplace_back( ac,"KWallet" ) ;
 
@@ -173,7 +187,7 @@ configOptions::configOptions( QWidget * parent,
 
 		m_actionPair.emplace_back( ac,"MACOS Keychain" ) ;
 
-		ac->setEnabled( utility::platformIsOSX() ) ;
+		ac->setEnabled( LXQt::Wallet::backEndIsSupported( bk::osxkeychain ) ) ;
 
 		return m ;
 	}() ) ;

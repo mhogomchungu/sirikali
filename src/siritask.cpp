@@ -26,15 +26,22 @@
 #include <QDebug>
 #include <QFile>
 
+#define DEBUG 0
+
 using cs = siritask::status ;
 
 static bool _create_folder( const QString& m )
 {
-	if( utility::pathExists( m ) ){
+	if( utility::platformIsWindows() ){
 
-		return utility::reUseMountPoint() ;
+		return true ;
 	}else{
-		return utility::createFolder( m ) ;
+		if( utility::pathExists( m ) ){
+
+			return utility::reUseMountPoint() ;
+		}else{
+			return utility::createFolder( m ) ;
+		}
 	}
 }
 
@@ -599,8 +606,13 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 		return _status( app,status_type::exeNotFound ) ;
 	}else{
+		exe = utility::Task::makePath( exe ) ;
+
 		auto _run = [ & ](){
 
+			#if DEBUG
+				utility::debug() << _args( exe,opt,configFilePath,create ) ;
+			#endif
 			auto s = utility::Task( _args( exe,opt,configFilePath,create ),
 						20000,
 						utility::systemEnvironment(),

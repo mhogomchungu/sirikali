@@ -19,28 +19,11 @@
 
 #include "checkforupdates.h"
 
-checkUpdates::checkUpdates( QWidget * widget ) : m_widget( widget ),m_running( false )
+checkUpdates::checkUpdates( QWidget * widget ) : m_widget( widget ),
+	m_timeOut( 1000 * utility::networkTimeOut() ),m_running( false )
 {
 	m_networkRequest.setRawHeader( "Host","api.github.com" ) ;
 	m_networkRequest.setRawHeader( "Accept-Encoding","text/plain" ) ;
-
-	m_timer.setInterval( 1000 * utility::networkTimeOut() ) ;
-
-	connect( &m_timer,&QTimer::timeout,this,[ this ](){
-
-		m_timer.stop() ;
-
-		if( m_network.cancel( m_networkReply ) ){
-
-			auto s = QString::number( utility::networkTimeOut() ) ;
-			auto e = m_widget->tr( "Network Request Failed To Respond Within %1 Seconds." ).arg( s ) ;
-
-			DialogMsg( m_widget ).ShowUIOK( m_widget->tr( "ERROR" ),e ) ;
-		}
-
-		m_running = false ;
-
-	},Qt::QueuedConnection ) ;
 }
 
 void checkUpdates::check( bool e )
@@ -232,14 +215,12 @@ void checkUpdates::checkForUpdate( backends_t::size_type position )
 			m_results += { exe,"N/A","N/A" } ;
 
 			this->checkForUpdate( position ) ;
+
 		}else {
+
 			m_networkRequest.setUrl( QUrl( e.second ) ) ;
 
-			m_timer.start() ;
-
-			m_networkReply = m_network.get( m_networkRequest,[ = ]( QNetworkReply& e ){
-
-				m_timer.stop() ;
+			m_network.get( m_timeOut,m_networkRequest,[ = ]( QNetworkReply& e ){
 
 				try{
 					m_results += { exe,f,this->latestVersion( e.readAll() ) } ;
@@ -250,6 +231,14 @@ void checkUpdates::checkForUpdate( backends_t::size_type position )
 				}
 
 				this->checkForUpdate( position ) ;
+
+			},[ this ](){
+
+				auto s = QString::number( utility::networkTimeOut() ) ;
+				auto e = m_widget->tr( "Network Request Failed To Respond Within %1 Seconds." ).arg( s ) ;
+
+				DialogMsg( m_widget ).ShowUIOK( m_widget->tr( "ERROR" ),e ) ;
+				m_running = false ;
 			} ) ;
 		}
 	}

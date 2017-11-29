@@ -57,7 +57,9 @@ LXQt::Wallet::Wallet * LXQt::Wallet::getWalletBackend( LXQt::Wallet::BackEnd bk 
 {
 	if( bk == LXQt::Wallet::BackEnd::internal ){
 
+#ifndef _WIN32
 		return new LXQt::Wallet::internalWallet() ;
+#endif
 	}
 
 	if( bk == LXQt::Wallet::BackEnd::kwallet ){
@@ -84,7 +86,11 @@ bool LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd bk )
 {
 	if( bk == LXQt::Wallet::BackEnd::internal ){
 
+#ifndef _WIN32
 		return true ;
+#else
+		return false ;
+#endif
 	}
 
 	if( bk == LXQt::Wallet::BackEnd::kwallet ){

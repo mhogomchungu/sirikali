@@ -7,5 +7,6 @@
 		 <file>file.png</file>
 		 <file>keyfile.png</file>
 		 <file>module.png</file>
+ 		 <file>harddrive.png</file>
 	 </qresource>
  </RCC>

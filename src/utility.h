@@ -32,6 +32,8 @@
 #include <QDialog>
 #include <QEventLoop>
 #include <QTimer>
+#include <QPushButton>
+#include <QLineEdit>
 #include <QMenu>
 #include <QVector>
 #include <QSystemTrayIcon>
@@ -60,7 +62,6 @@
 #include <QObject>
 #include <QLabel>
 
-#include <poll.h>
 #include <fcntl.h>
 
 #include <iostream>
@@ -192,16 +193,17 @@ namespace utility
 	struct fsInfo
 	{
 		bool valid ;
-		u_int64_t f_blocks ;
-		u_int64_t f_bavail ;
-		u_int64_t f_bsize ;
-		u_int64_t f_bfree ;
+        uint64_t f_blocks ;
+        uint64_t f_bavail ;
+        uint64_t f_bsize ;
+        uint64_t f_bfree ;
 	};
 
 	Task::future< utility::fsInfo >& fileSystemInfo( const QString& ) ;
 
 	bool platformIsLinux() ;
 	bool platformIsOSX() ;
+	bool platformIsWindows() ;
 
 	void setParent( QWidget * parent,QWidget ** localParent,QDialog * dialog ) ;
 
@@ -234,6 +236,8 @@ namespace utility
 
 	QString externalPluginExecutable() ;
 	void setExternalPluginExecutable( const QString& ) ;
+
+	void setWindowsMountPointOptions( QWidget *,QLineEdit *,QPushButton * ) ;
 
 	bool reUseMountPoint( void ) ;
 	void reUseMountPoint( bool ) ;

@@ -27,9 +27,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <cstdio>
-#include <pwd.h>
-#include <grp.h>
-#include <termios.h>
+//#include <termios.h>
 
 #include <memory>
 #include <iostream>
@@ -53,7 +51,6 @@
 #include <QProcessEnvironment>
 #include <QtNetwork/QLocalSocket>
 #include <unistd.h>
-#include <pwd.h>
 #include <QTimer>
 #include <QEventLoop>
 #include <QFileInfo>
@@ -96,7 +93,12 @@ bool utility::platformIsOSX()
 	return false ;
 }
 
-#else
+bool utility::platformIsWindows()
+{
+	return false
+}
+
+#elseifdef __APPLE__
 
 #include <sys/param.h>
 #include <sys/mount.h>
@@ -111,6 +113,27 @@ bool utility::platformIsOSX()
 	return true ;
 }
 
+bool utility::platformIsWindows()
+{
+    return false ;
+}
+
+#else
+
+bool utility::platformIsLinux()
+{
+	return false ;
+}
+
+bool utility::platformIsOSX()
+{
+	return false ;
+}
+
+bool utility::platformIsWindows()
+{
+	return true ;
+}
 #endif
 
 static QSettings * _settings ;
@@ -328,16 +351,9 @@ bool utility::enablePolkit( utility::background_thread thread )
 	return _use_polkit ;
 }
 
-static void _delete_paths( const QString& folderPath,const QString& socketPath )
-{
-	QDir e ;
-
-	e.remove( socketPath ) ;
-	e.rmdir( folderPath ) ;
-}
-
 void utility::initGlobals()
 {
+#ifdef __linux__
 	auto uid = getuid() ;
 
 	QString a = "/tmp/SiriKali-" + QString::number( uid ) ;
@@ -348,12 +364,16 @@ void utility::initGlobals()
 
 	QDir e ;
 
+	e.remove( a ) ;
+	e.rmdir( _polkit_socket_path ) ;
+
 	e.mkpath( a ) ;
 
 	auto s = a.toLatin1() ;
 
 	chown( s.constData(),uid,uid ) ;
 	chmod( s.constData(),0700 ) ;
+#endif
 }
 
 QString utility::helperSocketPath()
@@ -368,6 +388,7 @@ bool utility::useSiriPolkit()
 
 void utility::quitHelper()
 {
+#if __linux__
 	auto e = utility::helperSocketPath() ;
 
 	if( utility::pathExists( e ) ){
@@ -396,6 +417,7 @@ void utility::quitHelper()
 	auto a = "/tmp/SiriKali-" + QString::number( getuid() ) ;
 
 	_delete_paths( a,_polkit_socket_path ) ;
+#endif
 }
 
 QString utility::homePath()
@@ -432,8 +454,12 @@ Task::future< utility::fsInfo >& utility::fileSystemInfo( const QString& q )
 {
 	return ::Task::run( [ = ](){
 
-		struct statfs e ;
+		Q_UNUSED( q ) ;
+
 		utility::fsInfo s ;
+
+#ifndef WIN32
+		struct statfs e ;
 
 		s.valid = statfs( q.toLatin1().constData(),&e ) == 0 ;
 
@@ -441,7 +467,7 @@ Task::future< utility::fsInfo >& utility::fileSystemInfo( const QString& q )
 		s.f_bfree  = e.f_bfree ;
 		s.f_blocks = e.f_blocks ;
 		s.f_bsize  = e.f_bsize ;
-
+#endif
 		return s ;
 	} ) ;
 }
@@ -605,13 +631,18 @@ QString utility::executableFullPath( const QString& f )
 		e = "ecryptfs-simple" ;
 	}
 
+	if( utility::platformIsWindows() ){
+
+		e += ".exe" ;
+	}
+
 	QString exe ;
 
 	for( const auto& it : utility::executableSearchPaths() ){
 
 		exe = it + e ;
 
-		if( utility::pathExists( exe ) ){
+		if( utility::pathExists( "" + exe + "" ) ){
 
 			return exe ;
 		}
@@ -925,9 +956,14 @@ QStringList utility::directoryList( const QString& e )
 
 QIcon utility::getIcon()
 {
-	QIcon icon( INSTALL_PREFIX "/share/icons/hicolor/48x48/apps/sirikali.png" ) ;
+	if( utility::platformIsLinux() ){
 
-	return QIcon::fromTheme( "sirikali",icon ) ;
+		QIcon icon( INSTALL_PREFIX "/share/icons/hicolor/48x48/apps/sirikali.png" ) ;
+
+		return QIcon::fromTheme( "sirikali",icon ) ;
+	}else{
+		return QIcon( ":sirikali" ) ;
+	}
 }
 
 QString utility::homeConfigPath( const QString& e )
@@ -1471,6 +1507,8 @@ void utility::setStartMinimized( bool e )
 	_settings->setValue( "StartMinimized",e ) ;
 }
 
+#ifndef WIN32
+
 static inline bool _terminalEchoOff( struct termios * old,struct termios * current )
 {
 	if( tcgetattr( 1,old ) != 0 ){
@@ -1524,6 +1562,39 @@ QString utility::readPassword( bool addNewLine )
 
 	return s ;
 }
+
+#else
+
+QString utility::readPassword( bool addNewLine )
+{
+	std::cout << "Password: " << std::flush ;
+
+	QString s ;
+	int e ;
+
+	int m = _readPasswordMaximumLength() ;
+
+	for( int i = 0 ; i < m ; i++ ){
+
+		e = std::getchar() ;
+
+		if( e == '\n' || e == -1 ){
+
+			break ;
+		}else{
+			s += static_cast< char >( e ) ;
+		}
+	}
+
+	if( addNewLine ){
+
+		std::cout << std::endl ;
+	}
+
+	return s ;
+}
+
+#endif
 
 QString utility::externalPluginExecutable()
 {
@@ -1727,4 +1798,31 @@ QString utility::getExistingDirectory( QWidget * w,const QString& caption,const 
 	}
 
 	return e ;
+}
+
+void utility::setWindowsMountPointOptions( QWidget * obj,QLineEdit * e,QPushButton * s )
+{
+	auto menu = new QMenu( obj ) ;
+
+	QList< QAction* > actions ;
+
+	char m[ 3 ] = { 'G',':','\0' } ;
+
+	for( ; *m < 'Z' ; *m += 1 ){
+
+		auto ac = new QAction( m,obj ) ;
+		ac->setObjectName( m ) ;
+
+		actions.append( ac ) ;
+	}
+
+	QObject::connect( menu,&QMenu::triggered,[ e ]( QAction * ac ){
+
+		e->setText( ac->objectName() ) ;
+	} ) ;
+
+	menu->addActions( actions ) ;
+
+	s->setMenu( menu ) ;
+	s->setIcon( QIcon( ":/harddrive.png" ) ) ;
 }

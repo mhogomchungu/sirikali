@@ -49,6 +49,7 @@ public:
 private slots:
 	void volumeUpdate( void ) ;
 private:
+	void windowsMonitor( void ) ;
 	void linuxMonitor( void ) ;
 	void osxMonitor( void ) ;
 	void updateVolume( void ) ;

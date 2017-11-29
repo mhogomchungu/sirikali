@@ -22,7 +22,12 @@ endif()
 get_filename_component( GCRYPT_LIBRARY_PATH ${GCRYPT_LIBRARY} DIRECTORY )
 
 add_library( lxqt-wallet-backend STATIC lxqtwallet.c )
-set_target_properties( lxqt-wallet-backend PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pedantic -I${GCRYPT_INCLUDE_PATH}" )
+if( WIN32 )
+    set_target_properties( lxqt-wallet-backend PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -pedantic -I${GCRYPT_INCLUDE_PATH}" )
+else()
+    set_target_properties( lxqt-wallet-backend PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pedantic -I${GCRYPT_INCLUDE_PATH}" )
+endif()
+
 set_target_properties( lxqt-wallet-backend PROPERTIES LINK_FLAGS "-pie" )
 TARGET_LINK_LIBRARIES( lxqt-wallet-backend "${GCRYPT_LIBRARY}" )
 link_directories( "${GCRYPT_LIBRARY_PATH}" )

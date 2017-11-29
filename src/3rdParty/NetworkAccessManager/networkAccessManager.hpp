@@ -114,11 +114,17 @@ public:
 	{
 		return m_manager ;
 	}
-	QNetworkReply * get( const QNetworkRequest& r,function_t f )
+	QNetworkReply * get( int timeOut,const QNetworkRequest& r,function_t f,
+						 std::function< void() > e = [](){} )
 	{
 		auto s = m_manager.get( r ) ;
 
 		m_entries.emplace_back( s,true,std::move( f ) ) ;
+
+		if( timeOut != -1 ){
+
+			this->setTimeOut( timeOut,s,std::move( e ) ) ;
+		}
 
 		return s ;
 	}
@@ -197,7 +203,8 @@ public:
 			e.abort() ;
 		} ) ;
 	}
-	NetworkAccessManagerTimeOutManager& timeOutManager( int s,QNetworkReply * e,std::function< void() > m )
+private:
+	void setTimeOut( int s,QNetworkReply * e,std::function< void() > m )
 	{
 		auto a = [ this ]( QNetworkReply * e ){	return this->cancel( e ) ; } ;
 
@@ -205,10 +212,7 @@ public:
 
 		connect( &m_manager,SIGNAL( finished( QNetworkReply * ) ),
 			 u,SLOT( networkReply( QNetworkReply * ) ),Qt::QueuedConnection ) ;
-
-		return *u ;
 	}
-private:
 	bool find_network_reply( QNetworkReply * e,void( *function )( QNetworkReply&,entries_t&,position_t ) )
 	{
 		for( position_t s = 0 ; s < m_entries.size() ; s++ ){

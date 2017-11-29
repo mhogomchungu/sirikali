@@ -57,14 +57,13 @@ private:
 
 	QWidget * m_widget ;
 
-	QNetworkReply * m_networkReply ;
 	QNetworkRequest m_networkRequest ;
 
 	NetworkAccessManager m_network ;
 
 	QVector< QStringList > m_results ;
 
-	QTimer m_timer ;
+	int m_timeOut ;
 
 	bool m_autocheck ;
 

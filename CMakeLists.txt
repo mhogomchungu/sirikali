@@ -28,7 +28,12 @@ COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake )
 INCLUDE(CMakeDependentOption)
 INCLUDE(FindPkgConfig)
 
-add_definitions( -D_DEFAULT_SOURCE -fstack-protector-all --param ssp-buffer-size=4 )
+if( WIN32 )
+    add_definitions( -D_DEFAULT_SOURCE )
+else()
+    add_definitions( -D_DEFAULT_SOURCE -fstack-protector-all --param ssp-buffer-size=4 )
+endif()
+
 include_directories( ${PROJECT_BINARY_DIR} )
 
 if( LIB_SUFFIX )
@@ -269,7 +274,11 @@ INCLUDE_DIRECTORIES( ${GCRYPT_INCLUDE_PATH} )
 if( APPLE )
 	add_executable( sirikali MACOSX_BUNDLE ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} ${PROJECT_SOURCE_DIR}/icons/256x256/sirikali.icns )
 else()
-	add_executable( sirikali ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
+        if( WIN32)
+	        add_executable( sirikali WIN32 ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
+	else()
+	        add_executable( sirikali ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
+	endif()
 endif()
 
 link_directories( ${GCRYPT_LIBRARY_PATH} )
@@ -280,7 +289,11 @@ message( STATUS "---------------------------------------------------------------
 message( STATUS "Building GUI components using Qt5" )
 message( STATUS "---------------------------------------------------------------------------\n\n" )
 
-set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic" )
+if( WIN32 )
+    set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -pedantic" )
+else()
+    set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic" )
+endif()
 
 file( WRITE ${PROJECT_BINARY_DIR}/siriPolkit.h "\n#define siriPolkitPath \"${CMAKE_INSTALL_PREFIX}/bin/sirikali.pkexec\"" )
 
@@ -360,7 +373,9 @@ install( FILES ${PROJECT_BINARY_DIR}/sirikali.desktop
 	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )
 
-ADD_SUBDIRECTORY( src/siripolkit )
+if( LINUX )
+    ADD_SUBDIRECTORY( src/siripolkit )
+endif()
 
 file( WRITE ${PROJECT_BINARY_DIR}/org.sirikali.pkexec.policy
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>

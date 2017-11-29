@@ -78,7 +78,7 @@ sirikali::sirikali() :
 	m_mountInfo( this,true,[ & ](){ QCoreApplication::exit( m_exitStatus ) ; } ),
 	m_checkUpdates( this ),
 	m_configOptions( this,m_secrets,&m_language_menu,this->configOption() )
-{	
+{
 }
 
 configOptions::functions sirikali::configOption()
@@ -1141,7 +1141,7 @@ void sirikali::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 			if( e == "cryfs" ){
 
-				return { SLOT( cryfsProperties() ),true } ;
+				return { SLOT( cryfsProperties() ),!utility::platformIsWindows() } ;
 
 			}else if( e == "ecryptfs" ){
 
@@ -1536,12 +1536,15 @@ void sirikali::slotCurrentItemChanged( QTableWidgetItem * current,QTableWidgetIt
 
 void sirikali::disableAll()
 {
-	m_ui->pbmenu->setEnabled( false ) ;
-	m_ui->pbupdate->setEnabled( false ) ;
-	m_ui->tableWidget->setEnabled( false ) ;
-	m_ui->pbunlockvolume->setEnabled( false ) ;
-	m_ui->pbcreate->setEnabled( false ) ;
-	m_ui->pbFavorites->setEnabled( false ) ;
+	if( !utility::platformIsOSX() ){
+
+		m_ui->pbmenu->setEnabled( false ) ;
+		m_ui->pbupdate->setEnabled( false ) ;
+		m_ui->tableWidget->setEnabled( false ) ;
+		m_ui->pbunlockvolume->setEnabled( false ) ;
+		m_ui->pbcreate->setEnabled( false ) ;
+		m_ui->pbFavorites->setEnabled( false ) ;
+	}
 }
 
 void sirikali::enableAll()

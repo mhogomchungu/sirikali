@@ -178,7 +178,13 @@ void keyDialog::setUpInitUI()
 
 		m_ui->label_2->setText( tr( "Volume Name" ) ) ;
 
-		m_ui->lineEditFolderPath->setText( utility::homePath() + "/" ) ;
+		if( utility::platformIsWindows() ){
+
+			m_ui->lineEditFolderPath->setText( "Z:" ) ;
+			utility::setWindowsMountPointOptions( this,m_ui->lineEditFolderPath,m_ui->pbOpenFolderPath ) ;
+		}else{
+			m_ui->lineEditFolderPath->setText( utility::homePath() + "/" ) ;
+		}
 
 		m_ui->lineEditMountPoint->setFocus() ;
 
@@ -197,7 +203,11 @@ void keyDialog::setUpInitUI()
 
 	QIcon folderIcon( ":/folder.png" ) ;
 
-	m_ui->pbOpenFolderPath->setIcon( folderIcon ) ;
+	if( !utility::platformIsWindows() ){
+
+		m_ui->pbOpenFolderPath->setIcon( folderIcon ) ;
+	}
+
 	m_ui->pbSetKeyKeyFile->setIcon( folderIcon ) ;
 
 	this->setFixedSize( this->size() ) ;
@@ -212,7 +222,10 @@ void keyDialog::setUpInitUI()
 	m_ui->cbKeyType->addItem( tr( "HMAC+KeyFile" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "ExternalExecutable" ) ) ;
 
-	m_ui->cbKeyType->addItem( _internalWallet() ) ;
+	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::internal ) ){
+
+		m_ui->cbKeyType->addItem( _internalWallet() ) ;
+	}
 
 	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::libsecret ) ){
 
@@ -301,9 +314,23 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 		}
 	}
 
-	m_ui->lineEditMountPoint->setText( [ & ](){
+	m_ui->lineEditMountPoint->setText( [ & ]()->QString{
 
 		auto m = e.mountPoint() ;
+
+		if( utility::platformIsWindows() ){
+
+			utility::setWindowsMountPointOptions( this,
+							      m_ui->lineEditMountPoint,
+							      m_ui->pbMountPoint ) ;
+
+			if( m.isEmpty() ){
+
+				return "Z:" ;
+			}else{
+				return m ;
+			}
+		}
 
 		if( m.startsWith( "/" ) ){
 

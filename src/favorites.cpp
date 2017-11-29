@@ -42,16 +42,24 @@ favorites::favorites( QWidget * parent ) : QDialog( parent ),
 	connect( m_ui->pbConfigFilePath,SIGNAL( clicked() ),this,SLOT( configPath() ) ) ;
 	connect( m_ui->pbAdd,SIGNAL( clicked() ),this,SLOT( add() ) ) ;
 	connect( m_ui->pbFolderPath,SIGNAL( clicked() ),this,SLOT( folderPath() ) ) ;
-	connect( m_ui->pbMountPointPath,SIGNAL( clicked() ),this,SLOT( mountPointPath() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( cancel() ) ) ;
 	connect( m_ui->tableWidget,SIGNAL( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ),this,
 		SLOT( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) ) ;
 	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),this,
 		SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
-	connect( m_ui->lineEditEncryptedFolderPath,SIGNAL( textChanged( QString ) ),this,SLOT( devicePathTextChange( QString ) ) ) ;
+
+	if( utility::platformIsWindows() ){
+
+		utility::setWindowsMountPointOptions( this,m_ui->lineEditMountPath,m_ui->pbMountPointPath ) ;
+	}else{
+		m_ui->pbMountPointPath->setIcon( QIcon( ":/folder.png" ) ) ;
+
+		connect( m_ui->lineEditEncryptedFolderPath,SIGNAL( textChanged( QString ) ),
+			 this,SLOT( devicePathTextChange( QString ) ) ) ;
+		connect( m_ui->pbMountPointPath,SIGNAL( clicked() ),this,SLOT( mountPointPath() ) ) ;
+	}
 
 	m_ui->pbFolderPath->setIcon( QIcon( ":/sirikali.png" ) ) ;
-	m_ui->pbMountPointPath->setIcon( QIcon( ":/folder.png" ) ) ;
 	m_ui->pbConfigFilePath->setIcon( QIcon( ":/file.png" ) ) ;
 
 	m_ui->lineEditEncryptedFolderPath->setEnabled( false ) ;
@@ -170,7 +178,13 @@ void favorites::ShowUI()
 	}
 
 	m_ui->lineEditEncryptedFolderPath->clear() ;
-	m_ui->lineEditMountPath->clear() ;
+
+	if( utility::platformIsWindows() ){
+
+		m_ui->lineEditMountPath->setText( "Z:" ) ;
+	}else{
+		m_ui->lineEditMountPath->clear() ;
+	}
 	m_ui->tableWidget->setFocus() ;
 
 	this->show() ;

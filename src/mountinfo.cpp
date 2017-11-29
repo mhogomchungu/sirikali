@@ -24,13 +24,38 @@
 
 #include <QMetaObject>
 
+#ifdef WIN32
+
+struct pollfd {
+    int   fd;         /* file descriptor */
+    short events;     /* requested events */
+    short revents;    /* returned events */
+};
+
+const static short POLLPRI = 0 ;
+
+static int poll( struct pollfd * a,int b,int c )
+{
+	Q_UNUSED( a ) ;
+	Q_UNUSED( b ) ;
+	Q_UNUSED( c ) ;
+
+	return 0 ;
+}
+
+#else
+#include <poll.h>
+#endif
+
 enum class background_thread{ True,False } ;
 static QStringList _unlocked_volumes( background_thread thread )
 {
 	if( utility::platformIsLinux() ){
 
 		return utility::split( utility::fileContents( "/proc/self/mountinfo" ) ) ;
-	}else{
+
+	}else if( utility::platformIsOSX() ){
+
 		QStringList s ;
 		QString mode ;
 		QString fs ;
@@ -63,6 +88,9 @@ static QStringList _unlocked_volumes( background_thread thread )
 		}
 
 		return s ;
+
+	}else{
+		return {} ;
 	}
 }
 
@@ -75,8 +103,13 @@ mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& quit ) :
 	if( utility::platformIsLinux() ){
 
 		this->linuxMonitor() ;
-	}else{
+
+	}else if( utility::platformIsOSX() ){
+
 		this->osxMonitor() ;
+
+	}else{
+		this->windowsMonitor();
 	}
 }
 
@@ -329,4 +362,9 @@ void mountinfo::osxMonitor()
 	m_process.setProcessChannelMode( QProcess::MergedChannels ) ;
 
 	m_process.start( "diskutil activity" ) ;
+}
+
+void mountinfo::windowsMonitor()
+{
+
 }
