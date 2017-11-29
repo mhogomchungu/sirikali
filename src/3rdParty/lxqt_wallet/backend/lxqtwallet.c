@@ -201,8 +201,8 @@ static int _passed( gcry_error_t r )
 
 inline static void  _get_header_components( uint32_t * first,uint32_t * second,const char * str )
 {
-    memcpy( first,str,sizeof( uint32_t ) ) ;
-    memcpy( second,str + sizeof( uint32_t ),sizeof( uint32_t ) ) ;
+	memcpy( first,str,sizeof( uint32_t ) ) ;
+	memcpy( second,str + sizeof( uint32_t ),sizeof( uint32_t ) ) ;
 }
 
 uint64_t lxqt_wallet_wallet_size( lxqt_wallet_t wallet )
@@ -791,11 +791,11 @@ int lxqt_wallet_read_key_value( lxqt_wallet_t wallet,const char * key,uint32_t k
 	const char * e ;
 	const char * z ;
 
-    uint64_t k = 0 ;
-    uint64_t i = 0 ;
+	uint64_t k = 0 ;
+	uint64_t i = 0 ;
 
-    uint32_t key_len ;
-    uint32_t key_value_len ;
+	uint32_t key_len ;
+	uint32_t key_value_len ;
 
 	if( key == NULL || wallet == NULL || key_value == NULL ){
 		;
@@ -874,7 +874,7 @@ lxqt_wallet_error lxqt_wallet_add_key( lxqt_wallet_t wallet,const char * key,uin
 	char * e ;
 	char * f ;
 
-    uint64_t len ;
+	uint64_t len ;
 
 	if( key == NULL || wallet == NULL ){
 		return lxqt_wallet_invalid_argument ;
@@ -896,8 +896,8 @@ lxqt_wallet_error lxqt_wallet_add_key( lxqt_wallet_t wallet,const char * key,uin
 #endif
 				e = f + wallet->wallet_data_size ;
 
-                memcpy( e,&key_size,sizeof( uint32_t ) ) ;
-                memcpy( e + sizeof( uint32_t ),&key_value_length,sizeof( uint32_t ) ) ;
+				memcpy( e,&key_size,sizeof( uint32_t ) ) ;
+				memcpy( e + sizeof( uint32_t ),&key_value_length,sizeof( uint32_t ) ) ;
 				memcpy( e + NODE_HEADER_SIZE,key,key_size ) ;
 				memcpy( e + NODE_HEADER_SIZE + key_size,value,key_value_length ) ;
 
@@ -916,8 +916,8 @@ lxqt_wallet_error lxqt_wallet_add_key( lxqt_wallet_t wallet,const char * key,uin
 
 int lxqt_wallet_iter_read_value( lxqt_wallet_t wallet,lxqt_wallet_iterator_t * iter )
 {
-    uint32_t key_len ;
-    uint32_t key_value_len ;
+	uint32_t key_len ;
+	uint32_t key_value_len ;
 
 	const char * e ;
 
@@ -980,13 +980,13 @@ lxqt_wallet_error lxqt_wallet_delete_key( lxqt_wallet_t wallet,const char * key,
 	char * e ;
 	char * z ;
 
-    uint64_t k = 0 ;
-    uint64_t i = 0 ;
+	uint64_t k = 0 ;
+	uint64_t i = 0 ;
 
-    uint32_t key_len ;
-    uint32_t key_value_len ;
+	uint32_t key_len ;
+	uint32_t key_value_len ;
 
-    uint64_t block_size ;
+	uint64_t block_size ;
 
 	if( key == NULL || wallet == NULL ){
 		return lxqt_wallet_invalid_argument ;
@@ -1370,8 +1370,8 @@ static void _create_magic_string_header( char magic_string[ MAGIC_STRING_BUFFER_
 
 static int _wallet_is_compatible( const char * buffer )
 {
-    uint16_t version ;
-    memcpy( &version,buffer + MAGIC_STRING_SIZE,sizeof( uint16_t ) ) ;
+	uint16_t version ;
+	memcpy( &version,buffer + MAGIC_STRING_SIZE,sizeof( uint16_t ) ) ;
 	/*
 	 * This source file should be able to guarantee it can open volumes that have the same major version number
 	 */
@@ -1380,7 +1380,7 @@ static int _wallet_is_compatible( const char * buffer )
 
 static int _volume_version( const char * buffer )
 {
-    uint16_t version ;
-    memcpy( &version,buffer + MAGIC_STRING_SIZE,sizeof( uint16_t ) ) ;
+	uint16_t version ;
+	memcpy( &version,buffer + MAGIC_STRING_SIZE,sizeof( uint16_t ) ) ;
 	return ( int )version ;
 }
