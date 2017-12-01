@@ -58,7 +58,7 @@ extern "C"{
 
 	char * home_path()
 	{
-		auto s = QDir::homePath() ;
+		auto s = QDir::homePath().toLatin1() ;
 		auto a = static_cast< char * >( std::malloc( s.size() + 1 ) ) ;
 		std::memcpy( a,s.constData(),s.size() ) ;
 		*( a + s.size() ) = '\0' ;
