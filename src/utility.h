@@ -32,6 +32,7 @@
 #include <QDialog>
 #include <QEventLoop>
 #include <QTimer>
+#include <QDir>
 #include <QPushButton>
 #include <QLineEdit>
 #include <QMenu>
@@ -65,7 +66,6 @@
 #include <fcntl.h>
 
 #include <iostream>
-
 class QByteArray ;
 class QEvent ;
 

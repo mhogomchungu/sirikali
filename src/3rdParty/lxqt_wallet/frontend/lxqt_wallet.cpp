@@ -45,6 +45,27 @@
 #include "lxqt_osx_keychain.h"
 #include "osx_keychain.h"
 
+#include <cstring>
+
+#include <QDir>
+
+extern "C"{
+
+	void make_path( const char * e )
+	{
+		QDir().mkpath( e ) ;
+	}
+
+	char * home_path()
+	{
+		auto s = QDir::homePath() ;
+		auto a = static_cast< char * >( std::malloc( s.size() + 1 ) ) ;
+		std::memcpy( a,s.constData(),s.size() ) ;
+		*( a + s.size() ) = '\0' ;
+		return a ;
+	}
+}
+
 LXQt::Wallet::Wallet::Wallet()
 {
 }
@@ -57,9 +78,7 @@ LXQt::Wallet::Wallet * LXQt::Wallet::getWalletBackend( LXQt::Wallet::BackEnd bk 
 {
 	if( bk == LXQt::Wallet::BackEnd::internal ){
 
-#ifndef _WIN32
 		return new LXQt::Wallet::internalWallet() ;
-#endif
 	}
 
 	if( bk == LXQt::Wallet::BackEnd::kwallet ){
@@ -86,11 +105,7 @@ bool LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd bk )
 {
 	if( bk == LXQt::Wallet::BackEnd::internal ){
 
-#ifndef _WIN32
 		return true ;
-#else
-		return false ;
-#endif
 	}
 
 	if( bk == LXQt::Wallet::BackEnd::kwallet ){
