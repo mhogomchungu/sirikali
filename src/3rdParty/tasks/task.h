@@ -142,28 +142,28 @@ namespace Task
 		/*
 		 * Use this API if you care about the result
 		 */
-		void then( std::function< void( T ) >&& function )
+		void then( std::function< void( T ) > function )
 		{
-			m_function = std::forward<std::function<void(T)>>( function ) ;
+			m_function = std::move( function ) ;
 			this->start() ;
 		}
 		/*
 		 * Use this API if you DO NOT care about the result
 		 */
-		void then( std::function< void() >&& function )
+		void then( std::function< void() > function )
 		{
-			m_function_1 = std::forward<std::function<void()>>( function ) ;
+			m_function_1 = std::move( function ) ;
 			this->start() ;
 		}
-		void queue( std::function< void() >&& function = [](){} )
+		void queue( std::function< void() > function = [](){} )
 		{
 			if( this->manages_multiple_futures() ){
 
-				m_function_1 = std::forward<std::function<void()>>( function ) ;
+				m_function_1 = std::move( function ) ;
 
 				this->_queue() ;
 			}else{
-				this->then( std::forward<std::function<void()>>( function ) ) ;
+				this->then( std::move( function ) ) ;
 			}
 		}
 		T get()
@@ -188,7 +188,7 @@ namespace Task
 
 			T q ;
 
-			m_function = [ & ]( T&& r ){ q = std::forward<T>( r ) ; p.exit() ; } ;
+			m_function = [ & ]( T&& r ){ q = std::move( r ) ; p.exit() ; } ;
 
 			this->start() ;
 
@@ -272,7 +272,7 @@ namespace Task
 
 			}else if( m_function != nullptr ){
 
-				m_function( std::forward<T>( r ) ) ;
+				m_function( std::move( r ) ) ;
 			}
 		}
 
@@ -344,15 +344,15 @@ namespace Task
 	};
 
 	template<>
-	class future< void > : private QObject
+	class   future< void > : private QObject
 	{
 	public:
 		/*
 		 * ----------------Start of public API----------------
 		 */
-		void then( std::function< void() >&& function )
+		void then( std::function< void() > function )
 		{
-			m_function = std::forward<std::function<void()>>( function ) ;
+			m_function = std::move( function ) ;
 			this->start() ;
 		}
 		void get()
@@ -419,15 +419,15 @@ namespace Task
 				m_cancel() ;
 			}
 		}
-		void queue( std::function< void() >&& function = [](){} )
+		void queue( std::function< void() > function = [](){} )
 		{
 			if( this->manages_multiple_futures() ){
 
-				m_function = std::forward<std::function<void()>>( function ) ;
+				m_function = std::move( function ) ;
 
 				this->_queue() ;
 			}else{
-				this->then( std::forward<std::function<void()>>( function ) ) ;
+				this->then( std::move( function ) ) ;
 			}
 		}
 		/*
@@ -530,7 +530,7 @@ namespace Task
 	{
 	public:
 		ThreadHelper( std::function< T() >&& function ) :
-			m_function( std::forward<std::function<T()>>( function ) ),
+			m_function( std::move( function ) ),
 			m_future( this,
 				  [ this ](){ this->start() ; },
 				  [ this ](){ this->deleteLater() ; },
@@ -560,7 +560,7 @@ namespace Task
 	{
 	public:
 		ThreadHelper( std::function< void() >&& function ) :
-			m_function( std::forward<std::function<void()>>( function ) ),
+			m_function( std::move( function ) ),
 			m_future( this,
 				  [ this ](){ this->start() ; },
 				  [ this ](){ this->deleteLater() ; },
@@ -590,27 +590,16 @@ namespace Task
 	 *
 	 */
 
-	/*
-	 * This function is deprecated and is kept for backward compatilibility
-	 * It allows for code like "Task::run<int>(foo)" to still compile. The return type
-	 * of foo is no longer required to be speficied.
-	 */
-	template< typename T >
-	future<T>& run( std::function< T() >&& function )
-	{
-		return ( new ThreadHelper<T>( std::forward<std::function<T()>>( function ) ) )->Future() ;
-	}
-
 	template< typename Fn >
-	future<typename std::result_of<Fn()>::type>& run( Fn&& function )
+	future<typename std::result_of<Fn()>::type>& run( Fn function )
 	{
-		return ( new ThreadHelper<typename std::result_of<Fn()>::type>( std::forward<Fn>( function ) ) )->Future() ;
+		return ( new ThreadHelper<typename std::result_of<Fn()>::type>( std::move( function ) ) )->Future() ;
 	}
 
 	template< typename Fn,typename ... Args >
-	future<typename std::result_of<Fn(Args...)>::type>& run( Fn&& function, Args&& ... args )
+	future<typename std::result_of<Fn(Args...)>::type>& run( Fn function,Args ... args )
 	{
-		return Task::run( std::bind( std::forward<Fn>( function ),std::forward<Args>( args ) ... ) ) ;
+		return Task::run( std::bind( std::move( function ),std::move( args ) ... ) ) ;
 	}
 
 	/*
@@ -618,18 +607,16 @@ namespace Task
 	 */
 
 	template< typename T >
-	void _private_add( Task::future< T >& a,Task::future< T >& b,
-			   std::function< void( T ) >&& c )
+	void _private_add( Task::future< T >& a,Task::future< T >& b,std::function< void( T ) >&& c )
 	{
-		a.m_tasks.emplace_back( std::addressof( b ),std::forward<std::function<void(T)>>( c ) ) ;
+		a.m_tasks.emplace_back( std::addressof( b ),std::move( c ) ) ;
 		a.m_threads.push_back( b.m_thread ) ;
 	}
 
 	template< typename T >
-	void _private_add_void( Task::future< T >& a,Task::future< T >& b,
-				std::function< T() >&& c )
+	void _private_add_void( Task::future< T >& a,Task::future< T >& b,std::function< T() >&& c )
 	{
-		a.m_tasks.emplace_back( std::addressof( b ),std::forward<std::function<T()>>( c ) ) ;
+		a.m_tasks.emplace_back( std::addressof( b ),std::move( c ) ) ;
 		a.m_threads.push_back( b.m_thread ) ;
 	}
 
@@ -660,10 +647,9 @@ namespace Task
 	template< typename ... T >
 	void _private_add_task( Task::future< void >& f,std::function< void() >&& e,T&& ... t )
 	{
-		_private_add_void( f,Task::run( std::forward<std::function<void()>>( e ) ),
-				   std::function< void() >( [](){} ) ) ;
+		_private_add_void( f,Task::run( std::move( e ) ),std::function< void() >( [](){} ) ) ;
 
-		_private_add_task( f,std::forward<std::function<void()>>( t ) ... ) ;
+		_private_add_task( f,std::move( t ) ... ) ;
 	}
 
 	template< typename ... T >
@@ -676,8 +662,7 @@ namespace Task
 	template< typename E,typename F,typename ... T >
 	void _private_add_pair( Task::future< E >& f,F&& s,T&& ... t )
 	{
-		_private_add( f,Task::run< E >( std::forward<std::function<E()>>( s.first ) ),
-			      std::forward<std::function<void(E)>>( s.second ) ) ;
+		_private_add( f,Task::run( std::move( s.first ) ),std::move( s.second ) ) ;
 
 		_private_add_pair( f,std::forward<T>( t ) ... ) ;
 	}
@@ -685,8 +670,7 @@ namespace Task
 	template< typename F,typename ... T >
 	void _private_add_pair_void( Task::future< void >& f,F&& s,T&& ... t )
 	{
-		_private_add_void( f,Task::run( std::forward<std::function<void()>>( s.first ) ),
-				   std::forward<std::function<void()>>( s.second ) ) ;
+		_private_add_void( f,Task::run( std::move( s.first ) ),std::move( s.second ) ) ;
 
 		_private_add_pair_void( f,std::forward<T>( t ) ... ) ;
 	}
@@ -702,11 +686,11 @@ namespace Task
 	 */
 
 	template< typename ... T >
-	Task::future< void >& run( std::function< void() >&& f,T&& ... t )
+	Task::future< void >& run( std::function< void() >f,T ... t )
 	{
 		auto& e = _private_future< void >() ;
 
-		_private_add_task( e,std::forward<std::function<void()>>( f ),std::forward<T>( t ) ... ) ;
+		_private_add_task( e,std::move( f ),std::move( t ) ... ) ;
 
 		return e ;
 	}
@@ -722,21 +706,21 @@ namespace Task
 	}
 
 	template< typename ... T >
-	Task::future< void >& run( void_pair&& s,T&& ... t )
+	Task::future< void >& run( void_pair s,T ... t )
 	{
 		auto& e = _private_future< void >() ;
 
-		_private_add_pair_void( e,std::forward<void_pair>( s ),std::forward<T>( t ) ... ) ;
+		_private_add_pair_void( e,std::move( s ),std::move( t ) ... ) ;
 
 		return e ;
 	}
 
 	template< typename E,typename ... T >
-	Task::future< E >& run( pair< E >&& s,T&& ... t )
+	Task::future< E >& run( pair< E > s,T ... t )
 	{
 		auto& e = _private_future< E >() ;
 
-		_private_add_pair( e,std::forward<pair<E>>( s ),std::forward<T>( t ) ... ) ;
+		_private_add_pair( e,std::move( s ),std::move( t ) ... ) ;
 
 		return e ;
 	}
@@ -747,27 +731,16 @@ namespace Task
 	 *
 	 */
 
-	/*
-	 * This function is deprecated and is kept for backward compatilibility
-	 * It allows for code like "Task::await<int>(foo)" to still compile. The return type
-	 * of foo is no longer required to be speficied.
-	 */
-	template< typename T >
-	T await( std::function< T() >&& function )
-	{
-		return Task::run<T>( std::forward<std::function<T()>>( function ) ).await() ;
-	}
-
 	template< typename Fn >
-	typename std::result_of<Fn()>::type await( Fn&& function )
+	typename std::result_of<Fn()>::type await( Fn function )
 	{
-		return Task::run( std::forward<Fn>( function ) ).await() ;
+		return Task::run( std::move( function ) ).await() ;
 	}
 
 	template< typename Fn,typename ... Args >
-	typename std::result_of<Fn(Args...)>::type await( Fn&& function,Args&& ... args )
+	typename std::result_of<Fn(Args...)>::type await( Fn function,Args ... args )
 	{
-		return Task::run( std::forward<Fn>( function ),std::forward<Args>( args ) ... ).await() ;
+		return Task::run( std::move( function ),std::move( args ) ... ).await() ;
 	}
 
 	template< typename T >
@@ -788,15 +761,15 @@ namespace Task
 	 * different thread.
 	 */
 	template< typename Fn >
-	void exec( Fn&& function )
+	void exec( Fn function )
 	{
-		Task::run( std::forward<Fn>( function ) ).start() ;
+		Task::run( std::move( function ) ).start() ;
 	}
 
 	template< typename Fn,typename ... Args >
-	void exec( Fn&& function, Args&& ... args )
+	void exec( Fn function,Args ... args )
 	{
-		Task::exec( std::bind( std::forward<Fn>( function ),std::forward<Args>( args ) ... ) ) ;
+		Task::exec( std::bind( std::move( function ),std::move( args ) ... ) ) ;
 	}
 
 	template< typename T >

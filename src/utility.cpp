@@ -535,10 +535,7 @@ utility::wallet utility::getKey( const QString& keyID,LXQt::Wallet::Wallet& wall
 {
 	auto _getKey = []( LXQt::Wallet::Wallet& wallet,const QString& volumeID ){
 
-		return ::Task::await<QString>( [ & ](){
-
-			return wallet.readValue( volumeID ) ;
-		} ) ;
+		return ::Task::await( [ & ](){ return wallet.readValue( volumeID ) ; } ) ;
 	} ;
 
 	utility::wallet w{ false,false,"" } ;

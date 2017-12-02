@@ -122,7 +122,7 @@ QString checkUpdates::InstalledVersion( const siritask::volumeType& e )
 		}
 	}() ;
 
-	auto s = Task::await< QStringList >( [ & ](){
+	auto s = Task::await( [ & ](){
 
 		auto s = utility::systemEnvironment() ;
 
