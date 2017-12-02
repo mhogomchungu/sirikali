@@ -207,7 +207,7 @@ set( MOC_FILES
 		src/mountinfo.h
 		src/securefscreateoptions.h
 		src/cryfscreateoptions.h
-		src/3rdParty/tasks/task.h
+                src/3rdParty/tasks/task.hpp
 		src/3rdParty/NetworkAccessManager/networkAccessManager.hpp
  )
 

@@ -28,7 +28,7 @@
  * SUCH DAMAGE.
  */
 
-#include "task.h"
+#include "task.hpp"
 #include "example.h"
 
 #include <QString>
@@ -84,7 +84,7 @@ static void _test_run_then()
 	 */
 	_printThreadID() ;
 
-	Task::run<QString>( [](){
+	Task::run( [](){
 
 		/*
 		 * print the thread id to know we are on what thread.
@@ -129,7 +129,7 @@ static void _testing_task_await()
 {
 	_print( "Testing Task::await()" ) ;
 
-	QString e = Task::await<QString>( _longRunningTask ) ;
+	QString e = Task::await( _longRunningTask ) ;
 
 	_print( e.toLatin1().constData() ) ;
 
@@ -347,7 +347,7 @@ void example::run()
 	Task::await( bb ) ;
 	Task::await( bb ) ;
 
-	auto& tt = Task::run<int>( bb ) ;
+	auto& tt = Task::run( bb ) ;
 
 	Task::await( tt ) ;
 	Task::await( Task::run( cc ) ) ;
@@ -357,13 +357,12 @@ void example::run()
 	Task::await( dd,4 ) ;
 
 	Task::await( bb ) ;
-	Task::await<int>( bb ) ;
 
 	Task::await( cc ) ;
 
-	auto& zz = Task::run<int>( bb ) ;
+	auto& zz = Task::run( bb ) ;
 
-	Task::await<int>( zz ) ;
+	Task::await( zz ) ;
 	Task::await( Task::run( cc ) ) ;
 
 	Task::exec( aaa,4 );

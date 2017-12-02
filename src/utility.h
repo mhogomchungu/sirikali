@@ -199,7 +199,7 @@ namespace utility
         uint64_t f_bfree ;
 	};
 
-	Task::future< utility::fsInfo >& fileSystemInfo( const QString& ) ;
+	::Task::future< utility::fsInfo >& fileSystemInfo( const QString& ) ;
 
 	bool platformIsLinux() ;
 	bool platformIsOSX() ;

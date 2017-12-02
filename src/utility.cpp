@@ -453,7 +453,7 @@ void utility::openPath( const QString& path,const QString& opener,
 	}
 }
 
-Task::future< utility::fsInfo >& utility::fileSystemInfo( const QString& q )
+::Task::future< utility::fsInfo >& utility::fileSystemInfo( const QString& q )
 {
 	return ::Task::run( [ = ](){
 

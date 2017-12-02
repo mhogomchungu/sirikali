@@ -142,9 +142,8 @@ Task::future<void>& foo = Task::run( foo,bar ) ;
 
 ```
 
-```
-
 **4. Creating a future that combines multiple tasks and their continuations that take no argument. .get() and .queue() on the future will cause passed in functions to run sequentially and in the order they are specified. .await() and .then() will cause passed in function to run concurrently.**
+
 ```c++
 
 void foo() ; //function prototype
