@@ -269,6 +269,9 @@ namespace utility
 	bool autoOpenFolderOnMount() ;
 	void autoOpenFolderOnMount( bool ) ;
 
+	QString securefsPath() ;
+	QString winFSpath() ;
+
 	bool autoCheck() ;
 	void autoCheck( bool ) ;
 

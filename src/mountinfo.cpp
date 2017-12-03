@@ -366,5 +366,21 @@ void mountinfo::osxMonitor()
 
 void mountinfo::windowsMonitor()
 {
+	m_exit = false ;
 
+	m_stop = [ this ](){ m_exit = true ; } ;
+
+	Task::run( [ this ](){
+
+		while( true ){
+
+			if( m_exit ){
+
+				break ;
+			}else{
+				utility::Task::waitForOneSecond() ;
+			}
+		}
+
+	} ).then( std::move( m_quit ) ) ;
 }

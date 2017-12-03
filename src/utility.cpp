@@ -99,8 +99,7 @@ bool utility::platformIsWindows()
 	return false ;
 }
 
-#else
-#ifdef __APPLE__
+#elif __APPLE__
 
 #include <sys/param.h>
 #include <sys/mount.h>
@@ -137,10 +136,10 @@ bool utility::platformIsWindows()
 	return true ;
 }
 #endif
-#endif
 
 static QSettings * _settings ;
-
+static QString _securefsPath ;
+static QString _winfsPath ;
 static QByteArray _cookie ;
 static QString _polkit_socket_path ;
 
@@ -374,6 +373,30 @@ void utility::initGlobals()
 
 	chown( s.constData(),uid,uid ) ;
 	chmod( s.constData(),0700 ) ;
+#elif _WIN32
+
+	auto _read = []( const char * path,const char * key ){
+
+		DWORD dwType = REG_SZ ;
+		HKEY hKey = 0 ;
+
+		char buffer[ 4096 ] = { 0 } ;
+		auto buff = reinterpret_cast< BYTE * >( buffer ) ;
+
+		DWORD buffer_size = sizeof( buffer ) ;
+
+		if( RegOpenKey( HKEY_LOCAL_MACHINE,path,&hKey ) == ERROR_SUCCESS ){
+
+			RegQueryValueEx( hKey,key,nullptr,&dwType,buff,&buffer_size ) ;
+		}
+
+		RegCloseKey( hKey ) ;
+
+		return QByteArray( buffer,buffer_size ) ;
+	} ;
+
+	_securefsPath = _read( "SOFTWARE\\WOW6432Node\\WinFsp\\Services\\securefs","Executable" ) ;
+	_winfsPath    = _read( "SOFTWARE\\WOW6432Node\\WinFsp","InstallDir" ) ;
 #endif
 }
 
@@ -624,16 +647,21 @@ QString utility::executableSearchPaths( const QString& e )
 
 QString utility::executableFullPath( const QString& f )
 {
+	if( utility::platformIsWindows() ){
+
+		if( f == "securefs" ){
+
+			return utility::securefsPath() ;
+		}else{
+			return QString() ;
+		}
+	}
+
 	QString e = f ;
 
 	if( e == "ecryptfs" ){
 
 		e = "ecryptfs-simple" ;
-	}
-
-	if( utility::platformIsWindows() ){
-
-		e += ".exe" ;
 	}
 
 	QString exe ;
@@ -642,7 +670,7 @@ QString utility::executableFullPath( const QString& f )
 
 		exe = it + e ;
 
-		if( utility::pathExists( "" + exe + "" ) ){
+		if( utility::pathExists( exe ) ){
 
 			return exe ;
 		}
@@ -1825,4 +1853,14 @@ void utility::setWindowsMountPointOptions( QWidget * obj,QLineEdit * e,QPushButt
 
 	s->setMenu( menu ) ;
 	s->setIcon( QIcon( ":/harddrive.png" ) ) ;
+}
+
+QString utility::securefsPath()
+{
+	return _securefsPath ;
+}
+
+QString utility::winFSpath()
+{
+	return _winfsPath ;
 }
