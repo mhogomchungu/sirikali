@@ -184,7 +184,7 @@ void utility::polkitFailedWarning( std::function< void() > e )
 void utility::Task::execute( const QString& exe,int waitTime,
 			     const QProcessEnvironment& env,
 			     const QByteArray& password,
-			     const std::function< void() >& function,
+			     std::function< void() > function,
 			     bool polkit )
 {
 	if( polkit && utility::useSiriPolkit() ){
@@ -250,39 +250,14 @@ void utility::Task::execute( const QString& exe,int waitTime,
 			_report_error( "SiriKali: Failed To Parse Polkit Backend Output" ) ;
 		}
 	}else{
-		class Process : public QProcess{
-		public:
-			Process( const std::function< void() >& function,
-				 const QProcessEnvironment& env ) :
-				m_function( function )
-			{
-				this->setProcessEnvironment( env ) ;
-			}
-		protected:
-			void setupChildProcess()
-			{
-				m_function() ;
-			}
-		private:
-			const std::function< void() >& m_function ;
-		} p( function,env ) ;
+		auto s = ::Task::process::run( exe,{},waitTime,password,
+					       env,std::move( function  ) ).get() ;
 
-		p.start( exe ) ;
-
-		if( !password.isEmpty() ){
-
-			p.waitForStarted() ;
-
-			p.write( password + '\n' ) ;
-
-			p.closeWriteChannel() ;
-		}
-
-		m_finished   = p.waitForFinished( waitTime ) ;
-		m_exitCode   = p.exitCode() ;
-		m_exitStatus = p.exitStatus() ;
-		m_stdOut     = p.readAllStandardOutput() ;
-		m_stdError   = p.readAllStandardError() ;
+		m_finished   = s.finished() ;
+		m_exitCode   = s.exitCode() ;
+		m_exitStatus = s.exitStatus() ;
+		m_stdOut     = s.stdOut() ;
+		m_stdError   = s.stdError() ;
 	}
 }
 

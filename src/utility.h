@@ -569,7 +569,7 @@ namespace utility
 		}
 	private:
 		void execute( const QString& exe,int waitTime,const QProcessEnvironment& env,
-			      const QByteArray& password,const std::function< void() >& f,bool e ) ;
+			      const QByteArray& password,std::function< void() > f,bool e ) ;
 
 		QByteArray m_stdOut ;
 		QByteArray m_stdError ;

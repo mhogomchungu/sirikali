@@ -5,7 +5,7 @@ include_directories( ${PROJECT_BINARY_DIR}/siripoltik/ )
 
 set( sirikali.pkexecMOC_FILES
 	zulupolkit.h
-	../3rdParty/tasks/task.h
+        ../3rdParty/tasks/task.hpp
  )
 
 set( sirikali.pkexecSRC

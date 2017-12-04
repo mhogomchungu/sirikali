@@ -38,42 +38,6 @@
 
 namespace utility
 {
-	struct Task
-	{
-		template< typename T >
-		Task( const T& a ) : stdOut( a ),stdError( a )
-		{
-		}
-		Task()
-		{
-		}
-		Task( const QString& exe,const QString& password )
-		{
-			QProcess p ;
-
-			p.start( exe ) ;
-
-			p.waitForStarted() ;
-
-			p.write( password.toLatin1() + '\n' ) ;
-
-			p.closeWriteChannel() ;
-
-			finished   = p.waitForFinished( -1 ) ;
-			exitCode   = p.exitCode() ;
-			exitStatus = p.exitStatus() ;
-			stdOut     = p.readAllStandardOutput() ;
-			stdError   = p.readAllStandardError() ;
-		}
-
-		QByteArray stdOut ;
-		QByteArray stdError ;
-
-		int exitCode   = 255 ;
-		int exitStatus = 255 ;
-		bool finished  = true ;
-	};
-
 	QString executableFullPath( const QString& e )
 	{
 		QString exe ;
@@ -185,16 +149,30 @@ void zuluPolkit::start()
 	}
 }
 
-static void _respond( std::unique_ptr< QLocalSocket >& s,
-		      const utility::Task& e = utility::Task() )
+static void _respond( std::unique_ptr< QLocalSocket >& s,const char * e )
 {
 	nlohmann::json json ;
 
-	json[ "stdOut" ]     = e.stdOut.constData() ;
-	json[ "stdError" ]   = e.stdError.constData() ;
-	json[ "exitCode" ]   = e.exitCode ;
-	json[ "exitStatus" ] = e.exitStatus ;
-	json[ "finished" ]   = e.finished ;
+	json[ "stdOut" ]     = e ;
+	json[ "stdError" ]   = e ;
+	json[ "exitCode" ]   = 255 ;
+	json[ "exitStatus" ] = 255 ;
+	json[ "finished" ]   = true ;
+
+	s->write( json.dump().c_str() ) ;
+
+	s->waitForBytesWritten() ;
+}
+
+static void _respond( std::unique_ptr< QLocalSocket >& s,const Task::process::result& e )
+{
+	nlohmann::json json ;
+
+	json[ "stdOut" ]     = e.stdOut().constData() ;
+	json[ "stdError" ]   = e.stdError().constData() ;
+	json[ "exitCode" ]   = e.exitCode() ;
+	json[ "exitStatus" ] = e.exitStatus() ;
+	json[ "finished" ]   = e.finished() ;
 
 	s->write( json.dump().c_str() ) ;
 
@@ -226,7 +204,7 @@ void zuluPolkit::gotConnection()
 
 			}else if( command.startsWith( e ) ){
 
-				return _respond( s,utility::Task( command,password ) ) ;
+				return _respond( s,Task::process::run( command,password.toLatin1() ).get() ) ;
 			}else{
 				_respond( s,"SiriPolkit: Invalid Command" ) ;
 			}

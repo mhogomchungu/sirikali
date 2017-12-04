@@ -31,6 +31,7 @@
 #ifndef __TASK_H_INCLUDED__
 #define __TASK_H_INCLUDED__
 
+#include <type_traits>
 #include <vector>
 #include <utility>
 #include <future>
@@ -38,7 +39,7 @@
 #include <QThread>
 #include <QEventLoop>
 #include <QMutex>
-#include <type_traits>
+#include <QProcess>
 
 /*
  *
@@ -384,7 +385,7 @@ namespace Task
 		{
 			return m_tasks.size() > 0 ;
 		}
-		const std::vector< QThread * >& threads()
+		const std::vector< QThread * >& all_threads()
 		{
 			return m_threads ;
 		}
@@ -776,6 +777,109 @@ namespace Task
 	void exec( Task::future<T>& e )
 	{
 		e.start() ;
+	}
+
+	namespace process {
+
+		class result{
+		public:
+			result() = default ;
+			result( QProcess& e,int s )
+			{
+				m_finished   = e.waitForFinished( s ) ;
+				m_stdOut     = e.readAllStandardOutput() ;
+				m_stdError   = e.readAllStandardError() ;
+				m_exitCode   = e.exitCode() ;
+				m_exitStatus = e.exitStatus() ;
+			}
+			QByteArray stdOut() const
+			{
+				return m_stdOut ;
+			}
+			QByteArray stdError() const
+			{
+				return m_stdError ;
+			}
+			bool finished() const
+			{
+				return m_finished ;
+			}
+			bool success() const
+			{
+				return m_exitCode == 0 &&
+				       m_exitStatus == QProcess::NormalExit &&
+				       m_finished == true ;
+			}
+			bool failed() const
+			{
+				return !this->success() ;
+			}
+			int exitCode() const
+			{
+				return m_exitCode ;
+			}
+			int exitStatus() const
+			{
+				return m_exitStatus ;
+			}
+		private:
+			QByteArray m_stdOut ;
+			QByteArray m_stdError ;
+			bool m_success ;
+			bool m_finished ;
+			int m_exitCode ;
+			int m_exitStatus ;
+		};
+
+		static inline Task::future< result >& run( const QString& cmd,
+							   const QStringList& args = QStringList(),
+							   int waitTime = -1,
+							   const QByteArray& password = QByteArray(),
+							   const QProcessEnvironment& env = QProcessEnvironment(),
+							   std::function< void() > setUpChildProcess = [](){} )
+		{
+			return Task::run( [ = ](){
+
+				class Process : public QProcess{
+				public:
+					Process( std::function< void() > function,
+						 const QProcessEnvironment& env ) :
+						 m_function( std::move( function  ) )
+					{
+						this->setProcessEnvironment( env ) ;
+					}
+				protected:
+					void setupChildProcess()
+					{
+						m_function() ;
+					}
+				private:
+					std::function< void() > m_function ;
+
+				} exe( std::move( setUpChildProcess ),env ) ;
+
+				if( args.isEmpty() ){
+
+					exe.start( cmd ) ;
+				}else{
+					exe.start( cmd,args ) ;
+				}
+
+				if( !password.isEmpty() ){
+
+					exe.waitForStarted( waitTime ) ;
+					exe.write( password ) ;
+					exe.closeWriteChannel() ;
+				}
+
+				return result( exe,waitTime ) ;
+			} ) ;
+		}
+
+		static inline Task::future< result >& run( const QString& cmd,const QByteArray& password )
+		{
+			return Task::process::run( cmd,{},-1,password ) ;
+		}
 	}
 }
 
