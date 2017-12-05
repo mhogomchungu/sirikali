@@ -13,9 +13,20 @@ INCLUDE(CMakeDependentOption)
 find_package( Qt5Core REQUIRED )
 
 QT5_WRAP_CPP( MOC task.hpp example.h )
+QT5_WRAP_CPP( MOC_LIBRARY task.hpp )
 
 include_directories( ${Qt5Core_INCLUDE_DIRS} )
 
-add_executable( example example.cpp main.cpp ${MOC} )
+#add_executable( example example.cpp main.cpp ${MOC} )
 
-TARGET_LINK_LIBRARIES( example ${Qt5Core_LIBRARIES} )
+add_library( tasks STATIC ${MOC_LIBRARY} )
+
+#TARGET_LINK_LIBRARIES( example ${Qt5Core_LIBRARIES} )
+
+if( WIN32 )
+	set_target_properties( tasks PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -pedantic " )
+else()
+	set_target_properties( tasks PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic " )
+endif()
+
+

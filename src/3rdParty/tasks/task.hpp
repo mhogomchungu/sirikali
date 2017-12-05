@@ -792,11 +792,11 @@ namespace Task
 				m_exitCode   = e.exitCode() ;
 				m_exitStatus = e.exitStatus() ;
 			}
-			QByteArray stdOut() const
+			QByteArray std_out() const
 			{
 				return m_stdOut ;
 			}
-			QByteArray stdError() const
+			QByteArray std_error() const
 			{
 				return m_stdError ;
 			}
@@ -814,21 +814,21 @@ namespace Task
 			{
 				return !this->success() ;
 			}
-			int exitCode() const
+			int exit_code() const
 			{
 				return m_exitCode ;
 			}
-			int exitStatus() const
+			int exit_status() const
 			{
 				return m_exitStatus ;
 			}
 		private:
 			QByteArray m_stdOut ;
 			QByteArray m_stdError ;
-			bool m_success ;
-			bool m_finished ;
-			int m_exitCode ;
-			int m_exitStatus ;
+			bool m_success = false ;
+			bool m_finished = false ;
+			int m_exitCode = 255 ;
+			int m_exitStatus = 255 ;
 		};
 
 		static inline Task::future< result >& run( const QString& cmd,
@@ -836,7 +836,7 @@ namespace Task
 							   int waitTime = -1,
 							   const QByteArray& password = QByteArray(),
 							   const QProcessEnvironment& env = QProcessEnvironment(),
-							   std::function< void() > setUpChildProcess = [](){} )
+							   std::function< void() > setUp_child_process = [](){} )
 		{
 			return Task::run( [ = ](){
 
@@ -856,7 +856,7 @@ namespace Task
 				private:
 					std::function< void() > m_function ;
 
-				} exe( std::move( setUpChildProcess ),env ) ;
+				} exe( std::move( setUp_child_process ),env ) ;
 
 				if( args.isEmpty() ){
 

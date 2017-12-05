@@ -119,6 +119,8 @@ else()
 
 endif()
 
+ADD_SUBDIRECTORY( src/3rdParty/tasks )
+ADD_SUBDIRECTORY( src/3rdParty/NetworkAccessManager )
 
 if( INTERNAL_LXQT_WALLET )
 
@@ -207,8 +209,6 @@ set( MOC_FILES
 		src/mountinfo.h
 		src/securefscreateoptions.h
 		src/cryfscreateoptions.h
-                src/3rdParty/tasks/task.hpp
-		src/3rdParty/NetworkAccessManager/networkAccessManager.hpp
  )
 
 set( SRC 	src/dialogok.cpp
@@ -275,15 +275,15 @@ if( APPLE )
 	add_executable( sirikali MACOSX_BUNDLE ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} ${PROJECT_SOURCE_DIR}/icons/256x256/sirikali.icns )
 else()
         if( WIN32)
-	        add_executable( sirikali WIN32 ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
+                add_executable( sirikali WIN32 ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
 	else()
-	        add_executable( sirikali ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
+                add_executable( sirikali ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
 	endif()
 endif()
 
 link_directories( ${GCRYPT_LIBRARY_PATH} )
 
-TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet -L${GCRYPT_LIBRARY_PATH})
+TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet tasks networkAccessManager -L${GCRYPT_LIBRARY_PATH})
 
 message( STATUS "---------------------------------------------------------------------------" )
 message( STATUS "Building GUI components using Qt5" )

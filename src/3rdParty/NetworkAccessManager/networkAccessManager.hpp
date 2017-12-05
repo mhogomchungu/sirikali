@@ -206,14 +206,14 @@ public:
 	}
 	bool cancel( QNetworkReply * e )
 	{
-		return this->find_network_reply( e,[]( auto& e,auto& p,auto s ){
+		return this->find_network_reply( e,[ this ]( QNetworkReply& e,position_t s ){
 
-			if( std::get< bool >( p[ s ] ) ){
+			if( std::get< 1 >( m_entries[ s ] ) ){
 
 				e.deleteLater() ;
 			}
 
-			p.erase( p.begin() + s ) ;
+			m_entries.erase( m_entries.begin() + s ) ;
 
 			e.close() ;
 			e.abort() ;
@@ -234,13 +234,13 @@ private:
 				 u,SLOT( networkReply( QNetworkReply * ) ),Qt::QueuedConnection ) ;
 		}
 	}
-	bool find_network_reply( QNetworkReply * e,void( *function )( QNetworkReply&,entries_t&,position_t ) )
+	bool find_network_reply( QNetworkReply * e,std::function< void( QNetworkReply&,position_t ) > function )
 	{
 		for( position_t s = 0 ; s < m_entries.size() ; s++ ){
 
-			if( std::get< QNetworkReply * >( m_entries[ s ] ) == e ){
+			if( std::get< 0 >( m_entries[ s ] ) == e ){
 
-				function( *e,m_entries,s ) ;
+				function( *e,s ) ;
 
 				return true ;
 			}
@@ -251,16 +251,16 @@ private:
 private slots:
 	void networkReply( QNetworkReply * e )
 	{
-		this->find_network_reply( e,[]( auto& e,auto& p,auto s ){
+		this->find_network_reply( e,[ this ]( QNetworkReply& e,position_t s ){
 
-			std::get< function_t >( p[ s ] )( e ) ;
+			std::get< 2 >( m_entries[ s ] )( e ) ;
 
-			if( std::get< bool >( p[ s ] ) ){
+			if( std::get< 1 >( m_entries[ s ] ) ){
 
 				e.deleteLater() ;
 			}
 
-			p.erase( p.begin() + s ) ;
+			m_entries.erase( m_entries.begin() + s ) ;
 		} ) ;
 	}
 };

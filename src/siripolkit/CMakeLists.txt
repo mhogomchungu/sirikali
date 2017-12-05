@@ -5,7 +5,6 @@ include_directories( ${PROJECT_BINARY_DIR}/siripoltik/ )
 
 set( sirikali.pkexecMOC_FILES
 	zulupolkit.h
-        ../3rdParty/tasks/task.hpp
  )
 
 set( sirikali.pkexecSRC
@@ -37,9 +36,9 @@ add_executable( sirikali.pkexec ${sirikali.pkexecMOC} ${sirikali.pkexecSRC} )
 set_target_properties( sirikali.pkexec PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pedantic" )
 
 if( QT5 )
-	target_link_libraries( sirikali.pkexec ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES} )
+	target_link_libraries( sirikali.pkexec ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES} tasks )
 else()
-	target_link_libraries( sirikali.pkexec ${QT_LIBRARIES} ${QT_NETWORK} )
+	target_link_libraries( sirikali.pkexec ${QT_LIBRARIES} ${QT_NETWORK} tasks )
 endif()
 
 install( TARGETS sirikali.pkexec RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} )

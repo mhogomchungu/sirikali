@@ -250,14 +250,13 @@ void utility::Task::execute( const QString& exe,int waitTime,
 			_report_error( "SiriKali: Failed To Parse Polkit Backend Output" ) ;
 		}
 	}else{
-		auto s = ::Task::process::run( exe,{},waitTime,password,
-					       env,std::move( function  ) ).get() ;
+		auto s = ::Task::process::run( exe,{},waitTime,password,env,std::move( function  ) ).get() ;
 
 		m_finished   = s.finished() ;
-		m_exitCode   = s.exitCode() ;
-		m_exitStatus = s.exitStatus() ;
-		m_stdOut     = s.stdOut() ;
-		m_stdError   = s.stdError() ;
+		m_exitCode   = s.exit_code() ;
+		m_exitStatus = s.exit_status() ;
+		m_stdOut     = s.std_out() ;
+		m_stdError   = s.std_error() ;
 	}
 }
 
@@ -622,36 +621,15 @@ QString utility::executableSearchPaths( const QString& e )
 
 QString utility::executableFullPath( const QString& f )
 {
-	if( utility::platformIsWindows() ){
+	return utility2::executableFullPath( f,[]( const QString& e ){
 
-		if( f == "securefs" ){
+		if( utility::platformIsWindows() && e == "securefs" ){
 
 			return utility::securefsPath() ;
 		}else{
 			return QString() ;
 		}
-	}
-
-	QString e = f ;
-
-	if( e == "ecryptfs" ){
-
-		e = "ecryptfs-simple" ;
-	}
-
-	QString exe ;
-
-	for( const auto& it : utility::executableSearchPaths() ){
-
-		exe = it + e ;
-
-		if( utility::pathExists( exe ) ){
-
-			return exe ;
-		}
-	}
-
-	return QString() ;
+	} ) ;
 }
 
 QString utility::cmdArgumentValue( const QStringList& l,const QString& arg,const QString& defaulT )

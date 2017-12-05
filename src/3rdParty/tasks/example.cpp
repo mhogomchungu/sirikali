@@ -317,7 +317,7 @@ static void _testing_checking_multiple_futures()
 
 	Task::future<void>& e = Task::run( fn1,fn2,fn3 ) ;
 
-	const auto& z = e.threads() ;
+	const auto& z = e.all_threads() ;
 
 	std::string s = e.manages_multiple_futures() ? "true" : "false" ;
 

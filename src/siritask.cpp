@@ -128,13 +128,15 @@ static std::pair< bool,utility::Task > _unmount_volume( const QString& exe,
 {
 	auto e = utility::preUnMountCommand() ;
 
+	int timeOut = 10000 ;
+
 	if( e.isEmpty() ){
 
-		return { true,utility::Task::run( exe,10000,usePolkit ).get() } ;
+		return { true,utility::Task::run( exe,timeOut,usePolkit ).get() } ;
 	}else{
-		if( utility::Task::run( e + " " + mountPoint,10000,false ).get().success() ){
+		if( utility::Task::run( e + " " + mountPoint,timeOut,false ).get().success() ){
 
-			return { true,utility::Task::run( exe,10000,usePolkit ).get() } ;
+			return { true,utility::Task::run( exe,timeOut,usePolkit ).get() } ;
 		}else{
 			return { false,utility::Task() } ;
 		}
