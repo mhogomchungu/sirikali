@@ -1,6 +1,6 @@
 
 
-Asynchronous programming in Qt/C++ using tasks,continuations and resumable functions.
+Asynchronous programming in Qt/C++ using tasks and continuations.
 ========
 
 The project seeks to do async based programming in Qt/C++ using modern C++.

@@ -28,5 +28,3 @@ if( WIN32 )
 else()
 	set_target_properties( tasks PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic " )
 endif()
-
-
