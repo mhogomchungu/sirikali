@@ -21,7 +21,6 @@
 #define SECRETS_H
 
 #include "lxqt_wallet.h"
-#include "task.h"
 
 #include <QWidget>
 #include <functional>

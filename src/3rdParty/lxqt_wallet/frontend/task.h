@@ -28,8 +28,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef __TASK_H_INCLUDED__
-#define __TASK_H_INCLUDED__
+#ifndef __TASK_HH_INCLUDED__
+#define __TASK_HH_INCLUDED__
 
 #include <utility>
 #include <future>
@@ -482,4 +482,4 @@ r = Task::await( foo_2,6 ) ;
 
 #endif //end example block
 
-#endif //__TASK_H_INCLUDED__
+#endif //__TASK_HH_INCLUDED__

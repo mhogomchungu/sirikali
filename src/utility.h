@@ -54,7 +54,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#include "task.h"
+#include "task.hpp"
 #include "lxqt_wallet.h"
 #include "favorites.h"
 #include "plugins.h"

@@ -19,8 +19,6 @@
 
 
 #include "plugin.h"
-#include "task.h"
-
 #include "plugins.h"
 
 #include "ui_plugin.h"

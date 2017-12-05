@@ -26,7 +26,7 @@
 #include <QWidget>
 #include <QTimer>
 
-#include "3rdParty/NetworkAccessManager/networkAccessManager.hpp"
+#include "networkAccessManager.hpp"
 #include "utility.h"
 #include "dialogmsg.h"
 #include "siritask.h"

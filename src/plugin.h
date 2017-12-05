@@ -33,7 +33,7 @@ class QEvent ;
 
 #include <QWidget>
 #include "plugins.h"
-#include "task.h"
+#include "task.hpp"
 
 namespace Ui {
 class plugin;

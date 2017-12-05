@@ -121,6 +121,8 @@ endif()
 
 ADD_SUBDIRECTORY( src/3rdParty/tasks )
 ADD_SUBDIRECTORY( src/3rdParty/NetworkAccessManager )
+include_directories( src/3rdParty/tasks )
+include_directories( src/3rdParty/NetworkAccessManager )
 
 if( INTERNAL_LXQT_WALLET )
 
