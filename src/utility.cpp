@@ -1272,7 +1272,7 @@ int utility::networkTimeOut()
 
 		return _settings->value( "NetworkTimeOut" ).toInt() ;
 	}else{
-		int s = 10 ;
+		int s = 5 ;
 		_settings->setValue( "NetworkTimeOut",s ) ;
 		return s ;
 	}

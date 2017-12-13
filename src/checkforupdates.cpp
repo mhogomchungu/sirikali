@@ -20,7 +20,7 @@
 #include "checkforupdates.h"
 
 checkUpdates::checkUpdates( QWidget * widget ) : m_widget( widget ),
-	m_timeOut( 1000 * utility::networkTimeOut() ),m_running( false )
+	m_timeOut( utility::networkTimeOut() ),m_running( false )
 {
 	m_networkRequest.setRawHeader( "Host","api.github.com" ) ;
 	m_networkRequest.setRawHeader( "Accept-Encoding","text/plain" ) ;
@@ -234,7 +234,7 @@ void checkUpdates::checkForUpdate( backends_t::size_type position )
 
 			},[ this ](){
 
-				auto s = QString::number( utility::networkTimeOut() ) ;
+				auto s = QString::number( m_timeOut ) ;
 				auto e = m_widget->tr( "Network Request Failed To Respond Within %1 Seconds." ).arg( s ) ;
 
 				DialogMsg( m_widget ).ShowUIOK( m_widget->tr( "ERROR" ),e ) ;
