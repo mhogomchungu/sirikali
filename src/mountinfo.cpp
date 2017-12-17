@@ -81,9 +81,15 @@ static QStringList _getwinfspInstances( background_thread thread )
 
 		auto e = utility::split( it,' ' ) ;
 
-		auto s = cmd( "info " + e.at( 0 ) + " " + e.at( 1 ) ) ;
+		if( e.size() > 1 ){
 
-		m.append( s.at( 2 ) ) ;
+			auto s = cmd( "info " + e.at( 0 ) + " " + e.at( 1 ) ) ;
+
+			if( s.size() > 2 ){
+
+				m.append( s.at( 2 ) ) ;
+			}
+		}
 	}
 
 	return m ;
@@ -116,16 +122,19 @@ static QStringList _unlocked_volumes( background_thread thread )
 
 			auto e = utility::split( it,' ' ) ;
 
-			if( e.contains( ", read-only," ) ){
+			if( e.size() > 2 ){
 
-				mode = "ro" ;
-			}else{
-				mode = "rw" ;
+				if( e.contains( ", read-only," ) ){
+
+					mode = "ro" ;
+				}else{
+					mode = "rw" ;
+				}
+
+				fs = "fuse." + it.mid( 0,it.indexOf( '@' ) ) ;
+
+				s.append( w.arg( e.at( 2 ),mode,fs,e.at( 0 ) ) ) ;
 			}
-
-			fs = "fuse." + it.mid( 0,it.indexOf( '@' ) ) ;
-
-			s.append( w.arg( e.at( 2 ),mode,fs,e.at( 0 ) ) ) ;
 		}
 
 		return s ;
@@ -154,18 +163,21 @@ static QStringList _unlocked_volumes( background_thread thread )
 
 			auto e = utility::split( it,' ' ) ;
 
-			if( e.contains( " -o ro ," ) ){
+			if( e.size() > 6 ){
 
-				mode = "ro" ;
-			}else{
-				mode = "rw" ;
+				if( e.contains( " -o ro " ) ){
+
+					mode = "ro" ;
+				}else{
+					mode = "rw" ;
+				}
+
+				auto m = e.at( 5 ).mid( 11 ) ;
+
+				fs = "fuse." + m ;
+
+				s.append( w.arg( path( e.last() ),mode,fs,m + "@" + path( e.at( 6 ) ) ) ) ;
 			}
-
-			auto m = e.at( 5 ).mid( 11 ) ;
-
-			fs = "fuse." + m ;
-
-			s.append( w.arg( path( e.last() ),mode,fs,m + "@" + path( e.at( 6 ) ) ) ) ;
 		}
 
 		return s ;
