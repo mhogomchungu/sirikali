@@ -48,6 +48,47 @@ static int poll( struct pollfd * a,int b,int c )
 #endif
 
 enum class background_thread{ True,False } ;
+
+static QStringList _getwinfspInstances( background_thread thread )
+{
+	auto exe = "\"" + utility::winFSpath() + "\\bin\\launchctl-x86.exe\"" ;
+
+	auto cmd = [ & ]( const QString& e ){
+
+		auto s = [ & ](){
+
+			if( thread == background_thread::True ){
+
+				return utility::Task::run( exe + " " + e ).get() ;
+			}else{
+				return utility::Task::run( exe + " " + e ).await() ;
+			}
+		}() ;
+
+		return s.splitOutput( '\n',utility::Task::channel::stdOut ) ;
+	} ;
+
+	auto s = cmd( "list" ) ;
+
+	if( s.size() > 0 && s.first().startsWith( "OK" ) ){
+
+		s.removeFirst() ;
+	}
+
+	QStringList m ;
+
+	for( const auto& it : s ){
+
+		auto e = utility::split( it,' ' ) ;
+
+		auto s = cmd( "info " + e.at( 0 ) + " " + e.at( 1 ) ) ;
+
+		m.append( s.at( 2 ) ) ;
+	}
+
+	return m ;
+}
+
 static QStringList _unlocked_volumes( background_thread thread )
 {
 	if( utility::platformIsLinux() ){
@@ -88,9 +129,46 @@ static QStringList _unlocked_volumes( background_thread thread )
 		}
 
 		return s ;
-
 	}else{
-		return {} ;
+		QStringList s ;
+		QString mode ;
+		QString fs ;
+		const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
+
+		auto path = [](  QString e ){
+
+			if( e.startsWith( '\"' ) ){
+
+				e.remove( 0,1 ) ;
+			}
+
+			if( e.endsWith( '\"' ) ){
+
+				e.truncate( e.size() - 1 ) ;
+			}
+
+			return e ;
+		} ;
+
+		for( const auto& it : _getwinfspInstances( thread ) ){
+
+			auto e = utility::split( it,' ' ) ;
+
+			if( e.contains( " -o ro ," ) ){
+
+				mode = "ro" ;
+			}else{
+				mode = "rw" ;
+			}
+
+			auto m = e.at( 5 ).mid( 11 ) ;
+
+			fs = "fuse." + m ;
+
+			s.append( w.arg( path( e.last() ),mode,fs,m + "@" + path( e.at( 6 ) ) ) ) ;
+		}
+
+		return s ;
 	}
 }
 
@@ -107,7 +185,6 @@ mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& quit ) :
 	}else if( utility::platformIsOSX() ){
 
 		this->osxMonitor() ;
-
 	}else{
 		this->windowsMonitor();
 	}
@@ -370,7 +447,10 @@ void mountinfo::windowsMonitor()
 
 	m_stop = [ this ](){ m_exit = true ; } ;
 
-	Task::run( [ this ](){
+	Task::run( [ & ](){
+
+		auto previous = _getwinfspInstances( background_thread::True ) ;
+		auto now = previous ;
 
 		while( true ){
 
@@ -378,7 +458,16 @@ void mountinfo::windowsMonitor()
 
 				break ;
 			}else{
-				utility::Task::waitForOneSecond() ;
+				utility::Task::waitForTwoSeconds() ;
+
+				now = _getwinfspInstances( background_thread::True ) ;
+
+				if( now != previous ){
+
+					this->updateVolume() ;
+				}
+
+				previous = std::move( now ) ;
 			}
 		}
 
