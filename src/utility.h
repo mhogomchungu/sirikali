@@ -270,7 +270,8 @@ namespace utility
 	void autoOpenFolderOnMount( bool ) ;
 
 	QString securefsPath() ;
-	QString winFSpath() ;
+	QString winFSPpath() ;
+	int winFSPpollingInterval() ;
 
 	bool autoCheck() ;
 	void autoCheck( bool ) ;

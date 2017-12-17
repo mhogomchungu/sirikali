@@ -139,7 +139,7 @@ bool utility::platformIsWindows()
 
 static QSettings * _settings ;
 static QString _securefsPath ;
-static QString _winfsPath ;
+static QString _winfspPath ;
 static QByteArray _cookie ;
 static QString _polkit_socket_path ;
 
@@ -370,7 +370,7 @@ void utility::initGlobals()
 	} ;
 
 	_securefsPath = _read( "SOFTWARE\\WOW6432Node\\WinFsp\\Services\\securefs","Executable" ) ;
-	_winfsPath    = _read( "SOFTWARE\\WOW6432Node\\WinFsp","InstallDir" ) ;
+	_winfspPath    = _read( "SOFTWARE\\WOW6432Node\\WinFsp","InstallDir" ) ;
 #endif
 }
 
@@ -1813,7 +1813,17 @@ QString utility::securefsPath()
 	return _securefsPath ;
 }
 
-QString utility::winFSpath()
+QString utility::winFSPpath()
 {
-	return _winfsPath ;
+	return _winfspPath ;
+}
+
+int utility::winFSPpollingInterval()
+{
+	if( !_settings->contains( "WinFSPpollingInterval" ) ){
+
+		_settings->setValue( "WinFSPpollingInterval",2 ) ;
+	}
+
+	return _settings->value( "WinFSPpollingInterval" ).toInt() ;
 }

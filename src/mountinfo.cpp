@@ -51,7 +51,7 @@ enum class background_thread{ True,False } ;
 
 static QStringList _getwinfspInstances( background_thread thread )
 {
-	auto exe = "\"" + utility::winFSpath() + "\\bin\\launchctl-x86.exe\"" ;
+	auto exe = "\"" + utility::winFSPpath() + "\\bin\\launchctl-x86.exe\"" ;
 
 	auto cmd = [ & ]( const QString& e ){
 
@@ -135,7 +135,7 @@ static QStringList _unlocked_volumes( background_thread thread )
 		QString fs ;
 		const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
 
-		auto path = [](  QString e ){
+		auto path = []( QString e ){
 
 			if( e.startsWith( '\"' ) ){
 
@@ -447,7 +447,9 @@ void mountinfo::windowsMonitor()
 
 	m_stop = [ this ](){ m_exit = true ; } ;
 
-	Task::run( [ & ](){
+	auto interval = utility::winFSPpollingInterval() ;
+
+	Task::run( [ &,interval ](){
 
 		auto previous = _getwinfspInstances( background_thread::True ) ;
 		auto now = previous ;
@@ -458,7 +460,7 @@ void mountinfo::windowsMonitor()
 
 				break ;
 			}else{
-				utility::Task::waitForTwoSeconds() ;
+				utility::Task::wait( interval ) ;
 
 				now = _getwinfspInstances( background_thread::True ) ;
 
