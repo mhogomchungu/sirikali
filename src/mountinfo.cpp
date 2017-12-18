@@ -20,9 +20,10 @@
 #include "mountinfo.h"
 #include "utility.h"
 #include "siritask.h"
-#include "task.h"
+#include "task.hpp"
 
 #include <QMetaObject>
+#include <QStorageInfo>
 
 #ifdef WIN32
 
@@ -463,7 +464,7 @@ void mountinfo::windowsMonitor()
 
 	Task::run( [ &,interval ](){
 
-		auto previous = _getwinfspInstances( background_thread::True ) ;
+		auto previous = QStorageInfo::mountedVolumes() ;
 		auto now = previous ;
 
 		while( true ){
@@ -474,7 +475,7 @@ void mountinfo::windowsMonitor()
 			}else{
 				utility::Task::wait( interval ) ;
 
-				now = _getwinfspInstances( background_thread::True ) ;
+				now = QStorageInfo::mountedVolumes() ;
 
 				if( now != previous ){
 
