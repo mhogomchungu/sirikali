@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>610</width>
-    <height>384</height>
+    <width>621</width>
+    <height>395</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,12 +18,12 @@
     <rect>
      <x>20</x>
      <y>10</y>
-     <width>571</width>
-     <height>341</height>
+     <width>581</width>
+     <height>351</height>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>3</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="widget">
     <attribute name="title">
@@ -33,59 +33,59 @@
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>30</y>
-       <width>441</width>
+       <y>0</y>
+       <width>21</width>
        <height>41</height>
       </rect>
      </property>
      <property name="text">
-      <string>Auto Open Mount Point</string>
+      <string/>
      </property>
     </widget>
     <widget class="QCheckBox" name="cbReUseMountPoint">
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>80</y>
-       <width>441</width>
+       <y>40</y>
+       <width>21</width>
        <height>41</height>
       </rect>
      </property>
      <property name="text">
-      <string>Re Use Mount Point</string>
+      <string/>
      </property>
     </widget>
     <widget class="QCheckBox" name="cbAutoCheckForUpdates">
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>130</y>
-       <width>441</width>
+       <y>80</y>
+       <width>21</width>
        <height>41</height>
       </rect>
      </property>
      <property name="text">
-      <string>Auto Check For Updates</string>
+      <string/>
      </property>
     </widget>
     <widget class="QCheckBox" name="cbStartMinimized">
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>180</y>
-       <width>441</width>
+       <y>120</y>
+       <width>21</width>
        <height>41</height>
       </rect>
      </property>
      <property name="text">
-      <string>Start Minimized</string>
+      <string/>
      </property>
     </widget>
     <widget class="QPushButton" name="pbSelectLanguage">
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>260</y>
+       <y>280</y>
        <width>331</width>
        <height>33</height>
       </rect>
@@ -94,48 +94,155 @@
       <string>Select Language</string>
      </property>
     </widget>
-   </widget>
-   <widget class="QWidget" name="manageFavorites">
-    <attribute name="title">
-     <string>AutoMount</string>
-    </attribute>
+    <widget class="QLabel" name="label_9">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>0</y>
+       <width>401</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Auto Open Mount Point</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_10">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>40</y>
+       <width>401</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Re Use Mount Point</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_11">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>80</y>
+       <width>401</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Auto Check For Updates</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_12">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>120</y>
+       <width>401</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Start Minimized</string>
+     </property>
+    </widget>
     <widget class="QCheckBox" name="cbAutoMountAtStartUp">
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>40</y>
-       <width>411</width>
-       <height>61</height>
+       <y>160</y>
+       <width>21</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_7">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>160</y>
+       <width>401</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="text">
       <string>Auto Mount Favorites Volumes At Startup</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
      </property>
     </widget>
     <widget class="QCheckBox" name="cbAutoMountWhenAvailable">
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>110</y>
+       <y>200</y>
+       <width>21</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="maximumSize">
+      <size>
        <width>431</width>
-       <height>81</height>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_6">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>200</y>
+       <width>401</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="text">
       <string>Auto Mount Favorites Volumes When Available</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
      </property>
     </widget>
     <widget class="QCheckBox" name="cbShowMountDialogWhenAutoMounting">
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>200</y>
-       <width>441</width>
-       <height>61</height>
+       <y>240</y>
+       <width>21</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_8">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>240</y>
+       <width>401</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="text">
       <string>Show Mount Dialog When Auto Mounting</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
      </property>
     </widget>
    </widget>
@@ -149,7 +256,7 @@
        <x>40</x>
        <y>10</y>
        <width>481</width>
-       <height>221</height>
+       <height>231</height>
       </rect>
      </property>
      <property name="title">
@@ -225,7 +332,7 @@
      <property name="geometry">
       <rect>
        <x>140</x>
-       <y>230</y>
+       <y>240</y>
        <width>291</width>
        <height>33</height>
       </rect>
@@ -238,7 +345,7 @@
      <property name="geometry">
       <rect>
        <x>140</x>
-       <y>270</y>
+       <y>280</y>
        <width>291</width>
        <height>33</height>
       </rect>
@@ -407,7 +514,7 @@
    <property name="geometry">
     <rect>
      <x>240</x>
-     <y>350</y>
+     <y>360</y>
      <width>131</width>
      <height>33</height>
     </rect>
@@ -425,9 +532,6 @@
   <tabstop>cbStartMinimized</tabstop>
   <tabstop>pbSelectLanguage</tabstop>
   <tabstop>pushButton</tabstop>
-  <tabstop>cbAutoMountAtStartUp</tabstop>
-  <tabstop>cbAutoMountWhenAvailable</tabstop>
-  <tabstop>cbShowMountDialogWhenAutoMounting</tabstop>
   <tabstop>rbNone</tabstop>
   <tabstop>rbInternalWallet</tabstop>
   <tabstop>rbLibSecret</tabstop>

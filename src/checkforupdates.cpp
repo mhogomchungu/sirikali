@@ -235,9 +235,9 @@ void checkUpdates::checkForUpdate( backends_t::size_type position )
 			},[ this ](){
 
 				auto s = QString::number( m_timeOut ) ;
-				auto e = m_widget->tr( "Network Request Failed To Respond Within %1 Seconds." ).arg( s ) ;
+				auto e = QObject::tr( "Network Request Failed To Respond Within %1 Seconds." ).arg( s ) ;
 
-				DialogMsg( m_widget ).ShowUIOK( m_widget->tr( "ERROR" ),e ) ;
+				DialogMsg( m_widget ).ShowUIOK( QObject::tr( "ERROR" ),e ) ;
 				m_running = false ;
 			} ) ;
 		}

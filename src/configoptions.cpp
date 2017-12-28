@@ -36,6 +36,8 @@ configOptions::configOptions( QWidget * parent,
 {
 	m_ui->setupUi( this ) ;
 
+	//this->setFixedSize( this->window()->size() ) ;
+
 	m_ui->tabWidget->setCurrentIndex( 0 ) ;	
 
 	connect( m_ui->pushButton,&QPushButton::clicked,[ this ](){ this->HideUI() ; } ) ;
@@ -135,12 +137,7 @@ configOptions::configOptions( QWidget * parent,
 
 		m_functions.function_2( ac ) ;
 
-		m_ui->retranslateUi( this ) ;
-
-		for( auto& it : m_actionPair ){
-
-			it.first->setText( tr( it.second ) ) ;
-		}
+		this->translateUI() ;
 	} ) ;
 
 	m_ui->pbKeyStorage->setMenu( [ this ](){
@@ -262,6 +259,16 @@ configOptions::configOptions( QWidget * parent,
 configOptions::~configOptions()
 {
 	delete m_ui ;
+}
+
+void configOptions::translateUI()
+{
+	m_ui->retranslateUi( this ) ;
+
+	for( auto& it : m_actionPair ){
+
+		it.first->setText( tr( it.second ) ) ;
+	}
 }
 
 void configOptions::ShowUI()

@@ -312,6 +312,9 @@ install( TARGETS sirikali BUNDLE DESTINATION . COMPONENT Runtime RUNTIME DESTINA
 file( COPY icons/256x256/sirikali.icns DESTINATION "sirikali.app/Contents/Resources/" )
 file( COPY translations/fr_FR.qm DESTINATION "sirikali.app/Contents/Resources/" )
 file( COPY translations/en_US.qm DESTINATION "sirikali.app/Contents/Resources/" )
+file( COPY translations/de_DE.qm DESTINATION "sirikali.app/Contents/Resources/" )
+file( COPY translations/es_MX.qm DESTINATION "sirikali.app/Contents/Resources/" )
+
 file( COPY changelog DESTINATION "sirikali.app/Contents/Resources/" )
 
 #install( DIRECTORY "${QT_PLUGINS_DIR}/imageformats" DESTINATION ${plugin_dest_dir}/plugins COMPONENT Runtime )
@@ -342,6 +345,7 @@ install( FILES src/sirikali.png DESTINATION           ${CMAKE_INSTALL_DATAROOTDI
 install( FILES translations/en_US.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 install( FILES translations/fr_FR.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 install( FILES translations/es_MX.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
+install( FILES translations/de_DE.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 
 install( FILES src/sirikali.1.gz DESTINATION ${CMAKE_INSTALL_DATADIR}/man/man1/ )
 install( FILES src/sirikali.pkexec.1.gz DESTINATION ${CMAKE_INSTALL_DATADIR}/man/man1/ )

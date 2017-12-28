@@ -45,6 +45,7 @@ public:
 
 	configOptions( QWidget * parent,secrets&,QMenu *,functions ) ;
 	void ShowUI() ;
+	void translateUI() ;
 	~configOptions() ;
 private:
 	void HideUI() ;

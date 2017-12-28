@@ -136,6 +136,8 @@ void sirikali::setUpApp( const QString& volume )
 	m_ui = new Ui::sirikali ;
 	m_ui->setupUi( this ) ;
 
+	m_configOptions.translateUI() ;
+
 	m_ui->pbcreate->setMinimumHeight( 31 ) ;
 	m_ui->pbunlockvolume->setMinimumHeight( 31 ) ;
 	m_ui->pbmenu->setMinimumHeight( 31 ) ;
