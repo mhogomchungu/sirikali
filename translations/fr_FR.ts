@@ -105,12 +105,36 @@ options:
 	-u   Unmount volume.
 	-p   Print a list of unlocked volumes.
 	-s   Option to trigger generation of password hash.</source>
-        <translation type="unfinished"></translation>
+        <translation>
+Options:
+	-d   localisation du chemin d&apos;un volume pour être auto déverrouillé / monté
+	-m   à utiliser pour ouvrir un gestionnaire de fichiers par défaut (l&apos;outil par défaut est xdg-open)
+	-e   démarre l&apos;application sans afficher l&apos;interface graphique
+	-b   Nom du processus pour  to récupérer le mot de passe du volume quand il est ouvert depuis la ligne de commande CLI.
+	     Les processus supportés sont : &quot;internal&quot;,&quot;stdin&quot;,&quot;keyfile&quot;,&quot;osxkeychain&quot;,&quot;kwallet&quot; and &quot;libsecret&quot;.
+	     Les trois premiers sont toujours dispo mais les autres ont des dépendances à compiler.
+	     &quot;internal&quot; option amène SiriKali à lire le mot de passe depuis lxqt-wallet internal backend.
+	     &quot;stdin&quot; option amène SiriKali à lire le mot de passe depuis standard input.
+	     &quot;keyfile&quot; option amène SiriKali à lire le mot de passe depuis un simple fichier.
+	     &quot;libsecret&quot; option amène SiriKali à lire le mot de passe depuis lxqt-wallet libsecret backend.
+	     &quot;kwallet&quot; option amène SiriKali à lire le mot de passe depuis lxqt-wallet kwallet backend.
+	     &quot;osxkeychain&quot; option amène SiriKali à lire le mot de passe depuis lxqt-wallet OSX key chain backend.
+	-k   quand il est ouvert depuis la ligne de commande CLI, la valeur &quot;rw&quot; ouvrira le volume en mode read\write (lecture/écriture)
+	     la valeur &quot;ro&quot; ouvrira le volume en mode read only (lecture seule).
+	-z   Chemin complet du point de montage à utiliser quand il est ouvert depuis la ligne de commande CLI.
+	     Cette option est toutefois facultative.
+	-c   Paramètre le fichier de configuration du volume quand il est ouvert depuis la ligne de commande CLI.
+	-i   Paramètre le temps d&apos;inactivité (en minutes) pour démonter le volume quand le montage a été fait en ligne de commande CLI.
+	-o   Paramètre les options de montage quand le montage va être fait en ligne de commande CLI.
+	-f   Chemin vers le fichier de clé.
+	-u   Démonte le volume.
+	-p   Affiche la liste des volumes déchiffrés.
+	-s   Option pour déclencher la génération du hash du mot de passe.</translation>
     </message>
     <message>
         <location filename="../src/utility.cpp" line="809"/>
         <source>Manage Favorites</source>
-        <translation type="unfinished"></translation>
+        <translation>Gérer les Favoris</translation>
     </message>
     <message>
         <location filename="../src/utility.cpp" line="810"/>
@@ -125,7 +149,7 @@ options:
     <message>
         <location filename="../src/keydialog.cpp" line="1300"/>
         <source>This plugin delegates key generation to an external application</source>
-        <translation type="unfinished"></translation>
+        <translation>Ce plugin transmet la génération de clé à une application extérieure</translation>
     </message>
     <message>
         <location filename="../src/checkforupdates.cpp" line="65"/>
@@ -137,7 +161,7 @@ Dernière version disponible : %4.</translation>
     <message>
         <location filename="../src/checkforupdates.cpp" line="238"/>
         <source>Network Request Failed To Respond Within %1 Seconds.</source>
-        <translation type="unfinished"></translation>
+        <translation>Le réseau n&apos;a pas répondu dans l&apos;espace de temps de %1 secondes.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="41"/>
@@ -157,7 +181,7 @@ Dernière version disponible : %4.</translation>
     <message>
         <location filename="../src/keydialog.cpp" line="56"/>
         <source>OSX KeyChain</source>
-        <translation type="unfinished"></translation>
+        <translation>Porte clés OSX</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1245"/>
@@ -173,7 +197,9 @@ Merci d&apos;utiliser un hashage de la clé de fichier au travers de l&apos;opti
         <source>Effective Key Is Generated With Below Formula:
 
 key = hmac_sha256(password,keyfile contents)</source>
-        <translation type="unfinished"></translation>
+        <translation>La clé actuelle est générée avec la formule ci-dessous:
+
+clé = hmac_sha256(mot de passe,contenu du fichier de clé)</translation>
     </message>
     <message>
         <location filename="../src/checkforupdates.cpp" line="240"/>
@@ -278,12 +304,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configfileoption.ui" line="14"/>
         <source>Set Config File Path</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir le chemin du fichier de configuration</translation>
     </message>
     <message>
         <location filename="../src/configfileoption.ui" line="26"/>
         <source>&amp;Set</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Paramétrer</translation>
     </message>
     <message>
         <location filename="../src/configfileoption.ui" line="39"/>
@@ -293,7 +319,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configfileoption.ui" line="78"/>
         <source>Select A Folder To Create Config File In(Optional).</source>
-        <translation type="unfinished"></translation>
+        <translation>Sélectionner un répertoire pour y créer un fichier de configuration (facultatif).</translation>
     </message>
 </context>
 <context>
@@ -301,12 +327,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configoptions.ui" line="14"/>
         <source>Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Paramétrages</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="30"/>
         <source>General Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Options Générales</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="107"/>
@@ -327,7 +353,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configoptions.ui" line="152"/>
         <source>Start Minimized</source>
-        <translation type="unfinished"></translation>
+        <translation>Lancer Réduit (barre des tâches)</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="94"/>
@@ -337,57 +363,57 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configoptions.ui" line="301"/>
         <source>&amp;KWallet</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;KWallet</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="327"/>
         <source>&amp;None</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Aucun</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="360"/>
         <source>Editable Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Options modifiables</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="453"/>
         <source>Set External Plugin Executable</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir le plugin exécutable externe</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="469"/>
         <source>Set Command To Run After Mount</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir les commandes à exécuter après montage</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="505"/>
         <source>Set Command To Run Before UnMount</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir les commandes à exécuter avant montage</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="178"/>
         <source>Auto Mount Favorites Volumes At Startup</source>
-        <translation type="unfinished"></translation>
+        <translation>Montage Automatique des volumes au démarrage</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="213"/>
         <source>Auto Mount Favorites Volumes When Available</source>
-        <translation type="unfinished"></translation>
+        <translation>Montage Automatique des volumes lorsqu&apos;ils sont disponibles</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="242"/>
         <source>Show Mount Dialog When Auto Mounting</source>
-        <translation type="unfinished"></translation>
+        <translation>Montrer la boîte de dialogue lors du Montage Automatique</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="251"/>
         <source>Manage Keys In Wallets</source>
-        <translation type="unfinished"></translation>
+        <translation>Gérer les clés dans les trousseaux</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="263"/>
         <source>Set Default Wallet To Retrieve Volume Keys</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir le trousseau par défaut pour récupérer les clés de volume</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="275"/>
@@ -398,27 +424,27 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configoptions.ui" line="288"/>
         <source>&amp;Libsecret</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Libsecret</translation>
     </message>
     <message>
         <location filename="../src/configoptions.cpp" line="171"/>
         <source>KWallet</source>
-        <translation type="unfinished"></translation>
+        <translation>KWallet</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="314"/>
         <source>&amp;MACOS Keychain</source>
-        <translation type="unfinished"></translation>
+        <translation>Porte clé &amp;MACOS</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="341"/>
         <source>Change Internal Wallet Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Modifier le mot de passe interne du trousseau</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="354"/>
         <source>&amp;Key Storage</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Clé de stockage</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="372"/>
@@ -433,17 +459,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configoptions.ui" line="523"/>
         <source>&amp;Close</source>
-        <translation type="unfinished"></translation>
+        <translation>Fermer &amp;C</translation>
     </message>
     <message>
         <location filename="../src/configoptions.cpp" line="162"/>
         <source>Libsecret</source>
-        <translation type="unfinished"></translation>
+        <translation>Libsecret</translation>
     </message>
     <message>
         <location filename="../src/configoptions.cpp" line="180"/>
         <source>MACOS Keychain</source>
-        <translation type="unfinished"></translation>
+        <translation>Porte clés MACOS</translation>
     </message>
 </context>
 <context>
@@ -451,17 +477,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/cryfscreateoptions.ui" line="14"/>
         <source>Select Volume Creation Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Sélectionner les options de création du volume</translation>
     </message>
     <message>
         <location filename="../src/cryfscreateoptions.ui" line="36"/>
         <source>Cipher To Use For Encryption.</source>
-        <translation type="unfinished"></translation>
+        <translation>Chiffrement à utiliser pour l&apos;encryptage.</translation>
     </message>
     <message>
         <location filename="../src/cryfscreateoptions.ui" line="55"/>
         <source>Cipher Text Block Size In Bytes.</source>
-        <translation type="unfinished"></translation>
+        <translation>Taille du bloc de texte de chiffrement en bytes.</translation>
     </message>
     <message>
         <location filename="../src/cryfscreateoptions.ui" line="81"/>
@@ -476,7 +502,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/cryfscreateoptions.ui" line="107"/>
         <source>Select A Folder To Create Config File In(Optional).</source>
-        <translation type="unfinished"></translation>
+        <translation>Sélectionner un répertoire pour y créer un fichier de configuration (facultatif).</translation>
     </message>
 </context>
 <context>
@@ -512,7 +538,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites.ui" line="91"/>
         <source>Config File Path (Optional)</source>
-        <translation>Chemin du fichier de configuration (optionnel)</translation>
+        <translation>Chemin du fichier de configuration (facultatif)</translation>
     </message>
     <message>
         <location filename="../src/favorites.ui" line="107"/>
@@ -522,7 +548,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites.ui" line="196"/>
         <source>Mount Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Options de montage</translation>
     </message>
     <message>
         <location filename="../src/favorites.ui" line="207"/>
@@ -562,7 +588,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites.ui" line="214"/>
         <source>Mount Options (Optional And Comma Separated)</source>
-        <translation type="unfinished"></translation>
+        <translation>Options de montage (facultatif / séparation par virgules)</translation>
     </message>
     <message>
         <location filename="../src/favorites.ui" line="26"/>
@@ -619,7 +645,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites.cpp" line="327"/>
         <source>Mount Options Can Not Contain &quot;-&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Les options de montage ne peuvent pas comporter &quot;-&quot;</translation>
     </message>
     <message>
         <location filename="../src/favorites.cpp" line="372"/>
@@ -643,7 +669,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/filemanager.ui" line="14"/>
         <location filename="../src/filemanager.cpp" line="49"/>
         <source>Set File Manager</source>
-        <translation type="unfinished">Définir le gestionnaire de fichiers</translation>
+        <translation>Définir le gestionnaire de fichiers</translation>
     </message>
     <message>
         <location filename="../src/filemanager.ui" line="26"/>
@@ -658,17 +684,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/filemanager.cpp" line="40"/>
         <source>Enter Below The Name Of The Application You Want To Be Used To Open Mount Points.</source>
-        <translation type="unfinished"></translation>
+        <translation>Tapez ci dessous le nom de l&apos;application que vous voulez utiliser pour ouvrir les points de montage.</translation>
     </message>
     <message>
         <location filename="../src/filemanager.cpp" line="51"/>
         <source>Set Executable For &quot;ExternalExecutable&quot; Plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir l&apos;exécutable pour le plugin &quot;ExecutableExterne&quot;</translation>
     </message>
     <message>
         <location filename="../src/filemanager.cpp" line="53"/>
         <source>Enter Below The Name Of The External Executable And Its Arguments To Use When Invoking &quot;ExternalExecutable&quot; Plugin.</source>
-        <translation type="unfinished"></translation>
+        <translation>Tapez ci dessous le nom de l&apos;exécutable externe et les arguments que vous voulez utiliser quand vous utilisez le plugin &quot;ExécutableExterne&quot;.</translation>
     </message>
 </context>
 <context>
@@ -676,37 +702,37 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/gocryptfscreateoptions.ui" line="14"/>
         <source>Select Volume Creation Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Sélectionner les options de création du volume</translation>
     </message>
     <message>
         <location filename="../src/gocryptfscreateoptions.ui" line="36"/>
         <source>Cipher To Use For File Contents Encryption.</source>
-        <translation type="unfinished"></translation>
+        <translation>Chiffrement à utiliser pour l&apos;encryptage du contenu du fichier.</translation>
     </message>
     <message>
         <location filename="../src/gocryptfscreateoptions.ui" line="55"/>
         <source>&amp;OK</source>
-        <translation type="unfinished">&amp;OK</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/gocryptfscreateoptions.ui" line="68"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished">&amp;Annuler</translation>
+        <translation>&amp;Annuler</translation>
     </message>
     <message>
         <location filename="../src/gocryptfscreateoptions.ui" line="81"/>
         <source>Select A Folder To Create Config File In(Optional).</source>
-        <translation type="unfinished"></translation>
+        <translation>Sélectionner un répertoire pour y créer un fichier de configuration (facultatif).</translation>
     </message>
     <message>
         <location filename="../src/gocryptfscreateoptions.ui" line="138"/>
         <source>Encrypt File Na&amp;mes</source>
-        <translation type="unfinished"></translation>
+        <translation>No&amp;ms des fichiers à chiffrer</translation>
     </message>
     <message>
         <location filename="../src/gocryptfscreateoptions.ui" line="151"/>
         <source>Do &amp;Not Encrypt File Names</source>
-        <translation type="unfinished"></translation>
+        <translation>Noms des fichiers à &amp;Ne pas chiffrer</translation>
     </message>
 </context>
 <context>
@@ -714,12 +740,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/help.ui" line="14"/>
         <source>FAQ</source>
-        <translation type="unfinished"></translation>
+        <translation>Foire Aux Questions</translation>
     </message>
     <message>
         <location filename="../src/help.ui" line="26"/>
         <source>&amp;Close</source>
-        <translation type="unfinished"></translation>
+        <translation>Fermer &amp;C</translation>
     </message>
     <message>
         <location filename="../src/help.ui" line="54"/>
@@ -755,12 +781,12 @@ p, li { white-space: pre-wrap; }
 &lt;ol style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Click &amp;quot;Menu-&amp;gt;Settings-&amp;gt;Manage Keys In Wallets-&amp;gt;Key Storage&amp;quot; and then select your preferred key storage system.&lt;/li&gt;
 &lt;li style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;On the dialog window that shows up,click &amp;quot;Add&amp;quot;.&lt;/li&gt;
 &lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;On the dialog window that shows up,add your password in the appropriate fields. &amp;quot;Volume ID&amp;quot; is the full path to the encrypted volume folder. Click the button to the right of the field to invoke file dialog window where you will get the opportunity to browse to where the folder is to select it.&lt;/li&gt;&lt;/ol&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/help.ui" line="99"/>
         <source>Open &amp;PDF</source>
-        <translation type="unfinished"></translation>
+        <translation>Ouvrir le &amp;PDF</translation>
     </message>
 </context>
 <context>
@@ -802,7 +828,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.ui" line="290"/>
         <source>Set Key</source>
-        <translation type="unfinished"></translation>
+        <translation>Paramétrer une clé</translation>
     </message>
     <message>
         <location filename="../src/keydialog.ui" line="303"/>
@@ -812,12 +838,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.ui" line="358"/>
         <source>Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Mot de passe</translation>
     </message>
     <message>
         <location filename="../src/keydialog.ui" line="387"/>
         <source>TextLabel</source>
-        <translation type="unfinished"></translation>
+        <translation>ÉtiquetteTexte</translation>
     </message>
     <message>
         <location filename="../src/keydialog.ui" line="155"/>
@@ -882,7 +908,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.cpp" line="284"/>
         <source>(%1/%2) Unlocking &quot;%3&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>(%1/%2) dévérouille &quot;%3&quot;</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="424"/>
@@ -963,12 +989,12 @@ Mot de passe entré incorrect.</translation>
     <message>
         <location filename="../src/keydialog.cpp" line="858"/>
         <source>A Space Character Is Not Allowed In Paths When Using Ecryptfs Backend And Polkit.</source>
-        <translation type="unfinished"></translation>
+        <translation>Le caractére espace n&apos;est pas autorisé quand on utilise un processus Ecryptfs et le Polkit.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="863"/>
         <source>This Backend Requires Root&apos;s Privileges And An attempt To Acquire Them Has Failed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ce processus nécessite des privilèges Root et la tentative de les obtenir a échoué.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="868"/>
@@ -989,7 +1015,9 @@ L&apos;exécutable Cryfs est introuvable.</translation>
         <source>SiriKali Can Not Unlock This Volume Because Its FileSystem Has To Manually Be Converted To The Version Of Cryfs That Is Currently In Use.
 
 Run Cryfs With This Volume To Manually Update This Volume&apos;s FileSystem.</source>
-        <translation type="unfinished"></translation>
+        <translation>SiriKali ne peut pas dévérouiller ce volume car le système de fichiers doit être manuellement converti dans la version de CryFS utilisée actuellement.
+
+Exécutez CryFS sur ce volume pour manuellement mettre à jour le système de fichiers du volume.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="883"/>
@@ -1041,7 +1069,7 @@ Volume non supporté rencontré.</translation>
     <message>
         <location filename="../src/keydialog.cpp" line="1067"/>
         <source>Failed To Generate Key.</source>
-        <translation type="unfinished"></translation>
+        <translation>Echec de la génération de clé.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1321"/>
@@ -1116,12 +1144,12 @@ Volume non supporté rencontré.</translation>
     <message>
         <location filename="../src/options.ui" line="138"/>
         <source>Mount The Volume With Below Mount Options.</source>
-        <translation type="unfinished"></translation>
+        <translation>Monter le volume avec les options de montage ci-dessous.</translation>
     </message>
     <message>
         <location filename="../src/options.ui" line="157"/>
         <source>&amp;Set</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Paramétrer</translation>
     </message>
     <message>
         <location filename="../src/options.ui" line="170"/>
@@ -1281,7 +1309,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/securefscreateoptions.ui" line="14"/>
         <source>Choose Format Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir le type de format</translation>
     </message>
     <message>
         <location filename="../src/securefscreateoptions.ui" line="29"/>
@@ -1290,17 +1318,21 @@ p, li { white-space: pre-wrap; }
 The &quot;full format&quot; maps files, directories and symlinks in the virtual filesystem all to regular files in the underlying filesystem. The directory structure is flattened and recorded as B-trees in files.
 
 The lite format has become the default on Unix-like operating systems as it is much faster and features easier conflict resolution, especially when used with DropBox, Google Drive, etc. The full format, however, leaks fewer information about the filesystem hierarchy, runs relatively independent of the features of the underlying filesystem, and is in general more secure.</source>
-        <translation type="unfinished"></translation>
+        <translation>Le &quot;format allégé&quot; chiffre simplement les noms de fichiers et le contenu des fichiers séparément, de la même façon que ce qu&apos;opère encfs, avec toutefois plus de sécurité.
+
+Le &quot;format complet&quot; mappe les fichiers, répertoires, liens symboliques du système de fichiers virtuel dans des fichiers réguliers sous-jacents du système de fichiers. La structure de l&apos;arborescence est réduite et sauvegardée des fichiers B-arbres.
+
+Le &quot;format allégé&quot; est devenu le mode par défaut des systèmes basés Unix car il est plus rapide et plus permet une résolution plus facile de conflits notamment lors de l&apos;utilisation de DropBox, Google Drive, etc. Le &quot;format complet&quot;, toutefois, perd moins d&apos;infos sur la hiérarchie du système de fichiers, s&apos;exécute plus indépendamment du système de fichiers sous-jacent et il est en général plus sécurisé.</translation>
     </message>
     <message>
         <location filename="../src/securefscreateoptions.ui" line="50"/>
         <source>Lite Format</source>
-        <translation type="unfinished"></translation>
+        <translation>Format allégé</translation>
     </message>
     <message>
         <location filename="../src/securefscreateoptions.ui" line="55"/>
         <source>Full Format</source>
-        <translation type="unfinished"></translation>
+        <translation>Format complet</translation>
     </message>
     <message>
         <location filename="../src/securefscreateoptions.ui" line="69"/>
@@ -1315,7 +1347,7 @@ The lite format has become the default on Unix-like operating systems as it is m
     <message>
         <location filename="../src/securefscreateoptions.ui" line="95"/>
         <source>Select A Folder To Create Config File In.</source>
-        <translation type="unfinished"></translation>
+        <translation>Sélectionner un répertoire pour y créer un fichier de configuration.</translation>
     </message>
 </context>
 <context>
@@ -1445,23 +1477,24 @@ The lite format has become the default on Unix-like operating systems as it is m
     <message>
         <location filename="../src/sirikali.cpp" line="342"/>
         <source>Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Paramétrages</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="347"/>
         <source>FAQ</source>
-        <translation type="unfinished"></translation>
+        <translation>Foire Aux Questions</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="468"/>
         <source>SiriKali Failed To Connect To siriPolkit.
 Please Report This Serious Bug.</source>
-        <translation type="unfinished"></translation>
+        <translation>SiriKali a échoué à la connexion de siriPolkit.
+Merci de reporter ce bug important.</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="516"/>
         <source>&quot;%1&quot; Folder Must Be Writable</source>
-        <translation type="unfinished"></translation>
+        <translation>&quot;%1&quot; Répertoire devant être autorisé en écriture</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="943"/>
@@ -1536,7 +1569,7 @@ Please Report This Serious Bug.</source>
     <message>
         <location filename="../src/sirikali.cpp" line="1271"/>
         <source>&amp;Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Quitter</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="1358"/>
