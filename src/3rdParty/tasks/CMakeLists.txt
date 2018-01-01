@@ -2,7 +2,7 @@ cmake_minimum_required( VERSION 3.0 )
 
 project( tasks )
 
-add_definitions( -Wextra -Wall -pedantic )
+add_definitions( -Wextra -Wall -pedantic -std=c++11 )
 
 set( CMAKE_CXX_STANDARD 11 )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
