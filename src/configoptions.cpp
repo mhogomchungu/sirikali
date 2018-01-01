@@ -36,9 +36,9 @@ configOptions::configOptions( QWidget * parent,
 {
 	m_ui->setupUi( this ) ;
 
-	//this->setFixedSize( this->window()->size() ) ;
+	this->setFixedSize( this->window()->size() ) ;
 
-	m_ui->tabWidget->setCurrentIndex( 0 ) ;	
+	m_ui->tabWidget->setCurrentIndex( 0 ) ;
 
 	connect( m_ui->pushButton,&QPushButton::clicked,[ this ](){ this->HideUI() ; } ) ;
 
