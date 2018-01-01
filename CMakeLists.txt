@@ -4,7 +4,7 @@ set_property( GLOBAL PROPERTY ALLOW_DUPLICATE_CUSTOM_TARGETS ON )
 
 project( sirikali )
 
-set( PGR_VERSION "1.3.1" )
+set( PGR_VERSION "1.3.2" )
 
 add_definitions( -Wextra -Wall -pedantic )
 
@@ -73,7 +73,7 @@ file( WRITE ${PROJECT_BINARY_DIR}/version.h "
 \n
 #ifndef SIRIKALI_VERSION
 #define SIRIKALI_VERSION
-#define VERSION_STRING \"Version  : ${PGR_VERSION}\\nCopyright: 2016-2017 Francis Banyikwa,mhogomchungu@gmail.com\\nLicense  : GPLv2+\"
+#define VERSION_STRING \"Version  : ${PGR_VERSION}\\nCopyright: 2016-2018 Francis Banyikwa,mhogomchungu@gmail.com\\nLicense  : GPLv2+\"
 #endif
 \n" )
 
@@ -245,7 +245,7 @@ if( APPLE )
 
 	SET( MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/MacOSXBundleInfo.plist.in" )
 	SET( MACOSX_BUNDLE_BUNDLE_NAME "SiriKali" )
-	SET( MACOSX_BUNDLE_COPYRIGHT "(c)2016-2017,Francis Banyikwa,mhogomchungu@gmail.com" )
+	SET( MACOSX_BUNDLE_COPYRIGHT "(c)2016-2018,Francis Banyikwa,mhogomchungu@gmail.com" )
 	SET( MACOSX_BUNDLE_BUNDLE_VERSION "${PGR_VERSION}" )
 	SET( MACOSX_BUNDLE_GUI_IDENTIFIER "com.crypto.SiriKali" )
 	SET( MACOSX_BUNDLE_SHORT_VERSION_STRING "${PGR_VERSION}" )
