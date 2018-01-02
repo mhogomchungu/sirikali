@@ -25,6 +25,7 @@ override_dh_auto_build:
 get-orig-source:  $(info I: $(PKG)_$(VER))
 	@echo "# Downloading..."
 	uscan --noconf --verbose --rename --destdir=$(CURDIR) --check-dirname-level=0 --force-download --download-version $(VER) $(PKD)
+	mv SiriKali-$(VER).tar.xz.pgp $(PKG)_$(VER).orig.tar.xz.asc
 
 
 .PHONY: override_dh_auto_configure get-orig-source
