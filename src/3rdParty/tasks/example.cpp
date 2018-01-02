@@ -28,7 +28,7 @@
  * SUCH DAMAGE.
  */
 
-#include "task.h"
+#include "task.hpp"
 #include "example.h"
 
 #include <QString>
@@ -84,7 +84,7 @@ static void _test_run_then()
 	 */
 	_printThreadID() ;
 
-	Task::run<QString>( [](){
+	Task::run( [](){
 
 		/*
 		 * print the thread id to know we are on what thread.
@@ -129,7 +129,7 @@ static void _testing_task_await()
 {
 	_print( "Testing Task::await()" ) ;
 
-	QString e = Task::await<QString>( _longRunningTask ) ;
+	QString e = Task::await( _longRunningTask ) ;
 
 	_print( e.toLatin1().constData() ) ;
 
@@ -317,7 +317,7 @@ static void _testing_checking_multiple_futures()
 
 	Task::future<void>& e = Task::run( fn1,fn2,fn3 ) ;
 
-	const auto& z = e.threads() ;
+	const auto& z = e.all_threads() ;
 
 	std::string s = e.manages_multiple_futures() ? "true" : "false" ;
 
@@ -327,6 +327,55 @@ static void _testing_checking_multiple_futures()
 
 void example::run()
 {
+	auto aa = []( int x ){ return x ; } ;
+
+	auto bb = [](){	return 6 ; } ;
+
+	auto cc = [](){} ;
+
+	auto dd = []( int x ){ if(x){} ; } ;
+
+	std::function< int(int) > aaa = aa ;
+
+	Task::run( aaa,4 ).get() ;
+	Task::run( aa,4 ).get() ;
+	Task::run( dd,4 ).get() ;
+
+	Task::run( bb ).get() ;
+	Task::run( cc ).get() ;
+
+	Task::await( bb ) ;
+	Task::await( bb ) ;
+
+	auto& tt = Task::run( bb ) ;
+
+	Task::await( tt ) ;
+	Task::await( Task::run( cc ) ) ;
+
+	Task::await( aa,4 ) ;
+
+	Task::await( dd,4 ) ;
+
+	Task::await( bb ) ;
+
+	Task::await( cc ) ;
+
+	auto& zz = Task::run( bb ) ;
+
+	Task::await( zz ) ;
+	Task::await( Task::run( cc ) ) ;
+
+	Task::exec( aaa,4 );
+	Task::exec( aa,4 ) ;
+	Task::exec( dd,4 ) ;
+
+	Task::exec( bb ) ;
+	Task::exec( cc ) ;
+
+	Task::run( bb,bb ).get() ;
+
+	Task::run( Task::run( cc ),Task::run( cc ) ).get() ;
+
 	_testing_checking_multiple_futures() ;
 
 	_testing_queue_with_no_results() ;

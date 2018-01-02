@@ -17,40 +17,44 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SECUREFSCREATEOPTIONS_H
-#define SECUREFSCREATEOPTIONS_H
+#ifndef CONFIGFILEOPTION_H
+#define CONFIGFILEOPTION_H
+
+#include <QDialog>
+#include <QStringList>
+#include <QCloseEvent>
 
 #include <functional>
 #include <utility>
 
-#include <QCloseEvent>
-#include <QString>
-#include <QStringList>
-#include <QDialog>
-
 namespace Ui {
-class securefscreateoptions;
+class configFileOption;
 }
 
-class securefscreateoptions : public QDialog
+class configFileOption : public QDialog
 {
 	Q_OBJECT
 public:
-	static void instance( QWidget * parent,std::function< void( const QStringList& ) > function )
+	static void instance( QWidget * e,
+			      const QString& app,
+			      std::function< void( const QStringList& ) > s )
 	{
-		new securefscreateoptions( parent,std::move( function ) ) ;
+		new configFileOption( e,app,std::move( s ) ) ;
 	}
-	explicit securefscreateoptions( QWidget * parent,std::function< void( const QStringList& ) > ) ;
-	~securefscreateoptions() ;
+
+	explicit configFileOption( QWidget * parent,
+				   const QString&,
+				   std::function< void( const QStringList& ) > ) ;
+	~configFileOption() ;
 private slots:
-	void pbOK() ;
 	void pbCancel() ;
-	void pbConfigFilePath() ;
+	void pbSet() ;
+	void pbSetConfigFile() ;
 private:
-	void HideUI() ;
-	void closeEvent( QCloseEvent * ) ;
-	Ui::securefscreateoptions * m_ui ;
+	void closeEvent( QCloseEvent * e ) ;
+	Ui::configFileOption * m_ui ;
 	std::function< void( const QStringList& ) > m_function ;
+	QString m_app ;
 };
 
-#endif // SECUREFSCREATEOPTIONS_H
+#endif // CONFIGFILEOPTION_H

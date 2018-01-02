@@ -1,6 +1,6 @@
 
 
-Asynchronous programming in Qt/C++ using tasks,continuations and resumable functions.
+Asynchronous programming in Qt/C++ using tasks and continuations.
 ========
 
 The project seeks to do async based programming in Qt/C++ using modern C++.
@@ -29,7 +29,7 @@ can be retrieved through the future's below public methods:
                background thread.
 
             3. Unsuspends the current thread when the wrapped function finish and let
-               the thread current continue normally.
+               the current thread continue normally.
 
             The suspension at step 1 is done without blocking the thread and hence the
             suspension can be done in the GUI thread and the GUI will remain responsive.
@@ -40,13 +40,13 @@ can be retrieved through the future's below public methods:
 5. .cancel(). This method can be used to cancel a future. It is important to know
               that this method does not terminate a running thread that is powering a future, it just
               releases memory used by a future and this method should be used if a future is to be discarded
-	      after it it is acquired but never used. To terminate a thread,call .threads() method,locate a QThread
+	      after it it is acquired but never used. To terminate a thread,call .all_threads() method,locate a QThread
 	      instance you want to terminate and call .terminate() method on the instance.
 
-6. .threads(). This method returns a vector of QThreads that are powering futures.
-               The vector will contain a single entry if this future powers its own task. If this future
-               manages other futures,then the returned vector will contain QThread pointers that are in
-               the same order as tasks/futures passed to Task::run().
+6. .all_threads(). This method returns a vector of QThreads that are powering futures.
+                   The vector will contain a single entry if this future powers its own task. If this future
+                   manages other futures,then the returned vector will contain QThread pointers that are in
+                   the same order as tasks/futures passed to Task::run().
 
 7. .start(). This method is to be used if a future is to be run without caring about its result.
 	     Use this API if you want a future to run but dont want to use any of the above mentioned methods.
@@ -82,7 +82,7 @@ int r = foo.await() ;
 
 int foo() ; //function prototype
 
-int r = Task::await<int>( foo ) ;
+int r = Task::await( foo ) ;
 
 ```
 
@@ -127,33 +127,23 @@ Task::future<void>& foo = Task::run( bar ) ;
 
 int foo() ; //function prototype
 
-Task::future<int>& foo = Task::run<int>( foo ) ;
+Task::future<int>& foo = Task::run( foo ) ;
 
 ```
 
-**3. Creating a future that combines multiple functions. .get() and .queue() on the future will cause passed in function to run sequentially and in the order they are specified. .await() and .then() will cause passed in function to run concurrently. The result of the future is undefined and a function that takes no argument should be used if .await() method of the future is called.**
+**3. Creating a future that combines multiple functions. .get() and .queue() on the future will cause passed in function to run sequentially and in the order they are specified. .await() and .then() will cause passed in function to run concurrently.**
 
 ```c++
 
-int foo() ; //function prototype
-int bar() ; //function prototype
+void foo() ; //function prototype
+void bar() ; //function prototype
 
-Task::future<int>& foo = Task::run<int>( foo,bar ) ;
-
-```
-
-**4. Creating a future that combines multiple futures. .get() and .queue() on the future will cause passed in futures to run sequentially and in the order they are specified. .await() and .then() will cause passed in futures to run concurrently. The result of the future is undefined and a function that takes no argument should be used if .await() method of the future is called.**
-
-```c++
-
-Task::future<int>& foo() ; //function prototype
-Task::future<int>& bar() ; //function prototype
-
-Task::future<int>& foo = Task::run<int>( foo,bar ) ;
+Task::future<void>& foo = Task::run( foo,bar ) ;
 
 ```
 
-**5. Creating a future that combines multiple tasks and their continuations that take no argument. .get() and .queue() on the future will cause passed in functions to run sequentially and in the order they are specified. .await() and .then() will cause passed in function to run concurrently.**
+**4. Creating a future that combines multiple tasks and their continuations that take no argument. .get() and .queue() on the future will cause passed in functions to run sequentially and in the order they are specified. .await() and .then() will cause passed in function to run concurrently.**
+
 ```c++
 
 void foo() ; //function prototype
@@ -162,12 +152,11 @@ void bar() ; //function prototype
 void cfoo() ; //function prototype
 void cbar() ; //function prototype
 
-Task::future<void>& e = Task::run( Task::void_pair{ foo,cfoo },
-				   Task::void_pair{ bar,cbar } ) ;
+Task::future<void>& e = Task::run( Task::void_pair{ foo,cfoo },Task::void_pair{ bar,cbar } ) ;
 
 ```
 
-**6. Creating a future that combines multiple tasks and their continuations that takes an argument. .get() and .queue() on the future will cause passed in pairs to run sequentially and in the order they are specified. .await() and .then() will cause passed in pairs to run concurrently. The result of the future is undefined and a function that takes no argument should be used if .await() method of the future is called.**
+**5. Creating a future that combines multiple tasks and their continuations that takes an argument. .get() and .queue() on the future will cause passed in pairs to run sequentially and in the order they are specified. .await() and .then() will cause passed in pairs to run concurrently. The result of the future is undefined and a function that takes no argument should be used if .await() method of the future is called.**
 
 ```c++
 
@@ -177,8 +166,7 @@ int bar() ; //function prototype
 void cfoo( int ) ; //function prototype
 void cbar( int ) ; //function prototype
 
-Task::future<int>& e = Task::run( Task::pair<int>{ foo,cfoo },
-				  Task::pair<int>{ bar,cbar } ) ;
+Task::future<int>& e = Task::run( Task::pair<int>{ foo,cfoo },Task::pair<int>{ bar,cbar } ) ;
 ```
 
 Further documentation of how to use the library is here[1] and here[2].

@@ -20,14 +20,64 @@
 #ifndef CHECKFORUPDATES_H
 #define CHECKFORUPDATES_H
 
-class QWidget ;
+#include <QFile>
+#include <QVector>
+#include <QObject>
+#include <QWidget>
+#include <QTimer>
 
-namespace checkForUpdates
+#include "networkAccessManager.hpp"
+#include "utility.h"
+#include "dialogmsg.h"
+#include "siritask.h"
+#include "version.h"
+#include "json.h"
+
+#include <utility>
+#include <array>
+
+class checkUpdates : public QObject
 {
-	bool autoCheck( void ) ;
-	void autoCheck( bool ) ;
+	Q_OBJECT
+public:
+	void run( bool e ) ;
 
-	void check( QWidget *,bool ) ;
-}
+	checkUpdates( QWidget * widget ) ;
+private:
+	void check( bool ) ;
+
+	void showResult() ;
+
+	QString InstalledVersion( const siritask::volumeType& e ) ;
+	QString latestVersion( const QByteArray& data ) ;
+
+	using backends_t = std::array< std::pair< const char *,const char * >,6 > ;
+
+	void checkForUpdate( backends_t::size_type position = 0 ) ;
+
+	QWidget * m_widget ;
+
+	QNetworkRequest m_networkRequest ;
+
+	NetworkAccessManager m_network ;
+
+	QVector< QStringList > m_results ;
+
+	int m_timeOut ;
+
+	bool m_autocheck ;
+
+	bool m_running ;
+
+	backends_t m_backends = { {
+
+		{ "sirikali","https://api.github.com/repos/mhogomchungu/sirikali/releases" },
+		{ "cryfs","https://api.github.com/repos/cryfs/cryfs/releases" },
+		{ "gocryptfs","https://api.github.com/repos/rfjakob/gocryptfs/releases" },
+		{ "securefs","https://api.github.com/repos/netheril96/securefs/releases" },
+		{ "encfs","https://api.github.com/repos/vgough/encfs/releases" },
+		{ "ecryptfs-simple","https://api.github.com/repos/mhogomchungu/ecryptfs-simple/releases" }
+	} } ;
+} ;
 
 #endif // CHECKFORUPDATES_H

@@ -129,20 +129,9 @@ void walletconfiginput::slotCancel()
 
 void walletconfiginput::pbImageFilePath()
 {
-	auto x = QFileDialog::getExistingDirectory( this,tr( "Select A Volume" ),
-						    utility::homePath(),QFileDialog::ShowDirsOnly ) ;
+	auto x = utility::getExistingDirectory( this,tr( "Select A Volume" ),utility::homePath() ) ;
 
 	if( !x.isEmpty() ){
-
-		while( true ){
-
-			if( x.endsWith( '/' ) ){
-
-				x.truncate( x.length() - 1 ) ;
-			}else{
-				break ;
-			}
-		}
 
 		this->setvolumeID( x ) ;
 	}

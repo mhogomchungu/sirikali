@@ -22,16 +22,23 @@ SOURCES += \
     readonlywarning.cpp \
     walletconfiginput.cpp \
     dialogmsg.cpp \
+    gocryptfscreateoptions.cpp \
     monitor_mountinfo.cpp \
     tablewidget.cpp \
     options.cpp \
     securefscreateoptions.cpp \
-    cryfscreateoptions.cpp
+    cryfscreateoptions.cpp \
+    configfileoption.cpp \
+    help.cpp \
+    configoptions.cpp
 
 HEADERS += \
     securefscreateoptions.h \
     cryfscreateoptions.h \
     dialogok.h \
+    configoptions.h \
+    gocryptfscreateoptions.h \
+    configfileoption.h \
     checkforupdates.h \
     favorites.h \
     filemanager.h \
@@ -40,6 +47,7 @@ HEADERS += \
     sirikali.h  \
     keydialog.h  \
     plugin.h   \
+    help.h \
     walletconfig.h   \
     siritask.h  \
     readonlywarning.h \
@@ -62,9 +70,13 @@ FORMS += \
     cryfscreateoptions.ui \
     dialogok.ui \
     sirikali.ui \
+    gocryptfscreateoptions.ui \
+    configoptions.ui \
+    configfileoption.ui \
     favorites.ui \
     filemanager.ui \
     plugin.ui \
+    help.ui \
     walletconfiginput.ui \
     dialogmsg.ui \
     keydialog.ui \
@@ -77,4 +89,6 @@ FORMS += \
 TRANSLATIONS = ../translations/en_US.ts \
                ../translations/fr_FR.ts \
                ../translations/es_MX.ts \
-               ../translations/ar_SA.ts
+               ../translations/ar_SA.ts \
+               ../translations/de_DE.ts
+

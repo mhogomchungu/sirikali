@@ -20,7 +20,7 @@
 
 #include "zulupolkit.h"
 #include "siriPolkit.h"
-#include "../task.h"
+#include "task.hpp"
 #include "../utility2.h"
 #include "json.h"
 
@@ -28,68 +28,12 @@
 #include <memory>
 #include <iostream>
 
-#include <QProcess>
 #include <QCoreApplication>
 #include <QFile>
 
 #include <sys/types.h>
 #include <sys/stat.h>
-
-namespace utility
-{
-	struct Task
-	{
-		template< typename T >
-		Task( const T& a ) : stdOut( a ),stdError( a )
-		{
-		}
-		Task()
-		{
-		}
-		Task( const QString& exe,const QString& password )
-		{
-			QProcess p ;
-
-			p.start( exe ) ;
-
-			p.waitForStarted() ;
-
-			p.write( password.toLatin1() + '\n' ) ;
-
-			p.closeWriteChannel() ;
-
-			finished   = p.waitForFinished( -1 ) ;
-			exitCode   = p.exitCode() ;
-			exitStatus = p.exitStatus() ;
-			stdOut     = p.readAllStandardOutput() ;
-			stdError   = p.readAllStandardError() ;
-		}
-
-		QByteArray stdOut ;
-		QByteArray stdError ;
-
-		int exitCode   = 255 ;
-		int exitStatus = 255 ;
-		bool finished  = true ;
-	};
-
-	QString executableFullPath( const QString& e )
-	{
-		QString exe ;
-
-		for( const auto& it : utility2::executableSearchPaths() ){
-
-			exe = it + e ;
-
-			if( QFile::exists( exe ) ){
-
-				return exe ;
-			}
-		}
-
-		return QString() ;
-	}
-}
+#include <unistd.h>
 
 static bool _terminalEchoOff( struct termios * old,struct termios * current )
 {
@@ -98,8 +42,8 @@ static bool _terminalEchoOff( struct termios * old,struct termios * current )
 		return false ;
 	}
 
-	*current = *old;
-	current->c_lflag &= ~ECHO;
+	*current = *old ;
+	current->c_lflag &= ~ECHO ;
 
 	if( tcsetattr( 1,TCSAFLUSH,current ) != 0 ){
 
@@ -119,6 +63,36 @@ zuluPolkit::~zuluPolkit()
 	QFile::remove( m_socketPath ) ;
 }
 
+#if QT_VERSION > QT_VERSION_CHECK( 5,0,0 )
+	#include <QFileDevice>
+
+	#define zuluPermission QFileDevice
+#else
+	#define zuluPermission QFile
+#endif
+
+static void _set_path_writable_by_others( const QString& e )
+{
+	QFile f( e ) ;
+
+	for( decltype( umask( 0 ) ) i = 0 ; i < 1000 ; i++ ){
+
+		umask( i ) ;
+
+		f.open( QIODevice::WriteOnly ) ;
+
+		auto s = f.permissions() ;
+
+		f.close() ;
+		f.remove() ;
+
+		if( s & zuluPermission::WriteOther ){
+
+			break ;
+		}
+	}
+}
+
 void zuluPolkit::start()
 {
 	if( m_arguments.size() > 1 ){
@@ -127,9 +101,26 @@ void zuluPolkit::start()
 
 		m_socketPath = m_arguments.at( 1 ) ;
 
+		bool ok ;
+
+		auto uid = QProcessEnvironment::systemEnvironment().value( "PKEXEC_UID" ).toInt( &ok ) ;
+
+		if( ok ){
+
+			auto e = m_socketPath ;
+			e.remove( "/siriPolkit.socket" ) ;
+
+			auto s = e.toLatin1() ;
+
+			if( chown( s.constData(),uid,uid ) ){}
+			if( chmod( s.constData(),0700 ) ){}
+		}
+
 		QFile::remove( m_socketPath ) ;
 
 		auto s = umask( 0 ) ;
+
+		_set_path_writable_by_others( m_socketPath ) ;
 
 		m_server.listen( m_socketPath ) ;
 
@@ -137,38 +128,55 @@ void zuluPolkit::start()
 	}
 }
 
-static void _respond( std::unique_ptr< QLocalSocket >& s,
-		      const utility::Task& e = utility::Task() )
+static void _respond( QLocalSocket& s,const char * e )
 {
 	nlohmann::json json ;
 
-	json[ "stdOut" ]     = e.stdOut.constData() ;
-	json[ "stdError" ]   = e.stdError.constData() ;
-	json[ "exitCode" ]   = e.exitCode ;
-	json[ "exitStatus" ] = e.exitStatus ;
-	json[ "finished" ]   = e.finished ;
+	json[ "stdOut" ]     = e ;
+	json[ "stdError" ]   = e ;
+	json[ "exitCode" ]   = 255 ;
+	json[ "exitStatus" ] = 255 ;
+	json[ "finished" ]   = true ;
 
-	s->write( json.dump().c_str() ) ;
+	s.write( json.dump().c_str() ) ;
 
-	s->waitForBytesWritten() ;
+	s.waitForBytesWritten() ;
+}
+
+static void _respond( QLocalSocket& s,const Task::process::result& e )
+{
+	nlohmann::json json ;
+
+	json[ "stdOut" ]     = e.std_out().constData() ;
+	json[ "stdError" ]   = e.std_error().constData() ;
+	json[ "exitCode" ]   = e.exit_code() ;
+	json[ "exitStatus" ] = e.exit_status() ;
+	json[ "finished" ]   = e.finished() ;
+
+	s.write( json.dump().c_str() ) ;
+
+	s.waitForBytesWritten() ;
 }
 
 void zuluPolkit::gotConnection()
 {
 	std::unique_ptr< QLocalSocket > s( m_server.nextPendingConnection() ) ;
 
-	try{
-		s->waitForReadyRead() ;
+	auto& m = *s ;
 
-		auto json = nlohmann::json::parse( s->readAll().constData() ) ;
+	try{
+		m.waitForReadyRead() ;
+
+		auto json = nlohmann::json::parse( m.readAll().constData() ) ;
 
 		auto password = QString::fromStdString( json[ "password" ].get< std::string >() ) ;
 		auto cookie   = QString::fromStdString( json[ "cookie" ].get< std::string >() ) ;
 		auto command  = QString::fromStdString( json[ "command" ].get< std::string >() ) ;
 
-		auto su = utility::executableFullPath( "su" ) ;
+		auto su = utility2::executableFullPath( "su" ) ;
 
-		auto e = su + " - -c \"" + utility::executableFullPath( "ecryptfs-simple" ) ;
+		auto e = su + " - -c \"'" + utility2::executableFullPath( "ecryptfs-simple" ) ;
+		auto f = su + " - -c \"" + utility2::executableFullPath( "ecryptfs-simple" ) ;
 
 		if( cookie == m_cookie ){
 
@@ -176,18 +184,18 @@ void zuluPolkit::gotConnection()
 
 				return QCoreApplication::quit() ;
 
-			}else if( command.startsWith( e ) ){
+			}else if( command.startsWith( e ) || command.startsWith( f ) ){
 
-				return _respond( s,utility::Task( command,password ) ) ;
+				return _respond( m,Task::process::run( command,password.toLatin1() ).get() ) ;
 			}else{
-				_respond( s,"SiriPolkit: Invalid Command" ) ;
+				_respond( m,"SiriPolkit: Invalid Command" ) ;
 			}
 		}else{
-			_respond( s,"SiriPolkit: Failed To Authenticate Request" ) ;
+			_respond( m,"SiriPolkit: Failed To Authenticate Request" ) ;
 		}
 	}catch( ... ){
 
-		_respond( s,"SiriPolkit: Failed To Parse Request" ) ;
+		_respond( m,"SiriPolkit: Failed To Parse Request" ) ;
 	}
 }
 

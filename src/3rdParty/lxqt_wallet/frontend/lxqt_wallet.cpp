@@ -45,6 +45,27 @@
 #include "lxqt_osx_keychain.h"
 #include "osx_keychain.h"
 
+#include <cstring>
+
+#include <QDir>
+
+extern "C"{
+
+	void make_path( const char * e )
+	{
+		QDir().mkpath( e ) ;
+	}
+
+	char * home_path()
+	{
+		auto s = QDir::homePath().toLatin1() ;
+		auto a = static_cast< char * >( std::malloc( s.size() + 1 ) ) ;
+		std::memcpy( a,s.constData(),s.size() ) ;
+		*( a + s.size() ) = '\0' ;
+		return a ;
+	}
+}
+
 LXQt::Wallet::Wallet::Wallet()
 {
 }

@@ -20,17 +20,90 @@
 #include "mountinfo.h"
 #include "utility.h"
 #include "siritask.h"
-#include "task.h"
+#include "task.hpp"
 
 #include <QMetaObject>
+#include <QStorageInfo>
+
+#ifdef WIN32
+
+struct pollfd {
+    int   fd;         /* file descriptor */
+    short events;     /* requested events */
+    short revents;    /* returned events */
+};
+
+const static short POLLPRI = 0 ;
+
+static int poll( struct pollfd * a,int b,int c )
+{
+	Q_UNUSED( a ) ;
+	Q_UNUSED( b ) ;
+	Q_UNUSED( c ) ;
+
+	return 0 ;
+}
+
+#else
+#include <poll.h>
+#endif
 
 enum class background_thread{ True,False } ;
+
+static QStringList _getwinfspInstances( background_thread thread )
+{
+	auto exe = "\"" + utility::winFSPpath() + "\\bin\\launchctl-x86.exe\"" ;
+
+	auto cmd = [ & ]( const QString& e ){
+
+		auto s = [ & ](){
+
+			if( thread == background_thread::True ){
+
+				return utility::Task::run( exe + " " + e ).get() ;
+			}else{
+				return utility::Task::run( exe + " " + e ).await() ;
+			}
+		}() ;
+
+		return s.splitOutput( '\n',utility::Task::channel::stdOut ) ;
+	} ;
+
+	auto s = cmd( "list" ) ;
+
+	if( s.size() > 0 && s.first().startsWith( "OK" ) ){
+
+		s.removeFirst() ;
+	}
+
+	QStringList m ;
+
+	for( const auto& it : s ){
+
+		auto e = utility::split( it,' ' ) ;
+
+		if( e.size() > 1 ){
+
+			auto s = cmd( "info " + e.at( 0 ) + " " + e.at( 1 ) ) ;
+
+			if( s.size() > 2 ){
+
+				m.append( s.at( 2 ) ) ;
+			}
+		}
+	}
+
+	return m ;
+}
+
 static QStringList _unlocked_volumes( background_thread thread )
 {
 	if( utility::platformIsLinux() ){
 
 		return utility::split( utility::fileContents( "/proc/self/mountinfo" ) ) ;
-	}else{
+
+	}else if( utility::platformIsOSX() ){
+
 		QStringList s ;
 		QString mode ;
 		QString fs ;
@@ -50,16 +123,62 @@ static QStringList _unlocked_volumes( background_thread thread )
 
 			auto e = utility::split( it,' ' ) ;
 
-			if( e.contains( ", read-only," ) ){
+			if( e.size() > 2 ){
 
-				mode = "ro" ;
-			}else{
-				mode = "rw" ;
+				if( e.contains( ", read-only," ) ){
+
+					mode = "ro" ;
+				}else{
+					mode = "rw" ;
+				}
+
+				fs = "fuse." + it.mid( 0,it.indexOf( '@' ) ) ;
+
+				s.append( w.arg( e.at( 2 ),mode,fs,e.at( 0 ) ) ) ;
+			}
+		}
+
+		return s ;
+	}else{
+		QStringList s ;
+		QString mode ;
+		QString fs ;
+		const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
+
+		auto path = []( QString e ){
+
+			if( e.startsWith( '\"' ) ){
+
+				e.remove( 0,1 ) ;
 			}
 
-			fs = "fuse." + it.mid( 0,it.indexOf( '@' ) ) ;
+			if( e.endsWith( '\"' ) ){
 
-			s.append( w.arg( e.at( 2 ),mode,fs,e.at( 0 ) ) ) ;
+				e.truncate( e.size() - 1 ) ;
+			}
+
+			return e ;
+		} ;
+
+		for( const auto& it : _getwinfspInstances( thread ) ){
+
+			auto e = utility::split( it,' ' ) ;
+
+			if( e.size() > 6 ){
+
+				if( e.contains( " -o ro " ) ){
+
+					mode = "ro" ;
+				}else{
+					mode = "rw" ;
+				}
+
+				auto m = e.at( 5 ).mid( 11 ) ;
+
+				fs = "fuse." + m ;
+
+				s.append( w.arg( path( e.last() ),mode,fs,m + "@" + path( e.at( 6 ) ) ) ) ;
+			}
 		}
 
 		return s ;
@@ -75,8 +194,12 @@ mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& quit ) :
 	if( utility::platformIsLinux() ){
 
 		this->linuxMonitor() ;
-	}else{
+
+	}else if( utility::platformIsOSX() ){
+
 		this->osxMonitor() ;
+	}else{
+		this->windowsMonitor();
 	}
 }
 
@@ -84,9 +207,9 @@ mountinfo::~mountinfo()
 {
 }
 
-Task::future< QVector< volumeInfo > >& mountinfo::unlockedVolumes()
+Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 {
-	return Task::run< QVector< volumeInfo > >( [](){
+	return Task::run( [](){
 
 		auto _hash = []( const QString& e ){
 
@@ -149,7 +272,7 @@ Task::future< QVector< volumeInfo > >& mountinfo::unlockedVolumes()
 			return l.at( 5 ).mid( 0,2 ) ;
 		} ;
 
-		QVector< volumeInfo > e ;
+		std::vector< volumeInfo > e ;
 
 		volumeInfo::mountinfo info ;
 
@@ -192,7 +315,7 @@ Task::future< QVector< volumeInfo > >& mountinfo::unlockedVolumes()
 				info.mode         = _ro( k ) ;
 				info.mountOptions = k.last() ;
 
-				e.append( info ) ;
+				e.emplace_back( info ) ;
 			}
 		}
 
@@ -304,8 +427,6 @@ void mountinfo::linuxMonitor()
 	e.then( std::move( m_quit ) ) ;
 }
 
-#if QT_VERSION > QT_VERSION_CHECK( 5,0,0 )
-
 void mountinfo::osxMonitor()
 {
 	m_stop = [ this ](){ m_process.terminate() ; } ;
@@ -328,13 +449,42 @@ void mountinfo::osxMonitor()
 		this->updateVolume() ;
 	} ) ;
 
+	m_process.setProcessChannelMode( QProcess::MergedChannels ) ;
+
 	m_process.start( "diskutil activity" ) ;
 }
 
-#else
-
-void mountinfo::osxMonitor()
+void mountinfo::windowsMonitor()
 {
-}
+	m_exit = false ;
 
-#endif
+	m_stop = [ this ](){ m_exit = true ; } ;
+
+	auto interval = utility::winFSPpollingInterval() ;
+
+	Task::run( [ &,interval ](){
+
+		auto previous = QStorageInfo::mountedVolumes() ;
+		auto now = previous ;
+
+		while( true ){
+
+			if( m_exit ){
+
+				break ;
+			}else{
+				utility::Task::wait( interval ) ;
+
+				now = QStorageInfo::mountedVolumes() ;
+
+				if( now != previous ){
+
+					this->updateVolume() ;
+				}
+
+				previous = std::move( now ) ;
+			}
+		}
+
+	} ).then( std::move( m_quit ) ) ;
+}

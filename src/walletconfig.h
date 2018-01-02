@@ -28,6 +28,9 @@
 #include "utility.h"
 #include "secrets.h"
 
+#include <functional>
+#include <utility>
+
 class QCloseEvent ;
 class QWidget ;
 class QTableWidgetItem ;
@@ -41,11 +44,13 @@ class walletconfig : public QDialog
 {
 	Q_OBJECT
 public:
-	static walletconfig& instance( QWidget * parent,secrets::wallet&& wallet )
+	static void instance( QWidget * parent,
+			      secrets::wallet&& wallet,
+			      std::function< void() > e = [](){} )
 	{
-		return *( new walletconfig( parent,std::move( wallet ) ) ) ;
+		new walletconfig( parent,std::move( wallet ),std::move( e ) ) ;
 	}
-	explicit walletconfig( QWidget * parent,secrets::wallet&& ) ;
+	explicit walletconfig( QWidget * parent,secrets::wallet&&,std::function< void() > ) ;
 	~walletconfig() ;
 	void HideUI( void ) ;
 private slots:
@@ -69,6 +74,7 @@ private:
 	QString m_comment ;
 	QString m_key ;
 	QWidget * m_parentWidget ;
+	std::function< void() > m_function ;
 };
 
 #endif // KWALLETCONFIG_H

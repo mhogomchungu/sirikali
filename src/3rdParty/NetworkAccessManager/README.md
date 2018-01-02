@@ -10,19 +10,29 @@ this library is a thin wrapper to it.
 Example below shows an example of how to process a network response asynchronously
 using a lambda.
 
+The return argument of the API can be used to fine tune the network request.
+
 ```
 void foo::bar()
 {
-	QNetworkRequest networRequest( QUrl( "https://foo.com" ) ) ;
+	QNetworkRequest networRequest( QUrl( "https://example.com" ) ) ;
 
-	networRequest.setRawHeader( "Host","foo.com" ) ;
+	networRequest.setRawHeader( "Host","example.com" ) ;
 	networRequest.setRawHeader( "Accept-Encoding","text/plain" ) ;
 
-	m_networkAccessManager.get( networRequest,[ this ]( NetworkAccessManager::NetworkReply e ){
+	int timeOut = 10 ;
 
-		QByteArray result = e->readAll() ;
+	m_network.get( timeOut,networRequest,[]( QNetworkReply& e ){
 
-		this->processResult( result ) ;
+		/*
+		 *
+		 * Process network response
+		 *
+		 */
+	},[](){
+		/*
+		 * Handle timeout
+		 */
 	} ) ;
 }
 

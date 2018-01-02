@@ -21,9 +21,10 @@
 #define SECRETS_H
 
 #include "lxqt_wallet.h"
-#include "task.h"
 
 #include <QWidget>
+#include <functional>
+#include <utility>
 
 class secrets
 {
@@ -61,7 +62,7 @@ public:
 
 	QWidget * parent() ;
 
-	void changeInternalWalletPassword( const QString&,const QString& ) ;
+	void changeInternalWalletPassword( const QString&,const QString&,std::function< void() > ) ;
 	void setParent( QWidget * ) ;
 
 	secrets( QWidget * parent = nullptr ) ;

@@ -36,6 +36,10 @@
 #include "mountinfo.h"
 #include "lxqt_wallet.h"
 #include "keydialog.h"
+#include "checkforupdates.h"
+#include "configoptions.h"
+
+#include <vector>
 
 class QCloseEvent ;
 class QAction ;
@@ -54,9 +58,10 @@ public:
 	int start( QApplication& ) ;
 	~sirikali() ;
 private slots:
-	void startMinimized( bool ) ;
-	void setPluginExecutable( void ) ;
-	void setFileManager( void ) ;
+	void configurationOptions( void ) ;
+	void FAQ( void ) ;
+	void showTrayIconWhenReady( void ) ;
+	void polkitFailedWarning( void ) ;
 	void hideWindow( void ) ;
 	void setUpApp( const QString& ) ;
 	void start( const QStringList& ) ;
@@ -66,17 +71,7 @@ private slots:
 	void encfsProperties( void ) ;
 	void ecryptfsProperties( void ) ;
 	void securefsProperties( void ) ;
-	void autoMountKeyStorage( void ) ;
-	void autoMountKeySource( QAction * ) ;
-	void showMountDialogWhenAutoMounting( bool ) ;
-	void autoMountWhenAvailable( bool ) ;
-	void setDefaultMountPointPrefix( void ) ;
-	void autoCheckUpdates( bool ) ;
-	void reuseMountPoint( bool ) ;
-	void autoMountFavoritesOnStartUp( bool ) ;
 	void unlockVolume( const QStringList& ) ;
-	void aboutToShowMenu( void ) ;
-	void changeInternalWalletPassWord( void ) ;
 	void closeApplication( int = 0,const QString& = QString() ) ;
 	void unlockVolume( void ) ;
 	void startGUI( void ) ;
@@ -98,27 +93,26 @@ private slots:
 	void slotOpenSharedFolder( void ) ;
 	void addEntryToTable( const QStringList& ) ;
 	void addEntryToTable( const volumeInfo& ) ;
-	void autoOpenFolderOnMount( bool ) ;
 	void removeEntryFromTable( QString ) ;
 	void showFavorites( void ) ;
 	void favoriteClicked( QAction * ) ;
-	void keyManagerClicked( QAction * ) ;
 	void openMountPointPath( const QString& ) ;
 	void licenseInfo( void ) ;
 	void updateCheck( void ) ;
-	void languageMenu( QAction * ac ) ;
 	void autoMountFavoritesOnAvailable( QString ) ;
 private:
-	void mountMultipleVolumes( QVector< std::pair< favorites::entry,QByteArray > > ) ;
+	configOptions::functions configOption() ;
+
+	void showTrayIcon() ;
+
+	void mountMultipleVolumes( utility::volumeList ) ;
 
 	QString resolveFavoriteMountPoint( const QString& ) ;
 
 	QFont getSystemVolumeFont( void ) ;
 
-	bool autoOpenFolderOnMount( void ) ;
-
 	void cliCommand( const QStringList& ) ;
-	void updateVolumeList( const QVector< volumeInfo >& ) ;
+	void updateVolumeList( const std::vector< volumeInfo >& ) ;
 	void openMountPoint( const QString& ) ;
 	void setLocalizationLanguage( bool ) ;
 	void dragEnterEvent( QDragEnterEvent * ) ;
@@ -133,8 +127,7 @@ private:
 	void raiseWindow( const QString& = QString() ) ;
 	void autoUnlockVolumes( void ) ;
 
-	QVector< std::pair< favorites::entry,QByteArray > >
-	autoUnlockVolumes( QVector< std::pair< favorites::entry,QByteArray > >,bool = false ) ;
+	utility::volumeList autoUnlockVolumes( utility::volumeList,bool = false ) ;
 
 	Ui::sirikali * m_ui = nullptr ;
 
@@ -145,11 +138,11 @@ private:
 	QMenu * m_hidden_volume_menu = nullptr ;
 	QMenu * m_not_hidden_volume_menu = nullptr ;
 	QMenu * m_key_manager_menu = nullptr ;
-	QMenu * m_language_menu = nullptr ;
-	QMenu * m_autoMountKeyStorage = nullptr ;
 
-	QVector< std::pair< QAction *,const char * > > m_actionPair ;
-	QVector< std::pair< QMenu *,const char * > > m_menuPair ;
+	QMenu m_language_menu ;
+
+	std::vector< std::pair< QAction *,const char * > > m_actionPair ;
+	std::vector< std::pair< QMenu *,const char * > > m_menuPair ;
 
 	QAction * m_unMountAll = nullptr ;
 	QAction * m_change_password_action = nullptr ;
@@ -166,6 +159,10 @@ private:
 	QSystemTrayIcon m_trayIcon ;
 
 	mountinfo m_mountInfo ;
+
+	checkUpdates m_checkUpdates ;
+
+	configOptions m_configOptions ;
 };
 
 #endif // MAINWINDOW_H

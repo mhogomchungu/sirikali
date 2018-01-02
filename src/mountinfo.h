@@ -29,6 +29,7 @@
 
 #include <functional>
 #include <memory>
+#include <vector>
 
 #include "volumeinfo.h"
 
@@ -36,7 +37,7 @@ class mountinfo : private QObject
 {
 	Q_OBJECT
 public:
-	static Task::future< QVector< volumeInfo > >& unlockedVolumes() ;
+	static Task::future< std::vector< volumeInfo > >& unlockedVolumes() ;
 
 	mountinfo( QObject * parent,bool,std::function< void() >&& ) ;
 
@@ -48,6 +49,7 @@ public:
 private slots:
 	void volumeUpdate( void ) ;
 private:
+	void windowsMonitor( void ) ;
 	void linuxMonitor( void ) ;
 	void osxMonitor( void ) ;
 	void updateVolume( void ) ;
@@ -61,6 +63,7 @@ private:
 	std::function< void() > m_quit ;
 
 	bool m_announceEvents ;
+	bool m_exit ;
 
 	QStringList m_oldMountList ;
 	QStringList m_newMountList ;

@@ -23,6 +23,8 @@
 #include <QStringList>
 #include <QDir>
 
+#include <functional>
+
 class QByteArray ;
 class QTranslator ;
 
@@ -76,6 +78,41 @@ namespace utility2
 			"/opt/sbin/",
 			 b.constData(),
 			 c.constData() } ;
+	}
+
+	static inline QString executableFullPath( const QString& f,
+						  std::function< QString( const QString& ) > function = nullptr )
+	{
+		if( function ){
+
+			auto s = function( f ) ;
+
+			if( !s.isEmpty() ){
+
+				return s ;
+			}
+		}
+
+		QString e = f ;
+
+		if( e == "ecryptfs" ){
+
+			e = "ecryptfs-simple" ;
+		}
+
+		QString exe ;
+
+		for( const auto& it : utility2::executableSearchPaths() ){
+
+			exe = it + e ;
+
+			if( QFile::exists( exe ) ){
+
+				return exe ;
+			}
+		}
+
+		return QString() ;
 	}
 
 	class translator

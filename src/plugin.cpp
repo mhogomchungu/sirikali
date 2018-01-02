@@ -19,8 +19,6 @@
 
 
 #include "plugin.h"
-#include "task.h"
-
 #include "plugins.h"
 
 #include "ui_plugin.h"
@@ -115,7 +113,7 @@ void plugin::pbSetKey()
 
 	this->disableAll() ;
 
-	Task::run< QByteArray >( [ this,passphrase,keyFile ](){
+	Task::run( [ this,passphrase,keyFile ](){
 
 		if( m_pluginType == plugins::plugin::hmac_key ){
 

@@ -4,7 +4,7 @@ set_property( GLOBAL PROPERTY ALLOW_DUPLICATE_CUSTOM_TARGETS ON )
 
 project( sirikali )
 
-set( PGR_VERSION "1.3.1" )
+set( PGR_VERSION "1.3.2" )
 
 add_definitions( -Wextra -Wall -pedantic )
 
@@ -28,7 +28,12 @@ COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake )
 INCLUDE(CMakeDependentOption)
 INCLUDE(FindPkgConfig)
 
-add_definitions( -D_DEFAULT_SOURCE -fstack-protector-all --param ssp-buffer-size=4 )
+if( WIN32 )
+    add_definitions( -D_DEFAULT_SOURCE )
+else()
+    add_definitions( -D_DEFAULT_SOURCE -fstack-protector-all --param ssp-buffer-size=4 )
+endif()
+
 include_directories( ${PROJECT_BINARY_DIR} )
 
 if( LIB_SUFFIX )
@@ -68,7 +73,7 @@ file( WRITE ${PROJECT_BINARY_DIR}/version.h "
 \n
 #ifndef SIRIKALI_VERSION
 #define SIRIKALI_VERSION
-#define VERSION_STRING \"Version  : ${PGR_VERSION}\\nCopyright: 2016-2017 Francis Banyikwa,mhogomchungu@gmail.com\\nLicense  : GPLv2+\"
+#define VERSION_STRING \"Version  : ${PGR_VERSION}\\nCopyright: 2016-2018 Francis Banyikwa,mhogomchungu@gmail.com\\nLicense  : GPLv2+\"
 #endif
 \n" )
 
@@ -76,13 +81,11 @@ if( NOT DEFINED INTERNAL_LXQT_WALLET )
 	set( INTERNAL_LXQT_WALLET "false" )
 endif()
 
-if( NOT DEFINED QT5 )
-	set( QT5 "true" )
+if( DEFINED QT5 AND NOT QT5 )
+	message( FATAL_ERROR "Qt4 Build is no longer supported" )
 endif()
 
-if( APPLE )
-	set( QT5 "true" )
-endif()
+set( QT5 "true" )
 
 find_file( JSON_HEADER_PATH "nlohmann/json.hpp" )
 
@@ -116,6 +119,10 @@ else()
 
 endif()
 
+ADD_SUBDIRECTORY( src/3rdParty/tasks )
+ADD_SUBDIRECTORY( src/3rdParty/NetworkAccessManager )
+include_directories( src/3rdParty/tasks )
+include_directories( src/3rdParty/NetworkAccessManager )
 
 if( INTERNAL_LXQT_WALLET )
 
@@ -174,18 +181,28 @@ set( UI_FILES 	src/sirikali.ui
 		src/walletconfiginput.ui
 		src/options.ui
 		src/dialogok.ui
+		src/help.ui
+		src/gocryptfscreateoptions.ui
 		src/filemanager.ui
 		src/securefscreateoptions.ui
 		src/cryfscreateoptions.ui
+                src/configfileoption.ui
+                src/configoptions.ui
 )
 
-set( MOC_FILES 	src/dialogok.h
+set( MOC_FILES
+                src/configoptions.h
+                src/configfileoption.h
+                src/checkforupdates.h
+                src/dialogok.h
+                src/help.h
 		src/sirikali.h
 		src/keydialog.h
 		src/oneinstance.h
 		src/dialogmsg.h
 		src/plugin.h
 		src/favorites.h
+		src/gocryptfscreateoptions.h
 		src/readonlywarning.h
 		src/walletconfig.h
 		src/walletconfiginput.h
@@ -194,15 +211,17 @@ set( MOC_FILES 	src/dialogok.h
 		src/mountinfo.h
 		src/securefscreateoptions.h
 		src/cryfscreateoptions.h
-		src/3rdParty/tasks/task.h
-		src/3rdParty/NetworkAccessManager/networkAccessManager.hpp
  )
 
 set( SRC 	src/dialogok.cpp
 		src/main.cpp
+		src/gocryptfscreateoptions.cpp
+		src/configoptions.cpp
+                src/configfileoption.cpp
 		src/sirikali.cpp
 		src/keydialog.cpp
 		src/siritask.cpp
+		src/help.cpp
 		src/oneinstance.cpp
 		src/mountinfo.cpp
 		src/utility.cpp
@@ -226,7 +245,7 @@ if( APPLE )
 
 	SET( MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/MacOSXBundleInfo.plist.in" )
 	SET( MACOSX_BUNDLE_BUNDLE_NAME "SiriKali" )
-	SET( MACOSX_BUNDLE_COPYRIGHT "(c)2016-2017,Francis Banyikwa,mhogomchungu@gmail.com" )
+	SET( MACOSX_BUNDLE_COPYRIGHT "(c)2016-2018,Francis Banyikwa,mhogomchungu@gmail.com" )
 	SET( MACOSX_BUNDLE_BUNDLE_VERSION "${PGR_VERSION}" )
 	SET( MACOSX_BUNDLE_GUI_IDENTIFIER "com.crypto.SiriKali" )
 	SET( MACOSX_BUNDLE_SHORT_VERSION_STRING "${PGR_VERSION}" )
@@ -237,71 +256,46 @@ if( APPLE )
 	SET_SOURCE_FILES_PROPERTIES( translations/fr_FR.qm PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
 endif()
 
-if( QT5 )
-	find_package( Qt5Widgets REQUIRED )
-	find_package( Qt5Core REQUIRED )
-	find_package( Qt5Network REQUIRED )
+find_package( Qt5Widgets REQUIRED )
+find_package( Qt5Core REQUIRED )
+find_package( Qt5Network REQUIRED )
 
-	set( CMAKE_INCLUDE_CURRENT_DIR ON )
-	include_directories( ${Qt5Widgets_INCLUDE_DIRS} )
-	include_directories( ${Qt5Network_INCLUDE_DIRS} )
+set( CMAKE_INCLUDE_CURRENT_DIR ON )
+include_directories( ${Qt5Widgets_INCLUDE_DIRS} )
+include_directories( ${Qt5Network_INCLUDE_DIRS} )
 
-	add_definitions( ${Qt5Widgets_DEFINITIONS} )
+add_definitions( ${Qt5Widgets_DEFINITIONS} )
 
-	QT5_WRAP_UI( UI ${UI_FILES} )
-	QT5_WRAP_CPP( MOC ${MOC_FILES} )
-	QT5_ADD_RESOURCES( TRAY_RC_SRCS src/icon.qrc )
+QT5_WRAP_UI( UI ${UI_FILES} )
+QT5_WRAP_CPP( MOC ${MOC_FILES} )
+QT5_ADD_RESOURCES( TRAY_RC_SRCS src/icon.qrc )
 
-	INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
-	INCLUDE_DIRECTORIES( ${GCRYPT_INCLUDE_PATH} )
+INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
+INCLUDE_DIRECTORIES( ${GCRYPT_INCLUDE_PATH} )
 
-	if( APPLE )
-		add_executable( sirikali MACOSX_BUNDLE ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} ${PROJECT_SOURCE_DIR}/icons/256x256/sirikali.icns )
-	else()
-		add_executable( sirikali ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
-	endif()
-
-	link_directories( ${GCRYPT_LIBRARY_PATH} )
-
-	TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet -L${GCRYPT_LIBRARY_PATH})
-
-	message( STATUS "---------------------------------------------------------------------------" )
-	message( STATUS "Building GUI components using Qt5" )
-	message( STATUS "---------------------------------------------------------------------------\n\n" )
+if( APPLE )
+	add_executable( sirikali MACOSX_BUNDLE ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} ${PROJECT_SOURCE_DIR}/icons/256x256/sirikali.icns )
 else()
-	find_package( Qt4 REQUIRED )
-
-	add_definitions( -I${Qt4_INCLUDE_DIR} )
-	add_definitions( -I${QT_HEADERS_DIR} )
-
-	INCLUDE( ${QT_USE_FILE} )
-	INCLUDE( ${QT_USE_FILE} )
-
-	INCLUDE( ${QT_USE_FILE} )
-
-	QT4_WRAP_UI( UI ${UI_FILES} )
-	QT4_WRAP_CPP( MOC ${MOC_FILES} )
-	QT4_ADD_RESOURCES( TRAY_RC_SRCS src/icon.qrc )
-
-	INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
-	INCLUDE_DIRECTORIES( ${GCRYPT_INCLUDE_PATH} )
-
-	link_directories( ${GCRYPT_LIBRARY_PATH} )
-
-	if( APPLE )
-		add_executable( sirikali MACOSX_BUNDLE ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} ${PROJECT_SOURCE_DIR}/icons/256x256/sirikali.icns )
+        if( WIN32)
+                add_executable( sirikali WIN32 ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
 	else()
-		add_executable( sirikali ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
+                add_executable( sirikali ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
 	endif()
-
-	TARGET_LINK_LIBRARIES( sirikali -lQtCore -lQtGui -lQtNetwork ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet -L${GCRYPT_LIBRARY_PATH} )
-
-	message( STATUS "---------------------------------------------------------------------------" )
-	message( STATUS "Building GUI components using Qt4" )
-	message( STATUS "---------------------------------------------------------------------------\n\n" )
 endif()
 
-set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic" )
+link_directories( ${GCRYPT_LIBRARY_PATH} )
+
+TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet tasks networkAccessManager -L${GCRYPT_LIBRARY_PATH})
+
+message( STATUS "---------------------------------------------------------------------------" )
+message( STATUS "Building GUI components using Qt5" )
+message( STATUS "---------------------------------------------------------------------------\n\n" )
+
+if( WIN32 )
+    set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -pedantic" )
+else()
+    set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic" )
+endif()
 
 file( WRITE ${PROJECT_BINARY_DIR}/siriPolkit.h "\n#define siriPolkitPath \"${CMAKE_INSTALL_PREFIX}/bin/sirikali.pkexec\"" )
 
@@ -318,6 +312,9 @@ install( TARGETS sirikali BUNDLE DESTINATION . COMPONENT Runtime RUNTIME DESTINA
 file( COPY icons/256x256/sirikali.icns DESTINATION "sirikali.app/Contents/Resources/" )
 file( COPY translations/fr_FR.qm DESTINATION "sirikali.app/Contents/Resources/" )
 file( COPY translations/en_US.qm DESTINATION "sirikali.app/Contents/Resources/" )
+file( COPY translations/de_DE.qm DESTINATION "sirikali.app/Contents/Resources/" )
+file( COPY translations/es_MX.qm DESTINATION "sirikali.app/Contents/Resources/" )
+
 file( COPY changelog DESTINATION "sirikali.app/Contents/Resources/" )
 
 #install( DIRECTORY "${QT_PLUGINS_DIR}/imageformats" DESTINATION ${plugin_dest_dir}/plugins COMPONENT Runtime )
@@ -348,6 +345,7 @@ install( FILES src/sirikali.png DESTINATION           ${CMAKE_INSTALL_DATAROOTDI
 install( FILES translations/en_US.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 install( FILES translations/fr_FR.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 install( FILES translations/es_MX.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
+install( FILES translations/de_DE.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 
 install( FILES src/sirikali.1.gz DESTINATION ${CMAKE_INSTALL_DATADIR}/man/man1/ )
 install( FILES src/sirikali.pkexec.1.gz DESTINATION ${CMAKE_INSTALL_DATADIR}/man/man1/ )
@@ -381,7 +379,9 @@ install( FILES ${PROJECT_BINARY_DIR}/sirikali.desktop
 	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )
 
-ADD_SUBDIRECTORY( src/siripolkit )
+if( UNIX AND NOT APPLE )
+    ADD_SUBDIRECTORY( src/siripolkit )
+endif()
 
 file( WRITE ${PROJECT_BINARY_DIR}/org.sirikali.pkexec.policy
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>

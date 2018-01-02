@@ -20,8 +20,10 @@
 #include "securefscreateoptions.h"
 #include "ui_securefscreateoptions.h"
 
+#include "utility.h"
+
 securefscreateoptions::securefscreateoptions( QWidget * parent,
-					      std::function< void( const QString& ) > function ) :
+					      std::function< void( const QStringList& ) > function ) :
 	QDialog( parent ),
 	m_ui( new Ui::securefscreateoptions ),
 	m_function( std::move( function ) )
@@ -32,6 +34,9 @@ securefscreateoptions::securefscreateoptions( QWidget * parent,
 
 	connect( m_ui->pbOK,SIGNAL( clicked() ),this,SLOT( pbOK() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
+	connect( m_ui->pbConfigFile,SIGNAL( clicked() ),this,SLOT( pbConfigFilePath() ) ) ;
+
+	m_ui->pbConfigFile->setIcon( QIcon( ":/folder.png" ) ) ;
 
 	m_ui->comboBox->setFocus() ;
 
@@ -47,11 +52,18 @@ void securefscreateoptions::pbOK()
 {
 	this->hide() ;
 
+	auto e = m_ui->lineEdit->text() ;
+
+	if( !e.isEmpty() ){
+
+		e = "--config " + e ;
+	}
+
 	if( m_ui->comboBox->currentIndex() == 1 ){
 
-		m_function( "--format 2" ) ;
+		m_function( { "--format 2",m_ui->lineEdit->text() } ) ;
 	}else{
-		m_function( "--format 4" ) ;
+		m_function( {"--format 4",m_ui->lineEdit->text() } ) ;
 	}
 
 	this->deleteLater() ;
@@ -60,8 +72,13 @@ void securefscreateoptions::pbOK()
 void securefscreateoptions::pbCancel()
 {
 	this->hide() ;
-	m_function( QString() ) ;
+	m_function( {} ) ;
 	this->deleteLater() ;
+}
+
+void securefscreateoptions::pbConfigFilePath()
+{
+	m_ui->lineEdit->setText( utility::configFilePath( this,"securefs" ) ) ;
 }
 
 void securefscreateoptions::HideUI()

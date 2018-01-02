@@ -17,40 +17,39 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SECUREFSCREATEOPTIONS_H
-#define SECUREFSCREATEOPTIONS_H
+#ifndef GOCRYPTFSCREATEOPTIONS_H
+#define GOCRYPTFSCREATEOPTIONS_H
 
 #include <functional>
 #include <utility>
 
 #include <QCloseEvent>
 #include <QString>
-#include <QStringList>
 #include <QDialog>
 
 namespace Ui {
-class securefscreateoptions;
+class gocryptfscreateoptions;
 }
 
-class securefscreateoptions : public QDialog
+class gocryptfscreateoptions : public QDialog
 {
 	Q_OBJECT
 public:
 	static void instance( QWidget * parent,std::function< void( const QStringList& ) > function )
 	{
-		new securefscreateoptions( parent,std::move( function ) ) ;
+                new gocryptfscreateoptions( parent,std::move( function ) ) ;
 	}
-	explicit securefscreateoptions( QWidget * parent,std::function< void( const QStringList& ) > ) ;
-	~securefscreateoptions() ;
+        gocryptfscreateoptions( QWidget * parent,std::function< void( const QStringList& ) > ) ;
+        ~gocryptfscreateoptions() ;
 private slots:
+	void pbSelectConfigPath() ;
 	void pbOK() ;
 	void pbCancel() ;
-	void pbConfigFilePath() ;
 private:
-	void HideUI() ;
+	void HideUI( const QStringList& = QStringList() ) ;
 	void closeEvent( QCloseEvent * ) ;
-	Ui::securefscreateoptions * m_ui ;
+        Ui::gocryptfscreateoptions * m_ui ;
 	std::function< void( const QStringList& ) > m_function ;
 };
 
-#endif // SECUREFSCREATEOPTIONS_H
+#endif // GOCRYPTFSCREATEOPTIONS_H

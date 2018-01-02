@@ -17,40 +17,43 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SECUREFSCREATEOPTIONS_H
-#define SECUREFSCREATEOPTIONS_H
+#ifndef CONFIGOPTIONS_H
+#define CONFIGOPTIONS_H
+
+#include <QDialog>
+#include <QCloseEvent>
+#include <QMenu>
 
 #include <functional>
 #include <utility>
-
-#include <QCloseEvent>
-#include <QString>
-#include <QStringList>
-#include <QDialog>
+#include <vector>
+#include "secrets.h"
 
 namespace Ui {
-class securefscreateoptions;
+class configOptions ;
 }
 
-class securefscreateoptions : public QDialog
+class configOptions : public QDialog
 {
 	Q_OBJECT
 public:
-	static void instance( QWidget * parent,std::function< void( const QStringList& ) > function )
-	{
-		new securefscreateoptions( parent,std::move( function ) ) ;
-	}
-	explicit securefscreateoptions( QWidget * parent,std::function< void( const QStringList& ) > ) ;
-	~securefscreateoptions() ;
-private slots:
-	void pbOK() ;
-	void pbCancel() ;
-	void pbConfigFilePath() ;
+	struct functions{
+
+		std::function< void() > function_1 ;
+		std::function< void( QAction * ) > function_2 ;
+	};
+
+	configOptions( QWidget * parent,secrets&,QMenu *,functions ) ;
+	void ShowUI() ;
+	void translateUI() ;
+	~configOptions() ;
 private:
 	void HideUI() ;
 	void closeEvent( QCloseEvent * ) ;
-	Ui::securefscreateoptions * m_ui ;
-	std::function< void( const QStringList& ) > m_function ;
+	Ui::configOptions * m_ui ;
+	configOptions::functions m_functions ;
+	secrets& m_secrets ;
+	std::vector< std::pair< QAction *,const char * > > m_actionPair ;
 };
 
-#endif // SECUREFSCREATEOPTIONS_H
+#endif // CONFIGOPTIONS_H

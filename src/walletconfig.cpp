@@ -36,9 +36,11 @@
 
 #define COMMENT "-SiriKali_Comment_ID"
 
-walletconfig::walletconfig( QWidget * parent,secrets::wallet&& wallet ) :
-	QDialog( parent ),m_ui( new Ui::walletconfig ),
-	m_wallet( std::move( wallet ) )
+walletconfig::walletconfig( QWidget * parent,secrets::wallet&& wallet,std::function< void() > e ) :
+	QDialog( parent ),
+	m_ui( new Ui::walletconfig ),
+	m_wallet( std::move( wallet ) ),
+	m_function( std::move( e ) )
 {
 	m_ui->setupUi( this ) ;
 
@@ -161,7 +163,7 @@ void walletconfig::pbAdd()
 		m_volumeID = volumeID ;
 		m_key      = key ;
 
-		Task::run< bool >( [ this ](){
+		Task::run( [ this ](){
 
 			auto _add = [ this ](){
 
@@ -225,7 +227,7 @@ void walletconfig::accessWallet()
 	this->raise() ;
 	this->activateWindow() ;
 
-	Task::run<walletKeys>( [ this ](){
+	Task::run( [ this ](){
 
 		return m_wallet->readAllKeyValues() ;
 
@@ -296,6 +298,7 @@ void walletconfig::HideUI()
 {
 	this->hide() ;
 	this->deleteLater() ;
+	m_function() ;
 }
 
 void walletconfig::closeEvent( QCloseEvent * e )

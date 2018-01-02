@@ -34,6 +34,7 @@
 #include "lxqt_wallet.h"
 #include "utility2.h"
 #include "plugin.h"
+#include "configfileoption.h"
 
 static QString _kwallet()
 {
@@ -59,7 +60,7 @@ keyDialog::keyDialog( QWidget * parent,
 		      secrets& s,
 		      bool o,
 		      const QString& q,
-		      QVector< std::pair< favorites::entry,QByteArray > > z,
+		      utility::volumeList z,
 		      std::function< void() > f ) :
 	QDialog( parent ),
 	m_ui( new Ui::keyDialog ),
@@ -177,7 +178,13 @@ void keyDialog::setUpInitUI()
 
 		m_ui->label_2->setText( tr( "Volume Name" ) ) ;
 
-		m_ui->lineEditFolderPath->setText( utility::homePath() + "/" ) ;
+		if( utility::platformIsWindows() ){
+
+			m_ui->lineEditFolderPath->setText( "Z:" ) ;
+			utility::setWindowsMountPointOptions( this,m_ui->lineEditFolderPath,m_ui->pbOpenFolderPath ) ;
+		}else{
+			m_ui->lineEditFolderPath->setText( utility::homePath() + "/" ) ;
+		}
 
 		m_ui->lineEditMountPoint->setFocus() ;
 
@@ -196,7 +203,11 @@ void keyDialog::setUpInitUI()
 
 	QIcon folderIcon( ":/folder.png" ) ;
 
-	m_ui->pbOpenFolderPath->setIcon( folderIcon ) ;
+	if( !utility::platformIsWindows() ){
+
+		m_ui->pbOpenFolderPath->setIcon( folderIcon ) ;
+	}
+
 	m_ui->pbSetKeyKeyFile->setIcon( folderIcon ) ;
 
 	this->setFixedSize( this->size() ) ;
@@ -211,7 +222,10 @@ void keyDialog::setUpInitUI()
 	m_ui->cbKeyType->addItem( tr( "HMAC+KeyFile" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "ExternalExecutable" ) ) ;
 
-	m_ui->cbKeyType->addItem( _internalWallet() ) ;
+	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::internal ) ){
+
+		m_ui->cbKeyType->addItem( _internalWallet() ) ;
+	}
 
 	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::libsecret ) ){
 
@@ -300,9 +314,23 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 		}
 	}
 
-	m_ui->lineEditMountPoint->setText( [ & ](){
+	m_ui->lineEditMountPoint->setText( [ & ]()->QString{
 
 		auto m = e.mountPoint() ;
+
+		if( utility::platformIsWindows() ){
+
+			utility::setWindowsMountPointOptions( this,
+							      m_ui->lineEditMountPoint,
+							      m_ui->pbMountPoint ) ;
+
+			if( m.isEmpty() ){
+
+				return "Z:" ;
+			}else{
+				return m ;
+			}
+		}
 
 		if( m.startsWith( "/" ) ){
 
@@ -348,7 +376,7 @@ void keyDialog::setDefaultUI()
 {
 	if( m_create ){
 
-		if( m_exe == "Securefs" || m_exe == "Cryfs" ){
+		if( utility::equalsAtleastOne( m_exe,"Securefs","Cryfs","Gocryptfs","Ecryptfs" ) ){
 
 			m_ui->pbOptions->setEnabled( true ) ;
 		}else{
@@ -408,25 +436,46 @@ void keyDialog::pbOptions()
 {
 	if( m_create ){
 
-		if( m_exe == "Securefs" ){
+		if( m_exe == "Ecryptfs" ){
 
 			this->hide() ;
 
-			securefscreateoptions::instance( m_parentWidget,[ this ]( const QString& e ){
+			configFileOption::instance( this,m_exe,[ this ]( const QStringList& e ){
 
-				m_createOptions = e ;
+				utility2::stringListToStrings( e,m_configFile ) ;
 
 				this->ShowUI() ;
 			} ) ;
-		}
 
-		if( m_exe == "Cryfs" ){
+		}else if( m_exe == "Gocryptfs" ){
 
 			this->hide() ;
 
-			cryfscreateoptions::instance( m_parentWidget,[ this ]( const QString& e ){
+			gocryptfscreateoptions::instance( m_parentWidget,[ this ]( const QStringList& e ){
 
-				m_createOptions = e ;
+				utility2::stringListToStrings( e,m_createOptions,m_configFile ) ;
+
+				this->ShowUI() ;
+			} ) ;
+
+		}else if( m_exe == "Securefs" ){
+
+			this->hide() ;
+
+			securefscreateoptions::instance( m_parentWidget,[ this ]( const QStringList& e ){
+
+				utility2::stringListToStrings( e,m_createOptions,m_configFile ) ;
+
+				this->ShowUI() ;
+			} ) ;
+
+		}else if( m_exe == "Cryfs" ){
+
+			this->hide() ;
+
+			cryfscreateoptions::instance( m_parentWidget,[ this ]( const QStringList& e ){
+
+				utility2::stringListToStrings( e,m_createOptions,m_configFile ) ;
 
 				this->ShowUI() ;
 			} ) ;
@@ -530,17 +579,7 @@ void keyDialog::textChanged( QString e )
 void keyDialog::pbMountPointPath()
 {
 	auto msg = tr( "Select A Folder To Create A Mount Point In." ) ;
-	auto e = QFileDialog::getExistingDirectory( this,msg,utility::homePath(),QFileDialog::ShowDirsOnly ) ;
-
-	while( true ){
-
-		if( e.endsWith( '/' ) ){
-
-			e.truncate( e.length() - 1 ) ;
-		}else{
-			break ;
-		}
-	}
+	auto e = utility::getExistingDirectory( this,msg,utility::homePath() ) ;
 
 	if( !e.isEmpty() ){
 
@@ -553,17 +592,7 @@ void keyDialog::pbMountPointPath()
 void keyDialog::pbFolderPath()
 {
 	auto msg = tr( "Select A Folder To Create A Mount Point In." ) ;
-	auto e = QFileDialog::getExistingDirectory( this,msg,utility::homePath(),QFileDialog::ShowDirsOnly ) ;
-
-	while( true ){
-
-		if( e.endsWith( '/' ) ){
-
-			e.truncate( e.length() - 1 ) ;
-		}else{
-			break ;
-		}
-	}
+	auto e = utility::getExistingDirectory( this,msg,utility::homePath() ) ;
 
 	if( !e.isEmpty() ){
 
@@ -757,7 +786,7 @@ void keyDialog::pbOpen()
 
 			using bk = LXQt::Wallet::BackEnd ;
 
-			w = utility::getKey( m_path,m_secrets.walletBk( bk::internal ).bk() ) ;
+			w = utility::getKey( m_path,m_secrets.walletBk( bk::internal ).bk(),this ) ;
 
 			if( w.notConfigured ){
 
@@ -797,7 +826,7 @@ bool keyDialog::completed( const siritask::cmdStatus& s,const QString& m )
 
 	case siritask::status::success :
 
-		if( m_autoOpenMountPoint ){
+		if( utility::autoOpenFolderOnMount() ){
 
 			utility::Task::exec( m_fileManagerOpen + " " + utility::Task::makePath( m ) ) ;
 		}
@@ -1005,7 +1034,7 @@ void keyDialog::pbSetKey()
 	auto keyFile    = m_ui->lineEditSetKeyKeyFile->text() ;
 	auto passphrase = m_ui->lineEditSetKeyPassword->text() ;
 
-	Task::run< QByteArray >( [ = ](){
+	Task::run( [ = ](){
 
 		if( m_hmac ){
 
@@ -1183,7 +1212,7 @@ void keyDialog::openVolume()
 
 	}else if( keyType == keyDialog::keyfile ){
 
-		Task::run< QByteArray >( [ this ](){
+		Task::run( [ this ](){
 
 			return utility::fileContents( m_ui->lineEditKey->text() ) ;
 
@@ -1298,7 +1327,7 @@ void keyDialog::cbActicated( QString e )
 		}else{
 			this->disableAll() ;
 
-			Task::run< QByteArray >( [ q = std::move( q ) ](){
+			Task::run( [ q = std::move( q ) ](){
 
 				return plugins::hmac_key( q,QString() ) ;
 

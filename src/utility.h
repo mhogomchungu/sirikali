@@ -32,6 +32,9 @@
 #include <QDialog>
 #include <QEventLoop>
 #include <QTimer>
+#include <QDir>
+#include <QPushButton>
+#include <QLineEdit>
 #include <QMenu>
 #include <QVector>
 #include <QSystemTrayIcon>
@@ -44,13 +47,14 @@
 #include <memory>
 #include <array>
 #include <utility>
+#include <vector>
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
 
-#include "task.h"
+#include "task.hpp"
 #include "lxqt_wallet.h"
 #include "favorites.h"
 #include "plugins.h"
@@ -59,13 +63,16 @@
 #include <QObject>
 #include <QLabel>
 
-#include <poll.h>
 #include <fcntl.h>
 
 #include <iostream>
-
 class QByteArray ;
 class QEvent ;
+
+namespace utility
+{
+	using volumeList = std::vector< std::pair< favorites::entry,QByteArray > > ;
+}
 
 namespace utility
 {
@@ -186,16 +193,17 @@ namespace utility
 	struct fsInfo
 	{
 		bool valid ;
-		u_int64_t f_blocks ;
-		u_int64_t f_bavail ;
-		u_int64_t f_bsize ;
-		u_int64_t f_bfree ;
+        uint64_t f_blocks ;
+        uint64_t f_bavail ;
+        uint64_t f_bsize ;
+        uint64_t f_bfree ;
 	};
 
-	Task::future< utility::fsInfo >& fileSystemInfo( const QString& ) ;
+	::Task::future< utility::fsInfo >& fileSystemInfo( const QString& ) ;
 
 	bool platformIsLinux() ;
 	bool platformIsOSX() ;
+	bool platformIsWindows() ;
 
 	void setParent( QWidget * parent,QWidget ** localParent,QDialog * dialog ) ;
 
@@ -209,10 +217,11 @@ namespace utility
 
 	bool printVersionOrHelpInfo( const QStringList& ) ;
 
-	wallet getKey( const QString& keyID,LXQt::Wallet::Wallet& ) ;
+	wallet getKey( const QString& keyID,LXQt::Wallet::Wallet&,QWidget * = nullptr ) ;
 
 	QString cmdArgumentValue( const QStringList&,const QString& arg,const QString& defaulT = QString() ) ;
 
+	void runCommandOnMount( const QString& ) ;
 	QString runCommandOnMount( void ) ;
 	QString fileManager( void ) ;
 	void setFileManager( const QString& ) ;
@@ -228,12 +237,17 @@ namespace utility
 	QString externalPluginExecutable() ;
 	void setExternalPluginExecutable( const QString& ) ;
 
+	void setWindowsMountPointOptions( QWidget *,QLineEdit *,QPushButton * ) ;
+
 	bool reUseMountPoint( void ) ;
 	void reUseMountPoint( bool ) ;
 
 	QString homeConfigPath( const QString& = QString() ) ;
 	QString homePath() ;
 	QString mountPath( const QString& path ) ;
+	QString mountPath() ;
+
+	QString getExistingDirectory( QWidget *,const QString& caption,const QString& dir ) ;
 
 	bool createFolder( const QString& ) ;
 
@@ -243,6 +257,9 @@ namespace utility
 
 	void setSettingsObject( QSettings * ) ;
 
+	void preUnMountCommand( const QString& ) ;
+	QString preUnMountCommand( void ) ;
+
 	QString mountPathPostFix( const QString& path ) ;
 	QString mountPathPostFix( const QString& prefix,const QString& path ) ;
 
@@ -251,6 +268,10 @@ namespace utility
 
 	bool autoOpenFolderOnMount() ;
 	void autoOpenFolderOnMount( bool ) ;
+
+	QString securefsPath() ;
+	QString winFSPpath() ;
+	int winFSPpollingInterval() ;
 
 	bool autoCheck() ;
 	void autoCheck( bool ) ;
@@ -285,27 +306,34 @@ namespace utility
 
 	QProcessEnvironment systemEnvironment() ;
 
+	int networkTimeOut() ;
+
 	QString homePath() ;
 	QString userName() ;
+
+	QString configFilePath( QWidget *,const QString& ) ;
 
 	QStringList split( const QString&,char = '\n' ) ;
 	QStringList executableSearchPaths( void ) ;
 	QString executableSearchPaths( const QString& ) ;
 
+	void polkitFailedWarning( std::function< void() > ) ;
 	bool useSiriPolkit( void ) ;
 	void quitHelper() ;
+	void initGlobals() ;
 	QString helperSocketPath() ;
 	void clearFavorites( void ) ;
 	void addToFavorite( const QStringList& ) ;
-	QVector< favorites::entry > readFavorites( void ) ;
+	std::vector< favorites::entry > readFavorites( void ) ;
 	favorites::entry readFavorite( const QString& ) ;
 	void replaceFavorite( const favorites::entry&,const favorites::entry& ) ;
-	void readFavorites( QMenu *,bool,const QString&,const QString& ) ;
+	void readFavorites( QMenu * ) ;
 	void removeFavoriteEntry( const favorites::entry& ) ;
 	int favoritesEntrySize() ;
 	QString getVolumeID( const QString&,bool = false ) ;
 	QString localizationLanguage() ;
 	QString localizationLanguagePath() ;
+	QString socketPath() ;
 	void setLocalizationLanguage( const QString& ) ;
 	QString walletName( void ) ;
 	QString walletName( LXQt::Wallet::BackEnd ) ;
@@ -435,7 +463,7 @@ namespace utility
 		static ::Task::future< utility::Task >& run( const QString& exe,
 							     const QByteArray& password = QByteArray() )
 		{
-			return ::Task::run< utility::Task >( [ = ](){
+			return ::Task::run( [ = ](){
 
 				return utility::Task( exe,-1,utility::systemEnvironment(),password ) ;
 			} ) ;
@@ -542,13 +570,13 @@ namespace utility
 		}
 	private:
 		void execute( const QString& exe,int waitTime,const QProcessEnvironment& env,
-			      const QByteArray& password,const std::function< void() >& f,bool e ) ;
+			      const QByteArray& password,std::function< void() > f,bool e ) ;
 
 		QByteArray m_stdOut ;
 		QByteArray m_stdError ;
-		int m_exitCode ;
-		int m_exitStatus ;
-		bool m_finished ;
+		int m_exitCode = 255 ;
+		int m_exitStatus = 255 ;
+		bool m_finished = false ;
 	};
 }
 

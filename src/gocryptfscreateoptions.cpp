@@ -17,16 +17,16 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "cryfscreateoptions.h"
-#include "ui_cryfscreateoptions.h"
+#include "gocryptfscreateoptions.h"
+#include "ui_gocryptfscreateoptions.h"
 
 #include "utility.h"
 #include "task.h"
 
-cryfscreateoptions::cryfscreateoptions( QWidget * parent,
+gocryptfscreateoptions::gocryptfscreateoptions( QWidget * parent,
 					std::function< void( const QStringList& ) > function ) :
 	QDialog( parent ),
-	m_ui( new Ui::cryfscreateoptions ),
+	m_ui( new Ui::gocryptfscreateoptions ),
 	m_function( std::move( function ) )
 {
 	m_ui->setupUi( this ) ;
@@ -39,64 +39,54 @@ cryfscreateoptions::cryfscreateoptions( QWidget * parent,
 
 	m_ui->pbConfigPath->setIcon( QIcon( ":/folder.png" ) ) ;
 
-	m_ui->lineEdit->setText( "32768" ) ;
+	m_ui->comboBox->addItems( { "AES256-GCM","AES256-SIV" } ) ;
 
-	auto exe = utility::executableFullPath( "cryfs" ) + " --show-ciphers" ;
+	m_ui->rbEncryptFileNames->setChecked( true ) ;
 
-	utility::Task::run( exe ).then( [ this ]( const utility::Task& e ){
-
-		if( e.success() ){
-
-			auto s = e.splitOutput( '\n',utility::Task::channel::stdError ) ;
-
-			if( s.isEmpty() ){
-
-				m_ui->comboBox->addItem( "aes-256-gcm" ) ;
-			}else{
-				m_ui->comboBox->addItems( s ) ;
-			}
-		}else{
-			m_ui->comboBox->addItem( "aes-256-gcm" ) ;
-		}
-
-		m_ui->comboBox->setFocus() ;
-
-		this->show() ;
-	} ) ;
+	this->show() ;
 }
 
-cryfscreateoptions::~cryfscreateoptions()
+gocryptfscreateoptions::~gocryptfscreateoptions()
 {
 	delete m_ui ;
 }
 
-void cryfscreateoptions::pbSelectConfigPath()
+void gocryptfscreateoptions::pbSelectConfigPath()
 {
-	m_ui->lineEdit_2->setText( utility::configFilePath( this,"cryfs" ) ) ;
+	m_ui->lineEdit_2->setText( utility::configFilePath( this,"gocryptfs" ) ) ;
 }
 
-void cryfscreateoptions::pbOK()
+void gocryptfscreateoptions::pbOK()
 {
-	auto e = QString( "--cipher %1 --blocksize %2" ) ;
+	auto a = [ this ](){
 
-	auto s = m_ui->lineEdit->text() ;
+		if( m_ui->comboBox->currentIndex() == 1 ){
 
-	if( s.isEmpty() ){
+			return "-aessiv" ;
+		}else{
+			return "" ;
+		}
+	}() ;
 
-		s = "32768" ;
-	}
+	auto b = [ this ](){
 
-	e = e.arg( m_ui->comboBox->currentText(),s ) ;
+		if( m_ui->rbDoNotEncryptFileNames->isChecked() ){
 
-	this->HideUI( { e,m_ui->lineEdit_2->text() } ) ;
+			return "-plaintextnames" ;
+		}else{
+			return "" ;
+		}
+	}() ;
+
+	this->HideUI( { QString( "%1 %2" ).arg( a,b ),m_ui->lineEdit_2->text() } ) ;
 }
 
-void cryfscreateoptions::pbCancel()
+void gocryptfscreateoptions::pbCancel()
 {
 	this->HideUI() ;
 }
 
-void cryfscreateoptions::HideUI( const QStringList& e )
+void gocryptfscreateoptions::HideUI( const QStringList& e )
 {
 	this->hide() ;
 
@@ -105,7 +95,7 @@ void cryfscreateoptions::HideUI( const QStringList& e )
 	this->deleteLater() ;
 }
 
-void cryfscreateoptions::closeEvent( QCloseEvent * e )
+void gocryptfscreateoptions::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
 	this->pbCancel() ;

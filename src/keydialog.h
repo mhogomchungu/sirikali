@@ -39,9 +39,11 @@ class QTableWidget ;
 #include "secrets.h"
 #include "securefscreateoptions.h"
 #include "cryfscreateoptions.h"
+#include "gocryptfscreateoptions.h"
 
 #include <functional>
 #include <memory>
+#include <vector>
 
 #if BUILD_PWQUALITY
 class keystrength
@@ -114,7 +116,7 @@ public:
 			      secrets& s,
 			      bool o,
 			      const QString& m,
-			      QVector< std::pair< favorites::entry,QByteArray > > e,
+			      utility::volumeList e,
 			      std::function< void() > function )
 	{
 		new keyDialog( parent,s,o,m,std::move( e ),std::move( function ) ) ;
@@ -123,7 +125,7 @@ public:
 		   secrets&,
 		   bool,
 		   const QString&,
-		   QVector< std::pair< favorites::entry,QByteArray > >,
+		   utility::volumeList,
 		   std::function< void() > ) ;
 	keyDialog( QWidget * parent,
 		   secrets&,
@@ -220,7 +222,7 @@ private :
 	std::function< void() > m_cancel = [](){} ;
 	std::function< void() > m_done = [](){} ;
 
-	QVector< std::pair< favorites::entry,QByteArray > > m_volumes ;
+	utility::volumeList m_volumes ;
 
 	decltype( m_volumes.size() ) m_counter = 0 ;
 };

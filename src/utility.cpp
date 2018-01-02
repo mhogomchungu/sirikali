@@ -27,15 +27,15 @@
 #include <string.h>
 #include <stdio.h>
 #include <cstdio>
-#include <pwd.h>
-#include <grp.h>
+#ifndef _WIN32
 #include <termios.h>
-
+#endif
 #include <memory>
 #include <iostream>
 
 #include <QObject>
 #include <QDir>
+#include <QFileDialog>
 #include <QTranslator>
 #include <QEventLoop>
 #include <QDebug>
@@ -52,7 +52,6 @@
 #include <QProcessEnvironment>
 #include <QtNetwork/QLocalSocket>
 #include <unistd.h>
-#include <pwd.h>
 #include <QTimer>
 #include <QEventLoop>
 #include <QFileInfo>
@@ -95,7 +94,12 @@ bool utility::platformIsOSX()
 	return false ;
 }
 
-#else
+bool utility::platformIsWindows()
+{
+	return false ;
+}
+
+#elif __APPLE__
 
 #include <sys/param.h>
 #include <sys/mount.h>
@@ -110,13 +114,57 @@ bool utility::platformIsOSX()
 	return true ;
 }
 
+bool utility::platformIsWindows()
+{
+    return false ;
+}
+
+#else
+
+bool utility::platformIsLinux()
+{
+	return false ;
+}
+
+bool utility::platformIsOSX()
+{
+	return false ;
+}
+
+bool utility::platformIsWindows()
+{
+	return true ;
+}
 #endif
 
 static QSettings * _settings ;
-
+static QString _securefsPath ;
+static QString _winfspPath ;
 static QByteArray _cookie ;
+static QString _polkit_socket_path ;
 
 static bool _use_polkit = false ;
+
+static std::function< void() > _failed_to_connect_to_zulupolkit ;
+
+#if QT_VERSION > QT_VERSION_CHECK( 5,0,0 )
+	#include <QStandardPaths>
+	QString utility::socketPath()
+	{
+		return QStandardPaths::writableLocation( QStandardPaths::RuntimeLocation ) ;
+	}
+#else
+	#include <QDesktopServices>
+	QString utility::socketPath()
+	{
+		return QDesktopServices::storageLocation( QDesktopServices::DataLocation ) ;
+	}
+#endif
+
+void utility::polkitFailedWarning( std::function< void() > e )
+{
+	_failed_to_connect_to_zulupolkit = std::move( e ) ;
+}
 
 ::Task::future< utility::Task >& utility::Task::run( const QString& exe,bool e )
 {
@@ -125,7 +173,7 @@ static bool _use_polkit = false ;
 
 ::Task::future< utility::Task >& utility::Task::run( const QString& exe,int s,bool e )
 {
-	return ::Task::run< utility::Task >( [ = ](){
+	return ::Task::run( [ = ](){
 
 		auto env = utility::systemEnvironment() ;
 
@@ -136,7 +184,7 @@ static bool _use_polkit = false ;
 void utility::Task::execute( const QString& exe,int waitTime,
 			     const QProcessEnvironment& env,
 			     const QByteArray& password,
-			     const std::function< void() >& function,
+			     std::function< void() > function,
 			     bool polkit )
 {
 	if( polkit && utility::useSiriPolkit() ){
@@ -202,39 +250,13 @@ void utility::Task::execute( const QString& exe,int waitTime,
 			_report_error( "SiriKali: Failed To Parse Polkit Backend Output" ) ;
 		}
 	}else{
-		class Process : public QProcess{
-		public:
-			Process( const std::function< void() >& function,
-				 const QProcessEnvironment& env ) :
-				m_function( function )
-			{
-				this->setProcessEnvironment( env ) ;
-			}
-		protected:
-			void setupChildProcess()
-			{
-				m_function() ;
-			}
-		private:
-			const std::function< void() >& m_function ;
-		} p( function,env ) ;
+		auto s = ::Task::process::run( exe,{},waitTime,password,env,std::move( function  ) ).get() ;
 
-		p.start( exe ) ;
-
-		if( !password.isEmpty() ){
-
-			p.waitForStarted() ;
-
-			p.write( password + '\n' ) ;
-
-			p.closeWriteChannel() ;
-		}
-
-		m_finished   = p.waitForFinished( waitTime ) ;
-		m_exitCode   = p.exitCode() ;
-		m_exitStatus = p.exitStatus() ;
-		m_stdOut     = p.readAllStandardOutput() ;
-		m_stdError   = p.readAllStandardError() ;
+		m_finished   = s.finished() ;
+		m_exitCode   = s.exit_code() ;
+		m_exitStatus = s.exit_status() ;
+		m_stdOut     = s.std_out() ;
+		m_stdError   = s.std_error() ;
 	}
 }
 
@@ -254,13 +276,13 @@ static ::Task::future< utility::Task >& _start_siripolkit( const QString& e )
 {
 	_cookie = plugins::getRandomData( 16 ).toHex() ;
 
-	return ::Task::run< utility::Task >( [ = ]{
+	return ::Task::run( [ = ]{
 
 		return utility::Task( e,
 				      -1,
 				      utility::systemEnvironment(),
 				      _cookie,
-				      [](){ umask( 0 ) ; },
+				      [](){},
 				      false ) ;
 	} ) ;
 }
@@ -305,9 +327,56 @@ bool utility::enablePolkit( utility::background_thread thread )
 	return _use_polkit ;
 }
 
+void utility::initGlobals()
+{
+#ifdef __linux__
+	auto uid = getuid() ;
+
+	QString a = "/tmp/SiriKali-" + QString::number( uid ) ;
+
+	_polkit_socket_path = a + "/siriPolkit.socket" ;
+
+	QDir e ;
+
+	e.remove( a ) ;
+	e.rmdir( _polkit_socket_path ) ;
+
+	e.mkpath( a ) ;
+
+	auto s = a.toLatin1() ;
+
+	chown( s.constData(),uid,uid ) ;
+	chmod( s.constData(),0700 ) ;
+#elif _WIN32
+
+	auto _read = []( const char * path,const char * key ){
+
+		DWORD dwType = REG_SZ ;
+		HKEY hKey = 0 ;
+
+		char buffer[ 4096 ] = { 0 } ;
+		auto buff = reinterpret_cast< BYTE * >( buffer ) ;
+
+		DWORD buffer_size = sizeof( buffer ) ;
+
+		if( RegOpenKey( HKEY_LOCAL_MACHINE,path,&hKey ) == ERROR_SUCCESS ){
+
+			RegQueryValueEx( hKey,key,nullptr,&dwType,buff,&buffer_size ) ;
+		}
+
+		RegCloseKey( hKey ) ;
+
+		return QByteArray( buffer,buffer_size ) ;
+	} ;
+
+	_securefsPath = _read( "SOFTWARE\\WOW6432Node\\WinFsp\\Services\\securefs","Executable" ) ;
+	_winfspPath    = _read( "SOFTWARE\\WOW6432Node\\WinFsp","InstallDir" ) ;
+#endif
+}
+
 QString utility::helperSocketPath()
 {
-	return utility::homeConfigPath() + ".tmp/SiriKali.polkit.socket" ;
+	return _polkit_socket_path ;
 }
 
 bool utility::useSiriPolkit()
@@ -317,6 +386,7 @@ bool utility::useSiriPolkit()
 
 void utility::quitHelper()
 {
+#if __linux__
 	auto e = utility::helperSocketPath() ;
 
 	if( utility::pathExists( e ) ){
@@ -331,9 +401,9 @@ void utility::quitHelper()
 
 				nlohmann::json json ;
 
-				json[ "cookie" ]     = _cookie.constData() ;
-				json[ "password" ]   = "" ;
-				json[ "command" ]    = "exit" ;
+				json[ "cookie" ]   = _cookie.constData() ;
+				json[ "password" ] = "" ;
+				json[ "command" ]  = "exit" ;
 
 				return json.dump().c_str() ;
 			}() ) ;
@@ -341,6 +411,13 @@ void utility::quitHelper()
 			s.waitForBytesWritten() ;
 		}
 	}
+
+	auto a = "/tmp/SiriKali-" + QString::number( getuid() ) ;
+
+	QDir m ;
+	m.remove( a ) ;
+	m.rmdir( _polkit_socket_path ) ;
+#endif
 }
 
 QString utility::homePath()
@@ -350,7 +427,7 @@ QString utility::homePath()
 
 ::Task::future<bool>& utility::openPath( const QString& path,const QString& opener )
 {
-	return ::Task::run<bool>( [ = ](){
+	return ::Task::run( [ = ](){
 
 		auto e = opener + " " + utility::Task::makePath( path ) ;
 
@@ -373,12 +450,16 @@ void utility::openPath( const QString& path,const QString& opener,
 	}
 }
 
-Task::future< utility::fsInfo >& utility::fileSystemInfo( const QString& q )
+::Task::future< utility::fsInfo >& utility::fileSystemInfo( const QString& q )
 {
-	return ::Task::run< utility::fsInfo >( [ = ](){
+	return ::Task::run( [ = ](){
 
-		struct statfs e ;
+		Q_UNUSED( q ) ;
+
 		utility::fsInfo s ;
+
+#ifndef WIN32
+		struct statfs e ;
 
 		s.valid = statfs( q.toLatin1().constData(),&e ) == 0 ;
 
@@ -386,7 +467,7 @@ Task::future< utility::fsInfo >& utility::fileSystemInfo( const QString& q )
 		s.f_bfree  = e.f_bfree ;
 		s.f_blocks = e.f_blocks ;
 		s.f_bsize  = e.f_bsize ;
-
+#endif
 		return s ;
 	} ) ;
 }
@@ -447,14 +528,11 @@ bool utility::printVersionOrHelpInfo( const QStringList& e )
 	}
 }
 
-utility::wallet utility::getKey( const QString& keyID,LXQt::Wallet::Wallet& wallet )
+utility::wallet utility::getKey( const QString& keyID,LXQt::Wallet::Wallet& wallet,QWidget * widget )
 {
 	auto _getKey = []( LXQt::Wallet::Wallet& wallet,const QString& volumeID ){
 
-		return ::Task::await<QString>( [ & ](){
-
-			return wallet.readValue( volumeID ) ;
-		} ) ;
+		return ::Task::await( [ & ](){ return wallet.readValue( volumeID ) ; } ) ;
 	} ;
 
 	utility::wallet w{ false,false,"" } ;
@@ -474,7 +552,17 @@ utility::wallet utility::getKey( const QString& keyID,LXQt::Wallet::Wallet& wall
 			}else{
 				wallet.setImage( QIcon( ":/sirikali" ) ) ;
 
-				w.opened = wallet.open( walletName,appName ) ;
+				if( widget ){
+
+					widget->hide() ;
+
+					w.opened = wallet.open( walletName,appName ) ;
+
+					widget->show() ;
+
+				}else{
+					w.opened = wallet.open( walletName,appName ) ;
+				}
 			}
 
 			if( w.opened ){
@@ -533,26 +621,15 @@ QString utility::executableSearchPaths( const QString& e )
 
 QString utility::executableFullPath( const QString& f )
 {
-	QString e = f ;
+	return utility2::executableFullPath( f,[]( const QString& e ){
 
-	if( e == "ecryptfs" ){
+		if( utility::platformIsWindows() && e == "securefs" ){
 
-		e = "ecryptfs-simple" ;
-	}
-
-	QString exe ;
-
-	for( const auto& it : utility::executableSearchPaths() ){
-
-		exe = it + e ;
-
-		if( utility::pathExists( exe ) ){
-
-			return exe ;
+			return utility::securefsPath() ;
+		}else{
+			return QString() ;
 		}
-	}
-
-	return QString() ;
+	} ) ;
 }
 
 QString utility::cmdArgumentValue( const QStringList& l,const QString& arg,const QString& defaulT )
@@ -653,7 +730,7 @@ void utility::addToFavorite( const QStringList& e )
 
 			auto q = utility::readFavorites() ;
 
-			q.append( e ) ;
+			q.emplace_back( e ) ;
 
 			QStringList l ;
 
@@ -667,15 +744,15 @@ void utility::addToFavorite( const QStringList& e )
 	}
 }
 
-QVector< favorites::entry > utility::readFavorites()
+std::vector< favorites::entry > utility::readFavorites()
 {
 	if( _settings->contains( "FavoritesVolumes" ) ){
 
-		QVector< favorites::entry > e ;
+		std::vector< favorites::entry > e ;
 
 		for( const auto& it : _settings->value( "FavoritesVolumes" ).toStringList() ){
 
-			e.append( it ) ;
+			e.emplace_back( it ) ;
 		}
 
 		return e ;
@@ -715,32 +792,30 @@ void utility::removeFavoriteEntry( const favorites::entry& e )
 	}() ) ;
 }
 
-void utility::readFavorites( QMenu * m,bool truncate ,const QString& a, const QString& b )
+void utility::readFavorites( QMenu * m )
 {
 	m->clear() ;
 
-	auto _add_action = [ m,truncate ]( const favorites::entry& e ){
+	auto _add_action = [ m ]( const QString& e,const QString& s ){
 
 		auto ac = new QAction( m ) ;
 
-		if( truncate ){
-
-			ac->setText( e.volumePath ) ;
-		}else{
-			ac->setText( e.string() ) ;
-		}
+		ac->setText( e ) ;
+		ac->setObjectName( s ) ;
 
 		return ac ;
 	} ;
 
-	m->addAction( new QAction( a,m ) ) ;
-	m->addAction( new QAction( b,m ) ) ;
+	m->addAction( _add_action( QObject::tr( "Manage Favorites" ),"Manage Favorites" ) ) ;
+	m->addAction( _add_action( QObject::tr( "Mount All" ),"Mount All" ) ) ;
 
 	m->addSeparator() ;
 
 	for( const auto& it : utility::readFavorites() ){
 
-		m->addAction( _add_action( it ) ) ;
+		const auto& e = it.volumePath ;
+
+		m->addAction( _add_action( e,e ) ) ;
 	}
 }
 
@@ -862,9 +937,14 @@ QStringList utility::directoryList( const QString& e )
 
 QIcon utility::getIcon()
 {
-	QIcon icon( INSTALL_PREFIX "/share/icons/hicolor/48x48/apps/sirikali.png" ) ;
+	if( utility::platformIsLinux() ){
 
-	return QIcon::fromTheme( "sirikali",icon ) ;
+		QIcon icon( INSTALL_PREFIX "/share/icons/hicolor/48x48/apps/sirikali.png" ) ;
+
+		return QIcon::fromTheme( "sirikali",icon ) ;
+	}else{
+		return QIcon( ":sirikali" ) ;
+	}
 }
 
 QString utility::homeConfigPath( const QString& e )
@@ -933,20 +1013,26 @@ QString utility::applicationName()
 	return "SiriKali" ;
 }
 
+static void _set_mount_default()
+{
+	if( !_settings->contains( "MountPrefix" ) ){
+
+		_settings->setValue( "MountPrefix",utility::homePath() + "/.SiriKali" ) ;
+	}
+}
+
+QString utility::mountPath()
+{
+	_set_mount_default() ;
+
+	return _settings->value( "MountPrefix" ).toString() ;
+}
+
 QString utility::mountPath( const QString& path )
 {
-	QString e ;
+	_set_mount_default() ;
 
-	if( _settings->contains( "MountPrefix" ) ){
-
-		e = _settings->value( "MountPrefix" ).toString() ;
-	}else{
-		auto e = utility::homePath() + "/.SiriKali" ;
-
-		utility::setDefaultMountPointPrefix( e ) ;
-	}
-
-	return e + "/" + path ;
+	return _settings->value( "MountPrefix" ).toString() + "/" + path ;
 }
 
 void utility::setDefaultMountPointPrefix( const QString& path )
@@ -1180,6 +1266,18 @@ bool utility::autoMountFavoritesOnAvailable()
 	}
 }
 
+int utility::networkTimeOut()
+{
+	if( _settings->contains( "NetworkTimeOut" ) ){
+
+		return _settings->value( "NetworkTimeOut" ).toInt() ;
+	}else{
+		int s = 5 ;
+		_settings->setValue( "NetworkTimeOut",s ) ;
+		return s ;
+	}
+}
+
 bool utility::showMountDialogWhenAutoMounting()
 {
 	if( _settings->contains( "ShowMountDialogWhenAutoMounting" ) ){
@@ -1280,6 +1378,26 @@ bool utility::createFolder( const QString& m )
 	return QDir().mkpath( m ) ;
 }
 
+QString utility::preUnMountCommand()
+{
+	if( !_settings->contains( "PreUnMountCommand" ) ){
+
+		_settings->setValue( "PreUnMountCommand",QString() ) ;
+	}
+
+	return _settings->value( "PreUnMountCommand" ).toString() ;
+}
+
+void utility::preUnMountCommand( const QString& e )
+{
+	_settings->setValue( "PreUnMountCommand",e ) ;
+}
+
+void utility::runCommandOnMount( const QString& e )
+{
+	_settings->setValue( "RunCommandOnMount",e ) ;
+}
+
 QString utility::runCommandOnMount()
 {
 	if( _settings->contains( "RunCommandOnMount" ) ){
@@ -1370,6 +1488,8 @@ void utility::setStartMinimized( bool e )
 	_settings->setValue( "StartMinimized",e ) ;
 }
 
+#ifndef WIN32
+
 static inline bool _terminalEchoOff( struct termios * old,struct termios * current )
 {
 	if( tcgetattr( 1,old ) != 0 ){
@@ -1423,6 +1543,39 @@ QString utility::readPassword( bool addNewLine )
 
 	return s ;
 }
+
+#else
+
+QString utility::readPassword( bool addNewLine )
+{
+	std::cout << "Password: " << std::flush ;
+
+	QString s ;
+	int e ;
+
+	int m = _readPasswordMaximumLength() ;
+
+	for( int i = 0 ; i < m ; i++ ){
+
+		e = std::getchar() ;
+
+		if( e == '\n' || e == -1 ){
+
+			break ;
+		}else{
+			s += static_cast< char >( e ) ;
+		}
+	}
+
+	if( addNewLine ){
+
+		std::cout << std::endl ;
+	}
+
+	return s ;
+}
+
+#endif
 
 QString utility::externalPluginExecutable()
 {
@@ -1553,4 +1706,124 @@ QString utility::windowDimensions::dimensions() const
 	}
 
 	return e ;
+}
+
+QString utility::configFilePath( QWidget * s,const QString& e )
+{
+	return [ = ](){
+
+		QFileDialog dialog( s ) ;
+
+		dialog.setFileMode( QFileDialog::AnyFile ) ;
+
+		dialog.setDirectory( utility::homePath() ) ;
+
+		dialog.setAcceptMode( QFileDialog::AcceptSave ) ;
+
+		dialog.selectFile( [ = ](){
+
+			if( e == "cryfs" ){
+
+				return "cryfs.config" ;
+
+			}else if( e == "encfs" ){
+
+				return "encfs6.xml" ;
+
+			}else if( e == "gocryptfs" ){
+
+				return "gocryptfs.conf" ;
+
+			}else if( e == "securefs" ){
+
+				return "securefs.json" ;
+
+			}else if( e == "ecryptfs" ){
+
+				return "ecryptfs.config" ;
+			}else{
+				return "" ;
+			}
+		}() ) ;
+
+		if( dialog.exec() ){
+
+			auto q = dialog.selectedFiles() ;
+
+			if( !q.isEmpty() ){
+
+				return q.first() ;
+			}
+		}
+
+		return QString() ;
+	}() ;
+}
+
+QString utility::getExistingDirectory( QWidget * w,const QString& caption,const QString& dir )
+{
+	auto e = QFileDialog::getExistingDirectory( w,caption,dir,QFileDialog::ShowDirsOnly ) ;
+
+	while( true ){
+
+		if( e == "/" ){
+
+			break ;
+
+		}else if( e.endsWith( '/' ) ){
+
+			e.truncate( e.length() - 1 ) ;
+		}else{
+			break ;
+		}
+	}
+
+	return e ;
+}
+
+void utility::setWindowsMountPointOptions( QWidget * obj,QLineEdit * e,QPushButton * s )
+{
+	auto menu = new QMenu( obj ) ;
+
+	QList< QAction* > actions ;
+
+	char m[ 3 ] = { 'G',':','\0' } ;
+
+	for( ; *m < 'Z' ; *m += 1 ){
+
+		auto ac = new QAction( m,obj ) ;
+		ac->setObjectName( m ) ;
+
+		actions.append( ac ) ;
+	}
+
+	QObject::connect( menu,&QMenu::triggered,[ e ]( QAction * ac ){
+
+		e->setText( ac->objectName() ) ;
+	} ) ;
+
+	menu->addActions( actions ) ;
+
+	s->setMenu( menu ) ;
+	s->setIcon( QIcon( ":/harddrive.png" ) ) ;
+}
+
+QString utility::securefsPath()
+{
+	return _securefsPath ;
+}
+
+QString utility::winFSPpath()
+{
+	return _winfspPath ;
+}
+
+int utility::winFSPpollingInterval()
+{
+	if( !_settings->contains( "WinFSPpollingInterval" ) ){
+
+		_settings->setValue( "WinFSPpollingInterval",2 ) ;
+	}
+
+	return _settings->value( "WinFSPpollingInterval" ).toInt() ;
 }

@@ -31,6 +31,7 @@
 #ifndef __TASK_H_INCLUDED__
 #define __TASK_H_INCLUDED__
 
+#include <type_traits>
 #include <vector>
 #include <utility>
 #include <future>
@@ -38,6 +39,7 @@
 #include <QThread>
 #include <QEventLoop>
 #include <QMutex>
+#include <QProcess>
 
 /*
  *
@@ -237,7 +239,7 @@ namespace Task
 		/*
 		 * ----------------End of public API----------------
 		 */
-		future() = delete ;
+		future() = default ;
 		future( const future& ) = delete ;
 		future( future&& ) = delete ;
 		future& operator=( const future& ) = delete ;
@@ -284,7 +286,7 @@ namespace Task
 		{
 			m_tasks[ m_counter ].first->then( [ this ]( T&& e ){
 
-				m_tasks[ m_counter ].second( std::move( e ) ) ;
+				m_tasks[ m_counter ].second( std::forward<T>( e ) ) ;
 
 				m_counter++ ;
 
@@ -310,7 +312,7 @@ namespace Task
 
 					m_counter++ ;
 
-					it.second( std::move( e ) ) ;
+					it.second( std::forward<T>( e ) ) ;
 
 					if( m_counter == m_tasks.size() ){
 
@@ -343,7 +345,7 @@ namespace Task
 	};
 
 	template<>
-	class future< void > : private QObject
+	class   future< void > : private QObject
 	{
 	public:
 		/*
@@ -383,7 +385,7 @@ namespace Task
 		{
 			return m_tasks.size() > 0 ;
 		}
-		const std::vector< QThread * >& threads()
+		const std::vector< QThread * >& all_threads()
 		{
 			return m_threads ;
 		}
@@ -432,7 +434,7 @@ namespace Task
 		/*
 		 * ----------------End of public API----------------
 		 */
-		future() = delete ;
+		future() = default ;
 		future( const future& ) = delete ;
 		future( future&& ) = delete ;
 		future& operator=( const future& ) = delete ;
@@ -589,27 +591,16 @@ namespace Task
 	 *
 	 */
 
-	template< typename T >
-	future<T>& run( std::function< T() > function )
+	template< typename Fn >
+	future<typename std::result_of<Fn()>::type>& run( Fn function )
 	{
-		return ( new ThreadHelper<T>( std::move( function ) ) )->Future() ;
+		return ( new ThreadHelper<typename std::result_of<Fn()>::type>( std::move( function ) ) )->Future() ;
 	}
 
-	template< typename T,typename ... Args >
-	future<T>& run( std::function< T( Args ... ) > function,Args ... args )
+	template< typename Fn,typename ... Args >
+	future<typename std::result_of<Fn(Args...)>::type>& run( Fn function,Args ... args )
 	{
-		return Task::run<T>( std::bind( std::move( function ),std::move( args ) ... ) ) ;
-	}
-
-	static inline future< void >& run( std::function< void() > function )
-	{
-		return Task::run< void >( std::move( function ) ) ;
-	}
-
-	template< typename ... Args >
-	future< void >& run( std::function< void( Args ... ) > function,Args ... args )
-	{
-		return Task::run< void >( std::bind( std::move( function ),std::move( args ) ... ) ) ;
+		return Task::run( std::bind( std::move( function ),std::move( args ) ... ) ) ;
 	}
 
 	/*
@@ -617,16 +608,14 @@ namespace Task
 	 */
 
 	template< typename T >
-	void _private_add( Task::future< T >& a,Task::future< T >& b,
-			   std::function< void( T ) >&& c )
+	void _private_add( Task::future< T >& a,Task::future< T >& b,std::function< void( T ) >&& c )
 	{
 		a.m_tasks.emplace_back( std::addressof( b ),std::move( c ) ) ;
 		a.m_threads.push_back( b.m_thread ) ;
 	}
 
 	template< typename T >
-	void _private_add_void( Task::future< T >& a,Task::future< T >& b,
-				std::function< T() >&& c )
+	void _private_add_void( Task::future< T >& a,Task::future< T >& b,std::function< T() >&& c )
 	{
 		a.m_tasks.emplace_back( std::addressof( b ),std::move( c ) ) ;
 		a.m_threads.push_back( b.m_thread ) ;
@@ -659,7 +648,8 @@ namespace Task
 	template< typename ... T >
 	void _private_add_task( Task::future< void >& f,std::function< void() >&& e,T&& ... t )
 	{
-		_private_add_void( f,Task::run< void >( std::move( e ) ),std::function< void() >( [](){} ) ) ;
+		_private_add_void( f,Task::run( std::move( e ) ),std::function< void() >( [](){} ) ) ;
+
 		_private_add_task( f,std::move( t ) ... ) ;
 	}
 
@@ -673,49 +663,33 @@ namespace Task
 	template< typename E,typename F,typename ... T >
 	void _private_add_pair( Task::future< E >& f,F&& s,T&& ... t )
 	{
-		_private_add( f,Task::run< E >( std::move( s.first ) ),std::move( s.second ) ) ;
+		_private_add( f,Task::run( std::move( s.first ) ),std::move( s.second ) ) ;
+
 		_private_add_pair( f,std::forward<T>( t ) ... ) ;
 	}
 
 	template< typename F,typename ... T >
 	void _private_add_pair_void( Task::future< void >& f,F&& s,T&& ... t )
 	{
-		_private_add_void( f,Task::run< void >( std::move( s.first ) ),std::move( s.second ) ) ;
+		_private_add_void( f,Task::run( std::move( s.first ) ),std::move( s.second ) ) ;
+
 		_private_add_pair_void( f,std::forward<T>( t ) ... ) ;
 	}
 
 	template< typename T >
-	struct _private_future
+	Task::future< T >& _private_future()
 	{
-		Task::future< T >& operator()()
-		{
-			return *( new Task::future< T >( nullptr,
-							 [](){},
-							 [](){},
-							 [](){ return T() ; } ) ) ;
-		}
-	};
-
-	template<>
-	struct _private_future< void >
-	{
-		Task::future< void >& operator()()
-		{
-			return *( new Task::future< void >( nullptr,
-							    [](){},
-							    [](){},
-							    [](){} ) ) ;
-		}
-	};
+		return *( new Task::future< T >() ) ;
+	}
 
 	/*
 	 * -------------------------End of internal helper functions-------------------------
 	 */
 
 	template< typename ... T >
-	Task::future< void >& run( std::function< void() > f,T ... t )
+	Task::future< void >& run( std::function< void() >f,T ... t )
 	{
-		auto& e = _private_future< void >()() ;
+		auto& e = _private_future< void >() ;
 
 		_private_add_task( e,std::move( f ),std::move( t ) ... ) ;
 
@@ -725,7 +699,7 @@ namespace Task
 	template< typename ... T >
 	Task::future< void >& run( Task::future< void >& s,T&& ... t )
 	{
-		auto& e = _private_future< void >()() ;
+		auto& e = _private_future< void >() ;
 
 		_private_add_future( e,s,std::forward<T>( t ) ... ) ;
 
@@ -735,7 +709,7 @@ namespace Task
 	template< typename ... T >
 	Task::future< void >& run( void_pair s,T ... t )
 	{
-		auto& e = _private_future< void >()() ;
+		auto& e = _private_future< void >() ;
 
 		_private_add_pair_void( e,std::move( s ),std::move( t ) ... ) ;
 
@@ -745,7 +719,7 @@ namespace Task
 	template< typename E,typename ... T >
 	Task::future< E >& run( pair< E > s,T ... t )
 	{
-		auto& e = _private_future< E >()() ;
+		auto& e = _private_future< E >() ;
 
 		_private_add_pair( e,std::move( s ),std::move( t ) ... ) ;
 
@@ -758,21 +732,16 @@ namespace Task
 	 *
 	 */
 
-	template< typename T >
-	T await( std::function< T() > function )
+	template< typename Fn >
+	typename std::result_of<Fn()>::type await( Fn function )
 	{
-		return Task::run<T>( std::move( function ) ).await() ;
+		return Task::run( std::move( function ) ).await() ;
 	}
 
-	template< typename T,typename ... Args >
-	T await( std::function< T( Args ... ) > function,Args ... args )
+	template< typename Fn,typename ... Args >
+	typename std::result_of<Fn(Args...)>::type await( Fn function,Args ... args )
 	{
-		return Task::await<T>( std::bind( std::move( function ),std::move( args ) ... ) ) ;
-	}
-
-	static inline void await( std::function< void() > function )
-	{
-		Task::await< void >( std::move( function ) ) ;
+		return Task::run( std::move( function ),std::move( args ) ... ).await() ;
 	}
 
 	template< typename T >
@@ -792,13 +761,14 @@ namespace Task
 	 * continuation feature.Useful when wanting to just run a function in a
 	 * different thread.
 	 */
-	static inline void exec( std::function< void() > function )
+	template< typename Fn >
+	void exec( Fn function )
 	{
 		Task::run( std::move( function ) ).start() ;
 	}
 
-	template< typename T,typename ... Args >
-	void exec( std::function< T( Args ... ) > function,Args ... args )
+	template< typename Fn,typename ... Args >
+	void exec( Fn function,Args ... args )
 	{
 		Task::exec( std::bind( std::move( function ),std::move( args ) ... ) ) ;
 	}
@@ -807,6 +777,109 @@ namespace Task
 	void exec( Task::future<T>& e )
 	{
 		e.start() ;
+	}
+
+	namespace process {
+
+		class result{
+		public:
+			result() = default ;
+			result( QProcess& e,int s )
+			{
+				m_finished   = e.waitForFinished( s ) ;
+				m_stdOut     = e.readAllStandardOutput() ;
+				m_stdError   = e.readAllStandardError() ;
+				m_exitCode   = e.exitCode() ;
+				m_exitStatus = e.exitStatus() ;
+			}
+			QByteArray std_out() const
+			{
+				return m_stdOut ;
+			}
+			QByteArray std_error() const
+			{
+				return m_stdError ;
+			}
+			bool finished() const
+			{
+				return m_finished ;
+			}
+			bool success() const
+			{
+				return m_exitCode == 0 &&
+				       m_exitStatus == QProcess::NormalExit &&
+				       m_finished == true ;
+			}
+			bool failed() const
+			{
+				return !this->success() ;
+			}
+			int exit_code() const
+			{
+				return m_exitCode ;
+			}
+			int exit_status() const
+			{
+				return m_exitStatus ;
+			}
+		private:
+			QByteArray m_stdOut ;
+			QByteArray m_stdError ;
+			bool m_success = false ;
+			bool m_finished = false ;
+			int m_exitCode = 255 ;
+			int m_exitStatus = 255 ;
+		};
+
+		static inline Task::future< result >& run( const QString& cmd,
+							   const QStringList& args = QStringList(),
+							   int waitTime = -1,
+							   const QByteArray& password = QByteArray(),
+							   const QProcessEnvironment& env = QProcessEnvironment(),
+							   std::function< void() > setUp_child_process = [](){} )
+		{
+			return Task::run( [ = ](){
+
+				class Process : public QProcess{
+				public:
+					Process( std::function< void() > function,
+						 const QProcessEnvironment& env ) :
+						 m_function( std::move( function  ) )
+					{
+						this->setProcessEnvironment( env ) ;
+					}
+				protected:
+					void setupChildProcess()
+					{
+						m_function() ;
+					}
+				private:
+					std::function< void() > m_function ;
+
+				} exe( std::move( setUp_child_process ),env ) ;
+
+				if( args.isEmpty() ){
+
+					exe.start( cmd ) ;
+				}else{
+					exe.start( cmd,args ) ;
+				}
+
+				if( !password.isEmpty() ){
+
+					exe.waitForStarted( waitTime ) ;
+					exe.write( password ) ;
+					exe.closeWriteChannel() ;
+				}
+
+				return result( exe,waitTime ) ;
+			} ) ;
+		}
+
+		static inline Task::future< result >& run( const QString& cmd,const QByteArray& password )
+		{
+			return Task::process::run( cmd,{},-1,password ) ;
+		}
 	}
 }
 
@@ -838,11 +911,11 @@ void bar( int r )
 	 */
 }
 
-Task::run<int>( foo ).then( bar ) ;
+Task::run( foo ).then( bar ) ;
 
 alternatively,
 
-Task::future<int>& e = Task::run<int>( foo ) ;
+Task::future<int>& e = Task::run( foo ) ;
 
 e.then( bar ) ;
 
@@ -877,35 +950,23 @@ e.then( bar_1 ) ;
 * Example use cases on how to use Task::run().await() API
 **********************************************************
 
-int r = Task::await<int>( foo ) ;
+int r = Task::await( foo ) ;
 
 alternatively,
 
-Task::future<int>& e = Task::run<int>( foo ) ;
+Task::future<int>& e = Task::run( foo ) ;
 
 int r = e.await() ;
 
 alternatively,
 
-int r = Task::run<int>( foo ).await() ;
+int r = Task::run( foo ).await() ;
 
 *******************************************************************
 * Example use cases on how to use lambda that requires an argument
 *******************************************************************
 
-/*
- * declaring "foo_2" with an auto keyword will not be sufficient here
- * and the full std::function<blablabla> is required.
- *
- * For the same reason,just plugging in a lambda that requires arguments
- * into Task::run() will not be sufficent and the plugged in lambda must
- * be casted to std::function<blablabla> for it to compile.
- *
- * Why the above restriction? No idea but i suspect it has to do with
- * variadic template type deduction failing to see something.
- */
-
-std::function< int( int ) > foo_2 = []( int x ){
+auto foo_2 = []( int x ){
 
 	return x + 1 ;
 } ;

@@ -35,7 +35,7 @@
 extern "C" {
 #endif
 
-#include <sys/types.h>
+#include <stdint.h>
 
 /*
  * NOTE: For documentation on how to use this API,look at the end of this header file.
@@ -71,20 +71,20 @@ typedef enum{
  * key can not be NULL,
  * a NULL value or a non NULL value of size 0 will be taken as an empty value.
  */
-lxqt_wallet_error lxqt_wallet_add_key( lxqt_wallet_t,const char * key,u_int32_t key_size,const char * key_value,u_int32_t key_value_length ) ;
+lxqt_wallet_error lxqt_wallet_add_key( lxqt_wallet_t,const char * key,uint32_t key_size,const char * key_value,uint32_t key_value_length ) ;
 
 /*
  * open "wallet_name" wallet of application "application_name" using a password of size password_length.
  *
  * The rest of the API except lxqt_wallet_create() are undefined if this function returns a non zero number
  */
-lxqt_wallet_error lxqt_wallet_open( lxqt_wallet_t *,const char * password,u_int32_t password_length,
+lxqt_wallet_error lxqt_wallet_open( lxqt_wallet_t *,const char * password,uint32_t password_length,
 		      const char * wallet_name,const char * application_name ) ;
 
 /*
  * create a new wallet named "wallet_name" owned by application "application_name" using a password "password" of size "password_length".
  */
-lxqt_wallet_error lxqt_wallet_create( const char * password,u_int32_t password_length,const char * wallet_name,const char * application_name ) ;
+lxqt_wallet_error lxqt_wallet_create( const char * password,uint32_t password_length,const char * wallet_name,const char * application_name ) ;
 
 /*
  * give a list of all wallets that belong to a program
@@ -99,7 +99,7 @@ char ** lxqt_wallet_wallet_list( const char * application_name,int * size ) ;
  * return the version of the library used to create the volume.
  * -1 is returned on error
  */
-int lxqt_wallet_volume_version( const char * wallet_name,const char * application_name,const char * password,u_int32_t password_length ) ;
+int lxqt_wallet_volume_version( const char * wallet_name,const char * application_name,const char * password,uint32_t password_length ) ;
 
 /*
  * return the version of this library.
@@ -109,7 +109,7 @@ int lxqt_wallet_library_version( void ) ;
 /*
  * delete a key.
  */
-lxqt_wallet_error lxqt_wallet_delete_key( lxqt_wallet_t,const char * key,u_int32_t key_size ) ;
+lxqt_wallet_error lxqt_wallet_delete_key( lxqt_wallet_t,const char * key,uint32_t key_size ) ;
 
 /*
  * delete a wallet named "wallet_name" of an application named "application_name" exists
@@ -131,27 +131,27 @@ int lxqt_wallet_exists( const char * wallet_name,const char * application_name )
  * returns a path to where the wallet file is stored.
  * on return path_buffer will contain something like "/home/$USER/.local/application_name/wallets"
  */
-void lxqt_wallet_application_wallet_path( char * path_buffer,u_int32_t path_buffer_size,const char * application_name ) ;
+void lxqt_wallet_application_wallet_path( char * path_buffer,uint32_t path_buffer_size,const char * application_name ) ;
 
 /*
  * returns the amount of memory managed data consumes.
  */
-u_int64_t lxqt_wallet_wallet_size( lxqt_wallet_t ) ;
+uint64_t lxqt_wallet_wallet_size( lxqt_wallet_t ) ;
 
 /*
  * returns the number of elements in the wallet
  */
-u_int64_t lxqt_wallet_wallet_entry_count( lxqt_wallet_t ) ;
+uint64_t lxqt_wallet_wallet_entry_count( lxqt_wallet_t ) ;
 
 typedef struct{
 	const char * key ;
-	u_int32_t key_size ;
+	uint32_t key_size ;
 	const char * key_value ;
-	u_int32_t key_value_size ;
+	uint32_t key_value_size ;
 }lxqt_wallet_key_values_t ;
 
 typedef struct{
-	u_int64_t iter_pos ;
+	uint64_t iter_pos ;
 	lxqt_wallet_key_values_t entry ;
 }lxqt_wallet_iterator_t ;
 
@@ -172,12 +172,12 @@ int lxqt_wallet_iter_read_value( lxqt_wallet_t,lxqt_wallet_iterator_t * ) ;
  * 0 is returned if a matching key was not found.
  * Content of the key_value returned are undefined after an entry is added or removed from the list
  */
-int lxqt_wallet_read_key_value( lxqt_wallet_t,const char * key,u_int32_t key_size,lxqt_wallet_key_values_t * key_value ) ;
+int lxqt_wallet_read_key_value( lxqt_wallet_t,const char * key,uint32_t key_size,lxqt_wallet_key_values_t * key_value ) ;
 
 /*
  * returns 1 if a wallet has a key and 0 otherwise
  */
-int lxqt_wallet_wallet_has_key( lxqt_wallet_t,const char * key,u_int32_t key_size ) ;
+int lxqt_wallet_wallet_has_key( lxqt_wallet_t,const char * key,uint32_t key_size ) ;
 
 /*
  * returns 1 if value was found in one of the entries.
@@ -185,12 +185,12 @@ int lxqt_wallet_wallet_has_key( lxqt_wallet_t,const char * key,u_int32_t key_siz
  * If an entry is found,key_value argument will be filled up
  * Content of the key_value returned are undefined after an entry is added or removed from the list
  */
-int lxqt_wallet_wallet_has_value( lxqt_wallet_t,const char * value,u_int32_t value_size,lxqt_wallet_key_values_t * key_value ) ;
+int lxqt_wallet_wallet_has_value( lxqt_wallet_t,const char * value,uint32_t value_size,lxqt_wallet_key_values_t * key_value ) ;
 
 /*
  * change the wallet password
  */
-lxqt_wallet_error lxqt_wallet_change_wallet_password( lxqt_wallet_t,const char * new_password,u_int32_t new_password_size ) ;
+lxqt_wallet_error lxqt_wallet_change_wallet_password( lxqt_wallet_t,const char * new_password,uint32_t new_password_size ) ;
 
 /*
  * get a file given by argument "source" and create an encrypted version of the file given by argument "destination" using
@@ -199,7 +199,7 @@ lxqt_wallet_error lxqt_wallet_change_wallet_password( lxqt_wallet_t,const char *
  * function is an argument pointer to a function that takes an interger and returns an integer.The input argument will
  * show progress in percentage.If the return value of the function is non zero,the process will terminate.
  */
-lxqt_wallet_error lxqt_wallet_create_encrypted_file( const char * password,u_int32_t password_length,
+lxqt_wallet_error lxqt_wallet_create_encrypted_file( const char * password,uint32_t password_length,
 						     const char * source,const char * destination,int( *function )( int,void * ),void * ) ;
 
 /*
@@ -209,7 +209,7 @@ lxqt_wallet_error lxqt_wallet_create_encrypted_file( const char * password,u_int
  * function is an argument pointer to a function that takes an interger and returns an integer.The input argument will
  * show progress in percentage.If the return value of the function is non zero,the process will terminate.
  */
-lxqt_wallet_error lxqt_wallet_create_decrypted_file( const char * password,u_int32_t password_length,
+lxqt_wallet_error lxqt_wallet_create_decrypted_file( const char * password,uint32_t password_length,
 						     const char * source,const char * destination,int( *function )( int,void * ),void * ) ;
 /*
  * undocumented API
