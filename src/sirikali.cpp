@@ -164,6 +164,20 @@ void sirikali::setUpApp( const QString& volume )
 
 	m_ui->tableWidget->setMouseTracking( true ) ;
 
+	m_ui->tableWidget->setContextMenuPolicy( Qt::CustomContextMenu ) ;
+
+	connect( m_ui->tableWidget,&QTableWidget::customContextMenuRequested,[ this ]( QPoint s ){
+
+		Q_UNUSED( s ) ;
+
+		auto item = m_ui->tableWidget->currentItem() ;
+
+		if( item ){
+
+			this->showContextMenu( item,true ) ;
+		}
+	} ) ;
+
 	connect( m_ui->tableWidget,SIGNAL( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ),
 		 this,SLOT( slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) ) ;
 
