@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  *  Copyright (c) 2017
  *  name : Francis Banyikwa
@@ -146,45 +146,26 @@ configOptions::configOptions( QWidget * parent,
 
 		auto m = new QMenu( this ) ;
 
-		auto ac = m->addAction( tr( "Internal Wallet" ),[ this ](){
+		auto _addAction = [ m,this ]( const QString& e,const char * s,bk z ){
 
-			this->hide() ;
+			auto ac = m->addAction( e ) ;
 
-			walletconfig::instance( this,
-						m_secrets.walletBk( bk::internal ),
-						[ this ](){ this->show() ; } ) ;
-		} ) ;
+			ac->setEnabled( LXQt::Wallet::backEndIsSupported( z ) ) ;
 
-		ac->setEnabled( LXQt::Wallet::backEndIsSupported( bk::internal ) ) ;
+			m_actionPair.emplace_back( ac,s ) ;
 
-		m_actionPair.emplace_back( ac,"Internal Wallet" ) ;
+			connect( ac,&QAction::triggered,[ this,z ](){
 
-		ac = m->addAction( tr( "Libsecret" ),[ this ](){
+				this->hide() ;
 
-			walletconfig::instance( this,m_secrets.walletBk( bk::libsecret ) ) ;
-		} ) ;
+				walletconfig::instance( this,m_secrets.walletBk( z ),[ this ](){ this->show() ; } ) ;
+			} ) ;
+		} ;
 
-		ac->setEnabled( LXQt::Wallet::backEndIsSupported( bk::libsecret ) ) ;
-
-		m_actionPair.emplace_back( ac,"Libsecret" ) ;
-
-		ac = m->addAction( tr( "KWallet" ),[ this ](){
-
-			walletconfig::instance( this,m_secrets.walletBk( bk::kwallet ) ) ;
-		} ) ;
-
-		ac->setEnabled( LXQt::Wallet::backEndIsSupported( bk::kwallet ) ) ;
-
-		m_actionPair.emplace_back( ac,"KWallet" ) ;
-
-		ac = m->addAction( tr( "MACOS Keychain" ),[ this ](){
-
-			walletconfig::instance( this,m_secrets.walletBk( bk::osxkeychain ) ) ;
-		} ) ;
-
-		m_actionPair.emplace_back( ac,"MACOS Keychain" ) ;
-
-		ac->setEnabled( LXQt::Wallet::backEndIsSupported( bk::osxkeychain ) ) ;
+		_addAction( tr( "Internal Wallet" ),"Internal Wallet",bk::internal ) ;
+		_addAction( tr( "Libsecret" ),"Libsecret",bk::libsecret ) ;
+		_addAction( tr( "KWallet" ),"KWallet",bk::kwallet ) ;
+		_addAction( tr( "MACOS Keychain" ),"MACOS Keychain",bk::osxkeychain ) ;
 
 		return m ;
 	}() ) ;
