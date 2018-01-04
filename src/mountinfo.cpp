@@ -23,7 +23,23 @@
 #include "task.hpp"
 
 #include <QMetaObject>
+#include <QtGlobal>
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
+
+class QStorageInfo{
+
+	static QList<QStorageInfo> mountedVolumes()
+	{
+		return QList<QStorageInfo>() ;
+	}
+} ;
+
+#else
+
 #include <QStorageInfo>
+
+#endif
 
 #ifdef WIN32
 
