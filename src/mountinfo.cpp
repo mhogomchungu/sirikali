@@ -27,11 +27,17 @@
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
 
-class QStorageInfo{
+struct QStorageInfo{
 
 	static QList<QStorageInfo> mountedVolumes()
 	{
 		return QList<QStorageInfo>() ;
+	}
+
+	bool operator==( const QStorageInfo& e )
+	{
+		Q_UNUSED( e ) ;
+		return false ;
 	}
 } ;
 
