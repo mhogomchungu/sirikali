@@ -23,7 +23,6 @@ override_dh_auto_build:
 	if [ ${VER} != ${PRODUCT_VER} ] ; then exit 1 ; fi
 	if ! grep -q \"${VER}\" ./debian/sirikali.appdata.xml ; then exit 1 ; fi
 	dh_auto_build
-	pandoc debian/sirikali.1.md -s -t man -o debian/sirikali.1
 
 get-orig-source:  $(info I: $(PKG)_$(VER))
 	@echo "# Downloading..."
