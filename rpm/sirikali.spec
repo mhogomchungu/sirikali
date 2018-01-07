@@ -43,6 +43,8 @@ BuildRequires: qt5-qtbase-devel
 %description
 SiriKali is a Qt/C++ GUI front end to encfs,cryfs,gocryptfs,ecryptfs and securefs.
 
+%undefine _debugsource_packages
+
 %prep
 %setup -q
 
