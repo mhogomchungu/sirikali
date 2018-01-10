@@ -792,11 +792,11 @@ namespace Task
 				m_exitCode   = e.exitCode() ;
 				m_exitStatus = e.exitStatus() ;
 			}
-			QByteArray std_out() const
+			const QByteArray& std_out() const
 			{
 				return m_stdOut ;
 			}
-			QByteArray std_error() const
+			const QByteArray& std_error() const
 			{
 				return m_stdError ;
 			}
@@ -879,6 +879,13 @@ namespace Task
 		static inline Task::future< result >& run( const QString& cmd,const QByteArray& password )
 		{
 			return Task::process::run( cmd,{},-1,password ) ;
+		}
+
+		static inline Task::future< result >& run( const QString& cmd,
+							   const QStringList& args,
+							   const QByteArray& password )
+		{
+			return Task::process::run( cmd,args,-1,password ) ;
 		}
 	}
 }
