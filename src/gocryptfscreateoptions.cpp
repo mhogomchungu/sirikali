@@ -21,7 +21,7 @@
 #include "ui_gocryptfscreateoptions.h"
 
 #include "utility.h"
-#include "task.h"
+#include "task.hpp"
 
 gocryptfscreateoptions::gocryptfscreateoptions( QWidget * parent,
 					std::function< void( const QStringList& ) > function ) :

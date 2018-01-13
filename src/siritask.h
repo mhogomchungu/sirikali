@@ -21,7 +21,7 @@
 #define ZULUMOUNTTASK_H
 
 #include "volumeinfo.h"
-#include "task.h"
+#include "task.hpp"
 #include "utility.h"
 #include "favorites.h"
 #include <QVector>

@@ -21,7 +21,7 @@
 #include "ui_cryfscreateoptions.h"
 
 #include "utility.h"
-#include "task.h"
+#include "task.hpp"
 
 cryfscreateoptions::cryfscreateoptions( QWidget * parent,
 					std::function< void( const QStringList& ) > function ) :

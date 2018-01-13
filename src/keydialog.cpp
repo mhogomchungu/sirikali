@@ -29,7 +29,7 @@
 
 #include "options.h"
 #include "dialogmsg.h"
-#include "task.h"
+#include "task.hpp"
 #include "utility.h"
 #include "lxqt_wallet.h"
 #include "utility2.h"
