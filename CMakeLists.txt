@@ -350,6 +350,8 @@ install( FILES translations/de_DE.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirika
 install( FILES src/sirikali.1.gz DESTINATION ${CMAKE_INSTALL_DATADIR}/man/man1/ )
 install( FILES src/sirikali.pkexec.1.gz DESTINATION ${CMAKE_INSTALL_DATADIR}/man/man1/ )
 
+install( FILES src/sirikali.appdata.xml DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo/ )
+
 endif()
 
 if( NOT APPLE )
