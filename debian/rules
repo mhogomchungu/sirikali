@@ -1,0 +1,32 @@
+#!/usr/bin/make -f
+
+PKD = $(word 1,$(abspath $(dir $(MAKEFILE_LIST))))
+PKG = $(shell dpkg-parsechangelog -l$(PKD)/changelog --show-field=Source)
+VER ?= $(shell (dpkg-parsechangelog -l$(PKD)/changelog | grep Version | sed 's/Version..//' | sed 's/-.\+//'))
+PRODUCT_VER = $(shell (grep version changelog | tail -1 | awk '{print $2}'))
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# This has to be exported to make some magic below work.
+export DH_OPTIONS
+
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+
+override_dh_auto_configure:
+	dh_auto_configure -- -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_LIBDIR=lib/$(DEB_HOST_MULTIARCH) -DQT5=true  -DNOSECRETSUPPORT=false -DNOKDESUPPORT=true
+
+%:
+	dh $@ --parallel
+
+override_dh_auto_build:
+	if [ ${VER} != ${PRODUCT_VER} ] ; then exit 1 ; fi
+	if ! grep -q \"${VER}\" ./debian/sirikali.appdata.xml ; then exit 1 ; fi
+	dh_auto_build
+
+get-orig-source:  $(info I: $(PKG)_$(VER))
+	@echo "# Downloading..."
+	uscan --noconf --verbose --rename --destdir=$(CURDIR) --check-dirname-level=0 --force-download --download-version $(VER) $(PKD)
+
+
+.PHONY: override_dh_auto_configure get-orig-source

@@ -1,0 +1,9 @@
+# "The maintainer script seems to call killall. Since this utility kills
+# processes by name, it may well end up killing unrelated processes.
+# Most uses of killall should use invoke-rc.d instead."
+#
+# sysvinit is not an option here, and the call is against
+# /usr/bin/siricali, which is unlikely to accidentally hit another
+# process.
+sirikali: killall-is-dangerous
+

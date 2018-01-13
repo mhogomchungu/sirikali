@@ -1,0 +1,116 @@
+sirikali (1.3.2-1) unstable; urgency=medium
+
+  * New upstream version
+
+ -- David Steele <steele@debian.org>  Tue, 02 Jan 2018 21:06:34 -0500
+
+sirikali (1.3.1-1) unstable; urgency=medium
+
+  *  New upstream version.
+
+ -- David Steele <steele@debian.org>  Fri, 20 Oct 2017 23:49:20 -0400
+
+sirikali (1.3.0-1) unstable; urgency=medium
+
+  * New upstream version. 
+  * Save the source signature in an archivable format.
+  * Kill existing sirikali daemon on upgrade.
+
+ -- David Steele <steele@debian.org>  Tue, 12 Sep 2017 23:09:37 -0400
+
+sirikali (1.2.9-1) unstable; urgency=medium
+
+  * New upstream version.
+
+ -- David Steele <steele@debian.org>  Tue, 11 Jul 2017 07:25:01 -0400
+
+sirikali (1.2.8-1) unstable; urgency=medium
+
+  * Build-dep libgcrypt20-dev instead of libgcrypt11-dev (Closes: 864134).
+  * New upstream version
+
+ -- David Steele <steele@debian.org>  Sun, 02 Jul 2017 17:04:26 -0400
+
+sirikali (1.2.7-1) unstable; urgency=medium
+
+  * New upstream release(s).
+
+ -- David Steele <steele@debian.org>  Fri, 19 May 2017 11:47:38 -0400
+
+sirikali (1.2.3-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Minor appstream fix.
+  * Update architecture list.
+
+ -- David Steele <steele@debian.org>  Thu, 29 Dec 2016 21:24:41 -0500
+
+sirikali (1.2.2-1) unstable; urgency=medium
+
+  * New upstream version.
+  * Update the appstream install directory. 
+
+ -- David Steele <steele@debian.org>  Fri, 09 Dec 2016 12:39:24 -0500
+
+sirikali (1.2.1-1) unstable; urgency=low
+  [Mhogo Mchungu]
+  * New Features
+     -- Maintanance release.
+     -- FIX BUG: Dont generate an update warning prompt on startup when
+        auto check for updates is set but the application is started while
+        the system has no internet connection.
+     -- FIX BUG: Dont auto delete mount folders when a volumes was
+        unmounted outside of SiriKali.
+     -- FIX BUG: Populate $PATH variable properly before calling backends
+        since some backends fails without it.
+     -- FIX BUG: The build process failed to build on Qt4
+
+ -- David Steele <steele@debian.org>  Sat, 29 Oct 2016 10:32:53 -0400
+
+sirikali (1.2.0-2) unstable; urgency=medium
+
+  * Depend on encfs for armel, where cryfs doesn't currently build.
+
+ -- David Steele <steele@debian.org>  Sat, 22 Oct 2016 22:43:05 -0400
+
+sirikali (1.2.0-1) unstable; urgency=low
+  [Mhogo Mchungu]
+  * New Features
+     -- Add ability to add a favorite volume with mount options
+        (external config file path,idle timeout,auto mount).
+     -- Add a GUI option to select what secure key storage backend
+        to use when auto mounting volumes.
+
+  [David Steele]
+  * Incorporate upstream addition of PATH to called tasks.
+
+ -- David Steele <steele@debian.org>  Sun, 09 Oct 2016 10:03:25 -0400
+
+sirikali (1.1.0-1) unstable; urgency=low
+  [Mhogo Mchungu]
+  * New Features
+     -- Add ability to automount favorites volumes on program start up time.
+     -- Add ability to automount favorites volumes when they become available
+        i.e., when the files systems the volume resides in is mounted.
+
+  [David Steele]
+  * Reworked Debian packaging
+  * Closes: #838426.
+
+ -- David Steele <steele@debian.org>  Tue, 20 Sep 2016 19:59:35 -0400
+
+sirikali (1.0.0-1) UNRELEASED; urgency=low
+  [Mhogo Mchungu]
+  * New Features
+     -- Initial release.
+     -- Can create and unlock Cryfs Volumes.
+     -- Can create and unlock Encfs Volumes.
+     -- Can create and unlock Gocryptfs Volumes.
+     -- Can create and unlock Securefs Volumes.
+     -- Can save and retrieve volumes keys from KDE wallet,GNOME's libsecret and an internal
+             secured storage system backed by libgcrypt.
+     -- Can save favorite volumes for easier access to frequently used volumes.
+     -- Can use keys derived from passphrases,keyfiles and a combination of a passphrase and a keyfile.
+     -- Can be build with Qt4(default) or with Qt5.
+
+ -- Mhogo Mchungu <mhogomchungu@gmail.com>  Thu, 11 Aug 2016 16:38:48 +0000
