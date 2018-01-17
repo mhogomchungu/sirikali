@@ -535,32 +535,32 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/ecryptfscreateoptions.ui" line="14"/>
         <source>Select Volume Creation Options</source>
-        <translation type="unfinished">Wähle Optionen zur Erzeugung des Datenträgers</translation>
+        <translation>Wähle Optionen zur Erzeugung des Datenträgers</translation>
     </message>
     <message>
         <location filename="../src/ecryptfscreateoptions.ui" line="26"/>
         <source>&amp;OK</source>
-        <translation type="unfinished">&amp;OK</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/ecryptfscreateoptions.ui" line="39"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished">Abbre&amp;chen</translation>
+        <translation>Abbre&amp;chen</translation>
     </message>
     <message>
         <location filename="../src/ecryptfscreateoptions.ui" line="52"/>
         <source>Select A Folder To Create Config File In(Optional).</source>
-        <translation type="unfinished">Wähle Ordner um darin eine Konfiguratonsdatei zu erzeugen (Optional).</translation>
+        <translation>Wähle Ordner um darin eine Konfiguratonsdatei zu erzeugen (Optional).</translation>
     </message>
     <message>
         <location filename="../src/ecryptfscreateoptions.ui" line="109"/>
         <source>Encrypt File Na&amp;mes</source>
-        <translation type="unfinished">Verschlüssle Dateina&amp;men</translation>
+        <translation>Verschlüssle Dateina&amp;men</translation>
     </message>
     <message>
         <location filename="../src/ecryptfscreateoptions.ui" line="122"/>
         <source>Do &amp;Not Encrypt File Names</source>
-        <translation type="unfinished">Dateinamen &amp;Nicht verschlüsseln</translation>
+        <translation>Dateinamen &amp;Nicht verschlüsseln</translation>
     </message>
     <message>
         <location filename="../src/ecryptfscreateoptions.ui" line="148"/>

@@ -31,7 +31,7 @@
     <message>
         <location filename="../src/dialogmsg.cpp" line="237"/>
         <source>Do not show this dialog again</source>
-        <translation>No mostrar este diálogo </translation>
+        <translation>No mostrar este diálogo</translation>
     </message>
 </context>
 <context>
@@ -233,7 +233,7 @@ options:
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/changepassworddialog.ui" line="186"/>
         <source>&amp;Cancel</source>
-        <translation>&amp;Cancelar </translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/changepassworddialog.ui" line="199"/>
@@ -270,7 +270,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/checkforupdates.cpp" line="90"/>
         <location filename="../src/checkforupdates.cpp" line="93"/>
         <source>Version Info</source>
-        <translation type="unfinished">Información de la versión</translation>
+        <translation>Información de la versión</translation>
     </message>
 </context>
 <context>
@@ -283,7 +283,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configfileoption.ui" line="26"/>
         <source>&amp;Set</source>
-        <translation type="unfinished">&amp;Set</translation>
+        <translation>&amp;Set</translation>
     </message>
     <message>
         <location filename="../src/configfileoption.ui" line="39"/>
@@ -351,7 +351,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configoptions.ui" line="453"/>
         <source>Set External Plugin Executable</source>
-        <translation type="unfinished">Establecer pluging ejecutable externo </translation>
+        <translation>Establecer pluging ejecutable externo</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="469"/>
@@ -506,12 +506,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/ecryptfscreateoptions.ui" line="14"/>
         <source>Select Volume Creation Options</source>
-        <translation type="unfinished">Selecione opciones de creacion de volumen</translation>
+        <translation>Selecione opciones de creacion de volumen</translation>
     </message>
     <message>
         <location filename="../src/ecryptfscreateoptions.ui" line="26"/>
         <source>&amp;OK</source>
-        <translation type="unfinished">&amp;OK</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/ecryptfscreateoptions.ui" line="39"/>
@@ -718,7 +718,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/gocryptfscreateoptions.ui" line="14"/>
         <source>Select Volume Creation Options</source>
-        <translation type="unfinished">Selecione opciones de creacion de volumen</translation>
+        <translation>Selecione opciones de creacion de volumen</translation>
     </message>
     <message>
         <location filename="../src/gocryptfscreateoptions.ui" line="36"/>
@@ -728,7 +728,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/gocryptfscreateoptions.ui" line="55"/>
         <source>&amp;OK</source>
-        <translation type="unfinished">&amp;OK</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/gocryptfscreateoptions.ui" line="68"/>
@@ -919,7 +919,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.cpp" line="266"/>
         <source>Check This Box To Make Password Visible</source>
-        <translation>Selecciona para mostrar la contraseña </translation>
+        <translation>Selecciona para mostrar la contraseña</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="284"/>
@@ -929,7 +929,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.cpp" line="424"/>
         <source>Create A New &quot;%1&quot; Volume</source>
-        <translation>Crear un nuevo volumen &quot;%1&quot; </translation>
+        <translation>Crear un nuevo volumen &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="523"/>
@@ -1227,7 +1227,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/password_dialog.ui" line="170"/>
         <source>&amp;Ok</source>
-        <translation type="unfinished">&amp;Ok</translation>
+        <translation>&amp;Ok</translation>
     </message>
 </context>
 <context>
@@ -1256,7 +1256,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/plugin.ui" line="142"/>
         <location filename="../src/plugin.cpp" line="161"/>
         <source>KeyFile</source>
-        <translation type="unfinished">KeyFile</translation>
+        <translation>KeyFile</translation>
     </message>
     <message>
         <location filename="../src/plugin.cpp" line="111"/>
@@ -1295,7 +1295,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/readonlywarning.ui" line="61"/>
         <source>&amp;Ok</source>
-        <translation type="unfinished">&amp;Ok</translation>
+        <translation>&amp;Ok</translation>
     </message>
 </context>
 <context>
@@ -1327,7 +1327,7 @@ The lite format has become the default on Unix-like operating systems as it is m
     <message>
         <location filename="../src/securefscreateoptions.ui" line="69"/>
         <source>&amp;OK</source>
-        <translation type="unfinished">&amp;OK</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/securefscreateoptions.ui" line="82"/>
@@ -1350,7 +1350,7 @@ The lite format has become the default on Unix-like operating systems as it is m
     <message>
         <location filename="../src/sirikali.ui" line="55"/>
         <source>Volume Path</source>
-        <translation>Directorio del Volumen </translation>
+        <translation>Directorio del Volumen</translation>
     </message>
     <message>
         <location filename="../src/sirikali.ui" line="63"/>
@@ -1396,7 +1396,7 @@ The lite format has become the default on Unix-like operating systems as it is m
         <location filename="../src/sirikali.ui" line="122"/>
         <location filename="../src/sirikali.cpp" line="352"/>
         <source>Favorites</source>
-        <translation>Favoritos </translation>
+        <translation>Favoritos</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="343"/>
@@ -1411,7 +1411,7 @@ The lite format has become the default on Unix-like operating systems as it is m
     <message>
         <location filename="../src/sirikali.cpp" line="366"/>
         <source>Quit</source>
-        <translation>Salir </translation>
+        <translation>Salir</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="363"/>
@@ -1628,7 +1628,7 @@ The Volume Is Not Supported</source>
     <message>
         <location filename="../src/walletconfig.cpp" line="203"/>
         <source>ERROR!</source>
-        <translation>ERROR</translation>
+        <translation>ERROR!</translation>
     </message>
     <message>
         <location filename="../src/walletconfig.cpp" line="203"/>
@@ -1677,7 +1677,7 @@ The Volume Is Not Supported</source>
         <location filename="../src/walletconfiginput.cpp" line="102"/>
         <location filename="../src/walletconfiginput.cpp" line="109"/>
         <source>ERROR!</source>
-        <translation>ERROR</translation>
+        <translation>ERROR!</translation>
     </message>
     <message>
         <location filename="../src/walletconfiginput.cpp" line="102"/>

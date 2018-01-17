@@ -533,32 +533,32 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/ecryptfscreateoptions.ui" line="14"/>
         <source>Select Volume Creation Options</source>
-        <translation type="unfinished">Sélectionner les options de création du volume</translation>
+        <translation>Sélectionner les options de création du volume</translation>
     </message>
     <message>
         <location filename="../src/ecryptfscreateoptions.ui" line="26"/>
         <source>&amp;OK</source>
-        <translation type="unfinished">&amp;OK</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../src/ecryptfscreateoptions.ui" line="39"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished">&amp;Annuler</translation>
+        <translation>&amp;Annuler</translation>
     </message>
     <message>
         <location filename="../src/ecryptfscreateoptions.ui" line="52"/>
         <source>Select A Folder To Create Config File In(Optional).</source>
-        <translation type="unfinished">Sélectionner un répertoire pour y créer un fichier de configuration (facultatif).</translation>
+        <translation>Sélectionner un répertoire pour y créer un fichier de configuration (facultatif).</translation>
     </message>
     <message>
         <location filename="../src/ecryptfscreateoptions.ui" line="109"/>
         <source>Encrypt File Na&amp;mes</source>
-        <translation type="unfinished">No&amp;ms des fichiers à chiffrer</translation>
+        <translation>No&amp;ms des fichiers à chiffrer</translation>
     </message>
     <message>
         <location filename="../src/ecryptfscreateoptions.ui" line="122"/>
         <source>Do &amp;Not Encrypt File Names</source>
-        <translation type="unfinished">Noms des fichiers à &amp;Ne pas chiffrer</translation>
+        <translation>Noms des fichiers à &amp;Ne pas chiffrer</translation>
     </message>
     <message>
         <location filename="../src/ecryptfscreateoptions.ui" line="148"/>
