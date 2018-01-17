@@ -440,9 +440,9 @@ void keyDialog::pbOptions()
 
 			this->hide() ;
 
-			configFileOption::instance( this,m_exe,[ this ]( const QStringList& e ){
+			ecryptfscreateoptions::instance( this,[ this ]( const QStringList& e ){
 
-				utility2::stringListToStrings( e,m_configFile ) ;
+				utility2::stringListToStrings( e,m_createOptions,m_configFile ) ;
 
 				this->ShowUI() ;
 			} ) ;
@@ -996,6 +996,14 @@ void keyDialog::encryptedFolderCreate()
 		m_ui->lineEditKey->setFocus() ;
 
 		return ;
+	}
+
+	if( m_exe == "Ecryptfs" ){
+
+		if( m_createOptions.isEmpty() ){
+
+			m_createOptions = "-o " + ecryptfscreateoptions::defaultCreateOptions() ;
+		}
 	}
 
 	m_working = true ;

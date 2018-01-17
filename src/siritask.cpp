@@ -351,18 +351,6 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 	}else if( _ecryptfs( type ) ){
 
-		auto _options = []( const std::initializer_list< const char * >& e ){
-
-			QString q = "-o key=passphrase" ;
-
-			for( const auto& it : e ){
-
-				q += it ;
-			}
-
-			return q ;
-		} ;
-
 		auto mode = [ & ](){
 
 			if( opt.ro ){
@@ -379,14 +367,9 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 			if( create ){
 
-				auto s = _options( { ",ecryptfs_passthrough=n",
-						     ",ecryptfs_enable_filename_crypto=y",
-						     ",ecryptfs_key_bytes=32",
-						     ",ecryptfs_cipher=aes" } ) ;
-
-				return e.arg( exe,s,mode,configPath,cipherFolder,mountPoint ) ;
+				return e.arg( exe,opt.createOptions,mode,configPath,cipherFolder,mountPoint ) ;
 			}else{
-				return e.arg( exe,_options( {} ),mode,configPath,cipherFolder,mountPoint ) ;
+				return e.arg( exe,"-o key=passphrase",mode,configPath,cipherFolder,mountPoint ) ;
 			}
 		}() ;
 
@@ -527,7 +510,7 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 		return siritask::status::success ;
 	}
 
-	siritask::cmdStatus e = { r.exitCode(),stdOut ? r.stdOut() : r.stdError() } ;
+	siritask::cmdStatus e( r.exitCode(),stdOut ? r.stdOut() : r.stdError() ) ;
 
 	const auto msg = e.msg().toLower() ;
 
@@ -610,24 +593,25 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 	}else{
 		exe = utility::Task::makePath( exe ) ;
 
-		auto _run = [ & ](){
+		auto _run = [ & ]()->std::pair< QString,siritask::cmdStatus >{
 
-			#if DEBUG
-				utility::debug() << _args( exe,opt,configFilePath,create ) ;
-			#endif
-			auto s = utility::Task( _args( exe,opt,configFilePath,create ),
+			auto cmd = _args( exe,opt,configFilePath,create ) ;
+
+			auto s = utility::Task( cmd,
 						20000,
 						utility::systemEnvironment(),
 						password.toLatin1(),
 						[](){},
 						_ecryptfs( app ) ) ;
 
-			return _status( s,_status( app,status_type::exeName ),app == "encfs" ) ;
+			return { cmd,_status( s,_status( app,status_type::exeName ),app == "encfs" ) } ;
 		} ;
 
 		auto s = _run() ;
 
-		if( s == siritask::status::ecrypfsBadExePermissions ){
+		auto e = s.second ;
+
+		if( e == siritask::status::ecrypfsBadExePermissions ){
 
 			if( utility::enablePolkit( utility::background_thread::True ) ){
 
@@ -635,12 +619,12 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 			}
 		}
 
-		if( s != siritask::status::success ){
+		if( e != siritask::status::success ){
 
-			utility::debug() << s.report() ;
+			utility::debug() << e.report( s.first ) ;
 		}
 
-		return s ;
+		return e ;
 	}
 }
 

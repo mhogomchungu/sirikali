@@ -30,10 +30,12 @@ SOURCES += \
     cryfscreateoptions.cpp \
     configfileoption.cpp \
     help.cpp \
-    configoptions.cpp
+    configoptions.cpp \
+    ecryptfscreateoptions.cpp
 
 HEADERS += \
     securefscreateoptions.h \
+    ecryptfscreateoptions.h \
     cryfscreateoptions.h \
     dialogok.h \
     configoptions.h \
@@ -67,6 +69,7 @@ HEADERS += \
 
 FORMS += \
     securefscreateoptions.ui \
+    ecryptfscreateoptions.ui \
     cryfscreateoptions.ui \
     dialogok.ui \
     sirikali.ui \

@@ -188,6 +188,7 @@ set( UI_FILES 	src/sirikali.ui
 		src/cryfscreateoptions.ui
                 src/configfileoption.ui
                 src/configoptions.ui
+                src/ecryptfscreateoptions.ui
 )
 
 set( MOC_FILES
@@ -211,6 +212,7 @@ set( MOC_FILES
 		src/mountinfo.h
 		src/securefscreateoptions.h
 		src/cryfscreateoptions.h
+		src/ecryptfscreateoptions.h
  )
 
 set( SRC 	src/dialogok.cpp
@@ -239,6 +241,7 @@ set( SRC 	src/dialogok.cpp
 		src/securefscreateoptions.cpp
 		src/cryfscreateoptions.cpp
 		src/utility2.cpp
+		src/ecryptfscreateoptions.cpp
 )
 
 if( APPLE )

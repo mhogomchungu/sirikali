@@ -40,6 +40,7 @@ class QTableWidget ;
 #include "securefscreateoptions.h"
 #include "cryfscreateoptions.h"
 #include "gocryptfscreateoptions.h"
+#include "ecryptfscreateoptions.h"
 
 #include <functional>
 #include <memory>
