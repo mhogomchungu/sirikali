@@ -75,6 +75,7 @@ rm -rf $RPM_BUILD_DIR/sirikali
 %{_datadir}/icons/hicolor/256x256/apps/sirikali.png
 %{_datadir}/pixmaps/sirikali.png
 %{_datadir}/icons/sirikali.png
+%{_datadir}/metainfo/sirikali.appdata.xml
 %{_datadir}/sirikali/translations/en_US.qm
 %{_datadir}/sirikali/translations/fr_FR.qm
 %{_datadir}/sirikali/translations/es_MX.qm

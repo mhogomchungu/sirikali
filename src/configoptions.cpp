@@ -40,6 +40,8 @@ configOptions::configOptions( QWidget * parent,
 
 	m_ui->tabWidget->setCurrentIndex( 0 ) ;
 
+	m_ui->pbMountPointPrefix->setIcon( QIcon( ":/folder.png" ) ) ;
+
 	connect( m_ui->pushButton,&QPushButton::clicked,[ this ](){ this->HideUI() ; } ) ;
 
 	m_ui->cbAutoOpenMountPoint->setChecked( utility::autoOpenFolderOnMount() ) ;
