@@ -138,6 +138,9 @@
      <property name="text">
       <string>Auto Check For Updates</string>
      </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
     </widget>
     <widget class="QLabel" name="label_12">
      <property name="geometry">
@@ -150,6 +153,9 @@
      </property>
      <property name="text">
       <string>Start Minimized</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
      </property>
     </widget>
     <widget class="QCheckBox" name="cbAutoMountAtStartUp">
@@ -255,8 +261,8 @@
       <rect>
        <x>40</x>
        <y>10</y>
-       <width>481</width>
-       <height>231</height>
+       <width>491</width>
+       <height>241</height>
       </rect>
      </property>
      <property name="title">
@@ -320,7 +326,7 @@
         <x>100</x>
         <y>30</y>
         <width>311</width>
-        <height>41</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="text">
@@ -331,10 +337,10 @@
     <widget class="QPushButton" name="pbChangeWalletPassword">
      <property name="geometry">
       <rect>
-       <x>140</x>
-       <y>240</y>
-       <width>291</width>
-       <height>33</height>
+       <x>70</x>
+       <y>250</y>
+       <width>431</width>
+       <height>31</height>
       </rect>
      </property>
      <property name="text">
@@ -455,6 +461,9 @@
      <property name="alignment">
       <set>Qt::AlignCenter</set>
      </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
     </widget>
     <widget class="QLabel" name="label_4">
      <property name="geometry">
@@ -470,6 +479,9 @@
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEditAfterMountCommand">
@@ -506,6 +518,9 @@
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
      </property>
     </widget>
    </widget>

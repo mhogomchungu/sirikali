@@ -26,8 +26,6 @@
 #include <QDebug>
 #include <QFile>
 
-#define DEBUG 0
-
 using cs = siritask::status ;
 
 static bool _create_folder( const QString& m )

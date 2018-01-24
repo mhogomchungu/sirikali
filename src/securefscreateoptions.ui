@@ -92,10 +92,13 @@ The lite format has become the default on Unix-like operating systems as it is m
     </rect>
    </property>
    <property name="text">
-    <string>Select A Folder To Create Config File In.</string>
+    <string>Select A Folder To Create Config File In(Optional).</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QLineEdit" name="lineEdit">

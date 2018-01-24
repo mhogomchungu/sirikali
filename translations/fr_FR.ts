@@ -381,12 +381,12 @@ p, li { white-space: pre-wrap; }
         <translation>Choisir le plugin exécutable externe</translation>
     </message>
     <message>
-        <location filename="../src/configoptions.ui" line="469"/>
+        <location filename="../src/configoptions.ui" line="472"/>
         <source>Set Command To Run After Mount</source>
         <translation>Choisir les commandes à exécuter après montage</translation>
     </message>
     <message>
-        <location filename="../src/configoptions.ui" line="505"/>
+        <location filename="../src/configoptions.ui" line="511"/>
         <source>Set Command To Run Before UnMount</source>
         <translation>Choisir les commandes à exécuter avant montage</translation>
     </message>
@@ -417,7 +417,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="275"/>
-        <location filename="../src/configoptions.cpp" line="165"/>
+        <location filename="../src/configoptions.cpp" line="167"/>
         <source>Internal Wallet</source>
         <translation>Trousseau interne</translation>
     </message>
@@ -427,7 +427,7 @@ p, li { white-space: pre-wrap; }
         <translation>&amp;Libsecret</translation>
     </message>
     <message>
-        <location filename="../src/configoptions.cpp" line="167"/>
+        <location filename="../src/configoptions.cpp" line="169"/>
         <source>KWallet</source>
         <translation>KWallet</translation>
     </message>
@@ -457,17 +457,17 @@ p, li { white-space: pre-wrap; }
         <translation>Paramétrer le préfixe du point de montage</translation>
     </message>
     <message>
-        <location filename="../src/configoptions.ui" line="523"/>
+        <location filename="../src/configoptions.ui" line="532"/>
         <source>&amp;Close</source>
         <translation>Fermer &amp;C</translation>
     </message>
     <message>
-        <location filename="../src/configoptions.cpp" line="166"/>
+        <location filename="../src/configoptions.cpp" line="168"/>
         <source>Libsecret</source>
         <translation>Libsecret</translation>
     </message>
     <message>
-        <location filename="../src/configoptions.cpp" line="168"/>
+        <location filename="../src/configoptions.cpp" line="170"/>
         <source>MACOS Keychain</source>
         <translation>Porte clés MACOS</translation>
     </message>
@@ -490,17 +490,17 @@ p, li { white-space: pre-wrap; }
         <translation>Taille du bloc de texte de chiffrement en bytes.</translation>
     </message>
     <message>
-        <location filename="../src/cryfscreateoptions.ui" line="81"/>
+        <location filename="../src/cryfscreateoptions.ui" line="84"/>
         <source>&amp;OK</source>
         <translation>&amp;OK</translation>
     </message>
     <message>
-        <location filename="../src/cryfscreateoptions.ui" line="94"/>
+        <location filename="../src/cryfscreateoptions.ui" line="97"/>
         <source>&amp;Cancel</source>
         <translation>&amp;Annuler</translation>
     </message>
     <message>
-        <location filename="../src/cryfscreateoptions.ui" line="107"/>
+        <location filename="../src/cryfscreateoptions.ui" line="110"/>
         <source>Select A Folder To Create Config File In(Optional).</source>
         <translation>Sélectionner un répertoire pour y créer un fichier de configuration (facultatif).</translation>
     </message>
@@ -551,22 +551,22 @@ p, li { white-space: pre-wrap; }
         <translation>Sélectionner un répertoire pour y créer un fichier de configuration (facultatif).</translation>
     </message>
     <message>
-        <location filename="../src/ecryptfscreateoptions.ui" line="109"/>
-        <source>Encrypt File Na&amp;mes</source>
-        <translation>No&amp;ms des fichiers à chiffrer</translation>
+        <location filename="../src/ecryptfscreateoptions.ui" line="138"/>
+        <source>Do Not Encrypt File Names</source>
+        <translation>Noms des fichiers à Ne pas chiffrer</translation>
     </message>
     <message>
-        <location filename="../src/ecryptfscreateoptions.ui" line="122"/>
-        <source>Do &amp;Not Encrypt File Names</source>
-        <translation>Noms des fichiers à &amp;Ne pas chiffrer</translation>
+        <location filename="../src/ecryptfscreateoptions.ui" line="154"/>
+        <source>Encrypt File Names</source>
+        <translation>Noms des fichiers à chiffrer</translation>
     </message>
     <message>
-        <location filename="../src/ecryptfscreateoptions.ui" line="148"/>
-        <source>Enable Plain Te&amp;xt Passthrough</source>
+        <location filename="../src/ecryptfscreateoptions.ui" line="225"/>
+        <source>Enable Plain Text Passthrough</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ecryptfscreateoptions.ui" line="161"/>
+        <location filename="../src/ecryptfscreateoptions.ui" line="209"/>
         <source>Do Not Enable Plain Text Passthrough</source>
         <translation type="unfinished"></translation>
     </message>
@@ -768,14 +768,14 @@ p, li { white-space: pre-wrap; }
         <translation>Sélectionner un répertoire pour y créer un fichier de configuration (facultatif).</translation>
     </message>
     <message>
-        <location filename="../src/gocryptfscreateoptions.ui" line="138"/>
-        <source>Encrypt File Na&amp;mes</source>
-        <translation>No&amp;ms des fichiers à chiffrer</translation>
+        <location filename="../src/gocryptfscreateoptions.ui" line="167"/>
+        <source>Do Not Encrypt File Names</source>
+        <translation>Noms des fichiers à Ne pas chiffrer</translation>
     </message>
     <message>
-        <location filename="../src/gocryptfscreateoptions.ui" line="151"/>
-        <source>Do &amp;Not Encrypt File Names</source>
-        <translation>Noms des fichiers à &amp;Ne pas chiffrer</translation>
+        <location filename="../src/gocryptfscreateoptions.ui" line="183"/>
+        <source>Encrypt File Names</source>
+        <translation>Noms des fichiers à chiffrer</translation>
     </message>
 </context>
 <context>
@@ -1389,8 +1389,8 @@ Le &quot;format allégé&quot; est devenu le mode par défaut des systèmes bas�
     </message>
     <message>
         <location filename="../src/securefscreateoptions.ui" line="95"/>
-        <source>Select A Folder To Create Config File In.</source>
-        <translation>Sélectionner un répertoire pour y créer un fichier de configuration.</translation>
+        <source>Select A Folder To Create Config File In(Optional).</source>
+        <translation>Sélectionner un répertoire pour y créer un fichier de configuration (facultatif).</translation>
     </message>
 </context>
 <context>

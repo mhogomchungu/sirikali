@@ -83,6 +83,9 @@
    <property name="alignment">
     <set>Qt::AlignCenter</set>
    </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
   </widget>
   <widget class="QLineEdit" name="lineEdit_2">
    <property name="geometry">
@@ -130,12 +133,12 @@
      <rect>
       <x>20</x>
       <y>0</y>
-      <width>291</width>
+      <width>21</width>
       <height>41</height>
      </rect>
     </property>
     <property name="text">
-     <string>Encrypt File Na&amp;mes</string>
+     <string/>
     </property>
    </widget>
    <widget class="QRadioButton" name="rbDoNotEncryptFileNames">
@@ -143,12 +146,44 @@
      <rect>
       <x>20</x>
       <y>30</y>
-      <width>291</width>
+      <width>21</width>
       <height>41</height>
      </rect>
     </property>
     <property name="text">
-     <string>Do &amp;Not Encrypt File Names</string>
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>30</y>
+      <width>261</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Do Not Encrypt File Names</string>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>0</y>
+      <width>261</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Encrypt File Names</string>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
     </property>
    </widget>
   </widget>

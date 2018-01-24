@@ -288,7 +288,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configfileoption.ui" line="39"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../src/configfileoption.ui" line="78"/>
@@ -354,12 +354,12 @@ p, li { white-space: pre-wrap; }
         <translation>Establecer pluging ejecutable externo</translation>
     </message>
     <message>
-        <location filename="../src/configoptions.ui" line="469"/>
+        <location filename="../src/configoptions.ui" line="472"/>
         <source>Set Command To Run After Mount</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/configoptions.ui" line="505"/>
+        <location filename="../src/configoptions.ui" line="511"/>
         <source>Set Command To Run Before UnMount</source>
         <translation type="unfinished"></translation>
     </message>
@@ -390,7 +390,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="275"/>
-        <location filename="../src/configoptions.cpp" line="165"/>
+        <location filename="../src/configoptions.cpp" line="167"/>
         <source>Internal Wallet</source>
         <translation>Cartera interna</translation>
     </message>
@@ -400,7 +400,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/configoptions.cpp" line="167"/>
+        <location filename="../src/configoptions.cpp" line="169"/>
         <source>KWallet</source>
         <translation type="unfinished"></translation>
     </message>
@@ -430,17 +430,17 @@ p, li { white-space: pre-wrap; }
         <translation>Establecer prefijo de punto de montaje</translation>
     </message>
     <message>
-        <location filename="../src/configoptions.ui" line="523"/>
+        <location filename="../src/configoptions.ui" line="532"/>
         <source>&amp;Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/configoptions.cpp" line="166"/>
+        <location filename="../src/configoptions.cpp" line="168"/>
         <source>Libsecret</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/configoptions.cpp" line="168"/>
+        <location filename="../src/configoptions.cpp" line="170"/>
         <source>MACOS Keychain</source>
         <translation type="unfinished"></translation>
     </message>
@@ -463,17 +463,17 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/cryfscreateoptions.ui" line="81"/>
+        <location filename="../src/cryfscreateoptions.ui" line="84"/>
         <source>&amp;OK</source>
         <translation>&amp;OK</translation>
     </message>
     <message>
-        <location filename="../src/cryfscreateoptions.ui" line="94"/>
+        <location filename="../src/cryfscreateoptions.ui" line="97"/>
         <source>&amp;Cancel</source>
         <translation>&amp;Cancelar</translation>
     </message>
     <message>
-        <location filename="../src/cryfscreateoptions.ui" line="107"/>
+        <location filename="../src/cryfscreateoptions.ui" line="110"/>
         <source>Select A Folder To Create Config File In(Optional).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -516,7 +516,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/ecryptfscreateoptions.ui" line="39"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../src/ecryptfscreateoptions.ui" line="52"/>
@@ -524,22 +524,22 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ecryptfscreateoptions.ui" line="109"/>
-        <source>Encrypt File Na&amp;mes</source>
+        <location filename="../src/ecryptfscreateoptions.ui" line="138"/>
+        <source>Do Not Encrypt File Names</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ecryptfscreateoptions.ui" line="122"/>
-        <source>Do &amp;Not Encrypt File Names</source>
+        <location filename="../src/ecryptfscreateoptions.ui" line="154"/>
+        <source>Encrypt File Names</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ecryptfscreateoptions.ui" line="148"/>
-        <source>Enable Plain Te&amp;xt Passthrough</source>
+        <location filename="../src/ecryptfscreateoptions.ui" line="225"/>
+        <source>Enable Plain Text Passthrough</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ecryptfscreateoptions.ui" line="161"/>
+        <location filename="../src/ecryptfscreateoptions.ui" line="209"/>
         <source>Do Not Enable Plain Text Passthrough</source>
         <translation type="unfinished"></translation>
     </message>
@@ -733,7 +733,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/gocryptfscreateoptions.ui" line="68"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../src/gocryptfscreateoptions.ui" line="81"/>
@@ -741,13 +741,13 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gocryptfscreateoptions.ui" line="138"/>
-        <source>Encrypt File Na&amp;mes</source>
+        <location filename="../src/gocryptfscreateoptions.ui" line="167"/>
+        <source>Do Not Encrypt File Names</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gocryptfscreateoptions.ui" line="151"/>
-        <source>Do &amp;Not Encrypt File Names</source>
+        <location filename="../src/gocryptfscreateoptions.ui" line="183"/>
+        <source>Encrypt File Names</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1156,7 +1156,7 @@ Not Supported Volume Encountered.</source>
     <message>
         <location filename="../src/options.ui" line="170"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../src/options.cpp" line="139"/>
@@ -1217,7 +1217,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/password_dialog.ui" line="144"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/password_dialog.ui" line="157"/>
@@ -1245,7 +1245,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/plugin.ui" line="42"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../src/plugin.ui" line="113"/>
@@ -1332,11 +1332,11 @@ The lite format has become the default on Unix-like operating systems as it is m
     <message>
         <location filename="../src/securefscreateoptions.ui" line="82"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../src/securefscreateoptions.ui" line="95"/>
-        <source>Select A Folder To Create Config File In.</source>
+        <source>Select A Folder To Create Config File In(Optional).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1651,7 +1651,7 @@ The Volume Is Not Supported</source>
     <message>
         <location filename="../src/walletconfiginput.ui" line="42"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="../src/walletconfiginput.ui" line="64"/>
