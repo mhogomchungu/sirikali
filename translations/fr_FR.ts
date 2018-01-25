@@ -563,12 +563,14 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/ecryptfscreateoptions.ui" line="225"/>
         <source>Enable Plain Text Passthrough</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Détails de la description de l&apos;option &apos;Plaintext passthrough&apos; de ecryptfs</translatorcomment>
+        <translation>Activer une arborescence de répertoires avec des fichiers en clair</translation>
     </message>
     <message>
         <location filename="../src/ecryptfscreateoptions.ui" line="209"/>
         <source>Do Not Enable Plain Text Passthrough</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Détails de la description de l&apos;option &apos;Plaintext passthrough&apos; de ecryptfs</translatorcomment>
+        <translation>Désactiver une arborescence de répertoires avec des fichiers en clair</translation>
     </message>
 </context>
 <context>
