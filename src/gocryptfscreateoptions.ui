@@ -188,6 +188,15 @@
    </widget>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>comboBox</tabstop>
+  <tabstop>rbEncryptFileNames</tabstop>
+  <tabstop>rbDoNotEncryptFileNames</tabstop>
+  <tabstop>lineEdit_2</tabstop>
+  <tabstop>pbConfigPath</tabstop>
+  <tabstop>pbOK</tabstop>
+  <tabstop>pbCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

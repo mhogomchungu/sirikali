@@ -125,6 +125,13 @@ The lite format has become the default on Unix-like operating systems as it is m
    </property>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>comboBox</tabstop>
+  <tabstop>lineEdit</tabstop>
+  <tabstop>pbConfigFile</tabstop>
+  <tabstop>pbOK</tabstop>
+  <tabstop>pbCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

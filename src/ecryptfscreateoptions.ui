@@ -230,6 +230,16 @@
    </widget>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>rbEnablePlainText</tabstop>
+  <tabstop>rbDoNotEnablePlainText</tabstop>
+  <tabstop>rbEncryptFileNames</tabstop>
+  <tabstop>rbDoNotEncryptFileNames</tabstop>
+  <tabstop>lineEdit_2</tabstop>
+  <tabstop>pbConfigPath</tabstop>
+  <tabstop>pbOK</tabstop>
+  <tabstop>pbCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
