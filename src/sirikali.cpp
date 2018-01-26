@@ -484,6 +484,8 @@ void sirikali::polkitFailedWarning()
 
 void sirikali::start( const QStringList& l )
 {
+	utility::enableDebug( l.contains( "--debug" ) ) ;
+
 	m_startHidden  = l.contains( "-e" ) ;
 
 	if( !m_startHidden ){

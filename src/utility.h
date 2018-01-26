@@ -301,6 +301,9 @@ namespace utility
 
 	bool enableRevealingPasswords( void ) ;
 
+	void enableDebug( bool ) ;
+	bool debugEnabled( void ) ;
+
 	enum class background_thread{ True,False } ;
 	bool enablePolkit( utility::background_thread ) ;
 

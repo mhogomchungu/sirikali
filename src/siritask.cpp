@@ -619,7 +619,12 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 		if( e != siritask::status::success ){
 
-			utility::debug() << e.report( s.first ) ;
+			if( utility::debugEnabled() ){
+
+				utility::debug() << e.report( s.first ) ;
+			}else{
+				utility::debug() << e.report() ;
+			}
 		}
 
 		return e ;

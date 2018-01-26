@@ -161,6 +161,18 @@ static std::function< void() > _failed_to_connect_to_zulupolkit ;
 	}
 #endif
 
+static bool _enable_debug = false ;
+
+void utility::enableDebug( bool e )
+{
+	_enable_debug = e ;
+}
+
+bool utility::debugEnabled()
+{
+	return _enable_debug ;
+}
+
 void utility::polkitFailedWarning( std::function< void() > e )
 {
 	_failed_to_connect_to_zulupolkit = std::move( e ) ;
