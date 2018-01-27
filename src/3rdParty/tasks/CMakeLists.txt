@@ -38,13 +38,13 @@ endif()
 file( WRITE ${PROJECT_BINARY_DIR}/mhogomchungu_task.pc
 "prefix=${CMAKE_INSTALL_PREFIX}
 libdir=${CMAKE_INSTALL_FULL_LIBDIR}
-includedir=${CMAKE_INSTALL_FULL_INCLUDEDIR}
+includedir=${CMAKE_INSTALL_FULL_INCLUDEDIR}/mhogomchungu
 
 Name: mhogomchungu_task
 Description: A Qt5 library that offers task based programming using modern C++
 Version: ${LIB_VERSION}
 Libs: -L${CMAKE_INSTALL_FULL_LIBDIR} -l${Qt5Core_LIBRARIES}
-Cflags: -I${CMAKE_INSTALL_FULL_INCLUDEDIR}
+Cflags: -I${CMAKE_INSTALL_FULL_INCLUDEDIR}/mhogomchungu
 \n")
 
 if( TASK_INSTALL )
