@@ -127,7 +127,7 @@ pkg_check_modules( MCHUNGU_TASK mhogomchungu_task )
 if( MCHUNGU_TASK_FOUND )
 
 	message( STATUS "---------------------------------------------------------------------------" )
-	message( STATUS "mhogomchungu_task library will be provided by an internal library" )
+	message( STATUS "mhogomchungu_task library will be provided by an external library" )
 	message( STATUS "---------------------------------------------------------------------------" )
 
 	include_directories( "${MCHUNGU_TASK_INCLUDEDIR}" )
