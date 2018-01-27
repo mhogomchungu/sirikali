@@ -119,26 +119,8 @@ else()
 
 endif()
 
-ADD_SUBDIRECTORY( src/3rdParty/NetworkAccessManager )
-include_directories( src/3rdParty/NetworkAccessManager )
-
+pkg_check_modules( MCHUNGU_NETWORK mhogomchungu_network )
 pkg_check_modules( MCHUNGU_TASK mhogomchungu_task )
-
-if( MCHUNGU_TASK_FOUND )
-
-	message( STATUS "---------------------------------------------------------------------------" )
-	message( STATUS "mhogomchungu_task library will be provided by an external library" )
-	message( STATUS "---------------------------------------------------------------------------" )
-
-	include_directories( "${MCHUNGU_TASK_INCLUDEDIR}" )
-	link_directories( "${MCHUNGU_TASK_LIBDIR}" )
-else()
-	message( STATUS "---------------------------------------------------------------------------" )
-	message( STATUS "mhogomchungu_task library will be provided by an internal library" )
-	message( STATUS "---------------------------------------------------------------------------" )
-	include_directories( src/3rdParty/tasks )
-	ADD_SUBDIRECTORY( src/3rdParty/tasks )
-endif()
 
 if( INTERNAL_LXQT_WALLET )
 
@@ -183,6 +165,38 @@ else()
 			include_directories( ${PROJECT_BINARY_DIR}/src/3rdParty/lxqt_wallet/frontend )
 		endif()
 	endif()
+endif()
+
+if( MCHUNGU_NETWORK_FOUND )
+
+	message( STATUS "---------------------------------------------------------------------------" )
+	message( STATUS "mhogomchungu_network library will be provided by an external library" )
+	message( STATUS "---------------------------------------------------------------------------" )
+
+	include_directories( "${MCHUNGU_NETWORK_INCLUDEDIR}" )
+	link_directories( "${MCHUNGU_NETWORK_LIBDIR}" )
+else()
+	message( STATUS "---------------------------------------------------------------------------" )
+	message( STATUS "mhogomchungu_network library will be provided by an internal library" )
+	message( STATUS "---------------------------------------------------------------------------" )
+	ADD_SUBDIRECTORY( src/3rdParty/NetworkAccessManager )
+	include_directories( src/3rdParty/NetworkAccessManager )
+endif()
+
+if( MCHUNGU_TASK_FOUND )
+
+	message( STATUS "---------------------------------------------------------------------------" )
+	message( STATUS "mhogomchungu_task library will be provided by an external library" )
+	message( STATUS "---------------------------------------------------------------------------" )
+
+	include_directories( "${MCHUNGU_TASK_INCLUDEDIR}" )
+	link_directories( "${MCHUNGU_TASK_LIBDIR}" )
+else()
+	message( STATUS "---------------------------------------------------------------------------" )
+	message( STATUS "mhogomchungu_task library will be provided by an internal library" )
+	message( STATUS "---------------------------------------------------------------------------" )
+	include_directories( src/3rdParty/tasks )
+	ADD_SUBDIRECTORY( src/3rdParty/tasks )
 endif()
 
 add_definitions( -std=c++14 )
@@ -304,7 +318,7 @@ endif()
 
 link_directories( ${GCRYPT_LIBRARY_PATH} )
 
-TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task networkAccessManager -L${GCRYPT_LIBRARY_PATH})
+TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task mhogomchungu_network -L${GCRYPT_LIBRARY_PATH})
 
 message( STATUS "---------------------------------------------------------------------------" )
 message( STATUS "Building GUI components using Qt5" )

@@ -3,6 +3,7 @@ cmake_minimum_required( VERSION 3.0 )
 project( tasks )
 
 set( LIB_VERSION "1.2.3" )
+set( SO_VERSION "1.0.0" )
 
 add_definitions( -Wextra -Wall -pedantic )
 
@@ -20,7 +21,14 @@ QT5_WRAP_CPP( MOC_LIBRARY task.hpp )
 
 include_directories( ${Qt5Core_INCLUDE_DIRS} )
 
-add_library( mhogomchungu_task STATIC ${MOC_LIBRARY} )
+if( MCHUNGU_TASK_INSTALL )
+
+	add_library( mhogomchungu_task SHARED ${MOC_LIBRARY} )
+	set_target_properties(mhogomchungu_task PROPERTIES SOVERSION "${SO_VERSION}")
+else()
+	add_library( mhogomchungu_task STATIC ${MOC_LIBRARY} )
+endif()
+
 target_link_libraries( mhogomchungu_task ${Qt5Core_LIBRARIES} )
 
 if( WIN32 )
@@ -47,10 +55,10 @@ Libs: -L${CMAKE_INSTALL_FULL_LIBDIR} -l${Qt5Core_LIBRARIES}
 Cflags: -I${CMAKE_INSTALL_FULL_INCLUDEDIR}/mhogomchungu
 \n")
 
-if( TASK_INSTALL )
+if( MCHUNGU_TASK_INSTALL )
 	install( FILES ${PROJECT_BINARY_DIR}/mhogomchungu_task.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig/ PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ )
 	install( FILES task.hpp DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mhogomchungu )
-	install( TARGETS mhogomchungu_task ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} )
+	install( TARGETS mhogomchungu_task LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} )
 endif()
 
 # uninstall target
