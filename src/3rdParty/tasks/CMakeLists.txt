@@ -2,29 +2,62 @@ cmake_minimum_required( VERSION 3.0 )
 
 project( tasks )
 
-add_definitions( -Wextra -Wall -pedantic -std=c++11 )
+set( LIB_VERSION "1.2.3" )
+
+add_definitions( -Wextra -Wall -pedantic )
 
 set( CMAKE_CXX_STANDARD 11 )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
 set( CMAKE_CXX_EXTENSIONS OFF)
 
-INCLUDE(CMakeDependentOption)
+INCLUDE( GNUInstallDirs )
+
+INCLUDE( CMakeDependentOption )
 
 find_package( Qt5Core REQUIRED )
 
-QT5_WRAP_CPP( MOC task.hpp example.h )
 QT5_WRAP_CPP( MOC_LIBRARY task.hpp )
 
 include_directories( ${Qt5Core_INCLUDE_DIRS} )
 
-#add_executable( example example.cpp main.cpp ${MOC} )
-
-add_library( tasks STATIC ${MOC_LIBRARY} )
-
-#TARGET_LINK_LIBRARIES( example ${Qt5Core_LIBRARIES} )
+add_library( mhogomchungu_task STATIC ${MOC_LIBRARY} )
+target_link_libraries( mhogomchungu_task ${Qt5Core_LIBRARIES} )
 
 if( WIN32 )
-	set_target_properties( tasks PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -pedantic " )
+	set_target_properties( mhogomchungu_task PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -pedantic " )
 else()
-	set_target_properties( tasks PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic " )
+	set_target_properties( mhogomchungu_task PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic " )
 endif()
+
+if( DEBUG )
+	QT5_WRAP_CPP( MOC_EXE example.h )
+	add_executable( example example.cpp main.cpp ${MOC_EXE} )
+	target_link_libraries( example mhogomchungu_task )
+endif()
+
+file( WRITE ${PROJECT_BINARY_DIR}/mhogomchungu_task.pc
+"prefix=${CMAKE_INSTALL_PREFIX}
+libdir=${CMAKE_INSTALL_FULL_LIBDIR}
+includedir=${CMAKE_INSTALL_FULL_INCLUDEDIR}
+
+Name: mhogomchungu_task
+Description: A Qt5 library that offers task based programming using modern C++
+Version: ${LIB_VERSION}
+Libs: -L${CMAKE_INSTALL_FULL_LIBDIR} -l${Qt5Core_LIBRARIES}
+Cflags: -I${CMAKE_INSTALL_FULL_INCLUDEDIR}
+\n")
+
+if( TASK_INSTALL )
+	install( FILES ${PROJECT_BINARY_DIR}/mhogomchungu_task.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig/ PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ )
+	install( FILES task.hpp DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mhogomchungu )
+	install( TARGETS mhogomchungu_task ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} )
+endif()
+
+# uninstall target
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+	IMMEDIATE @ONLY )
+
+add_custom_target( uninstall
+COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake )

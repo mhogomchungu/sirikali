@@ -131,7 +131,7 @@ Task::future<int>& foo = Task::run( foo ) ;
 
 ```
 
-**3. Creating a future that combines multiple functions. .get() and .queue() on the future will cause passed in function to run sequentially and in the order they are specified. .await() and .then() will cause passed in function to run concurrently.**
+**3. Creating a future that combines multiple functions. .get() and .queue() on the future will cause passed in functions to run sequentially and in the order they are specified. .await() and .then() will cause passed in functions to run concurrently.**
 
 ```c++
 
@@ -142,7 +142,7 @@ Task::future<void>& foo = Task::run( foo,bar ) ;
 
 ```
 
-**4. Creating a future that combines multiple tasks and their continuations that take no argument. .get() and .queue() on the future will cause passed in functions to run sequentially and in the order they are specified. .await() and .then() will cause passed in function to run concurrently.**
+**4. Creating a future that combines multiple tasks and their continuations that take no argument. .get() and .queue() on the future will cause passed in functions to run sequentially and in the order they are specified. .await() and .then() will cause passed in functions to run concurrently.**
 
 ```c++
 

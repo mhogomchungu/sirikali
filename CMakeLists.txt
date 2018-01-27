@@ -119,10 +119,26 @@ else()
 
 endif()
 
-ADD_SUBDIRECTORY( src/3rdParty/tasks )
 ADD_SUBDIRECTORY( src/3rdParty/NetworkAccessManager )
-include_directories( src/3rdParty/tasks )
 include_directories( src/3rdParty/NetworkAccessManager )
+
+pkg_check_modules( MCHUNGU_TASK mhogomchungu_task )
+
+if( MCHUNGU_TASK_FOUND )
+
+	message( STATUS "---------------------------------------------------------------------------" )
+	message( STATUS "mhogomchungu_task library will be provided by an internal library" )
+	message( STATUS "---------------------------------------------------------------------------" )
+
+	include_directories( "${MCHUNGU_TASK_INCLUDEDIR}" )
+	link_directories( "${MCHUNGU_TASK_LIBDIR}" )
+else()
+	message( STATUS "---------------------------------------------------------------------------" )
+	message( STATUS "mhogomchungu_task library will be provided by an internal library" )
+	message( STATUS "---------------------------------------------------------------------------" )
+	include_directories( src/3rdParty/tasks )
+	ADD_SUBDIRECTORY( src/3rdParty/tasks )
+endif()
 
 if( INTERNAL_LXQT_WALLET )
 
@@ -288,7 +304,7 @@ endif()
 
 link_directories( ${GCRYPT_LIBRARY_PATH} )
 
-TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet tasks networkAccessManager -L${GCRYPT_LIBRARY_PATH})
+TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task networkAccessManager -L${GCRYPT_LIBRARY_PATH})
 
 message( STATUS "---------------------------------------------------------------------------" )
 message( STATUS "Building GUI components using Qt5" )
