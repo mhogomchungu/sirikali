@@ -1,11 +1,11 @@
 cmake_minimum_required( VERSION 3.0 )
 
-project( tasks )
+project( mhogomchungu_task )
 
 set( LIB_VERSION "1.2.3" )
 set( SO_VERSION "1.0.0" )
 
-add_definitions( -Wextra -Wall -pedantic )
+add_definitions( -Wextra -Wall -pedantic -std=c++11 )
 
 set( CMAKE_CXX_STANDARD 11 )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
@@ -22,7 +22,6 @@ QT5_WRAP_CPP( MOC_LIBRARY task.hpp )
 include_directories( ${Qt5Core_INCLUDE_DIRS} )
 
 if( MCHUNGU_TASK_INSTALL )
-
 	add_library( mhogomchungu_task SHARED ${MOC_LIBRARY} )
 	set_target_properties(mhogomchungu_task PROPERTIES SOVERSION "${SO_VERSION}")
 else()
@@ -37,7 +36,7 @@ else()
 	set_target_properties( mhogomchungu_task PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic " )
 endif()
 
-if( DEBUG )
+if( MCHUNGU_TASK_DEBUG )
 	QT5_WRAP_CPP( MOC_EXE example.h )
 	add_executable( example example.cpp main.cpp ${MOC_EXE} )
 	target_link_libraries( example mhogomchungu_task )
