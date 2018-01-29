@@ -30,6 +30,8 @@
 #include <vector>
 #include <utility>
 
+enum class background_thread{ True,False } ;
+
 #if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
 
 struct QStorageInfo{
@@ -72,12 +74,6 @@ static int poll( struct pollfd * a,int b,int c )
 
 	return 0 ;
 }
-
-#else
-#include <poll.h>
-#endif
-
-enum class background_thread{ True,False } ;
 
 #if 0
 
@@ -297,6 +293,17 @@ static QStringList _getwinfspInstances( background_thread thread )
 		return infoList().commands() ;
 	}
 }
+
+#else
+#include <poll.h>
+
+static QStringList _getwinfspInstances( background_thread thread )
+{
+	Q_UNUSED( thread ) ;
+	return QStringList() ;
+}
+
+#endif
 
 static QStringList _unlocked_volumes( background_thread thread )
 {
