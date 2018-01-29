@@ -8,6 +8,11 @@ set( PGR_VERSION "1.3.2" )
 
 add_definitions( -Wextra -Wall -pedantic )
 
+if( WIN32 )
+    include_directories( "C:\\Program Files (x86)\\WinFsp\\inc" )
+    link_directories( "C:\\Program Files (x86)\\WinFsp\\lib" )
+endif()
+
 set( CMAKE_CXX_STANDARD 14 )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
 set( CMAKE_CXX_EXTENSIONS OFF)
@@ -318,7 +323,11 @@ endif()
 
 link_directories( ${GCRYPT_LIBRARY_PATH} )
 
-TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task mhogomchungu_network -L${GCRYPT_LIBRARY_PATH})
+if( WIN32 )
+    TARGET_LINK_LIBRARIES( sirikali winfsp-x86 ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task mhogomchungu_network -L${GCRYPT_LIBRARY_PATH})
+else()
+    TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task mhogomchungu_network -L${GCRYPT_LIBRARY_PATH})
+endif()
 
 message( STATUS "---------------------------------------------------------------------------" )
 message( STATUS "Building GUI components using Qt5" )

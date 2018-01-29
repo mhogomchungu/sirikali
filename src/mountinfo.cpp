@@ -25,6 +25,11 @@
 #include <QMetaObject>
 #include <QtGlobal>
 
+#include <QFile>
+
+#include <vector>
+#include <utility>
+
 #if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
 
 struct QStorageInfo{
@@ -49,6 +54,8 @@ struct QStorageInfo{
 
 #ifdef WIN32
 
+#include <winfsp/launch.h>
+
 struct pollfd {
     int   fd;         /* file descriptor */
     short events;     /* requested events */
@@ -71,6 +78,8 @@ static int poll( struct pollfd * a,int b,int c )
 #endif
 
 enum class background_thread{ True,False } ;
+
+#if 0
 
 static QStringList _getwinfspInstances( background_thread thread )
 {
@@ -116,6 +125,177 @@ static QStringList _getwinfspInstances( background_thread thread )
 	}
 
 	return m ;
+}
+
+#endif
+
+namespace SiriKali {
+
+struct winFsp{
+
+	winFsp( const QString& a,const QString& b,const QString& c = QString() ) :
+		className( a ),instanceName( b ),command( c )
+	{
+	}
+	QString className ;
+	QString instanceName ;
+	QString command ;
+} ;
+
+}
+
+class infoList
+{
+public:
+	infoList()
+	{
+		for( const auto& it : this->nameList() ){
+
+			this->list( it ) ;
+		}
+	}
+	bool valid()
+	{
+		return m_error == 0 ;
+	}
+	const std::vector< SiriKali::winFsp >& values()
+	{
+		return m_entries ;
+	}
+	QStringList commands()
+	{
+		QStringList s ;
+
+		for( const auto& it : m_entries ){
+
+			s.append( it.command ) ;
+		}
+
+		return s ;
+	}
+private:
+	void list( const SiriKali::winFsp& e )
+	{
+		std::array< WCHAR,BUFFER_SIZE > buffer ;
+
+		ULONG size = static_cast< ULONG >( buffer.size() ) ;
+
+		std::array< WCHAR,BUFFER_SIZE > className ;
+		std::array< WCHAR,BUFFER_SIZE > instanceName ;
+
+		e.className.toWCharArray( className.data() ) ;
+		e.instanceName.toWCharArray( instanceName.data() ) ;
+
+		FspLaunchGetInfo( className.data(),
+				  instanceName.data(),
+				  buffer.data(),
+				  &size,
+				  &m_error) ;
+
+		size = size / sizeof( WCHAR ) ;
+
+		if( m_error == 0 ){
+
+			this->build( m_entries,buffer.data(),size,3 ) ;
+		}
+	}
+	std::vector< SiriKali::winFsp > nameList()
+	{
+		std::array< WCHAR,BUFFER_SIZE > buffer ;
+
+		ULONG size = static_cast< ULONG >( buffer.size() ) ;
+
+		std::vector< SiriKali::winFsp > entries ;
+
+		FspLaunchGetNameList( buffer.data(),&size,&m_error) ;
+
+		size = size / sizeof( WCHAR ) ;
+
+		if( m_error == 0 ){
+
+			this->build( entries,buffer.data(),size,2 ) ;
+		}
+
+		return entries ;
+	}
+	std::pair< WCHAR *,int > component( WCHAR * buffer,ULONG size,ULONG e )
+	{
+		ULONG i = e ;
+
+		while( true ){
+
+			if( e >= size ){
+
+				return { nullptr,0 } ;
+
+			}else if( buffer[ e ] == 0 ){
+
+				return { &buffer[ i ],e + 1 } ;
+			}else{
+				e++ ;
+			}
+		}
+	}
+	void build( std::vector< SiriKali::winFsp >& entries,
+		     WCHAR * buffer,ULONG size,int count )
+	{
+		ULONG i = 0 ;
+
+		while( true ){
+
+			auto s = this->component( buffer,size,i ) ;
+
+			if( s.first == nullptr ){
+
+				return ;
+			}
+
+			auto e = this->component( buffer,size,s.second ) ;
+
+			if( e.first == nullptr ){
+
+				return ;
+			}
+
+			if( count == 2 ){
+
+				auto a = QString::fromWCharArray( s.first ) ;
+				auto b = QString::fromWCharArray( e.first ) ;
+
+				entries.emplace_back( a,b ) ;
+
+				i = e.second ;
+			}else{
+				auto m = this->component( buffer,size,e.second ) ;
+
+				if( m.first == nullptr ){
+
+					return ;
+				}
+
+				auto a = QString::fromWCharArray( s.first ) ;
+				auto b = QString::fromWCharArray( e.first ) ;
+				auto c = QString::fromWCharArray( m.first ) ;
+
+				entries.emplace_back( a,b,c ) ;
+
+				i = m.second ;
+			}
+		}
+	}
+	static const size_t BUFFER_SIZE = 4096 ;
+	ULONG m_error ;
+	std::vector< SiriKali::winFsp > m_entries ;
+} ;
+
+static QStringList _getwinfspInstances( background_thread thread )
+{
+	if( thread == background_thread::True ){
+
+		return Task::await( [](){ return infoList().commands() ; } ) ;
+	}else{
+		return infoList().commands() ;
+	}
 }
 
 static QStringList _unlocked_volumes( background_thread thread )
