@@ -129,10 +129,6 @@ namespace SiriKali {
 
 struct winFsp{
 
-	winFsp( const QString& a,const QString& b,const QString& c = QString() ) :
-		className( a ),instanceName( b ),command( c )
-	{
-	}
 	QString className ;
 	QString instanceName ;
 	QString command ;
@@ -258,7 +254,7 @@ private:
 				auto a = QString::fromWCharArray( s.first ) ;
 				auto b = QString::fromWCharArray( e.first ) ;
 
-				entries.emplace_back( a,b ) ;
+				entries.emplace_back( SiriKali::winFsp{ a,b } ) ;
 
 				i = e.second ;
 			}else{
@@ -273,7 +269,7 @@ private:
 				auto b = QString::fromWCharArray( e.first ) ;
 				auto c = QString::fromWCharArray( m.first ) ;
 
-				entries.emplace_back( a,b,c ) ;
+				entries.emplace_back( SiriKali::winFsp{ a,b,c } ) ;
 
 				i = m.second ;
 			}
