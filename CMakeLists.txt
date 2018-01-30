@@ -277,6 +277,7 @@ set( SRC 	src/dialogok.cpp
 		src/cryfscreateoptions.cpp
 		src/utility2.cpp
 		src/ecryptfscreateoptions.cpp
+		src/winfsp.cpp
 )
 
 if( APPLE )

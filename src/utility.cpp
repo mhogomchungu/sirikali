@@ -27,7 +27,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <cstdio>
-#ifndef _WIN32
+#ifndef WIN32
 #include <termios.h>
 #endif
 #include <memory>
@@ -63,6 +63,7 @@
 #include "locale_path.h"
 #include "plugins.h"
 #include "json.h"
+#include "winfsp.h"
 #include "readonlywarning.h"
 
 #include <sys/types.h>
@@ -359,30 +360,11 @@ void utility::initGlobals()
 
 	chown( s.constData(),uid,uid ) ;
 	chmod( s.constData(),0700 ) ;
-#elif _WIN32
+#elif WIN32
+	auto e = "SOFTWARE\\WOW6432Node\\WinFsp\\Services\\securefs" ;
 
-	auto _read = []( const char * path,const char * key ){
-
-		DWORD dwType = REG_SZ ;
-		HKEY hKey = 0 ;
-
-		char buffer[ 4096 ] = { 0 } ;
-		auto buff = reinterpret_cast< BYTE * >( buffer ) ;
-
-		DWORD buffer_size = sizeof( buffer ) ;
-
-		if( RegOpenKey( HKEY_LOCAL_MACHINE,path,&hKey ) == ERROR_SUCCESS ){
-
-			RegQueryValueEx( hKey,key,nullptr,&dwType,buff,&buffer_size ) ;
-		}
-
-		RegCloseKey( hKey ) ;
-
-		return QByteArray( buffer,buffer_size ) ;
-	} ;
-
-	_securefsPath = _read( "SOFTWARE\\WOW6432Node\\WinFsp\\Services\\securefs","Executable" ) ;
-	_winfspPath    = _read( "SOFTWARE\\WOW6432Node\\WinFsp","InstallDir" ) ;
+	_securefsPath = SiriKali::Winfsp::readRegister( e,"Executable" ) ;
+	_winfspPath = SiriKali::Winfsp::readRegister( "SOFTWARE\\WOW6432Node\\WinFsp","InstallDir" ) ;
 #endif
 }
 
