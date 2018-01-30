@@ -18,22 +18,35 @@
  */
 
 #include "winfsp.h"
+#include "utility.h"
 
-#if WIN32
+#ifdef _WIN32
 
 #include <winfsp/launch.h>
 #include <Windows.h>
 #include <Winreg.h>
+
+int poll( struct pollfd * a,int b,int c )
+{
+	Q_UNUSED( a ) ;
+	Q_UNUSED( b ) ;
+	Q_UNUSED( c ) ;
+
+	return 0 ;
+}
 
 QString SiriKali::Winfsp::readRegister( const char * path,const char * key )
 {
 	DWORD dwType = REG_SZ ;
 	HKEY hKey = 0 ;
 
-	char buffer[ 4096 ] = { 0 } ;
-	auto buff = reinterpret_cast< BYTE * >( buffer ) ;
+	std::array< char,4096 > buffer ;
 
-	DWORD buffer_size = sizeof( buffer ) ;
+	std::fill( buffer.begin(),buffer.end(),'\0' ) ;
+
+	auto buff = reinterpret_cast< BYTE * >( buffer.data() ) ;
+
+	auto buffer_size = static_cast< DWORD >( buffer.size() ) ;
 
 	if( RegOpenKey( HKEY_LOCAL_MACHINE,path,&hKey ) == ERROR_SUCCESS ){
 
@@ -42,27 +55,17 @@ QString SiriKali::Winfsp::readRegister( const char * path,const char * key )
 
 	RegCloseKey( hKey ) ;
 
-	return QByteArray( buffer,buffer_size ) ;
+	return QByteArray( buffer.data(),buffer_size ) ;
 }
 
-namespace SiriKali{
-namespace Winfsp {
-
-struct winFsp{
-
-	QString className ;
-	QString instanceName ;
-	QString command ;
-} ;
-
-class SiriKali::Winfsp::FspLaunchGetNameList::impl
+class SiriKali::Winfsp::ActiveInstances::impl
 {
 public:
 	impl()
 	{
 		for( const auto& it : this->nameList() ){
 
-			this->list( it ) ;
+			this->addToList( it ) ;
 		}
 	}
 	bool valid()
@@ -85,7 +88,7 @@ public:
 		return s ;
 	}
 private:
-	void list( const SiriKali::Winfsp::winFsp& e )
+	void addToList( const SiriKali::Winfsp::winFsp& e )
 	{
 		std::array< WCHAR,BUFFER_SIZE > buffer ;
 
@@ -116,7 +119,7 @@ private:
 
 		auto size = static_cast< ULONG >( buffer.size() ) ;
 
-		std::vector< SiriKali::winFsp > entries ;
+		std::vector< SiriKali::Winfsp::winFsp > entries ;
 
 		FspLaunchGetNameList( buffer.data(),&size,&m_error) ;
 
@@ -199,9 +202,6 @@ private:
 	std::vector< SiriKali::Winfsp::winFsp > m_entries ;
 } ;
 
-}
-}
-
 #else
 
 QString SiriKali::Winfsp::readRegister( const char * path,const char * key )
@@ -212,7 +212,7 @@ QString SiriKali::Winfsp::readRegister( const char * path,const char * key )
 	return QString() ;
 }
 
-class SiriKali::Winfsp::FspLaunchGetNameList::impl
+class SiriKali::Winfsp::ActiveInstances::impl
 {
 public:
 	impl()
@@ -236,26 +236,26 @@ private:
 
 #endif
 
-SiriKali::Winfsp::FspLaunchGetNameList::FspLaunchGetNameList() :
-	m_handle( new SiriKali::Winfsp::FspLaunchGetNameList::impl() )
+SiriKali::Winfsp::ActiveInstances::ActiveInstances() :
+	m_handle( new SiriKali::Winfsp::ActiveInstances::impl() )
 {
 }
 
-SiriKali::Winfsp::FspLaunchGetNameList::~FspLaunchGetNameList()
+SiriKali::Winfsp::ActiveInstances::~ActiveInstances()
 {
 	delete m_handle ;
 }
-bool SiriKali::Winfsp::FspLaunchGetNameList::valid()
+bool SiriKali::Winfsp::ActiveInstances::valid()
 {
 	return m_handle->valid() ;
 }
 
-const std::vector< SiriKali::Winfsp::winFsp >& SiriKali::Winfsp::FspLaunchGetNameList::values()
+const std::vector< SiriKali::Winfsp::winFsp >& SiriKali::Winfsp::ActiveInstances::values()
 {
 	return m_handle->values() ;
 }
 
-QStringList SiriKali::Winfsp::FspLaunchGetNameList::commands()
+QStringList SiriKali::Winfsp::ActiveInstances::commands()
 {
 	return m_handle->commands() ;
 }

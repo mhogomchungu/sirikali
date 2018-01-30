@@ -27,7 +27,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <cstdio>
-#ifndef WIN32
+#ifndef _WIN32
 #include <termios.h>
 #endif
 #include <memory>
@@ -360,9 +360,10 @@ void utility::initGlobals()
 
 	chown( s.constData(),uid,uid ) ;
 	chmod( s.constData(),0700 ) ;
-#elif WIN32
-	auto e = "SOFTWARE\\WOW6432Node\\WinFsp\\Services\\securefs" ;
+#endif
 
+#ifdef WIN32
+	auto e = "SOFTWARE\\WOW6432Node\\WinFsp\\Services\\securefs" ;
 	_securefsPath = SiriKali::Winfsp::readRegister( e,"Executable" ) ;
 	_winfspPath = SiriKali::Winfsp::readRegister( "SOFTWARE\\WOW6432Node\\WinFsp","InstallDir" ) ;
 #endif

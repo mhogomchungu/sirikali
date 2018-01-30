@@ -37,11 +37,11 @@ struct winFsp{
 	QString command ;
 } ;
 
-class FspLaunchGetNameList
+class ActiveInstances
 {
 public:
-	FspLaunchGetNameList() ;
-	~FspLaunchGetNameList() ;
+	ActiveInstances() ;
+	~ActiveInstances() ;
 	bool valid() ;
 	const std::vector< SiriKali::Winfsp::winFsp >& values() ;
 	QStringList commands() ;
@@ -77,7 +77,7 @@ struct QStorageInfo{
 
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 
 struct pollfd {
     int   fd;         /* file descriptor */
@@ -87,19 +87,11 @@ struct pollfd {
 
 const static short POLLPRI = 0 ;
 
-static int poll( struct pollfd * a,int b,int c )
-{
-	Q_UNUSED( a ) ;
-	Q_UNUSED( b ) ;
-	Q_UNUSED( c ) ;
-
-	return 0 ;
-}
+int poll( struct pollfd * a,int b,int c ) ;
 
 #else
 
 #include <poll.h>
-
 
 #endif
 

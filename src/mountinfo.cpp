@@ -37,9 +37,9 @@ static QStringList _getwinfspInstances( background_thread thread )
 {
 	if( thread == background_thread::True ){
 
-		return SiriKali::Winfsp::FspLaunchGetNameList().commands() ;
+		return SiriKali::Winfsp::ActiveInstances().commands() ;
 	}else{
-		return Task::await( [](){ return SiriKali::Winfsp::FspLaunchGetNameList().commands() ; } ) ;
+		return Task::await( [](){ return SiriKali::Winfsp::ActiveInstances().commands() ; } ) ;
 	}
 }
 
