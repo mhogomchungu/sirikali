@@ -254,7 +254,7 @@ private:
 				auto a = QString::fromWCharArray( s.first ) ;
 				auto b = QString::fromWCharArray( e.first ) ;
 
-				entries.emplace_back( SiriKali::winFsp{ a,b } ) ;
+				entries.emplace_back( SiriKali::winFsp{ a,b,QString() } ) ;
 
 				i = e.second ;
 			}else{
@@ -284,13 +284,14 @@ static QStringList _getwinfspInstances( background_thread thread )
 {
 	if( thread == background_thread::True ){
 
-		return Task::await( [](){ return infoList().commands() ; } ) ;
-	}else{
 		return infoList().commands() ;
+	}else{
+		return Task::await( [](){ return infoList().commands() ; } ) ;
 	}
 }
 
 #else
+
 #include <poll.h>
 
 static QStringList _getwinfspInstances( background_thread thread )
