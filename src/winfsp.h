@@ -22,6 +22,7 @@
 
 #include <QtGlobal>
 
+#include <QString>
 #include <QStringList>
 #include <QList>
 #include <vector>
@@ -37,17 +38,22 @@ struct winFsp{
 	QString command ;
 } ;
 
+bool FspLaunchStop( const QString& className,const QString& instanceName ) ;
+
+bool FspLaunchStart( const QString& className,const QString& instanceName,
+		     const QStringList opts,bool hasSecret ) ;
+
 class ActiveInstances
 {
 public:
 	ActiveInstances() ;
 	~ActiveInstances() ;
-	bool valid() ;
-	const std::vector< SiriKali::Winfsp::winFsp >& values() ;
-	QStringList commands() ;
+	bool valid() const ;
+	const std::vector< SiriKali::Winfsp::winFsp >& values() const ;
+	QStringList commands() const ;
 private:
 	class impl ;
-	impl * m_handle ;
+	std::unique_ptr< impl > m_handle ;
 } ;
 
 QString readRegister( const char * path,const char * key ) ;

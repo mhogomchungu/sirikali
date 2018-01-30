@@ -26,6 +26,9 @@
 #include <Windows.h>
 #include <Winreg.h>
 
+#include <array>
+#include <algorithm>
+
 int poll( struct pollfd * a,int b,int c )
 {
 	Q_UNUSED( a ) ;
@@ -33,6 +36,25 @@ int poll( struct pollfd * a,int b,int c )
 	Q_UNUSED( c ) ;
 
 	return 0 ;
+}
+
+bool SiriKali::Winfsp::FspLaunchStart( const QString& className,
+				       const QString& instanceName,
+				       const QStringList args,
+				       bool hasSecret )
+{
+	Q_UNUSED( className ) ;
+	Q_UNUSED( instanceName ) ;
+	Q_UNUSED( args ) ;
+	Q_UNUSED( hasSecret ) ;
+	return false ;
+}
+
+bool SiriKali::Winfsp::FspLaunchStop( const QString& className,const QString& instanceName )
+{
+	Q_UNUSED( className ) ;
+	Q_UNUSED( instanceName ) ;
+	return false ;
 }
 
 QString SiriKali::Winfsp::readRegister( const char * path,const char * key )
@@ -68,15 +90,15 @@ public:
 			this->addToList( it ) ;
 		}
 	}
-	bool valid()
+	bool valid() const
 	{
 		return m_error == 0 ;
 	}
-	const std::vector< SiriKali::Winfsp::winFsp >& values()
+	const std::vector< SiriKali::Winfsp::winFsp >& values() const
 	{
 		return m_entries ;
 	}
-	QStringList commands()
+	QStringList commands() const
 	{
 		QStringList s ;
 
@@ -92,7 +114,7 @@ private:
 	{
 		std::array< WCHAR,BUFFER_SIZE > buffer ;
 
-		ULONG size = static_cast< ULONG >( buffer.size() ) ;
+		auto size = static_cast< ULONG >( buffer.size() ) ;
 
 		std::array< WCHAR,BUFFER_SIZE > className ;
 		std::array< WCHAR,BUFFER_SIZE > instanceName ;
@@ -212,21 +234,40 @@ QString SiriKali::Winfsp::readRegister( const char * path,const char * key )
 	return QString() ;
 }
 
+bool SiriKali::Winfsp::FspLaunchStart( const QString& className,
+				       const QString& instanceName,
+				       const QStringList args,
+				       bool hasSecret )
+{
+	Q_UNUSED( className ) ;
+	Q_UNUSED( instanceName ) ;
+	Q_UNUSED( args ) ;
+	Q_UNUSED( hasSecret ) ;
+	return false ;
+}
+
+bool SiriKali::Winfsp::FspLaunchStop( const QString& className,const QString& instanceName )
+{
+	Q_UNUSED( className ) ;
+	Q_UNUSED( instanceName ) ;
+	return false ;
+}
+
 class SiriKali::Winfsp::ActiveInstances::impl
 {
 public:
 	impl()
 	{
 	}
-	bool valid()
+	bool valid() const
 	{
 		return false ;
 	}
-	const std::vector< SiriKali::Winfsp::winFsp >& values()
+	const std::vector< SiriKali::Winfsp::winFsp >& values() const
 	{
 		return m_entries ;
 	}
-	QStringList commands()
+	QStringList commands() const
 	{
 		return {} ;
 	}
@@ -243,19 +284,19 @@ SiriKali::Winfsp::ActiveInstances::ActiveInstances() :
 
 SiriKali::Winfsp::ActiveInstances::~ActiveInstances()
 {
-	delete m_handle ;
 }
-bool SiriKali::Winfsp::ActiveInstances::valid()
+
+bool SiriKali::Winfsp::ActiveInstances::valid() const
 {
 	return m_handle->valid() ;
 }
 
-const std::vector< SiriKali::Winfsp::winFsp >& SiriKali::Winfsp::ActiveInstances::values()
+const std::vector< SiriKali::Winfsp::winFsp >& SiriKali::Winfsp::ActiveInstances::values() const
 {
 	return m_handle->values() ;
 }
 
-QStringList SiriKali::Winfsp::ActiveInstances::commands()
+QStringList SiriKali::Winfsp::ActiveInstances::commands() const
 {
 	return m_handle->commands() ;
 }
