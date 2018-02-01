@@ -142,6 +142,8 @@ void keyDialog::setUpInitUI()
 
 	m_reUseMountPoint = utility::reUseMountPoint() ;
 
+	m_checkBoxOriginalText = m_ui->checkBoxOpenReadOnly->text() ;
+
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),
 		 this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbOpen,SIGNAL( clicked() ),
@@ -822,6 +824,13 @@ bool keyDialog::completed( const siritask::cmdStatus& s,const QString& m )
 {
 	QString msg ;
 
+	if( s.status() == siritask::status::cryfsMigrateFileSystem ){
+
+		m_ui->checkBoxOpenReadOnly->setText( tr( "Upgrade File System" ) ) ;
+	}else{
+		m_ui->checkBoxOpenReadOnly->setText( m_checkBoxOriginalText ) ;
+	}
+
 	switch( s.status() ){
 
 	case siritask::status::success :
@@ -875,7 +884,8 @@ bool keyDialog::completed( const siritask::cmdStatus& s,const QString& m )
 
 	case siritask::status::cryfsMigrateFileSystem :
 
-		msg = tr( "SiriKali Can Not Unlock This Volume Because Its FileSystem Has To Manually Be Converted To The Version Of Cryfs That Is Currently In Use.\n\nRun Cryfs With This Volume To Manually Update This Volume's FileSystem." ) ;
+		msg = tr( "This Volume Of Cryfs Needs To Be Upgraded To Work With The Version Of Cryfs You Are Using.\n\nThe Upgrade is IRREVERSIBLE And The Volume Will No Longer Work With Older Versions of Cryfs.\n\nTo Do The Upgrade, Check The \"Upgrade File System\" Option And Unlock The Volume Again." ) ;
+
 		break;
 
 	case siritask::status::encfsNotFound :
@@ -1166,6 +1176,13 @@ void keyDialog::encryptedFolderMount()
 	}
 
 	m_working = true ;
+
+	utility::debug() << m_ui->checkBoxOpenReadOnly->text() ;
+
+	if( m_ui->checkBoxOpenReadOnly->text().remove( "&" ) == tr( "Upgrade File System" ).remove( "&" ) ){
+
+		m_mountOptions += "--allow-filesystem-upgrade" ;
+	}
 
 	siritask::options s{ m_path,m,m_key,m_idleTimeOut,m_configFile,m_exe,ro,m_mountOptions,QString() } ;
 

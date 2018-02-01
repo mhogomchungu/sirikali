@@ -243,7 +243,7 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 	const auto& type = opt.type ;
 
-	auto mountOptions = [ & ](){
+	auto idleTimeOut = [ & ](){
 
 		if( !opt.idleTimeout.isEmpty() ){
 
@@ -397,20 +397,29 @@ static QString _args( const QString& exe,const siritask::options& opt,
 		//	e += " -o volname=" + utility::split( opt.plainFolder,'/' ).last() ;
 		//}
 
+		auto mountOptions = opt.mountOptions ;
+
 		auto z = [ & ]()->QString{
 
 			if( create ){
 
-				return exe + " " + opt.createOptions ;
+				return exe + " " + mountOptions ;
 			}else{
-				return exe ;
+				if( mountOptions.contains( "--allow-filesystem-upgrade" ) ){
+
+					mountOptions.replace( "--allow-filesystem-upgrade","" ) ;
+
+					return exe + " --allow-filesystem-upgrade" ;
+				}else{
+					return exe ;
+				}
 			}
 		}() ;
 
-		auto opts = e.arg( z,cipherFolder,mountPoint,mountOptions,configPath,
+		auto opts = e.arg( z,cipherFolder,mountPoint,idleTimeOut,configPath,
 				   separator,type.name(),cipherFolder,type.name() ) ;
 
-		if( opt.mountOptions.isEmpty() ){
+		if( mountOptions.isEmpty() ){
 
 			if( opt.ro ){
 
@@ -421,9 +430,9 @@ static QString _args( const QString& exe,const siritask::options& opt,
 		}else{
 			if( opt.ro ){
 
-				return opts + " -o ro -o " + opt.mountOptions ;
+				return opts + " -o ro -o " + mountOptions ;
 			}else{
-				return opts + " -o rw -o " + opt.mountOptions ;
+				return opts + " -o rw -o " + mountOptions ;
 			}
 		}
 	}else{
@@ -434,7 +443,7 @@ static QString _args( const QString& exe,const siritask::options& opt,
 			e += " -o volname=" + utility::split( opt.plainFolder,'/' ).last() ;
 		}
 
-		auto opts = e.arg( exe,cipherFolder,mountPoint,mountOptions,configPath,
+		auto opts = e.arg( exe,cipherFolder,mountPoint,idleTimeOut,configPath,
 				   separator,type.name(),cipherFolder,type.name() ) ;
 
 		if( opt.mountOptions.isEmpty() ){

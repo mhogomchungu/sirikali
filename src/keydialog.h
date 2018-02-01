@@ -193,6 +193,7 @@ private :
 
 	QByteArray m_key ;
 
+	QString m_checkBoxOriginalText ;
 	QString m_path ;
 	QString m_deviceOffSet ;
 	QString m_idleTimeOut ;
