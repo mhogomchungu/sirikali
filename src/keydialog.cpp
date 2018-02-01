@@ -1177,8 +1177,6 @@ void keyDialog::encryptedFolderMount()
 
 	m_working = true ;
 
-	utility::debug() << m_ui->checkBoxOpenReadOnly->text() ;
-
 	if( m_ui->checkBoxOpenReadOnly->text().remove( "&" ) == tr( "Upgrade File System" ).remove( "&" ) ){
 
 		m_mountOptions += "--allow-filesystem-upgrade" ;
