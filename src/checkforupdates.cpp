@@ -112,7 +112,7 @@ QString checkUpdates::InstalledVersion( const siritask::volumeType& e )
 
 		if( e == "cryfs" ){
 
-			return exe ;
+			return exe + " --version" ;
 
 		}else if( e == "securefs" ){
 
