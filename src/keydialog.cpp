@@ -1179,7 +1179,10 @@ void keyDialog::encryptedFolderMount()
 
 	if( m_ui->checkBoxOpenReadOnly->text().remove( "&" ) == tr( "Upgrade File System" ).remove( "&" ) ){
 
-		m_mountOptions += "--allow-filesystem-upgrade" ;
+		if( m_ui->checkBoxOpenReadOnly->isChecked() ){
+
+			m_mountOptions += "--allow-filesystem-upgrade" ;
+		}
 	}
 
 	siritask::options s{ m_path,m,m_key,m_idleTimeOut,m_configFile,m_exe,ro,m_mountOptions,QString() } ;
