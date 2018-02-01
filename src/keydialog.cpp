@@ -1181,7 +1181,7 @@ void keyDialog::encryptedFolderMount()
 
 		if( m_ui->checkBoxOpenReadOnly->isChecked() ){
 
-			m_mountOptions += "--allow-filesystem-upgrade" ;
+			m_mountOptions += " --allow-filesystem-upgrade" ;
 		}
 	}
 

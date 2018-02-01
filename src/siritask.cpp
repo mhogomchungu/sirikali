@@ -405,9 +405,9 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 				return exe + " " + mountOptions ;
 			}else{
-				if( mountOptions.contains( "--allow-filesystem-upgrade" ) ){
+				if( mountOptions.contains( " --allow-filesystem-upgrade" ) ){
 
-					mountOptions.replace( "--allow-filesystem-upgrade","" ) ;
+					mountOptions.replace( " --allow-filesystem-upgrade","" ) ;
 
 					return exe + " --allow-filesystem-upgrade" ;
 				}else{
