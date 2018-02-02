@@ -772,7 +772,7 @@ void sirikali::autoUnlockVolumes( const std::vector< volumeInfo >& s )
 			}
 		}
 
-		return true ;
+		return false ;
 	} ;
 
 	for( auto&& it : _readFavorites() ){
