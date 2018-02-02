@@ -304,6 +304,9 @@ namespace utility
 	void enableDebug( bool ) ;
 	bool debugEnabled( void ) ;
 
+	void enableFullDebug( bool ) ;
+	bool debugFullEnabled( void ) ;
+
 	enum class background_thread{ True,False } ;
 	bool enablePolkit( utility::background_thread ) ;
 

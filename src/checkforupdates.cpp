@@ -110,11 +110,7 @@ QString checkUpdates::InstalledVersion( const siritask::volumeType& e )
 
 	auto args = [ & ](){
 
-		if( e == "cryfs" ){
-
-			return exe + " --version" ;
-
-		}else if( e == "securefs" ){
+		if( e == "securefs" ){
 
 			return exe + " version" ;
 		}else{
@@ -126,11 +122,11 @@ QString checkUpdates::InstalledVersion( const siritask::volumeType& e )
 
 		auto s = utility::systemEnvironment() ;
 
-		if( e != "encfs" ){
+		if( e == "encfs" ){
 
-			return utility::Task( args,-1,s ).splitOutput( ' ',utility::Task::channel::stdOut ) ;
-		}else{
 			return utility::Task( args,-1,s ).splitOutput( ' ',utility::Task::channel::stdError ) ;
+		}else{
+			return utility::Task( args,-1,s ).splitOutput( ' ',utility::Task::channel::stdOut ) ;
 		}
 	} ) ;
 

@@ -174,6 +174,18 @@ bool utility::debugEnabled()
 	return _enable_debug ;
 }
 
+static bool _enable_full_debug = false ;
+
+void utility::enableFullDebug( bool e )
+{
+	_enable_full_debug = e ;
+}
+
+bool utility::debugFullEnabled()
+{
+	return _enable_full_debug ;
+}
+
 void utility::polkitFailedWarning( std::function< void() > e )
 {
 	_failed_to_connect_to_zulupolkit = std::move( e ) ;

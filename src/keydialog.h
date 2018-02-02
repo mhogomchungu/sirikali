@@ -176,6 +176,8 @@ private :
 
 	void showErrorMessage( const siritask::cmdStatus& ) ;
 	void showErrorMessage( const QString& ) ;
+	void reportErrorMessage( const siritask::cmdStatus& ) ;
+	void openMountPoint( const QString& ) ;
 
 	void setUIVisible( bool ) ;
 	void keyAndKeyFile( void ) ;
@@ -185,6 +187,7 @@ private :
 	void windowSetTitle( const QString& = QString() ) ;
 	void closeEvent( QCloseEvent * ) ;
 
+	bool upgradingFileSystem( void ) ;
 	bool mountedAll() ;
 	bool completed( const siritask::cmdStatus&,const QString& m ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;

@@ -542,16 +542,36 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 
 	}else if( s == siritask::status::cryfs ){
 
-		const auto& m = e.msg() ;
+		/*
+		 * Error codes are here: https://github.com/cryfs/cryfs/blob/develop/src/cryfs/ErrorCodes.h
+		 *
+		 * Valid for crfs > 0.9.8
+		 */
 
-		if( msg.contains( "password" ) ){
+		auto m = e.exitCode() ;
+
+		if( m == 11 ){
 
 			e = s ;
 
-		}else if( m.contains( "This filesystem is for CryFS" ) &&
-			  m.contains( "It has to be migrated" ) ){
+		}else if( m == 14 ){
 
 			e = siritask::status::cryfsMigrateFileSystem ;
+		}else{
+			/*
+			 * Falling back to parsing strings
+			 */
+			const auto& m = e.msg() ;
+
+			if( msg.contains( "password" ) ){
+
+				e = s ;
+
+			}else if( m.contains( "This filesystem is for CryFS" ) &&
+				  m.contains( "It has to be migrated" ) ){
+
+				e = siritask::status::cryfsMigrateFileSystem ;
+			}
 		}
 
 	}else if( s == siritask::status::encfs ){
@@ -628,11 +648,16 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 		if( e != siritask::status::success ){
 
-			if( utility::debugEnabled() ){
+			if( utility::debugFullEnabled() || utility::debugEnabled() ){
 
 				utility::debug() << e.report( s.first ) ;
 			}else{
 				utility::debug() << e.report() ;
+			}
+		}else{
+			if( utility::debugFullEnabled() ){
+
+				utility::debug() << e.report( s.first ) ;
 			}
 		}
 

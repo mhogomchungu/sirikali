@@ -542,6 +542,11 @@ bool keyDialog::eventFilter( QObject * watched,QEvent * event )
 
 void keyDialog::cbMountReadOnlyStateChanged( int state )
 {
+	if( this->upgradingFileSystem() ){
+
+		return ;
+	}
+
 	auto e = utility::setOpenVolumeReadOnly( this,state == Qt::Checked ) ;
 
 	m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
@@ -820,7 +825,15 @@ void keyDialog::pbOpen()
 	}
 }
 
-bool keyDialog::completed( const siritask::cmdStatus& s,const QString& m )
+void keyDialog::openMountPoint( const QString& m )
+{
+	if( utility::autoOpenFolderOnMount() ){
+
+		utility::Task::exec( m_fileManagerOpen + " " + utility::Task::makePath( m ) ) ;
+	}
+}
+
+void keyDialog::reportErrorMessage( const siritask::cmdStatus& s )
 {
 	QString msg ;
 
@@ -835,12 +848,9 @@ bool keyDialog::completed( const siritask::cmdStatus& s,const QString& m )
 
 	case siritask::status::success :
 
-		if( utility::autoOpenFolderOnMount() ){
-
-			utility::Task::exec( m_fileManagerOpen + " " + utility::Task::makePath( m ) ) ;
-		}
-
-		return true ;
+		/*
+		 * Should not get here
+		 */
 
 	case siritask::status::cryfs :
 
@@ -929,8 +939,6 @@ bool keyDialog::completed( const siritask::cmdStatus& s,const QString& m )
 	}
 
 	this->showErrorMessage( { s,msg } ) ;
-
-	return false ;
 }
 
 void keyDialog::showErrorMessage( const QString& e )
@@ -1025,10 +1033,13 @@ void keyDialog::encryptedFolderCreate()
 
 	m_working = false ;
 
-	if( this->completed( e,m ) ){
+	if( e == siritask::status::success ){
 
+		this->openMountPoint( m ) ;
 		this->HideUI() ;
 	}else{
+		this->reportErrorMessage( e ) ;
+
 		if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
 
 			m_ui->lineEditKey->clear() ;
@@ -1175,9 +1186,7 @@ void keyDialog::encryptedFolderMount()
 		return ;
 	}
 
-	m_working = true ;
-
-	if( m_ui->checkBoxOpenReadOnly->text().remove( "&" ) == tr( "Upgrade File System" ).remove( "&" ) ){
+	if( this->upgradingFileSystem() ){
 
 		if( m_ui->checkBoxOpenReadOnly->isChecked() ){
 
@@ -1185,23 +1194,34 @@ void keyDialog::encryptedFolderMount()
 		}
 	}
 
+	m_working = true ;
+
 	siritask::options s{ m_path,m,m_key,m_idleTimeOut,m_configFile,m_exe,ro,m_mountOptions,QString() } ;
 
 	auto e = siritask::encryptedFolderMount( s ).await() ;
 
 	m_working = false ;
 
-	if( this->completed( e,m ) ){
+	if( e == siritask::status::success ){
+
+		this->openMountPoint( m ) ;
 
 		this->enableAll() ;
 		this->unlockVolume() ;
 	}else{
+		this->reportErrorMessage( e ) ;
+
 		m_ui->lineEditKey->clear() ;
 
 		this->enableAll() ;
 
 		m_ui->lineEditKey->setFocus() ;
 	}
+}
+
+bool keyDialog::upgradingFileSystem()
+{
+	return m_ui->checkBoxOpenReadOnly->text().remove( "&" ) == tr( "Upgrade File System" ).remove( "&" ) ;
 }
 
 void keyDialog::openVolume()
