@@ -760,9 +760,26 @@ void sirikali::autoUnlockVolumes()
 {
 	utility::volumeList e ;
 
+	auto s = mountinfo::unlockedVolumes().await() ;
+
+	auto _mounted = [ & ]( const QString& e ){
+
+		for( const auto& it : s ){
+
+			if( it.volumePath() == e ){
+
+				return true ;
+			}
+		}
+
+		return true ;
+	} ;
+
 	for( auto&& it : _readFavorites() ){
 
-		if( it.first.autoMount() ){
+		const auto& m = it.first ;
+
+		if( m.autoMount() && !_mounted( m.volumePath )){
 
 			e.emplace_back( std::move( it ) ) ;
 		}
