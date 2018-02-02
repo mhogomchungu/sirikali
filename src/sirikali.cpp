@@ -243,7 +243,9 @@ void sirikali::setUpApp( const QString& volume )
 
 	this->disableAll() ;
 
-	this->updateVolumeList( mountinfo::unlockedVolumes().await() ) ;
+	auto m = mountinfo::unlockedVolumes().await() ;
+
+	this->updateVolumeList( m ) ;
 
 	if( volume.isEmpty() ) {
 
@@ -252,7 +254,7 @@ void sirikali::setUpApp( const QString& volume )
 		this->showMoungDialog( volume ) ;
 	}
 
-	this->startGUI() ;
+	this->startGUI( m ) ;
 
 	QTimer::singleShot( utility::checkForUpdateInterval(),this,SLOT( autoUpdateCheck() ) ) ;
 }
@@ -437,7 +439,7 @@ void sirikali::setLocalizationLanguage( bool translate )
 	utility::setLocalizationLanguage( translate,&m_language_menu,m_translator ) ;
 }
 
-void sirikali::startGUI()
+void sirikali::startGUI( const std::vector< volumeInfo >& m )
 {
 	if( !m_startHidden ){
 
@@ -446,7 +448,7 @@ void sirikali::startGUI()
 
 	if( utility::autoMountFavoritesOnStartUp() ){
 
-		this->autoUnlockVolumes() ;
+		this->autoUnlockVolumes( m ) ;
 	}
 }
 
@@ -756,11 +758,9 @@ void sirikali::autoMountFavoritesOnAvailable( QString m )
 	}
 }
 
-void sirikali::autoUnlockVolumes()
+void sirikali::autoUnlockVolumes( const std::vector< volumeInfo >& s )
 {
 	utility::volumeList e ;
-
-	auto s = mountinfo::unlockedVolumes().await() ;
 
 	auto _mounted = [ & ]( const QString& e ){
 

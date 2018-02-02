@@ -74,7 +74,7 @@ private slots:
 	void unlockVolume( const QStringList& ) ;
 	void closeApplication( int = 0,const QString& = QString() ) ;
 	void unlockVolume( void ) ;
-	void startGUI( void ) ;
+	void startGUI( const std::vector< volumeInfo >& ) ;
 	void showMoungDialog( const volumeInfo& ) ;
 	void showMoungDialog( const QString&,const QString& = QString() ) ;
 	void mount( const volumeInfo&,const QString& = QString(),const QByteArray& = QByteArray() ) ;
@@ -125,7 +125,7 @@ private:
 	void setUpFont( void ) ;
 	void setUpShortCuts( void ) ;
 	void raiseWindow( const QString& = QString() ) ;
-	void autoUnlockVolumes( void ) ;
+	void autoUnlockVolumes( const std::vector< volumeInfo >& ) ;
 
 	utility::volumeList autoUnlockVolumes( utility::volumeList,bool = false ) ;
 
