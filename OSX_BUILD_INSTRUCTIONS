@@ -16,6 +16,8 @@ Below are instructions on how to build SiriKali on OSX.
 5.1 brew install homebrew/fuse/encfs
     # for securefs support
 5.2 brew install homebrew/fuse/securefs
+    # for gocryptfs support
+5.3 brew install gocryptfs
 
     # Inside the directory of the cloned repository
 6.  mkdir build
