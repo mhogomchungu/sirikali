@@ -1007,7 +1007,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/keydialog.cpp" line="842"/>
         <location filename="../src/keydialog.cpp" line="1224"/>
         <source>Upgrade File System</source>
-        <translation type="unfinished"></translation>
+        <translation>Mettre à jour le système de fichiers</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="857"/>
@@ -1130,7 +1130,11 @@ Volume non supporté rencontré.</translation>
 The Upgrade is IRREVERSIBLE And The Volume Will No Longer Work With Older Versions of Cryfs.
 
 To Do The Upgrade, Check The &quot;Upgrade File System&quot; Option And Unlock The Volume Again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ce volume Cryfs nécessite un système de fichiers mis à jour pour fonctionner avec la version de Cryfs que vous utilisez.
+
+La mise à jour est IRREVERSIBLE et le volume ne fonctionnera alors plus avec l&apos;ancienne version de Cryfs.
+
+Pour réaliser la mise à jour, cochez l&apos;option &quot;Mettre à jour le système de fichiers&quot; et déchiffrez à nouveau le volume.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1003"/>
