@@ -49,17 +49,17 @@ cryfscreateoptions::cryfscreateoptions( QWidget * parent,
 
 			auto s = e.splitOutput( '\n',utility::Task::channel::stdError ) ;
 
-			if( s.isEmpty() ){
+			if( !s.isEmpty() ){
 
-				m_ui->comboBox->addItem( "aes-256-gcm" ) ;
-			}else{
 				m_ui->comboBox->addItems( s ) ;
+			}else{
+				m_ui->comboBox->setEnabled( false ) ;
 			}
 		}else{
-			m_ui->comboBox->addItem( "aes-256-gcm" ) ;
+			m_ui->comboBox->setEnabled( false ) ;
 		}
 
-		m_ui->comboBox->setFocus() ;
+		m_ui->pbOK->setFocus() ;
 
 		this->show() ;
 	} ) ;
@@ -77,16 +77,24 @@ void cryfscreateoptions::pbSelectConfigPath()
 
 void cryfscreateoptions::pbOK()
 {
-	auto e = QString( "--cipher %1 --blocksize %2" ) ;
+	auto e = [ & ](){
 
-	auto s = m_ui->lineEdit->text() ;
+		auto s = m_ui->lineEdit->text() ;
 
-	if( s.isEmpty() ){
+		if( s.isEmpty() ){
 
-		s = "32768" ;
-	}
+			s = "32768" ;
+		}
 
-	e = e.arg( m_ui->comboBox->currentText(),s ) ;
+		auto m = m_ui->comboBox->currentText() ;
+
+		if( m.isEmpty() ){
+
+			return QString( "--blocksize %2" ).arg( s ) ;
+		}else{
+			return QString( "--cipher %1 --blocksize %2" ).arg( m,s ) ;
+		}
+	}() ;
 
 	this->HideUI( { e,m_ui->lineEdit_2->text() } ) ;
 }

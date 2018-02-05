@@ -403,7 +403,7 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 			if( create ){
 
-				return exe + " " + mountOptions ;
+				return exe + " " + opt.createOptions ;
 			}else{
 				if( mountOptions.contains( " --allow-filesystem-upgrade" ) ){
 
