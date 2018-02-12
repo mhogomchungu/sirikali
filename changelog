@@ -117,7 +117,8 @@ version 1.3.2
 -- Add German translations.
 -- Update French translations.
 
-version 1.3.3(unreleased)
+version 1.3.3
 -- Invoke context menu with a left click in addition to the default right click.
 -- Add a GUI windows to set ecryptfs volume creation options.
 -- Add a GUI way to upgrade cryfs volume(cryfs > 0.9.8 required).
+-- Make it possible to build the project with system provided "internal" libraries.

@@ -837,7 +837,7 @@ void keyDialog::reportErrorMessage( const siritask::cmdStatus& s )
 {
 	QString msg ;
 
-	if( s.status() == siritask::status::cryfsMigrateFileSystem ){
+	if( s == siritask::status::cryfsMigrateFileSystem ){
 
 		m_ui->checkBoxOpenReadOnly->setText( tr( "Upgrade File System" ) ) ;
 	}else{

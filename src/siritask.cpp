@@ -636,7 +636,7 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 		auto s = _run() ;
 
-		auto e = s.second ;
+		const auto& e = s.second ;
 
 		if( e == siritask::status::ecrypfsBadExePermissions ){
 

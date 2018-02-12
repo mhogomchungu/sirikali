@@ -370,11 +370,11 @@ void utility::initGlobals()
 
 	auto s = a.toLatin1() ;
 
-	chown( s.constData(),uid,uid ) ;
-	chmod( s.constData(),0700 ) ;
+	if( chown( s.constData(),uid,uid ) ){}
+	if( chmod( s.constData(),0700 ) ){}
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 	auto e = "SOFTWARE\\WOW6432Node\\WinFsp\\Services\\securefs" ;
 	_securefsPath = SiriKali::Winfsp::readRegister( e,"Executable" ) ;
 	_winfspPath = SiriKali::Winfsp::readRegister( "SOFTWARE\\WOW6432Node\\WinFsp","InstallDir" ) ;
