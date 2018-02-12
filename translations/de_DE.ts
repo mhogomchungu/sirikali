@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="de_DE">
+<TS version="2.0" language="de_DE">
 <context>
     <name>DialogMsg</name>
     <message>
@@ -565,12 +565,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/ecryptfscreateoptions.ui" line="225"/>
         <source>Enable Plain Text Passthrough</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktiviere Durchreichung von Klartext</translation>
     </message>
     <message>
         <location filename="../src/ecryptfscreateoptions.ui" line="209"/>
         <source>Do Not Enable Plain Text Passthrough</source>
-        <translation type="unfinished"></translation>
+        <translation>Durchreichung von Klartext NICHT aktivieren</translation>
     </message>
 </context>
 <context>
@@ -1038,7 +1038,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/keydialog.cpp" line="842"/>
         <location filename="../src/keydialog.cpp" line="1224"/>
         <source>Upgrade File System</source>
-        <translation type="unfinished"></translation>
+        <translation>Dateisystem nachrüsten</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="857"/>
@@ -1099,7 +1099,11 @@ Die ausführbare Datei von Cryfs konnte nicht gefunden werden.</translation>
 The Upgrade is IRREVERSIBLE And The Volume Will No Longer Work With Older Versions of Cryfs.
 
 To Do The Upgrade, Check The &quot;Upgrade File System&quot; Option And Unlock The Volume Again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dieses Cryfs-Dateisystem muss nachgerüstet werden, um unter der Cryfs-Version welche du aktuell nutzt, arbeiten zu können.
+
+Die Nachrüstung ist UNUMKEHRBAR und das Dateisystem wird NICHT mehr unter älteren Cryfs-Versionen arbeiten können.
+
+Um die Nachrüstung durchzuführen, markiere die Option &quot;Dateisystem nachrüsten&quot; und schließe das Dateisystem erneut auf.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="903"/>
