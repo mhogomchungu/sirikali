@@ -53,9 +53,9 @@ Account Number:	0152454497500
 
 ## Download link
 
-Latest released version is 1.3.2 and it can be downloaded by clicking below link.
+Latest released version is 1.3.3 and it can be downloaded by clicking below link.
 
-<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.2/SiriKali-1.3.2.tar.xz">SiriKali-1.3.2.tar.xz</a>
+<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.3/SiriKali-1.3.3.tar.xz">SiriKali-1.3.3.tar.xz</a>
 
 Older versions can be downloaded <a href="https://github.com/mhogomchungu/sirikali/releases">here.</a>
 
@@ -139,4 +139,4 @@ cv9jY9bZAbVaMUjF7dw/bsqgJ2HCJ33cf16GybRtozOE36YDB2omg58ngIrlmlea
 -----END PGP PUBLIC KEY BLOCK-----
 ```
 
-last update: Mon Jan  1 09:32:43 EAT 2018
+last update: Sat Feb 17 13:52:07 EAT 2018
