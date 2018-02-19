@@ -52,12 +52,17 @@ private:
 	std::unique_ptr< impl > m_handle ;
 } ;
 
-}
-
-}
-
 static SiriKali::Winfsp::manageInstances _winfsInstances ;
 static const bool _babySittingSecurefs = true ;
+
+bool babySittingBackends()
+{
+	return utility::platformIsWindows() && _babySittingSecurefs ;
+}
+
+}
+
+}
 
 #ifdef _WIN32
 
@@ -394,7 +399,7 @@ Task::process::result SiriKali::Winfsp::FspLaunchStop( const QString& className,
 
 QStringList SiriKali::Winfsp::mountedVolumes()
 {
-	if( _babySittingSecurefs ){
+	if( SiriKali::Winfsp::babySittingBackends() ){
 
 		return QStringList() ;
 	}else{
@@ -404,7 +409,7 @@ QStringList SiriKali::Winfsp::mountedVolumes()
 
 Task::process::result SiriKali::Winfsp::FspLaunchStop( const QString& m )
 {
-	if( _babySittingSecurefs ){
+	if( SiriKali::Winfsp::babySittingBackends() ){
 
 		return _winfsInstances.removeInstance( m ) ;
 	}else{
@@ -417,7 +422,7 @@ Task::process::result SiriKali::Winfsp::FspLaunchStop( const QString& m )
 
 Task::process::result SiriKali::Winfsp::FspLaunchStart( const QString& exe,const QByteArray& password )
 {
-	if( _babySittingSecurefs ){
+	if( SiriKali::Winfsp::babySittingBackends() ){
 
 		return _winfsInstances.addInstance( exe,password ) ;
 	}else{

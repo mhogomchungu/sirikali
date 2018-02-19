@@ -51,6 +51,8 @@ QString readRegister( const char * path,const char * key ) ;
 
 QStringList mountedVolumes() ;
 
+bool babySittingBackends() ;
+
 }
 }
 
