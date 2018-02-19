@@ -328,7 +328,7 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 
 				return Task::process::result( 0 ) ;
 			}else{
-				return Task::process::result( "",data,1,0 ) ;
+				return Task::process::result( "",data,1,0,true ) ;
 			}
 		}else{
 			if( counter < 10 ){
@@ -336,7 +336,7 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 				counter++ ;
 				utility::Task::suspendForOneSecond() ;
 			}else{
-				return Task::process::result( "",data,1,0 ) ;
+				return Task::process::result( "",data,1,0,true ) ;
 			}
 		}
 	}

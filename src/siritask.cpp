@@ -32,8 +32,8 @@ using cs = siritask::status ;
 static bool _windows_platform()
 {
 	//return false ;
-	return true ;
-	//return utility::platformIsWindows() ;
+	//return true ;
+	return utility::platformIsWindows() ;
 }
 
 static bool _create_folder( const QString& m )
