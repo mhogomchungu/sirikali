@@ -58,7 +58,7 @@
 #include "plugins.h"
 #include "help.h"
 #include "configoptions.h"
-
+#include "winfsp.h"
 #include "json.h"
 
 static utility::volumeList _readFavorites()

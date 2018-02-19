@@ -37,9 +37,9 @@ static QStringList _getwinfspInstances( background_thread thread )
 {
 	if( thread == background_thread::True ){
 
-		return SiriKali::Winfsp::ActiveInstances().commands() ;
+		return SiriKali::Winfsp::mountedVolumes() ;
 	}else{
-		return Task::await( [](){ return SiriKali::Winfsp::ActiveInstances().commands() ; } ) ;
+		return Task::await( [](){ return SiriKali::Winfsp::mountedVolumes() ; } ) ;
 	}
 }
 
@@ -378,9 +378,9 @@ void mountinfo::osxMonitor()
 {
 	m_stop = [ this ](){ m_process.terminate() ; } ;
 
-	auto s = static_cast< void( QProcess::* )( int ) >( &QProcess::finished ) ;
+	auto s = static_cast< void( QProcess::* )( int,QProcess::ExitStatus ) >( &QProcess::finished ) ;
 
-	connect( &m_process,s,[ this ]( int e ){ Q_UNUSED( e ) ; m_quit() ; } ) ;
+	connect( &m_process,s,[ this ]( int e,QProcess::ExitStatus s ){ Q_UNUSED( e ) ; Q_UNUSED( s ) ; m_quit() ; } ) ;
 
 	connect( &m_process,&QProcess::readyReadStandardOutput,[ & ](){
 

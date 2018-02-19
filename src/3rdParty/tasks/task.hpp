@@ -784,6 +784,23 @@ namespace Task
 		class result{
 		public:
 			result() = default ;
+			result( int exit_code ) :
+				m_finished( true ),
+				m_exitCode( exit_code ),
+				m_exitStatus( 0 )
+			{
+			}
+			result( const QByteArray& std_out,
+				const QByteArray& std_error,
+				int exit_code,
+				int exit_status ) :
+				m_stdOut( std_out ),
+				m_stdError( std_error ),
+				m_finished( true ),
+				m_exitCode( exit_code ),
+				m_exitStatus( exit_status )
+			{
+			}
 			result( QProcess& e,int s )
 			{
 				m_finished   = e.waitForFinished( s ) ;
@@ -825,7 +842,6 @@ namespace Task
 		private:
 			QByteArray m_stdOut ;
 			QByteArray m_stdError ;
-			bool m_success = false ;
 			bool m_finished = false ;
 			int m_exitCode = 255 ;
 			int m_exitStatus = 255 ;

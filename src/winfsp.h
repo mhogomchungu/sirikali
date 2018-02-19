@@ -27,42 +27,42 @@
 #include <QList>
 #include <vector>
 #include <memory>
+#include <QProcess>
+
+#include "task.hpp"
 
 namespace SiriKali{
 namespace Winfsp{
 
-struct winFsp{
+Task::process::result FspLaunchStop( const QString& className,
+				     const QString& instanceName,
+				     const QStringList& opts ) ;
 
-	QString className ;
-	QString instanceName ;
-	QString command ;
-} ;
+Task::process::result FspLaunchStart( const QString& className,
+				      const QString& instanceName,
+				      const QStringList& opts,
+				      const QByteArray& password ) ;
 
-bool FspLaunchStop( const QString& className,const QString& instanceName ) ;
+Task::process::result FspLaunchStart( const QString& exe,const QByteArray& password ) ;
 
-bool FspLaunchStart( const QString& className,const QString& instanceName,
-		     const QStringList opts,bool hasSecret ) ;
-
-class ActiveInstances
-{
-public:
-	ActiveInstances() ;
-	~ActiveInstances() ;
-	bool valid() const ;
-	const std::vector< SiriKali::Winfsp::winFsp >& values() const ;
-	QStringList commands() const ;
-private:
-	class impl ;
-	std::unique_ptr< impl > m_handle ;
-} ;
+Task::process::result FspLaunchStop( const QString& mountPath ) ;
 
 QString readRegister( const char * path,const char * key ) ;
+
+QStringList mountedVolumes() ;
 
 }
 }
 
 #if QT_VERSION < QT_VERSION_CHECK( 5,4,0 )
 
+/*
+ * Debian 8 uses an old version of Qt that does not have this class.
+ * Adding it here to make these old version of Qt happy.
+ *
+ * This struct is used only in windows version of the project and we use
+ * a much recent version of Qt on windows.
+ */
 struct QStorageInfo{
 
 	static QList<QStorageInfo> mountedVolumes()

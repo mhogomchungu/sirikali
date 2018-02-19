@@ -275,7 +275,7 @@ void utility::Task::execute( const QString& exe,int waitTime,
 			_report_error( "SiriKali: Failed To Parse Polkit Backend Output" ) ;
 		}
 	}else{
-		auto s = ::Task::process::run( exe,{},waitTime,password,env,std::move( function  ) ).get() ;
+		auto s = ::Task::process::run( exe,{},waitTime,password,env,std::move( function ) ).get() ;
 
 		m_finished   = s.finished() ;
 		m_exitCode   = s.exit_code() ;

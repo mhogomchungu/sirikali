@@ -518,6 +518,14 @@ namespace utility
 		Task()
 		{
 		}
+		Task( const ::Task::process::result& e )
+		{
+			m_stdError = e.std_error() ;
+			m_stdOut   = e.std_out() ;
+			m_exitCode = e.exit_code() ;
+			m_exitStatus = e.exit_status() ;
+			m_finished = e.finished() ;
+		}
 		Task( const QString& exe,int waitTime = -1,const QProcessEnvironment& env = utility::systemEnvironment(),
 		      const QByteArray& password = QByteArray(),std::function< void() > f = [](){},bool e = false )
 		{

@@ -20,6 +20,45 @@
 #include "winfsp.h"
 #include "utility.h"
 
+namespace SiriKali{
+namespace Winfsp{
+
+struct winFsp{
+
+	QString className ;
+	QString instanceName ;
+	QString command ;
+} ;
+
+class manageInstances
+{
+public:
+	Task::process::result addInstance( const QString& args,const QByteArray& password ) ;
+	Task::process::result removeInstance( const QString& mountPoint ) ;
+private:
+	std::vector< QProcess * > m_instances ;
+} ;
+
+class ActiveInstances
+{
+public:
+	ActiveInstances() ;
+	~ActiveInstances() ;
+	bool valid() const ;
+	const std::vector< SiriKali::Winfsp::winFsp >& values() const ;
+	QStringList commands() const ;
+private:
+	class impl ;
+	std::unique_ptr< impl > m_handle ;
+} ;
+
+}
+
+}
+
+static SiriKali::Winfsp::manageInstances _winfsInstances ;
+static const bool _babySittingSecurefs = true ;
+
 #ifdef _WIN32
 
 #include <winfsp/launch.h>
@@ -36,25 +75,6 @@ int poll( struct pollfd * a,int b,int c )
 	Q_UNUSED( c ) ;
 
 	return 0 ;
-}
-
-bool SiriKali::Winfsp::FspLaunchStart( const QString& className,
-				       const QString& instanceName,
-				       const QStringList args,
-				       bool hasSecret )
-{
-	Q_UNUSED( className ) ;
-	Q_UNUSED( instanceName ) ;
-	Q_UNUSED( args ) ;
-	Q_UNUSED( hasSecret ) ;
-	return false ;
-}
-
-bool SiriKali::Winfsp::FspLaunchStop( const QString& className,const QString& instanceName )
-{
-	Q_UNUSED( className ) ;
-	Q_UNUSED( instanceName ) ;
-	return false ;
 }
 
 QString SiriKali::Winfsp::readRegister( const char * path,const char * key )
@@ -234,25 +254,6 @@ QString SiriKali::Winfsp::readRegister( const char * path,const char * key )
 	return QString() ;
 }
 
-bool SiriKali::Winfsp::FspLaunchStart( const QString& className,
-				       const QString& instanceName,
-				       const QStringList args,
-				       bool hasSecret )
-{
-	Q_UNUSED( className ) ;
-	Q_UNUSED( instanceName ) ;
-	Q_UNUSED( args ) ;
-	Q_UNUSED( hasSecret ) ;
-	return false ;
-}
-
-bool SiriKali::Winfsp::FspLaunchStop( const QString& className,const QString& instanceName )
-{
-	Q_UNUSED( className ) ;
-	Q_UNUSED( instanceName ) ;
-	return false ;
-}
-
 class SiriKali::Winfsp::ActiveInstances::impl
 {
 public:
@@ -299,4 +300,130 @@ const std::vector< SiriKali::Winfsp::winFsp >& SiriKali::Winfsp::ActiveInstances
 QStringList SiriKali::Winfsp::ActiveInstances::commands() const
 {
 	return m_handle->commands() ;
+}
+
+Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QString& args,
+								      const QByteArray& password )
+{
+	auto exe = new QProcess() ;
+
+	exe->start( args ) ;
+	exe->waitForStarted() ;
+	exe->write( password + "\n" ) ;
+	exe->closeWriteChannel() ;
+
+	QByteArray data ;
+
+	size_t counter = 0 ;
+
+	while( true ){
+
+		data += exe->readAllStandardError() ;
+
+		if( data.contains( "\n" ) ){
+
+			if( data.contains( "init" ) ){
+
+				m_instances.emplace_back( exe ) ;
+
+				return Task::process::result( 0 ) ;
+			}else{
+				return Task::process::result( "",data,1,0 ) ;
+			}
+		}else{
+			if( counter < 10 ){
+
+				counter++ ;
+				utility::Task::suspendForOneSecond() ;
+			}else{
+				return Task::process::result( "",data,1,0 ) ;
+			}
+		}
+	}
+}
+
+Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const QString& mountPoint )
+{
+	for( size_t i = 0 ; i < m_instances.size() ; i++ ){
+
+		auto e = m_instances[ i ] ;
+
+		auto m = "\"" + e->arguments().at( 8 ) + "\"" ;
+
+		if( m == mountPoint ){
+
+			e->terminate() ;
+
+			utility::Task::suspend( 3 ) ;
+
+			e->deleteLater() ;
+
+			m_instances.erase( m_instances.begin() + i ) ;
+
+			return Task::process::result( 0 ) ;
+		}
+	}
+
+	return Task::process::result() ;
+}
+
+Task::process::result SiriKali::Winfsp::FspLaunchStart( const QString& className,
+							const QString& instanceName,
+							const QStringList& args,
+							const QByteArray& password )
+{
+	Q_UNUSED( className ) ;
+	Q_UNUSED( instanceName ) ;
+
+	Q_UNUSED( args ) ;
+	Q_UNUSED( password ) ;
+
+	return Task::process::result() ;
+}
+
+Task::process::result SiriKali::Winfsp::FspLaunchStop( const QString& className,
+						       const QString& instanceName,
+						       const QStringList& opts )
+{
+	Q_UNUSED( className ) ;
+	Q_UNUSED( instanceName ) ;
+	Q_UNUSED( opts ) ;
+
+	return Task::process::result() ;
+}
+
+QStringList SiriKali::Winfsp::mountedVolumes()
+{
+	if( _babySittingSecurefs ){
+
+		return QStringList() ;
+	}else{
+		return SiriKali::Winfsp::ActiveInstances().commands() ;
+	}
+}
+
+Task::process::result SiriKali::Winfsp::FspLaunchStop( const QString& m )
+{
+	if( _babySittingSecurefs ){
+
+		return _winfsInstances.removeInstance( m ) ;
+	}else{
+		QStringList e ;
+		e.append( m ) ;
+
+		return SiriKali::Winfsp::FspLaunchStop( QString(),QString(),e ) ;
+	}
+}
+
+Task::process::result SiriKali::Winfsp::FspLaunchStart( const QString& exe,const QByteArray& password )
+{
+	if( _babySittingSecurefs ){
+
+		return _winfsInstances.addInstance( exe,password ) ;
+	}else{
+		QStringList e ;
+		e.append( exe ) ;
+
+		return SiriKali::Winfsp::FspLaunchStart( QString(),QString(),e,password ) ;
+	}
 }

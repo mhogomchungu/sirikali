@@ -20,6 +20,7 @@
 #include "plugins.h"
 #include "siritask.h"
 #include "mountinfo.h"
+#include "winfsp.h"
 
 #include <QDir>
 #include <QString>
@@ -27,6 +28,13 @@
 #include <QFile>
 
 using cs = siritask::status ;
+
+static bool _windows_platform()
+{
+	//return false ;
+	return true ;
+	//return utility::platformIsWindows() ;
+}
 
 static bool _create_folder( const QString& m )
 {
@@ -188,6 +196,11 @@ static bool _unmount_ecryptfs( const QString& cipherFolder,
 
 static bool _unmount_rest( const QString& mountPoint,int maxCount )
 {
+	if( _windows_platform() ){
+
+		return SiriKali::Winfsp::FspLaunchStop( mountPoint ).success() ;
+	}
+
 	auto cmd = [ & ](){
 
 		if( utility::platformIsOSX() ){
@@ -335,6 +348,12 @@ static QString _args( const QString& exe,const siritask::options& opt,
 					//}
 
 					auto e = QString( "%1 mount -b %2 %3 -o fsname=securefs@%4 -o subtype=securefs %5 %6" ) ;
+
+					if( _windows_platform() ){
+
+						e.replace( " -b ","" )  ;
+					}
+
 					return e.arg( exe,configPath,mode,cipherFolder,cipherFolder,mountPoint ) ;
 				}
 			}
@@ -607,6 +626,16 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 	return e ;
 }
 
+static utility::Task _run_task( const QString& cmd,const QString& password,bool ecryptfs )
+{
+	if( _windows_platform() ){
+
+		return SiriKali::Winfsp::FspLaunchStart( cmd,password.toLatin1() ) ;
+	}else{
+		return utility::Task( cmd,20000,utility::systemEnvironment(),
+				      password.toLatin1(),[](){},ecryptfs ) ;
+	}
+}
 static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 		const QString& password,const QString& configFilePath )
 {
@@ -624,12 +653,7 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 			auto cmd = _args( exe,opt,configFilePath,create ) ;
 
-			auto s = utility::Task( cmd,
-						20000,
-						utility::systemEnvironment(),
-						password.toLatin1(),
-						[](){},
-						_ecryptfs( app ) ) ;
+			auto s = _run_task( cmd,password,_ecryptfs( app ) ) ;
 
 			return { cmd,_status( s,_status( app,status_type::exeName ),app == "encfs" ) } ;
 		} ;
