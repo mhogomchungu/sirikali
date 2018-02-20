@@ -20,6 +20,8 @@
 #include "winfsp.h"
 #include "utility.h"
 
+#include <utility>
+
 namespace SiriKali{
 namespace Winfsp{
 
@@ -35,8 +37,9 @@ class manageInstances
 public:
 	Task::process::result addInstance( const QString& args,const QByteArray& password ) ;
 	Task::process::result removeInstance( const QString& mountPoint ) ;
+	QStringList commands() const ;
 private:
-	std::vector< QProcess * > m_instances ;
+	std::vector< std::pair< QProcess *,QString > > m_instances ;
 } ;
 
 class ActiveInstances
@@ -307,6 +310,18 @@ QStringList SiriKali::Winfsp::ActiveInstances::commands() const
 	return m_handle->commands() ;
 }
 
+QStringList SiriKali::Winfsp::manageInstances::commands() const
+{
+	QStringList s ;
+
+	for( const auto& it : m_instances ){
+
+		s.append( it.second ) ;
+	}
+
+	return s ;
+}
+
 Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QString& args,
 								      const QByteArray& password )
 {
@@ -329,7 +344,7 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 
 			if( data.contains( "init" ) ){
 
-				m_instances.emplace_back( exe ) ;
+				m_instances.emplace_back( exe,args ) ;
 
 				return Task::process::result( 0 ) ;
 			}else{
@@ -351,7 +366,7 @@ Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const Q
 {
 	for( size_t i = 0 ; i < m_instances.size() ; i++ ){
 
-		auto e = m_instances[ i ] ;
+		auto e = m_instances[ i ].first ;
 
 		auto m = "\"" + e->arguments().at( 8 ) + "\"" ;
 
@@ -397,11 +412,11 @@ Task::process::result SiriKali::Winfsp::FspLaunchStop( const QString& className,
 	return Task::process::result() ;
 }
 
-QStringList SiriKali::Winfsp::mountedVolumes()
+QStringList SiriKali::Winfsp::commands()
 {
 	if( SiriKali::Winfsp::babySittingBackends() ){
 
-		return QStringList() ;
+		return _winfsInstances.commands() ;
 	}else{
 		return SiriKali::Winfsp::ActiveInstances().commands() ;
 	}

@@ -37,9 +37,9 @@ static QStringList _getwinfspInstances( background_thread thread )
 {
 	if( thread == background_thread::True ){
 
-		return SiriKali::Winfsp::mountedVolumes() ;
+		return SiriKali::Winfsp::commands() ;
 	}else{
-		return Task::await( [](){ return SiriKali::Winfsp::mountedVolumes() ; } ) ;
+		return Task::await( [](){ return SiriKali::Winfsp::commands() ; } ) ;
 	}
 }
 

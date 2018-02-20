@@ -49,7 +49,7 @@ Task::process::result FspLaunchStop( const QString& mountPath ) ;
 
 QString readRegister( const char * path,const char * key ) ;
 
-QStringList mountedVolumes() ;
+QStringList commands() ;
 
 bool babySittingBackends() ;
 
