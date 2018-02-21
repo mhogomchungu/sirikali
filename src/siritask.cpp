@@ -348,6 +348,12 @@ static QString _args( const QString& exe,const siritask::options& opt,
 					//}
 
 					auto e = QString( "%1 mount -b %2 %3 -o fsname=securefs@%4 -o subtype=securefs %5 %6" ) ;
+
+					if( _windows_platform() ){
+
+						e.replace( " -b ","" ) ;
+					}
+
 					return e.arg( exe,configPath,mode,cipherFolder,cipherFolder,mountPoint ) ;
 				}
 			}

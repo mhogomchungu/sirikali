@@ -107,25 +107,59 @@ static QStringList _unlocked_volumes( background_thread thread )
 			return e ;
 		} ;
 
-		for( const auto& it : _getwinfspInstances( thread ) ){
+		auto _babySitter = [ & ](){
 
-			auto e = utility::split( it,' ' ) ;
+			for( const auto& it : _getwinfspInstances( thread ) ){
 
-			if( e.size() > 6 ){
+				auto e = utility::split( it,' ' ) ;
 
-				if( e.contains( " -o ro " ) ){
+				if( e.size() > 8 ){
 
-					mode = "ro" ;
-				}else{
-					mode = "rw" ;
+					if( e.contains( " -o ro " ) ){
+
+						mode = "ro" ;
+					}else{
+						mode = "rw" ;
+					}
+
+					auto m = e.at( 7 ).mid( 8 ) ;
+
+					fs = "fuse." + m ;
+
+					s.append( w.arg( path( e.last() ),mode,fs,m + "@" + path( e.at( 8 ) ) ) ) ;
 				}
-
-				auto m = e.at( 5 ).mid( 11 ) ;
-
-				fs = "fuse." + m ;
-
-				s.append( w.arg( path( e.last() ),mode,fs,m + "@" + path( e.at( 6 ) ) ) ) ;
 			}
+		} ;
+
+		auto _nonBabySitter = [ & ](){
+
+			for( const auto& it : _getwinfspInstances( thread ) ){
+
+				auto e = utility::split( it,' ' ) ;
+
+				if( e.size() > 6 ){
+
+					if( e.contains( " -o ro " ) ){
+
+						mode = "ro" ;
+					}else{
+						mode = "rw" ;
+					}
+
+					auto m = e.at( 5 ).mid( 11 ) ;
+
+					fs = "fuse." + m ;
+
+					s.append( w.arg( path( e.last() ),mode,fs,m + "@" + path( e.at( 6 ) ) ) ) ;
+				}
+			}
+		} ;
+
+		if( SiriKali::Winfsp::babySittingBackends() ){
+
+			_babySitter() ;
+		}else{
+			_nonBabySitter() ;
 		}
 
 		return s ;
@@ -146,7 +180,7 @@ mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& quit ) :
 
 		this->osxMonitor() ;
 	}else{
-		this->windowsMonitor();
+		this->windowsMonitor() ;
 	}
 }
 
@@ -403,6 +437,13 @@ void mountinfo::osxMonitor()
 
 void mountinfo::windowsMonitor()
 {
+	if( SiriKali::Winfsp::babySittingBackends() ){
+
+		SiriKali::Winfsp::updateVolumeList( [ this ]{ this->updateVolume() ; } ) ;
+
+		return ;
+	}
+
 	m_exit = false ;
 
 	m_stop = [ this ](){ m_exit = true ; } ;

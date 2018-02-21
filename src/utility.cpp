@@ -27,7 +27,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <cstdio>
-#ifndef _WIN32
+#ifndef Q_OS_WIN
 #include <termios.h>
 #endif
 #include <memory>
@@ -57,6 +57,7 @@
 #include <QFileInfo>
 #include <QEvent>
 #include <QKeyEvent>
+#include <QStandardPaths>
 
 #include "utility2.h"
 #include "install_prefix.h"
@@ -81,7 +82,7 @@
 
 #include "version.h"
 
-#ifdef __linux__
+#ifdef Q_OS_LINUX
 
 #include <sys/vfs.h>
 
@@ -100,7 +101,9 @@ bool utility::platformIsWindows()
 	return false ;
 }
 
-#elif __APPLE__
+#endif
+
+#ifdef Q_OS_MACOS
 
 #include <sys/param.h>
 #include <sys/mount.h>
@@ -120,7 +123,9 @@ bool utility::platformIsWindows()
     return false ;
 }
 
-#else
+#endif
+
+#ifdef Q_OS_WIN
 
 bool utility::platformIsLinux()
 {
@@ -148,19 +153,10 @@ static bool _use_polkit = false ;
 
 static std::function< void() > _failed_to_connect_to_zulupolkit ;
 
-#if QT_VERSION > QT_VERSION_CHECK( 5,0,0 )
-	#include <QStandardPaths>
-	QString utility::socketPath()
-	{
-		return QStandardPaths::writableLocation( QStandardPaths::RuntimeLocation ) ;
-	}
-#else
-	#include <QDesktopServices>
-	QString utility::socketPath()
-	{
-		return QDesktopServices::storageLocation( QDesktopServices::DataLocation ) ;
-	}
-#endif
+QString utility::socketPath()
+{
+	return QStandardPaths::writableLocation( QStandardPaths::RuntimeLocation ) ;
+}
 
 static bool _enable_debug = false ;
 
@@ -374,7 +370,7 @@ void utility::initGlobals()
 	if( chmod( s.constData(),0700 ) ){}
 #endif
 
-#ifdef _WIN32
+#ifdef Q_OS_WIN
 	auto e = "SOFTWARE\\WOW6432Node\\WinFsp\\Services\\securefs" ;
 	_securefsPath = SiriKali::Winfsp::readRegister( e,"Executable" ) ;
 	_winfspPath = SiriKali::Winfsp::readRegister( "SOFTWARE\\WOW6432Node\\WinFsp","InstallDir" ) ;
@@ -1495,7 +1491,7 @@ void utility::setStartMinimized( bool e )
 	_settings->setValue( "StartMinimized",e ) ;
 }
 
-#ifndef WIN32
+#ifndef Q_OS_WIN
 
 static inline bool _terminalEchoOff( struct termios * old,struct termios * current )
 {

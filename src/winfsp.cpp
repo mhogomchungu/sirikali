@@ -38,8 +38,10 @@ public:
 	Task::process::result addInstance( const QString& args,const QByteArray& password ) ;
 	Task::process::result removeInstance( const QString& mountPoint ) ;
 	QStringList commands() const ;
+	void updateVolumeList( std::function< void() > ) ;
 private:
 	std::vector< std::pair< QProcess *,QString > > m_instances ;
+	std::function< void() > m_updateVolumeList ;
 } ;
 
 class ActiveInstances
@@ -57,10 +59,16 @@ private:
 
 static SiriKali::Winfsp::manageInstances _winfsInstances ;
 static const bool _babySittingSecurefs = true ;
+static std::function< void() > _updateVolumeList ;
 
 bool babySittingBackends()
 {
 	return utility::platformIsWindows() && _babySittingSecurefs ;
+}
+
+void updateVolumeList( std::function< void() > function )
+{
+	_winfsInstances.updateVolumeList( std::move( function ) ) ;
 }
 
 }
@@ -322,6 +330,11 @@ QStringList SiriKali::Winfsp::manageInstances::commands() const
 	return s ;
 }
 
+void SiriKali::Winfsp::manageInstances::updateVolumeList( std::function< void() > function )
+{
+	m_updateVolumeList = std::move( function ) ;
+}
+
 Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QString& args,
 								      const QByteArray& password )
 {
@@ -345,6 +358,8 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 			if( data.contains( "init" ) ){
 
 				m_instances.emplace_back( exe,args ) ;
+
+				m_updateVolumeList() ;
 
 				return Task::process::result( 0 ) ;
 			}else{
@@ -374,11 +389,11 @@ Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const Q
 
 			e->terminate() ;
 
-			utility::Task::suspend( 3 ) ;
-
 			e->deleteLater() ;
 
 			m_instances.erase( m_instances.begin() + i ) ;
+
+			m_updateVolumeList() ;
 
 			return Task::process::result( 0 ) ;
 		}

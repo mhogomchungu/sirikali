@@ -53,6 +53,8 @@ QStringList commands() ;
 
 bool babySittingBackends() ;
 
+void updateVolumeList( std::function< void() > ) ;
+
 }
 }
 
