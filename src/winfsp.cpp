@@ -75,7 +75,7 @@ void updateVolumeList( std::function< void() > function )
 
 }
 
-#ifdef _WIN32
+#ifdef Q_OS_WIN
 
 #include <winfsp/launch.h>
 #include <Windows.h>

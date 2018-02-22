@@ -87,7 +87,7 @@ struct QStorageInfo{
 
 #endif
 
-#ifdef _WIN32
+#ifdef Q_OS_WIN
 
 struct pollfd {
     int   fd;         /* file descriptor */

@@ -27,9 +27,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <cstdio>
-#ifndef Q_OS_WIN
-#include <termios.h>
-#endif
 #include <memory>
 #include <iostream>
 
@@ -1491,7 +1488,40 @@ void utility::setStartMinimized( bool e )
 	_settings->setValue( "StartMinimized",e ) ;
 }
 
-#ifndef Q_OS_WIN
+#ifdef Q_OS_WIN
+
+QString utility::readPassword( bool addNewLine )
+{
+	std::cout << "Password: " << std::flush ;
+
+	QString s ;
+	int e ;
+
+	int m = _readPasswordMaximumLength() ;
+
+	for( int i = 0 ; i < m ; i++ ){
+
+		e = std::getchar() ;
+
+		if( e == '\n' || e == -1 ){
+
+			break ;
+		}else{
+			s += static_cast< char >( e ) ;
+		}
+	}
+
+	if( addNewLine ){
+
+		std::cout << std::endl ;
+	}
+
+	return s ;
+}
+
+#else
+
+#include <termios.h>
 
 static inline bool _terminalEchoOff( struct termios * old,struct termios * current )
 {
@@ -1538,37 +1568,6 @@ QString utility::readPassword( bool addNewLine )
 	}
 
 	tcsetattr( 1,TCSAFLUSH,&old ) ;
-
-	if( addNewLine ){
-
-		std::cout << std::endl ;
-	}
-
-	return s ;
-}
-
-#else
-
-QString utility::readPassword( bool addNewLine )
-{
-	std::cout << "Password: " << std::flush ;
-
-	QString s ;
-	int e ;
-
-	int m = _readPasswordMaximumLength() ;
-
-	for( int i = 0 ; i < m ; i++ ){
-
-		e = std::getchar() ;
-
-		if( e == '\n' || e == -1 ){
-
-			break ;
-		}else{
-			s += static_cast< char >( e ) ;
-		}
-	}
 
 	if( addNewLine ){
 
