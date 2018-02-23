@@ -59,7 +59,6 @@ private:
 
 static SiriKali::Winfsp::manageInstances _winfsInstances ;
 static const bool _babySittingSecurefs = true ;
-static std::function< void() > _updateVolumeList ;
 
 bool babySittingBackends()
 {
