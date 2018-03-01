@@ -793,10 +793,11 @@ namespace Task
 			result( const QByteArray& std_out,
 				const QByteArray& std_error,
 				int exit_code,
-				int exit_status ) :
+				int exit_status,
+				bool finished ) :
 				m_stdOut( std_out ),
 				m_stdError( std_error ),
-				m_finished( true ),
+				m_finished( finished ),
 				m_exitCode( exit_code ),
 				m_exitStatus( exit_status )
 			{
