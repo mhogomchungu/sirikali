@@ -310,6 +310,7 @@ private:
 
 int SiriKali::Winfsp::terminateProcess( unsigned long pid )
 {
+	Q_UNUSED( pid ) ;
 	return 0 ;
 }
 
