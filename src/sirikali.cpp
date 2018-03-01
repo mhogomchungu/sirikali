@@ -473,6 +473,18 @@ int sirikali::start( QApplication& e )
 
 	const auto l = QCoreApplication::arguments() ;
 
+	for( const QString& it : l ){
+
+		if( it.startsWith( "terminateProcess-" ) ){
+
+			auto s = it ;
+
+			s.replace( "terminateProcess-","" ) ;
+
+			return SiriKali::Winfsp::terminateProcess( s.toULong() ) ;
+		}
+	}
+
 	if( utility::printVersionOrHelpInfo( l ) ){
 
 		return 0 ;
@@ -1099,7 +1111,7 @@ static void _volume_properties( const QString& cmd,const std::pair<QString,QStri
 		DialogMsg( w ).ShowUIOK( QObject::tr( "ERROR" ),
 					 QObject::tr( "Failed To Find %1 Executable" ).arg( cmd ) ) ;
 	}else{
-		auto e = _volume_properties( exe,args,path ) ;
+		auto e = _volume_properties( "\"" + exe + "\"",args,path ) ;
 
 		if( e.first ){
 

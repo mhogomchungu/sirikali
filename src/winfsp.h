@@ -47,6 +47,8 @@ Task::process::result FspLaunchStart( const QString& exe,const QByteArray& passw
 
 Task::process::result FspLaunchStop( const QString& mountPath ) ;
 
+int terminateProcess( unsigned long pid ) ;
+
 QString readRegister( const char * path,const char * key ) ;
 
 QStringList commands() ;

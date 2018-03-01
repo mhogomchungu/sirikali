@@ -40,6 +40,7 @@ public:
 	QStringList commands() const ;
 	void updateVolumeList( std::function< void() > ) ;
 private:
+	bool waitFor( QProcess *,QByteArray&,const char * ) ;
 	std::vector< std::pair< QProcess *,QString > > m_instances ;
 	std::function< void() > m_updateVolumeList ;
 } ;
@@ -90,6 +91,52 @@ int poll( struct pollfd * a,int b,int c )
 	Q_UNUSED( c ) ;
 
 	return 0 ;
+}
+
+// SiriKali took below code from "https://stackoverflow.com/questions/813086/can-i-send-a-ctrl-c-sigint-to-an-application-on-windows"
+
+// Inspired from http://stackoverflow.com/a/15281070/1529139
+// and http://stackoverflow.com/q/40059902/1529139
+static bool signalCtrl(DWORD dwProcessId, DWORD dwCtrlEvent)
+{
+    bool success = false;
+    DWORD thisConsoleId = GetCurrentProcessId();
+    // Leave current console if it exists
+    // (otherwise AttachConsole will return ERROR_ACCESS_DENIED)
+    bool consoleDetached = (FreeConsole() != FALSE);
+
+    if (AttachConsole(dwProcessId) != FALSE)
+    {
+	// Add a fake Ctrl-C handler for avoid instant kill is this console
+	// WARNING: do not revert it or current program will be also killed
+	SetConsoleCtrlHandler(nullptr, true);
+	success = (GenerateConsoleCtrlEvent(dwCtrlEvent, 0) != FALSE);
+	FreeConsole();
+    }
+
+    if (consoleDetached)
+    {
+	// Create a new console if previous was deleted by OS
+	if (AttachConsole(thisConsoleId) == FALSE)
+	{
+	    int errorCode = GetLastError();
+	    if (errorCode == 31) // 31=ERROR_GEN_FAILURE
+	    {
+		AllocConsole();
+	    }
+	}
+    }
+    return success;
+}
+
+int SiriKali::Winfsp::terminateProcess( unsigned long pid )
+{
+	if( signalCtrl( pid,CTRL_C_EVENT ) ){
+
+		return 0 ;
+	}else{
+		return 1 ;
+	}
 }
 
 QString SiriKali::Winfsp::readRegister( const char * path,const char * key )
@@ -189,7 +236,7 @@ private:
 
 		return entries ;
 	}
-	std::pair< WCHAR *,int > component( WCHAR * buffer,ULONG size,ULONG e )
+	std::pair< WCHAR *,ULONG > component( WCHAR * buffer,ULONG size,ULONG e )
 	{
 		ULONG i = e ;
 
@@ -261,6 +308,11 @@ private:
 
 #else
 
+int SiriKali::Winfsp::terminateProcess( unsigned long pid )
+{
+	return 0 ;
+}
+
 QString SiriKali::Winfsp::readRegister( const char * path,const char * key )
 {
 	Q_UNUSED( path ) ;
@@ -323,7 +375,25 @@ QStringList SiriKali::Winfsp::manageInstances::commands() const
 
 	for( const auto& it : m_instances ){
 
-		s.append( it.second ) ;
+		const auto& y = it.second ;
+
+		/*
+		 * y will contain something like: "C:/path/to/executable mount -o rw -o fsname=securefs@"C:/vault" -o subtype=securefs "C:/vault" "Z:"
+		 *
+		 * below code removes the first argument because its useless and will cause problems if it contains a space character
+		 */
+
+		int m = y.indexOf( "mount" ) ;
+
+		if( m != -1 ){
+
+			auto n = y ;
+
+			n.remove( 0,m ) ;
+			n.prepend( "woof " ) ;
+
+			s.append( n ) ;
+		}
 	}
 
 	return s ;
@@ -332,6 +402,36 @@ QStringList SiriKali::Winfsp::manageInstances::commands() const
 void SiriKali::Winfsp::manageInstances::updateVolumeList( std::function< void() > function )
 {
 	m_updateVolumeList = std::move( function ) ;
+}
+
+bool SiriKali::Winfsp::manageInstances::waitFor( QProcess * exe,
+						 QByteArray& data,
+						 const char * token )
+{
+	size_t counter = 0 ;
+
+	while( true ){
+
+		data += exe->readAllStandardError() ;
+
+		if( data.contains( "\n" ) ){
+
+			if( data.contains( token ) ){
+
+				return true ;
+			}else{
+				return false ;
+			}
+		}else{
+			if( counter < 10 ){
+
+				counter++ ;
+				utility::Task::suspendForOneSecond() ;
+			}else{
+				return false ;
+			}
+		}
+	}
 }
 
 Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QString& args,
@@ -346,33 +446,15 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 
 	QByteArray data ;
 
-	size_t counter = 0 ;
+	if( this->waitFor( exe,data,"init" ) ){
 
-	while( true ){
+		m_instances.emplace_back( exe,args ) ;
 
-		data += exe->readAllStandardError() ;
+		m_updateVolumeList() ;
 
-		if( data.contains( "\n" ) ){
-
-			if( data.contains( "init" ) ){
-
-				m_instances.emplace_back( exe,args ) ;
-
-				m_updateVolumeList() ;
-
-				return Task::process::result( 0 ) ;
-			}else{
-				return Task::process::result( "",data,1,0,true ) ;
-			}
-		}else{
-			if( counter < 10 ){
-
-				counter++ ;
-				utility::Task::suspendForOneSecond() ;
-			}else{
-				return Task::process::result( "",data,1,0,true ) ;
-			}
-		}
+		return Task::process::result( 0 ) ;
+	}else{
+		return Task::process::result( "",data,1,0,true ) ;
 	}
 }
 
@@ -386,15 +468,22 @@ Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const Q
 
 		if( m == mountPoint ){
 
-			e->terminate() ;
+			auto exe = "sirikali.exe terminateProcess-" + QString::number( e->processId() ) ;
 
-			e->deleteLater() ;
+			auto m = Task::process::run( exe ).await() ;
 
-			m_instances.erase( m_instances.begin() + i ) ;
+			if( m.success() ) {
 
-			m_updateVolumeList() ;
+				e->deleteLater() ;
 
-			return Task::process::result( 0 ) ;
+				m_instances.erase( m_instances.begin() + i ) ;
+
+				m_updateVolumeList() ;
+
+				return Task::process::result( 0 ) ;
+			}else{
+				return Task::process::result( "","",1,0,true ) ;
+			}
 		}
 	}
 

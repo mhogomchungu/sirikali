@@ -22,6 +22,7 @@
 
 #include <QStringList>
 #include <QDir>
+#include <QtGlobal>
 
 #include <functional>
 
@@ -100,6 +101,14 @@ namespace utility2
 			e = "ecryptfs-simple" ;
 		}
 
+#ifdef Q_OS_WIN
+		if( !e.endsWith( ".exe" ) ){
+
+			e += ".exe" ;
+		}
+#else
+
+#endif
 		QString exe ;
 
 		for( const auto& it : utility2::executableSearchPaths() ){

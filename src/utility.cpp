@@ -368,9 +368,9 @@ void utility::initGlobals()
 #endif
 
 #ifdef Q_OS_WIN
-	auto e = "SOFTWARE\\WOW6432Node\\WinFsp\\Services\\securefs" ;
-	_securefsPath = SiriKali::Winfsp::readRegister( e,"Executable" ) ;
-	_winfspPath = SiriKali::Winfsp::readRegister( "SOFTWARE\\WOW6432Node\\WinFsp","InstallDir" ) ;
+	//auto e = "SOFTWARE\\WOW6432Node\\WinFsp\\Services\\securefs" ;
+	//_securefsPath = SiriKali::Winfsp::readRegister( e,"Executable" ) ;
+	//_winfspPath = SiriKali::Winfsp::readRegister( "SOFTWARE\\WOW6432Node\\WinFsp","InstallDir" ) ;
 #endif
 }
 

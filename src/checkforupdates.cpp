@@ -108,6 +108,8 @@ QString checkUpdates::InstalledVersion( const siritask::volumeType& e )
 		return "N/A" ;
 	}
 
+	exe = "\"" + exe + "\"" ;
+
 	auto args = [ & ](){
 
 		if( e == "securefs" ){
