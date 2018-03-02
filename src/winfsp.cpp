@@ -77,13 +77,6 @@ void updateVolumeList( std::function< void() > function )
 
 #ifdef Q_OS_WIN
 
-#include <winfsp/launch.h>
-#include <Windows.h>
-#include <Winreg.h>
-
-#include <array>
-#include <algorithm>
-
 int poll( struct pollfd * a,int b,int c )
 {
 	Q_UNUSED( a ) ;
@@ -91,6 +84,29 @@ int poll( struct pollfd * a,int b,int c )
 	Q_UNUSED( c ) ;
 
 	return 0 ;
+}
+
+QString SiriKali::Winfsp::readRegister( const char * path,const char * key )
+{
+	DWORD dwType = REG_SZ ;
+	HKEY hKey = 0 ;
+
+	std::array< char,4096 > buffer ;
+
+	std::fill( buffer.begin(),buffer.end(),'\0' ) ;
+
+	auto buff = reinterpret_cast< BYTE * >( buffer.data() ) ;
+
+	auto buffer_size = static_cast< DWORD >( buffer.size() ) ;
+
+	if( RegOpenKey( HKEY_LOCAL_MACHINE,path,&hKey ) == ERROR_SUCCESS ){
+
+		RegQueryValueEx( hKey,key,nullptr,&dwType,buff,&buffer_size ) ;
+	}
+
+	RegCloseKey( hKey ) ;
+
+	return QByteArray( buffer.data(),buffer_size ) ;
 }
 
 // SiriKali took below code from "https://stackoverflow.com/questions/813086/can-i-send-a-ctrl-c-sigint-to-an-application-on-windows"
@@ -139,27 +155,40 @@ int SiriKali::Winfsp::terminateProcess( unsigned long pid )
 	}
 }
 
+#else
+
+int SiriKali::Winfsp::terminateProcess( unsigned long pid )
+{
+	Q_UNUSED( pid ) ;
+	return 0 ;
+}
+
 QString SiriKali::Winfsp::readRegister( const char * path,const char * key )
 {
-	DWORD dwType = REG_SZ ;
-	HKEY hKey = 0 ;
+	Q_UNUSED( path ) ;
+	Q_UNUSED( key ) ;
 
-	std::array< char,4096 > buffer ;
+	return QString() ;
+}
 
-	std::fill( buffer.begin(),buffer.end(),'\0' ) ;
+#endif
 
-	auto buff = reinterpret_cast< BYTE * >( buffer.data() ) ;
+//#ifdef Q_OS_WIN
+#if 0
+#include <winfsp/launch.h>
+#include <Windows.h>
+#include <Winreg.h>
 
-	auto buffer_size = static_cast< DWORD >( buffer.size() ) ;
+#include <array>
+#include <algorithm>
 
-	if( RegOpenKey( HKEY_LOCAL_MACHINE,path,&hKey ) == ERROR_SUCCESS ){
+int poll( struct pollfd * a,int b,int c )
+{
+	Q_UNUSED( a ) ;
+	Q_UNUSED( b ) ;
+	Q_UNUSED( c ) ;
 
-		RegQueryValueEx( hKey,key,nullptr,&dwType,buff,&buffer_size ) ;
-	}
-
-	RegCloseKey( hKey ) ;
-
-	return QByteArray( buffer.data(),buffer_size ) ;
+	return 0 ;
 }
 
 class SiriKali::Winfsp::ActiveInstances::impl
@@ -300,20 +329,6 @@ private:
 } ;
 
 #else
-
-int SiriKali::Winfsp::terminateProcess( unsigned long pid )
-{
-	Q_UNUSED( pid ) ;
-	return 0 ;
-}
-
-QString SiriKali::Winfsp::readRegister( const char * path,const char * key )
-{
-	Q_UNUSED( path ) ;
-	Q_UNUSED( key ) ;
-
-	return QString() ;
-}
 
 class SiriKali::Winfsp::ActiveInstances::impl
 {
