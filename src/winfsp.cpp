@@ -40,7 +40,7 @@ public:
 	std::vector< QStringList > commands() const ;
 	void updateVolumeList( std::function< void() > ) ;
 private:
-	bool waitForStarted( QProcess *,QByteArray& ) ;
+	std::pair< bool,QByteArray > waitForStarted( QProcess * ) ;
 	std::vector< QProcess * > m_instances ;
 	std::function< void() > m_updateVolumeList ;
 } ;
@@ -400,9 +400,11 @@ void SiriKali::Winfsp::manageInstances::updateVolumeList( std::function< void() 
 	m_updateVolumeList = std::move( function ) ;
 }
 
-bool SiriKali::Winfsp::manageInstances::waitForStarted( QProcess * exe,QByteArray& data )
+std::pair< bool,QByteArray > SiriKali::Winfsp::manageInstances::waitForStarted( QProcess * exe )
 {
 	size_t counter = 0 ;
+
+	QByteArray data ;
 
 	while( true ){
 
@@ -412,9 +414,9 @@ bool SiriKali::Winfsp::manageInstances::waitForStarted( QProcess * exe,QByteArra
 
 			if( utility::containsAtleastOne( data,"init","The service securefs has been started" ) ){
 
-				return true ;
+				return { true,QByteArray() } ;
 			}else{
-				return false ;
+				return { false,data } ;
 			}
 		}else{
 			if( counter < 10 ){
@@ -422,7 +424,7 @@ bool SiriKali::Winfsp::manageInstances::waitForStarted( QProcess * exe,QByteArra
 				counter++ ;
 				utility::Task::suspendForOneSecond() ;
 			}else{
-				return false ;
+				return { false,data } ;
 			}
 		}
 	}
@@ -438,9 +440,9 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 	exe->write( password + "\n" ) ;
 	exe->closeWriteChannel() ;
 
-	QByteArray data ;
+	auto m = this->waitForStarted( exe ) ;
 
-	if( this->waitForStarted( exe,data ) ){
+	if( m.first ){
 
 		m_instances.emplace_back( exe ) ;
 
@@ -448,7 +450,7 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 
 		return Task::process::result( 0 ) ;
 	}else{
-		return Task::process::result( "",data,1,0,true ) ;
+		return Task::process::result( "",m.second,1,0,true ) ;
 	}
 }
 
