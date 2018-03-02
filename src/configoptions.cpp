@@ -77,7 +77,7 @@ configOptions::configOptions( QWidget * parent,
 		m_ui->lineEditMountPointPrefix->clear() ;
 		m_ui->lineEditMountPointPrefix->setEnabled( false ) ;
 		m_ui->pbMountPointPrefix->setEnabled( false ) ;
-		m_ui->lineEditFileManager->setEnabled( false ) ;
+		//m_ui->lineEditFileManager->setEnabled( false ) ;
 	}else{
 		m_ui->lineEditMountPointPrefix->setText( utility::mountPath() ) ;
 	}

@@ -213,6 +213,7 @@ private :
 	bool m_reUseMountPoint ;
 	bool m_checked = false ;
 	bool m_hmac ;
+	bool m_closeGUI = false ;
 
 	secrets& m_secrets ;
 

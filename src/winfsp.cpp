@@ -37,11 +37,11 @@ class manageInstances
 public:
 	Task::process::result addInstance( const QString& args,const QByteArray& password ) ;
 	Task::process::result removeInstance( const QString& mountPoint ) ;
-	QStringList commands() const ;
+	std::vector< QStringList > commands() const ;
 	void updateVolumeList( std::function< void() > ) ;
 private:
 	bool waitFor( QProcess *,QByteArray&,const char * ) ;
-	std::vector< std::pair< QProcess *,QString > > m_instances ;
+	std::vector< QProcess * > m_instances ;
 	std::function< void() > m_updateVolumeList ;
 } ;
 
@@ -52,7 +52,7 @@ public:
 	~ActiveInstances() ;
 	bool valid() const ;
 	const std::vector< SiriKali::Winfsp::winFsp >& values() const ;
-	QStringList commands() const ;
+	std::vector< QStringList > commands() const ;
 private:
 	class impl ;
 	std::unique_ptr< impl > m_handle ;
@@ -180,16 +180,9 @@ public:
 	{
 		return m_entries ;
 	}
-	QStringList commands() const
+	std::vector< QStringList > commands() const
 	{
-		QStringList s ;
-
-		for( const auto& it : m_entries ){
-
-			s.append( it.command ) ;
-		}
-
-		return s ;
+		return {} ;
 	}
 private:
 	void addToList( const SiriKali::Winfsp::winFsp& e )
@@ -336,7 +329,7 @@ public:
 	{
 		return m_entries ;
 	}
-	QStringList commands() const
+	std::vector< QStringList > commands() const
 	{
 		return {} ;
 	}
@@ -365,36 +358,32 @@ const std::vector< SiriKali::Winfsp::winFsp >& SiriKali::Winfsp::ActiveInstances
 	return m_handle->values() ;
 }
 
-QStringList SiriKali::Winfsp::ActiveInstances::commands() const
+std::vector< QStringList > SiriKali::Winfsp::ActiveInstances::commands() const
 {
 	return m_handle->commands() ;
 }
 
-QStringList SiriKali::Winfsp::manageInstances::commands() const
+std::vector< QStringList > SiriKali::Winfsp::manageInstances::commands() const
 {
-	QStringList s ;
+	std::vector< QStringList > s ;
 
 	for( const auto& it : m_instances ){
 
-		const auto& y = it.second ;
+		auto e = it->arguments() ;
 
-		/*
-		 * y will contain something like: "C:/path/to/executable mount -o rw -o fsname=securefs@"C:/vault" -o subtype=securefs "C:/vault" "Z:"
-		 *
-		 * below code removes the first argument because its useless and will cause problems if it contains a space character
-		 */
+		for( auto& m : e ){
 
-		int m = y.indexOf( "mount" ) ;
-
-		if( m != -1 ){
-
-			auto n = y ;
-
-			n.remove( 0,m ) ;
-			n.prepend( "woof " ) ;
-
-			s.append( n ) ;
+			/*
+			 * linux's /proc/self/mountinfo makes these substitutions and we make
+			 * them too to be consistent with linux
+			 */
+			//m.replace( "\n","\\012" ) ;
+			m.replace( " ","\\040" ) ;
+			//m.replace( "\\","\\134" ) ;
+			//m.replace( "\\t","\\011" ) ;
 		}
+
+		s.emplace_back( e ) ;
 	}
 
 	return s ;
@@ -449,7 +438,7 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 
 	if( this->waitFor( exe,data,"init" ) ){
 
-		m_instances.emplace_back( exe,args ) ;
+		m_instances.emplace_back( exe ) ;
 
 		m_updateVolumeList() ;
 
@@ -463,7 +452,7 @@ Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const Q
 {
 	for( size_t i = 0 ; i < m_instances.size() ; i++ ){
 
-		auto e = m_instances[ i ].first ;
+		auto e = m_instances[ i ] ;
 
 		auto m = "\"" + e->arguments().at( 8 ) + "\"" ;
 
@@ -516,7 +505,7 @@ Task::process::result SiriKali::Winfsp::FspLaunchStop( const QString& className,
 	return Task::process::result() ;
 }
 
-QStringList SiriKali::Winfsp::commands()
+std::vector< QStringList > SiriKali::Winfsp::commands()
 {
 	if( SiriKali::Winfsp::babySittingBackends() ){
 

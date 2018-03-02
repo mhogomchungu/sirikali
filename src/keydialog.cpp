@@ -182,8 +182,10 @@ void keyDialog::setUpInitUI()
 
 		if( utility::platformIsWindows() ){
 
-			m_ui->lineEditFolderPath->setText( "Z:" ) ;
-			utility::setWindowsMountPointOptions( this,m_ui->lineEditFolderPath,m_ui->pbOpenFolderPath ) ;
+			//m_ui->lineEditFolderPath->setText( "Z:" ) ;
+			//utility::setWindowsMountPointOptions( this,m_ui->lineEditFolderPath,m_ui->pbOpenFolderPath ) ;
+			m_ui->lineEditFolderPath->setText( utility::homePath() + "/Desktop/" ) ;
+			//m_ui->pbOpenFolderPath->setIcon( QIcon( ":/folder.png" ) ) ;
 		}else{
 			m_ui->lineEditFolderPath->setText( utility::homePath() + "/" ) ;
 		}
@@ -205,10 +207,7 @@ void keyDialog::setUpInitUI()
 
 	QIcon folderIcon( ":/folder.png" ) ;
 
-	if( !utility::platformIsWindows() ){
-
-		m_ui->pbOpenFolderPath->setIcon( folderIcon ) ;
-	}
+	m_ui->pbOpenFolderPath->setIcon( folderIcon ) ;
 
 	m_ui->pbSetKeyKeyFile->setIcon( folderIcon ) ;
 
@@ -852,6 +851,11 @@ void keyDialog::reportErrorMessage( const siritask::cmdStatus& s )
 		 * Should not get here
 		 */
 
+	case siritask::status::volumeCreatedSuccessfully :
+
+		msg = tr( "Volume Created Successfully." ) ;
+		break ;
+
 	case siritask::status::cryfs :
 
 		msg = tr( "Failed To Unlock A Cryfs Volume.\nWrong Password Entered." ) ;
@@ -967,6 +971,12 @@ void keyDialog::showErrorMessage( const siritask::cmdStatus& e )
 
 void keyDialog::pbOK()
 {
+	if( m_closeGUI ){
+
+		m_cancel() ;
+		return this->HideUI() ;
+	}
+
 	m_ui->checkBoxVisibleKey->setChecked( false ) ;
 
 	this->setUIVisible( true ) ;
@@ -1040,14 +1050,19 @@ void keyDialog::encryptedFolderCreate()
 	}else{
 		this->reportErrorMessage( e ) ;
 
-		if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
+		if( e == siritask::status::volumeCreatedSuccessfully ){
 
-			m_ui->lineEditKey->clear() ;
+			m_closeGUI = true ;
+		}else{
+			if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
+
+				m_ui->lineEditKey->clear() ;
+			}
+
+			this->enableAll() ;
+
+			m_ui->lineEditKey->setFocus() ;
 		}
-
-		this->enableAll() ;
-
-		m_ui->lineEditKey->setFocus() ;
 	}
 }
 

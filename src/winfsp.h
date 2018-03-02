@@ -51,7 +51,7 @@ int terminateProcess( unsigned long pid ) ;
 
 QString readRegister( const char * path,const char * key ) ;
 
-QStringList commands() ;
+std::vector< QStringList > commands() ;
 
 bool babySittingBackends() ;
 

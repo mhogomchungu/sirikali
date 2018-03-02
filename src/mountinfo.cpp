@@ -33,7 +33,7 @@
 
 enum class background_thread{ True,False } ;
 
-static QStringList _getwinfspInstances( background_thread thread )
+static std::vector< QStringList > _getwinfspInstances( background_thread thread )
 {
 	if( thread == background_thread::True ){
 
@@ -89,6 +89,7 @@ static QStringList _unlocked_volumes( background_thread thread )
 	}else{
 		QStringList s ;
 		QString mode ;
+		QString m ;
 		QString fs ;
 		const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
 
@@ -109,30 +110,36 @@ static QStringList _unlocked_volumes( background_thread thread )
 
 		auto _babySitter = [ & ](){
 
-			for( const auto& it : _getwinfspInstances( thread ) ){
+			for( const QStringList& e : _getwinfspInstances( thread ) ){
 
-				auto e = utility::split( it,' ' ) ;
+				if( e.size() > 7 ){
 
-				if( e.size() > 8 ){
-
-					if( e.contains( " -o ro " ) ){
+					if( e.contains( "ro" ) ){
 
 						mode = "ro" ;
 					}else{
 						mode = "rw" ;
 					}
 
-					auto m = e.at( 7 ).mid( 8 ) ;
+					for( const auto& it : e ){
+
+						if( it.startsWith( "subtype=" ) ){
+
+							m = it ;
+							m.replace( "subtype=","" ) ;
+
+						}
+					}
 
 					fs = "fuse." + m ;
 
-					s.append( w.arg( path( e.last() ),mode,fs,m + "@" + path( e.at( 8 ) ) ) ) ;
+					s.append( w.arg( path( e.last() ),mode,fs,m + "@" + path( e.at( 7 ) ) ) ) ;
 				}
 			}
 		} ;
 
 		auto _nonBabySitter = [ & ](){
-
+#if 0
 			for( const auto& it : _getwinfspInstances( thread ) ){
 
 				auto e = utility::split( it,' ' ) ;
@@ -153,6 +160,7 @@ static QStringList _unlocked_volumes( background_thread thread )
 					s.append( w.arg( path( e.last() ),mode,fs,m + "@" + path( e.at( 6 ) ) ) ) ;
 				}
 			}
+#endif
 		} ;
 
 		if( SiriKali::Winfsp::babySittingBackends() ){

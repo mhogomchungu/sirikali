@@ -442,9 +442,12 @@ void utility::openPath( const QString& path,const QString& opener,
 
 		openPath( path,opener ).then( [ title,msg,obj ]( bool failed ){
 
-			if( failed && obj ){
+			if( !utility::platformIsWindows() ){
 
-				DialogMsg( obj ).ShowUIOK( title,msg ) ;
+				if( failed && obj ){
+
+					DialogMsg( obj ).ShowUIOK( title,msg ) ;
+				}
 			}
 		} ) ;
 	}
@@ -1413,9 +1416,21 @@ QString utility::runCommandOnMount()
 
 static QString _file_manager()
 {
-	auto s = utility::platformIsLinux() ? "xdg-open" : "open" ;
+	QString s ;
+	QString e ;
 
-	auto e = utility::executableFullPath( s ) ;
+	if( utility::platformIsLinux() ){
+
+		s = "xdg-open" ;
+		e = utility::executableFullPath( s ) ;
+
+	}else if( utility::platformIsOSX() ){
+
+		s = "open" ;
+		e = utility::executableFullPath( s ) ;
+	}else{
+		s = "expoler.exe" ;
+	}
 
 	if( e.isEmpty() ){
 

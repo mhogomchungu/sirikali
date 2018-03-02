@@ -29,13 +29,6 @@
 
 using cs = siritask::status ;
 
-static bool _windows_platform()
-{
-	//return false ;
-	//return true ;
-	return utility::platformIsWindows() ;
-}
-
 static bool _create_folder( const QString& m )
 {
 	if( utility::platformIsWindows() ){
@@ -196,7 +189,7 @@ static bool _unmount_ecryptfs( const QString& cipherFolder,
 
 static bool _unmount_rest( const QString& mountPoint,int maxCount )
 {
-	if( _windows_platform() ){
+	if( utility::platformIsWindows() ){
 
 		return SiriKali::Winfsp::FspLaunchStop( mountPoint ).success() ;
 	}
@@ -349,7 +342,7 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 					auto e = QString( "%1 mount -b %2 %3 -o fsname=securefs@%4 -o subtype=securefs %5 %6" ) ;
 
-					if( _windows_platform() ){
+					if( utility::platformIsWindows() ){
 
 						e.replace( " -b ","" ) ;
 					}
@@ -533,7 +526,7 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 {
 	if( r.success() ){
 
-		return siritask::status::success ;
+		return siritask::cmdStatus( siritask::status::success,r.exitCode() ) ;
 	}
 
 	siritask::cmdStatus e( r.exitCode(),stdOut ? r.stdOut() : r.stdError() ) ;
@@ -626,11 +619,16 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 	return e ;
 }
 
-static utility::Task _run_task( const QString& cmd,const QString& password,bool ecryptfs )
+static utility::Task _run_task( const QString& cmd,const QString& password,bool create,bool ecryptfs )
 {
-	if( _windows_platform() ){
+	if( utility::platformIsWindows() ){
 
-		return SiriKali::Winfsp::FspLaunchStart( cmd,password.toLatin1() ) ;
+		if( create ){
+
+			return Task::process::run( cmd,password.toLatin1() ).get() ;
+		}else{
+			return SiriKali::Winfsp::FspLaunchStart( cmd,password.toLatin1() ) ;
+		}
 	}else{
 		return utility::Task( cmd,20000,utility::systemEnvironment(),
 				      password.toLatin1(),[](){},ecryptfs ) ;
@@ -653,7 +651,7 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 			auto cmd = _args( exe,opt,configFilePath,create ) ;
 
-			auto s = _run_task( cmd,password,_ecryptfs( app ) ) ;
+			auto s = _run_task( cmd,password,create,_ecryptfs( app ) ) ;
 
 			return { cmd,_status( s,_status( app,status_type::exeName ),app == "encfs" ) } ;
 		} ;
@@ -830,11 +828,16 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderCreate( const siri
 
 					if( opt.type.isOneOf( "gocryptfs","securefs" ) ){
 
-						e = siritask::encryptedFolderMount( opt,true ).get() ;
+						if( utility::platformIsWindows() ){
 
-						if( e != cs::success ){
+							e = cs::volumeCreatedSuccessfully ;
+						}else{
+							e = siritask::encryptedFolderMount( opt,true ).get() ;
 
-							_deleteFolders( opt.cipherFolder,opt.plainFolder ) ;
+							if( e != cs::success ){
+
+								 _deleteFolders( opt.cipherFolder,opt.plainFolder ) ;
+							}
 						}
 					}
 				}else{
