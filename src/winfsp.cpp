@@ -160,7 +160,7 @@ int SiriKali::Winfsp::terminateProcess( unsigned long pid )
 int SiriKali::Winfsp::terminateProcess( unsigned long pid )
 {
 	Q_UNUSED( pid ) ;
-	return 0 ;
+	return 1 ;
 }
 
 QString SiriKali::Winfsp::readRegister( const char * path,const char * key )
@@ -181,15 +181,6 @@ QString SiriKali::Winfsp::readRegister( const char * path,const char * key )
 
 #include <array>
 #include <algorithm>
-
-int poll( struct pollfd * a,int b,int c )
-{
-	Q_UNUSED( a ) ;
-	Q_UNUSED( b ) ;
-	Q_UNUSED( c ) ;
-
-	return 0 ;
-}
 
 class SiriKali::Winfsp::ActiveInstances::impl
 {
@@ -398,7 +389,7 @@ std::vector< QStringList > SiriKali::Winfsp::manageInstances::commands() const
 			//m.replace( "\\t","\\011" ) ;
 		}
 
-		s.emplace_back( e ) ;
+		s.emplace_back( std::move( e ) ) ;
 	}
 
 	return s ;
