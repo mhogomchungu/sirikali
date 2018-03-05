@@ -626,9 +626,18 @@ QString utility::executableFullPath( const QString& f )
 {
 	return utility2::executableFullPath( f,[]( const QString& e ){
 
-		if( utility::platformIsWindows() && e == "securefs" ){
+		if( utility::platformIsWindows() ){
 
-			return utility::securefsPath() ;
+			//return utility::securefsPath() ;
+
+			auto m = utility::windowsExecutableSearchPath() + "/" + e + ".exe" ;
+
+			if( utility::pathExists( m ) ){
+
+				return m ;
+			}else{
+				return QString() ;
+			}
 		}else{
 			return QString() ;
 		}
@@ -1843,4 +1852,24 @@ int utility::winFSPpollingInterval()
 	}
 
 	return _settings->value( "WinFSPpollingInterval" ).toInt() ;
+}
+
+void utility::setWindowsExecutableSearchPath( const QString& e )
+{
+	if( e.isEmpty() ){
+
+		_settings->setValue( "WindowsExecutableSearchPath",utility::homePath() + "/bin" ) ;
+	}else{
+		_settings->setValue( "WindowsExecutableSearchPath",e ) ;
+	}
+}
+
+QString utility::windowsExecutableSearchPath()
+{
+	if( !_settings->contains( "WindowsExecutableSearchPath" ) ){
+
+		_settings->setValue( "WindowsExecutableSearchPath",utility::homePath() + "/bin" ) ;
+	}
+
+	return _settings->value( "WindowsExecutableSearchPath" ).toString() ;
 }

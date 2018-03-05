@@ -220,11 +220,27 @@ void sirikali::setUpApp( const QString& volume )
 			}
 		} ;
 
-		_enable( m->addAction( "Cryfs" ),"Cryfs" ) ;
-		_enable( m->addAction( "Gocryptfs" ),"Gocryptfs" ) ;
-		_enable( m->addAction( "Securefs" ),"Securefs" ) ;
-		_enable( m->addAction( "Encfs" ),"Encfs" ) ;
-		_enable( m->addAction( "Ecryptfs" ),"Ecryptfs" ) ;
+		if( utility::platformIsWindows() ){
+
+			auto ac = m->addAction( "Securefs" ) ;
+
+			_enable( ac,"Securefs" ) ;
+
+			m_warnOnMissingExecutable = !ac->isEnabled() ;
+
+		}else if( utility::platformIsOSX() ){
+
+			_enable( m->addAction( "Cryfs" ),"Cryfs" ) ;
+			_enable( m->addAction( "Gocryptfs" ),"Gocryptfs" ) ;
+			_enable( m->addAction( "Securefs" ),"Securefs" ) ;
+			_enable( m->addAction( "Encfs" ),"Encfs" ) ;
+		}else{
+			_enable( m->addAction( "Cryfs" ),"Cryfs" ) ;
+			_enable( m->addAction( "Gocryptfs" ),"Gocryptfs" ) ;
+			_enable( m->addAction( "Securefs" ),"Securefs" ) ;
+			_enable( m->addAction( "Encfs" ),"Encfs" ) ;
+			_enable( m->addAction( "Ecryptfs" ),"Ecryptfs" ) ;
+		}
 
 		return m ;
 	}() ) ;
@@ -450,6 +466,13 @@ void sirikali::startGUI( const std::vector< volumeInfo >& m )
 	if( !m_startHidden ){
 
 		this->raiseWindow() ;
+
+		if( m_warnOnMissingExecutable ){
+
+			auto e = tr( "Failed To Locate \"securefs\" Executable.\n\nGo To \"Menu->Settings->Editable Options->Set Executable Search Path\"\n\n And Set A Path To Where \"securefs\" Executable Is Located On The Computer And Restart." ) ;
+
+			DialogMsg( this ).ShowUIOK( tr( "WARNING" ),e ) ;
+		}
 	}
 
 	if( utility::autoMountFavoritesOnStartUp() ){

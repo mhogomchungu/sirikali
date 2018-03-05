@@ -323,6 +323,9 @@ namespace utility
 	QStringList executableSearchPaths( void ) ;
 	QString executableSearchPaths( const QString& ) ;
 
+	void setWindowsExecutableSearchPath( const QString& ) ;
+	QString windowsExecutableSearchPath() ;
+
 	void polkitFailedWarning( std::function< void() > ) ;
 	bool useSiriPolkit( void ) ;
 	void quitHelper() ;
