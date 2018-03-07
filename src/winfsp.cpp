@@ -450,6 +450,8 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 
 		return Task::process::result( 0 ) ;
 	}else{
+		exe->deleteLater() ;
+
 		return Task::process::result( "",m.second,1,0,true ) ;
 	}
 }
