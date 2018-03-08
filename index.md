@@ -57,14 +57,12 @@ Latest released version is 1.3.3 and its source code can be downloaded by clicki
 
 <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.3/SiriKali-1.3.3.tar.xz">SiriKali-1.3.3.tar.xz</a>
 
-Older versions can be downloaded <a href="https://github.com/mhogomchungu/sirikali/releases">here.</a>
-
 Users of Microsoft Windows Operating System should download SiriKali by clicking below link.
 
-<a href="https://github.com/mhogomchungu/sirikali/releases/tag/1.3.3">SiriKali.1.zip</a>
+<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.3/SiriKali.1.zip">SiriKali.1.zip</a>
 ```
-To use the application on windows, extract the archive, enter SiriKali folder and then
-click "sirikali.exe" executable to launch it.
+To use the application on windows, extract the archive, enter SiriKali folder and
+then click "sirikali.exe" executable to launch it.
 
 An installer will come later on, for now, copy the folder to somewhere
 "out of the way" and then create a window's shortcut file to the executable
