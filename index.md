@@ -62,6 +62,13 @@ Older versions can be downloaded <a href="https://github.com/mhogomchungu/sirika
 ## Binary packages
 
 Users of Microsoft Windows Operating System should download ```SiriKali.1.zip``` file from <a href="https://github.com/mhogomchungu/sirikali/releases/tag/1.3.3">here.</a>
+```
+To use the application,extract the archive,enter SiriKali folder and then click "sirikali.exe" executable to launch it.
+
+An installer will come later on, for now, copy the folder to somewhere "out of the way" and then create a window's shortcut file to the executable for easy access.
+
+Currently, SiriKali on windows supports only securefs backend will expect to find it at "~/bin", in window's language, SiriKali will expect to find "securefs.exe" at "C:\Users\<username>\bin"
+```
 
 Check first if SiriKali is present in your distribution's repositories and use that version if it is.
 ```Fedora,opensuse,ubuntu and debian``` users can install binary packages by following instructions on <a href="http://software.opensuse.org//download.html?project=home%3Aobs_mhogomchungu&package=sirikali">this</a> link.
