@@ -70,7 +70,7 @@ An installer will come later on, for now, copy the folder to somewhere
 "out of the way" and then create a window's shortcut file to the executable
 for easy access.
 
-Currently, SiriKali on windows supports only securefs backend will expect to
+Currently, SiriKali on windows supports only securefs backend and will expect to
 find it at "~/bin", in window's language, SiriKali will expect to find
 "securefs.exe" at "C:\Users\<username>\bin"
 ```
