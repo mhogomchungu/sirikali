@@ -63,11 +63,16 @@ Older versions can be downloaded <a href="https://github.com/mhogomchungu/sirika
 
 Users of Microsoft Windows Operating System should download ```SiriKali.1.zip``` file from <a href="https://github.com/mhogomchungu/sirikali/releases/tag/1.3.3">here.</a>
 ```
-To use the application,extract the archive,enter SiriKali folder and then click "sirikali.exe" executable to launch it.
+To use the application,extract the archive,enter SiriKali folder and then click
+"sirikali.exe" executable to launch it.
 
-An installer will come later on, for now, copy the folder to somewhere "out of the way" and then create a window's shortcut file to the executable for easy access.
+An installer will come later on, for now, copy the folder to somewhere
+"out of the way" and then create a window's shortcut file to the executable
+for easy access.
 
-Currently, SiriKali on windows supports only securefs backend will expect to find it at "~/bin", in window's language, SiriKali will expect to find "securefs.exe" at "C:\Users\<username>\bin"
+Currently, SiriKali on windows supports only securefs backend will expect to
+find it at "~/bin", in window's language, SiriKali will expect to find
+"securefs.exe" at "C:\Users\<username>\bin"
 ```
 
 Check first if SiriKali is present in your distribution's repositories and use that version if it is.
@@ -148,4 +153,4 @@ cv9jY9bZAbVaMUjF7dw/bsqgJ2HCJ33cf16GybRtozOE36YDB2omg58ngIrlmlea
 -----END PGP PUBLIC KEY BLOCK-----
 ```
 
-last update: Sat Feb 17 13:52:07 EAT 2018
+last update: Thu Mar  8 16:42:05 EAT 2018
