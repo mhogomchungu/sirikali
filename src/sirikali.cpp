@@ -469,7 +469,7 @@ void sirikali::startGUI( const std::vector< volumeInfo >& m )
 
 		if( m_warnOnMissingExecutable ){
 
-			auto e = tr( "Failed To Locate \"securefs\" Executable.\n\nGo To \"Menu->Settings->Editable Options->Set Executable Search Path\"\n\n And Set A Path To Where \"securefs\" Executable Is Located On The Computer And Restart." ) ;
+			auto e = tr( "Failed To Locate \"securefs\" Executable.\n\nGo To \"Menu->Settings->Editable Options->Set Executable Search Path\"\n\n And Then Set A Path To Where \"securefs\" Executable Is Located On The Computer And Restart." ) ;
 
 			DialogMsg( this ).ShowUIOK( tr( "WARNING" ),e ) ;
 		}

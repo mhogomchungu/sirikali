@@ -895,7 +895,10 @@ void utility::setLocalizationLanguage( bool translate,QMenu * m,utility2::transl
 
 		for( auto& it : e ){
 
-			m->addAction( it.remove( ".qm" ) )->setCheckable( true ) ;
+			if( !it.startsWith( "qt_" ) ){
+
+				m->addAction( it.remove( ".qm" ) )->setCheckable( true ) ;
+			}
 		}
 
 		_selectOption( m,r ) ;
@@ -932,7 +935,12 @@ void utility::setLocalizationLanguage( const QString& language )
 
 QString utility::localizationLanguagePath()
 {
-	return QString( TRANSLATION_PATH ) ;
+	if( utility::platformIsWindows() ){
+
+		return QDir().currentPath() + "/translations" ;
+	}else{
+		return QString( TRANSLATION_PATH ) ;
+	}
 }
 
 QStringList utility::directoryList( const QString& e )
