@@ -50,8 +50,8 @@ private:
 	std::unique_ptr< impl > m_handle ;
 } ;
 
-#ifndef Q_OS_WIN
-
+//#ifndef Q_OS_WIN
+#if 1
 class ActiveInstances::impl
 {
 public:
