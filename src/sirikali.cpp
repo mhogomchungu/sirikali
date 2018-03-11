@@ -1383,7 +1383,22 @@ void sirikali::dropEvent( QDropEvent * e )
 
 	for( const auto& it : e->mimeData()->urls() ){
 
-		s.emplace_back( it.path(),QByteArray() ) ;
+		auto m = it.path() ;
+
+		if( utility::platformIsWindows() ){
+
+			while( true ){
+
+				if( m.startsWith( "/" ) ){
+
+					m = m.remove( 0,1 ) ;
+				}else{
+					break ;
+				}
+			}
+		}
+
+		s.emplace_back( std::move( m ),QByteArray() ) ;
 	}
 
 	this->mountMultipleVolumes( std::move( s ) ) ;
