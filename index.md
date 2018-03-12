@@ -60,7 +60,7 @@ Latest released version is 1.3.3 and its source code can be downloaded by clicki
 Users of Microsoft Windows Operating System should download SiriKali installer by clicking below link. The installer is not
 signed and expect to get a warning from windows saying the installer is from unknown publisher.
 
-< https://github.com/mhogomchungu/sirikali/releases/download/1.3.3/SiriKali-setup.exe">SiriKali-setup.exe</a>
+<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.3/SiriKali-setup.exe">SiriKali-setup.exe</a>
 
 ```
 Currently, SiriKali on windows supports only securefs backend and will expect to
@@ -148,4 +148,4 @@ cv9jY9bZAbVaMUjF7dw/bsqgJ2HCJ33cf16GybRtozOE36YDB2omg58ngIrlmlea
 -----END PGP PUBLIC KEY BLOCK-----
 ```
 
-last update: Thu Mar  8 16:42:05 EAT 2018
+last update: Mon Mar 12 15:08:25 EAT 2018
