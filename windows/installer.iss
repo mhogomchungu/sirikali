@@ -4,7 +4,7 @@
 #define MyAppName "SiriKali"
 #define MyAppVersion "1.3.3"
 #define MyAppPublisher "Francis Banyikwa"
-#define MyAppURL "http://mhogomchungu.github.io/sirikali"
+#define MyAppURL "https://mhogomchungu.github.io/sirikali"
 #define MyAppExeName "sirikali.exe"
 
 [Setup]
