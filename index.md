@@ -57,17 +57,12 @@ Latest released version is 1.3.3 and its source code can be downloaded by clicki
 
 <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.3/SiriKali-1.3.3.tar.xz">SiriKali-1.3.3.tar.xz</a>
 
-Users of Microsoft Windows Operating System should download SiriKali by clicking below link.
+Users of Microsoft Windows Operating System should download SiriKali installer by clicking below link. The installer is not
+signed and expect to get a warning from windows saying the installer is from unknown publisher.
 
-<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.3/SiriKali.1.zip">SiriKali.1.zip</a>
+< https://github.com/mhogomchungu/sirikali/releases/download/1.3.3/SiriKali-setup.exe">SiriKali-setup.exe</a>
+
 ```
-To use the application on windows, extract the archive, enter SiriKali folder and
-then click "sirikali.exe" executable to launch it.
-
-An installer will come later on, for now, copy the folder to somewhere
-"out of the way" and then create a window's shortcut file to the executable
-for easy access.
-
 Currently, SiriKali on windows supports only securefs backend and will expect to
 find it at "~/bin", in window's language, SiriKali will expect to find
 "securefs.exe" at "C:\Users\<username>\bin"
