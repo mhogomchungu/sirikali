@@ -138,6 +138,7 @@ bool utility::platformIsWindows()
 {
 	return true ;
 }
+
 #endif
 
 static QSettings * _settings ;
@@ -347,7 +348,7 @@ bool utility::enablePolkit( utility::background_thread thread )
 
 void utility::initGlobals()
 {
-#ifdef __linux__
+#ifdef Q_OS_LINUX
 	auto uid = getuid() ;
 
 	QString a = "/tmp/SiriKali-" + QString::number( uid ) ;
@@ -386,7 +387,7 @@ bool utility::useSiriPolkit()
 
 void utility::quitHelper()
 {
-#if __linux__
+#ifdef Q_OS_LINUX
 	auto e = utility::helperSocketPath() ;
 
 	if( utility::pathExists( e ) ){
@@ -461,7 +462,7 @@ void utility::openPath( const QString& path,const QString& opener,
 
 		utility::fsInfo s ;
 
-#ifndef WIN32
+#ifndef Q_OS_WIN
 		struct statfs e ;
 
 		s.valid = statfs( q.toLatin1().constData(),&e ) == 0 ;
@@ -939,7 +940,7 @@ QString utility::localizationLanguagePath()
 
 		return QDir().currentPath() + "/translations" ;
 	}else{
-		return QString( TRANSLATION_PATH ) ;
+		return TRANSLATION_PATH ;
 	}
 }
 
