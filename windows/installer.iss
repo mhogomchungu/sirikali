@@ -6,6 +6,7 @@
 #define MyAppPublisher "Francis Banyikwa"
 #define MyAppURL "https://mhogomchungu.github.io/sirikali"
 #define MyAppExeName "sirikali.exe"
+#define MyReleasedRootPath "C:\projects\released"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -60,34 +61,34 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Files]
-Source: "C:\projects\sirikali\windows\SiriKali\sirikali.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\projects\sirikali\windows\SiriKali\D3Dcompiler_47.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\projects\sirikali\windows\SiriKali\libEGL.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\projects\sirikali\windows\SiriKali\libgcc_s_dw2-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\projects\sirikali\windows\SiriKali\libgcrypt-20.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\projects\sirikali\windows\SiriKali\libGLESV2.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\projects\sirikali\windows\SiriKali\libgpg-error-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\projects\sirikali\windows\SiriKali\libstdc++-6.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\projects\sirikali\windows\SiriKali\libwinpthread-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\projects\sirikali\windows\SiriKali\LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\projects\sirikali\windows\SiriKali\opengl32sw.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\projects\sirikali\windows\SiriKali\Qt5Core.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\projects\sirikali\windows\SiriKali\Qt5Gui.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\projects\sirikali\windows\SiriKali\Qt5Network.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\projects\sirikali\windows\SiriKali\Qt5Svg.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\projects\sirikali\windows\SiriKali\Qt5Widgets.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\projects\sirikali\windows\SiriKali\bearer\*"; DestDir: "{app}\bearer"; Flags: ignoreversion
-Source: "C:\projects\sirikali\windows\SiriKali\iconengines\*"; DestDir: "{app}\iconengines"; Flags: ignoreversion
-Source: "C:\projects\sirikali\windows\SiriKali\imageformats\*"; DestDir: "{app}\imageformats"; Flags: ignoreversion
-Source: "C:\projects\sirikali\windows\SiriKali\platforms\*"; DestDir: "{app}\platforms"; Flags: ignoreversion
-Source: "C:\projects\sirikali\windows\SiriKali\translations\*"; DestDir: "{app}\translations"; Flags: ignoreversion
-Source: "C:\projects\sirikali\windows\SiriKali\icons\sirikali.ico"; DestDir: "{app}\icons"; Flags: ignoreversion
+Source: "{#MyReleasedRootPath}\SiriKali\sirikali.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyReleasedRootPath}\SiriKali\D3Dcompiler_47.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyReleasedRootPath}\SiriKali\libEGL.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyReleasedRootPath}\SiriKali\libgcc_s_dw2-1.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyReleasedRootPath}\SiriKali\libgcrypt-20.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyReleasedRootPath}\SiriKali\libGLESV2.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyReleasedRootPath}\SiriKali\libgpg-error-0.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyReleasedRootPath}\SiriKali\libstdc++-6.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyReleasedRootPath}\SiriKali\libwinpthread-1.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyReleasedRootPath}\SiriKali\LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyReleasedRootPath}\SiriKali\opengl32sw.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyReleasedRootPath}\SiriKali\Qt5Core.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyReleasedRootPath}\SiriKali\Qt5Gui.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyReleasedRootPath}\SiriKali\Qt5Network.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyReleasedRootPath}\SiriKali\Qt5Svg.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyReleasedRootPath}\SiriKali\Qt5Widgets.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyReleasedRootPath}\SiriKali\bearer\*"; DestDir: "{app}\bearer"; Flags: ignoreversion
+Source: "{#MyReleasedRootPath}\SiriKali\iconengines\*"; DestDir: "{app}\iconengines"; Flags: ignoreversion
+Source: "{#MyReleasedRootPath}\SiriKali\imageformats\*"; DestDir: "{app}\imageformats"; Flags: ignoreversion
+Source: "{#MyReleasedRootPath}\SiriKali\platforms\*"; DestDir: "{app}\platforms"; Flags: ignoreversion
+Source: "{#MyReleasedRootPath}\SiriKali\translations\*"; DestDir: "{app}\translations"; Flags: ignoreversion
+Source: "{#MyReleasedRootPath}\SiriKali\icons\sirikali.ico"; DestDir: "{app}\icons"; Flags: ignoreversion
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
 Name: "{commonprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\icons\sirikali.ico"; WorkingDir: "{app}"
-Name: "{commonprograms}\Uninstall {#MyAppName}"; Filename: "{uninstallexe}"; IconFilename: "{app}\icons\sirikali.ico"; WorkingDir: "{app}"
+;Name: "{commonprograms}\Uninstall {#MyAppName}"; Filename: "{uninstallexe}"; IconFilename: "{app}\icons\sirikali.ico"; WorkingDir: "{app}"
 
 Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\icons\sirikali.ico"; WorkingDir: "{app}"; Tasks: desktopicon
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\icons\sirikali.ico"; WorkingDir: "{app}"; Tasks: quicklaunchicon
