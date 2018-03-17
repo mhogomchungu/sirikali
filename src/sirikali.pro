@@ -90,6 +90,7 @@ FORMS += \
     3rdParty/lxqt_wallet/frontend/changepassworddialog.ui
 
 TRANSLATIONS = ../translations/en_US.ts \
+               ../translations/sv_SE.ts \
                ../translations/fr_FR.ts \
                ../translations/es_MX.ts \
                ../translations/ar_SA.ts \

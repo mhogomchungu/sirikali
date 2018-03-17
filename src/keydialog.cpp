@@ -927,6 +927,11 @@ void keyDialog::reportErrorMessage( const siritask::cmdStatus& s )
 		msg = tr( "Failed To Create Mount Point." ) ;
 		break;
 
+	case siritask::status::securefsFailedToLoadWinfsp :
+
+		msg = tr( "SecureFS Can not Load WinFsp. Please Make Sure You Have WinFsp Properly Installed" ) ;
+		break;
+
 	case siritask::status::unknown :
 
 		msg = tr( "Failed To Unlock The Volume.\nNot Supported Volume Encountered." ) ;
