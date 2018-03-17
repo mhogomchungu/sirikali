@@ -340,14 +340,19 @@ static QString _args( const QString& exe,const siritask::options& opt,
 					//	mode += " -o volname=" + utility::split( opt.plainFolder,'/' ).last() ;
 					//}
 
-					auto e = QString( "%1 mount -b %2 %3 -o fsname=securefs@%4 -o subtype=securefs %5 %6" ) ;
+					auto bg = [](){
 
-					if( utility::platformIsWindows() ){
+						if( utility::platformIsWindows() ){
 
-						e.replace( " -b ","" ) ;
-					}
+							return "" ;
+						}else{
+							return "-b" ;
+						}
+					}() ;
 
-					return e.arg( exe,configPath,mode,cipherFolder,cipherFolder,mountPoint ) ;
+					auto e = QString( "%1 mount %2 %3 %4 -o fsname=securefs@%5 -o subtype=securefs %6 %7" ) ;
+
+					return e.arg( exe,bg,configPath,mode,cipherFolder,cipherFolder,mountPoint ) ;
 				}
 			}
 		}() ;
@@ -689,11 +694,11 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 static QString _configFilePath( const siritask::options& opt )
 {
-	if( opt.configFilePath.startsWith( "/" ) || opt.configFilePath.isEmpty() ){
+	if( opt.configFilePath.isEmpty() ){
 
-		return opt.configFilePath ;
+		return QString() ;
 	}else{
-		return utility::homePath() + "/" + opt.configFilePath ;
+		return QDir().absoluteFilePath( opt.configFilePath ) ;
 	}
 }
 

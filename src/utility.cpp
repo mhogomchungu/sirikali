@@ -1447,7 +1447,7 @@ static QString _file_manager()
 		s = "open" ;
 		e = utility::executableFullPath( s ) ;
 	}else{
-		s = "expoler.exe" ;
+		s = "explorer.exe" ;
 	}
 
 	if( e.isEmpty() ){

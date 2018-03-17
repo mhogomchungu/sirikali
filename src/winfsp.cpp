@@ -271,7 +271,7 @@ Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const Q
 
 		auto e = m_instances[ i ] ;
 
-		auto m = "\"" + e->arguments().at( 8 ) + "\"" ;
+		auto m = "\"" + e->arguments().last() + "\"" ;
 
 		if( m == mountPoint ){
 

@@ -112,29 +112,27 @@ static QStringList _unlocked_volumes( background_thread thread )
 
 			for( const QStringList& e : _getwinfspInstances( thread ) ){
 
-				if( e.size() > 7 ){
+				if( e.contains( "ro" ) ){
 
-					if( e.contains( "ro" ) ){
-
-						mode = "ro" ;
-					}else{
-						mode = "rw" ;
-					}
-
-					for( const auto& it : e ){
-
-						if( it.startsWith( "subtype=" ) ){
-
-							m = it ;
-							m.replace( "subtype=","" ) ;
-
-						}
-					}
-
-					fs = "fuse." + m ;
-
-					s.append( w.arg( path( e.last() ),mode,fs,m + "@" + path( e.at( 7 ) ) ) ) ;
+					mode = "ro" ;
+				}else{
+					mode = "rw" ;
 				}
+
+				for( const auto& it : e ){
+
+					if( it.startsWith( "subtype=" ) ){
+
+						m = it ;
+						m.replace( "subtype=","" ) ;
+					}
+				}
+
+				fs = "fuse." + m ;
+
+				m += "@" + path( e.at( e.size() - 2 ) ) ;
+
+				s.append( w.arg( path( e.last() ),mode,fs,m ) ) ;
 			}
 		} ;
 
