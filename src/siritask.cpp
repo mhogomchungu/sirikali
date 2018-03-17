@@ -610,10 +610,6 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 			if( msg.contains( "password" ) ){
 
 				e = s ;
-
-			}else if( msg.contains( "SecureFS cannot load WinFsp" ) ){
-
-				e = cs::securefsFailedToLoadWinfsp ;
 			}
 		}
 
@@ -622,6 +618,10 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 		if( msg.contains( "password" ) ){
 
 			e = s ;
+
+		}else if( msg.contains( "securefs cannot load winfsp" ) ){
+
+			e = cs::securefsFailedToLoadWinfsp ;
 		}
 	}
 
