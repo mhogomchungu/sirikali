@@ -33,23 +33,49 @@ class QTranslator ;
 
 namespace utility2
 {
-	template< typename E,typename F,typename ... G >
-	auto unique_ptr( F&& f,G&& ... g )
+	template< typename Type,typename ... Arguments >
+	Type * create_type( Arguments&& ... args )
 	{
-		using B = std::decay_t< F > ;
+		if( sizeof ... ( args ) == 0 ){
 
-		if( sizeof ... ( g ) == 0 ){
-
-			return std::unique_ptr< E,B >( new E(),std::forward< F >( f ) ) ;
+			return new Type() ;
 		}else{
-			return std::unique_ptr< E,B >( new E( std::forward< G >( g ) ... ),std::forward< F >( f ) ) ;
+			return new Type( std::forward< Arguments >( args ) ... ) ;
 		}
 	}
 
-	template< typename E,typename ... G >
-	auto unique_qptr( G&& ... g )
+	/*
+	 * This method takes a function that returns a resource,a function that deletes
+	 * the resource and arguments that are to be passed to the function that returns a
+	 * resource.
+	 *
+	 * example usecase of a function:
+	 *
+	 * auto woof = utility2::unique_rsc( ::fopen,::fclose,"/woof/foo/bar","r" ) ;
+	 */
+	template< typename Function,typename Deleter,typename ... Arguments >
+	auto unique_rsc( Function function,Deleter&& deleter,Arguments&& ... args )
 	{
-		return utility2::unique_ptr< E >( []( E * e ){ e->deleteLater() ; },std::forward< G >( g ) ... ) ;
+		using A = std::remove_pointer_t< std::result_of_t< Function( Arguments&& ... ) > > ;
+		using B = std::decay_t< Deleter > ;
+
+		return std::unique_ptr< A,B >( function( std::forward< Arguments >( args ) ... ),
+					       std::forward< Deleter >( deleter ) ) ;
+	}
+
+	template< typename Type,typename Deleter,typename ... Arguments >
+	auto unique_ptr( Deleter&& deleter,Arguments&& ... args )
+	{
+		return unique_rsc( utility2::create_type< Type >,
+				   std::forward< Deleter >( deleter ),
+				   std::forward< Arguments >( args ) ... ) ;
+	}
+
+	template< typename Type,typename ... Arguments >
+	auto unique_qptr( Arguments&& ... args )
+	{
+		return utility2::unique_ptr< Type >( []( Type * e ){ e->deleteLater() ; },
+						     std::forward< Arguments >( args ) ... ) ;
 	}
 
 	namespace detail
