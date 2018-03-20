@@ -1045,7 +1045,7 @@ static lxqt_wallet_error lxqt_wallet_close_exit( lxqt_wallet_error err,lxqt_wall
 	*w = NULL ;
 
 	if( handle != 0 ){
-        gcry_cipher_close( handle ) ;
+	gcry_cipher_close( handle ) ;
 	}
 
 	if( wallet->wallet_data_size > 0 ){
