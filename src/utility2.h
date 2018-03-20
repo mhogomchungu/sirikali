@@ -33,34 +33,24 @@ class QTranslator ;
 
 namespace utility2
 {
-	template< typename E,typename F >
-	auto unique_ptr( F&& f )
-	{
-		using A = typename std::remove_pointer< E >::type ;
-		using B = typename std::remove_reference< F >::type ;
-
-		return std::unique_ptr< A,B >( new E(),std::forward< F >( f ) ) ;
-	}
-
 	template< typename E,typename F,typename ... G >
 	auto unique_ptr( F&& f,G&& ... g )
 	{
-		using A = typename std::remove_pointer< E >::type ;
-		using B = typename std::remove_reference< F >::type ;
+		using A = std::decay_t< E > ;
+		using B = std::decay_t< F > ;
 
-		return std::unique_ptr< A,B >( new E( std::forward< G >( g ) ... ),std::forward< F >( f ) ) ;
+		if( sizeof ... ( g ) == 0 ){
+
+			return std::unique_ptr< A,B >( new E(),std::forward< F >( f ) ) ;
+		}else{
+			return std::unique_ptr< A,B >( new E( std::forward< G >( g ) ... ),std::forward< F >( f ) ) ;
+		}
 	}
 
 	template< typename T,typename ... E >
 	auto unique_qptr( E&& ... e )
 	{
 		return utility2::unique_ptr< T >( []( T * e ){ e->deleteLater() ; },std::forward< E >( e ) ... ) ;
-	}
-
-	template< typename T,typename ... E >
-	auto unique_qptr()
-	{
-		return utility2::unique_ptr< T >( []( T * e ){ e->deleteLater() ; } ) ;
 	}
 
 	namespace detail
