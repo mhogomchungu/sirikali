@@ -34,7 +34,7 @@ public:
 	std::vector< QStringList > commands() const ;
 	void updateVolumeList( std::function< void() > ) ;
 private:
-	std::pair< bool,QByteArray > waitForStarted( QProcess * ) ;
+	std::pair< bool,QByteArray > waitForStarted( QProcess& ) ;
 	std::vector< QProcess * > m_instances ;
 	std::function< void() > m_updateVolumeList ;
 } ;
@@ -209,7 +209,7 @@ void SiriKali::Winfsp::manageInstances::updateVolumeList( std::function< void() 
 	m_updateVolumeList = std::move( function ) ;
 }
 
-std::pair< bool,QByteArray > SiriKali::Winfsp::manageInstances::waitForStarted( QProcess * exe )
+std::pair< bool,QByteArray > SiriKali::Winfsp::manageInstances::waitForStarted( QProcess& exe )
 {
 	size_t counter = 0 ;
 
@@ -217,7 +217,7 @@ std::pair< bool,QByteArray > SiriKali::Winfsp::manageInstances::waitForStarted( 
 
 	while( true ){
 
-		data += exe->readAllStandardError() ;
+		data += exe.readAllStandardError() ;
 
 		if( data.contains( "\n" ) ){
 
@@ -242,26 +242,24 @@ std::pair< bool,QByteArray > SiriKali::Winfsp::manageInstances::waitForStarted( 
 Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QString& args,
 								      const QByteArray& password )
 {
-	auto exe = new QProcess() ;
+	auto exe = utility2::unique_qptr< QProcess >() ;
 
 	exe->start( args ) ;
 	exe->waitForStarted() ;
 	exe->write( password + "\n" ) ;
 	exe->closeWriteChannel() ;
 
-	auto m = this->waitForStarted( exe ) ;
+	auto m = this->waitForStarted( *exe ) ;
 
 	if( m.first ){
 
-		m_instances.emplace_back( exe ) ;
+		m_instances.emplace_back( exe.release() ) ;
 
 		m_updateVolumeList() ;
 
 		return Task::process::result( 0 ) ;
 	}else{
-		exe->deleteLater() ;
-
-		return Task::process::result( "",m.second,1,0,true ) ;
+		return Task::process::result( QByteArray(),m.second,1,0,true ) ;
 	}
 }
 

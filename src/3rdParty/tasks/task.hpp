@@ -790,13 +790,14 @@ namespace Task
 				m_exitStatus( 0 )
 			{
 			}
-			result( const QByteArray& std_out,
-				const QByteArray& std_error,
+			template< typename E,typename F >
+			result( E&& std_out,
+				F&& std_error,
 				int exit_code,
 				int exit_status,
 				bool finished ) :
-				m_stdOut( std_out ),
-				m_stdError( std_error ),
+				m_stdOut( std::forward<E>( std_out ) ),
+				m_stdError( std::forward<F>( std_error ) ),
 				m_finished( finished ),
 				m_exitCode( exit_code ),
 				m_exitStatus( exit_status )
