@@ -36,21 +36,20 @@ namespace utility2
 	template< typename E,typename F,typename ... G >
 	auto unique_ptr( F&& f,G&& ... g )
 	{
-		using A = std::decay_t< E > ;
 		using B = std::decay_t< F > ;
 
 		if( sizeof ... ( g ) == 0 ){
 
-			return std::unique_ptr< A,B >( new E(),std::forward< F >( f ) ) ;
+			return std::unique_ptr< E,B >( new E(),std::forward< F >( f ) ) ;
 		}else{
-			return std::unique_ptr< A,B >( new E( std::forward< G >( g ) ... ),std::forward< F >( f ) ) ;
+			return std::unique_ptr< E,B >( new E( std::forward< G >( g ) ... ),std::forward< F >( f ) ) ;
 		}
 	}
 
-	template< typename T,typename ... E >
-	auto unique_qptr( E&& ... e )
+	template< typename E,typename ... G >
+	auto unique_qptr( G&& ... g )
 	{
-		return utility2::unique_ptr< T >( []( T * e ){ e->deleteLater() ; },std::forward< E >( e ) ... ) ;
+		return utility2::unique_ptr< E >( []( E * e ){ e->deleteLater() ; },std::forward< G >( g ) ... ) ;
 	}
 
 	namespace detail
