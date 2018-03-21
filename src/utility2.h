@@ -54,7 +54,7 @@ namespace utility2
 	 * auto woof = utility2::unique_rsc( ::fopen,::fclose,"/woof/foo/bar","r" ) ;
 	 */
 	template< typename Function,typename Deleter,typename ... Arguments >
-	auto unique_rsc( Function function,Deleter&& deleter,Arguments&& ... args )
+	auto unique_rsc( Function&& function,Deleter&& deleter,Arguments&& ... args )
 	{
 		using A = std::remove_pointer_t< std::result_of_t< Function( Arguments&& ... ) > > ;
 		using B = std::decay_t< Deleter > ;
