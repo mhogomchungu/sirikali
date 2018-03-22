@@ -62,7 +62,7 @@ favorites::favorites( QWidget * parent ) : QDialog( parent ),
 	m_ui->pbFolderPath->setIcon( QIcon( ":/sirikali.png" ) ) ;
 	m_ui->pbConfigFilePath->setIcon( QIcon( ":/file.png" ) ) ;
 
-	m_ui->lineEditEncryptedFolderPath->setEnabled( false ) ;
+	//m_ui->lineEditEncryptedFolderPath->setEnabled( false ) ;
 
 	m_ui->cbAutoMount->setChecked( false ) ;
 

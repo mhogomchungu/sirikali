@@ -36,15 +36,18 @@ public:
 private:
 	std::pair< bool,QByteArray > waitForStarted( QProcess& ) ;
 	std::vector< QProcess * > m_instances ;
-	std::function< void() > m_updateVolumeList ;
+	std::function< void() > m_updateVolumeList = [](){
+
+		utility::debug() << "booooooo!!!" ;
+	} ;
 } ;
 
 static SiriKali::Winfsp::manageInstances _winfsInstances ;
-static const bool _babySittingSecurefs = true ;
+static const bool _babySittingBackends = true ;
 
 bool babySittingBackends()
 {
-	return utility::platformIsWindows() && _babySittingSecurefs ;
+	return _babySittingBackends ;
 }
 
 void updateVolumeList( std::function< void() > function )
@@ -219,14 +222,9 @@ std::pair< bool,QByteArray > SiriKali::Winfsp::manageInstances::waitForStarted( 
 
 		data += exe.readAllStandardError() ;
 
-		if( data.contains( "\n" ) ){
+		if( utility::containsAtleastOne( data,"init","INIT:","The service securefs has been started" ) ){
 
-			if( utility::containsAtleastOne( data,"init","The service securefs has been started" ) ){
-
-				return { true,QByteArray() } ;
-			}else{
-				return { false,data } ;
-			}
+			return { true,QByteArray() } ;
 		}else{
 			if( counter < 10 ){
 
@@ -244,6 +242,8 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 {
 	auto exe = utility2::unique_qptr< QProcess >() ;
 
+	exe->setProcessEnvironment( utility::systemEnvironment() ) ;
+
 	exe->start( args ) ;
 	exe->waitForStarted() ;
 	exe->write( password + "\n" ) ;
@@ -252,6 +252,8 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 	auto m = this->waitForStarted( *exe ) ;
 
 	if( m.first ){
+
+		exe->closeReadChannel( QProcess::StandardError ) ;
 
 		m_instances.emplace_back( exe.release() ) ;
 

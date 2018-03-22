@@ -1188,22 +1188,28 @@ void keyDialog::encryptedFolderMount()
 		return this->enableAll() ;
 	}
 
-	if( !utility::pathExists( m_path ) ){
+	if( !m_path.startsWith( "sshfs " ) ){
 
-		this->showErrorMessage( tr( "Encrypted Folder Appear To Not Be Present." ) ) ;
+		if( !utility::pathExists( m_path ) ){
 
-		return this->enableAll() ;
+			this->showErrorMessage( tr( "Encrypted Folder Appear To Not Be Present." ) ) ;
+
+			return this->enableAll() ;
+		}
 	}
 
-	if( m_key.isEmpty() ){
+	if( !m_path.startsWith( "sshfs " ) ){
 
-		this->showErrorMessage( tr( "Atleast One Required Field Is Empty." ) ) ;
+		if( m_key.isEmpty() ){
 
-		this->enableAll() ;
+			this->showErrorMessage( tr( "Atleast One Required Field Is Empty." ) ) ;
 
-		m_ui->lineEditKey->setFocus() ;
+			this->enableAll() ;
 
-		return ;
+			m_ui->lineEditKey->setFocus() ;
+
+			return ;
+		}
 	}
 
 	if( this->upgradingFileSystem() ){

@@ -401,7 +401,7 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 				return _wrap_su( s + " -o " + opt.mountOptions ) ;
 			}else{
-				return s + " -o " + opt.mountOptions;
+				return s + " -o " + opt.mountOptions ;
 			}
 		}
 
@@ -452,7 +452,9 @@ static QString _args( const QString& exe,const siritask::options& opt,
 				return opts + " -o rw -o " + mountOptions ;
 			}
 		}
-	}else{
+
+	}else if( type == "encfs" ){
+
 		auto e = QString( "%1 %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ) ;
 
 		if( utility::platformIsOSX() ){
@@ -479,7 +481,25 @@ static QString _args( const QString& exe,const siritask::options& opt,
 				return opts + " -o rw -o " + opt.mountOptions ;
 			}
 		}
+
+	}else if( type == "sshfs" ){
+
+		auto s = "%1 %2 %3 -f -d -o subtype=sshfs -o fsname=sshfs@%4" ;
+
+		auto e = QString( s ).arg( exe,opt.cipherFolder,opt.plainFolder,opt.cipherFolder ) ;
+
+		for( const auto& it : utility::split( opt.mountOptions,',' ) ){
+
+			e += " -o " + it ;
+		}
+
+		return e ;
 	}
+
+	/*
+	 * We Should not get here
+	 */
+	return QString() ;
 }
 
 enum class status_type{ exeName,exeNotFound } ;
@@ -628,9 +648,13 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 	return e ;
 }
 
-static utility::Task _run_task( const QString& cmd,const QString& password,bool create,bool ecryptfs )
+static utility::Task _run_task( const QString& cmd,
+				const QString& password,
+				bool create,
+				bool ecryptfs,
+				bool sshfs )
 {
-	if( utility::platformIsWindows() ){
+	if( utility::platformIsWindows() || sshfs ){
 
 		if( create ){
 
@@ -660,7 +684,7 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 			auto cmd = _args( exe,opt,configFilePath,create ) ;
 
-			auto s = _run_task( cmd,password,create,_ecryptfs( app ) ) ;
+			auto s = _run_task( cmd,password,create,_ecryptfs( app ),opt.type == "sshfs" ) ;
 
 			return { cmd,_status( s,_status( app,status_type::exeName ),app == "encfs" ) } ;
 		} ;
@@ -739,6 +763,14 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const sirit
 				return cs::failedToCreateMountPoint ;
 			}
 		} ;
+
+		if( opt.cipherFolder.startsWith( "sshfs " ) ){
+
+			auto opts = opt ;
+			opts.cipherFolder = opts.cipherFolder.remove( 0,6 ) ; // 6 is the size of "sshfs "
+
+			return _mount( "sshfs",opts,QString() ) ;
+		}
 
                 if( opt.configFilePath.isEmpty() ){
 
