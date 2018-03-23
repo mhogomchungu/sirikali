@@ -122,3 +122,7 @@ version 1.3.3
 -- Add a GUI windows to set ecryptfs volume creation options.
 -- Add a GUI way to upgrade cryfs volume(cryfs > 0.9.8 required).
 -- Make it possible to build the project with system provided "internal" libraries.
+
+version 1.3.4(unreleased)
+-- Add support for sshfs backend.
+-- Add support for Microsoft Windows operating system.
