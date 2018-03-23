@@ -484,7 +484,15 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 	}else if( type == "sshfs" ){
 
-		auto s = "%1 %2 %3 -f -d -o subtype=sshfs -o fsname=sshfs@%4" ;
+		auto s = [](){
+
+			if( utility::platformIsWindows() ){
+
+				return "%1 %2 %3 -f -d -o subtype=sshfs -o fsname=sshfs@%4" ;
+			}else{
+				return "%1 %2 %3 -o subtype=sshfs -o fsname=sshfs@%4" ;
+			}
+		}() ;
 
 		auto e = QString( s ).arg( exe,opt.cipherFolder,opt.plainFolder,opt.cipherFolder ) ;
 
@@ -651,10 +659,9 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 static utility::Task _run_task( const QString& cmd,
 				const QString& password,
 				bool create,
-				bool ecryptfs,
-				bool sshfs )
+				bool ecryptfs )
 {
-	if( utility::platformIsWindows() || sshfs ){
+	if( utility::platformIsWindows() ){
 
 		if( create ){
 
@@ -684,7 +691,7 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 			auto cmd = _args( exe,opt,configFilePath,create ) ;
 
-			auto s = _run_task( cmd,password,create,_ecryptfs( app ),opt.type == "sshfs" ) ;
+			auto s = _run_task( cmd,password,create,_ecryptfs( app ) ) ;
 
 			return { cmd,_status( s,_status( app,status_type::exeName ),app == "encfs" ) } ;
 		} ;
@@ -768,6 +775,18 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const sirit
 
 			auto opts = opt ;
 			opts.cipherFolder = opts.cipherFolder.remove( 0,6 ) ; // 6 is the size of "sshfs "
+
+			auto m = opts.key ;
+
+			/*
+			 * On my linux box, sshfs prompts six times when entered password is wrong before
+			 * giving up, here, we simulate replaying the password 10 times hoping it will be
+			 * enough for sshfs.
+			 */
+			for( int i = 0 ; i < 9 ; i++ ){
+
+				opts.key += "\n" + m ;
+			}
 
 			return _mount( "sshfs",opts,QString() ) ;
 		}

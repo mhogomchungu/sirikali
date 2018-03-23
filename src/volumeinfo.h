@@ -69,6 +69,7 @@ public:
 	{
 		return utility::containsAtleastOne( e," fuse.cryfs ",
 						    " fuse.encfs ",
+						    " fuse.sshfs ",
 						    " fuse.gocryptfs ",
 						    " fuse.securefs ",
 						    " ecryptfs " ) ;

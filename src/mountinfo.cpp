@@ -285,7 +285,8 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 				if( utility::startsWithAtLeastOne( cf,"encfs@",
 								   "cryfs@",
 								   "securefs@",
-								   "gocryptfs@" ) ){
+								   "gocryptfs@",
+								   "sshfs@" ) ){
 
 					info.volumePath = _decode( cf,true ) ;
 
