@@ -488,25 +488,25 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 			if( utility::platformIsWindows() ){
 
-				return "%1 %2 %3 -f -d -o subtype=sshfs -o fsname=sshfs@%4" ;
+				return "%1 -f -d %2 -o subtype=sshfs -o fsname=sshfs@%3 %4 %5" ;
 			}else{
-				return "%1 %2 %3 -o subtype=sshfs -o fsname=sshfs@%4" ;
+				return "%1 %2 -o subtype=sshfs -o fsname=sshfs@%3 %4 %5" ;
 			}
 		}() ;
 
-		auto e = s.arg( exe,opt.cipherFolder,opt.plainFolder,opt.cipherFolder ) ;
+		QString m ;
 
 		for( const auto& it : utility::split( opt.mountOptions,',' ) ){
 
-			e += " -o " + it ;
+			m += " -o " + it ;
 		}
 
 		if( !opt.key.isEmpty() ){
 
-			e += " -o password_stdin" ;
+			m += " -o password_stdin" ;
 		}
 
-		return e ;
+		return s.arg( exe,m,opt.cipherFolder,opt.cipherFolder,opt.plainFolder ) ;
 	}
 
 	/*
