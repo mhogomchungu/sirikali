@@ -33,6 +33,12 @@ class QTranslator ;
 
 namespace utility2
 {
+	template< typename Type >
+	Type reflect_argument( Type e )
+	{
+		return e ;
+	}
+
 	template< typename Type,typename ... Arguments >
 	Type * create_type( Arguments&& ... args )
 	{
@@ -69,6 +75,13 @@ namespace utility2
 		return unique_rsc( utility2::create_type< Type >,
 				   std::forward< Deleter >( deleter ),
 				   std::forward< Arguments >( args ) ... ) ;
+	}
+
+	template< typename Type,typename Deleter >
+	auto unique_ptr( Type type,Deleter&& deleter )
+	{
+		return unique_rsc( utility2::reflect_argument< Type >,
+				   std::forward< Deleter >( deleter ),type ) ;
 	}
 
 	template< typename Type,typename ... Arguments >

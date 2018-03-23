@@ -484,7 +484,7 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 	}else if( type == "sshfs" ){
 
-		auto s = [](){
+		QString s = [](){
 
 			if( utility::platformIsWindows() ){
 
@@ -494,11 +494,16 @@ static QString _args( const QString& exe,const siritask::options& opt,
 			}
 		}() ;
 
-		auto e = QString( s ).arg( exe,opt.cipherFolder,opt.plainFolder,opt.cipherFolder ) ;
+		auto e = s.arg( exe,opt.cipherFolder,opt.plainFolder,opt.cipherFolder ) ;
 
 		for( const auto& it : utility::split( opt.mountOptions,',' ) ){
 
 			e += " -o " + it ;
+		}
+
+		if( !opt.key.isEmpty() ){
+
+			e += " -o password_stdin" ;
 		}
 
 		return e ;
@@ -776,16 +781,19 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const sirit
 			auto opts = opt ;
 			opts.cipherFolder = opts.cipherFolder.remove( 0,6 ) ; // 6 is the size of "sshfs "
 
-			auto m = opts.key ;
+			if( !opts.key.isEmpty() ){
 
-			/*
-			 * On my linux box, sshfs prompts six times when entered password is wrong before
-			 * giving up, here, we simulate replaying the password 10 times hoping it will be
-			 * enough for sshfs.
-			 */
-			for( int i = 0 ; i < 9 ; i++ ){
+				auto m = opts.key ;
 
-				opts.key += "\n" + m ;
+				/*
+				 * On my linux box, sshfs prompts six times when entered password is wrong before
+				 * giving up, here, we simulate replaying the password 10 times hoping it will be
+				 * enough for sshfs.
+				 */
+				for( int i = 0 ; i < 9 ; i++ ){
+
+					opts.key += "\n" + m ;
+				}
 			}
 
 			return _mount( "sshfs",opts,QString() ) ;
