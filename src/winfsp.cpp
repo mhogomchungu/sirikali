@@ -157,6 +157,12 @@ QString SiriKali::Winfsp::readRegister( const char * path,const char * key )
 
 #endif
 
+QString SiriKali::Winfsp::sshfsInstallDir()
+{
+	auto e = "SOFTWARE\\WOW6432Node\\SSHFS-Win" ;
+	return SiriKali::Winfsp::readRegister( e,"InstallDir" ) ;
+}
+
 SiriKali::Winfsp::ActiveInstances::ActiveInstances() :
 	m_handle( new SiriKali::Winfsp::ActiveInstances::impl() )
 {
@@ -222,7 +228,10 @@ std::pair< bool,QByteArray > SiriKali::Winfsp::manageInstances::waitForStarted( 
 
 		data += exe.readAllStandardError() ;
 
-		if( utility::containsAtleastOne( data,"init","INIT:","The service securefs has been started" ) ){
+		if( utility::containsAtleastOne( data,
+						 "init",
+						 "The service sshfs has been started.",
+						 "The service securefs has been started" ) ){
 
 			return { true,QByteArray() } ;
 		}else{
@@ -240,9 +249,16 @@ std::pair< bool,QByteArray > SiriKali::Winfsp::manageInstances::waitForStarted( 
 Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QString& args,
 								      const QByteArray& password )
 {
+
 	auto exe = utility2::unique_qptr< QProcess >() ;
 
-	exe->setProcessEnvironment( utility::systemEnvironment() ) ;
+	auto env = utility::systemEnvironment() ;
+
+	auto path = env.value( "PATH" ) + ";" + SiriKali::Winfsp::sshfsInstallDir() + "\\bin" ;
+
+	env.insert( "PATH",path ) ;
+
+	exe->setProcessEnvironment( env ) ;
 
 	exe->start( args ) ;
 	exe->waitForStarted() ;
@@ -275,7 +291,14 @@ Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const Q
 
 		if( m == mountPoint ){
 
-			auto exe = "sirikali.exe terminateProcess-" + QString::number( e->processId() ) ;
+			QString exe ;
+
+			if( e->program().endsWith( "sshfs.exe" ) ){
+
+				exe = "taskkill /F /PID " + QString::number( e->processId() ) ;
+			}else{
+				exe = "sirikali.exe terminateProcess-" + QString::number( e->processId() ) ;
+			}
 
 			auto m = Task::process::run( exe ).await() ;
 

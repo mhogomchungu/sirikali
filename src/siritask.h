@@ -133,6 +133,7 @@ namespace siritask
 		cryfs,
 		cryfsMigrateFileSystem,
 		encfs,
+		sshfs,
 		gocryptfs,
 		securefs,
 		securefsFailedToLoadWinfsp,

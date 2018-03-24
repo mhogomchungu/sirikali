@@ -861,6 +861,11 @@ void keyDialog::reportErrorMessage( const siritask::cmdStatus& s )
 		msg = tr( "Failed To Unlock A Cryfs Volume.\nWrong Password Entered." ) ;
 		break;
 
+	case siritask::status::sshfs :
+
+		msg = tr( "Failed To Connect To The Remote Computer.\nWrong Password Entered." ) ;
+		break;
+
 	case siritask::status::encfs :
 
 		msg = tr( "Failed To Unlock An Encfs Volume.\nWrong Password Entered." ) ;

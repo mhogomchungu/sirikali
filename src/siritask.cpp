@@ -488,7 +488,7 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 			if( utility::platformIsWindows() ){
 
-				return "%1 -f -d %2 -o subtype=sshfs -o fsname=sshfs@%3 %4 %5" ;
+				return "%1 -f %2 -o subtype=sshfs -o fsname=sshfs@%3 %4 %5" ;
 			}else{
 				return "%1 %2 -o subtype=sshfs -o fsname=sshfs@%3 %4 %5" ;
 			}
@@ -554,8 +554,12 @@ static siritask::status _status( const siritask::volumeType& app,status_type s )
 		}else if( _ecryptfs( app ) ){
 
 			return cs::ecryptfs ;
+
+		}else if( app == "sshfs" ){
+
+			return cs::sshfs ;
 		}else{
-			return cs::gocryptfs ;
+			return cs::unknown ;
 		}
 	}
 }
@@ -655,6 +659,13 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 		}else if( msg.contains( "securefs cannot load winfsp" ) ){
 
 			e = cs::securefsFailedToLoadWinfsp ;
+		}
+
+	}else if( s == siritask::status::sshfs ){
+
+		if( msg.contains( "password" ) ){
+
+			e = s ;
 		}
 	}
 

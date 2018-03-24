@@ -615,11 +615,21 @@ QStringList utility::executableSearchPaths()
 
 QString utility::executableSearchPaths( const QString& e )
 {
+	auto m = [](){
+
+		if( utility::platformIsWindows() ){
+
+			return ";" ;
+		}else{
+			return ":" ;
+		}
+	}() ;
+
 	if( e.isEmpty() ){
 
-		return utility::executableSearchPaths().join( ":" ) ;
+		return utility::executableSearchPaths().join( m ) ;
 	}else{
-		return e + ":" + utility::executableSearchPaths().join( ":" ) ;
+		return e + m + utility::executableSearchPaths().join( m ) ;
 	}
 }
 
@@ -629,15 +639,25 @@ QString utility::executableFullPath( const QString& f )
 
 		if( utility::platformIsWindows() ){
 
-			//return utility::securefsPath() ;
+			if( e == "sshfs" ){
 
-			auto m = utility::windowsExecutableSearchPath() + "/" + e + ".exe" ;
+				auto m = SiriKali::Winfsp::sshfsInstallDir() + "\\bin\\sshfs.exe" ;
 
-			if( utility::pathExists( m ) ){
+				if( utility::pathExists( m ) ){
 
-				return m ;
+					return m ;
+				}else{
+					return QString() ;
+				}
 			}else{
-				return QString() ;
+				auto m = utility::windowsExecutableSearchPath() + "/" + e + ".exe" ;
+
+				if( utility::pathExists( m ) ){
+
+					return m ;
+				}else{
+					return QString() ;
+				}
 			}
 		}else{
 			return QString() ;

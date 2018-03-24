@@ -134,6 +134,9 @@ namespace utility2
 		const auto b = a + "/bin/" ;
 		const auto c = a + "/.bin/" ;
 
+#ifdef Q_OS_WIN
+		return { b.constData(),c.constData() } ;
+#else
 		return { "/usr/local/bin/",
 			"/usr/local/sbin/",
 			"/usr/bin/",
@@ -146,6 +149,7 @@ namespace utility2
 			"/opt/sbin/",
 			 b.constData(),
 			 c.constData() } ;
+#endif
 	}
 
 	static inline QString executableFullPath( const QString& f,
