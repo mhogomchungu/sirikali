@@ -29,7 +29,9 @@ namespace Winfsp{
 class manageInstances
 {
 public:
-	Task::process::result addInstance( const QString& args,const QByteArray& password ) ;
+	Task::process::result addInstance( const QString& args,
+					   const QByteArray& password,
+					   const siritask::options& opts ) ;
 	Task::process::result removeInstance( const QString& mountPoint ) ;
 	std::vector< QStringList > commands() const ;
 	void updateVolumeList( std::function< void() > ) ;
@@ -247,7 +249,8 @@ std::pair< bool,QByteArray > SiriKali::Winfsp::manageInstances::waitForStarted( 
 }
 
 Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QString& args,
-								      const QByteArray& password )
+								      const QByteArray& password,
+								      const siritask::options& opts )
 {
 
 	auto exe = utility2::unique_qptr< QProcess >() ;
@@ -257,6 +260,13 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 	auto path = env.value( "PATH" ) + ";" + SiriKali::Winfsp::sshfsInstallDir() + "\\bin" ;
 
 	env.insert( "PATH",path ) ;
+
+	auto ssh_auth = opts.configFilePath ;
+
+	if( !ssh_auth.isEmpty() ){
+
+		env.insert( "SSH_AUTH_SOCK",ssh_auth ) ;
+	}
 
 	exe->setProcessEnvironment( env ) ;
 
@@ -368,11 +378,13 @@ Task::process::result SiriKali::Winfsp::FspLaunchStop( const QString& m )
 	}
 }
 
-Task::process::result SiriKali::Winfsp::FspLaunchStart( const QString& exe,const QByteArray& password )
+Task::process::result SiriKali::Winfsp::FspLaunchStart( const QString& exe,
+							const QByteArray& password,
+							const siritask::options& opts )
 {
 	if( SiriKali::Winfsp::babySittingBackends() ){
 
-		return _winfsInstances.addInstance( exe,password ) ;
+		return _winfsInstances.addInstance( exe,password,opts ) ;
 	}else{
 		QStringList e ;
 		e.append( exe ) ;

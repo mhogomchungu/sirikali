@@ -674,6 +674,7 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 
 static utility::Task _run_task( const QString& cmd,
 				const QString& password,
+				const siritask::options& opts,
 				bool create,
 				bool ecryptfs )
 {
@@ -683,7 +684,7 @@ static utility::Task _run_task( const QString& cmd,
 
 			return Task::process::run( cmd,password.toLatin1() ).get() ;
 		}else{
-			return SiriKali::Winfsp::FspLaunchStart( cmd,password.toLatin1() ) ;
+			return SiriKali::Winfsp::FspLaunchStart( cmd,password.toLatin1(),opts ) ;
 		}
 	}else{
 		return utility::Task( cmd,20000,utility::systemEnvironment(),
@@ -707,7 +708,7 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 			auto cmd = _args( exe,opt,configFilePath,create ) ;
 
-			auto s = _run_task( cmd,password,create,_ecryptfs( app ) ) ;
+			auto s = _run_task( cmd,password,opt,create,_ecryptfs( app ) ) ;
 
 			return { cmd,_status( s,_status( app,status_type::exeName ),app == "encfs" ) } ;
 		} ;

@@ -30,6 +30,7 @@
 #include <QProcess>
 
 #include "task.hpp"
+#include "siritask.h"
 
 namespace SiriKali{
 namespace Winfsp{
@@ -43,7 +44,9 @@ Task::process::result FspLaunchStart( const QString& className,
 				      const QStringList& opts,
 				      const QByteArray& password ) ;
 
-Task::process::result FspLaunchStart( const QString& exe,const QByteArray& password ) ;
+Task::process::result FspLaunchStart( const QString& exe,
+				      const QByteArray& password,
+				      const siritask::options& ) ;
 
 Task::process::result FspLaunchStop( const QString& mountPath ) ;
 
