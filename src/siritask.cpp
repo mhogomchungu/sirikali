@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  *  Copyright (c) 2014-2015
  *  name : Francis Banyikwa
@@ -828,10 +828,68 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const sirit
 					return cs::unknown ;
                                 }
                         }
-                }else{
-			auto e = _configFilePath( opt ) ;
+                }else{			
+			auto _path_exist = []( QString e,const QString& m )->std::pair< bool,QString >{
 
-			if( utility::pathExists( e ) ){
+				e.remove( 0,m.size() ) ;
+
+				if( utility::pathExists( e ) ){
+
+					return { true,e } ;
+				}else{
+					return { false,QString() } ;
+				}
+
+			} ;
+
+			auto e = opt.configFilePath ;
+
+			if( e.startsWith( "[[[gocryptfs]]]" ) ){
+
+				auto m = _path_exist( e,"[[[gocryptfs]]]" ) ;
+
+				if( m.first ){
+
+					return _mount( "gocryptfs",opt,m.second ) ;
+				}
+
+			}else if( e.startsWith( "[[[ecryptfs]]]" ) ){
+
+				auto m = _path_exist( e,"[[[ecryptfs]]]" ) ;
+
+				if( m.first ){
+
+					return _mount( "ecryptfs",opt,m.second ) ;
+				}
+
+			}else if( e.startsWith( "[[[cryfs]]]" ) ){
+
+				auto m = _path_exist( e,"[[[cryfs]]]" ) ;
+
+				if( m.first ){
+
+					return _mount( "cryfs",opt,m.second ) ;
+				}
+
+			}else if( e.startsWith( "[[[securefs]]]" ) ){
+
+				auto m = _path_exist( e,"[[[securefs]]]" ) ;
+
+				if( m.first ){
+
+					return _mount( "securefs",opt,m.second ) ;
+				}
+
+			}else if( e.startsWith( "[[[encfs]]]" ) ){
+
+				auto m = _path_exist( e,"[[[encfs]]]" ) ;
+
+				if( m.first ){
+
+					return _mount( "encfs",opt,m.second ) ;
+				}
+
+			}else if( utility::pathExists( e ) ){
 
 				if( e.endsWith( "gocryptfs.conf" ) ){
 
@@ -848,13 +906,15 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const sirit
 				}else if( e.endsWith( "cryfs.config" ) ){
 
 					return _mount( "cryfs",opt,e ) ;
-				}else{
-					return cs::unknown ;
+
+				}else if( utility::endsWithAtLeastOne( e,".encfs6.xml",".encfs5",".encfs4" ) ){
+
+					return _mount( "encfs",opt,e ) ;
 				}
-			}else{
-				return cs::unknown ;
 			}
                 }
+
+		return cs::unknown ;
 	} ) ;
 }
 
