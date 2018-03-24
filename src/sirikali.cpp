@@ -111,10 +111,13 @@ configOptions::functions sirikali::configOption()
 
 void sirikali::closeApplication( int s,const QString& e )
 {
-	if( SiriKali::Winfsp::babySittingBackends() && m_ui && m_ui->tableWidget->rowCount() > 0 ){
+	if( utility::platformIsWindows() && m_ui ){
 
-		auto m = tr( "Close All Volumes Before Quitting The Application" ) ;
-		return DialogMsg( this ).ShowUIOK( tr( "WARNING" ),m ) ;
+		if( SiriKali::Winfsp::babySittingBackends() && m_ui->tableWidget->rowCount() > 0 ){
+
+			auto m = tr( "Close All Volumes Before Quitting The Application" ) ;
+			return DialogMsg( this ).ShowUIOK( tr( "WARNING" ),m ) ;
+		}
 	}
 
 	utility::quitHelper() ;

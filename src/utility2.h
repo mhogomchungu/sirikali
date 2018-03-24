@@ -91,6 +91,13 @@ namespace utility2
 						     std::forward< Arguments >( args ) ... ) ;
 	}
 
+	template< typename Type >
+	auto unique_qptr( Type e )
+	{
+		return unique_rsc( utility2::reflect_argument< Type >,
+				   []( Type e ){ e->deleteLater() ; },e ) ;
+	}
+
 	namespace detail
 	{
 		template< typename E,typename F,typename G >
