@@ -34,6 +34,7 @@ public:
 					   const siritask::options& opts ) ;
 	Task::process::result removeInstance( const QString& mountPoint ) ;
 	std::vector< QStringList > commands() const ;
+	QString volumeProperties( const QString& mountPath ) ;
 	void updateVolumeList( std::function< void() > ) ;
 private:
 	std::pair< bool,QByteArray > waitForStarted( QProcess& ) ;
@@ -328,6 +329,35 @@ Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const Q
 	}
 
 	return Task::process::result() ;
+}
+
+QString SiriKali::Winfsp::manageInstances::volumeProperties( const QString& mountPath )
+{
+	for( size_t i = 0 ; i < m_instances.size() ; i++ ){
+
+		const auto& args = m_instances[ i ]->arguments() ;
+
+		if( mountPath == args.last() ){
+
+			auto m = QObject::tr( "Mount Options:\n\n" ) ;
+
+			for( const auto& it : args ){
+
+				if( it != "-o" ){
+
+					m += it + "\n" ;
+				}
+			}
+
+			return m ;
+		}
+	}
+
+	return QString() ;
+}
+QString SiriKali::Winfsp::volumeProperties( const QString& mountPath )
+{
+	return _winfsInstances.volumeProperties( mountPath ) ;
 }
 
 Task::process::result SiriKali::Winfsp::FspLaunchStart( const QString& className,

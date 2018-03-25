@@ -1183,6 +1183,22 @@ void sirikali::gocryptfsProperties()
 	this->enableAll() ;
 }
 
+void sirikali::sshfsProperties()
+{
+	auto table = m_ui->tableWidget ;
+
+	auto row = table->currentRow() ;
+
+	auto m = SiriKali::Winfsp::volumeProperties( table->item( row,1 )->text() ) ;
+
+	if( m.isEmpty() ){
+
+		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Read Volume Properties" ) ) ;
+	}else{
+		DialogMsg( this ).ShowUIInfo( tr( "INFORMATION" ),true,m ) ;
+	}
+}
+
 void sirikali::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 {
 	struct volumeType{ const char * slot ; bool enabled ; } ;
@@ -1238,6 +1254,13 @@ void sirikali::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 			}else if( e == "gocryptfs" ){
 
 				return { SLOT( gocryptfsProperties() ),true } ;
+
+			}else if( e == "sshfs"){
+
+				if( utility::platformIsWindows() ){
+
+					return { SLOT( sshfsProperties() ),true } ;
+				}
 			}
 		}
 

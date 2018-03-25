@@ -67,6 +67,7 @@ private slots:
 	void start( const QStringList& ) ;
 	void autoUpdateCheck( void ) ;
 	void gocryptfsProperties( void ) ;
+	void sshfsProperties( void ) ;
 	void cryfsProperties( void ) ;
 	void encfsProperties( void ) ;
 	void ecryptfsProperties( void ) ;
