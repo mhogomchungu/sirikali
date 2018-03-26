@@ -355,6 +355,7 @@ QString SiriKali::Winfsp::manageInstances::volumeProperties( const QString& moun
 
 	return QString() ;
 }
+
 QString SiriKali::Winfsp::volumeProperties( const QString& mountPath )
 {
 	return _winfsInstances.volumeProperties( mountPath ) ;
