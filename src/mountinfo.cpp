@@ -43,6 +43,45 @@ static std::vector< QStringList > _getwinfspInstances( background_thread thread 
 	}
 }
 
+static QStringList _macox_volumes( background_thread thread )
+{
+#if 1
+	if( thread == background_thread::True ){
+
+		return utility::Task::run( "mount" ).get().splitOutput( '\n' ) ;
+	}else{
+		return utility::Task::run( "mount" ).await().splitOutput( '\n' ) ;
+	}
+#else
+	Q_UNUSED( thread ) ;
+
+	QStringList m ;
+
+	for( const auto& it : QStorageInfo::mountedVolumes() ){
+
+		QString foo = [&](){
+
+			if( it.isReadOnly() ){
+
+				return "read-only," ;
+			}else{
+				return "" ;
+			}
+		}() ;
+
+		// securefs@/Users/adam/test 2 on /Users/adam/.SiriKali/test 2 (osxfuse, nodev, nosuid, synchronous, mounted by adam)
+
+		QString x = it.device() + " on " + it.rootPath() + " (" + it.fileSystemType() + "," + foo + ")" ;
+
+		//utility::debug() << x ;
+
+		m.append( x ) ;
+	}
+
+	return m ;
+#endif
+}
+
 static QStringList _unlocked_volumes( background_thread thread )
 {
 	if( utility::platformIsLinux() ){
@@ -56,17 +95,7 @@ static QStringList _unlocked_volumes( background_thread thread )
 		QString fs ;
 		const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
 
-		auto e = [ & ](){
-
-			if( thread == background_thread::True ){
-
-				return utility::Task::run( "mount" ).get().splitOutput( '\n' ) ;
-			}else{
-				return utility::Task::run( "mount" ).await().splitOutput( '\n' ) ;
-			}
-		}() ;
-
-		for( const auto& it : e ){
+		for( const auto& it : _macox_volumes( thread ) ){
 
 			auto e = utility::split( it,' ' ) ;
 
@@ -452,7 +481,7 @@ void mountinfo::pollForUpdates()
 
 void mountinfo::osxMonitor()
 {
-#if 0
+#if 1
 	this->pollForUpdates() ;
 #else
 	m_stop = [ this ](){ m_process.terminate() ; } ;
