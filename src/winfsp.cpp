@@ -20,6 +20,7 @@
 #include "winfsp.h"
 #include "utility.h"
 #include "winfsp_impl.hpp"
+#include "mountinfo.h"
 
 #include <utility>
 
@@ -200,14 +201,7 @@ std::vector< QStringList > SiriKali::Winfsp::manageInstances::commands() const
 
 		for( auto& m : e ){
 
-			/*
-			 * linux's /proc/self/mountinfo makes these substitutions and we make
-			 * them too to be consistent with linux
-			 */
-			//m.replace( "\n","\\012" ) ;
-			m.replace( " ","\\040" ) ;
-			//m.replace( "\\","\\134" ) ;
-			//m.replace( "\\t","\\011" ) ;
+			mountinfo::encodeMountPath( m ) ;
 		}
 
 		s.emplace_back( std::move( e ) ) ;

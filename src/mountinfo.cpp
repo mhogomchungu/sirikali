@@ -43,6 +43,27 @@ static std::vector< QStringList > _getwinfspInstances( background_thread thread 
 	}
 }
 
+void mountinfo::encodeMountPath( QString& m )
+{
+	/*
+	 * linux's /proc/self/mountinfo makes these substitutions and we make
+	 * them too to be consistent with linux
+	 */
+	//m.replace( "\n","\\012" ) ;
+	m.replace( " ","\\040" ) ;
+	//m.replace( "\\","\\134" ) ;
+	//m.replace( "\\t","\\011" ) ;
+}
+
+QString mountinfo::encodeMountPath( const QString& m )
+{
+	auto s = m ;
+
+	mountinfo::encodeMountPath( s ) ;
+
+	return s ;
+}
+
 static QStringList _macox_volumes( background_thread thread )
 {
 #if 1
@@ -59,11 +80,11 @@ static QStringList _macox_volumes( background_thread thread )
 
 	for( const auto& it : QStorageInfo::mountedVolumes() ){
 
-		QString foo = [&](){
+		QString readOnly = [&](){
 
 			if( it.isReadOnly() ){
 
-				return "read-only," ;
+				return ",read-only" ;
 			}else{
 				return "" ;
 			}
@@ -71,11 +92,12 @@ static QStringList _macox_volumes( background_thread thread )
 
 		// securefs@/Users/adam/test 2 on /Users/adam/.SiriKali/test 2 (osxfuse, nodev, nosuid, synchronous, mounted by adam)
 
-		QString x = it.device() + " on " + it.rootPath() + " (" + it.fileSystemType() + "," + foo + ")" ;
+		QString w = "%1 on %2 (%3%4)" ;
 
-		//utility::debug() << x ;
-
-		m.append( x ) ;
+		m.append( w.arg( mountinfo::encodeMountPath( it.device() ),
+				 mountinfo::encodeMountPath( it.rootPath() ),
+				 it.fileSystemType(),
+				 readOnly ) ) ;
 	}
 
 	return m ;
@@ -95,13 +117,25 @@ static QStringList _unlocked_volumes( background_thread thread )
 		QString fs ;
 		const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
 
+		auto _truncate = []( QString s ){
+
+			auto index = s.indexOf( '@' ) ;
+
+			if( index != -1 ){
+
+				s.remove( 0,index + 1 ) ;
+			}
+
+			return s ;
+		} ;
+
 		for( const auto& it : _macox_volumes( thread ) ){
 
 			auto e = utility::split( it,' ' ) ;
 
 			if( e.size() > 2 ){
 
-				if( e.contains( ", read-only," ) ){
+				if( e.at( 3 ).contains( "read-only" ) ){
 
 					mode = "ro" ;
 				}else{
@@ -110,7 +144,7 @@ static QStringList _unlocked_volumes( background_thread thread )
 
 				fs = "fuse." + it.mid( 0,it.indexOf( '@' ) ) ;
 
-				s.append( w.arg( e.at( 2 ),mode,fs,e.at( 0 ) ) ) ;
+				s.append( w.arg( e.at( 2 ),mode,fs,_truncate( e.at( 0 ) ) ) ) ;
 			}
 		}
 

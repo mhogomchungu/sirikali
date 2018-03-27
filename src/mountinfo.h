@@ -37,6 +37,9 @@ class mountinfo : private QObject
 {
 	Q_OBJECT
 public:
+	static void encodeMountPath( QString& ) ;
+	static QString encodeMountPath( const QString& ) ;
+
 	static Task::future< std::vector< volumeInfo > >& unlockedVolumes() ;
 
 	mountinfo( QObject * parent,bool,std::function< void() >&& ) ;
