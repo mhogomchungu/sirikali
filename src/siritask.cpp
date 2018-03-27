@@ -725,21 +725,6 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 			}
 		}
 
-		if( e != siritask::status::success ){
-
-			if( utility::debugFullEnabled() || utility::debugEnabled() ){
-
-				utility::debug() << e.report( s.first ) ;
-			}else{
-				utility::debug() << e.report() ;
-			}
-		}else{
-			if( utility::debugFullEnabled() ){
-
-				utility::debug() << e.report( s.first ) ;
-			}
-		}
-
 		return e ;
 	}
 }

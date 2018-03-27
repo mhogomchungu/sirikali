@@ -264,6 +264,8 @@ void utility::Task::execute( const QString& exe,int waitTime,
 			m_stdError   = json[ "stdError" ].get< std::string >().c_str() ;
 			m_stdOut     = json[ "stdOut" ].get< std::string >().c_str() ;
 
+			utility::logCommandOutPut( { m_stdOut,m_stdError,m_exitCode,m_exitStatus,m_finished },exe ) ;
+
 		}catch( ... ){
 
 			_report_error( "SiriKali: Failed To Parse Polkit Backend Output" ) ;
@@ -276,6 +278,37 @@ void utility::Task::execute( const QString& exe,int waitTime,
 		m_exitStatus = s.exit_status() ;
 		m_stdOut     = s.std_out() ;
 		m_stdError   = s.std_error() ;
+
+		utility::logCommandOutPut( s,exe ) ;
+	}	
+}
+
+void utility::logCommandOutPut( const ::Task::process::result& m,const QString& exe )
+{
+	if( utility::debugFullEnabled() || utility::debugEnabled() ){
+
+		auto _trim = []( QString e ){
+
+			while( true ){
+
+				if( e.endsWith( '\n' ) ){
+
+					e.truncate( e.size() - 1 ) ;
+				}else{
+					break ;
+				}
+			}
+
+			return e ;
+		} ;
+
+		QString s = "-------\nExit Code: %1\nExit Status: %2\nStdOut: %3\n-------\nStdError: %4\n-------\nCommand: %5" ;
+
+		utility::debug() << s.arg( QString::number( m.exit_code() ),
+					   QString::number( m.exit_status() ),
+					   _trim( m.std_out() ),
+					   _trim( m.std_error() ),
+					   exe ) ;
 	}
 }
 
