@@ -1906,7 +1906,7 @@ QString utility::winFSPpath()
 	return _winfspPath ;
 }
 
-int utility::winFSPpollingInterval()
+int utility::pollForUpdatesInterval()
 {
 	if( !_settings->contains( "WinFSPpollingInterval" ) ){
 

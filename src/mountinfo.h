@@ -55,6 +55,7 @@ private:
 	void updateVolume( void ) ;
 	void pbUpdate( void ) ;
 	void autoMount( const QString& ) ;
+	void pollForUpdates( void ) ;
 
 	QObject * m_parent ;
 	QProcess m_process ;
@@ -63,7 +64,7 @@ private:
 	std::function< void() > m_quit ;
 
 	bool m_announceEvents ;
-	bool m_exit ;
+	std::atomic_bool m_exit ;
 
 	QStringList m_oldMountList ;
 	QStringList m_newMountList ;

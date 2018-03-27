@@ -415,47 +415,13 @@ void mountinfo::linuxMonitor()
 	e.then( std::move( m_quit ) ) ;
 }
 
-void mountinfo::osxMonitor()
+void mountinfo::pollForUpdates()
 {
-	m_stop = [ this ](){ m_process.terminate() ; } ;
-
-	auto s = static_cast< void( QProcess::* )( int,QProcess::ExitStatus ) >( &QProcess::finished ) ;
-
-	connect( &m_process,s,[ this ]( int e,QProcess::ExitStatus s ){ Q_UNUSED( e ) ; Q_UNUSED( s ) ; m_quit() ; } ) ;
-
-	connect( &m_process,&QProcess::readyReadStandardOutput,[ & ](){
-
-		/*
-		 * Clear the buffer,not sure if its necessary.
-		 *
-		 * In the future,we will examine the output and call this->updateVolume()
-		 * only when we notice a volumes was mounted/unmounted to reduce noise if
-		 * "diskutil activity" is too chatty.
-		 */
-		m_process.readAllStandardOutput() ;
-
-		this->updateVolume() ;
-	} ) ;
-
-	m_process.setProcessChannelMode( QProcess::MergedChannels ) ;
-
-	m_process.start( "diskutil activity" ) ;
-}
-
-void mountinfo::windowsMonitor()
-{
-	if( SiriKali::Winfsp::babySittingBackends() ){
-
-		SiriKali::Winfsp::updateVolumeList( [ this ]{ this->updateVolume() ; } ) ;
-
-		return ;
-	}
-
 	m_exit = false ;
 
 	m_stop = [ this ](){ m_exit = true ; } ;
 
-	auto interval = utility::winFSPpollingInterval() ;
+	auto interval = utility::pollForUpdatesInterval() ;
 
 	Task::run( [ &,interval ](){
 
@@ -482,4 +448,40 @@ void mountinfo::windowsMonitor()
 		}
 
 	} ).then( std::move( m_quit ) ) ;
+}
+
+void mountinfo::osxMonitor()
+{
+#if 0
+	this->pollForUpdates() ;
+#else
+	m_stop = [ this ](){ m_process.terminate() ; } ;
+
+	auto s = static_cast< void( QProcess::* )( int,QProcess::ExitStatus ) >( &QProcess::finished ) ;
+
+	connect( &m_process,s,[ this ]( int e,QProcess::ExitStatus s ){ Q_UNUSED( e ) ; Q_UNUSED( s ) ; m_quit() ; } ) ;
+
+	connect( &m_process,&QProcess::readyReadStandardOutput,[ & ](){
+
+		/*
+		 * Clear the buffer,not sure if its necessary.
+		 *
+		 * In the future,we will examine the output and call this->updateVolume()
+		 * only when we notice a volumes was mounted/unmounted to reduce noise if
+		 * "diskutil activity" is too chatty.
+		 */
+		m_process.readAllStandardOutput() ;
+
+		this->updateVolume() ;
+	} ) ;
+
+	m_process.setProcessChannelMode( QProcess::MergedChannels ) ;
+
+	m_process.start( "diskutil activity" ) ;
+#endif
+}
+
+void mountinfo::windowsMonitor()
+{
+	SiriKali::Winfsp::updateVolumeList( [ this ]{ this->updateVolume() ; } ) ;
 }

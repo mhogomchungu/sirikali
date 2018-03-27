@@ -271,7 +271,7 @@ namespace utility
 
 	QString securefsPath() ;
 	QString winFSPpath() ;
-	int winFSPpollingInterval() ;
+	int pollForUpdatesInterval() ;
 
 	bool autoCheck() ;
 	void autoCheck( bool ) ;
