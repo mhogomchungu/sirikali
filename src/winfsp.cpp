@@ -278,18 +278,25 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 
 	auto m = this->waitForStarted( *exe ) ;
 
-	if( m.first ){
+	auto s = [ & ](){
 
-		exe->closeReadChannel( QProcess::StandardError ) ;
+		if( m.first ){
 
-		m_instances.emplace_back( exe.release() ) ;
+			exe->closeReadChannel( QProcess::StandardError ) ;
 
-		m_updateVolumeList() ;
+			m_instances.emplace_back( exe.release() ) ;
 
-		return Task::process::result( 0 ) ;
-	}else{
-		return Task::process::result( QByteArray(),m.second,1,0,true ) ;
-	}
+			m_updateVolumeList() ;
+
+			return Task::process::result( 0 ) ;
+		}else{
+			return Task::process::result( QByteArray(),m.second,1,0,true ) ;
+		}
+	}() ;
+
+	utility::logCommandOutPut( s,args ) ;
+
+	return s ;
 }
 
 Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const QString& mountPoint )
@@ -313,18 +320,25 @@ Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const Q
 
 			auto m = Task::process::run( exe ).await() ;
 
-			if( m.success() ) {
+			auto s = [ & ](){
 
-				e->deleteLater() ;
+				if( m.success() ) {
 
-				m_instances.erase( m_instances.begin() + i ) ;
+					e->deleteLater() ;
 
-				m_updateVolumeList() ;
+					m_instances.erase( m_instances.begin() + i ) ;
 
-				return Task::process::result( 0 ) ;
-			}else{
-				return Task::process::result( "","",1,0,true ) ;
-			}
+					m_updateVolumeList() ;
+
+					return Task::process::result( 0 ) ;
+				}else{
+					return Task::process::result( "","",1,0,true ) ;
+				}
+			}() ;
+
+			utility::logCommandOutPut( s,exe ) ;
+
+			return s ;
 		}
 	}
 

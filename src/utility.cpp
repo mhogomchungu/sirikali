@@ -302,13 +302,29 @@ void utility::logCommandOutPut( const ::Task::process::result& m,const QString& 
 			return e ;
 		} ;
 
-		QString s = "-------\nExit Code: %1\nExit Status: %2\nStdOut: %3\n-------\nStdError: %4\n-------\nCommand: %5" ;
+		QString s = "Exit Code: %1\nExit Status: %2\nStdOut: %3\n-------\nStdError: %4\n-------\nCommand: %5\n-------\ngit add" ;
 
-		utility::debug() << s.arg( QString::number( m.exit_code() ),
-					   QString::number( m.exit_status() ),
-					   _trim( m.std_out() ),
-					   _trim( m.std_error() ),
-					   exe ) ;
+		auto e = s.arg( QString::number( m.exit_code() ),
+				QString::number( m.exit_status() ),
+				_trim( m.std_out() ),
+				_trim( m.std_error() ),
+				exe ) ;
+
+		if( utility::platformIsWindows() ){
+
+			/*
+			 * We log the output to a file on a user's desktop because output
+			 * dont seem to show up on the terminal on windows
+			 */
+
+			QFile log( QDir::homePath() + "/Desktop/SiriKali.log.txt" ) ;
+
+			log.open( QIODevice::WriteOnly | QIODevice::Append ) ;
+
+			log.write( e.toLatin1() ) ;
+		}else{
+			utility::debug() << e ;
+		}
 	}
 }
 
