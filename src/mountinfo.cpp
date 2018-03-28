@@ -43,8 +43,9 @@ static std::vector< QStringList > _getwinfspInstances( background_thread thread 
 	}
 }
 
-void mountinfo::encodeMountPath( QString& m )
+QString mountinfo::encodeMountPath( const QString& e )
 {
+	auto m = e ;
 	/*
 	 * linux's /proc/self/mountinfo makes these substitutions and we make
 	 * them too to be consistent with linux
@@ -53,15 +54,8 @@ void mountinfo::encodeMountPath( QString& m )
 	m.replace( " ","\\040" ) ;
 	//m.replace( "\\","\\134" ) ;
 	//m.replace( "\\t","\\011" ) ;
-}
 
-QString mountinfo::encodeMountPath( const QString& m )
-{
-	auto s = m ;
-
-	mountinfo::encodeMountPath( s ) ;
-
-	return s ;
+	return m ;
 }
 
 static QStringList _macox_volumes( background_thread thread )
@@ -117,18 +111,6 @@ static QStringList _unlocked_volumes( background_thread thread )
 		QString fs ;
 		const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
 
-		auto _truncate = []( QString s ){
-
-			auto index = s.indexOf( '@' ) ;
-
-			if( index != -1 ){
-
-				s.remove( 0,index + 1 ) ;
-			}
-
-			return s ;
-		} ;
-
 		for( const auto& it : _macox_volumes( thread ) ){
 
 			auto e = utility::split( it,' ' ) ;
@@ -144,7 +126,7 @@ static QStringList _unlocked_volumes( background_thread thread )
 
 				fs = "fuse." + it.mid( 0,it.indexOf( '@' ) ) ;
 
-				s.append( w.arg( e.at( 2 ),mode,fs,_truncate( e.at( 0 ) ) ) ) ;
+				s.append( w.arg( e.at( 2 ),mode,fs,e.at( 0 ) ) ) ;
 			}
 		}
 

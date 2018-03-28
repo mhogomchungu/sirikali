@@ -201,7 +201,7 @@ std::vector< QStringList > SiriKali::Winfsp::manageInstances::commands() const
 
 		for( auto& m : e ){
 
-			mountinfo::encodeMountPath( m ) ;
+			m = mountinfo::encodeMountPath( m ) ;
 		}
 
 		s.emplace_back( std::move( e ) ) ;
