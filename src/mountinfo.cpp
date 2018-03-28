@@ -58,18 +58,8 @@ QString mountinfo::encodeMountPath( const QString& e )
 	return m ;
 }
 
-static QStringList _macox_volumes( background_thread thread )
+static QStringList _macox_volumes_1()
 {
-#if 1
-	if( thread == background_thread::True ){
-
-		return utility::Task::run( "mount" ).get().splitOutput( '\n' ) ;
-	}else{
-		return utility::Task::run( "mount" ).await().splitOutput( '\n' ) ;
-	}
-#else
-	Q_UNUSED( thread ) ;
-
 	QStringList m ;
 
 	for( const auto& it : QStorageInfo::mountedVolumes() ){
@@ -95,7 +85,86 @@ static QStringList _macox_volumes( background_thread thread )
 	}
 
 	return m ;
-#endif
+}
+
+static QStringList _macox_volumes()
+{
+	QStringList s ;
+	QString mode ;
+	QString fs ;
+	const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
+
+	for( const auto& it : _macox_volumes_1() ){
+
+		auto e = utility::split( it,' ' ) ;
+
+		if( e.size() > 2 ){
+
+			if( e.at( 3 ).contains( "read-only" ) ){
+
+				mode = "ro" ;
+			}else{
+				mode = "rw" ;
+			}
+
+			fs = "fuse." + it.mid( 0,it.indexOf( '@' ) ) ;
+
+			s.append( w.arg( e.at( 2 ),mode,fs,e.at( 0 ) ) ) ;
+		}
+	}
+
+	return s ;
+}
+
+static QStringList _windows_volumes( background_thread thread )
+{
+	QStringList s ;
+	QString mode ;
+	QString m ;
+	QString fs ;
+	const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
+
+	auto path = []( QString e ){
+
+		if( e.startsWith( '\"' ) ){
+
+			e.remove( 0,1 ) ;
+		}
+
+		if( e.endsWith( '\"' ) ){
+
+			e.truncate( e.size() - 1 ) ;
+		}
+
+		return e ;
+	} ;
+
+	for( const QStringList& e : _getwinfspInstances( thread ) ){
+
+		if( e.contains( "ro" ) ){
+
+			mode = "ro" ;
+		}else{
+			mode = "rw" ;
+		}
+
+		for( const auto& it : e ){
+
+			if( it.startsWith( "subtype=" ) ){
+
+				m = it ;
+				m.replace( "subtype=","" ) ;
+			}
+		}
+
+		fs = "fuse." + m ;
+
+		m += "@" + path( e.at( e.size() - 2 ) ) ;
+
+		s.append( w.arg( path( e.last() ),mode,fs,m ) ) ;
+	}
+
+	return s ;
 }
 
 static QStringList _unlocked_volumes( background_thread thread )
@@ -106,114 +175,9 @@ static QStringList _unlocked_volumes( background_thread thread )
 
 	}else if( utility::platformIsOSX() ){
 
-		QStringList s ;
-		QString mode ;
-		QString fs ;
-		const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
-
-		for( const auto& it : _macox_volumes( thread ) ){
-
-			auto e = utility::split( it,' ' ) ;
-
-			if( e.size() > 2 ){
-
-				if( e.at( 3 ).contains( "read-only" ) ){
-
-					mode = "ro" ;
-				}else{
-					mode = "rw" ;
-				}
-
-				fs = "fuse." + it.mid( 0,it.indexOf( '@' ) ) ;
-
-				s.append( w.arg( e.at( 2 ),mode,fs,e.at( 0 ) ) ) ;
-			}
-		}
-
-		return s ;
+		return _macox_volumes() ;
 	}else{
-		QStringList s ;
-		QString mode ;
-		QString m ;
-		QString fs ;
-		const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
-
-		auto path = []( QString e ){
-
-			if( e.startsWith( '\"' ) ){
-
-				e.remove( 0,1 ) ;
-			}
-
-			if( e.endsWith( '\"' ) ){
-
-				e.truncate( e.size() - 1 ) ;
-			}
-
-			return e ;
-		} ;
-
-		auto _babySitter = [ & ](){
-
-			for( const QStringList& e : _getwinfspInstances( thread ) ){
-
-				if( e.contains( "ro" ) ){
-
-					mode = "ro" ;
-				}else{
-					mode = "rw" ;
-				}
-
-				for( const auto& it : e ){
-
-					if( it.startsWith( "subtype=" ) ){
-
-						m = it ;
-						m.replace( "subtype=","" ) ;
-					}
-				}
-
-				fs = "fuse." + m ;
-
-				m += "@" + path( e.at( e.size() - 2 ) ) ;
-
-				s.append( w.arg( path( e.last() ),mode,fs,m ) ) ;
-			}
-		} ;
-
-		auto _nonBabySitter = [ & ](){
-#if 0
-			for( const auto& it : _getwinfspInstances( thread ) ){
-
-				auto e = utility::split( it,' ' ) ;
-
-				if( e.size() > 6 ){
-
-					if( e.contains( " -o ro " ) ){
-
-						mode = "ro" ;
-					}else{
-						mode = "rw" ;
-					}
-
-					auto m = e.at( 5 ).mid( 11 ) ;
-
-					fs = "fuse." + m ;
-
-					s.append( w.arg( path( e.last() ),mode,fs,m + "@" + path( e.at( 6 ) ) ) ) ;
-				}
-			}
-#endif
-		} ;
-
-		if( SiriKali::Winfsp::babySittingBackends() ){
-
-			_babySitter() ;
-		}else{
-			_nonBabySitter() ;
-		}
-
-		return s ;
+		return _windows_volumes( thread ) ;
 	}
 }
 
