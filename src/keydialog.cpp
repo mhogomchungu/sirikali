@@ -140,6 +140,16 @@ void keyDialog::setUpInitUI()
 {
 	this->setUIVisible( true ) ;
 
+	if( utility::platformIsWindows() ){
+
+		/*
+		 * We are diabling this functionality on windows for now
+		 * its currently not possible to open a volume in read only mode.
+		 */
+		m_ui->checkBoxOpenReadOnly->setChecked( false ) ;
+		m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
+	}
+
 	m_reUseMountPoint = utility::reUseMountPoint() ;
 
 	m_checkBoxOriginalText = m_ui->checkBoxOpenReadOnly->text() ;
@@ -632,7 +642,10 @@ void keyDialog::enableAll()
 		m_ui->checkBoxVisibleKey->setEnabled( index == keyDialog::Key ) ;
 	}
 
-	m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
+	if( !utility::platformIsWindows() ){
+
+		m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
+	}
 
 	m_ui->lineEditFolderPath->setEnabled( false ) ;
 	m_ui->label_3->setEnabled( true ) ;
