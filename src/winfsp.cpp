@@ -38,7 +38,7 @@ public:
 	QString volumeProperties( const QString& mountPath ) ;
 	void updateVolumeList( std::function< void() > ) ;
 private:
-	std::pair< bool,QByteArray > waitForStarted( QProcess& ) ;
+	std::pair< bool,QByteArray > getProcessOutput( QProcess& ) ;
 	std::vector< QProcess * > m_instances ;
 	std::function< void() > m_updateVolumeList = [](){
 
@@ -215,7 +215,7 @@ void SiriKali::Winfsp::manageInstances::updateVolumeList( std::function< void() 
 	m_updateVolumeList = std::move( function ) ;
 }
 
-std::pair< bool,QByteArray > SiriKali::Winfsp::manageInstances::waitForStarted( QProcess& exe )
+std::pair< bool,QByteArray > SiriKali::Winfsp::manageInstances::getProcessOutput( QProcess& exe )
 {
 	size_t counter = 0 ;
 
@@ -231,14 +231,17 @@ std::pair< bool,QByteArray > SiriKali::Winfsp::manageInstances::waitForStarted( 
 						 "The service securefs has been started" ) ){
 
 			return { true,QByteArray() } ;
-		}else{
-			if( counter < 10 ){
 
-				counter++ ;
-				utility::Task::suspendForOneSecond() ;
-			}else{
-				return { false,data } ;
-			}
+		}else if( data.contains( "password" ) ){
+
+			return { false,data } ;
+
+		}else if( counter < 10 ){
+
+			counter++ ;
+			utility::Task::suspendForOneSecond() ;
+		}else{
+			return { false,data } ;
 		}
 	}
 }
@@ -270,7 +273,7 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 	exe->write( password + "\n" ) ;
 	exe->closeWriteChannel() ;
 
-	auto m = this->waitForStarted( *exe ) ;
+	auto m = this->getProcessOutput( *exe ) ;
 
 	auto s = [ & ](){
 
