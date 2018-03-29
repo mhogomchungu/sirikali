@@ -280,7 +280,7 @@ void utility::Task::execute( const QString& exe,int waitTime,
 		m_stdError   = s.std_error() ;
 
 		utility::logCommandOutPut( s,exe ) ;
-	}	
+	}
 }
 
 void utility::logCommandOutPut( const ::Task::process::result& m,const QString& exe )
@@ -302,7 +302,7 @@ void utility::logCommandOutPut( const ::Task::process::result& m,const QString& 
 			return e ;
 		} ;
 
-		QString s = "Exit Code: %1\nExit Status: %2\nStdOut: %3\n-------\nStdError: %4\n-------\nCommand: %5\n-------\ngit add" ;
+		QString s = "Exit Code: %1\nExit Status: %2\nStdOut: %3\n-------\nStdError: %4\n-------\nCommand: %5\n-------\n" ;
 
 		auto e = s.arg( QString::number( m.exit_code() ),
 				QString::number( m.exit_status() ),
