@@ -146,7 +146,7 @@ key = hmac_sha256(password,keyfile contents)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="486"/>
+        <location filename="../src/utility.cpp" line="535"/>
         <source>
 options:
 	-d   Path to where a volume to be auto unlocked/mounted is located.
@@ -175,17 +175,17 @@ options:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="842"/>
+        <location filename="../src/utility.cpp" line="891"/>
         <source>Manage Favorites</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="843"/>
+        <location filename="../src/utility.cpp" line="892"/>
         <source>Mount All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="869"/>
+        <location filename="../src/utility.cpp" line="918"/>
         <source>about SiriKali</source>
         <translation type="unfinished"></translation>
     </message>

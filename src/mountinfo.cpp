@@ -64,7 +64,7 @@ static QStringList _macox_volumes_1()
 
 	for( const auto& it : QStorageInfo::mountedVolumes() ){
 
-		QString readOnly = [&](){
+		auto readOnly = [&](){
 
 			if( it.isReadOnly() ){
 
@@ -74,7 +74,7 @@ static QStringList _macox_volumes_1()
 			}
 		}() ;
 
-		// securefs@/Users/adam/test 2 on /Users/adam/.SiriKali/test 2 (osxfuse, nodev, nosuid, synchronous, mounted by adam)
+		// securefs@/Users/adam/woof on /Users/adam/.SiriKali/woof (osxfuse, nodev, nosuid, synchronous, mounted by adam)
 
 		QString w = "%1 on %2 (%3%4)" ;
 

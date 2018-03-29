@@ -691,6 +691,7 @@ static utility::Task _run_task( const QString& cmd,
 				      password.toLatin1(),[](){},ecryptfs ) ;
 	}
 }
+
 static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 		const QString& password,const QString& configFilePath )
 {
@@ -825,7 +826,7 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const sirit
 					return cs::unknown ;
                                 }
                         }
-                }else{			
+                }else{
 			auto _path_exist = []( QString e,const QString& m )->std::pair< bool,QString >{
 
 				e.remove( 0,m.size() ) ;

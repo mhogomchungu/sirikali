@@ -79,7 +79,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/utility.cpp" line="486"/>
+        <location filename="../src/utility.cpp" line="535"/>
         <source>
 options:
 	-d   Path to where a volume to be auto unlocked/mounted is located.
@@ -132,17 +132,17 @@ Options:
 	-s   Option pour déclencher la génération du hash du mot de passe.</translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="842"/>
+        <location filename="../src/utility.cpp" line="891"/>
         <source>Manage Favorites</source>
         <translation>Gérer les Favoris</translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="843"/>
+        <location filename="../src/utility.cpp" line="892"/>
         <source>Mount All</source>
         <translation>Monter tout</translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="869"/>
+        <location filename="../src/utility.cpp" line="918"/>
         <source>about SiriKali</source>
         <translation>A propos de SiriKali</translation>
     </message>

@@ -158,7 +158,7 @@ key = hmac_sha256(password,keyfile contents)</translation>
         <translation>Auslesen der Eigenschaften des Datenträgers fehlgeschlagen</translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="486"/>
+        <location filename="../src/utility.cpp" line="535"/>
         <source>
 options:
 	-d   Path to where a volume to be auto unlocked/mounted is located.
@@ -211,17 +211,17 @@ options:
 	-s   Option zum Auslösen der Generierung des Passphrasen-Hashes.</translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="842"/>
+        <location filename="../src/utility.cpp" line="891"/>
         <source>Manage Favorites</source>
         <translation>Favoriten verwalten</translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="843"/>
+        <location filename="../src/utility.cpp" line="892"/>
         <source>Mount All</source>
         <translation>Alle einhängen</translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="869"/>
+        <location filename="../src/utility.cpp" line="918"/>
         <source>about SiriKali</source>
         <translation>über SiriKali</translation>
     </message>
