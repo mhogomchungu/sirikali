@@ -1394,6 +1394,8 @@ void sirikali::slotTrayClicked( QSystemTrayIcon::ActivationReason e )
 			this->hide() ;
 		}else{
 			this->show() ;
+			this->raise() ;
+			this->setWindowState( Qt::WindowActive ) ;
 		}
 	}
 }

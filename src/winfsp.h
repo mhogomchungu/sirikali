@@ -72,8 +72,8 @@ void updateVolumeList( std::function< void() > ) ;
  * Debian 8 uses an old version of Qt that does not have this class.
  * Adding it here to make these old version of Qt happy.
  *
- * This struct is used only in windows version of the project and we use
- * a much recent version of Qt on windows.
+ * This struct is used only in windows and MACOS version of the project and we use
+ * a much recent version of Qt on these platforms.
  */
 struct QStorageInfo{
 
