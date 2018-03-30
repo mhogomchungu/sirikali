@@ -221,11 +221,11 @@ std::pair< bool,QByteArray > SiriKali::Winfsp::manageInstances::getProcessOutput
 
 	QByteArray data ;
 
+	/*
+	 * Read a full line before processing it
+	 */
 	while( true ){
 
-		/*
-		 * Read a full line before processing it
-		 */
 		data += exe.readAllStandardError() ;
 
 		if( data.contains( "\n" ) ){
@@ -234,7 +234,6 @@ std::pair< bool,QByteArray > SiriKali::Winfsp::manageInstances::getProcessOutput
 
 		}else if( counter < 10 ){
 
-			utility::debug() << counter ;
 			counter++ ;
 			utility::Task::suspendForOneSecond() ;
 		}else{
