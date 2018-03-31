@@ -33,23 +33,6 @@ class QTranslator ;
 
 namespace utility2
 {
-	template< typename Type >
-	Type reflect_argument( Type e )
-	{
-		return e ;
-	}
-
-	template< typename Type,typename ... Arguments >
-	Type * create_type( Arguments&& ... args )
-	{
-		if( sizeof ... ( args ) == 0 ){
-
-			return new Type() ;
-		}else{
-			return new Type( std::forward< Arguments >( args ) ... ) ;
-		}
-	}
-
 	/*
 	 * This method takes a function that returns a resource,a function that deletes
 	 * the resource and arguments that are to be passed to the function that returns a
@@ -69,18 +52,49 @@ namespace utility2
 					       std::forward< Deleter >( deleter ) ) ;
 	}
 
+	/*
+	 * This function takes a type,a deleter for the type and optional arguments the
+	 * construction of the object of the given type need.
+	 *
+	 * example:
+	 * auto woof = unique_ptr<Foo>(foo_deleter, arg1, arg2, argN);
+	 * auto woof = unique_ptr<Foo>(foo_deleter);
+	 *
+	 * The deleter must be a function that takes a single argument of type "Foo *".
+	 */
 	template< typename Type,typename Deleter,typename ... Arguments >
 	auto unique_ptr( Deleter&& deleter,Arguments&& ... args )
 	{
-		return unique_rsc( utility2::create_type< Type >,
+		auto create_object = []( Arguments&& ... args ){
+
+			if( sizeof ... ( args ) == 0 ){
+
+				return new Type() ;
+			}else{
+				return new Type( std::forward< Arguments >( args ) ... ) ;
+			}
+		} ;
+
+		return unique_rsc( std::move( create_object ),
 				   std::forward< Deleter >( deleter ),
 				   std::forward< Arguments >( args ) ... ) ;
 	}
 
+	/*
+	 * This function takes a type,a deleter for the type and optional arguments the
+	 * construction of the object of the given type need.
+	 *
+	 * example:
+	 * Foo *xxx = new Foo(12,"bar");
+	 * auto woof = unique_ptr(xxx, foo_deleter);
+	 *
+	 * The deleter must be a function that takes a single argument of type "Foo*".
+	 *
+	 */
 	template< typename Type,typename Deleter >
 	auto unique_ptr( Type type,Deleter&& deleter )
 	{
-		return unique_rsc( utility2::reflect_argument< Type >,
+		return unique_rsc( []( auto arg ){ return arg ; },
 				   std::forward< Deleter >( deleter ),type ) ;
 	}
 
@@ -94,7 +108,7 @@ namespace utility2
 	template< typename Type >
 	auto unique_qptr( Type e )
 	{
-		return unique_rsc( utility2::reflect_argument< Type >,
+		return unique_rsc( []( auto arg ){ return arg ; },
 				   []( Type e ){ e->deleteLater() ; },e ) ;
 	}
 
