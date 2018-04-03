@@ -337,7 +337,7 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 			if( m.isEmpty() ){
 
-				return "Z:" ;
+				return utility::freeWindowsDriveLetter() ;
 			}else{
 				return m ;
 			}

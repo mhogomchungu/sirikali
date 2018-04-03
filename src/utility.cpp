@@ -1885,6 +1885,21 @@ QString utility::getExistingDirectory( QWidget * w,const QString& caption,const 
 	return e ;
 }
 
+QString utility::freeWindowsDriveLetter()
+{
+	char m[ 3 ] = { 'Z',':','\0' } ;
+
+	for( ; *m > 'D' ; *m -= 1 ){
+
+		if( !utility::pathExists( m ) ){
+
+			return m ;
+		}
+	}
+
+	return "Z:" ;
+}
+
 void utility::setWindowsMountPointOptions( QWidget * obj,QLineEdit * e,QPushButton * s )
 {
 	auto menu = new QMenu( obj ) ;
@@ -1893,7 +1908,7 @@ void utility::setWindowsMountPointOptions( QWidget * obj,QLineEdit * e,QPushButt
 
 	char m[ 3 ] = { 'G',':','\0' } ;
 
-	for( ; *m < 'Z' ; *m += 1 ){
+	for( ; *m <= 'Z' ; *m += 1 ){
 
 		auto ac = new QAction( m,obj ) ;
 		ac->setObjectName( m ) ;

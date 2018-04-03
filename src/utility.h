@@ -237,6 +237,8 @@ namespace utility
 	QString externalPluginExecutable() ;
 	void setExternalPluginExecutable( const QString& ) ;
 
+	QString freeWindowsDriveLetter() ;
+
 	void setWindowsMountPointOptions( QWidget *,QLineEdit *,QPushButton * ) ;
 
 	bool reUseMountPoint( void ) ;

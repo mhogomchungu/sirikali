@@ -352,7 +352,7 @@ QString SiriKali::Winfsp::manageInstances::volumeProperties( const QString& moun
 {
 	for( size_t i = 0 ; i < m_instances.size() ; i++ ){
 
-		const auto& args = m_instances[ i ]->arguments() ;
+		auto args = m_instances[ i ]->arguments() ;
 
 		if( mountPath == args.last() ){
 
