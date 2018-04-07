@@ -62,26 +62,26 @@ static QStringList _macox_volumes_1()
 {
 	QStringList m ;
 
+	// securefs@/Users/adam/woof on /Users/adam/.SiriKali/woof (osxfuse, nodev, nosuid, synchronous, mounted by adam)
+
+	const QString w = "%1 on %2 (%3%4)" ;
+
+	auto readOnly = []( const QStorageInfo& e ){
+
+		if( e.isReadOnly() ){
+
+			return ",read-only" ;
+		}else{
+			return "" ;
+		}
+	} ;
+
 	for( const auto& it : QStorageInfo::mountedVolumes() ){
-
-		auto readOnly = [&](){
-
-			if( it.isReadOnly() ){
-
-				return ",read-only" ;
-			}else{
-				return "" ;
-			}
-		}() ;
-
-		// securefs@/Users/adam/woof on /Users/adam/.SiriKali/woof (osxfuse, nodev, nosuid, synchronous, mounted by adam)
-
-		QString w = "%1 on %2 (%3%4)" ;
 
 		m.append( w.arg( mountinfo::encodeMountPath( it.device() ),
 				 mountinfo::encodeMountPath( it.rootPath() ),
 				 it.fileSystemType(),
-				 readOnly ) ) ;
+				 readOnly( it ) ) ) ;
 	}
 
 	return m ;

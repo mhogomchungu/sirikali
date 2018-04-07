@@ -70,13 +70,13 @@ void updateVolumeList( std::function< void() > ) ;
 
 /*
  * Debian 8 uses an old version of Qt that does not have this class.
- * Adding it here to make these old version of Qt happy.
+ * Adding it here to make these old versions of Qt happy.
  *
  * This struct is used only in windows and MACOS version of the project and we use
- * a much recent version of Qt on these platforms.
+ * much recent versions of Qt on these platforms.
  */
-struct QStorageInfo{
-
+struct QStorageInfo
+{
 	static QList<QStorageInfo> mountedVolumes()
 	{
 		return QList<QStorageInfo>() ;
@@ -85,6 +85,26 @@ struct QStorageInfo{
 	bool operator==( const QStorageInfo& e )
 	{
 		Q_UNUSED( e ) ;
+		return false ;
+	}
+
+	QString rootPath() const ;
+	{
+		return QString() ;
+	}
+
+	QByteArray device() const ;
+	{
+		return QByteArray() ;
+	}
+
+	QByteArray fileSystemType() const ;
+	{
+		return QByteArray() ;
+	}
+
+	bool isReadOnly() const ;
+	{
 		return false ;
 	}
 } ;
