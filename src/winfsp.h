@@ -88,22 +88,22 @@ struct QStorageInfo
 		return false ;
 	}
 
-	QString rootPath() const ;
+	QString rootPath() const
 	{
 		return QString() ;
 	}
 
-	QByteArray device() const ;
+	QByteArray device() const
 	{
 		return QByteArray() ;
 	}
 
-	QByteArray fileSystemType() const ;
+	QByteArray fileSystemType() const
 	{
 		return QByteArray() ;
 	}
 
-	bool isReadOnly() const ;
+	bool isReadOnly() const
 	{
 		return false ;
 	}
