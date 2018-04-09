@@ -1238,8 +1238,6 @@ void lxqt_wallet_application_wallet_path( char * path,uint32_t path_buffer_size,
 {
 	char * e = NULL ;
 
-	if( e && path && path_buffer_size && application_name ){}
-
 #ifndef _WIN32
 
 	struct passwd * pass = getpwuid( getuid() ) ;
@@ -1249,6 +1247,7 @@ void lxqt_wallet_application_wallet_path( char * path,uint32_t path_buffer_size,
 	snprintf( path,path_buffer_size,"%s/.config/lxqt/wallets/%s/",e,application_name ) ;
 	free( e ) ;
 #endif
+	if( e && path && path_buffer_size && application_name ){}
 }
 
 static char * _wallet_full_path( char * path_buffer,uint32_t path_buffer_size,const char * wallet_name,const char * application_name )
@@ -1262,8 +1261,6 @@ static char * _wallet_full_path( char * path_buffer,uint32_t path_buffer_size,co
 static void _create_application_wallet_path( const char * application_name )
 {
 	char path[ PATH_MAX ] ;
-
-	if( application_name ){}
 
 #ifndef _WIN32
 
@@ -1281,6 +1278,7 @@ static void _create_application_wallet_path( const char * application_name )
 #else
 	make_path( path ) ;
 #endif
+	if( application_name ){}
 }
 
 static gcry_error_t _create_temp_key( char * output_key,uint32_t output_key_size,const char * input_key,uint32_t input_key_length )

@@ -3,6 +3,10 @@ cmake_minimum_required(VERSION 2.6)
 add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -std=c++14 -I${PROJECT_BINARY_DIR}/siripoltik/ )
 include_directories( ${PROJECT_BINARY_DIR}/siripoltik/ )
 
+set( CMAKE_CXX_STANDARD 14 )
+set( CMAKE_CXX_STANDARD_REQUIRED ON )
+set( CMAKE_CXX_EXTENSIONS OFF)
+
 set( sirikali.pkexecMOC_FILES
 	zulupolkit.h
  )
