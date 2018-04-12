@@ -23,6 +23,7 @@
 #include "mountinfo.h"
 
 #include <utility>
+#include <tuple>
 
 namespace SiriKali{
 namespace Winfsp{
@@ -38,7 +39,7 @@ public:
 	QString volumeProperties( const QString& mountPath ) ;
 	void updateVolumeList( std::function< void() > ) ;
 private:
-	std::pair< bool,QByteArray > getProcessOutput( QProcess& ) ;
+	std::tuple< bool,QByteArray,QByteArray > getProcessOutput( QProcess&,bool ) ;
 	std::vector< QProcess * > m_instances ;
 	std::function< void() > m_updateVolumeList = [](){
 
@@ -167,6 +168,11 @@ QString SiriKali::Winfsp::sshfsInstallDir()
 	return SiriKali::Winfsp::readRegister( e,"InstallDir" ) ;
 }
 
+QString SiriKali::Winfsp::encfsInstallDir()
+{
+	return "C:\\Program Files (x86)\\Encfs" ;
+}
+
 SiriKali::Winfsp::ActiveInstances::ActiveInstances() :
 	m_handle( new SiriKali::Winfsp::ActiveInstances::impl() )
 {
@@ -215,20 +221,20 @@ void SiriKali::Winfsp::manageInstances::updateVolumeList( std::function< void() 
 	m_updateVolumeList = std::move( function ) ;
 }
 
-std::pair< bool,QByteArray > SiriKali::Winfsp::manageInstances::getProcessOutput( QProcess& exe )
+template< typename Function >
+static QByteArray _read_line( Function function )
 {
 	size_t counter = 0 ;
 
-	QByteArray data ;
-
+	QByteArray buffer ;
 	/*
 	 * Read a full line before processing it
 	 */
 	while( true ){
 
-		data += exe.readAllStandardError() ;
+		buffer += function() ;
 
-		if( data.contains( "\n" ) ){
+		if( buffer.contains( "\n" ) ){
 
 			break ;
 
@@ -241,14 +247,30 @@ std::pair< bool,QByteArray > SiriKali::Winfsp::manageInstances::getProcessOutput
 		}
 	}
 
-	if( utility::containsAtleastOne( data,
+	return buffer ;
+}
+
+std::tuple< bool,QByteArray,QByteArray >
+SiriKali::Winfsp::manageInstances::getProcessOutput( QProcess& exe,bool encfs )
+{
+	auto stdError = _read_line( [ & ](){ return exe.readAllStandardError() ; } ) ;
+
+	if( utility::containsAtleastOne( stdError,
 					 "init",
 					 "The service sshfs has been started.",
-					 "The service securefs has been started" ) ){
+					 "The service securefs has been started",
+					 "The service encfs has been started" ) ){
 
-		return { true,QByteArray() } ;
+		return std::make_tuple( true,QByteArray(),QByteArray() ) ;
 	}else{
-		return { false,data } ;
+		QByteArray stdOut ;
+
+		if( encfs ){
+
+			stdOut = _read_line( [ & ](){ return exe.readAllStandardOutput() ; } ) ;
+		}
+
+		return std::make_tuple( false,stdOut,stdError ) ;
 	}
 }
 
@@ -261,7 +283,19 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 
 	auto env = utility::systemEnvironment() ;
 
-	auto path = env.value( "PATH" ) + ";" + SiriKali::Winfsp::sshfsInstallDir() + "\\bin" ;
+	auto path = [ & ](){
+
+		if( opts.type == "sshfs" ){
+
+			return env.value( "PATH" ) + ";" + SiriKali::Winfsp::sshfsInstallDir() + "\\bin" ;
+
+		}else if( opts.type == "encfs" ){
+
+			return env.value( "PATH" ) + ";" + SiriKali::Winfsp::encfsInstallDir() + "\\bin" ;
+		}else{
+			return QString() ;
+		}
+	}() ;
 
 	env.insert( "PATH",path ) ;
 
@@ -279,11 +313,11 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 	exe->write( password + "\n" ) ;
 	exe->closeWriteChannel() ;
 
-	auto m = this->getProcessOutput( *exe ) ;
+	auto m = this->getProcessOutput( *exe,opts.type == "encfs" ) ;
 
 	auto s = [ & ](){
 
-		if( m.first ){
+		if( std::get< 0 >( m ) ){
 
 			exe->closeReadChannel( QProcess::StandardError ) ;
 
@@ -293,7 +327,9 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 
 			return Task::process::result( 0 ) ;
 		}else{
-			return Task::process::result( QByteArray(),m.second,1,0,true ) ;
+			exe->waitForFinished() ;
+
+			return Task::process::result( std::get< 1 >( m ),std::get< 2 >( m ),1,0,true ) ;
 		}
 	}() ;
 
@@ -308,13 +344,26 @@ Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const Q
 
 		auto e = m_instances[ i ] ;
 
-		auto m = "\"" + e->arguments().last() + "\"" ;
+		auto m = [ & ](){
+
+			if( e->program().endsWith( "encfs.exe" ) ){
+
+				auto q = e->arguments().at( 2 ) ;
+
+				q.replace( "/cygdrive/","" ) ;
+				q += ":" ;
+
+				return "\"" + q + "\"" ;
+			}else{
+				return "\"" + e->arguments().last() + "\"" ;
+			}
+		}() ;
 
 		if( m == mountPoint ){
 
 			QString exe ;
 
-			if( e->program().endsWith( "sshfs.exe" ) ){
+			if( utility::endsWithAtLeastOne( e->program(),"sshfs.exe","encfs.exe" ) ){
 
 				exe = "taskkill /F /PID " + QString::number( e->processId() ) ;
 			}else{

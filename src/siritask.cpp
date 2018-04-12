@@ -455,7 +455,15 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 	}else if( type == "encfs" ){
 
-		auto e = QString( "%1 %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ) ;
+		auto e = [](){
+
+			if( utility::platformIsWindows() ){
+
+				return QString( "%1 -f %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ) ;
+			}else{
+				return QString( "%1 %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ) ;
+			}
+		}() ;
 
 		if( utility::platformIsOSX() ){
 
@@ -564,14 +572,14 @@ static siritask::status _status( const siritask::volumeType& app,status_type s )
 	}
 }
 
-static siritask::cmdStatus _status( const utility::Task& r,siritask::status s )
+static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bool encfs )
 {
 	if( r.success() ){
 
 		return siritask::cmdStatus( siritask::status::success,r.exitCode() ) ;
 	}
 
-	siritask::cmdStatus e( r.exitCode(),r.stdError().isEmpty() ? r.stdOut() : r.stdError() ) ;
+	siritask::cmdStatus e( r.exitCode(),encfs ? r.stdOut() : r.stdError() ) ;
 
 	const auto msg = e.msg().toLower() ;
 
@@ -710,7 +718,7 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 			auto s = _run_task( cmd,password,opt,create,_ecryptfs( app ) ) ;
 
-			return { cmd,_status( s,_status( app,status_type::exeName ) ) } ;
+			return { cmd,_status( s,_status( app,status_type::exeName ),app == "encfs" ) } ;
 		} ;
 
 		auto s = _run() ;
@@ -750,6 +758,14 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const sirit
 			auto opt = copt ;
 
 			opt.type = app ;
+
+			if( utility::platformIsWindows() ){
+
+				if( opt.type == "encfs" ){
+
+					opt.plainFolder = "/cygdrive/" + opt.plainFolder.remove( ":" ) ;
+				}
+			}
 
 			if( _ecryptfs_illegal_path( opt ) ){
 

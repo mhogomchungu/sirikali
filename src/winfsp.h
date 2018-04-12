@@ -56,6 +56,7 @@ int terminateProcess( unsigned long pid ) ;
 
 QString readRegister( const char * path,const char * key ) ;
 QString sshfsInstallDir() ;
+QString encfsInstallDir() ;
 
 std::vector< QStringList > commands() ;
 

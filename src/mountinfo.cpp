@@ -159,9 +159,21 @@ static QStringList _windows_volumes( background_thread thread )
 
 		fs = "fuse." + m ;
 
-		m += "@" + path( e.at( e.size() - 2 ) ) ;
+		if( m == "encfs" ){
 
-		s.append( w.arg( path( e.last() ),mode,fs,m ) ) ;
+			m += "@" + path( e.at( 1 ) ) ;
+
+			auto q = e.at( 2 ) ;
+
+			q.replace( "/cygdrive/","" ) ;
+			q += ":" ;
+
+			s.append( w.arg( path( q ),mode,fs,m ) ) ;
+		}else{
+			m += "@" + path( e.at( e.size() - 2 ) ) ;
+
+			s.append( w.arg( path( e.last() ),mode,fs,m ) ) ;
+		}
 	}
 
 	return s ;

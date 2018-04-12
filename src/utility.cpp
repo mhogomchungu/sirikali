@@ -142,8 +142,6 @@ bool utility::platformIsWindows()
 #endif
 
 static QSettings * _settings ;
-static QString _securefsPath ;
-static QString _winfspPath ;
 static QByteArray _cookie ;
 static QString _polkit_socket_path ;
 
@@ -416,12 +414,6 @@ void utility::initGlobals()
 	if( chown( s.constData(),uid,uid ) ){}
 	if( chmod( s.constData(),0700 ) ){}
 #endif
-
-#ifdef Q_OS_WIN
-	//auto e = "SOFTWARE\\WOW6432Node\\WinFsp\\Services\\securefs" ;
-	//_securefsPath = SiriKali::Winfsp::readRegister( e,"Executable" ) ;
-	//_winfspPath = SiriKali::Winfsp::readRegister( "SOFTWARE\\WOW6432Node\\WinFsp","InstallDir" ) ;
-#endif
 }
 
 QString utility::helperSocketPath()
@@ -682,22 +674,32 @@ QString utility::executableSearchPaths( const QString& e )
 	}
 }
 
+template< typename Function >
+QString _exe_path( const QString& exe,Function function )
+{
+	auto m = function() + "\\bin\\" + exe + ".exe" ;
+
+	if( !m.isEmpty() && utility::pathExists( m ) ){
+
+		return m ;
+	}else{
+		return QString() ;
+	}
+}
+
 QString utility::executableFullPath( const QString& f )
 {
 	return utility2::executableFullPath( f,[]( const QString& e ){
 
 		if( utility::platformIsWindows() ){
 
-			if( e == "sshfs" ){
+			if( utility::equalsAtleastOne( e,"encfs","encfsctl" ) ){
 
-				auto m = SiriKali::Winfsp::sshfsInstallDir() + "\\bin\\sshfs.exe" ;
+				return _exe_path( e,SiriKali::Winfsp::encfsInstallDir ) ;
 
-				if( utility::pathExists( m ) ){
+			}else if( e == "sshfs" ){
 
-					return m ;
-				}else{
-					return QString() ;
-				}
+				return _exe_path( e,SiriKali::Winfsp::sshfsInstallDir ) ;
 			}else{
 				auto m = utility::windowsExecutableSearchPath() + "/" + e + ".exe" ;
 
@@ -1925,16 +1927,6 @@ void utility::setWindowsMountPointOptions( QWidget * obj,QLineEdit * e,QPushButt
 
 	s->setMenu( menu ) ;
 	s->setIcon( QIcon( ":/harddrive.png" ) ) ;
-}
-
-QString utility::securefsPath()
-{
-	return _securefsPath ;
-}
-
-QString utility::winFSPpath()
-{
-	return _winfspPath ;
 }
 
 int utility::pollForUpdatesInterval()
