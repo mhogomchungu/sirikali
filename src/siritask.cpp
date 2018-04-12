@@ -564,14 +564,14 @@ static siritask::status _status( const siritask::volumeType& app,status_type s )
 	}
 }
 
-static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bool stdOut )
+static siritask::cmdStatus _status( const utility::Task& r,siritask::status s )
 {
 	if( r.success() ){
 
 		return siritask::cmdStatus( siritask::status::success,r.exitCode() ) ;
 	}
 
-	siritask::cmdStatus e( r.exitCode(),stdOut ? r.stdOut() : r.stdError() ) ;
+	siritask::cmdStatus e( r.exitCode(),r.stdError().isEmpty() ? r.stdOut() : r.stdError() ) ;
 
 	const auto msg = e.msg().toLower() ;
 
@@ -599,7 +599,7 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 		/*
 		 * Error codes are here: https://github.com/cryfs/cryfs/blob/develop/src/cryfs/ErrorCodes.h
 		 *
-		 * Valid for crfs > 0.9.8
+		 * Valid for cryfs > 0.9.8
 		 */
 
 		auto m = e.exitCode() ;
@@ -615,14 +615,13 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 			/*
 			 * Falling back to parsing strings
 			 */
-			const auto& m = e.msg() ;
 
 			if( msg.contains( "password" ) ){
 
 				e = s ;
 
-			}else if( m.contains( "This filesystem is for CryFS" ) &&
-				  m.contains( "It has to be migrated" ) ){
+			}else if( msg.contains( "this filesystem is for cryfs" ) &&
+				  msg.contains( "it has to be migrated" ) ){
 
 				e = siritask::status::cryfsMigrateFileSystem ;
 			}
@@ -711,7 +710,7 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 			auto s = _run_task( cmd,password,opt,create,_ecryptfs( app ) ) ;
 
-			return { cmd,_status( s,_status( app,status_type::exeName ),app == "encfs" ) } ;
+			return { cmd,_status( s,_status( app,status_type::exeName ) ) } ;
 		} ;
 
 		auto s = _run() ;
