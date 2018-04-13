@@ -124,5 +124,6 @@ version 1.3.3
 -- Make it possible to build the project with system provided "internal" libraries.
 
 version 1.3.4(unreleased)
--- Add support for sshfs backend.
 -- Add support for Microsoft Windows operating system.
+-- Add support for sshfs backend on Linux and Windows..
+-- Add support for encfs backend on windows.
