@@ -677,11 +677,12 @@ QString utility::executableSearchPaths( const QString& e )
 template< typename Function >
 QString _exe_path( const QString& exe,Function function )
 {
-	auto m = function() + "\\bin\\" + exe + ".exe" ;
+	auto m = function() ;
+	auto e = m + "\\bin\\" + exe + ".exe" ;
 
-	if( !m.isEmpty() && utility::pathExists( m ) ){
+	if( !m.isEmpty() && utility::pathExists( e ) ){
 
-		return m ;
+		return e ;
 	}else{
 		return QString() ;
 	}
