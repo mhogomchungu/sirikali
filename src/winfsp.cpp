@@ -170,6 +170,8 @@ QString SiriKali::Winfsp::sshfsInstallDir()
 
 QString SiriKali::Winfsp::encfsInstallDir()
 {
+	//auto e = "SOFTWARE\\WOW6432Node\\ENCFS" ;
+	//return SiriKali::Winfsp::readRegister( e,"InstallDir" ) ;
 	return "C:\\Program Files (x86)\\Encfs" ;
 }
 
@@ -276,7 +278,7 @@ static QProcessEnvironment _update_environment( const siritask::options& opts )
 
 			return m + SiriKali::Winfsp::encfsInstallDir() + "\\bin" ;
 		}else{
-			return QString() ;
+			return m ;
 		}
 	}() ;
 
@@ -295,9 +297,7 @@ Task::process::result SiriKali::Winfsp::FspLaunchRun( const QString& exe,
 
 			return _winfsInstances.addInstance( exe,password,opts ) ;
 		}else{
-			auto s = Task::process::result( "",
-							"Failed To Create Cipher Folder",
-							1,0,true ) ;
+			auto s = Task::process::result( "","Failed To Create Cipher Folder",1,0,true ) ;
 
 			utility::logCommandOutPut( s,exe ) ;
 
