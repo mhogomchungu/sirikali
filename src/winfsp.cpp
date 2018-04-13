@@ -221,20 +221,20 @@ void SiriKali::Winfsp::manageInstances::updateVolumeList( std::function< void() 
 	m_updateVolumeList = std::move( function ) ;
 }
 
-template< typename Function >
-static QByteArray _read_line( Function function )
+std::tuple< bool,QByteArray,QByteArray >
+SiriKali::Winfsp::manageInstances::getProcessOutput( QProcess& exe,bool encfs )
 {
 	size_t counter = 0 ;
 
-	QByteArray buffer ;
+	QByteArray m ;
 	/*
 	 * Read a full line before processing it
 	 */
 	while( true ){
 
-		buffer += function() ;
+		m += exe.readAllStandardOutput() ;
 
-		if( buffer.contains( "\n" ) ){
+		if( m.contains( "\n" ) ){
 
 			break ;
 
@@ -247,30 +247,16 @@ static QByteArray _read_line( Function function )
 		}
 	}
 
-	return buffer ;
-}
-
-std::tuple< bool,QByteArray,QByteArray >
-SiriKali::Winfsp::manageInstances::getProcessOutput( QProcess& exe,bool encfs )
-{
-	auto stdError = _read_line( [ & ](){ return exe.readAllStandardError() ; } ) ;
-
-	if( utility::containsAtleastOne( stdError,
-					 "init",
-					 "The service sshfs has been started.",
-					 "The service securefs has been started",
-					 "The service encfs has been started" ) ){
+	if( utility::containsAtleastOne( m,"init","has been started" ) ){
 
 		return std::make_tuple( true,QByteArray(),QByteArray() ) ;
 	}else{
-		QByteArray stdOut ;
-
 		if( encfs ){
 
-			stdOut = _read_line( [ & ](){ return exe.readAllStandardOutput() ; } ) ;
+			return std::make_tuple( false,m,QByteArray() ) ;
+		}else{
+			return std::make_tuple( false,QByteArray(),m ) ;
 		}
-
-		return std::make_tuple( false,stdOut,stdError ) ;
 	}
 }
 
@@ -278,7 +264,6 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 								      const QByteArray& password,
 								      const siritask::options& opts )
 {
-
 	auto exe = utility2::unique_qptr< QProcess >() ;
 
 	auto env = utility::systemEnvironment() ;
@@ -307,7 +292,7 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 	}
 
 	exe->setProcessEnvironment( env ) ;
-
+	exe->setProcessChannelMode( QProcess::MergedChannels ) ;
 	exe->start( args ) ;
 	exe->waitForStarted() ;
 	exe->write( password + "\n" ) ;
@@ -320,6 +305,7 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 		if( std::get< 0 >( m ) ){
 
 			exe->closeReadChannel( QProcess::StandardError ) ;
+			exe->closeReadChannel( QProcess::StandardOutput ) ;
 
 			m_instances.emplace_back( exe.release() ) ;
 
