@@ -260,29 +260,65 @@ SiriKali::Winfsp::manageInstances::getProcessOutput( QProcess& exe,bool encfs )
 	}
 }
 
-Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QString& args,
-								      const QByteArray& password,
-								      const siritask::options& opts )
+static QProcessEnvironment _update_environment( const siritask::options& opts )
 {
-	auto exe = utility2::unique_qptr< QProcess >() ;
-
 	auto env = utility::systemEnvironment() ;
+
+	auto m = env.value( "PATH" ) + ";" ;
 
 	auto path = [ & ](){
 
 		if( opts.type == "sshfs" ){
 
-			return env.value( "PATH" ) + ";" + SiriKali::Winfsp::sshfsInstallDir() + "\\bin" ;
+			return m + SiriKali::Winfsp::sshfsInstallDir() + "\\bin" ;
 
 		}else if( opts.type == "encfs" ){
 
-			return env.value( "PATH" ) + ";" + SiriKali::Winfsp::encfsInstallDir() + "\\bin" ;
+			return m + SiriKali::Winfsp::encfsInstallDir() + "\\bin" ;
 		}else{
 			return QString() ;
 		}
 	}() ;
 
 	env.insert( "PATH",path ) ;
+
+	return env ;
+}
+
+Task::process::result SiriKali::Winfsp::FspLaunchRun( const QString& exe,
+						      const QByteArray& password,
+						      const siritask::options& opts )
+{
+	if( opts.type == "encfs" ){
+
+		if( utility::createFolder( opts.cipherFolder ) ){
+
+			return _winfsInstances.addInstance( exe,password,opts ) ;
+		}else{
+			auto s = Task::process::result( "",
+							"Failed To Create Cipher Folder",
+							1,0,true ) ;
+
+			utility::logCommandOutPut( s,exe ) ;
+
+			return s ;
+		}
+	}else{
+		auto s = Task::process::run( exe,password ).get() ;
+
+		utility::logCommandOutPut( s,exe ) ;
+
+		return s ;
+	}
+}
+
+Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QString& args,
+								      const QByteArray& password,
+								      const siritask::options& opts )
+{
+	auto exe = utility2::unique_qptr< QProcess >() ;
+
+	auto env = _update_environment( opts ) ;
 
 	auto ssh_auth = opts.configFilePath ;
 

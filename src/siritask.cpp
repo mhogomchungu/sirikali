@@ -574,12 +574,14 @@ static siritask::status _status( const siritask::volumeType& app,status_type s )
 
 static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bool encfs )
 {
+	Q_UNUSED( encfs ) ;
+
 	if( r.success() ){
 
 		return siritask::cmdStatus( siritask::status::success,r.exitCode() ) ;
 	}
 
-	siritask::cmdStatus e( r.exitCode(),encfs ? r.stdOut() : r.stdError() ) ;
+	siritask::cmdStatus e( r.exitCode(),r.stdError().isEmpty() ? r.stdOut() : r.stdError() ) ;
 
 	const auto msg = e.msg().toLower() ;
 
@@ -689,7 +691,7 @@ static utility::Task _run_task( const QString& cmd,
 
 		if( create ){
 
-			return Task::process::run( cmd,password.toLatin1() ).get() ;
+			return SiriKali::Winfsp::FspLaunchRun( cmd,password.toLatin1(),opts ) ;
 		}else{
 			return SiriKali::Winfsp::FspLaunchStart( cmd,password.toLatin1(),opts ) ;
 		}
@@ -699,12 +701,22 @@ static utility::Task _run_task( const QString& cmd,
 	}
 }
 
-static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
+static siritask::cmdStatus _cmd( bool create,const siritask::options& opts,
 		const QString& password,const QString& configFilePath )
 {
+	auto opt = opts ;
+
 	const auto& app = opt.type ;
 
 	auto exe = app.executableFullPath() ;
+
+	if( utility::platformIsWindows() ){
+
+		if( opt.type == "encfs" ){
+
+			opt.plainFolder = "/cygdrive/" + opt.plainFolder.remove( ":" ) ;
+		}
+	}
 
 	if( exe.isEmpty() ){
 
@@ -758,14 +770,6 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const sirit
 			auto opt = copt ;
 
 			opt.type = app ;
-
-			if( utility::platformIsWindows() ){
-
-				if( opt.type == "encfs" ){
-
-					opt.plainFolder = "/cygdrive/" + opt.plainFolder.remove( ":" ) ;
-				}
-			}
 
 			if( _ecryptfs_illegal_path( opt ) ){
 
@@ -969,16 +973,11 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderCreate( const siri
 
 					if( opt.type.isOneOf( "gocryptfs","securefs" ) ){
 
-						if( utility::platformIsWindows() ){
+						e = siritask::encryptedFolderMount( opt,true ).get() ;
 
-							e = cs::volumeCreatedSuccessfully ;
-						}else{
-							e = siritask::encryptedFolderMount( opt,true ).get() ;
+						if( e != cs::success ){
 
-							if( e != cs::success ){
-
-								 _deleteFolders( opt.cipherFolder,opt.plainFolder ) ;
-							}
+							_deleteFolders( opt.cipherFolder,opt.plainFolder ) ;
 						}
 					}
 				}else{

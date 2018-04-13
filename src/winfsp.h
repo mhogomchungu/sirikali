@@ -48,6 +48,10 @@ Task::process::result FspLaunchStart( const QString& exe,
 				      const QByteArray& password,
 				      const siritask::options& ) ;
 
+Task::process::result FspLaunchRun( const QString& exe,
+				    const QByteArray& password,
+				    const siritask::options& ) ;
+
 Task::process::result FspLaunchStop( const QString& mountPath ) ;
 
 QString volumeProperties( const QString& mountPath ) ;

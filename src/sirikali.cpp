@@ -225,6 +225,8 @@ void sirikali::setUpApp( const QString& volume )
 
 		if( utility::platformIsWindows() ){
 
+			_enable( m->addAction( "Encfs" ),"Encfs" ) ;
+
 			auto ac = m->addAction( "Securefs" ) ;
 
 			_enable( ac,"Securefs" ) ;

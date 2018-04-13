@@ -1029,13 +1029,25 @@ void keyDialog::encryptedFolderCreate()
 		return this->enableAll() ;
 	}
 
-	m = utility::mountPath( utility::mountPathPostFix( m ) ) ;
+	if( utility::platformIsWindows() ){
 
-	if( utility::pathExists( m ) && !m_reUseMountPoint ){
+		m = utility::freeWindowsDriveLetter() ;
 
-		this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
+		if( utility::pathExists( m ) ){
 
-		return this->enableAll() ;
+			this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
+
+			return this->enableAll() ;
+		}
+	}else{
+		m = utility::mountPath( utility::mountPathPostFix( m ) ) ;
+
+		if( utility::pathExists( m ) && !m_reUseMountPoint ){
+
+			this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
+
+			return this->enableAll() ;
+		}
 	}
 
 	if( m_key.isEmpty() ){
