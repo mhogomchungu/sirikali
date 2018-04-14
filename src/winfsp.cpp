@@ -295,7 +295,7 @@ Task::process::result SiriKali::Winfsp::FspLaunchRun( const QString& exe,
 
 		if( utility::createFolder( opts.cipherFolder ) ){
 
-			return _winfsInstances.addInstance( exe,password,opts ) ;
+			return SiriKali::Winfsp::FspLaunchStart( exe,password,opts ) ;
 		}else{
 			auto s = Task::process::result( "","Failed To Create Cipher Folder",1,0,true ) ;
 
