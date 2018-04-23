@@ -165,9 +165,6 @@ static QStringList _windows_volumes( background_thread thread )
 
 			auto q = e.at( 2 ) ;
 
-			q.replace( "/cygdrive/","" ) ;
-			q += ":" ;
-
 			s.append( w.arg( path( q ),mode,fs,m ) ) ;
 		}else{
 			m += "@" + path( e.at( e.size() - 2 ) ) ;

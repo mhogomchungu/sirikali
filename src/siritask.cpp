@@ -710,14 +710,6 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opts,
 
 	auto exe = app.executableFullPath() ;
 
-	if( utility::platformIsWindows() ){
-
-		if( opt.type == "encfs" ){
-
-			opt.plainFolder = "/cygdrive/" + opt.plainFolder.remove( ":" ) ;
-		}
-	}
-
 	if( exe.isEmpty() ){
 
 		return _status( app,status_type::exeNotFound ) ;

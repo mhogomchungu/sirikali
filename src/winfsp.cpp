@@ -173,9 +173,8 @@ QString SiriKali::Winfsp::sshfsInstallDir()
 
 QString SiriKali::Winfsp::encfsInstallDir()
 {
-	//auto e = "SOFTWARE\\WOW6432Node\\ENCFS" ;
-	//return SiriKali::Winfsp::readRegister( e,"InstallDir" ) ;
-	return "C:\\Program Files (x86)\\Encfs" ;
+	auto e = "SOFTWARE\\WOW6432Node\\ENCFS" ;
+	return SiriKali::Winfsp::readRegister( e,"InstallDir" ) ;
 }
 
 SiriKali::Winfsp::ActiveInstances::ActiveInstances() :
@@ -373,12 +372,7 @@ Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const Q
 
 			if( e->program().endsWith( "encfs.exe" ) ){
 
-				auto q = e->arguments().at( 2 ) ;
-
-				q.replace( "/cygdrive/","" ) ;
-				q += ":" ;
-
-				return "\"" + q + "\"" ;
+				return "\"" + e->arguments().at( 2 ) + "\"" ;
 			}else{
 				return "\"" + e->arguments().last() + "\"" ;
 			}
