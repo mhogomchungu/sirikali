@@ -368,9 +368,11 @@ Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const Q
 
 		auto e = m_instances[ i ] ;
 
+		auto cmd = e->program() ;
+
 		auto m = [ & ](){
 
-			if( e->program().endsWith( "encfs.exe" ) ){
+			if( cmd.endsWith( "encfs.exe" ) ){
 
 				return "\"" + e->arguments().at( 2 ) + "\"" ;
 			}else{
@@ -382,7 +384,7 @@ Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const Q
 
 			QString exe ;
 
-			if( utility::endsWithAtLeastOne( e->program(),"sshfs.exe","encfs.exe" ) ){
+			if( utility::endsWithAtLeastOne( cmd,"sshfs.exe","encfs.exe" ) ){
 
 				exe = "taskkill /F /PID " + QString::number( e->processId() ) ;
 			}else{
@@ -403,7 +405,7 @@ Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const Q
 
 					return Task::process::result( 0 ) ;
 				}else{
-					return Task::process::result( "","",1,0,true ) ;
+					return Task::process::result( "","Failed To Terminate A Process",1,0,true ) ;
 				}
 			}() ;
 
