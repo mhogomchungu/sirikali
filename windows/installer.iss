@@ -6,8 +6,9 @@
 #define MyAppPublisher "Francis Banyikwa"
 #define MyAppURL "https://mhogomchungu.github.io/sirikali"
 #define MyAppExeName "sirikali.exe"
-#define MyReleasedRootPath "C:\projects\released"
-
+#define MyLibrariesLocation "C:\projects\SiriKali.libraries"
+#define MyEXELocation "C:\projects\build\SiriKali\sirikali.exe" 
+#define MyOutPutPath "C:\Users\Francis Banyikwa\Desktop\SiriKali"
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
@@ -21,12 +22,13 @@ AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
-DisableProgramGroupPage=yes
-LicenseFile=C:\projects\sirikali\LICENSE.txt
-OutputBaseFilename=SiriKali-setup
-SetupIconFile=C:\projects\sirikali\icons\256x256\sirikali.ico
+LicenseFile={#MyLibrariesLocation}\LICENSE.txt
+OutputDir={#MyOutPutPath}
+SetupIconFile={#MyLibrariesLocation}\icons\256x256\sirikali.ico
 Compression=lzma
 SolidCompression=yes
+DisableProgramGroupPage=yes
+OutputBaseFilename=SiriKali-setup
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -61,28 +63,23 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Files]
-Source: "{#MyReleasedRootPath}\SiriKali\sirikali.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyReleasedRootPath}\SiriKali\D3Dcompiler_47.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyReleasedRootPath}\SiriKali\libEGL.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyReleasedRootPath}\SiriKali\libgcc_s_dw2-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyReleasedRootPath}\SiriKali\libgcrypt-20.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyReleasedRootPath}\SiriKali\libGLESV2.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyReleasedRootPath}\SiriKali\libgpg-error-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyReleasedRootPath}\SiriKali\libstdc++-6.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyReleasedRootPath}\SiriKali\libwinpthread-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyReleasedRootPath}\SiriKali\LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyReleasedRootPath}\SiriKali\opengl32sw.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyReleasedRootPath}\SiriKali\Qt5Core.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyReleasedRootPath}\SiriKali\Qt5Gui.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyReleasedRootPath}\SiriKali\Qt5Network.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyReleasedRootPath}\SiriKali\Qt5Svg.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyReleasedRootPath}\SiriKali\Qt5Widgets.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyReleasedRootPath}\SiriKali\bearer\*"; DestDir: "{app}\bearer"; Flags: ignoreversion
-Source: "{#MyReleasedRootPath}\SiriKali\iconengines\*"; DestDir: "{app}\iconengines"; Flags: ignoreversion
-Source: "{#MyReleasedRootPath}\SiriKali\imageformats\*"; DestDir: "{app}\imageformats"; Flags: ignoreversion
-Source: "{#MyReleasedRootPath}\SiriKali\platforms\*"; DestDir: "{app}\platforms"; Flags: ignoreversion
-Source: "{#MyReleasedRootPath}\SiriKali\translations\*"; DestDir: "{app}\translations"; Flags: ignoreversion
-Source: "{#MyReleasedRootPath}\SiriKali\icons\sirikali.ico"; DestDir: "{app}\icons"; Flags: ignoreversion
+Source: "{#MyEXELocation}"; DestDir: "{app}"; Flags: ignoreversion
+
+Source: "{#MyLibrariesLocation}\*.dll"; DestDir: "{app}"; Flags: ignoreversion
+
+Source: "{#MyLibrariesLocation}\LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
+
+Source: "{#MyLibrariesLocation}\bearer\*"; DestDir: "{app}\bearer"; Flags: ignoreversion
+
+Source: "{#MyLibrariesLocation}\iconengines\*"; DestDir: "{app}\iconengines"; Flags: ignoreversion
+
+Source: "{#MyLibrariesLocation}\imageformats\*"; DestDir: "{app}\imageformats"; Flags: ignoreversion
+
+Source: "{#MyLibrariesLocation}\platforms\*"; DestDir: "{app}\platforms"; Flags: ignoreversion
+
+Source: "{#MyLibrariesLocation}\translations\*"; DestDir: "{app}\translations"; Flags: ignoreversion
+
+Source: "{#MyLibrariesLocation}\icons\sirikali.ico"; DestDir: "{app}\icons"; Flags: ignoreversion
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
