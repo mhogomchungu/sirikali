@@ -47,17 +47,20 @@ private:
 	} ;
 } ;
 
-static SiriKali::Winfsp::manageInstances _winfsInstances ;
-static const bool _babySittingBackends = true ;
+static SiriKali::Winfsp::manageInstances& _winfspInstances()
+{
+	static SiriKali::Winfsp::manageInstances _winfsInstances ;
+	return _winfsInstances ;
+}
 
 bool babySittingBackends()
 {
-	return _babySittingBackends ;
+	return true ;
 }
 
 void updateVolumeList( std::function< void() > function )
 {
-	_winfsInstances.updateVolumeList( std::move( function ) ) ;
+	_winfspInstances().updateVolumeList( std::move( function ) ) ;
 }
 
 }
@@ -446,7 +449,7 @@ QString SiriKali::Winfsp::manageInstances::volumeProperties( const QString& moun
 
 QString SiriKali::Winfsp::volumeProperties( const QString& mountPath )
 {
-	return _winfsInstances.volumeProperties( mountPath ) ;
+	return _winfspInstances().volumeProperties( mountPath ) ;
 }
 
 Task::process::result SiriKali::Winfsp::FspLaunchStart( const QString& className,
@@ -478,7 +481,7 @@ std::vector< QStringList > SiriKali::Winfsp::commands()
 {
 	if( SiriKali::Winfsp::babySittingBackends() ){
 
-		return _winfsInstances.commands() ;
+		return _winfspInstances().commands() ;
 	}else{
 		return SiriKali::Winfsp::ActiveInstances().commands() ;
 	}
@@ -488,7 +491,7 @@ Task::process::result SiriKali::Winfsp::FspLaunchStop( const QString& m )
 {
 	if( SiriKali::Winfsp::babySittingBackends() ){
 
-		return _winfsInstances.removeInstance( m ) ;
+		return _winfspInstances().removeInstance( m ) ;
 	}else{
 		QStringList e ;
 		e.append( m ) ;
@@ -503,7 +506,7 @@ Task::process::result SiriKali::Winfsp::FspLaunchStart( const QString& exe,
 {
 	if( SiriKali::Winfsp::babySittingBackends() ){
 
-		return _winfsInstances.addInstance( exe,password,opts ) ;
+		return _winfspInstances().addInstance( exe,password,opts ) ;
 	}else{
 		QStringList e ;
 		e.append( exe ) ;
