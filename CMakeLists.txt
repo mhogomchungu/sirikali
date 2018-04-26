@@ -124,6 +124,14 @@ else()
 
 endif()
 
+find_package( Qt5Widgets REQUIRED )
+find_package( Qt5Core REQUIRED )
+find_package( Qt5Network REQUIRED )
+
+message( STATUS "Found Qt5Widgets, version  ${Qt5Widgets_VERSION}" )
+message( STATUS "Found Qt5Core, version  ${Qt5Core_VERSION}" )
+message( STATUS "Found Qt5Network, version  ${Qt5Network_VERSION}" )
+
 pkg_check_modules( MCHUNGU_NETWORK mhogomchungu_network )
 pkg_check_modules( MCHUNGU_TASK mhogomchungu_task )
 
@@ -294,10 +302,6 @@ if( APPLE )
 	SET_SOURCE_FILES_PROPERTIES( translations/en_US.qm PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
 	SET_SOURCE_FILES_PROPERTIES( translations/fr_FR.qm PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
 endif()
-
-find_package( Qt5Widgets REQUIRED )
-find_package( Qt5Core REQUIRED )
-find_package( Qt5Network REQUIRED )
 
 set( CMAKE_INCLUDE_CURRENT_DIR ON )
 include_directories( ${Qt5Widgets_INCLUDE_DIRS} )

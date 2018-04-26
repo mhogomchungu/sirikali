@@ -10,6 +10,7 @@ Below are instructions on how to build SiriKali on OSX.
 3.1 brew install libgcrypt
 3.2 brew install qt5
 3.3 brew install pkg-config
+3.4 brew install cmake
 
 4.  brew cask install osxfuse
     # for encfs support
