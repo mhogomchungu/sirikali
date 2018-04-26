@@ -264,7 +264,7 @@ SiriKali::Winfsp::manageInstances::getProcessOutput( QProcess& exe,bool encfs )
 	}
 }
 
-static QProcessEnvironment _update_environment( const siritask::options& opts )
+static QProcessEnvironment _update_environment( const QString& type )
 {
 	auto env = utility::systemEnvironment() ;
 
@@ -272,11 +272,11 @@ static QProcessEnvironment _update_environment( const siritask::options& opts )
 
 	auto path = [ & ](){
 
-		if( opts.type == "sshfs" ){
+		if( type == "sshfs" ){
 
 			return m + SiriKali::Winfsp::sshfsInstallDir() + "\\bin" ;
 
-		}else if( opts.type == "encfs" ){
+		}else if( type == "encfs" ){
 
 			return m + SiriKali::Winfsp::encfsInstallDir() + "\\bin" ;
 		}else{
@@ -320,7 +320,7 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 {
 	auto exe = utility2::unique_qptr< QProcess >() ;
 
-	auto env = _update_environment( opts ) ;
+	auto env = _update_environment( opts.type.name() ) ;
 
 	auto ssh_auth = opts.configFilePath ;
 
@@ -362,21 +362,25 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 	return s ;
 }
 
-Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const QString& mountPoint )
+Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const QString& e )
 {
+	auto mountPoint = e ;
+
+	mountPoint.replace( "\"","" ) ;
+
 	for( size_t i = 0 ; i < m_instances.size() ; i++ ){
 
 		auto e = m_instances[ i ] ;
 
-		auto cmd = e->program() ;
+		const auto cmd = e->program() ;
 
 		auto m = [ & ](){
 
 			if( cmd.endsWith( "encfs.exe" ) ){
 
-				return "\"" + e->arguments().at( 2 ) + "\"" ;
+				return e->arguments().at( 2 ) ;
 			}else{
-				return "\"" + e->arguments().last() + "\"" ;
+				return e->arguments().last() ;
 			}
 		}() ;
 
@@ -384,14 +388,28 @@ Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const Q
 
 			QString exe ;
 
-			if( utility::endsWithAtLeastOne( cmd,"sshfs.exe","encfs.exe" ) ){
+			auto env = [ & ](){
 
-				exe = "taskkill /F /PID " + QString::number( e->processId() ) ;
-			}else{
+				if( cmd.endsWith( "encfs.exe" ) ){
+
+					return _update_environment( "encfs" ) ;
+				}else{
+					return utility::systemEnvironment() ;
+				}
+			}() ;
+
+			if( cmd.endsWith( "encfs.exe" ) ){
+
+				exe = cmd + " -u " + m ;
+
+			}else if( cmd.endsWith( "securefs.exe" ) ){
+
 				exe = "sirikali.exe terminateProcess-" + QString::number( e->processId() ) ;
+			}else{
+				exe = "taskkill /F /PID " + QString::number( e->processId() ) ;
 			}
 
-			auto m = Task::process::run( exe ).await() ;
+			auto m = Task::process::run( exe,{},-1,"",env ).await() ;
 
 			auto s = [ & ](){
 
