@@ -46,6 +46,7 @@
 #include "osx_keychain.h"
 
 #include <cstring>
+#include <cstdlib>
 
 #include <QDir>
 
