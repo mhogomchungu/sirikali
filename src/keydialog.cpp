@@ -945,9 +945,9 @@ void keyDialog::reportErrorMessage( const siritask::cmdStatus& s )
 		msg = tr( "Failed To Create Mount Point." ) ;
 		break;
 
-	case siritask::status::securefsFailedToLoadWinfsp :
+	case siritask::status::failedToLoadWinfsp :
 
-		msg = tr( "SecureFS Can not Load WinFsp. Please Make Sure You Have WinFsp Properly Installed" ) ;
+		msg = tr( "Backend Could Not Load WinFsp. Please Make Sure You Have WinFsp Properly Installed" ) ;
 		break;
 
 	case siritask::status::unknown :

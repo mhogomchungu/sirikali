@@ -136,7 +136,7 @@ namespace siritask
 		sshfs,
 		gocryptfs,
 		securefs,
-		securefsFailedToLoadWinfsp,
+		failedToLoadWinfsp,
 		ecryptfs,
 		ecryptfsIllegalPath,
 		ecrypfsBadExePermissions,

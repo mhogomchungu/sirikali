@@ -642,6 +642,10 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 		if( msg.contains( "password" ) ){
 
 			e = s ;
+
+		}else if( msg.contains( "cygfuse: initialization failed: winfsp-x86.dll not found" ) ){
+
+			e = cs::failedToLoadWinfsp ;
 		}
 
 	}else if( s == siritask::status::gocryptfs ){
@@ -667,7 +671,7 @@ static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bo
 
 		}else if( msg.contains( "securefs cannot load winfsp" ) ){
 
-			e = cs::securefsFailedToLoadWinfsp ;
+			e = cs::failedToLoadWinfsp ;
 		}
 
 	}else if( s == siritask::status::sshfs ){
