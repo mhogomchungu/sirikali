@@ -53,7 +53,7 @@ Swift Code:	CORUTZTZ
 Account Number:	0152454497500
 ```
 
-## Download link
+## Download links
 
 Latest released version is 1.3.4 and its source code can be downloaded by clicking below link.
 
@@ -65,9 +65,9 @@ signed and expect to get a warning from windows saying the installer is from unk
 <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.4/SiriKali-setup.exe">SiriKali-setup.exe</a>
 
 ```
-Currently, SiriKali on windows supports only securefs,encfs and sshfs backends. SiriKali will expect to
-find securefs at "~/bin" and in window's language, SiriKali will expect to find
-"securefs.exe" at "C:\Users\<username>\bin"
+Currently, SiriKali on windows supports only securefs,encfs and sshfs backends.
+SiriKali will expect to find securefs at "~/bin" and in window's language,
+SiriKali will expect to find "securefs.exe" at "C:\Users\<username>\bin"
 ```
 
 ## Binary packages
