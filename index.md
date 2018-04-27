@@ -8,11 +8,11 @@ SiriKali is a Qt/C++ GUI application that manages <a href="http://ecryptfs.org/"
 
 ```gocryptfs``` binary application is required to be installed for SiriKali to gain support for gocryptfs volumes.
 
-```encfs``` binary application is required to be installed for SiriKali to gain support for encfs volumes.
+```encfs``` binary application is required to be installed for SiriKali to gain support for encfs volumes. Windows users should get encfs from <a href="https://github.com/mhogomchungu/encfs/releases/tag/1.9.5">here.</a>
 
 ```securefs``` binary application is required to be installed for SiriKali to gain support for securefs volumes.
 
-```sshfs``` binary application is required to be installed for SiriKali to gain support for connecting to ssh servers. <a href="https://github.com/billziss-gh/sshfs-win">Sshfs-win</a> is required on windows to gain the support. Steps to setup SiriKali to connect to an ssh server are documented <a href="https://github.com/mhogomchungu/sirikali/wiki/Frequently-Asked-Questions#90-how-do-i-add-options-to-connect-to-an-ssh-server">here.</a>
+```sshfs``` binary application is required to be installed for SiriKali to gain support for connecting to ssh servers. Windows users should get sshfs from <a href="https://github.com/billziss-gh/sshfs-win">Sshfs-win">here. Steps to setup SiriKali to connect to an ssh server are documented <a href="https://github.com/mhogomchungu/sirikali/wiki/Frequently-Asked-Questions#90-how-do-i-add-options-to-connect-to-an-ssh-server">here.</a>
 
 Encrypted container ```folders``` have an advantage over encrypted container ```files``` like the ones that are created by <a href="http://mhogomchungu.github.io/zuluCrypt/">zuluCrypt</a>,TrueCrypt,VeraCrypt among other projects that use file based encrypted containers.
 
