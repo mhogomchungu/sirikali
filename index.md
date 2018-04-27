@@ -1,6 +1,6 @@
 ## SiriKali works on Linux, MACOS and Microsoft Windows
 
-SiriKali is a Qt/C++ GUI application that manages <a href="http://ecryptfs.org/">ecryptfs</a>,<a href="https://www.cryfs.org/">cryfs</a>,<a href="http://www.arg0.net/#!encfs/c1awt">encfs</a>,<a href="https://nuetzlich.net/gocryptfs">gocryptfs</a> and <a href="https://github.com/netheril96/securefs">securefs</a> based encrypted folders. These projects are compared <a href="https://nuetzlich.net/gocryptfs/comparison/">here.</a>
+SiriKali is a Qt/C++ GUI application that manages <a href="http://ecryptfs.org/">ecryptfs</a>,<a href="https://www.cryfs.org/">cryfs</a>,<a href="http://www.arg0.net/#!encfs/c1awt">encfs</a>,<a href="https://nuetzlich.net/gocryptfs">gocryptfs</a> and <a href="https://github.com/netheril96/securefs">securefs</a> based encrypted folders. These projects are compared <a href="https://nuetzlich.net/gocryptfs/comparison/">here.</a>SiriKali can also connect to ssh servers using <a href="https://github.com/libfuse/sshfs">sshfs.</a>
 
 <a href="https://github.com/mhogomchungu/ecryptfs-simple">ecryptfs-simple</a> binary application is required to be installed for SiriKali to gain support for ecryptfs volumes.
 
@@ -11,6 +11,8 @@ SiriKali is a Qt/C++ GUI application that manages <a href="http://ecryptfs.org/"
 ```encfs``` binary application is required to be installed for SiriKali to gain support for encfs volumes.
 
 ```securefs``` binary application is required to be installed for SiriKali to gain support for securefs volumes.
+
+```sshfs``` binary application is required to be installed for SiriKali to gain support for connecting to ssh servers. <a href="https://github.com/billziss-gh/sshfs-win">Sshfs-win</a> is required on windows to gain the support. Steps to setup SiriKali to connect to an ssh server are documented <a href="https://github.com/mhogomchungu/sirikali/wiki/Frequently-Asked-Questions#90-how-do-i-add-options-to-connect-to-an-ssh-server">here.</a>
 
 Encrypted container ```folders``` have an advantage over encrypted container ```files``` like the ones that are created by <a href="http://mhogomchungu.github.io/zuluCrypt/">zuluCrypt</a>,TrueCrypt,VeraCrypt among other projects that use file based encrypted containers.
 
@@ -53,18 +55,18 @@ Account Number:	0152454497500
 
 ## Download link
 
-Latest released version is 1.3.3 and its source code can be downloaded by clicking below link.
+Latest released version is 1.3.4 and its source code can be downloaded by clicking below link.
 
-<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.3/SiriKali-1.3.3.tar.xz">SiriKali-1.3.3.tar.xz</a>
+<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.4/SiriKali-1.3.4.tar.xz">SiriKali-1.3.4.tar.xz</a>
 
 Users of Microsoft Windows Operating System should download SiriKali installer by clicking below link. The installer is not
 signed and expect to get a warning from windows saying the installer is from unknown publisher.
 
-<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.3/SiriKali-setup.exe">SiriKali-setup.exe</a>
+<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.4/SiriKali-setup.exe">SiriKali-setup.exe</a>
 
 ```
-Currently, SiriKali on windows supports only securefs backend and will expect to
-find it at "~/bin", in window's language, SiriKali will expect to find
+Currently, SiriKali on windows supports only securefs,encfs and sshfs backends. SiriKali will expect to
+find securefs at "~/bin" and in window's language, SiriKali will expect to find
 "securefs.exe" at "C:\Users\<username>\bin"
 ```
 
@@ -150,4 +152,4 @@ cv9jY9bZAbVaMUjF7dw/bsqgJ2HCJ33cf16GybRtozOE36YDB2omg58ngIrlmlea
 -----END PGP PUBLIC KEY BLOCK-----
 ```
 
-last update: Mon Mar 12 15:08:25 EAT 2018
+last update: Fri Apr 27 22:17:53 EAT 2018
