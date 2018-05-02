@@ -2067,8 +2067,10 @@ static int _get_backend_installed_version( const QString& backend )
 	return 0 ;
 }
 
-::Task::future< std::pair< bool,bool > >& utility::backendIsGreaterOrEqualTo( const QString& backend,
-									      const QString& version )
+template< typename Function >
+::Task::future< std::pair< bool,bool > >& _compare_versions( const QString& backend,
+							     const QString& version,
+							     Function function )
 {
 	return ::Task::run( [ = ]()->std::pair< bool,bool >{
 
@@ -2076,11 +2078,23 @@ static int _get_backend_installed_version( const QString& backend )
 
 		if( installed != 0 ){
 
-			auto minimum = _convert_string_to_number( version ) ;
+			auto guard_version = _convert_string_to_number( version ) ;
 
-			return { true,installed >= minimum } ;
+			return { true,function( installed,guard_version ) } ;
 		}else{
 			return { false,false } ;
 		}
 	} ) ;
+}
+
+::Task::future< std::pair< bool,bool > >& utility::backendIsGreaterOrEqualTo( const QString& backend,
+									      const QString& version )
+{
+	return _compare_versions( backend,version,std::greater_equal<int>() ) ;
+}
+
+::Task::future<std::pair<bool, bool> > &utility::backendIsLessThan(const QString& backend,
+								   const QString& version )
+{
+	return _compare_versions( backend,version,std::less<int>() ) ;
 }

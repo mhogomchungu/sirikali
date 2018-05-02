@@ -354,6 +354,9 @@ namespace utility
 	bool eventFilter( QObject * gui,QObject * watched,QEvent * event,std::function< void() > ) ;
 	void licenseInfo( QWidget * ) ;
 
+	::Task::future< std::pair< bool,bool > >& backendIsLessThan( const QString& backend,
+								     const QString& version ) ;
+
 	::Task::future< std::pair< bool,bool > >& backendIsGreaterOrEqualTo( const QString& backend,
 									     const QString& version ) ;
 
