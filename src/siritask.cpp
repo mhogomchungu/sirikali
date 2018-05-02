@@ -270,7 +270,14 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 		if( type == "cryfs" ){
 
-			return "--" ;
+			auto m = utility::backendIsGreaterOrEqualTo( "cryfs","0.10" ).get() ;
+
+			if( m.first && m.second ){
+
+				return "" ;
+			}else{
+				return "--" ;
+			}
 
 		}else if( type == "encfs" ){
 

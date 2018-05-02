@@ -1959,3 +1959,128 @@ QString utility::windowsExecutableSearchPath()
 
 	return _settings->value( "WindowsExecutableSearchPath" ).toString() ;
 }
+
+
+static int _convert_string_to_number( const QString& e )
+{
+	auto _remove_junk = []( const QString& e ){
+
+		QString m ;
+
+		for( int s = 0 ; s < e.size() ; s++ ){
+
+			auto n = e.at( s ) ;
+
+			if( n == '.' || ( n >= '0' && n <= '9' ) ){
+
+				m += n ;
+			}else{
+				break ;
+			}
+		}
+
+		return m ;
+	} ;
+
+	auto _convert = []( const QString& e )->std::pair< bool,int >{
+
+		bool ok ;
+
+		auto s = e.toInt( &ok ) ;
+
+		return { ok,s } ;
+	} ;
+
+	auto s = utility::split( _remove_junk( e ),'.' ) ;
+
+	auto dots = s.size() ;
+
+	int major = 1000000 ;
+	int minor = 1000 ;
+	int patch = 1 ;
+
+	if( dots == 1 ){
+
+		auto a = _convert( s.first() ) ;
+
+		if( a.first ){
+
+			return a.second ;
+		}
+
+	}else if( dots == 2 ){
+
+		if( s.size() > 1 ){
+
+			auto a = _convert( s.at( 0 ) ) ;
+			auto b = _convert( s.at( 1 ) ) ;
+
+			if( a.first && b.first ){
+
+				return major * a.second + minor * b.second ;
+			}
+		}
+
+	}else if( dots == 3 ){
+
+		if( s.size() > 2 ){
+
+			auto a = _convert( s.at( 0 ) ) ;
+			auto b = _convert( s.at( 1 ) ) ;
+			auto c = _convert( s.at( 2 ) ) ;
+
+			if( a.first && b.first && c.first ){
+
+				return major * a.second + minor * b.second + patch * c.second ;
+			}
+		}
+	}
+
+	return 0 ;
+}
+
+static int _get_backend_installed_version( const QString& backend )
+{
+	auto exe = utility::executableFullPath( backend ) ;
+
+	if( exe.isEmpty() ){
+
+		return 0 ;
+	}
+
+	if( backend == "cryfs" ){
+
+		auto e = ::Task::process::run( exe + " --version" ).get().std_out() ;
+
+		auto f = utility::split( e,'\n' ) ;
+
+		auto m = utility::split( f.first(),' ' ) ;
+
+		if( m.size() >= 3 ){
+
+			auto s = m.at( 2 ) ;
+
+			return _convert_string_to_number( s ) ;
+		}
+	}
+
+	return 0 ;
+}
+
+::Task::future< std::pair< bool,bool > >& utility::backendIsGreaterOrEqualTo( const QString& backend,
+									      const QString& version )
+{
+	return ::Task::run( [ = ]()->std::pair< bool,bool >{
+
+		auto installed = _get_backend_installed_version( backend ) ;
+
+		if( installed != 0 ){
+
+			auto minimum = _convert_string_to_number( version ) ;
+
+			return { true,installed >= minimum } ;
+		}else{
+			return { false,false } ;
+		}
+	} ) ;
+}
