@@ -270,7 +270,11 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 		if( type == "cryfs" ){
 
-			auto m = utility::backendIsLessThan( "cryfs","0.10" ).get() ;
+			/*
+			 * declaring this variable as static to force this function to be called only
+			 * once.
+			 */
+			static auto m = utility::backendIsLessThan( "cryfs","0.10" ).get() ;
 
 			if( m.first && m.second ){
 
