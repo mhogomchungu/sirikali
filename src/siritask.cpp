@@ -276,7 +276,7 @@ static QString _args( const QString& exe,const siritask::options& opt,
 			 */
 			static auto m = utility::backendIsLessThan( "cryfs","0.10" ).get() ;
 
-			if( m.first && m.second ){
+			if( m.valid && m.value ){
 
 				return "--" ;
 			}else{
@@ -853,15 +853,15 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const sirit
                                 }
                         }
                 }else{
-			auto _path_exist = []( QString e,const QString& m )->std::pair< bool,QString >{
+			auto _path_exist = []( QString e,const QString& m )->utility::result< QString >{
 
 				e.remove( 0,m.size() ) ;
 
 				if( utility::pathExists( e ) ){
 
-					return { true,e } ;
+					return utility::result< QString >( e ) ;
 				}else{
-					return { false,QString() } ;
+					return utility::result< QString >() ;
 				}
 
 			} ;
@@ -872,45 +872,45 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const sirit
 
 				auto m = _path_exist( e,"[[[gocryptfs]]]" ) ;
 
-				if( m.first ){
+				if( m.valid ){
 
-					return _mount( "gocryptfs",opt,m.second ) ;
+					return _mount( "gocryptfs",opt,m.value ) ;
 				}
 
 			}else if( e.startsWith( "[[[ecryptfs]]]" ) ){
 
 				auto m = _path_exist( e,"[[[ecryptfs]]]" ) ;
 
-				if( m.first ){
+				if( m.valid ){
 
-					return _mount( "ecryptfs",opt,m.second ) ;
+					return _mount( "ecryptfs",opt,m.value ) ;
 				}
 
 			}else if( e.startsWith( "[[[cryfs]]]" ) ){
 
 				auto m = _path_exist( e,"[[[cryfs]]]" ) ;
 
-				if( m.first ){
+				if( m.valid ){
 
-					return _mount( "cryfs",opt,m.second ) ;
+					return _mount( "cryfs",opt,m.value ) ;
 				}
 
 			}else if( e.startsWith( "[[[securefs]]]" ) ){
 
 				auto m = _path_exist( e,"[[[securefs]]]" ) ;
 
-				if( m.first ){
+				if( m.valid ){
 
-					return _mount( "securefs",opt,m.second ) ;
+					return _mount( "securefs",opt,m.value ) ;
 				}
 
 			}else if( e.startsWith( "[[[encfs]]]" ) ){
 
 				auto m = _path_exist( e,"[[[encfs]]]" ) ;
 
-				if( m.first ){
+				if( m.valid ){
 
-					return _mount( "encfs",opt,m.second ) ;
+					return _mount( "encfs",opt,m.value ) ;
 				}
 
 			}else if( utility::pathExists( e ) ){

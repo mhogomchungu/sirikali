@@ -72,6 +72,19 @@ class QEvent ;
 namespace utility
 {
 	using volumeList = std::vector< std::pair< favorites::entry,QByteArray > > ;
+
+	template< typename Type >
+	struct result
+	{
+		result() : valid( false )
+		{
+		}
+		result( Type e ) : valid( true ),value( std::move( e ) )
+		{
+		}
+		bool valid ;
+		Type value ;
+	} ;
 }
 
 namespace utility
@@ -354,11 +367,11 @@ namespace utility
 	bool eventFilter( QObject * gui,QObject * watched,QEvent * event,std::function< void() > ) ;
 	void licenseInfo( QWidget * ) ;
 
-	::Task::future< std::pair< bool,bool > >& backendIsLessThan( const QString& backend,
-								     const QString& version ) ;
+	::Task::future< utility::result< bool > >& backendIsLessThan( const QString& backend,
+								      const QString& version ) ;
 
-	::Task::future< std::pair< bool,bool > >& backendIsGreaterOrEqualTo( const QString& backend,
-									     const QString& version ) ;
+	::Task::future< utility::result< bool > >& backendIsGreaterOrEqualTo( const QString& backend,
+									      const QString& version ) ;
 
 	void setLocalizationLanguage( bool translate,QMenu * m,utility2::translator& ) ;
 	void languageMenu( QMenu *,QAction *,utility2::translator& ) ;

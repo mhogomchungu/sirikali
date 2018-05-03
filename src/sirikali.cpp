@@ -1087,15 +1087,15 @@ void sirikali::cryfsProperties()
 	this->enableAll() ;
 }
 
-static std::pair< bool,QByteArray > _volume_properties( const QString& cmd,
-							const std::pair< QString,QString >& args,
-							const QString& path )
+static utility::result< QByteArray > _volume_properties( const QString& cmd,
+							 const std::pair< QString,QString >& args,
+							 const QString& path )
 {
 	auto e = utility::Task::run( cmd + args.first + path ).await() ;
 
 	if( e.success() ){
 
-		return { true,e.stdOut() } ;
+		return e.stdOut() ;
 	}else{
 		for( auto& it : utility::readFavorites() ){
 
@@ -1110,11 +1110,14 @@ static std::pair< bool,QByteArray > _volume_properties( const QString& cmd,
 
 				e = utility::Task::run( cmd + args.first + args.second + s ).await() ;
 
-				return { e.success(),e.stdOut() } ;
+				if( e.success() ){
+
+					return e.stdOut() ;
+				}
 			}
 		}
 
-		return { false,QByteArray() } ;
+		return utility::result< QByteArray >() ;
 	}
 }
 
@@ -1142,9 +1145,9 @@ static void _volume_properties( const QString& cmd,const std::pair<QString,QStri
 	}else{
 		auto e = _volume_properties( "\"" + exe + "\"",args,path ) ;
 
-		if( e.first ){
+		if( e.valid ){
 
-			auto s = e.second ;
+			auto& s = e.value ;
 
 			if( cmd == "gocryptfs" ){
 

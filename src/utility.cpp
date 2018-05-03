@@ -1982,13 +1982,18 @@ static int _convert_string_to_number( const QString& e )
 		return m ;
 	} ;
 
-	auto _convert = []( const QString& e )->std::pair< bool,int >{
+	auto _convert = []( const QString& e ){
 
 		bool ok ;
 
 		auto s = e.toInt( &ok ) ;
 
-		return { ok,s } ;
+		if( ok ){
+
+			return utility::result< int >( s ) ;
+		}else{
+			return utility::result< int >() ;
+		}
 	} ;
 
 	auto s = utility::split( _remove_junk( e ),'.' ) ;
@@ -2003,9 +2008,9 @@ static int _convert_string_to_number( const QString& e )
 
 		auto a = _convert( s.first() ) ;
 
-		if( a.first ){
+		if( a.valid ){
 
-			return a.second ;
+			return a.value ;
 		}
 
 	}else if( dots == 2 ){
@@ -2015,9 +2020,9 @@ static int _convert_string_to_number( const QString& e )
 			auto a = _convert( s.at( 0 ) ) ;
 			auto b = _convert( s.at( 1 ) ) ;
 
-			if( a.first && b.first ){
+			if( a.valid && b.valid ){
 
-				return major * a.second + minor * b.second ;
+				return major * a.value + minor * b.value ;
 			}
 		}
 
@@ -2029,9 +2034,9 @@ static int _convert_string_to_number( const QString& e )
 			auto b = _convert( s.at( 1 ) ) ;
 			auto c = _convert( s.at( 2 ) ) ;
 
-			if( a.first && b.first && c.first ){
+			if( a.valid && b.valid && c.valid ){
 
-				return major * a.second + minor * b.second + patch * c.second ;
+				return major * a.value + minor * b.value + patch * c.value ;
 			}
 		}
 	}
@@ -2068,11 +2073,11 @@ static int _get_backend_installed_version( const QString& backend )
 }
 
 template< typename Function >
-::Task::future< std::pair< bool,bool > >& _compare_versions( const QString& backend,
+::Task::future< utility::result< bool > >& _compare_versions( const QString& backend,
 							     const QString& version,
-							     Function function )
+							     Function compare )
 {
-	return ::Task::run( [ = ]()->std::pair< bool,bool >{
+	return ::Task::run( [ = ](){
 
 		auto installed = _get_backend_installed_version( backend ) ;
 
@@ -2080,21 +2085,21 @@ template< typename Function >
 
 			auto guard_version = _convert_string_to_number( version ) ;
 
-			return { true,function( installed,guard_version ) } ;
+			return utility::result< bool >( compare( installed,guard_version ) ) ;
 		}else{
-			return { false,false } ;
+			return utility::result< bool >() ;
 		}
 	} ) ;
 }
 
-::Task::future< std::pair< bool,bool > >& utility::backendIsGreaterOrEqualTo( const QString& backend,
-									      const QString& version )
+::Task::future< utility::result< bool > >& utility::backendIsGreaterOrEqualTo( const QString& backend,
+									       const QString& version )
 {
 	return _compare_versions( backend,version,std::greater_equal<int>() ) ;
 }
 
-::Task::future<std::pair<bool, bool> > &utility::backendIsLessThan(const QString& backend,
-								   const QString& version )
+::Task::future< utility::result< bool > > &utility::backendIsLessThan( const QString& backend,
+								       const QString& version )
 {
 	return _compare_versions( backend,version,std::less<int>() ) ;
 }
