@@ -1961,7 +1961,7 @@ QString utility::windowsExecutableSearchPath()
 }
 
 
-static int _convert_string_to_number( const QString& e )
+static utility::result< int > _convert_string_to_number( const QString& e )
 {
 	auto _remove_junk = []( const QString& e ){
 
@@ -1982,7 +1982,7 @@ static int _convert_string_to_number( const QString& e )
 		return m ;
 	} ;
 
-	auto _convert = []( const QString& e ){
+	auto _convert = []( const QString& e )->utility::result< int >{
 
 		bool ok ;
 
@@ -1990,9 +1990,9 @@ static int _convert_string_to_number( const QString& e )
 
 		if( ok ){
 
-			return utility::result< int >( s ) ;
+			return s  ;
 		}else{
-			return utility::result< int >() ;
+			return {} ;
 		}
 	} ;
 
@@ -2006,12 +2006,7 @@ static int _convert_string_to_number( const QString& e )
 
 	if( dots == 1 ){
 
-		auto a = _convert( s.first() ) ;
-
-		if( a.valid ){
-
-			return a.value ;
-		}
+		return _convert( s.first() ) ;
 
 	}else if( dots == 2 ){
 
@@ -2041,16 +2036,16 @@ static int _convert_string_to_number( const QString& e )
 		}
 	}
 
-	return 0 ;
+	return {} ;
 }
 
-static int _get_backend_installed_version( const QString& backend )
+static utility::result< int > _get_backend_installed_version( const QString& backend )
 {
 	auto exe = utility::executableFullPath( backend ) ;
 
 	if( exe.isEmpty() ){
 
-		return 0 ;
+		return {} ;
 	}
 
 	if( backend == "cryfs" ){
@@ -2069,7 +2064,7 @@ static int _get_backend_installed_version( const QString& backend )
 		}
 	}
 
-	return 0 ;
+	return {} ;
 }
 
 template< typename Function >
@@ -2077,17 +2072,16 @@ template< typename Function >
 							     const QString& version,
 							     Function compare )
 {
-	return ::Task::run( [ = ](){
+	return ::Task::run( [ = ]()->utility::result< bool >{
 
 		auto installed = _get_backend_installed_version( backend ) ;
+		auto guard_version = _convert_string_to_number( version ) ;
 
-		if( installed != 0 ){
+		if( installed.valid && guard_version.valid ){
 
-			auto guard_version = _convert_string_to_number( version ) ;
-
-			return utility::result< bool >( compare( installed,guard_version ) ) ;
+			return compare( installed.value,guard_version.value ) ;
 		}else{
-			return utility::result< bool >() ;
+			return {} ;
 		}
 	} ) ;
 }

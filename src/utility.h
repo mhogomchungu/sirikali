@@ -76,13 +76,13 @@ namespace utility
 	template< typename Type >
 	struct result
 	{
-		result() : valid( false )
+		result()
 		{
 		}
 		result( Type e ) : valid( true ),value( std::move( e ) )
 		{
 		}
-		bool valid ;
+		bool valid = false ;
 		Type value ;
 	} ;
 }
