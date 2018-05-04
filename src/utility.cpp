@@ -1998,41 +1998,40 @@ static utility::result< int > _convert_string_to_number( const QString& e )
 
 	auto s = utility::split( _remove_junk( e ),'.' ) ;
 
-	auto dots = s.size() ;
+	auto components = s.size() ;
 
 	int major = 1000000 ;
 	int minor = 1000 ;
 	int patch = 1 ;
 
-	if( dots == 1 ){
+	if( components == 1 ){
 
-		return _convert( s.first() ) ;
+		auto a = _convert( s.first() ) ;
 
-	}else if( dots == 2 ){
+		if( a.valid ){
 
-		if( s.size() > 1 ){
-
-			auto a = _convert( s.at( 0 ) ) ;
-			auto b = _convert( s.at( 1 ) ) ;
-
-			if( a.valid && b.valid ){
-
-				return major * a.value + minor * b.value ;
-			}
+			return major * a.value ;
 		}
 
-	}else if( dots == 3 ){
+	}else if( components == 2 ){
 
-		if( s.size() > 2 ){
+		auto a = _convert( s.at( 0 ) ) ;
+		auto b = _convert( s.at( 1 ) ) ;
 
-			auto a = _convert( s.at( 0 ) ) ;
-			auto b = _convert( s.at( 1 ) ) ;
-			auto c = _convert( s.at( 2 ) ) ;
+		if( a.valid && b.valid ){
 
-			if( a.valid && b.valid && c.valid ){
+			return major * a.value + minor * b.value ;
+		}
 
-				return major * a.value + minor * b.value + patch * c.value ;
-			}
+	}else if( components == 3 ){
+
+		auto a = _convert( s.at( 0 ) ) ;
+		auto b = _convert( s.at( 1 ) ) ;
+		auto c = _convert( s.at( 2 ) ) ;
+
+		if( a.valid && b.valid && c.valid ){
+
+			return major * a.value + minor * b.value + patch * c.value ;
 		}
 	}
 
