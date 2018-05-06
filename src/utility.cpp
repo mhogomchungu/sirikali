@@ -1961,27 +1961,8 @@ QString utility::windowsExecutableSearchPath()
 }
 
 
-static utility::result< int > _convert_string_to_number( const QString& e )
+static utility::result< int > _convert_string_to_version( const QString& e )
 {
-	auto _remove_junk = []( const QString& e ){
-
-		QString m ;
-
-		for( int s = 0 ; s < e.size() ; s++ ){
-
-			auto n = e.at( s ) ;
-
-			if( n == '.' || ( n >= '0' && n <= '9' ) ){
-
-				m += n ;
-			}else{
-				break ;
-			}
-		}
-
-		return m ;
-	} ;
-
 	auto _convert = []( const QString& e )->utility::result< int >{
 
 		bool ok ;
@@ -1996,7 +1977,7 @@ static utility::result< int > _convert_string_to_number( const QString& e )
 		}
 	} ;
 
-	auto s = utility::split( _remove_junk( e ),'.' ) ;
+	auto s = utility::split( e,'.' ) ;
 
 	auto components = s.size() ;
 
@@ -2038,8 +2019,29 @@ static utility::result< int > _convert_string_to_number( const QString& e )
 	return {} ;
 }
 
-static utility::result< int > _get_backend_installed_version( const QString& backend )
+static utility::result< QString > _installed_version( const QString& backend )
 {
+	auto _remove_junk = []( QString e ){
+
+		e.replace( "v","" ).replace( ";","" ) ;
+
+		QString m ;
+
+		for( int s = 0 ; s < e.size() ; s++ ){
+
+			auto n = e.at( s ) ;
+
+			if( n == '.' || ( n >= '0' && n <= '9' ) ){
+
+				m += n ;
+			}else{
+				break ;
+			}
+		}
+
+		return m ;
+	} ;
+
 	auto exe = utility::executableFullPath( backend ) ;
 
 	if( exe.isEmpty() ){
@@ -2047,23 +2049,68 @@ static utility::result< int > _get_backend_installed_version( const QString& bac
 		return {} ;
 	}
 
-	if( backend == "cryfs" ){
+	auto cmd = [ & ](){
 
-		auto e = ::Task::process::run( exe + " --version" ).get().std_out() ;
+		if( backend == "securefs" ){
 
-		auto f = utility::split( e,'\n' ) ;
+			return backend + " version" ;
+		}else{
+			return backend + " --version" ;
+		}
+	}() ;
 
-		auto m = utility::split( f.first(),' ' ) ;
+	auto s = utility::systemEnvironment() ;
+
+	auto r = [ & ](){
+
+		if( backend == "encfs" ){
+
+			return QString( ::Task::process::run( cmd,{},-1,{},s ).get().std_error() ) ;
+		}else{
+			return QString( ::Task::process::run( cmd,{},-1,{},s ).get().std_out() ) ;
+		}
+	}() ;
+
+	if( r.isEmpty() ){
+
+		return {} ;
+	}
+
+	auto m = utility::split( utility::split( r,'\n' ).first(),' ' ) ;
+
+	if( utility::equalsAtleastOne( backend,"cryfs","encfs","sshfs" ) ){
 
 		if( m.size() >= 3 ){
 
-			auto s = m.at( 2 ) ;
+			return _remove_junk( m.at( 2 ) ) ;
+		}
 
-			return _convert_string_to_number( s ) ;
+	}else if( utility::equalsAtleastOne( backend,"gocryptfs","securefs","ecryptfs-simple" ) ){
+
+		if( m.size() >= 2 ){
+
+			return _remove_junk( m.at( 1 ) ) ;
 		}
 	}
 
 	return {} ;
+}
+
+::Task::future< utility::result< QString > >& utility::backEndInstalledVersion( const QString& backend )
+{
+	return ::Task::run( _installed_version,backend ) ;
+}
+
+static utility::result< int > _installedVersion( const QString& backend )
+{
+	auto s = utility::backEndInstalledVersion( backend ).get() ;
+
+	if( s.valid && !s.value.isEmpty() ){
+
+		return _convert_string_to_version( s.value ) ;
+	}else{
+		return {} ;
+	}
 }
 
 template< typename Function >
@@ -2073,8 +2120,8 @@ template< typename Function >
 {
 	return ::Task::run( [ = ]()->utility::result< bool >{
 
-		auto installed = _get_backend_installed_version( backend ) ;
-		auto guard_version = _convert_string_to_number( version ) ;
+		auto installed = _installedVersion( backend ) ;
+		auto guard_version = _convert_string_to_version( version ) ;
 
 		if( installed.valid && guard_version.valid ){
 
@@ -2091,7 +2138,7 @@ template< typename Function >
 	return _compare_versions( backend,version,std::greater_equal<int>() ) ;
 }
 
-::Task::future< utility::result< bool > > &utility::backendIsLessThan( const QString& backend,
+::Task::future< utility::result< bool > >& utility::backendIsLessThan( const QString& backend,
 								       const QString& version )
 {
 	return _compare_versions( backend,version,std::less<int>() ) ;

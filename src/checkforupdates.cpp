@@ -99,58 +99,16 @@ QString checkUpdates::InstalledVersion( const siritask::volumeType& e )
 	if( e == "sirikali" ){
 
 		return THIS_VERSION ;
+	}else{
+		auto s = utility::backEndInstalledVersion( e.name() ).await() ;
+
+		if( s.valid ){
+
+			return s.value ;
+		}else{
+			return "N/A" ;
+		}
 	}
-
-	auto exe = e.executableFullPath() ;
-
-	if( exe.isEmpty() ){
-
-		return "N/A" ;
-	}
-
-	exe = "\"" + exe + "\"" ;
-
-	auto args = [ & ](){
-
-		if( e == "securefs" ){
-
-			return exe + " version" ;
-		}else{
-			return exe + " --version" ;
-		}
-	}() ;
-
-	auto s = Task::await( [ & ](){
-
-		auto s = utility::systemEnvironment() ;
-
-		if( e == "encfs" ){
-
-			return utility::Task( args,-1,s ).splitOutput( ' ',utility::Task::channel::stdError ) ;
-		}else{
-			return utility::Task( args,-1,s ).splitOutput( ' ',utility::Task::channel::stdOut ) ;
-		}
-	} ) ;
-
-	auto r = [ & ]()->QString{
-
-		if( e.isOneOf( "cryfs","encfs" ) ){
-
-			if( s.size() > 2 ){
-
-				return s.at( 2 ) ;
-			}
-		}else{
-			if( s.size() > 1 ){
-
-				return s.at( 1 ) ;
-			}
-		}
-
-		return "N/A" ;
-	}() ;
-
-	return r.split( '\n' ).first().remove( ';' ).remove( 'v' ).remove( '\n' ) ;
 }
 
 QString checkUpdates::latestVersion( const QByteArray& data )
@@ -213,9 +171,7 @@ void checkUpdates::checkForUpdate( backends_t::size_type position )
 			m_results += { exe,"N/A","N/A" } ;
 
 			this->checkForUpdate( position ) ;
-
 		}else {
-
 			m_networkRequest.setUrl( QUrl( e.second ) ) ;
 
 			m_network.get( m_timeOut,m_networkRequest,[ = ]( QNetworkReply& e ){
