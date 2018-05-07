@@ -121,9 +121,9 @@ static QString _wrap_su( const QString& s )
 	}
 }
 
-static std::pair< bool,utility::Task > _unmount_volume( const QString& exe,
-							const QString& mountPoint,
-							bool usePolkit )
+static utility::result< utility::Task > _unmount_volume( const QString& exe,
+							 const QString& mountPoint,
+							 bool usePolkit )
 {
 	auto e = utility::preUnMountCommand() ;
 
@@ -131,20 +131,18 @@ static std::pair< bool,utility::Task > _unmount_volume( const QString& exe,
 
 	if( e.isEmpty() ){
 
-		return { true,utility::Task::run( exe,timeOut,usePolkit ).get() } ;
+		return utility::Task::run( exe,timeOut,usePolkit ).get() ;
 	}else{
 		if( utility::Task::run( e + " " + mountPoint,timeOut,false ).get().success() ){
 
-			return { true,utility::Task::run( exe,timeOut,usePolkit ).get() } ;
+			return utility::Task::run( exe,timeOut,usePolkit ).get() ;
 		}else{
-			return { false,utility::Task() } ;
+			return {} ;
 		}
 	}
 }
 
-static bool _unmount_ecryptfs( const QString& cipherFolder,
-			       const QString& mountPoint,
-			       int maxCount )
+static bool _unmount_ecryptfs( const QString& cipherFolder,const QString& mountPoint,int maxCount )
 {
 	bool not_set = true ;
 
@@ -166,11 +164,11 @@ static bool _unmount_ecryptfs( const QString& cipherFolder,
 
 		auto s = _unmount_volume( cmd(),mountPoint,true ) ;
 
-		if( s.first && s.second.success() ){
+		if( s.valid && s.value.success() ){
 
 			return true ;
 		}else{
-			if( not_set && s.second.stdError().contains( "error: failed to set gid" ) ){
+			if( not_set && s.value.stdError().contains( "error: failed to set gid" ) ){
 
 				if( utility::enablePolkit( utility::background_thread::True ) ){
 
@@ -208,7 +206,7 @@ static bool _unmount_rest( const QString& mountPoint,int maxCount )
 
 		auto s = _unmount_volume( cmd,mountPoint,false ) ;
 
-		if( s.first && s.second.success() ){
+		if( s.valid && s.value.success() ){
 
 			return true ;
 		}else{
