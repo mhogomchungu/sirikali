@@ -1,4 +1,4 @@
-﻿/*
+/*
  *
  *  Copyright (c) 2014-2015
  *  name : Francis Banyikwa
@@ -189,7 +189,7 @@ static bool _unmount_rest( const QString& mountPoint,int maxCount )
 {
 	if( utility::platformIsWindows() ){
 
-		return SiriKali::Winfsp::FspLaunchStop( mountPoint ).success() ;
+		return SiriKali::Winfsp::FspLaunchStop( mountPoint ).get().success() ;
 	}
 
 	auto cmd = [ & ](){

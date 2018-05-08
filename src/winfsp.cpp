@@ -34,7 +34,7 @@ public:
 	Task::process::result addInstance( const QString& args,
 					   const QByteArray& password,
 					   const siritask::options& opts ) ;
-	Task::process::result removeInstance( const QString& mountPoint ) ;
+	Task::future< Task::process::result >& removeInstance( const QString& mountPoint ) ;
 	std::vector< QStringList > commands() const ;
 	QString volumeProperties( const QString& mountPath ) ;
 	void updateVolumeList( std::function< void() > ) ;
@@ -297,6 +297,10 @@ Task::process::result SiriKali::Winfsp::FspLaunchRun( const QString& exe,
 
 		if( utility::createFolder( opts.cipherFolder ) ){
 
+			/*
+			 * We are intentionally not logging here because the called function
+			 * below will do the logging.
+			 */
 			return SiriKali::Winfsp::FspLaunchStart( exe,password,opts ) ;
 		}else{
 			auto s = Task::process::result( "","Failed To Create Cipher Folder",1,0,true ) ;
@@ -362,78 +366,81 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 	return s ;
 }
 
-Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const QString& e )
+Task::future< Task::process::result >& SiriKali::Winfsp::manageInstances::removeInstance( const QString& e )
 {
-	auto mountPoint = e ;
+	return Task::run( [ e,this ](){
 
-	mountPoint.replace( "\"","" ) ;
+		auto mountPoint = e ;
 
-	for( size_t i = 0 ; i < m_instances.size() ; i++ ){
+		mountPoint.replace( "\"","" ) ;
 
-		auto e = m_instances[ i ] ;
+		for( size_t i = 0 ; i < m_instances.size() ; i++ ){
 
-		const auto cmd = e->program() ;
+			auto e = m_instances[ i ] ;
 
-		auto m = [ & ](){
+			const auto cmd = e->program() ;
 
-			if( cmd.endsWith( "encfs.exe" ) ){
-
-				return e->arguments().at( 2 ) ;
-			}else{
-				return e->arguments().last() ;
-			}
-		}() ;
-
-		if( m == mountPoint ){
-
-			QString exe ;
-
-			auto env = [ & ](){
+			auto m = [ & ](){
 
 				if( cmd.endsWith( "encfs.exe" ) ){
 
-					return _update_environment( "encfs" ) ;
+					return e->arguments().at( 2 ) ;
 				}else{
-					return utility::systemEnvironment() ;
+					return e->arguments().last() ;
 				}
 			}() ;
 
-			if( cmd.endsWith( "encfs.exe" ) ){
+			if( m == mountPoint ){
 
-				exe = "\"" + cmd + "\" -u " + m ;
+				QString exe ;
 
-			}else if( cmd.endsWith( "securefs.exe" ) ){
+				auto env = [ & ](){
 
-				exe = "sirikali.exe terminateProcess-" + QString::number( e->processId() ) ;
-			}else{
-				exe = "taskkill /F /PID " + QString::number( e->processId() ) ;
+					if( cmd.endsWith( "encfs.exe" ) ){
+
+						return _update_environment( "encfs" ) ;
+					}else{
+						return utility::systemEnvironment() ;
+					}
+				}() ;
+
+				if( cmd.endsWith( "encfs.exe" ) ){
+
+					exe = "\"" + cmd + "\" -u " + m ;
+
+				}else if( cmd.endsWith( "securefs.exe" ) ){
+
+					exe = "sirikali.exe terminateProcess-" + QString::number( e->processId() ) ;
+				}else{
+					exe = "taskkill /F /PID " + QString::number( e->processId() ) ;
+				}
+
+				auto m = Task::process::run( exe,{},-1,"",env ).get() ;
+
+				auto s = [ & ](){
+
+					if( m.success() ) {
+
+						e->deleteLater() ;
+
+						m_instances.erase( m_instances.begin() + i ) ;
+
+						m_updateVolumeList() ;
+
+						return Task::process::result( 0 ) ;
+					}else{
+						return Task::process::result( "","Failed To Terminate A Process",1,0,true ) ;
+					}
+				}() ;
+
+				utility::logCommandOutPut( s,exe ) ;
+
+				return s ;
 			}
-
-			auto m = Task::process::run( exe,{},-1,"",env ).await() ;
-
-			auto s = [ & ](){
-
-				if( m.success() ) {
-
-					e->deleteLater() ;
-
-					m_instances.erase( m_instances.begin() + i ) ;
-
-					m_updateVolumeList() ;
-
-					return Task::process::result( 0 ) ;
-				}else{
-					return Task::process::result( "","Failed To Terminate A Process",1,0,true ) ;
-				}
-			}() ;
-
-			utility::logCommandOutPut( s,exe ) ;
-
-			return s ;
 		}
-	}
 
-	return Task::process::result() ;
+		return Task::process::result() ;
+	} ) ;
 }
 
 QString SiriKali::Winfsp::manageInstances::volumeProperties( const QString& mountPath )
@@ -501,16 +508,16 @@ std::vector< QStringList > SiriKali::Winfsp::commands()
 	}
 }
 
-Task::process::result SiriKali::Winfsp::FspLaunchStop( const QString& m )
+Task::future< Task::process::result >& SiriKali::Winfsp::FspLaunchStop( const QString& m )
 {
 	if( SiriKali::Winfsp::babySittingBackends() ){
 
 		return _winfspInstances().removeInstance( m ) ;
 	}else{
-		QStringList e ;
-		e.append( m ) ;
+		QString x ;
+		QStringList y( m ) ;
 
-		return SiriKali::Winfsp::FspLaunchStop( QString(),QString(),e ) ;
+		return Task::run( [ = ](){ return SiriKali::Winfsp::FspLaunchStop( x,x,y ) ; } ) ;
 	}
 }
 
