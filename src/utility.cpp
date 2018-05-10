@@ -1989,9 +1989,9 @@ static utility::result< int > _convert_string_to_version( const QString& e )
 
 		auto a = _convert( s.first() ) ;
 
-		if( a.valid ){
+		if( a ){
 
-			return major * a.value ;
+			return major * a.value() ;
 		}
 
 	}else if( components == 2 ){
@@ -1999,9 +1999,9 @@ static utility::result< int > _convert_string_to_version( const QString& e )
 		auto a = _convert( s.at( 0 ) ) ;
 		auto b = _convert( s.at( 1 ) ) ;
 
-		if( a.valid && b.valid ){
+		if( a && b ){
 
-			return major * a.value + minor * b.value ;
+			return major * a.value() + minor * b.value() ;
 		}
 
 	}else if( components == 3 ){
@@ -2010,9 +2010,9 @@ static utility::result< int > _convert_string_to_version( const QString& e )
 		auto b = _convert( s.at( 1 ) ) ;
 		auto c = _convert( s.at( 2 ) ) ;
 
-		if( a.valid && b.valid && c.valid ){
+		if( a && b && c ){
 
-			return major * a.value + minor * b.value + patch * c.value ;
+			return major * a.value() + minor * b.value() + patch * c.value() ;
 		}
 	}
 
@@ -2105,9 +2105,9 @@ static utility::result< int > _installedVersion( const QString& backend )
 {
 	auto s = utility::backEndInstalledVersion( backend ).get() ;
 
-	if( s.valid && !s.value.isEmpty() ){
+	if( s && !s.value().isEmpty() ){
 
-		return _convert_string_to_version( s.value ) ;
+		return _convert_string_to_version( s.value() ) ;
 	}else{
 		return {} ;
 	}
@@ -2123,9 +2123,9 @@ template< typename Function >
 		auto installed = _installedVersion( backend ) ;
 		auto guard_version = _convert_string_to_version( version ) ;
 
-		if( installed.valid && guard_version.valid ){
+		if( installed && guard_version ){
 
-			return compare( installed.value,guard_version.value ) ;
+			return compare( installed.value(),guard_version.value() ) ;
 		}else{
 			return {} ;
 		}

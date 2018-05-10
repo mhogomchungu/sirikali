@@ -102,9 +102,9 @@ QString checkUpdates::InstalledVersion( const siritask::volumeType& e )
 	}else{
 		auto s = utility::backEndInstalledVersion( e.name() ).await() ;
 
-		if( s.valid ){
+		if( s ){
 
-			return s.value ;
+			return s.value() ;
 		}else{
 			return "N/A" ;
 		}

@@ -73,17 +73,51 @@ namespace utility
 {
 	using volumeList = std::vector< std::pair< favorites::entry,QByteArray > > ;
 
-	template< typename Type >
-	struct result
+	template< typename T >
+	class result
 	{
+	public:
 		result()
 		{
 		}
-		result( Type e ) : valid( true ),value( std::move( e ) )
+		result( T e ) : m_valid( true ),m_value( std::move( e ) )
 		{
 		}
-		bool valid = false ;
-		Type value ;
+		T * operator->()
+		{
+			return &m_value ;
+		}
+		const T * operator->() const
+		{
+			return &m_value ;
+		}
+		T& operator*()
+		{
+			return m_value ;
+		}
+		const T& operator*() const
+		{
+			return m_value ;
+		}
+		operator bool()
+		{
+			return m_valid ;
+		}
+		bool has_value() const
+		{
+			return m_valid ;
+		}
+		T& value()
+		{
+			return m_value ;
+		}
+		const T& value() const
+		{
+			return m_value ;
+		}
+	private:
+		bool m_valid = false ;
+		T m_value ;
 	} ;
 }
 

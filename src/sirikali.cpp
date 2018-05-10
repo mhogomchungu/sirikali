@@ -1145,9 +1145,9 @@ static void _volume_properties( const QString& cmd,const std::pair<QString,QStri
 	}else{
 		auto e = _volume_properties( "\"" + exe + "\"",args,path ) ;
 
-		if( e.valid ){
+		if( e ){
 
-			auto& s = e.value ;
+			auto& s = e.value() ;
 
 			if( cmd == "gocryptfs" ){
 

@@ -164,11 +164,11 @@ static bool _unmount_ecryptfs( const QString& cipherFolder,const QString& mountP
 
 		auto s = _unmount_volume( cmd(),mountPoint,true ) ;
 
-		if( s.valid && s.value.success() ){
+		if( s && s.value().success() ){
 
 			return true ;
 		}else{
-			if( not_set && s.value.stdError().contains( "error: failed to set gid" ) ){
+			if( not_set && s.value().stdError().contains( "error: failed to set gid" ) ){
 
 				if( utility::enablePolkit( utility::background_thread::True ) ){
 
@@ -206,7 +206,7 @@ static bool _unmount_rest( const QString& mountPoint,int maxCount )
 
 		auto s = _unmount_volume( cmd,mountPoint,false ) ;
 
-		if( s.valid && s.value.success() ){
+		if( s && s.value().success() ){
 
 			return true ;
 		}else{
@@ -274,7 +274,7 @@ static QString _args( const QString& exe,const siritask::options& opt,
 			 */
 			static auto m = utility::backendIsLessThan( "cryfs","0.10" ).get() ;
 
-			if( m.valid && m.value ){
+			if( m && m.value() ){
 
 				return "--" ;
 			}else{
@@ -870,45 +870,45 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const sirit
 
 				auto m = _path_exist( e,"[[[gocryptfs]]]" ) ;
 
-				if( m.valid ){
+				if( m ){
 
-					return _mount( "gocryptfs",opt,m.value ) ;
+					return _mount( "gocryptfs",opt,m.value() ) ;
 				}
 
 			}else if( e.startsWith( "[[[ecryptfs]]]" ) ){
 
 				auto m = _path_exist( e,"[[[ecryptfs]]]" ) ;
 
-				if( m.valid ){
+				if( m ){
 
-					return _mount( "ecryptfs",opt,m.value ) ;
+					return _mount( "ecryptfs",opt,m.value() ) ;
 				}
 
 			}else if( e.startsWith( "[[[cryfs]]]" ) ){
 
 				auto m = _path_exist( e,"[[[cryfs]]]" ) ;
 
-				if( m.valid ){
+				if( m ){
 
-					return _mount( "cryfs",opt,m.value ) ;
+					return _mount( "cryfs",opt,m.value() ) ;
 				}
 
 			}else if( e.startsWith( "[[[securefs]]]" ) ){
 
 				auto m = _path_exist( e,"[[[securefs]]]" ) ;
 
-				if( m.valid ){
+				if( m ){
 
-					return _mount( "securefs",opt,m.value ) ;
+					return _mount( "securefs",opt,m.value() ) ;
 				}
 
 			}else if( e.startsWith( "[[[encfs]]]" ) ){
 
 				auto m = _path_exist( e,"[[[encfs]]]" ) ;
 
-				if( m.valid ){
+				if( m ){
 
-					return _mount( "encfs",opt,m.value ) ;
+					return _mount( "encfs",opt,m.value() ) ;
 				}
 
 			}else if( utility::pathExists( e ) ){
