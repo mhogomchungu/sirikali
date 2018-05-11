@@ -857,11 +857,10 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const sirit
 
 				if( utility::pathExists( e ) ){
 
-					return utility::result< QString >( e ) ;
+					return e ;
 				}else{
-					return utility::result< QString >() ;
+					return {} ;
 				}
-
 			} ;
 
 			auto e = opt.configFilePath ;
