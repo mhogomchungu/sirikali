@@ -221,20 +221,283 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 							const QString& mountPoint,
 							const QString& fileSystem )
 {
-	return Task::run( [ = ](){
+	const int max_count = 5 ;
 
-		const int max_count = 5 ;
+	if( _ecryptfs( fileSystem ) ){
 
-		if( _ecryptfs( fileSystem ) ){
+		auto a = _makePath( cipherFolder ) ;
+		auto b = _makePath( mountPoint ) ;
 
-			auto a = _makePath( cipherFolder ) ;
-			auto b = _makePath( mountPoint ) ;
+		return Task::run( _unmount_ecryptfs,a,b,max_count ) ;
+	}else{
+		return Task::run( _unmount_rest,_makePath( mountPoint ),max_count ) ;
+	}
+}
 
-			return _unmount_ecryptfs( a,b,max_count ) ;
+struct cmdArgsList
+{
+	const QString& exe ;
+	const siritask::options& opt ;
+	const QString& configFilePath ;
+	const QString& separator ;
+	const QString& idleTimeOut ;
+	const QString& cipherFolder ;
+	const QString& mountPoint ;
+	const bool create ;
+};
+
+static QString _ecryptfs( const cmdArgsList& args )
+{
+	auto mode = [ & ](){
+
+		if( args.opt.ro ){
+
+			return "--readonly" ;
 		}else{
-			return _unmount_rest( _makePath( mountPoint ),max_count ) ;
+			return "" ;
 		}
-	} ) ;
+	}() ;
+
+	auto e = QString( "%1 %2 %3 -a %4 %5 %6" ) ;
+
+	auto s = [ & ]{
+
+		if( args.create ){
+
+			return e.arg( args.exe,
+				      args.opt.createOptions,
+				      mode,
+				      args.configFilePath,
+				      args.cipherFolder,
+				      args.mountPoint ) ;
+		}else{
+			return e.arg( args.exe,
+				      "-o key=passphrase",
+				      mode,
+				      args.configFilePath,
+				      args.cipherFolder,
+				      args.mountPoint ) ;
+		}
+	}() ;
+
+	if( args.opt.mountOptions.isEmpty() ){
+
+		if( utility::useSiriPolkit() ){
+
+			return _wrap_su( s ) ;
+		}else{
+			return s ;
+		}
+	}else{
+		if( utility::useSiriPolkit() ){
+
+			return _wrap_su( s + " -o " + args.opt.mountOptions ) ;
+		}else{
+			return s + " -o " + args.opt.mountOptions ;
+		}
+	}
+}
+
+static QString _gocryptfs_and_securefs( const cmdArgsList& args )
+{
+	QString mode = [ & ](){
+
+		if( args.opt.ro ){
+
+			return "-o ro" ;
+		}else{
+			return "-o rw" ;
+		}
+	}() ;
+
+	QString exe ;
+
+	if( args.opt.type == "gocryptfs" ){
+
+		if( args.create ){
+
+			auto e = QString( "%1 --init -q %2 %3 %4" ) ;
+
+			exe = e.arg( args.exe,
+				     args.opt.createOptions,
+				     args.configFilePath,
+				     args.cipherFolder ) ;
+		}else{
+			mode += " -o fsname=gocryptfs@" + args.cipherFolder ;
+
+			auto e = QString( "%1 -q %2 %3 %4 %5" ) ;
+
+			exe = e.arg( args.exe,
+				     mode,
+				     args.configFilePath,
+				     args.cipherFolder,
+				     args.mountPoint ) ;
+		}
+	}else{
+		if( args.create ){
+
+			auto e = QString( "%1 create %2 %3 %4" ) ;
+
+			exe = e.arg( args.exe,
+				     args.opt.createOptions,
+				     args.configFilePath,
+				     args.cipherFolder ) ;
+		}else{
+			auto bg = [](){
+
+				if( utility::platformIsWindows() ){
+
+					return "" ;
+				}else{
+					return "-b" ;
+				}
+			}() ;
+
+			auto e = QString( "%1 mount %2 %3 %4 -o fsname=securefs@%5 -o subtype=securefs %6 %7" ) ;
+
+			exe = e.arg( args.exe,
+				     bg,
+				     args.configFilePath,
+				     mode,
+				     args.cipherFolder,
+				     args.cipherFolder,
+				     args.mountPoint ) ;
+		}
+	}
+
+	if( args.opt.mountOptions.isEmpty() ){
+
+		return exe ;
+	}else{
+		return exe + " -o " + args.opt.mountOptions ;
+	}
+}
+
+static QString _cryfs( const cmdArgsList& args )
+{
+	auto e = QString( "%1 %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ) ;
+
+	auto mountOptions = args.opt.mountOptions ;
+
+	auto exe = [ & ]()->QString{
+
+		if( args.create ){
+
+			return args.exe + " " + args.opt.createOptions ;
+		}else{
+			if( mountOptions.contains( " --allow-filesystem-upgrade" ) ){
+
+				mountOptions.replace( " --allow-filesystem-upgrade","" ) ;
+
+				return args.exe + " --allow-filesystem-upgrade" ;
+			}else{
+				return args.exe ;
+			}
+		}
+	}() ;
+
+	auto opts = e.arg( exe,
+			   args.cipherFolder,
+			   args.mountPoint,
+			   args.idleTimeOut,
+			   args.configFilePath,
+			   args.separator,
+			   args.opt.type.name(),
+			   args.cipherFolder,
+			   args.opt.type.name() ) ;
+
+	if( mountOptions.isEmpty() ){
+
+		if( args.opt.ro ){
+
+			return opts + " -o ro" ;
+		}else{
+			return opts + " -o rw" ;
+		}
+	}else{
+		if( args.opt.ro ){
+
+			return opts + " -o ro -o " + mountOptions ;
+		}else{
+			return opts + " -o rw -o " + mountOptions ;
+		}
+	}
+}
+
+static QString _encfs( const cmdArgsList& args )
+{
+	auto e = [](){
+
+		if( utility::platformIsWindows() ){
+
+			return QString( "%1 -f %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ) ;
+		}else{
+			return QString( "%1 %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ) ;
+		}
+	}() ;
+
+	if( utility::platformIsOSX() ){
+
+		e += " -o volname=" + utility::split( args.opt.plainFolder,'/' ).last() ;
+	}
+
+	auto opts = e.arg( args.exe,
+			   args.cipherFolder,
+			   args.mountPoint,
+			   args.idleTimeOut,
+			   args.configFilePath,
+			   args.separator,
+			   args.opt.type.name(),
+			   args.cipherFolder,
+			   args.opt.type.name() ) ;
+
+	if( args.opt.mountOptions.isEmpty() ){
+
+		if( args.opt.ro ){
+
+			return opts + " -o ro" ;
+		}else{
+			return opts + " -o rw" ;
+		}
+	}else{
+		if( args.opt.ro ){
+
+			return opts + " -o ro -o " + args.opt.mountOptions ;
+		}else{
+			return opts + " -o rw -o " + args.opt.mountOptions ;
+		}
+	}
+}
+
+static QString _sshfs( const cmdArgsList& args )
+{
+	QString s = [](){
+
+		if( utility::platformIsWindows() ){
+
+			return "%1 -f %2 -o subtype=sshfs -o fsname=sshfs@%3 %4 %5" ;
+		}else{
+			return "%1 %2 -o subtype=sshfs -o fsname=sshfs@%3 %4 %5" ;
+		}
+	}() ;
+
+	QString opts ;
+
+	for( const auto& it : utility::split( args.opt.mountOptions,',' ) ){
+
+		opts += " -o " + it ;
+	}
+
+	if( !args.opt.key.isEmpty() ){
+
+		opts += " -o password_stdin" ;
+	}
+
+	return s.arg( args.exe,
+		      opts,
+		      args.opt.cipherFolder,
+		      args.opt.cipherFolder,
+		      args.opt.plainFolder ) ;
 }
 
 static QString _args( const QString& exe,const siritask::options& opt,
@@ -245,17 +508,15 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 	auto mountPoint   = _makePath( opt.plainFolder ) ;
 
-	const auto& type = opt.type ;
-
 	auto idleTimeOut = [ & ](){
 
 		if( !opt.idleTimeout.isEmpty() ){
 
-			if( type == "cryfs" ){
+			if( opt.type == "cryfs" ){
 
 				return QString( "--unmount-idle %1" ).arg( opt.idleTimeout ) ;
 
-			}else if( type == "encfs" ){
+			}else if( opt.type == "encfs" ){
 
 				return QString( "--idle=%1" ).arg( opt.idleTimeout ) ;
 			}
@@ -266,7 +527,7 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 	auto separator = [ & ](){
 
-		if( type == "cryfs" ){
+		if( opt.type == "cryfs" ){
 
 			/*
 			 * declaring this variable as static to force this function to be called only
@@ -281,7 +542,7 @@ static QString _args( const QString& exe,const siritask::options& opt,
 				return "" ;
 			}
 
-		}else if( type == "encfs" ){
+		}else if( opt.type == "encfs" ){
 
 			if( create ){
 
@@ -296,7 +557,7 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 	auto configPath = [ & ](){
 
-		if( type.isOneOf( "cryfs","gocryptfs","securefs","ecryptfs" ) ){
+		if( opt.type.isOneOf( "cryfs","gocryptfs","securefs","ecryptfs" ) ){
 
 			if( !configFilePath.isEmpty() ){
 
@@ -307,229 +568,34 @@ static QString _args( const QString& exe,const siritask::options& opt,
 		return QString() ;
 	}() ;
 
-	if( type.isOneOf( "gocryptfs","securefs" ) ){
+	cmdArgsList arguments{ exe,opt,configPath,separator,
+			       idleTimeOut,cipherFolder,mountPoint,create } ;
 
-		QString mode = [ & ](){
+	if( opt.type.isOneOf( "gocryptfs","securefs" ) ){
 
-			if( opt.ro ){
+		return _gocryptfs_and_securefs( arguments ) ;
 
-				return "-o ro" ;
-			}else{
-				return "-o rw" ;
-			}
-		}() ;
+	}else if( _ecryptfs( opt.type ) ){
 
-		auto e = [ & ](){
+		return _ecryptfs( arguments ) ;
 
-			if( type == "gocryptfs" ){
+	}else if( opt.type == "cryfs" ){
 
-				if( create ){
+		return _cryfs( arguments ) ;
 
-					auto e = QString( "%1 --init -q %2 %3 %4" ) ;
-					return e.arg( exe,opt.createOptions,configPath,cipherFolder ) ;
-				}else{
-					mode += " -o fsname=gocryptfs@" + cipherFolder ;
+	}else if( opt.type == "encfs" ){
 
-					//if( utility::platformIsOSX() ){
+		return _encfs( arguments ) ;
 
-					//	mode += " -o volname=" + utility::split( opt.plainFolder,'/' ).last() ;
-					//}
+	}else if( opt.type == "sshfs" ){
 
-					auto e = QString( "%1 -q %2 %3 %4 %5" ) ;
-					return e.arg( exe,mode,configPath,cipherFolder,mountPoint ) ;
-				}
-			}else{
-				if( create ){
-
-					auto e = QString( "%1 create %2 %3 %4" ) ;
-					return e.arg( exe,opt.createOptions,configPath,cipherFolder ) ;
-				}else{
-					//if( utility::platformIsOSX() ){
-
-					//	mode += " -o volname=" + utility::split( opt.plainFolder,'/' ).last() ;
-					//}
-
-					auto bg = [](){
-
-						if( utility::platformIsWindows() ){
-
-							return "" ;
-						}else{
-							return "-b" ;
-						}
-					}() ;
-
-					auto e = QString( "%1 mount %2 %3 %4 -o fsname=securefs@%5 -o subtype=securefs %6 %7" ) ;
-
-					return e.arg( exe,bg,configPath,mode,cipherFolder,cipherFolder,mountPoint ) ;
-				}
-			}
-		}() ;
-
-		if( opt.mountOptions.isEmpty() ){
-
-			return e ;
-		}else{
-			return e + " -o " + opt.mountOptions ;
-		}
-
-	}else if( _ecryptfs( type ) ){
-
-		auto mode = [ & ](){
-
-			if( opt.ro ){
-
-				return "--readonly" ;
-			}else{
-				return "" ;
-			}
-		}() ;
-
-		auto e = QString( "%1 %2 %3 -a %4 %5 %6" ) ;
-
-		auto s = [ & ]{
-
-			if( create ){
-
-				return e.arg( exe,opt.createOptions,mode,configPath,cipherFolder,mountPoint ) ;
-			}else{
-				return e.arg( exe,"-o key=passphrase",mode,configPath,cipherFolder,mountPoint ) ;
-			}
-		}() ;
-
-		if( opt.mountOptions.isEmpty() ){
-
-			if( utility::useSiriPolkit() ){
-
-				return _wrap_su( s ) ;
-			}else{
-				return s ;
-			}
-		}else{
-			if( utility::useSiriPolkit() ){
-
-				return _wrap_su( s + " -o " + opt.mountOptions ) ;
-			}else{
-				return s + " -o " + opt.mountOptions ;
-			}
-		}
-
-	}else if( type == "cryfs" ){
-
-		auto e = QString( "%1 %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ) ;
-
-		//if( utility::platformIsOSX() ){
-
-		//	e += " -o volname=" + utility::split( opt.plainFolder,'/' ).last() ;
-		//}
-
-		auto mountOptions = opt.mountOptions ;
-
-		auto z = [ & ]()->QString{
-
-			if( create ){
-
-				return exe + " " + opt.createOptions ;
-			}else{
-				if( mountOptions.contains( " --allow-filesystem-upgrade" ) ){
-
-					mountOptions.replace( " --allow-filesystem-upgrade","" ) ;
-
-					return exe + " --allow-filesystem-upgrade" ;
-				}else{
-					return exe ;
-				}
-			}
-		}() ;
-
-		auto opts = e.arg( z,cipherFolder,mountPoint,idleTimeOut,configPath,
-				   separator,type.name(),cipherFolder,type.name() ) ;
-
-		if( mountOptions.isEmpty() ){
-
-			if( opt.ro ){
-
-				return opts + " -o ro" ;
-			}else{
-				return opts + " -o rw" ;
-			}
-		}else{
-			if( opt.ro ){
-
-				return opts + " -o ro -o " + mountOptions ;
-			}else{
-				return opts + " -o rw -o " + mountOptions ;
-			}
-		}
-
-	}else if( type == "encfs" ){
-
-		auto e = [](){
-
-			if( utility::platformIsWindows() ){
-
-				return QString( "%1 -f %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ) ;
-			}else{
-				return QString( "%1 %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ) ;
-			}
-		}() ;
-
-		if( utility::platformIsOSX() ){
-
-			e += " -o volname=" + utility::split( opt.plainFolder,'/' ).last() ;
-		}
-
-		auto opts = e.arg( exe,cipherFolder,mountPoint,idleTimeOut,configPath,
-				   separator,type.name(),cipherFolder,type.name() ) ;
-
-		if( opt.mountOptions.isEmpty() ){
-
-			if( opt.ro ){
-
-				return opts + " -o ro" ;
-			}else{
-				return opts + " -o rw" ;
-			}
-		}else{
-			if( opt.ro ){
-
-				return opts + " -o ro -o " + opt.mountOptions ;
-			}else{
-				return opts + " -o rw -o " + opt.mountOptions ;
-			}
-		}
-
-	}else if( type == "sshfs" ){
-
-		QString s = [](){
-
-			if( utility::platformIsWindows() ){
-
-				return "%1 -f %2 -o subtype=sshfs -o fsname=sshfs@%3 %4 %5" ;
-			}else{
-				return "%1 %2 -o subtype=sshfs -o fsname=sshfs@%3 %4 %5" ;
-			}
-		}() ;
-
-		QString m ;
-
-		for( const auto& it : utility::split( opt.mountOptions,',' ) ){
-
-			m += " -o " + it ;
-		}
-
-		if( !opt.key.isEmpty() ){
-
-			m += " -o password_stdin" ;
-		}
-
-		return s.arg( exe,m,opt.cipherFolder,opt.cipherFolder,opt.plainFolder ) ;
+		return _sshfs( arguments ) ;
+	}else{
+		/*
+		 * We Should not get here
+		 */
+		return QString() ;
 	}
-
-	/*
-	 * We Should not get here
-	 */
-	return QString() ;
 }
 
 enum class status_type{ exeName,exeNotFound } ;
@@ -581,10 +647,8 @@ static siritask::status _status( const siritask::volumeType& app,status_type s )
 	}
 }
 
-static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bool encfs )
+static siritask::cmdStatus _status( const utility::Task& r,siritask::status s )
 {
-	Q_UNUSED( encfs ) ;
-
 	if( r.success() ){
 
 		return siritask::cmdStatus( siritask::status::success,r.exitCode() ) ;
@@ -735,7 +799,7 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opts,
 
 			auto s = _run_task( cmd,password,opt,create,_ecryptfs( app ) ) ;
 
-			return { cmd,_status( s,_status( app,status_type::exeName ),app == "encfs" ) } ;
+			return { cmd,_status( s,_status( app,status_type::exeName ) ) } ;
 		} ;
 
 		auto s = _run() ;
@@ -764,238 +828,242 @@ static QString _configFilePath( const siritask::options& opt )
 	}
 }
 
-Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const siritask::options& opt,
-								     bool reUseMountPoint )
+static siritask::cmdStatus _encrypted_folder_mount( const siritask::options& opt,bool reUseMountPoint )
 {
-	return Task::run( [ opt,reUseMountPoint ]()->siritask::cmdStatus{
+	auto _mount = [ reUseMountPoint ]( const QString& app,const siritask::options& copt,
+			const QString& configFilePath )->siritask::cmdStatus{
 
-		auto _mount = [ reUseMountPoint ]( const QString& app,const siritask::options& copt,
-				const QString& configFilePath )->siritask::cmdStatus{
+		auto opt = copt ;
 
-			auto opt = copt ;
-
-			opt.type = app ;
-
-			if( _ecryptfs_illegal_path( opt ) ){
-
-				return cs::ecryptfsIllegalPath ;
-			}
-
-			if( _create_folder( opt.plainFolder ) || reUseMountPoint ){
-
-				auto e = _cmd( false,opt,opt.key,configFilePath ) ;
-
-				if( e == cs::success ){
-
-					_run_command_on_mount( opt,app ) ;
-				}else{
-					siritask::deleteMountFolder( opt.plainFolder ) ;
-				}
-
-				return e ;
-			}else{
-				return cs::failedToCreateMountPoint ;
-			}
-		} ;
-
-		if( opt.cipherFolder.startsWith( "sshfs " ) ){
-
-			auto opts = opt ;
-			opts.cipherFolder = opts.cipherFolder.remove( 0,6 ) ; // 6 is the size of "sshfs "
-
-			if( !opts.key.isEmpty() ){
-
-				auto m = opts.key ;
-
-				/*
-				 * On my linux box, sshfs prompts six times when entered password is wrong before
-				 * giving up, here, we simulate replaying the password 10 times hoping it will be
-				 * enough for sshfs.
-				 */
-				for( int i = 0 ; i < 9 ; i++ ){
-
-					opts.key += "\n" + m ;
-				}
-			}
-
-			return _mount( "sshfs",opts,QString() ) ;
-		}
-
-                if( opt.configFilePath.isEmpty() ){
-
-                        if( utility::pathExists( opt.cipherFolder + "/cryfs.config" ) ){
-
-				return _mount( "cryfs",opt,QString() ) ;
-
-			}else if( utility::pathExists( opt.cipherFolder + "/gocryptfs.conf" ) ){
-
-				return _mount( "gocryptfs",opt,QString() ) ;
-
-			}else if( utility::pathExists( opt.cipherFolder + "/.securefs.json" ) ){
-
-				return _mount( "securefs",opt,QString() ) ;
-
-			}else if( utility::pathExists( opt.cipherFolder + "/.ecryptfs.config" ) ){
-
-				return _mount( "ecryptfs",opt,opt.cipherFolder + "/.ecryptfs.config" ) ;
-			}else{
-                                auto encfs6 = opt.cipherFolder + "/.encfs6.xml" ;
-                                auto encfs5 = opt.cipherFolder + "/.encfs5" ;
-                                auto encfs4 = opt.cipherFolder + "/.encfs4" ;
-
-                                if( utility::atLeastOnePathExists( encfs6,encfs5,encfs4 ) ){
-
-					return _mount( "encfs",opt,QString() ) ;
-                                }else{
-					return cs::unknown ;
-                                }
-                        }
-                }else{
-			auto _path_exist = []( QString e,const QString& m )->utility::result< QString >{
-
-				e.remove( 0,m.size() ) ;
-
-				if( utility::pathExists( e ) ){
-
-					return e ;
-				}else{
-					return {} ;
-				}
-			} ;
-
-			auto e = opt.configFilePath ;
-
-			if( e.startsWith( "[[[gocryptfs]]]" ) ){
-
-				auto m = _path_exist( e,"[[[gocryptfs]]]" ) ;
-
-				if( m ){
-
-					return _mount( "gocryptfs",opt,m.value() ) ;
-				}
-
-			}else if( e.startsWith( "[[[ecryptfs]]]" ) ){
-
-				auto m = _path_exist( e,"[[[ecryptfs]]]" ) ;
-
-				if( m ){
-
-					return _mount( "ecryptfs",opt,m.value() ) ;
-				}
-
-			}else if( e.startsWith( "[[[cryfs]]]" ) ){
-
-				auto m = _path_exist( e,"[[[cryfs]]]" ) ;
-
-				if( m ){
-
-					return _mount( "cryfs",opt,m.value() ) ;
-				}
-
-			}else if( e.startsWith( "[[[securefs]]]" ) ){
-
-				auto m = _path_exist( e,"[[[securefs]]]" ) ;
-
-				if( m ){
-
-					return _mount( "securefs",opt,m.value() ) ;
-				}
-
-			}else if( e.startsWith( "[[[encfs]]]" ) ){
-
-				auto m = _path_exist( e,"[[[encfs]]]" ) ;
-
-				if( m ){
-
-					return _mount( "encfs",opt,m.value() ) ;
-				}
-
-			}else if( utility::pathExists( e ) ){
-
-				if( e.endsWith( "gocryptfs.conf" ) ){
-
-					return _mount( "gocryptfs",opt,e ) ;
-
-				}else if( e.endsWith( "securefs.json" ) ){
-
-					return _mount( "securefs",opt,e ) ;
-
-				}else if( e.endsWith( "ecryptfs.config" ) ){
-
-					return _mount( "ecryptfs",opt,e ) ;
-
-				}else if( e.endsWith( "cryfs.config" ) ){
-
-					return _mount( "cryfs",opt,e ) ;
-
-				}else if( utility::endsWithAtLeastOne( e,".encfs6.xml",".encfs5",".encfs4" ) ){
-
-					return _mount( "encfs",opt,e ) ;
-				}
-			}
-                }
-
-		return cs::unknown ;
-	} ) ;
-}
-
-Task::future< siritask::cmdStatus >& siritask::encryptedFolderCreate( const siritask::options& opt )
-{
-	return Task::run( [ opt ]()->siritask::cmdStatus{
+		opt.type = app ;
 
 		if( _ecryptfs_illegal_path( opt ) ){
 
 			return cs::ecryptfsIllegalPath ;
 		}
 
-		if( _create_folder( opt.cipherFolder ) ){
+		if( _create_folder( opt.plainFolder ) || reUseMountPoint ){
 
-			if( _create_folder( opt.plainFolder ) ){
+			auto e = _cmd( false,opt,opt.key,configFilePath ) ;
 
-				auto e = _cmd( true,opt,[ & ]()->QString{
+			if( e == cs::success ){
 
-					if( opt.type.isOneOf( "securefs","encfs" ) ){
-
-						return opt.key + "\n" + opt.key ;
-					}else{
-						return opt.key ;
-					}
-
-				}(),[ & ](){
-
-					auto e = _configFilePath( opt ) ;
-
-					if( e.isEmpty() && opt.type == "ecryptfs" ){
-
-						return opt.cipherFolder + "/.ecryptfs.config" ;
-					}else{
-						return e ;
-					}
-				}() ) ;
-
-				if( e == cs::success ){
-
-					if( opt.type.isOneOf( "gocryptfs","securefs" ) ){
-
-						e = siritask::encryptedFolderMount( opt,true ).get() ;
-
-						if( e != cs::success ){
-
-							_deleteFolders( opt.cipherFolder,opt.plainFolder ) ;
-						}
-					}
-				}else{
-					_deleteFolders( opt.plainFolder,opt.cipherFolder ) ;
-				}
-
-				return e ;
+				_run_command_on_mount( opt,app ) ;
 			}else{
-				_deleteFolders( opt.cipherFolder ) ;
-
-				return cs::failedToCreateMountPoint ;
+				siritask::deleteMountFolder( opt.plainFolder ) ;
 			}
+
+			return e ;
 		}else{
 			return cs::failedToCreateMountPoint ;
 		}
-	} ) ;
+	} ;
+
+	if( opt.cipherFolder.startsWith( "sshfs " ) ){
+
+		auto opts = opt ;
+		opts.cipherFolder = opts.cipherFolder.remove( 0,6 ) ; // 6 is the size of "sshfs "
+
+		if( !opts.key.isEmpty() ){
+
+			auto m = opts.key ;
+
+			/*
+			 * On my linux box, sshfs prompts six times when entered password is wrong before
+			 * giving up, here, we simulate replaying the password 10 times hoping it will be
+			 * enough for sshfs.
+			 */
+			for( int i = 0 ; i < 9 ; i++ ){
+
+				opts.key += "\n" + m ;
+			}
+		}
+
+		return _mount( "sshfs",opts,QString() ) ;
+	}
+
+	if( opt.configFilePath.isEmpty() ){
+
+		if( utility::pathExists( opt.cipherFolder + "/cryfs.config" ) ){
+
+			return _mount( "cryfs",opt,QString() ) ;
+
+		}else if( utility::pathExists( opt.cipherFolder + "/gocryptfs.conf" ) ){
+
+			return _mount( "gocryptfs",opt,QString() ) ;
+
+		}else if( utility::pathExists( opt.cipherFolder + "/.securefs.json" ) ){
+
+			return _mount( "securefs",opt,QString() ) ;
+
+		}else if( utility::pathExists( opt.cipherFolder + "/.ecryptfs.config" ) ){
+
+			return _mount( "ecryptfs",opt,opt.cipherFolder + "/.ecryptfs.config" ) ;
+		}else{
+			auto encfs6 = opt.cipherFolder + "/.encfs6.xml" ;
+			auto encfs5 = opt.cipherFolder + "/.encfs5" ;
+			auto encfs4 = opt.cipherFolder + "/.encfs4" ;
+
+			if( utility::atLeastOnePathExists( encfs6,encfs5,encfs4 ) ){
+
+				return _mount( "encfs",opt,QString() ) ;
+			}else{
+				return cs::unknown ;
+			}
+		}
+	}else{
+		auto _path_exist = []( QString e,const QString& m )->utility::result< QString >{
+
+			e.remove( 0,m.size() ) ;
+
+			if( utility::pathExists( e ) ){
+
+				return e ;
+			}else{
+				return {} ;
+			}
+		} ;
+
+		auto e = opt.configFilePath ;
+
+		if( e.startsWith( "[[[gocryptfs]]]" ) ){
+
+			auto m = _path_exist( e,"[[[gocryptfs]]]" ) ;
+
+			if( m ){
+
+				return _mount( "gocryptfs",opt,m.value() ) ;
+			}
+
+		}else if( e.startsWith( "[[[ecryptfs]]]" ) ){
+
+			auto m = _path_exist( e,"[[[ecryptfs]]]" ) ;
+
+			if( m ){
+
+				return _mount( "ecryptfs",opt,m.value() ) ;
+			}
+
+		}else if( e.startsWith( "[[[cryfs]]]" ) ){
+
+			auto m = _path_exist( e,"[[[cryfs]]]" ) ;
+
+			if( m ){
+
+				return _mount( "cryfs",opt,m.value() ) ;
+			}
+
+		}else if( e.startsWith( "[[[securefs]]]" ) ){
+
+			auto m = _path_exist( e,"[[[securefs]]]" ) ;
+
+			if( m ){
+
+				return _mount( "securefs",opt,m.value() ) ;
+			}
+
+		}else if( e.startsWith( "[[[encfs]]]" ) ){
+
+			auto m = _path_exist( e,"[[[encfs]]]" ) ;
+
+			if( m ){
+
+				return _mount( "encfs",opt,m.value() ) ;
+			}
+
+		}else if( utility::pathExists( e ) ){
+
+			if( e.endsWith( "gocryptfs.conf" ) ){
+
+				return _mount( "gocryptfs",opt,e ) ;
+
+			}else if( e.endsWith( "securefs.json" ) ){
+
+				return _mount( "securefs",opt,e ) ;
+
+			}else if( e.endsWith( "ecryptfs.config" ) ){
+
+				return _mount( "ecryptfs",opt,e ) ;
+
+			}else if( e.endsWith( "cryfs.config" ) ){
+
+				return _mount( "cryfs",opt,e ) ;
+
+			}else if( utility::endsWithAtLeastOne( e,".encfs6.xml",".encfs5",".encfs4" ) ){
+
+				return _mount( "encfs",opt,e ) ;
+			}
+		}
+	}
+
+	return cs::unknown ;
+}
+
+static siritask::cmdStatus _encrypted_folder_create( const siritask::options& opt )
+{
+	if( _ecryptfs_illegal_path( opt ) ){
+
+		return cs::ecryptfsIllegalPath ;
+	}
+
+	if( _create_folder( opt.cipherFolder ) ){
+
+		if( _create_folder( opt.plainFolder ) ){
+
+			auto e = _cmd( true,opt,[ & ]()->QString{
+
+				if( opt.type.isOneOf( "securefs","encfs" ) ){
+
+					return opt.key + "\n" + opt.key ;
+				}else{
+					return opt.key ;
+				}
+
+			}(),[ & ](){
+
+				auto e = _configFilePath( opt ) ;
+
+				if( e.isEmpty() && opt.type == "ecryptfs" ){
+
+					return opt.cipherFolder + "/.ecryptfs.config" ;
+				}else{
+					return e ;
+				}
+			}() ) ;
+
+			if( e == cs::success ){
+
+				if( opt.type.isOneOf( "gocryptfs","securefs" ) ){
+
+					e = siritask::encryptedFolderMount( opt,true ).get() ;
+
+					if( e != cs::success ){
+
+						_deleteFolders( opt.cipherFolder,opt.plainFolder ) ;
+					}
+				}
+			}else{
+				_deleteFolders( opt.plainFolder,opt.cipherFolder ) ;
+			}
+
+			return e ;
+		}else{
+			_deleteFolders( opt.cipherFolder ) ;
+
+			return cs::failedToCreateMountPoint ;
+		}
+	}else{
+		return cs::failedToCreateMountPoint ;
+	}
+}
+
+Task::future< siritask::cmdStatus >& siritask::encryptedFolderCreate( const siritask::options& opt )
+{
+	return Task::run( _encrypted_folder_create,opt ) ;
+}
+
+Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const siritask::options& opt,
+								     bool reUseMountPoint )
+{
+	return Task::run( _encrypted_folder_mount,opt,reUseMountPoint ) ;
 }
