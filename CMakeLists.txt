@@ -433,7 +433,13 @@ install( FILES ${PROJECT_BINARY_DIR}/sirikali.desktop
 )
 
 if( UNIX AND NOT APPLE )
-    ADD_SUBDIRECTORY( src/siripolkit )
+	if( "${POLKIT_SUPPORT}" STREQUAL "" )
+		SET( POLKIT_SUPPORT "true" )
+	endif()
+
+	if( POLKIT_SUPPORT )
+		ADD_SUBDIRECTORY( src/siripolkit )
+	endif()
 endif()
 
 file( WRITE ${PROJECT_BINARY_DIR}/org.sirikali.pkexec.policy
