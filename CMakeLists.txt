@@ -463,6 +463,14 @@ file( WRITE ${PROJECT_BINARY_DIR}/org.sirikali.pkexec.policy
 </policyconfig>
 ")
 
-install ( FILES ${PROJECT_BINARY_DIR}/org.sirikali.pkexec.policy DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/polkit-1/actions )
+if( UNIX AND NOT APPLE )
+	if( "${POLKIT_SUPPORT}" STREQUAL "" )
+		SET( POLKIT_SUPPORT "true" )
+	endif()
+
+	if( POLKIT_SUPPORT )
+		install ( FILES ${PROJECT_BINARY_DIR}/org.sirikali.pkexec.policy DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/polkit-1/actions )
+	endif()
+endif()
 
 endif()
