@@ -164,11 +164,8 @@ void sirikali::setUpApp( const QString& volume )
 	table->setColumnWidth( 2,dimensions.columnWidthAt( 2 ) ) ;
 	table->setColumnWidth( 3,dimensions.columnWidthAt( 3 ) ) ;
 
-#if QT_VERSION < QT_VERSION_CHECK( 5,0,0 )
-	m_ui->tableWidget->verticalHeader()->setResizeMode( QHeaderView::ResizeToContents ) ;
-#else
 	m_ui->tableWidget->verticalHeader()->setSectionResizeMode( QHeaderView::ResizeToContents ) ;
-#endif
+
 	m_ui->tableWidget->verticalHeader()->setMinimumSectionSize( 30 ) ;
 
 	m_ui->tableWidget->setMouseTracking( true ) ;

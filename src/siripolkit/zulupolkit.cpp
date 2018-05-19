@@ -63,14 +63,6 @@ zuluPolkit::~zuluPolkit()
 	QFile::remove( m_socketPath ) ;
 }
 
-#if QT_VERSION > QT_VERSION_CHECK( 5,0,0 )
-	#include <QFileDevice>
-
-	#define zuluPermission QFileDevice
-#else
-	#define zuluPermission QFile
-#endif
-
 static void _set_path_writable_by_others( const QString& e )
 {
 	QFile f( e ) ;
@@ -86,7 +78,7 @@ static void _set_path_writable_by_others( const QString& e )
 		f.close() ;
 		f.remove() ;
 
-		if( s & zuluPermission::WriteOther ){
+		if( s & QFileDevice::WriteOther ){
 
 			break ;
 		}
