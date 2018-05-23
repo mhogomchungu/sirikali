@@ -101,12 +101,23 @@ endif()
 file( WRITE ${PROJECT_BINARY_DIR}/json.h "\n#include \"${JSON_HEADER_PATH}\"" )
 MESSAGE( STATUS "found json.hpp header file at: ${JSON_HEADER_PATH}" )
 
-find_file( GCRYPT_INCLUDE_FILE gcrypt.h )
-find_path( GCRYPT_INCLUDE_PATH gcrypt.h )
+if( WIN32 )
 
-add_definitions( -I${GCRYPT_INCLUDE_PATH} )
+    set( GCRYPT_INCLUDE_FILE "${PROJECT_SOURCE_DIR}/libs/include/gcrypt.h" )
+    set( GCRYPT_INCLUDE_PATH "${PROJECT_SOURCE_DIR}/libs/include" )
 
-find_library( GCRYPT_LIBRARY gcrypt )
+    MESSAGE( STATUS "${GCRYPT_INCLUDE_FILE}" )
+    set( GCRYPT_LIBRARY "${PROJECT_SOURCE_DIR}/libs/lib/libgcrypt.dll.a" )
+
+else()
+
+    find_file( GCRYPT_INCLUDE_FILE gcrypt.h )
+    find_path( GCRYPT_INCLUDE_PATH gcrypt.h )
+
+    add_definitions( -I${GCRYPT_INCLUDE_PATH} )
+
+    find_library( GCRYPT_LIBRARY gcrypt )
+endif()
 
 if( NOT GCRYPT_INCLUDE_FILE )
 	MESSAGE( FATAL_ERROR "could not find gcrypt header file" )

@@ -105,7 +105,12 @@ bool siritask::deleteMountFolder( const QString& m )
 
 		return false ;
 	}else{
-		return _deleteFolders( m ) ;
+		if( utility::platformIsWindows() ){
+
+			return true ;
+		}else{
+			return _deleteFolders( m ) ;
+		}
 	}
 }
 
@@ -189,7 +194,7 @@ static bool _unmount_rest( const QString& mountPoint,int maxCount )
 {
 	if( utility::platformIsWindows() ){
 
-		return SiriKali::Winfsp::FspLaunchStop( mountPoint ).get().success() ;
+		return SiriKali::Winfsp::FspLaunchStop( mountPoint ).success() ;
 	}
 
 	auto cmd = [ & ](){
@@ -221,17 +226,20 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 							const QString& mountPoint,
 							const QString& fileSystem )
 {
-	const int max_count = 5 ;
+	return Task::run( [ = ](){
 
-	if( _ecryptfs( fileSystem ) ){
+		const int max_count = 5 ;
 
-		auto a = _makePath( cipherFolder ) ;
-		auto b = _makePath( mountPoint ) ;
+		if( _ecryptfs( fileSystem ) ){
 
-		return Task::run( _unmount_ecryptfs,a,b,max_count ) ;
-	}else{
-		return Task::run( _unmount_rest,_makePath( mountPoint ),max_count ) ;
-	}
+			auto a = _makePath( cipherFolder ) ;
+			auto b = _makePath( mountPoint ) ;
+
+			return _unmount_ecryptfs( a,b,max_count ) ;
+		}else{
+			return _unmount_rest( _makePath( mountPoint ),max_count ) ;
+		}
+	} ) ;
 }
 
 struct cmdArgsList

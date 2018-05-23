@@ -9,6 +9,9 @@
 #define MyLibrariesLocation "C:\projects\SiriKali.libraries"
 #define MyEXELocation "C:\projects\build\SiriKali\sirikali.exe"
 #define MyOutPutPath "C:\Users\Francis Banyikwa\Desktop\SiriKali"
+#define MyGcryptLibraryPath "C:\projects\sirikali\libs\lib"
+#define MySourcesPath "C:\projects\sirikali"
+
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
@@ -22,9 +25,9 @@ AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
-LicenseFile={#MyLibrariesLocation}\LICENSE.txt
+LicenseFile={#MySourcesPath}\LICENSE.txt
 OutputDir={#MyOutPutPath}
-SetupIconFile={#MyLibrariesLocation}\icons\256x256\sirikali.ico
+SetupIconFile={#MySourcesPath}\icons\256x256\sirikali.ico
 Compression=lzma
 SolidCompression=yes
 DisableProgramGroupPage=yes
@@ -38,8 +41,9 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 Source: "{#MyEXELocation}"; DestDir: "{app}"; Flags: ignoreversion
 
 Source: "{#MyLibrariesLocation}\*.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyGcryptLibraryPath}\*.dll"; DestDir: "{app}"; Flags: ignoreversion    
 
-Source: "{#MyLibrariesLocation}\LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MySourcesPath}\LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 
 Source: "{#MyLibrariesLocation}\bearer\*"; DestDir: "{app}\bearer"; Flags: ignoreversion
 
@@ -47,11 +51,15 @@ Source: "{#MyLibrariesLocation}\iconengines\*"; DestDir: "{app}\iconengines"; Fl
 
 Source: "{#MyLibrariesLocation}\imageformats\*"; DestDir: "{app}\imageformats"; Flags: ignoreversion
 
+Source: "{#MyLibrariesLocation}\styles\*"; DestDir: "{app}\styles"; Flags: ignoreversion
+
 Source: "{#MyLibrariesLocation}\platforms\*"; DestDir: "{app}\platforms"; Flags: ignoreversion
 
 Source: "{#MyLibrariesLocation}\translations\*"; DestDir: "{app}\translations"; Flags: ignoreversion
 
-Source: "{#MyLibrariesLocation}\icons\sirikali.ico"; DestDir: "{app}\icons"; Flags: ignoreversion
+Source: "{#MySourcesPath}\translations\*"; DestDir: "{app}\translations"; Flags: ignoreversion
+
+Source: "{#MySourcesPath}\icons\256x256\sirikali.ico"; DestDir: "{app}\icons"; Flags: ignoreversion
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 

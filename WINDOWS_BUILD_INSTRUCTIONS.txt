@@ -1,0 +1,3 @@
+
+
+C:\projects\SiriKali.libraries>C:\Qt\5.10.1\mingw53_32\bin\windeployqt.exe --release  sirikali.exe
