@@ -57,7 +57,7 @@ Source: "{#MyLibrariesLocation}\platforms\*"; DestDir: "{app}\platforms"; Flags:
 
 Source: "{#MyLibrariesLocation}\translations\*"; DestDir: "{app}\translations"; Flags: ignoreversion
 
-Source: "{#MySourcesPath}\translations\*"; DestDir: "{app}\translations"; Flags: ignoreversion
+Source: "{#MySourcesPath}\translations\*.qm"; DestDir: "{app}\translations"; Flags: ignoreversion
 
 Source: "{#MySourcesPath}\icons\256x256\sirikali.ico"; DestDir: "{app}\icons"; Flags: ignoreversion
 
