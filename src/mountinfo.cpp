@@ -399,38 +399,22 @@ void mountinfo::announceEvents( bool s )
 
 void mountinfo::linuxMonitor()
 {
-	class mountEvent
-	{
-		public:
-		static Task::future< void > * monitor( std::function< void() > m )
-		{
-			auto& e = Task::run( [ m = std::move( m ) ](){
+	auto s = std::addressof( Task::run( [ this ](){
 
-				mountEvent( std::move( m ) ) ;
-			} ) ;
+		QFile s( "/proc/self/mountinfo" ) ;
+		struct pollfd m ;
 
-			return std::addressof( e ) ;
+		s.open( QIODevice::ReadOnly ) ;
+		m.fd     = s.handle() ;
+		m.events = POLLPRI ;
+
+		while( true ){
+
+			poll( &m,1,-1 ) ;
+
+			this->updateVolume() ;
 		}
-		mountEvent( std::function< void() > function ) :
-			m_handle( "/proc/self/mountinfo" )
-		{
-			m_handle.open( QIODevice::ReadOnly ) ;
-			m_monitor.fd     = m_handle.handle() ;
-			m_monitor.events = POLLPRI ;
-
-			while( true ){
-
-				poll( &m_monitor,1,-1 ) ;
-
-				function() ;
-			}
-		}
-	private:
-		QFile m_handle ;
-		struct pollfd m_monitor ;
-	} ;
-
-	auto s = mountEvent::monitor( [ this ](){ this->updateVolume() ; } ) ;
+	} ) ) ;
 
 	m_stop = [ s ](){ s->first_thread()->terminate() ; } ;
 
