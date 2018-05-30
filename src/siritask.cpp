@@ -306,7 +306,7 @@ static QString _ecryptfs( const cmdArgsList& args )
 	}
 }
 
-static QString _gocryptfs_and_securefs( const cmdArgsList& args )
+static QString _gocryptfs( const cmdArgsList& args )
 {
 	QString mode = [ & ](){
 
@@ -320,57 +320,76 @@ static QString _gocryptfs_and_securefs( const cmdArgsList& args )
 
 	QString exe ;
 
-	if( args.opt.type == "gocryptfs" ){
+	if( args.create ){
 
-		if( args.create ){
+		auto e = QString( "%1 --init -q %2 %3 %4" ) ;
 
-			auto e = QString( "%1 --init -q %2 %3 %4" ) ;
-
-			exe = e.arg( args.exe,
-				     args.opt.createOptions,
-				     args.configFilePath,
-				     args.cipherFolder ) ;
-		}else{
-			mode += " -o fsname=gocryptfs@" + args.cipherFolder ;
-
-			auto e = QString( "%1 -q %2 %3 %4 %5" ) ;
-
-			exe = e.arg( args.exe,
-				     mode,
-				     args.configFilePath,
-				     args.cipherFolder,
-				     args.mountPoint ) ;
-		}
+		exe = e.arg( args.exe,
+			     args.opt.createOptions,
+			     args.configFilePath,
+			     args.cipherFolder ) ;
 	}else{
-		if( args.create ){
+		mode += " -o fsname=gocryptfs@" + args.cipherFolder ;
 
-			auto e = QString( "%1 create %2 %3 %4" ) ;
+		auto e = QString( "%1 -q %2 %3 %4 %5" ) ;
 
-			exe = e.arg( args.exe,
-				     args.opt.createOptions,
-				     args.configFilePath,
-				     args.cipherFolder ) ;
+		exe = e.arg( args.exe,
+			     mode,
+			     args.configFilePath,
+			     args.cipherFolder,
+			     args.mountPoint ) ;
+	}
+
+	if( args.opt.mountOptions.isEmpty() ){
+
+		return exe ;
+	}else{
+		return exe + " -o " + args.opt.mountOptions ;
+	}
+}
+
+static QString _securefs( const cmdArgsList& args )
+{
+	QString mode = [ & ](){
+
+		if( args.opt.ro ){
+
+			return "-o ro" ;
 		}else{
-			auto bg = [](){
-
-				if( utility::platformIsWindows() ){
-
-					return "" ;
-				}else{
-					return "-b" ;
-				}
-			}() ;
-
-			auto e = QString( "%1 mount %2 %3 %4 -o fsname=securefs@%5 -o subtype=securefs %6 %7" ) ;
-
-			exe = e.arg( args.exe,
-				     bg,
-				     args.configFilePath,
-				     mode,
-				     args.cipherFolder,
-				     args.cipherFolder,
-				     args.mountPoint ) ;
+			return "-o rw" ;
 		}
+	}() ;
+
+	QString exe ;
+
+	if( args.create ){
+
+		auto e = QString( "%1 create %2 %3 %4" ) ;
+
+		exe = e.arg( args.exe,
+			     args.opt.createOptions,
+			     args.configFilePath,
+			     args.cipherFolder ) ;
+	}else{
+		auto bg = [](){
+
+			if( utility::platformIsWindows() ){
+
+				return "" ;
+			}else{
+				return "-b" ;
+			}
+		}() ;
+
+		auto e = QString( "%1 mount %2 %3 %4 -o fsname=securefs@%5 -o subtype=securefs %6 %7" ) ;
+
+		exe = e.arg( args.exe,
+			     bg,
+			     args.configFilePath,
+			     mode,
+			     args.cipherFolder,
+			     args.cipherFolder,
+			     args.mountPoint ) ;
 	}
 
 	if( args.opt.mountOptions.isEmpty() ){
@@ -576,12 +595,22 @@ static QString _args( const QString& exe,const siritask::options& opt,
 		return QString() ;
 	}() ;
 
-	cmdArgsList arguments{ exe,opt,configPath,separator,
-			       idleTimeOut,cipherFolder,mountPoint,create } ;
+	cmdArgsList arguments{  exe,
+				opt,
+				configPath,
+				separator,
+				idleTimeOut,
+				cipherFolder,
+				mountPoint,
+				create } ;
 
-	if( opt.type.isOneOf( "gocryptfs","securefs" ) ){
+	if( opt.type == "gocryptfs" ){
 
-		return _gocryptfs_and_securefs( arguments ) ;
+		return _gocryptfs( arguments ) ;
+
+	}else if( opt.type == "securefs" ){
+
+		return _securefs( arguments ) ;
 
 	}else if( _ecryptfs( opt.type ) ){
 
