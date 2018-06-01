@@ -80,7 +80,7 @@ Check first if SiriKali is present in your distribution's repositories and use t
 
 ## Screenshots
 
-<a href="http://tinypic.com?ref=fnftds" target="_blank"><img src="http://i68.tinypic.com/fnftds.jpg" border="0" alt="Image and video hosting by TinyPic"></a>
+<a href="http://tinypic.com?ref=1572g3n" target="_blank"><img src="http://i67.tinypic.com/1572g3n.png" border="0" alt="Image and video hosting by TinyPic"></a>
 
 <a href="http://tinypic.com?ref=v81umb" target="_blank"><img src="http://i64.tinypic.com/v81umb.png" border="0" alt="Image and video hosting by TinyPic"></a>
 
