@@ -701,19 +701,30 @@ QString utility::executableFullPath( const QString& f )
 			}else if( e == "sshfs" ){
 
 				return _exe_path( e,SiriKali::Winfsp::sshfsInstallDir ) ;
-			}else{
-				auto m = utility::windowsExecutableSearchPath() + "/" + e + ".exe" ;
 
-				if( utility::pathExists( m ) ){
+			}else if( e == "securefs" ){
 
-					return m ;
+				auto s = _exe_path( e,SiriKali::Winfsp::securefsInstallDir ) ;
+
+				if( s.isEmpty() ){
+
+					/*
+					 * Deprecating searching for securefs at ~/bin in favor of
+					 * looking for where its installed through consulting windows registry
+					 */
+					auto m = utility::windowsExecutableSearchPath() + "/" + e + ".exe" ;
+
+					if( utility::pathExists( m ) ){
+
+						return m ;
+					}
 				}else{
-					return QString() ;
+					return s ;
 				}
 			}
-		}else{
-			return QString() ;
 		}
+
+		return QString() ;
 	} ) ;
 }
 

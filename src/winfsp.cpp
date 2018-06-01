@@ -165,6 +165,12 @@ QString SiriKali::Winfsp::readRegister( const char * path,const char * key )
 
 #endif
 
+QString SiriKali::Winfsp::securefsInstallDir()
+{
+	auto e = "SOFTWARE\\WOW6432Node\\SECUREFS" ;
+	return SiriKali::Winfsp::readRegister( e,"InstallDir" ) ;
+}
+
 QString SiriKali::Winfsp::sshfsInstallDir()
 {
 	auto e = "SOFTWARE\\WOW6432Node\\SSHFS-Win" ;

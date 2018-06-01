@@ -228,7 +228,7 @@ void sirikali::setUpApp( const QString& volume )
 
 			_enable( ac,"Securefs" ) ;
 
-			m_warnOnMissingExecutable = !ac->isEnabled() ;
+			//m_warnOnMissingExecutable = !ac->isEnabled() ;
 
 		}else if( utility::platformIsOSX() ){
 
