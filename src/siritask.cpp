@@ -306,97 +306,74 @@ static QString _ecryptfs( const cmdArgsList& args )
 	}
 }
 
-static QString _gocryptfs( const cmdArgsList& args )
+static QString _mountOptions( const cmdArgsList& args,
+			      const QString& type,
+			      const QString& subtype = QString() )
 {
-	QString mode = [ & ](){
+	auto m = [ & ](){
 
-		if( args.opt.ro ){
+		if( args.opt.mountOptions.isEmpty() ){
 
-			return "-o ro" ;
+			return QString() ;
 		}else{
-			return "-o rw" ;
+			return "," + args.opt.mountOptions ;
 		}
 	}() ;
 
-	QString exe ;
+	if( args.opt.ro ){
 
+		auto e = " -o ro,fsname=%1@%2%3%4" ;
+		return QString( e ).arg( type,args.cipherFolder,subtype,m ) ;
+	}else{
+		auto e = " -o rw,fsname=%1@%2%3%4" ;
+		return QString( e ).arg( type,args.cipherFolder,subtype,m ) ;
+	}
+}
+
+static QString _gocryptfs( const cmdArgsList& args )
+{
 	if( args.create ){
 
-		auto e = QString( "%1 --init -q %2 %3 %4" ) ;
-
-		exe = e.arg( args.exe,
-			     args.opt.createOptions,
-			     args.configFilePath,
-			     args.cipherFolder ) ;
+		QString e = "%1 --init -q %2 %3 %4" ;
+		return e.arg( args.exe,
+			      args.opt.createOptions,
+			      args.configFilePath,
+			      args.cipherFolder ) ;
 	}else{
-		mode += " -o fsname=gocryptfs@" + args.cipherFolder ;
-
-		auto e = QString( "%1 -q %2 %3 %4 %5" ) ;
-
-		exe = e.arg( args.exe,
-			     mode,
-			     args.configFilePath,
-			     args.cipherFolder,
-			     args.mountPoint ) ;
-	}
-
-	if( args.opt.mountOptions.isEmpty() ){
-
-		return exe ;
-	}else{
-		return exe + " -o " + args.opt.mountOptions ;
+		QString e = "%1 -q %2 %3 %4 %5" ;
+		return e.arg( args.exe,
+			      args.configFilePath,
+			      args.cipherFolder,
+			      args.mountPoint,
+			      _mountOptions( args,"gocryptfs" ) ) ;
 	}
 }
 
 static QString _securefs( const cmdArgsList& args )
 {
-	QString mode = [ & ](){
-
-		if( args.opt.ro ){
-
-			return "-o ro" ;
-		}else{
-			return "-o rw" ;
-		}
-	}() ;
-
-	QString exe ;
-
 	if( args.create ){
 
-		auto e = QString( "%1 create %2 %3 %4" ) ;
-
-		exe = e.arg( args.exe,
-			     args.opt.createOptions,
-			     args.configFilePath,
-			     args.cipherFolder ) ;
+		QString e = "%1 create %2 %3 %4" ;
+		return e.arg( args.exe,
+			      args.opt.createOptions,
+			      args.configFilePath,
+			      args.cipherFolder ) ;
 	}else{
-		auto bg = [](){
+		QString exe = [ & ](){
 
 			if( utility::platformIsWindows() ){
 
-				return "" ;
+				return "%1 mount %2 %3 %4 %5" ;
 			}else{
-				return "-b" ;
+				return "%1 mount -b %2 %3 %4 %5" ;
 			}
 		}() ;
 
-		auto e = QString( "%1 mount %2 %3 %4 -o fsname=securefs@%5 -o subtype=securefs %6 %7" ) ;
-
-		exe = e.arg( args.exe,
-			     bg,
-			     args.configFilePath,
-			     mode,
-			     args.cipherFolder,
-			     args.cipherFolder,
-			     args.mountPoint ) ;
-	}
-
-	if( args.opt.mountOptions.isEmpty() ){
-
-		return exe ;
-	}else{
-		return exe + " -o " + args.opt.mountOptions ;
+		return exe.arg( args.exe,
+				args.configFilePath,
+				args.cipherFolder,
+				args.mountPoint,
+				_mountOptions( args,"securefs",",subtype=securefs" ) ) ;
 	}
 }
 
