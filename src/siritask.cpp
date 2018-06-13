@@ -678,6 +678,10 @@ static siritask::status _status( const siritask::volumeType& app,status_type s )
 		}else if( app == "sshfs" ){
 
 			return cs::sshfs ;
+
+		}else if( app == "gocryptfs" ){
+
+			return cs::gocryptfs ;
 		}else{
 			return cs::unknown ;
 		}
