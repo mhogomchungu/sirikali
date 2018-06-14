@@ -386,11 +386,11 @@ Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const Q
 
 		auto m = [ & ](){
 
-			if( utility::endsWithAtLeastOne( cmd,"encfs.exe","securefs.exe" ) ){
+			if( utility::endsWithAtLeastOne( cmd,"encfs.exe","sshfs.exe" ) ){
 
 				return e->arguments().at( 2 ) ;				
 			}else{
-				return e->arguments().last() ;
+				return e->arguments().at( e->arguments().size() - 2 ) ;
 			}
 		}() ;
 

@@ -449,29 +449,28 @@ static QString _sshfs( const cmdArgsList& args )
 
 		if( utility::platformIsWindows() ){
 
-			return "%1 -f %2 -o subtype=sshfs -o fsname=sshfs@%3 %4 %5" ;
+			return "%1 -f %2 %3 %4" ;
 		}else{
-			return "%1 %2 -o subtype=sshfs -o fsname=sshfs@%3 %4 %5" ;
+			return "%1 %2 %3 %4" ;
 		}
 	}() ;
 
-	QString opts ;
-
-	for( const auto& it : utility::split( args.opt.mountOptions,',' ) ){
-
-		opts += " -o " + it ;
-	}
+	auto mountOptions = args.opt.mountOptions ;
 
 	if( !args.opt.key.isEmpty() ){
 
-		opts += " -o password_stdin" ;
+		if( mountOptions.isEmpty() ){
+
+			mountOptions = "password_stdin" ;
+		}else{
+			mountOptions += ",password_stdin" ;
+		}
 	}
 
 	return s.arg( args.exe,
-		      opts,
 		      args.opt.cipherFolder,
-		      args.opt.cipherFolder,
-		      args.opt.plainFolder ) ;
+		      args.opt.plainFolder,
+		      _mountOptions( args,"sshfs",",subtype=sshfs",mountOptions ) ) ;
 }
 
 static QString _args( const QString& exe,const siritask::options& opt,
