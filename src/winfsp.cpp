@@ -388,7 +388,7 @@ Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const Q
 
 			if( utility::endsWithAtLeastOne( cmd,"encfs.exe","sshfs.exe" ) ){
 
-				return e->arguments().at( 2 ) ;				
+				return e->arguments().at( 2 ) ;
 			}else{
 				return e->arguments().at( e->arguments().size() - 3 ) ;
 			}

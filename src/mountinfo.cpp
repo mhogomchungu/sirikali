@@ -116,8 +116,8 @@ static QStringList _macox_volumes()
 	return s ;
 }
 
-enum class mountOptins{ mode,subtype } ;
-static QString _mountOption( const QStringList& e,mountOptins component )
+enum class mountOptions{ mode,subtype } ;
+static QString _mountOption( const QStringList& e,mountOptions component )
 {
 	if( e.isEmpty() ){
 
@@ -126,12 +126,12 @@ static QString _mountOption( const QStringList& e,mountOptins component )
 
 	const QString& s = e.last() ;
 
-	if( component == mountOptins::mode ){
+	if( component == mountOptions::mode ){
 
 		return s.mid( 0,2 ) ;
 	}
 
-	if( component == mountOptins::subtype ){
+	if( component == mountOptions::subtype ){
 
 		for( const auto& it : utility::split( s,',' ) ){
 
@@ -170,8 +170,8 @@ static QStringList _windows_volumes( background_thread thread )
 
 	for( const QStringList& e : _getwinfspInstances( thread ) ){
 
-		mode = _mountOption( e,mountOptins::mode ) ;
-		m    = _mountOption( e,mountOptins::subtype ) ;
+		mode = _mountOption( e,mountOptions::mode ) ;
+		m    = _mountOption( e,mountOptions::subtype ) ;
 
 		fs = "fuse." + m ;
 
