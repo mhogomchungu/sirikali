@@ -390,7 +390,7 @@ Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const Q
 
 				return e->arguments().at( 2 ) ;				
 			}else{
-				return e->arguments().at( e->arguments().size() - 2 ) ;
+				return e->arguments().at( e->arguments().size() - 3 ) ;
 			}
 		}() ;
 

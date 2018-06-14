@@ -141,6 +141,7 @@ namespace siritask
 		ecryptfsIllegalPath,
 		ecrypfsBadExePermissions,
 		gocryptfsNotFound,
+		sshfsNotFound,
 		cryfsNotFound,
 		encfsNotFound,
 		securefsNotFound,

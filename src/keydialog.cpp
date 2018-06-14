@@ -909,6 +909,11 @@ void keyDialog::reportErrorMessage( const siritask::cmdStatus& s )
 		msg = tr( "Failed To Unlock A Securefs Volume.\nWrong Password Entered." ) ;
 		break;
 
+	case siritask::status::sshfsNotFound :
+
+		msg = tr( "Failed To Complete The Request.\nSshfs Executable Could Not Be Found." ) ;
+		break;
+
 	case siritask::status::cryfsNotFound :
 
 		msg = tr( "Failed To Complete The Request.\nCryfs Executable Could Not Be Found." ) ;

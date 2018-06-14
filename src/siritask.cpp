@@ -601,8 +601,16 @@ static siritask::status _status( const siritask::volumeType& app,status_type s )
 		}else if( _ecryptfs( app ) ){
 
 			return cs::ecryptfs_simpleNotFound ;
-		}else{
+
+		}else if( app == "gocryptfs"){
+
 			return cs::gocryptfsNotFound ;
+
+		}else if( app =="sshfs" ){
+
+			return cs::sshfsNotFound ;
+		}else{
+			return cs::unknown ;
 		}
 	}else{
 		if( app == "cryfs" ){
