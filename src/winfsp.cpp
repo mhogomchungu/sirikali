@@ -386,9 +386,9 @@ Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const Q
 
 		auto m = [ & ](){
 
-			if( cmd.endsWith( "encfs.exe" ) ){
+			if( utility::endsWithAtLeastOne( cmd,"encfs.exe","securefs.exe" ) ){
 
-				return e->arguments().at( 2 ) ;
+				return e->arguments().at( 2 ) ;				
 			}else{
 				return e->arguments().last() ;
 			}

@@ -116,6 +116,35 @@ static QStringList _macox_volumes()
 	return s ;
 }
 
+enum class mountOptins{ mode,subtype } ;
+static QString _mountOption( const QStringList& e,mountOptins component )
+{
+	if( e.isEmpty() ){
+
+		return QString() ;
+	}
+
+	const QString& s = e.last() ;
+
+	if( component == mountOptins::mode ){
+
+		return s.mid( 0,2 ) ;
+	}
+
+	if( component == mountOptins::subtype ){
+
+		for( const auto& it : utility::split( s,',' ) ){
+
+			if( it.startsWith( "subtype=" ) ){
+
+				return it.mid( 8 ) ;
+			}
+		}
+	}
+
+	return QString() ;
+}
+
 static QStringList _windows_volumes( background_thread thread )
 {
 	QStringList s ;
@@ -141,36 +170,14 @@ static QStringList _windows_volumes( background_thread thread )
 
 	for( const QStringList& e : _getwinfspInstances( thread ) ){
 
-		if( e.contains( "ro" ) ){
-
-			mode = "ro" ;
-		}else{
-			mode = "rw" ;
-		}
-
-		for( const auto& it : e ){
-
-			if( it.startsWith( "subtype=" ) ){
-
-				m = it ;
-				m.replace( "subtype=","" ) ;
-			}
-		}
+		mode = _mountOption( e,mountOptins::mode ) ;
+		m    = _mountOption( e,mountOptins::subtype ) ;
 
 		fs = "fuse." + m ;
 
-		if( m == "encfs" ){
+		m += "@" + path( e.at( 1 ) ) ;
 
-			m += "@" + path( e.at( 1 ) ) ;
-
-			auto q = e.at( 2 ) ;
-
-			s.append( w.arg( path( q ),mode,fs,m ) ) ;
-		}else{
-			m += "@" + path( e.at( e.size() - 2 ) ) ;
-
-			s.append( w.arg( path( e.last() ),mode,fs,m ) ) ;
-		}
+		s.append( w.arg( path( e.at( 2 ) ),mode,fs,m ) ) ;
 	}
 
 	return s ;
