@@ -602,7 +602,7 @@ static siritask::status _status( const siritask::volumeType& app,status_type s )
 
 			return cs::ecryptfs_simpleNotFound ;
 
-		}else if( app == "gocryptfs"){
+		}else if( app == "gocryptfs" ){
 
 			return cs::gocryptfsNotFound ;
 
