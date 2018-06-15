@@ -307,32 +307,25 @@ static QString _ecryptfs( const cmdArgsList& args )
 }
 
 static QString _mountOptions( const cmdArgsList& args,
+			      const QString& mountOptions,
 			      const QString& type,
-			      const QString& subtype = QString(),
-			      const QString& mountOptions = QString() )
+			      const QString& subtype = QString() )
 {
-	auto m = [ & ](){
+	QString e = [ & ](){
 
-		if( mountOptions.isEmpty() ){
+		if( args.opt.ro ){
 
-			if( args.opt.mountOptions.isEmpty() ){
-
-				return QString() ;
-			}else{
-				return "," + args.opt.mountOptions ;
-			}
+			return " -o ro,fsname=%1@%2%3" ;
 		}else{
-			return "," + mountOptions ;
+			return " -o rw,fsname=%1@%2%3" ;
 		}
 	}() ;
 
-	if( args.opt.ro ){
+	if( mountOptions.isEmpty() ){
 
-		auto e = " -o ro,fsname=%1@%2%3%4" ;
-		return QString( e ).arg( type,args.cipherFolder,subtype,m ) ;
+		return e.arg( type,args.cipherFolder,subtype ) ;
 	}else{
-		auto e = " -o rw,fsname=%1@%2%3%4" ;
-		return QString( e ).arg( type,args.cipherFolder,subtype,m ) ;
+		return e.arg( type,args.cipherFolder,subtype ) + "," + mountOptions ;
 	}
 }
 
@@ -351,7 +344,7 @@ static QString _gocryptfs( const cmdArgsList& args )
 			      args.configFilePath,
 			      args.cipherFolder,
 			      args.mountPoint,
-			      _mountOptions( args,"gocryptfs" ) ) ;
+			      _mountOptions( args,args.opt.mountOptions,"gocryptfs" ) ) ;
 	}
 }
 
@@ -379,7 +372,8 @@ static QString _securefs( const cmdArgsList& args )
 				args.configFilePath,
 				args.cipherFolder,
 				args.mountPoint,
-				_mountOptions( args,"securefs",",subtype=securefs" ) ) ;
+				_mountOptions( args,args.opt.mountOptions,
+					       "securefs",",subtype=securefs" ) ) ;
 	}
 }
 
@@ -412,7 +406,7 @@ static QString _cryfs( const cmdArgsList& args )
 		      args.idleTimeOut,
 		      args.configFilePath,
 		      args.separator,
-		      _mountOptions( args,"cryfs",",subtype=cryfs",mountOptions ) ) ;
+		      _mountOptions( args,mountOptions,"cryfs",",subtype=cryfs" ) ) ;
 }
 
 static QString _encfs( const cmdArgsList& args )
@@ -427,7 +421,7 @@ static QString _encfs( const cmdArgsList& args )
 		}
 	}() ;
 
-	auto mountOptions = _mountOptions( args,"encfs",",subtype=encfs" ) ;
+	auto mountOptions = _mountOptions( args,args.opt.mountOptions,"encfs",",subtype=encfs" ) ;
 
 	if( utility::platformIsOSX() ){
 
@@ -470,7 +464,7 @@ static QString _sshfs( const cmdArgsList& args )
 	return s.arg( args.exe,
 		      args.opt.cipherFolder,
 		      args.opt.plainFolder,
-		      _mountOptions( args,"sshfs",",subtype=sshfs",mountOptions ) ) ;
+		      _mountOptions( args,mountOptions,"sshfs",",subtype=sshfs" ) ) ;
 }
 
 static QString _args( const QString& exe,const siritask::options& opt,
