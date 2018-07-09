@@ -175,15 +175,15 @@ static QString _readRegister( const QByteArray& path,registryAccess opt,const ch
 
 #endif
 
-static QString _installDir( const QString& exe )
+static QString _installDir( const QByteArray& exe )
 {
 	auto e = "SOFTWARE\\" + exe ;
 
-	auto s =  _readRegister( e.toLatin1(),registryAccess::KEY_WOW_64_32_KEY,"InstallDir" ) ;
+	auto s =  _readRegister( e,registryAccess::KEY_WOW_64_32_KEY,"InstallDir" ) ;
 
 	if( s.isEmpty() ){
 
-		return _readRegister( e.toLatin1(),registryAccess::KEY_WOW_64_64_KEY,"InstallDir" ) ;
+		return _readRegister( e,registryAccess::KEY_WOW_64_64_KEY,"InstallDir" ) ;
 	}else{
 		return s ;
 	}
