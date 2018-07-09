@@ -78,10 +78,20 @@ int poll( struct pollfd * a,int b,int c )
 	return 0 ;
 }
 
-QString SiriKali::Winfsp::readRegister( const char * path,const char * key )
+enum class registryAccess{KEY_WOW_64_32_KEY,KEY_WOW_64_64_KEY};
+
+static QString _readRegister( const QByteArray& path,registryAccess opt,const char * key )
 {
 	DWORD dwType = REG_SZ ;
 	HKEY hKey = 0 ;
+	REGSAM access = KEY_QUERY_VALUE ;
+
+	if( opt == registryAccess::KEY_WOW_64_32_KEY ){
+
+		access |= KEY_WOW64_32KEY ;
+	}else{
+		access |= KEY_WOW64_64KEY ;
+	}
 
 	std::array< char,4096 > buffer ;
 
@@ -91,7 +101,7 @@ QString SiriKali::Winfsp::readRegister( const char * path,const char * key )
 
 	auto buffer_size = static_cast< DWORD >( buffer.size() ) ;
 
-	if( RegOpenKey( HKEY_LOCAL_MACHINE,path,&hKey ) == ERROR_SUCCESS ){
+	if( RegOpenKeyExA( HKEY_LOCAL_MACHINE,path.constData(),0,access,&hKey ) == ERROR_SUCCESS ){
 
 		RegQueryValueEx( hKey,key,nullptr,&dwType,buff,&buffer_size ) ;
 	}
@@ -155,32 +165,43 @@ int SiriKali::Winfsp::terminateProcess( unsigned long pid )
 	return 1 ;
 }
 
-QString SiriKali::Winfsp::readRegister( const char * path,const char * key )
+static QString _readRegister( const QByteArray& path,registryOption opt,const char * key )
 {
 	Q_UNUSED( path ) ;
 	Q_UNUSED( key ) ;
-
+	Q_UNUSED( opt ) ;
 	return QString() ;
 }
 
 #endif
 
+static QString _installDir( const QString& exe )
+{
+	auto e = "SOFTWARE\\" + exe ;
+
+	auto s =  _readRegister( e.toLatin1(),registryAccess::KEY_WOW_64_32_KEY,"InstallDir" ) ;
+
+	if( s.isEmpty() ){
+
+		return _readRegister( e.toLatin1(),registryAccess::KEY_WOW_64_64_KEY,"InstallDir" ) ;
+	}else{
+		return s ;
+	}
+}
+
 QString SiriKali::Winfsp::securefsInstallDir()
 {
-	auto e = "SOFTWARE\\WOW6432Node\\SECUREFS" ;
-	return SiriKali::Winfsp::readRegister( e,"InstallDir" ) ;
+	return _installDir( "SECUREFS" ) ;
 }
 
 QString SiriKali::Winfsp::sshfsInstallDir()
 {
-	auto e = "SOFTWARE\\WOW6432Node\\SSHFS-Win" ;
-	return SiriKali::Winfsp::readRegister( e,"InstallDir" ) ;
+	return _installDir( "SSHFS-Win" ) ;
 }
 
 QString SiriKali::Winfsp::encfsInstallDir()
 {
-	auto e = "SOFTWARE\\WOW6432Node\\ENCFS" ;
-	return SiriKali::Winfsp::readRegister( e,"InstallDir" ) ;
+	return _installDir( "ENCFS" ) ;
 }
 
 SiriKali::Winfsp::ActiveInstances::ActiveInstances() :

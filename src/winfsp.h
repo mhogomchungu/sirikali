@@ -58,7 +58,6 @@ QString volumeProperties( const QString& mountPath ) ;
 
 int terminateProcess( unsigned long pid ) ;
 
-QString readRegister( const char * path,const char * key ) ;
 QString sshfsInstallDir() ;
 QString encfsInstallDir() ;
 QString securefsInstallDir() ;
