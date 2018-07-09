@@ -67,6 +67,8 @@ void updateVolumeList( std::function< void() > function )
 
 }
 
+enum class registryAccess{KEY_WOW_64_32_KEY,KEY_WOW_64_64_KEY};
+
 #ifdef Q_OS_WIN
 
 int poll( struct pollfd * a,int b,int c )
@@ -77,8 +79,6 @@ int poll( struct pollfd * a,int b,int c )
 
 	return 0 ;
 }
-
-enum class registryAccess{KEY_WOW_64_32_KEY,KEY_WOW_64_64_KEY};
 
 static QString _readRegister( const QByteArray& path,registryAccess opt,const char * key )
 {
@@ -165,7 +165,7 @@ int SiriKali::Winfsp::terminateProcess( unsigned long pid )
 	return 1 ;
 }
 
-static QString _readRegister( const QByteArray& path,registryOption opt,const char * key )
+static QString _readRegister( const QByteArray& path,registryAccess opt,const char * key )
 {
 	Q_UNUSED( path ) ;
 	Q_UNUSED( key ) ;
