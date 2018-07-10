@@ -217,18 +217,19 @@ void sirikali::setUpApp( const QString& volume )
 				}else{
 					ac->setText( tr( "%1 Is Not Installed" ).arg( exe ) ) ;
 				}
+			}else{
+				if( exe == "Sshfs" ){
+
+					ac->setEnabled( false ) ;
+				}
 			}
 		} ;
 
 		if( utility::platformIsWindows() ){
 
 			_enable( m->addAction( "Encfs" ),"Encfs" ) ;
-
-			auto ac = m->addAction( "Securefs" ) ;
-
-			_enable( ac,"Securefs" ) ;
-
-			//m_warnOnMissingExecutable = !ac->isEnabled() ;
+			_enable( m->addAction( "Securefs" ),"Securefs" ) ;
+			_enable( m->addAction( "Sshfs" ),"Sshfs" ) ;
 
 		}else if( utility::platformIsOSX() ){
 
@@ -242,6 +243,7 @@ void sirikali::setUpApp( const QString& volume )
 			_enable( m->addAction( "Securefs" ),"Securefs" ) ;
 			_enable( m->addAction( "Encfs" ),"Encfs" ) ;
 			_enable( m->addAction( "Ecryptfs" ),"Ecryptfs" ) ;
+			_enable( m->addAction( "Sshfs" ),"Sshfs" ) ;
 		}
 
 		return m ;

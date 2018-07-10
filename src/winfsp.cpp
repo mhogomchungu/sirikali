@@ -97,6 +97,21 @@ public:
 			m_hkey = nullptr ;
 		}
 	}
+	regOpenKey( const regOpenKey& ) = delete ;
+	regOpenKey& operator=( const regOpenKey& ) = delete ;
+	regOpenKey( regOpenKey&& other )
+	{
+		this->closeKey() ;
+		m_hkey = other.m_hkey ;
+		other.m_hkey = nullptr ;
+	}
+	regOpenKey& operator=( regOpenKey&& other )
+	{
+		this->closeKey() ;
+		m_hkey = other.m_hkey ;
+		other.m_hkey = nullptr ;
+		return *this ;
+	}
 	operator bool()
 	{
 		return m_hkey != nullptr ;
@@ -128,13 +143,17 @@ public:
 	}
 	~regOpenKey()
 	{
-		RegCloseKey( m_hkey ) ;
+		this->closeKey() ;
 	}
 private:
 	template< typename Function,typename ... Args >
 	bool success( Function&& function,Args&& ... args )
 	{
 		return function( std::forward< Args >( args ) ... ) == ERROR_SUCCESS ;
+	}
+	void closeKey()
+	{
+		RegCloseKey( m_hkey ) ;
 	}
 	HKEY m_hkey ;
 };

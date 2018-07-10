@@ -684,7 +684,14 @@ QString _exe_path( const QString& exe,Function function )
 
 		return e ;
 	}else{
-		return QString() ;
+		auto m = utility::windowsExecutableSearchPath() + "\\bin\\" + exe + ".exe" ;
+
+		if( utility::pathExists( m ) ){
+
+			return m ;
+		}else{
+			return {} ;
+		}
 	}
 }
 
@@ -704,23 +711,7 @@ QString utility::executableFullPath( const QString& f )
 
 			}else if( e == "securefs" ){
 
-				auto s = _exe_path( e,SiriKali::Winfsp::securefsInstallDir ) ;
-
-				if( s.isEmpty() ){
-
-					/*
-					 * Deprecating searching for securefs at ~/bin in favor of
-					 * looking for where its installed through consulting windows registry
-					 */
-					auto m = utility::windowsExecutableSearchPath() + "/" + e + ".exe" ;
-
-					if( utility::pathExists( m ) ){
-
-						return m ;
-					}
-				}else{
-					return s ;
-				}
+				return _exe_path( e,SiriKali::Winfsp::securefsInstallDir ) ;
 			}
 		}
 
