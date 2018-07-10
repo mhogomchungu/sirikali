@@ -67,8 +67,6 @@ void updateVolumeList( std::function< void() > function )
 
 }
 
-enum class registryAccess{KEY_WOW_64_32_KEY,KEY_WOW_64_64_KEY};
-
 #ifdef Q_OS_WIN
 
 int poll( struct pollfd * a,int b,int c )
@@ -80,35 +78,70 @@ int poll( struct pollfd * a,int b,int c )
 	return 0 ;
 }
 
-static QString _readRegister( const QByteArray& path,registryAccess opt,const char * key )
+class regOpenKey{
+public:
+	regOpenKey( const char * subKey,HKEY hkey = HKEY_LOCAL_MACHINE )
+	{
+		HKEY m ;
+		REGSAM wow64 = KEY_QUERY_VALUE | KEY_WOW64_64KEY ;
+		REGSAM wow32 = KEY_QUERY_VALUE | KEY_WOW64_32KEY ;
+
+		if( this->success( RegOpenKeyExA,hkey,subKey,0,wow64,&m ) ){
+
+			m_hkey = m ;
+
+		}else if( this->success( RegOpenKeyExA,hkey,subKey,0,wow32,&m ) ){
+
+			m_hkey = m ;
+		}else{
+			m_hkey = nullptr ;
+		}
+	}
+	operator bool()
+	{
+		return m_hkey != nullptr ;
+	}
+	QByteArray getValue( const char * key )
+	{
+		if( m_hkey != nullptr ){
+
+			DWORD dwType = REG_SZ ;
+
+			std::array< char,4096 > buffer ;
+
+			std::fill( buffer.begin(),buffer.end(),'\0' ) ;
+
+			auto e = reinterpret_cast< BYTE * >( buffer.data() ) ;
+			auto m = static_cast< DWORD >( buffer.size() ) ;
+
+			if( this->success( RegQueryValueEx,m_hkey,key,nullptr,&dwType,e,&m ) ){
+
+				return { buffer.data(),static_cast< int >( m ) } ;
+			}
+		}
+
+		return {} ;
+	}
+	HKEY handle()
+	{
+		return m_hkey ;
+	}
+	~regOpenKey()
+	{
+		RegCloseKey( m_hkey ) ;
+	}
+private:
+	template< typename Function,typename ... Args >
+	bool success( Function&& function,Args&& ... args )
+	{
+		return function( std::forward< Args >( args ) ... ) == ERROR_SUCCESS ;
+	}
+	HKEY m_hkey ;
+};
+
+static QString _readRegistry( const char * subKey,const char * key )
 {
-	DWORD dwType = REG_SZ ;
-	HKEY hKey = 0 ;
-	REGSAM access = KEY_QUERY_VALUE ;
-
-	if( opt == registryAccess::KEY_WOW_64_32_KEY ){
-
-		access |= KEY_WOW64_32KEY ;
-	}else{
-		access |= KEY_WOW64_64KEY ;
-	}
-
-	std::array< char,4096 > buffer ;
-
-	std::fill( buffer.begin(),buffer.end(),'\0' ) ;
-
-	auto buff = reinterpret_cast< BYTE * >( buffer.data() ) ;
-
-	auto buffer_size = static_cast< DWORD >( buffer.size() ) ;
-
-	if( RegOpenKeyExA( HKEY_LOCAL_MACHINE,path.constData(),0,access,&hKey ) == ERROR_SUCCESS ){
-
-		RegQueryValueEx( hKey,key,nullptr,&dwType,buff,&buffer_size ) ;
-	}
-
-	RegCloseKey( hKey ) ;
-
-	return QByteArray( buffer.data(),buffer_size ) ;
+	return regOpenKey( subKey ).getValue( key ) ;
 }
 
 // SiriKali took below code from "https://stackoverflow.com/questions/813086/can-i-send-a-ctrl-c-sigint-to-an-application-on-windows"
@@ -165,43 +198,28 @@ int SiriKali::Winfsp::terminateProcess( unsigned long pid )
 	return 1 ;
 }
 
-static QString _readRegister( const QByteArray& path,registryAccess opt,const char * key )
+static QString _readRegistry( const char * subKey,const char * key )
 {
-	Q_UNUSED( path ) ;
+	Q_UNUSED( subKey ) ;
 	Q_UNUSED( key ) ;
-	Q_UNUSED( opt ) ;
 	return QString() ;
 }
 
 #endif
 
-static QString _installDir( const QByteArray& exe )
-{
-	auto e = "SOFTWARE\\" + exe ;
-
-	auto s =  _readRegister( e,registryAccess::KEY_WOW_64_32_KEY,"InstallDir" ) ;
-
-	if( s.isEmpty() ){
-
-		return _readRegister( e,registryAccess::KEY_WOW_64_64_KEY,"InstallDir" ) ;
-	}else{
-		return s ;
-	}
-}
-
 QString SiriKali::Winfsp::securefsInstallDir()
 {
-	return _installDir( "SECUREFS" ) ;
+	return _readRegistry( "SOFTWARE\\SECUREFS","InstallDir" ) ;
 }
 
 QString SiriKali::Winfsp::sshfsInstallDir()
 {
-	return _installDir( "SSHFS-Win" ) ;
+	return _readRegistry( "SOFTWARE\\SSHFS-Win","InstallDir" ) ;
 }
 
 QString SiriKali::Winfsp::encfsInstallDir()
 {
-	return _installDir( "ENCFS" ) ;
+	return _readRegistry( "SOFTWARE\\ENCFS","InstallDir" ) ;
 }
 
 SiriKali::Winfsp::ActiveInstances::ActiveInstances() :
