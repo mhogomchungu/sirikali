@@ -684,13 +684,22 @@ QString _exe_path( const QString& exe,Function function )
 
 		return e ;
 	}else{
-		auto m = utility::windowsExecutableSearchPath() + "\\bin\\" + exe + ".exe" ;
+		auto s = utility::windowsExecutableSearchPath() ;
+
+		auto m = s + "\\bin\\" + exe + ".exe" ;
 
 		if( utility::pathExists( m ) ){
 
 			return m ;
 		}else{
-			return {} ;
+			auto m = s + "\\" + exe + ".exe" ;
+
+			if( utility::pathExists( m ) ){
+
+				return m ;
+			}else{
+				return {} ;
+			}
 		}
 	}
 }
