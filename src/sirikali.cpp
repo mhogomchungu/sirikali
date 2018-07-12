@@ -217,11 +217,6 @@ void sirikali::setUpApp( const QString& volume )
 				}else{
 					ac->setText( tr( "%1 Is Not Installed" ).arg( exe ) ) ;
 				}
-			}else{
-				if( exe == "Sshfs" ){
-
-					ac->setEnabled( false ) ;
-				}
 			}
 		} ;
 
@@ -1455,9 +1450,14 @@ void sirikali::createVolume( QAction * ac )
 {
 	if( ac ){
 
-		this->mount( volumeInfo(),ac->objectName() ) ;
-	}else{
-		this->mount( volumeInfo(),"Cryfs" ) ;
+		auto s = ac->objectName() ;
+
+		if( s == "Sshfs" ){
+
+			favorites::instance( this,favorites::type::sshfs ) ;
+		}else{
+			this->mount( volumeInfo(),s ) ;
+		}
 	}
 }
 

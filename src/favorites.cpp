@@ -32,7 +32,7 @@
 #include "dialogmsg.h"
 #include "tablewidget.h"
 
-favorites::favorites( QWidget * parent ) : QDialog( parent ),
+favorites::favorites( QWidget * parent,favorites::type type ) : QDialog( parent ),
 	m_ui( new Ui::favorites )
 {
 	m_ui->setupUi( this ) ;
@@ -61,8 +61,6 @@ favorites::favorites( QWidget * parent ) : QDialog( parent ),
 
 	m_ui->pbFolderPath->setIcon( QIcon( ":/sirikali.png" ) ) ;
 	m_ui->pbConfigFilePath->setIcon( QIcon( ":/file.png" ) ) ;
-
-	//m_ui->lineEditEncryptedFolderPath->setEnabled( false ) ;
 
 	m_ui->cbAutoMount->setChecked( false ) ;
 
@@ -94,7 +92,7 @@ favorites::favorites( QWidget * parent ) : QDialog( parent ),
 
 	this->checkFavoritesConsistency() ;
 
-	this->ShowUI() ;
+	this->ShowUI( type ) ;
 }
 
 void favorites::checkFavoritesConsistency()
@@ -157,7 +155,7 @@ void favorites::shortcutPressed()
 	this->itemClicked( m_ui->tableWidget->currentItem(),false ) ;
 }
 
-void favorites::ShowUI()
+void favorites::ShowUI( favorites::type type )
 {
 	m_ui->tableWidget->setColumnWidth( 0,285 ) ;
 	m_ui->tableWidget->setColumnWidth( 1,285 ) ;
@@ -185,6 +183,17 @@ void favorites::ShowUI()
 	}else{
 		m_ui->lineEditMountPath->clear() ;
 	}
+
+
+	if( type == favorites::type::sshfs ){
+
+		m_ui->lineEditIdleTimeOut->setEnabled( false ) ;
+		m_ui->lineEditMountOptions->setText( "idmap=user,StrictHostKeyChecking=no" ) ;
+		m_ui->lineEditEncryptedFolderPath->setText( "sshfs " ) ;
+		m_ui->labelName ->setText( tr( "Remote Ssh Server Address\n(Example: sshfs woof@bar.foo)" ) ) ;
+		m_ui->labelCofigFilePath->setText( tr( "SSH_AUTH_SOCK Socket Path (Optional)" ) ) ;
+	}
+
 	m_ui->tableWidget->setFocus() ;
 
 	this->show() ;

@@ -152,17 +152,15 @@ public:
 		}
 	};
 
-	static favorites& instance( QWidget * parent = 0 )
+	enum class type{ sshfs,others } ;
+	static favorites& instance( QWidget * parent = 0,favorites::type type = favorites::type::others )
 	{
-		return *( new favorites( parent ) ) ;
+		return *( new favorites( parent,type ) ) ;
 	}
-	explicit favorites( QWidget * parent = 0 ) ;
+	explicit favorites( QWidget * parent = 0,favorites::type type = favorites::type::others ) ;
 	~favorites() ;
 signals:
 	void ShowPartitionUI( void ) ;
-public slots:
-	void ShowUI( void ) ;
-	void HideUI( void ) ;
 private slots:
 	void toggleAutoMount( void ) ;
 	void configPath( void ) ;
@@ -177,6 +175,8 @@ private slots:
 	void shortcutPressed( void ) ;
 	void devicePathTextChange( QString ) ;
 private:
+	void ShowUI( favorites::type ) ;
+	void HideUI( void ) ;
 	void checkFavoritesConsistency() ;
 	favorites::entry getEntry( int ) ;
 	QString getExistingFile( const QString& ) ;
