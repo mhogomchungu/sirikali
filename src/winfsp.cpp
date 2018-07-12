@@ -510,7 +510,7 @@ QString SiriKali::Winfsp::manageInstances::volumeProperties( const QString& moun
 
 		auto args = m_instances[ i ]->arguments() ;
 
-		if( mountPath == args.last() ){
+		if( mountPath == args.at( 2 ) ){
 
 			auto m = QObject::tr( "Mount Options:\n\n" ) ;
 
