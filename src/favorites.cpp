@@ -184,7 +184,6 @@ void favorites::ShowUI( favorites::type type )
 		m_ui->lineEditMountPath->clear() ;
 	}
 
-
 	if( type == favorites::type::sshfs ){
 
 		m_ui->lineEditIdleTimeOut->setEnabled( false ) ;
