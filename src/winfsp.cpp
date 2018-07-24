@@ -332,17 +332,17 @@ static QProcessEnvironment _update_environment( const QString& type )
 {
 	auto env = utility::systemEnvironment() ;
 
-	auto m = env.value( "PATH" ) + ";" ;
+	auto m = env.value( "PATH" ) ;
 
 	auto path = [ & ](){
 
 		if( type == "sshfs" ){
 
-			return SiriKali::Winfsp::sshfsInstallDir() + "\\bin" + m ;
+			return SiriKali::Winfsp::sshfsInstallDir() + "\\bin;" + m ;
 
 		}else if( type == "encfs" ){
 
-			return SiriKali::Winfsp::encfsInstallDir() + "\\bin" + m ;
+			return SiriKali::Winfsp::encfsInstallDir() + "\\bin;" + m ;
 		}else{
 			return m ;
 		}
