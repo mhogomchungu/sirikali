@@ -163,6 +163,7 @@ signals:
 	void ShowPartitionUI( void ) ;
 private slots:
 	void toggleAutoMount( void ) ;
+	void edit( void ) ;
 	void configPath( void ) ;
 	void removeEntryFromFavoriteList( void ) ;
 	void add( void ) ;

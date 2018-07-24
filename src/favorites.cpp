@@ -48,6 +48,8 @@ favorites::favorites( QWidget * parent,favorites::type type ) : QDialog( parent 
 	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),this,
 		SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
 
+	m_ui->pbAdd->setObjectName( "Add" ) ;
+
 	if( utility::platformIsWindows() ){
 
 		utility::setWindowsMountPointOptions( this,m_ui->lineEditMountPath,m_ui->pbMountPointPath ) ;
@@ -216,6 +218,26 @@ void favorites::itemClicked( QTableWidgetItem * current )
 	this->itemClicked( current,true ) ;
 }
 
+void favorites::edit()
+{
+	auto table = m_ui->tableWidget ;
+
+	if( table->rowCount() > 0 ){
+
+		m_ui->pbAdd->setText( tr( "Edit" ) ) ;
+		m_ui->pbAdd->setObjectName( "Edit" ) ;
+
+		auto row = table->currentRow() ;
+
+		m_ui->lineEditEncryptedFolderPath->setText( table->item( row,0 )->text() ) ;
+		m_ui->lineEditMountPath->setText( table->item( row,1 )->text() ) ;
+		m_ui->cbAutoMount->setChecked( table->item( row,2 )->text() == "true" ) ;
+		m_ui->lineEditConfigFilePath->setText( table->item( row,3 )->text() ) ;
+		m_ui->lineEditIdleTimeOut->setText( table->item( row,4 )->text() ) ;
+		m_ui->lineEditMountOptions->setText( table->item( row,5 )->text() ) ;
+	}
+}
+
 void favorites::itemClicked( QTableWidgetItem * current,bool clicked )
 {
 	if( current ){
@@ -226,6 +248,11 @@ void favorites::itemClicked( QTableWidgetItem * current,bool clicked )
 
 		connect( m.addAction( tr( "Toggle AutoMount" ) ),
 			 SIGNAL( triggered() ),this,SLOT( toggleAutoMount() ) ) ;
+
+		m.addSeparator() ;
+
+		connect( m.addAction( tr( "Edit" ) ),
+			 SIGNAL( triggered() ),this,SLOT( edit() ) ) ;
 
 		m.addSeparator() ;
 
@@ -365,9 +392,32 @@ void favorites::add()
 			  _option( m_ui->lineEditIdleTimeOut->text() ),
 			  _option( mOpts ) } ;
 
-	this->addEntries( e ) ;
+	if( m_ui->pbAdd->objectName() == "Edit" ){
 
-	utility::addToFavorite( e ) ;
+		int row = m_ui->tableWidget->currentRow() ;
+
+		if( row >= 0 ){
+
+			auto f = this->getEntry( row ) ;
+
+			utility::replaceFavorite( f,e ) ;
+
+			tablewidget::updateRow( m_ui->tableWidget,e,row ) ;
+
+			m_ui->pbAdd->setText( tr( "Add" ) ) ;
+			m_ui->pbAdd->setObjectName( "Edit" ) ;
+			m_ui->lineEditEncryptedFolderPath->clear() ;
+			m_ui->lineEditMountPath->clear() ;
+			m_ui->lineEditConfigFilePath->clear() ;
+			m_ui->lineEditIdleTimeOut->clear() ;
+			m_ui->lineEditMountOptions->clear() ;
+		}
+	}else{
+		tablewidget::addRow( m_ui->tableWidget,e ) ;
+		utility::addToFavorite( e ) ;
+		m_ui->lineEditEncryptedFolderPath->clear() ;
+		m_ui->lineEditMountPath->clear() ;
+	}
 
 	m_ui->lineEditEncryptedFolderPath->clear() ;
 	m_ui->lineEditMountPath->clear() ;
