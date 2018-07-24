@@ -338,11 +338,11 @@ static QProcessEnvironment _update_environment( const QString& type )
 
 		if( type == "sshfs" ){
 
-			return m + SiriKali::Winfsp::sshfsInstallDir() + "\\bin" ;
+			return SiriKali::Winfsp::sshfsInstallDir() + "\\bin" + m ;
 
 		}else if( type == "encfs" ){
 
-			return m + SiriKali::Winfsp::encfsInstallDir() + "\\bin" ;
+			return SiriKali::Winfsp::encfsInstallDir() + "\\bin" + m ;
 		}else{
 			return m ;
 		}
