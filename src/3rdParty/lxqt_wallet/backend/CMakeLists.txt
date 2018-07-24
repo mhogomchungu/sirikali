@@ -23,9 +23,9 @@ get_filename_component( GCRYPT_LIBRARY_PATH ${GCRYPT_LIBRARY} DIRECTORY )
 
 add_library( lxqt-wallet-backend STATIC lxqtwallet.c )
 if( WIN32 )
-    set_target_properties( lxqt-wallet-backend PROPERTIES COMPILE_FLAGS "-Wall -Wformat-truncation=0 -s -pedantic -I${GCRYPT_INCLUDE_PATH}" )
+    set_target_properties( lxqt-wallet-backend PROPERTIES COMPILE_FLAGS "-Wall -s -pedantic -I${GCRYPT_INCLUDE_PATH}" )
 else()
-    set_target_properties( lxqt-wallet-backend PROPERTIES COMPILE_FLAGS "-Wall -Wformat-truncation=0 -s -fPIC -pedantic -I${GCRYPT_INCLUDE_PATH}" )
+    set_target_properties( lxqt-wallet-backend PROPERTIES COMPILE_FLAGS "-Wall -s -fPIC -pedantic -I${GCRYPT_INCLUDE_PATH}" )
 endif()
 
 set_target_properties( lxqt-wallet-backend PROPERTIES LINK_FLAGS "-pie" )

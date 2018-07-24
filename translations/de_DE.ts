@@ -662,65 +662,65 @@ p, li { white-space: pre-wrap; }
         <translation>Einhängeoptionen (Optional; mit Kommas getrennt)</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="193"/>
+        <location filename="../src/favorites.cpp" line="192"/>
         <source>Remote Ssh Server Address
 (Example: sshfs woof@bar.foo)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="194"/>
+        <location filename="../src/favorites.cpp" line="193"/>
         <source>SSH_AUTH_SOCK Socket Path (Optional)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="228"/>
+        <location filename="../src/favorites.cpp" line="227"/>
         <source>Toggle AutoMount</source>
         <translation>Automatisches Einhängen einschalten</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="233"/>
+        <location filename="../src/favorites.cpp" line="232"/>
         <source>Remove Selected Entry</source>
         <translation>Ausgewählten Eintrag entfernen</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="238"/>
+        <location filename="../src/favorites.cpp" line="237"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="326"/>
-        <location filename="../src/favorites.cpp" line="330"/>
-        <location filename="../src/favorites.cpp" line="336"/>
+        <location filename="../src/favorites.cpp" line="325"/>
+        <location filename="../src/favorites.cpp" line="329"/>
+        <location filename="../src/favorites.cpp" line="335"/>
         <source>ERROR!</source>
         <translation>FEHLER !</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="326"/>
+        <location filename="../src/favorites.cpp" line="325"/>
         <source>Encrypted Folder Address Field Is Empty</source>
         <translation>Feld mit Pfad des verschlüsselten Ordners steht leer</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="330"/>
+        <location filename="../src/favorites.cpp" line="329"/>
         <source>Mount Point Path Field Is Empty</source>
         <translation>Feld mit Pfad des Einhängepunkts steht leer</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="336"/>
+        <location filename="../src/favorites.cpp" line="335"/>
         <source>Mount Options Can Not Contain &quot;-&quot;</source>
         <translation>Einhängepunktoptionen dürfen kein &quot;-&quot; enthalten</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="381"/>
+        <location filename="../src/favorites.cpp" line="380"/>
         <source>Path To A Config File</source>
         <translation>Pfad einer Konfigurationsdatei</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="410"/>
+        <location filename="../src/favorites.cpp" line="409"/>
         <source>Path To An Encrypted Folder</source>
         <translation>Pfad eines verschlüsselten Ordners</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="420"/>
+        <location filename="../src/favorites.cpp" line="419"/>
         <source>Path To Mount Folder</source>
         <translation>Pfad des Einhängeordners</translation>
     </message>

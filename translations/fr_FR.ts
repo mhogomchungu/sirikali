@@ -662,65 +662,65 @@ p, li { white-space: pre-wrap; }
         <translation>&amp;Fini</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="193"/>
+        <location filename="../src/favorites.cpp" line="192"/>
         <source>Remote Ssh Server Address
 (Example: sshfs woof@bar.foo)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="194"/>
+        <location filename="../src/favorites.cpp" line="193"/>
         <source>SSH_AUTH_SOCK Socket Path (Optional)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="228"/>
+        <location filename="../src/favorites.cpp" line="227"/>
         <source>Toggle AutoMount</source>
         <translation>Basculer Montage Auto</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="233"/>
+        <location filename="../src/favorites.cpp" line="232"/>
         <source>Remove Selected Entry</source>
         <translation>Enlever l&apos;entrée sélectionnée</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="238"/>
+        <location filename="../src/favorites.cpp" line="237"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="326"/>
-        <location filename="../src/favorites.cpp" line="330"/>
-        <location filename="../src/favorites.cpp" line="336"/>
+        <location filename="../src/favorites.cpp" line="325"/>
+        <location filename="../src/favorites.cpp" line="329"/>
+        <location filename="../src/favorites.cpp" line="335"/>
         <source>ERROR!</source>
         <translation>ERREUR!</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="326"/>
+        <location filename="../src/favorites.cpp" line="325"/>
         <source>Encrypted Folder Address Field Is Empty</source>
         <translation>Le champ d&apos;adresse du répertoire chiffré est vide</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="330"/>
+        <location filename="../src/favorites.cpp" line="329"/>
         <source>Mount Point Path Field Is Empty</source>
         <translation>Le champ du chemin du point de montage est vide</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="336"/>
+        <location filename="../src/favorites.cpp" line="335"/>
         <source>Mount Options Can Not Contain &quot;-&quot;</source>
         <translation>Les options de montage ne peuvent pas comporter &quot;-&quot;</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="381"/>
+        <location filename="../src/favorites.cpp" line="380"/>
         <source>Path To A Config File</source>
         <translation>Chemin vers un fichier de configuration</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="410"/>
+        <location filename="../src/favorites.cpp" line="409"/>
         <source>Path To An Encrypted Folder</source>
         <translation>Chemin d&apos;accès au répertoire chiffré</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="420"/>
+        <location filename="../src/favorites.cpp" line="419"/>
         <source>Path To Mount Folder</source>
         <translation>Chemin d&apos;accès au répertoire de montage</translation>
     </message>
