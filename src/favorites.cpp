@@ -189,7 +189,7 @@ void favorites::ShowUI( favorites::type type )
 	if( type == favorites::type::sshfs ){
 
 		m_ui->lineEditIdleTimeOut->setEnabled( false ) ;
-		m_ui->lineEditMountOptions->setText( "idmap=user,StrictHostKeyChecking=no" ) ;
+		m_ui->lineEditMountOptions->setText( "idmap=user" ) ;
 		m_ui->lineEditEncryptedFolderPath->setText( "sshfs " ) ;
 		m_ui->labelName ->setText( tr( "Remote Ssh Server Address\n(Example: sshfs woof@bar.foo:/remote/path)" ) ) ;
 		m_ui->labelCofigFilePath->setText( tr( "SSH_AUTH_SOCK Socket Path (Optional)" ) ) ;

@@ -455,9 +455,9 @@ static QString _sshfs( const cmdArgsList& args )
 
 		if( mountOptions.isEmpty() ){
 
-			mountOptions = "password_stdin" ;
+			mountOptions = "password_stdin,StrictHostKeyChecking=no" ;
 		}else{
-			mountOptions += ",password_stdin" ;
+			mountOptions += ",password_stdin,StrictHostKeyChecking=no" ;
 		}
 	}
 
