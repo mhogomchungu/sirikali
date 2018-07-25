@@ -633,65 +633,76 @@ p, li { white-space: pre-wrap; }
         <translation>&amp;Hecho</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="192"/>
+        <location filename="../src/favorites.cpp" line="194"/>
         <source>Remote Ssh Server Address
-(Example: sshfs woof@bar.foo)</source>
+(Example: sshfs woof@bar.foo:/remote/path)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="193"/>
+        <location filename="../src/favorites.cpp" line="195"/>
         <source>SSH_AUTH_SOCK Socket Path (Optional)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="227"/>
+        <location filename="../src/favorites.cpp" line="228"/>
+        <location filename="../src/favorites.cpp" line="252"/>
+        <source>Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/favorites.cpp" line="247"/>
         <source>Toggle AutoMount</source>
         <translation>Toggle AutoMount</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="232"/>
+        <location filename="../src/favorites.cpp" line="257"/>
         <source>Remove Selected Entry</source>
         <translation>Remover entrada seleccionada</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="237"/>
+        <location filename="../src/favorites.cpp" line="262"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="325"/>
-        <location filename="../src/favorites.cpp" line="329"/>
-        <location filename="../src/favorites.cpp" line="335"/>
+        <location filename="../src/favorites.cpp" line="350"/>
+        <location filename="../src/favorites.cpp" line="354"/>
+        <location filename="../src/favorites.cpp" line="360"/>
         <source>ERROR!</source>
         <translation>ERROR!</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="325"/>
+        <location filename="../src/favorites.cpp" line="350"/>
         <source>Encrypted Folder Address Field Is Empty</source>
         <translation>El campo de dirección de carpeta cifrada está vacío</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="329"/>
+        <location filename="../src/favorites.cpp" line="354"/>
         <source>Mount Point Path Field Is Empty</source>
         <translation>El campo de ruta de punto de montaje está vacío</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="335"/>
+        <location filename="../src/favorites.cpp" line="360"/>
         <source>Mount Options Can Not Contain &quot;-&quot;</source>
         <translation>Las opciones de montaje no pueden contener &quot;-&quot;</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="380"/>
+        <location filename="../src/favorites.cpp" line="395"/>
+        <source>Add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/favorites.cpp" line="424"/>
         <source>Path To A Config File</source>
         <translation>Directorio para configurar archivo</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="409"/>
+        <location filename="../src/favorites.cpp" line="453"/>
         <source>Path To An Encrypted Folder</source>
         <translation>Direcciorio de un folder encriptado</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="419"/>
+        <location filename="../src/favorites.cpp" line="463"/>
         <source>Path To Mount Folder</source>
         <translation>Camino para montar la carpeta</translation>
     </message>

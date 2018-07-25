@@ -465,7 +465,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/configoptions.cpp" line="80"/>
         <location filename="../src/configoptions.cpp" line="267"/>
         <source>Set Executables Search Path</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir le chemin de recherche des exécutables</translation>
     </message>
     <message>
         <location filename="../src/configoptions.cpp" line="177"/>
@@ -662,65 +662,77 @@ p, li { white-space: pre-wrap; }
         <translation>&amp;Fini</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="192"/>
+        <location filename="../src/favorites.cpp" line="194"/>
         <source>Remote Ssh Server Address
-(Example: sshfs woof@bar.foo)</source>
-        <translation type="unfinished"></translation>
+(Example: sshfs woof@bar.foo:/remote/path)</source>
+        <translation>Adresse du serveur SSH distant
+(Exemple: sshfs woof@bar.foo:/répertoire/distant)</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="193"/>
+        <location filename="../src/favorites.cpp" line="195"/>
         <source>SSH_AUTH_SOCK Socket Path (Optional)</source>
-        <translation type="unfinished"></translation>
+        <translation>SSH_AUTH_SOCK Chemin du Socket (Optionnel)</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="227"/>
+        <location filename="../src/favorites.cpp" line="228"/>
+        <location filename="../src/favorites.cpp" line="252"/>
+        <source>Edit</source>
+        <translation>Éditer</translation>
+    </message>
+    <message>
+        <location filename="../src/favorites.cpp" line="247"/>
         <source>Toggle AutoMount</source>
         <translation>Basculer Montage Auto</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="232"/>
+        <location filename="../src/favorites.cpp" line="257"/>
         <source>Remove Selected Entry</source>
         <translation>Enlever l&apos;entrée sélectionnée</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="237"/>
+        <location filename="../src/favorites.cpp" line="262"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="325"/>
-        <location filename="../src/favorites.cpp" line="329"/>
-        <location filename="../src/favorites.cpp" line="335"/>
+        <location filename="../src/favorites.cpp" line="350"/>
+        <location filename="../src/favorites.cpp" line="354"/>
+        <location filename="../src/favorites.cpp" line="360"/>
         <source>ERROR!</source>
         <translation>ERREUR!</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="325"/>
+        <location filename="../src/favorites.cpp" line="350"/>
         <source>Encrypted Folder Address Field Is Empty</source>
         <translation>Le champ d&apos;adresse du répertoire chiffré est vide</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="329"/>
+        <location filename="../src/favorites.cpp" line="354"/>
         <source>Mount Point Path Field Is Empty</source>
         <translation>Le champ du chemin du point de montage est vide</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="335"/>
+        <location filename="../src/favorites.cpp" line="360"/>
         <source>Mount Options Can Not Contain &quot;-&quot;</source>
         <translation>Les options de montage ne peuvent pas comporter &quot;-&quot;</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="380"/>
+        <location filename="../src/favorites.cpp" line="395"/>
+        <source>Add</source>
+        <translation>Ajouter</translation>
+    </message>
+    <message>
+        <location filename="../src/favorites.cpp" line="424"/>
         <source>Path To A Config File</source>
         <translation>Chemin vers un fichier de configuration</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="409"/>
+        <location filename="../src/favorites.cpp" line="453"/>
         <source>Path To An Encrypted Folder</source>
         <translation>Chemin d&apos;accès au répertoire chiffré</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="419"/>
+        <location filename="../src/favorites.cpp" line="463"/>
         <source>Path To Mount Folder</source>
         <translation>Chemin d&apos;accès au répertoire de montage</translation>
     </message>
@@ -1029,7 +1041,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.cpp" line="869"/>
         <source>Volume Created Successfully.</source>
-        <translation type="unfinished"></translation>
+        <translation>Volume créé avec succès.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="874"/>
@@ -1042,7 +1054,8 @@ Mot de passe entré incorrect.</translation>
         <location filename="../src/keydialog.cpp" line="879"/>
         <source>Failed To Connect To The Remote Computer.
 Wrong Password Entered.</source>
-        <translation type="unfinished"></translation>
+        <translation>Echec de la connexion à l&apos;ordinateur distant
+Mot de passe erroné.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="884"/>
@@ -1086,7 +1099,8 @@ Mot de passe entré incorrect.</translation>
         <location filename="../src/keydialog.cpp" line="914"/>
         <source>Failed To Complete The Request.
 Sshfs Executable Could Not Be Found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Echec pour compléter la requête.
+L&apos;exécutable Sshfs n&apos;a pu être trouvé.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="919"/>
@@ -1173,7 +1187,7 @@ Pour réaliser la mise à jour, cochez l&apos;option &quot;Mettre à jour le sys
     <message>
         <location filename="../src/keydialog.cpp" line="955"/>
         <source>Backend Could Not Load WinFsp. Please Make Sure You Have WinFsp Properly Installed</source>
-        <translation type="unfinished"></translation>
+        <translation>Le processus n&apos;a pas pu charger WinFsp. Veuillez vérifier que vous ayez installé WinFsp correctement</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1043"/>
@@ -1570,7 +1584,7 @@ Le &quot;format allégé&quot; est devenu le mode par défaut des systèmes bas�
     <message>
         <location filename="../src/sirikali.cpp" line="118"/>
         <source>Close All Volumes Before Quitting The Application</source>
-        <translation type="unfinished"></translation>
+        <translation>Fermer tous les volumes avant de quitter l&apos;application</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="373"/>
@@ -1594,7 +1608,11 @@ Le &quot;format allégé&quot; est devenu le mode par défaut des systèmes bas�
 Go To &quot;Menu-&gt;Settings-&gt;Editable Options-&gt;Set Executable Search Path&quot;
 
  And Then Set A Path To Where &quot;securefs&quot; Executable Is Located On The Computer And Restart.</source>
-        <translation type="unfinished"></translation>
+        <translation>Echec pour trouver l&apos;exécutable &quot;securefs&quot;.
+
+Voir dans &quot;Menu-&gt;Paramétrages-&gt;Options modifiables-&gt;Choisir le chemin de recherche des exécutables&quot;
+
+ et paramétrer le chemin où l&apos;exécutable &quot;securefs&quot; se situe sur le système, Redémarrer ensuite.</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="525"/>
