@@ -133,3 +133,4 @@ version 1.3.5(unreleased)
 -- Add "-DPOLKIT_SUPPORT=" compile time option to disable polkit support. Suid root-less ecryptfs-simple backend
    will not work if this option is turned off.
 -- Fix a bug on windows that prevented SiriKali from seeing 64 bit sshfs-win.
+-- Add ability to edit favorites entries.

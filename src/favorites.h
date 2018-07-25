@@ -187,6 +187,7 @@ private:
 	void addEntries( const QStringList& ) ;
 	Ui::favorites * m_ui ;
 	QWidget * m_parentWidget ;
+	int m_editRow ;
 };
 
 #endif // MANAGEDEVICENAMES_H
