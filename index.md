@@ -3,9 +3,15 @@
 SiriKali is a Qt/C++ GUI application that manages ecryptfs,cryfs,encfs,gocryptfs and securefs based encrypted folders. These projects are compared <a href="https://nuetzlich.net/gocryptfs/comparison/">here.</a>SiriKali can also connect to ssh servers using ssh.
 
 #### Supported Backends on Linux:
-<a href="https://github.com/netheril96/securefs">Securefs, </a><a href="https://github.com/mhogomchungu/ecryptfs-simple">Ecryptfs, </a><a href="https://www.cryfs.org/">cryfs, </a><a href="https://github.com/vgough/encfs">Encfs, </a><a href="https://nuetzlich.net/gocryptfs">Gocryptfs</a> and <a href="https://github.com/libfuse/sshfs">Sshfs.</a>
+
+<a href="https://github.com/netheril96/securefs">Securefs</a>, <a href="https://github.com/mhogomchungu/ecryptfs-simple">Ecryptfs</a>, <a href="https://www.cryfs.org/">cryfs</a>, <a href="https://github.com/vgough/encfs">Encfs, </a><a href="https://nuetzlich.net/gocryptfs">Gocryptfs</a> and <a href="https://github.com/libfuse/sshfs">Sshfs.</a>
+
 #### Supported Backends on Microsoft Windows:
-<a href="https://github.com/netheril96/securefs">Securefs, </a><a href="https://github.com/mhogomchungu/encfs/latest">Encfs</a> and <a href="https://github.com/billziss-gh/sshfs-win">Sshfs.</a>  Users of Securefs should inform SiriKali of where Securefs binary is located on the system by setting the path at: ```Menu->Settings->Editable Options->Set Executables Search Path.```
+<a href="https://github.com/netheril96/securefs">Securefs</a>, <a href="https://github.com/mhogomchungu/encfs/latest">Encfs</a> and <a href="https://github.com/billziss-gh/sshfs-win">Sshfs.</a>
+
+
+Users of Securefs should inform SiriKali of where Securefs binary is located on the system by setting the path at: ```Menu->Settings->Editable Options->Set Executables Search Path.```
+
 #### Supported Backends on MACOS:
 <a href="https://github.com/netheril96/securefs">Securefs, </a><a href="https://www.cryfs.org/">Cryfs, </a><a href="https://github.com/vgough/encfs">Encfs</a> and <a href="https://nuetzlich.net/gocryptfs">Gocryptfs.</a>
 
@@ -145,4 +151,5 @@ cv9jY9bZAbVaMUjF7dw/bsqgJ2HCJ33cf16GybRtozOE36YDB2omg58ngIrlmlea
 -----END PGP PUBLIC KEY BLOCK-----
 ```
 
-last update: Wed Aug  1 21:59:11 EAT 2018
+last update: Wed Aug  1 22:33:52 EAT 2018
+
