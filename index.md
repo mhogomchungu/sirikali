@@ -4,37 +4,18 @@ SiriKali is a Qt/C++ GUI application that manages ecryptfs,cryfs,encfs,gocryptfs
 
 #### Supported Backends on Linux:
 
-<a href="https://github.com/netheril96/securefs">1. securefs.</a>
-
-<a href="https://github.com/mhogomchungu/ecryptfs-simple">ecryptfs</a>
-
-<a href="https://www.cryfs.org/">3. cryfs.</a>
-
-<a href="https://github.com/vgough/encfs">4. encfs.</a>
-
-<a href="https://nuetzlich.net/gocryptfs">5. gocryptfs.</a>
-
-<a href="https://github.com/libfuse/sshfs">6. sshfs.</a>
+<a href="https://github.com/netheril96/securefs">Securefs, </a><a href="https://github.com/mhogomchungu/ecryptfs-simple">Ecryptfs, </a><a href="https://www.cryfs.org/">cryfs, </a><a href="https://github.com/vgough/encfs">Encfs, </a><a href="https://nuetzlich.net/gocryptfs">Gocryptfs, </a><a href="https://github.com/libfuse/sshfs">Sshfs.</a>
 
 #### Supported Backends on MACOS:
 
-<a href="https://github.com/netheril96/securefs">1. securefs.</a>
-
-<a href="https://www.cryfs.org/">2. cryfs.</a>
-
-<a href="https://github.com/vgough/encfs">3. encfs.</a>
-
-<a href="https://nuetzlich.net/gocryptfs">4. gocryptfs.</a>
+<a href="https://github.com/netheril96/securefs">Securefs, </a><a href="https://www.cryfs.org/">Cryfs, </a><a href="https://github.com/vgough/encfs">Encfs, </a><a href="https://nuetzlich.net/gocryptfs">Gocryptfs.</a>
 
 #### Supported Backends on Microsoft Windows:
 
-<a href="https://github.com/netheril96/securefs">1. securefs.</a>
+<a href="https://github.com/netheril96/securefs">Securefs, </a><a href="https://github.com/mhogomchungu/encfs/latest">Encfs, </a><a href="https://github.com/billziss-gh/sshfs-win">Sshfs.</a> Steps to setup SiriKali to
+connect to an ssh server are documented <a href="https://github.com/mhogomchungu/sirikali/wiki/Frequently-Asked-Questions#90-how-do-i-add-options-to-connect-to-an-ssh-server">here.</a> Users of Securefs should inform SiriKali of where Securefs binary is located on the system
+by setting the option at: ```Menu->Settings->Editable Options->Set Executables Search Path.```
 
-<a href="https://github.com/mhogomchungu/encfs/latest">2. encfs.</a>
-
-<a href="https://github.com/billziss-gh/sshfs-win">3. sshfs.</a> Steps to setup SiriKali to
-connect to an ssh server are documented <a href="https://github.com/mhogomchungu/sirikali/wiki/Frequently-Asked-Questions#90-how-do-i-add-options-to-connect-to-an-ssh-server">here.</a>
-```
 
 Encrypted container ```folders``` have an advantage over encrypted container ```files``` like the ones that are created by <a href="http://mhogomchungu.github.io/zuluCrypt/">zuluCrypt</a>,TrueCrypt,VeraCrypt among other projects that use file based encrypted containers.
 
@@ -86,11 +67,7 @@ signed and expect to get a warning from windows saying the installer is from unk
 
 <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.5/SiriKali-setup.exe">SiriKali-setup.exe</a>
 
-```
-Currently, SiriKali on windows supports only securefs,encfs and sshfs backends.
-SiriKali will expect to find securefs at "~/bin" and in window's language,
-SiriKali will expect to find "securefs.exe" at "C:\Users\<username>\bin"
-```
+
 
 ## Binary packages
 
