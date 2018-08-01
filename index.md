@@ -1,18 +1,45 @@
 ## SiriKali works on Linux, MACOS and Microsoft Windows
 
-SiriKali is a Qt/C++ GUI application that manages <a href="http://ecryptfs.org/">ecryptfs</a>,<a href="https://www.cryfs.org/">cryfs</a>,<a href="http://www.arg0.net/#!encfs/c1awt">encfs</a>,<a href="https://nuetzlich.net/gocryptfs">gocryptfs</a> and <a href="https://github.com/netheril96/securefs">securefs</a> based encrypted folders. These projects are compared <a href="https://nuetzlich.net/gocryptfs/comparison/">here.</a>SiriKali can also connect to ssh servers using <a href="https://github.com/libfuse/sshfs">sshfs.</a>
+SiriKali is a Qt/C++ GUI application that manages ecryptfs,cryfs,encfs,gocryptfs and securefs based encrypted folders. These projects are compared <a href="https://nuetzlich.net/gocryptfs/comparison/">here.</a>SiriKali can also connect to ssh servers using ssh.
 
-<a href="https://github.com/mhogomchungu/ecryptfs-simple">ecryptfs-simple</a> binary application is required to be installed for SiriKali to gain support for ecryptfs volumes.
+#### Supported Backends on Linux:
 
-```cryfs``` binary application is required to be installed for SiriKali to gain support for cryfs volumes.
+```
+<a href="https://github.com/netheril96/securefs">1. securefs.</a>
 
-```gocryptfs``` binary application is required to be installed for SiriKali to gain support for gocryptfs volumes.
+<a href="https://github.com/mhogomchungu/ecryptfs-simple">ecryptfs</a>
 
-```encfs``` binary application is required to be installed for SiriKali to gain support for encfs volumes. Windows users should get encfs from <a href="https://github.com/mhogomchungu/encfs/releases/tag/1.9.5">here.</a>
+<a href="https://www.cryfs.org/">3. cryfs.</a>
 
-```securefs``` binary application is required to be installed for SiriKali to gain support for securefs volumes.
+<a href="https://github.com/vgough/encfs">4. encfs.</a>
 
-```sshfs``` binary application is required to be installed for SiriKali to gain support for connecting to ssh servers. Windows users should get sshfs from <a href="https://github.com/billziss-gh/sshfs-win">here</a>. Steps to setup SiriKali to connect to an ssh server are documented <a href="https://github.com/mhogomchungu/sirikali/wiki/Frequently-Asked-Questions#90-how-do-i-add-options-to-connect-to-an-ssh-server">here.</a>
+<a href="https://nuetzlich.net/gocryptfs">5. gocryptfs.</a>
+
+<a href="https://github.com/libfuse/sshfs">6. sshfs.</a>
+
+```
+#### Supported Backends on MACOS:
+
+```
+<a href="https://github.com/netheril96/securefs">1. securefs.</a>
+
+<a href="https://www.cryfs.org/">2. cryfs.</a>
+
+<a href="https://github.com/vgough/encfs">3. encfs.</a>
+
+<a href="https://nuetzlich.net/gocryptfs">4. gocryptfs.</a>
+
+```
+#### Supported Backends on Microsoft Windows:
+
+```
+<a href="https://github.com/netheril96/securefs">1. securefs.</a>
+
+<a href="https://github.com/mhogomchungu/encfs/latest">2. encfs.</a>
+
+<a href="https://github.com/billziss-gh/sshfs-win">3. sshfs.</a> Steps to setup SiriKali to
+connect to an ssh server are documented <a href="https://github.com/mhogomchungu/sirikali/wiki/Frequently-Asked-Questions#90-how-do-i-add-options-to-connect-to-an-ssh-server">here.</a>
+```
 
 Encrypted container ```folders``` have an advantage over encrypted container ```files``` like the ones that are created by <a href="http://mhogomchungu.github.io/zuluCrypt/">zuluCrypt</a>,TrueCrypt,VeraCrypt among other projects that use file based encrypted containers.
 
@@ -152,4 +179,4 @@ cv9jY9bZAbVaMUjF7dw/bsqgJ2HCJ33cf16GybRtozOE36YDB2omg58ngIrlmlea
 -----END PGP PUBLIC KEY BLOCK-----
 ```
 
-last update: Fri Apr 27 22:17:53 EAT 2018
+last update: Wed Aug  1 21:59:11 EAT 2018
