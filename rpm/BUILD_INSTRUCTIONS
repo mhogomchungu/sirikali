@@ -1,6 +1,6 @@
 
 ps: copy and paste all given commands to make sure you dont mistype them.
-ps: at step 5,replace "1.3.4" to SiriKali version you are building.
+ps: at step 5,replace "1.3.5" to SiriKali version you are building.
 ps: these instructions assumes rpm build directory is at "~/rpmbuild".
     Modify the paths in step 5 if they are different in your distribution.
 
@@ -32,8 +32,8 @@ ps: these instructions assumes rpm build directory is at "~/rpmbuild".
    ****************************************************************************************************************
 
    rpmdev-setuptree
-   tar   -cf  ~/rpmbuild/SOURCES/SiriKali-1.3.4.tar ../SiriKali-1.3.4
-   xz    -z  ~/rpmbuild/SOURCES/SiriKali-1.3.4.tar
+   tar   -cf  ~/rpmbuild/SOURCES/SiriKali-1.3.5.tar ../SiriKali-1.3.5
+   xz    -z  ~/rpmbuild/SOURCES/SiriKali-1.3.5.tar
 
    ****************************************************************************************************************
 
