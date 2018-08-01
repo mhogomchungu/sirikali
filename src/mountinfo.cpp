@@ -151,6 +151,9 @@ static QStringList _windows_volumes( background_thread thread )
 	QString mode ;
 	QString m ;
 	QString fs ;
+	int mountPathIndex ;
+	int cipherPathIndex ;
+
 	const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
 
 	auto path = []( QString e ){
@@ -175,9 +178,19 @@ static QStringList _windows_volumes( background_thread thread )
 
 		fs = "fuse." + m ;
 
-		m += "@" + path( e.at( 1 ) ) ;
+		if( e.at( 1 ) == "--config" ){
 
-		s.append( w.arg( path( e.at( 2 ) ),mode,fs,m ) ) ;
+			cipherPathIndex = 3 ;
+			mountPathIndex = 4 ;
+		}else{
+			cipherPathIndex = 1 ;
+			mountPathIndex = 2 ;
+		}
+
+		m += "@" + path( e.at( cipherPathIndex ) ) ;
+
+		s.append( w.arg( path( e.at( mountPathIndex ) ),mode,fs,m ) ) ;
+
 	}
 
 	return s ;
