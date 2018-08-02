@@ -4,7 +4,7 @@ SiriKali is a Qt/C++ GUI application that manages ecryptfs,cryfs,encfs,gocryptfs
 
 #### Supported Backends on Linux:
 
-<a href="https://github.com/netheril96/securefs">Securefs</a>, <a href="https://github.com/mhogomchungu/ecryptfs-simple">Ecryptfs</a>, <a href="https://www.cryfs.org/">cryfs</a>, <a href="https://github.com/vgough/encfs">Encfs, </a><a href="https://nuetzlich.net/gocryptfs">Gocryptfs</a> and <a href="https://github.com/libfuse/sshfs">Sshfs.</a>
+<a href="https://github.com/netheril96/securefs">Securefs</a>, <a href="https://github.com/mhogomchungu/ecryptfs-simple">Ecryptfs</a>, <a href="https://www.cryfs.org/">Cryfs</a>, <a href="https://github.com/vgough/encfs">Encfs, </a><a href="https://nuetzlich.net/gocryptfs">Gocryptfs</a> and <a href="https://github.com/libfuse/sshfs">Sshfs.</a>
 
 #### Supported Backends on Microsoft Windows:
 <a href="https://github.com/netheril96/securefs">Securefs</a>, <a href="https://github.com/mhogomchungu/encfs/latest">Encfs</a> and <a href="https://github.com/billziss-gh/sshfs-win">Sshfs.</a>
