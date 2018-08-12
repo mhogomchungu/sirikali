@@ -145,6 +145,7 @@ namespace siritask
 		cryfsNotFound,
 		encfsNotFound,
 		securefsNotFound,
+		backEndDoesNotSupportCustomConfigPath,
 		ecryptfs_simpleNotFound,
 		unknown,
 		failedToCreateMountPoint,

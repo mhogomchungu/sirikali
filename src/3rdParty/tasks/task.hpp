@@ -111,6 +111,17 @@ namespace Task
 
 	using void_pair = std::pair< std::function< void() >,std::function< void() > > ;
 
+	template< typename T >
+	class future;
+
+	namespace detail
+	{
+		template< typename T >
+		void add_void( Task::future< T >&,Task::future< T >&,std::function< T() >&& ) ;
+		template< typename T >
+		void add( Task::future< T >&,Task::future< T >&,std::function< void( T ) >&& ) ;
+	}
+
 	class Thread : public QThread
 	{
 		Q_OBJECT
@@ -137,9 +148,6 @@ namespace Task
 	class future : private QObject
 	{
 	public:
-		/*
-		 * ----------------Start of public API----------------
-		 */
 		/*
 		 * Use this API if you care about the result
 		 */
@@ -236,9 +244,6 @@ namespace Task
 				m_cancel() ;
 			}
 		}
-		/*
-		 * ----------------End of public API----------------
-		 */
 		future() = default ;
 		future( const future& ) = delete ;
 		future( future&& ) = delete ;
@@ -278,7 +283,7 @@ namespace Task
 		}
 
 		template< typename E >
-		friend void _private_add( Task::future< E >&,
+		friend void Task::detail::add( Task::future< E >&,
 					  Task::future< E >&,
 					  std::function< void( E ) >&& ) ;
 	private:
@@ -348,9 +353,6 @@ namespace Task
 	class   future< void > : private QObject
 	{
 	public:
-		/*
-		 * ----------------Start of public API----------------
-		 */
 		void then( std::function< void() > function )
 		{
 			m_function = std::move( function ) ;
@@ -431,9 +433,6 @@ namespace Task
 				this->then( std::move( function ) ) ;
 			}
 		}
-		/*
-		 * ----------------End of public API----------------
-		 */
 		future() = default ;
 		future( const future& ) = delete ;
 		future( future&& ) = delete ;
@@ -462,9 +461,9 @@ namespace Task
 		}
 
 		template< typename T >
-		friend void _private_add_void( Task::future< T >&,
-					       Task::future< T >&,
-					       std::function< T() >&& ) ;
+		friend void Task::detail::add_void( Task::future< T >&,
+						    Task::future< T >&,
+						    std::function< T() >&& ) ;
 		void run()
 		{
 			m_function() ;
@@ -586,16 +585,101 @@ namespace Task
 	};
 
 	/*
-	 *
-	 * Below APIs wrappes a function around a future and then returns the future.
-	 *
+	 * -------------------------Start of internal helper functions-------------------------
+	 */
+
+	namespace detail
+	{
+		template< typename Fn >
+		Task::future<typename std::result_of<Fn()>::type>& run( Fn function )
+		{
+			using fn_t = typename std::result_of<Fn()>::type ;
+			return ( new ThreadHelper<fn_t>( std::move( function ) ) )->Future() ;
+		}
+
+		template< typename T >
+		void add( Task::future< T >& a,Task::future< T >& b,std::function< void( T ) >&& c )
+		{
+			a.m_tasks.emplace_back( std::addressof( b ),std::move( c ) ) ;
+			a.m_threads.push_back( b.m_thread ) ;
+		}
+
+		template< typename T >
+		void add_void( Task::future< T >& a,Task::future< T >& b,std::function< T() >&& c )
+		{
+			a.m_tasks.emplace_back( std::addressof( b ),std::move( c ) ) ;
+			a.m_threads.push_back( b.m_thread ) ;
+		}
+
+		template< typename T >
+		void add_task( Task::future< T >& f )
+		{
+			Q_UNUSED( f ) ;
+		}
+
+		template< typename T >
+		void add_future( Task::future< T >& f )
+		{
+			Q_UNUSED( f ) ;
+		}
+
+		template< typename T >
+		void add_pair( Task::future< T >& f )
+		{
+			Q_UNUSED( f ) ;
+		}
+
+		template< typename T >
+		void add_pair_void( Task::future< T >& f )
+		{
+			Q_UNUSED( f ) ;
+		}
+
+		template< typename ... T >
+		void add_task( Task::future< void >& f,std::function< void() >&& e,T&& ... t )
+		{
+			add_void( f,Task::detail::run( std::move( e ) ),
+				  std::function< void() >( [](){} ) ) ;
+			add_task( f,std::move( t ) ... ) ;
+		}
+
+		template< typename ... T >
+		void add_future( Task::future< void >& f,Task::future< void >& e,T&& ... t )
+		{
+			add_void( f,e,std::function< void() >( [](){} ) ) ;
+			add_future( f,std::forward<T>( t ) ... ) ;
+		}
+
+		template< typename E,typename F,typename ... T >
+		void add_pair( Task::future< E >& f,F&& s,T&& ... t )
+		{
+			add( f,Task::detail::run( std::move( s.first ) ),std::move( s.second ) ) ;
+			add_pair( f,std::forward<T>( t ) ... ) ;
+		}
+
+		template< typename F,typename ... T >
+		void add_pair_void( Task::future< void >& f,F&& s,T&& ... t )
+		{
+			add_void( f,Task::detail::run( std::move( s.first ) ),std::move( s.second ) ) ;
+			add_pair_void( f,std::forward<T>( t ) ... ) ;
+		}
+
+		template< typename T >
+		Task::future< T >& future()
+		{
+			return *( new Task::future< T >() ) ;
+		}
+	} //end of detail namespace
+
+
+	/*
+	 * -------------------------End of internal helper functions-------------------------
 	 */
 
 	template< typename Fn >
 	future<typename std::result_of<Fn()>::type>& run( Fn function )
 	{
-		using fn_t = typename std::result_of<Fn()>::type ;
-		return ( new ThreadHelper<fn_t>( std::move( function ) ) )->Future() ;
+		return Task::detail::run( std::move( function ) ) ;
 	}
 
 	template< typename Fn,typename ... Args >
@@ -604,133 +688,35 @@ namespace Task
 		return Task::run( std::bind( std::move( function ),std::move( args ) ... ) ) ;
 	}
 
-	/*
-	 * -------------------------Start of internal helper functions-------------------------
-	 */
-
-	template< typename Fn >
-	future<typename std::result_of<Fn()>::type>& _run( Fn function )
-	{
-		using fn_t = typename std::result_of<Fn()>::type ;
-		return ( new ThreadHelper<fn_t>( std::move( function ) ) )->Future() ;
-	}
-
-	template< typename T >
-	void _private_add( Task::future< T >& a,Task::future< T >& b,std::function< void( T ) >&& c )
-	{
-		a.m_tasks.emplace_back( std::addressof( b ),std::move( c ) ) ;
-		a.m_threads.push_back( b.m_thread ) ;
-	}
-
-	template< typename T >
-	void _private_add_void( Task::future< T >& a,Task::future< T >& b,std::function< T() >&& c )
-	{
-		a.m_tasks.emplace_back( std::addressof( b ),std::move( c ) ) ;
-		a.m_threads.push_back( b.m_thread ) ;
-	}
-
-	template< typename T >
-	void _private_add_task( Task::future< T >& f )
-	{
-		Q_UNUSED( f ) ;
-	}
-
-	template< typename T >
-	void _private_add_future( Task::future< T >& f )
-	{
-		Q_UNUSED( f ) ;
-	}
-
-	template< typename T >
-	void _private_add_pair( Task::future< T >& f )
-	{
-		Q_UNUSED( f ) ;
-	}
-
-	template< typename T >
-	void _private_add_pair_void( Task::future< T >& f )
-	{
-		Q_UNUSED( f ) ;
-	}
-
-	template< typename ... T >
-	void _private_add_task( Task::future< void >& f,std::function< void() >&& e,T&& ... t )
-	{
-		_private_add_void( f,Task::_run( std::move( e ) ),std::function< void() >( [](){} ) ) ;
-
-		_private_add_task( f,std::move( t ) ... ) ;
-	}
-
-	template< typename ... T >
-	void _private_add_future( Task::future< void >& f,Task::future< void >& e,T&& ... t )
-	{
-		_private_add_void( f,e,std::function< void() >( [](){} ) ) ;
-		_private_add_future( f,std::forward<T>( t ) ... ) ;
-	}
-
-	template< typename E,typename F,typename ... T >
-	void _private_add_pair( Task::future< E >& f,F&& s,T&& ... t )
-	{
-		_private_add( f,Task::_run( std::move( s.first ) ),std::move( s.second ) ) ;
-
-		_private_add_pair( f,std::forward<T>( t ) ... ) ;
-	}
-
-	template< typename F,typename ... T >
-	void _private_add_pair_void( Task::future< void >& f,F&& s,T&& ... t )
-	{
-		_private_add_void( f,Task::_run( std::move( s.first ) ),std::move( s.second ) ) ;
-
-		_private_add_pair_void( f,std::forward<T>( t ) ... ) ;
-	}
-
-	template< typename T >
-	Task::future< T >& _private_future()
-	{
-		return *( new Task::future< T >() ) ;
-	}
-
-	/*
-	 * -------------------------End of internal helper functions-------------------------
-	 */
-
 	template< typename ... T >
 	Task::future< void >& run( std::function< void() >f,T ... t )
 	{
-		auto& e = _private_future< void >() ;
-
-		_private_add_task( e,std::move( f ),std::move( t ) ... ) ;
-
+		auto& e = Task::detail::future< void >() ;
+		Task::detail::add_task( e,std::move( f ),std::move( t ) ... ) ;
 		return e ;
 	}
 
 	template< typename ... T >
 	Task::future< void >& run( Task::future< void >& s,T&& ... t )
 	{
-		auto& e = _private_future< void >() ;
-
-		_private_add_future( e,s,std::forward<T>( t ) ... ) ;
-
+		auto& e = Task::detail::future< void >() ;
+		Task::detail::add_future( e,s,std::forward<T>( t ) ... ) ;
 		return e ;
 	}
 
 	template< typename ... T >
 	Task::future< void >& run( void_pair s,T ... t )
 	{
-		auto& e = _private_future< void >() ;
-
-		_private_add_pair_void( e,std::move( s ),std::move( t ) ... ) ;
-
+		auto& e = Task::detail::future< void >() ;
+		Task::detail::add_pair_void( e,std::move( s ),std::move( t ) ... ) ;
 		return e ;
 	}
 
 	template< typename E,typename ... T >
 	Task::future< E >& run( pair< E > s,T ... t )
 	{
-		auto& e = _private_future< E >() ;
-
-		_private_add_pair( e,std::move( s ),std::move( t ) ... ) ;
-
+		auto& e = Task::detail::future< E >() ;
+		Task::detail::add_pair( e,std::move( s ),std::move( t ) ... ) ;
 		return e ;
 	}
 

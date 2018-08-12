@@ -914,6 +914,11 @@ void keyDialog::reportErrorMessage( const siritask::cmdStatus& s )
 		msg = tr( "Failed To Complete The Request.\nSshfs Executable Could Not Be Found." ) ;
 		break;
 
+	case siritask::status::backEndDoesNotSupportCustomConfigPath :
+
+		msg = tr( "Backend Does Not Support Custom Configuration File Path." ) ;
+		break;
+
 	case siritask::status::cryfsNotFound :
 
 		msg = tr( "Failed To Complete The Request.\nCryfs Executable Could Not Be Found." ) ;

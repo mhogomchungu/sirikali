@@ -455,10 +455,15 @@ static QString _sshfs( const cmdArgsList& args )
 
 		if( mountOptions.isEmpty() ){
 
-			mountOptions = "password_stdin,StrictHostKeyChecking=no" ;
+			mountOptions = "password_stdin" ;
 		}else{
-			mountOptions += ",password_stdin,StrictHostKeyChecking=no" ;
+			mountOptions += ",password_stdin" ;
 		}
+	}
+
+	if( !mountOptions.contains( "StrictHostKeyChecking=") ){
+
+		mountOptions += ",StrictHostKeyChecking=no" ;
 	}
 
 	return s.arg( args.exe,
@@ -522,22 +527,9 @@ static QString _args( const QString& exe,const siritask::options& opt,
 		}
 	}() ;
 
-	auto configPath = [ & ](){
-
-		if( opt.type.isOneOf( "cryfs","gocryptfs","securefs","ecryptfs" ) ){
-
-			if( !configFilePath.isEmpty() ){
-
-				return "--config " + _makePath( configFilePath ) ;
-			}
-		}
-
-		return QString() ;
-	}() ;
-
 	cmdArgsList arguments{  exe,
 				opt,
-				configPath,
+				configFilePath,
 				separator,
 				idleTimeOut,
 				cipherFolder,
@@ -767,6 +759,22 @@ static utility::Task _run_task( const QString& cmd,
 	}
 }
 
+static utility::result< QString > _build_config_file_path( const siritask::options& opt,
+							   const QString& configFilePath )
+{
+	if( configFilePath.isEmpty() ){
+
+		return QString() ;
+	}else{
+		if( opt.type.isOneOf( "cryfs","gocryptfs","securefs","ecryptfs" ) ){
+
+			return "--config " + _makePath( configFilePath ) ;
+		}else{
+			return {} ;
+		}
+	}
+}
+
 static siritask::cmdStatus _cmd( bool create,const siritask::options& opts,
 		const QString& password,const QString& configFilePath )
 {
@@ -782,20 +790,25 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opts,
 	}else{
 		exe = utility::Task::makePath( exe ) ;
 
-		auto _run = [ & ]()->std::pair< QString,siritask::cmdStatus >{
+		auto _run = [ & ]()->siritask::cmdStatus{
 
-			auto cmd = _args( exe,opt,configFilePath,create ) ;
+			auto m = _build_config_file_path( opt,configFilePath ) ;
 
-			auto s = _run_task( cmd,password,opt,create,_ecryptfs( app ) ) ;
+			if( m ){
 
-			return { cmd,_status( s,_status( app,status_type::exeName ) ) } ;
+				auto cmd = _args( exe,opt,m.value(),create ) ;
+
+				auto s = _run_task( cmd,password,opt,create,_ecryptfs( app ) ) ;
+
+				return _status( s,_status( app,status_type::exeName ) ) ;
+			}else{
+				return cs::backEndDoesNotSupportCustomConfigPath ;
+			}
 		} ;
 
 		auto s = _run() ;
 
-		const auto& e = s.second ;
-
-		if( e == siritask::status::ecrypfsBadExePermissions ){
+		if( s == siritask::status::ecrypfsBadExePermissions ){
 
 			if( utility::enablePolkit( utility::background_thread::True ) ){
 
@@ -803,7 +816,7 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opts,
 			}
 		}
 
-		return e ;
+		return s ;
 	}
 }
 
