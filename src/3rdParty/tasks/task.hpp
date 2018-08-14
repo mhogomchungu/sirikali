@@ -1,5 +1,5 @@
 ﻿/*
- * copyright: 2014-2017
+ * copyright: 2014-2018
  * name : Francis Banyikwa
  * email: mhogomchungu@gmail.com
  *
@@ -107,11 +107,6 @@
 namespace Task
 {
 	template< typename T >
-	using pair = std::pair< std::function< T() >,std::function< void( T ) > > ;
-
-	using void_pair = std::pair< std::function< void() >,std::function< void() > > ;
-
-	template< typename T >
 	class future;
 
 	namespace detail
@@ -120,6 +115,37 @@ namespace Task
 		void add_void( Task::future< T >&,Task::future< T >&,std::function< T() >&& ) ;
 		template< typename T >
 		void add( Task::future< T >&,Task::future< T >&,std::function< void( T ) >&& ) ;
+	}
+
+	template< typename T >
+	struct pair{
+		pair( std::function< T() > first,std::function< void( T ) > second ) :
+			value( std::make_pair( std::move( first ),std::move( second ) ) )
+		{
+		}
+		std::pair< std::function< T() >,std::function< void( T ) > > value ;
+	};
+
+	template<>
+	struct pair<void>{
+		pair( std::function< void() > first,std::function< void() > second ) :
+			value( std::make_pair( std::move( first ),std::move( second ) ) )
+		{
+		}
+		std::pair< std::function< void() >,std::function< void() > > value ;
+	};
+
+	template< typename E,typename F >
+	pair<typename std::result_of<E()>::type> make_pair( E e,F f )
+	{
+		return pair<typename std::result_of<E()>::type>( std::move( e ),std::move( f ) ) ;
+	}
+
+	template< typename E,typename F,
+		  typename std::enable_if<std::is_void<typename std::result_of<E()>::type>::value>::type>
+	pair< void > make_pair( E e,F f )
+	{
+		return pair< void >( std::move( e ),std::move( f ) ) ;
 	}
 
 	class Thread : public QThread
@@ -350,7 +376,7 @@ namespace Task
 	};
 
 	template<>
-	class   future< void > : private QObject
+	class future< void > : private QObject
 	{
 	public:
 		void then( std::function< void() > function )
@@ -653,14 +679,14 @@ namespace Task
 		template< typename E,typename F,typename ... T >
 		void add_pair( Task::future< E >& f,F&& s,T&& ... t )
 		{
-			add( f,Task::detail::run( std::move( s.first ) ),std::move( s.second ) ) ;
+			add( f,Task::detail::run( std::move( s.value.first ) ),std::move( s.value.second ) ) ;
 			add_pair( f,std::forward<T>( t ) ... ) ;
 		}
 
 		template< typename F,typename ... T >
 		void add_pair_void( Task::future< void >& f,F&& s,T&& ... t )
 		{
-			add_void( f,Task::detail::run( std::move( s.first ) ),std::move( s.second ) ) ;
+			add_void( f,Task::detail::run( std::move( s.value.first ) ),std::move( s.value.second ) ) ;
 			add_pair_void( f,std::forward<T>( t ) ... ) ;
 		}
 
@@ -705,7 +731,7 @@ namespace Task
 	}
 
 	template< typename ... T >
-	Task::future< void >& run( void_pair s,T ... t )
+	Task::future< void >& run( pair< void > s,T ... t )
 	{
 		auto& e = Task::detail::future< void >() ;
 		Task::detail::add_pair_void( e,std::move( s ),std::move( t ) ... ) ;
@@ -1032,27 +1058,27 @@ auto ra1 = [](){ std::cout << "r1" << std::endl ; } ;
 auto ra2 = [](){ std::cout << "r2" << std::endl ; } ;
 auto ra3 = [](){ std::cout << "r3" << std::endl ; } ;
 
-Task::future<void>& e = Task::run( Task::void_pair{ fna1,ra1 },
-				   Task::void_pair{ fna2,ra2 },
-				   Task::void_pair{ fna3,ra3 } ) ;
+Task::future<void>& e = Task::run( Task::make_pair( fna1,ra1 ),
+				   Task::make_pair( fna2,ra2 ),
+				   Task::make_pair( fna3,ra3 ) ) ;
 
 e.await() ;
 
 std::cout<< "Testing multiple tasks with continuation arguments" << std::endl ;
 
-auto fn1 = [](){ _printThreadID(); return 0 ;} ;
-auto fn2 = [](){ _printThreadID(); return 0 ;} ;
+auto fn1 = [](){ _printThreadID(); return 0 ; } ;
+auto fn2 = [](){ _printThreadID(); return 0 ; } ;
 auto fn3 = [](){ _printThreadID(); return 0 ; } ;
 
 auto r1 = []( int ){ std::cout << "r1" << std::endl ; } ;
 auto r2 = []( int ){ std::cout << "r2" << std::endl ; } ;
 auto r3 = []( int ){ std::cout << "r3" << std::endl ; } ;
 
-Task::future<int>& s = Task::run(  Task::pair<int>{ fn1,r1 },
-				   Task::pair<int>{ fn2,r2 },
-				   Task::pair<int>{ fn3,r3 } ) ;
+Task::future<int>& s = Task::run( Task::make_pair( fn1,r1 ),
+				  Task::make_pair( fn2,r2 ),
+				  Task::make_pair( fn3,r3 ) ) ;
 
-s.then( [](){ QCoreApplication::quit() ;} ) ;
+s.then( [](){ QCoreApplication::quit() ; } ) ;
 
 #endif //end example block
 
