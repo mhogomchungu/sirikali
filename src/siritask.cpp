@@ -467,8 +467,8 @@ static QString _sshfs( const cmdArgsList& args )
 	}
 
 	return s.arg( args.exe,
-		      args.opt.cipherFolder,
-		      args.opt.plainFolder,
+		      args.cipherFolder,
+		      args.mountPoint,
 		      _mountOptions( args,mountOptions,"sshfs",",subtype=sshfs" ) ) ;
 }
 
