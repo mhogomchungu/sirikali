@@ -766,7 +766,7 @@ static utility::result< QString > _build_config_file_path( const siritask::optio
 
 		return QString() ;
 	}else{
-		if( opt.type.isOneOf( "cryfs","gocryptfs","securefs","ecryptfs" ) ){
+		if( opt.type.isOneOf( "cryfs","gocryptfs","securefs","ecryptfs","encfs" ) ){
 
 			return "--config " + _makePath( configFilePath ) ;
 		}else{

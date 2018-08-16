@@ -1091,22 +1091,42 @@ static utility::result< QByteArray > _volume_properties( const QString& cmd,
 
 		return e.stdOut() ;
 	}else{
-		for( auto& it : utility::readFavorites() ){
+		for( const auto& it : utility::readFavorites() ){
 
 			if( utility::Task::makePath( it.volumePath ) == path ){
 
-				auto s = utility::Task::makePath( it.configFilePath ) ;
+				auto s = [ & ]{
 
-				if( cmd.endsWith( "gocryptfs" ) ){
+					if( cmd.endsWith( "gocryptfs\"" ) ){
 
-					s += " " + it.volumePath ;
-				}
+						auto a = utility::Task::makePath( it.configFilePath ) ;
+						auto b = utility::Task::makePath( it.volumePath ) ;
+
+						return a + " " + b ;
+
+					}else if( cmd.endsWith( "encfsctl\"" ) ){
+
+						auto s = it.configFilePath ;
+
+						int index = s.lastIndexOf( "/" ) ;
+						if( index != -1 ){
+
+							s.remove( index,s.length() - index ) ;
+						}
+
+						return utility::Task::makePath( s ) ;
+					}else{
+						return utility::Task::makePath( it.configFilePath ) ;
+					}
+				}() ;
 
 				e = utility::Task::run( cmd + args.first + args.second + s ).await() ;
 
 				if( e.success() ){
 
 					return e.stdOut() ;
+				}else{
+					break ;
 				}
 			}
 		}
@@ -1137,7 +1157,7 @@ static void _volume_properties( const QString& cmd,const std::pair<QString,QStri
 		DialogMsg( w ).ShowUIOK( QObject::tr( "ERROR" ),
 					 QObject::tr( "Failed To Find %1 Executable" ).arg( cmd ) ) ;
 	}else{
-		auto e = _volume_properties( "\"" + exe + "\"",args,path ) ;
+		auto e = _volume_properties( utility::Task::makePath( exe ),args,path ) ;
 
 		if( e ){
 
