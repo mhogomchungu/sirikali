@@ -486,7 +486,12 @@ static QString _sshfs( const cmdArgsList& args )
 
 	if( !fuseOptions.contains( "StrictHostKeyChecking=") ){
 
-		fuseOptions += ",StrictHostKeyChecking=no" ;
+		if( fuseOptions.isEmpty() ){
+
+			fuseOptions = "StrictHostKeyChecking=no" ;
+		}else{
+			fuseOptions += ",StrictHostKeyChecking=no" ;
+		}
 	}
 
 	return s.arg( args.exe,args.cipherFolder,args.mountPoint,fuseOptions ) ;
