@@ -353,13 +353,6 @@ void favorites::add()
 
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Mount Point Path Field Is Empty" ) ) ;
 	}
-	if( !mOpts.isEmpty() ){
-
-		if( mOpts.startsWith( "-" ) || mOpts.contains( ",-" ) ){
-
-			return msg.ShowUIOK( tr( "ERROR!" ),tr( "Mount Options Can Not Contain \"-\"" ) ) ;
-		}
-	}
 
 	m_ui->tableWidget->setEnabled( false ) ;
 
