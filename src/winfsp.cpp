@@ -430,6 +430,53 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 	return s ;
 }
 
+SiriKali::Winfsp::mountOptions SiriKali::Winfsp::mountOption( const QStringList& e )
+{
+	const QString& s = e.last() ;
+
+	SiriKali::Winfsp::mountOptions mOpt ;
+
+	mOpt.mode = s.mid( 0,2 ) ;
+
+	auto path = []( QString e ){
+
+		if( e.startsWith( '\"' ) ){
+
+			e.remove( 0,1 ) ;
+		}
+
+		if( e.endsWith( '\"' ) ){
+
+			e.truncate( e.size() - 1 ) ;
+		}
+
+		return e ;
+	} ;
+
+	for( const auto& it : utility::split( s,',' ) ){
+
+		if( it.startsWith( "subtype=" ) ){
+
+			mOpt.subtype = it.mid( 8 ) ;
+		}
+	}
+
+	for( int i = 0 ; i < e.size() ; i++ ){
+
+		const auto& m = e.at( i ) ;
+
+		if( m.endsWith( ":" ) && m.size() == 2 ){
+
+			mOpt.cipherFolder   = path( e.at( i - 1 ) ) ;
+			mOpt.mountPointPath = path( e.at( i ) ) ;
+
+			break ;
+		}
+	}
+
+	return mOpt ;
+}
+
 Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const QString& e )
 {
 	auto mountPoint = e ;
@@ -440,17 +487,9 @@ Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const Q
 
 		auto e = m_instances[ i ] ;
 
-		const auto cmd = e->program() ;
+		auto cmd = e->program() ;
 
-		auto m = [ & ](){
-
-			if( utility::endsWithAtLeastOne( cmd,"encfs.exe","sshfs.exe" ) ){
-
-				return e->arguments().at( 2 ) ;
-			}else{
-				return e->arguments().at( e->arguments().size() - 3 ) ;
-			}
-		}() ;
+		auto m = SiriKali::Winfsp::mountOption( e->arguments() ).mountPointPath ;
 
 		if( m == mountPoint ){
 
@@ -567,6 +606,18 @@ std::vector< QStringList > SiriKali::Winfsp::commands()
 	}else{
 		return SiriKali::Winfsp::ActiveInstances().commands() ;
 	}
+}
+
+std::vector< SiriKali::Winfsp::mountOptions > SiriKali::Winfsp::getMountOptions()
+{
+	std::vector< SiriKali::Winfsp::mountOptions > mOpts ;
+
+	for( const auto& it : SiriKali::Winfsp::commands() ){
+
+		mOpts.emplace_back( SiriKali::Winfsp::mountOption( it ) ) ;
+	}
+
+	return mOpts ;
 }
 
 Task::process::result SiriKali::Winfsp::FspLaunchStop( const QString& m )

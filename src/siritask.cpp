@@ -308,16 +308,6 @@ private:
 
 static QString _ecryptfs( const cmdArgsList& args )
 {
-	auto mode = [ & ](){
-
-		if( args.opt.ro ){
-
-			return "--readonly" ;
-		}else{
-			return "" ;
-		}
-	}() ;
-
 	auto e = QString( "%1 %2 %3 -a %4 %5 %6" ) ;
 
 	auto s = [ & ]{
@@ -326,14 +316,14 @@ static QString _ecryptfs( const cmdArgsList& args )
 
 			return e.arg( args.exe,
 				      args.opt.createOptions,
-				      mode,
+				      args.opt.ro ? "--readonly" : "",
 				      args.configFilePath,
 				      args.cipherFolder,
 				      args.mountPoint ) ;
 		}else{
 			return e.arg( args.exe,
 				      "-o key=passphrase",
-				      mode,
+				      args.opt.ro ? "--readonly" : "",
 				      args.configFilePath,
 				      args.cipherFolder,
 				      args.mountPoint ) ;

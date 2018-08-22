@@ -33,16 +33,6 @@
 
 enum class background_thread{ True,False } ;
 
-static std::vector< QStringList > _getwinfspInstances( background_thread thread )
-{
-	if( thread == background_thread::True ){
-
-		return SiriKali::Winfsp::commands() ;
-	}else{
-		return Task::await( [](){ return SiriKali::Winfsp::commands() ; } ) ;
-	}
-}
-
 QString mountinfo::encodeMountPath( const QString& e )
 {
 	auto m = e ;
@@ -116,59 +106,14 @@ static QStringList _macox_volumes()
 	return s ;
 }
 
-struct mountOptions
+static std::vector< SiriKali::Winfsp::mountOptions > _win_volumes( background_thread thread )
 {
-	QString mode ;
-	QString subtype ;
-	QString cipherFolder ;
-	QString mountPointPath ;
-};
+	if( thread == background_thread::True ){
 
-static mountOptions _mountOption( const QStringList& e )
-{
-	const QString& s = e.last() ;
-
-	mountOptions mOpt ;
-
-	mOpt.mode = s.mid( 0,2 ) ;
-
-	auto path = []( QString e ){
-
-		if( e.startsWith( '\"' ) ){
-
-			e.remove( 0,1 ) ;
-		}
-
-		if( e.endsWith( '\"' ) ){
-
-			e.truncate( e.size() - 1 ) ;
-		}
-
-		return e ;
-	} ;
-
-	for( const auto& it : utility::split( s,',' ) ){
-
-		if( it.startsWith( "subtype=" ) ){
-
-			mOpt.subtype = it.mid( 8 ) ;
-		}
+		return SiriKali::Winfsp::getMountOptions() ;
+	}else{
+		return Task::await( SiriKali::Winfsp::getMountOptions ) ;
 	}
-
-	for( int i = 0 ; i < e.size() ; i++ ){
-
-		const auto& m = e.at( i ) ;
-
-		if( m.endsWith( ":" ) && m.size() == 2 ){
-
-			mOpt.cipherFolder   = path( e.at( i - 1 ) ) ;
-			mOpt.mountPointPath = path( e.at( i ) ) ;
-
-			break ;
-		}
-	}
-
-	return mOpt ;
 }
 
 static QStringList _windows_volumes( background_thread thread )
@@ -177,15 +122,13 @@ static QStringList _windows_volumes( background_thread thread )
 
 	const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
 
-	for( const QStringList& e : _getwinfspInstances( thread ) ){
+	for( const auto& e : _win_volumes( thread ) ){
 
-		auto mOpt = _mountOption( e ) ;
+		auto fs = "fuse." + e.subtype ;
 
-		auto fs = "fuse." + mOpt.subtype ;
+		auto m = e.subtype + "@" + e.cipherFolder ;
 
-		auto m = mOpt.subtype + "@" + mOpt.cipherFolder ;
-
-		s.append( w.arg( mOpt.mountPointPath,mOpt.mode,fs,m ) ) ;
+		s.append( w.arg( e.mountPointPath,e.mode,fs,m ) ) ;
 	}
 
 	return s ;

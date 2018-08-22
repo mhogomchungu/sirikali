@@ -376,6 +376,7 @@ namespace utility
 	QString windowsExecutableSearchPath() ;
 
 	void logCommandOutPut( const ::Task::process::result&,const QString& ) ;
+	void logCommandOutPut( const QString& ) ;
 
 	void polkitFailedWarning( std::function< void() > ) ;
 	bool useSiriPolkit( void ) ;
