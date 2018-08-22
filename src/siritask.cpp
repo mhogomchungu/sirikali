@@ -391,20 +391,13 @@ static QString _securefs( const cmdArgsList& args )
 			      args.configFilePath,
 			      args.cipherFolder ) ;
 	}else{
-		QString exe = [ & ](){
-
-			if( utility::platformIsWindows() ){
-
-				return "%1 mount %2 %3 %4 %5 %6" ;
-			}else{
-				return "%1 mount -b %2 %3 %4 %5 %6" ;
-			}
-		}() ;
-
 		mountOptions m( args ) ;
+
+		QString exe = "%1 mount %2 %3 %4 %5 %6 %7" ;
 
 		return exe.arg( args.exe,
 				m.exeOptions(),
+				utility::platformIsWindows() ? "" : "-b",
 				args.configFilePath,
 				args.cipherFolder,
 				args.mountPoint,
@@ -431,15 +424,7 @@ static QString _cryfs( const cmdArgsList& args )
 
 static QString _encfs( const cmdArgsList& args )
 {
-	auto e = [](){
-
-		if( utility::platformIsWindows() ){
-
-			return QString( "%1 -f %2 %3 %4 %5 %6 %7 %8" ) ;
-		}else{
-			return QString( "%1 %2 %3 %4 %5 %6 %7 %8" ) ;
-		}
-	}() ;
+	QString e = "%1 %2 %3 %4 %5 %6 %7 %8 %9" ;
 
 	mountOptions m( args ) ;
 
@@ -452,6 +437,7 @@ static QString _encfs( const cmdArgsList& args )
 
 	return e.arg( args.exe,
 		      m.exeOptions(),
+		      utility::platformIsWindows() ? "-f" : "",
 		      args.cipherFolder,
 		      args.mountPoint,
 		      args.idleTimeOut,
@@ -462,16 +448,6 @@ static QString _encfs( const cmdArgsList& args )
 
 static QString _sshfs( const cmdArgsList& args )
 {
-	QString s = [](){
-
-		if( utility::platformIsWindows() ){
-
-			return "%1 -f %2 %3 %4" ;
-		}else{
-			return "%1 %2 %3 %4" ;
-		}
-	}() ;
-
 	auto fuseOptions = mountOptions( args ).fuseOptions( "sshfs",",subtype=sshfs" ) ;
 
 	if( !args.opt.key.isEmpty() ){
@@ -494,7 +470,12 @@ static QString _sshfs( const cmdArgsList& args )
 		}
 	}
 
-	return s.arg( args.exe,args.cipherFolder,args.mountPoint,fuseOptions ) ;
+	QString s = "%1 %2 %3 %4 %5" ;
+
+	return s.arg( args.exe,
+		      utility::platformIsWindows() ? "-f" : "",
+		      args.cipherFolder,
+		      args.mountPoint,fuseOptions ) ;
 }
 
 static QString _args( const QString& exe,const siritask::options& opt,
