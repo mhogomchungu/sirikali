@@ -116,45 +116,21 @@ static QStringList _macox_volumes()
 	return s ;
 }
 
-enum class mountOptions{ mode,subtype } ;
-static QString _mountOption( const QStringList& e,mountOptions component )
+struct mountOptions
 {
-	if( e.isEmpty() ){
+	QString mode ;
+	QString subtype ;
+	QString cipherFolder ;
+	QString mountPointPath ;
+};
 
-		return QString() ;
-	}
-
+static mountOptions _mountOption( const QStringList& e )
+{
 	const QString& s = e.last() ;
 
-	if( component == mountOptions::mode ){
+	mountOptions mOpt ;
 
-		return s.mid( 0,2 ) ;
-	}
-
-	if( component == mountOptions::subtype ){
-
-		for( const auto& it : utility::split( s,',' ) ){
-
-			if( it.startsWith( "subtype=" ) ){
-
-				return it.mid( 8 ) ;
-			}
-		}
-	}
-
-	return QString() ;
-}
-
-static QStringList _windows_volumes( background_thread thread )
-{
-	QStringList s ;
-	QString mode ;
-	QString m ;
-	QString fs ;
-	int mountPathIndex ;
-	int cipherPathIndex ;
-
-	const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
+	mOpt.mode = s.mid( 0,2 ) ;
 
 	auto path = []( QString e ){
 
@@ -171,25 +147,45 @@ static QStringList _windows_volumes( background_thread thread )
 		return e ;
 	} ;
 
+	for( const auto& it : utility::split( s,',' ) ){
+
+		if( it.startsWith( "subtype=" ) ){
+
+			mOpt.subtype = it.mid( 8 ) ;
+		}
+	}
+
+	for( int i = 0 ; i < e.size() ; i++ ){
+
+		const auto& m = e.at( i ) ;
+
+		if( m.endsWith( ":" ) && m.size() == 2 ){
+
+			mOpt.cipherFolder   = path( e.at( i - 1 ) ) ;
+			mOpt.mountPointPath = path( e.at( i ) ) ;
+
+			break ;
+		}
+	}
+
+	return mOpt ;
+}
+
+static QStringList _windows_volumes( background_thread thread )
+{
+	QStringList s ;
+
+	const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
+
 	for( const QStringList& e : _getwinfspInstances( thread ) ){
 
-		mode = _mountOption( e,mountOptions::mode ) ;
-		m    = _mountOption( e,mountOptions::subtype ) ;
+		auto mOpt = _mountOption( e ) ;
 
-		fs = "fuse." + m ;
+		auto fs = "fuse." + mOpt.subtype ;
 
-		if( e.at( 1 ) == "--config" ){
+		auto m = mOpt.subtype + "@" + mOpt.cipherFolder ;
 
-			cipherPathIndex = 3 ;
-			mountPathIndex = 4 ;
-		}else{
-			cipherPathIndex = 1 ;
-			mountPathIndex = 2 ;
-		}
-
-		m += "@" + path( e.at( cipherPathIndex ) ) ;
-
-		s.append( w.arg( path( e.at( mountPathIndex ) ),mode,fs,m ) ) ;
+		s.append( w.arg( mOpt.mountPointPath,mOpt.mode,fs,m ) ) ;
 	}
 
 	return s ;
