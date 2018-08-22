@@ -190,7 +190,6 @@ static QStringList _windows_volumes( background_thread thread )
 		m += "@" + path( e.at( cipherPathIndex ) ) ;
 
 		s.append( w.arg( path( e.at( mountPathIndex ) ),mode,fs,m ) ) ;
-
 	}
 
 	return s ;
@@ -254,7 +253,7 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 
 			for( decltype( l ) i = 0 ; i < l ; i++ ){
 
-				hash += *( key + i ) ;
+				hash += static_cast< uint32_t>( *( key + i ) ) ;
 
 				hash += ( hash << 10 ) ;
 
