@@ -247,8 +247,6 @@ struct cmdArgsList
 	const QString& exe ;
 	const siritask::options& opt ;
 	const QString& configFilePath ;
-	const QString& separator ;
-	const QString& idleTimeOut ;
 	const QString& cipherFolder ;
 	const QString& mountPoint ;
 	const bool create ;
@@ -256,9 +254,10 @@ struct cmdArgsList
 
 class mountOptions{
 public:
-	mountOptions( const cmdArgsList& e ) : m_cmdArgsList( e )
+	mountOptions( const cmdArgsList& e,const QString& f,const QString& g = QString() ) :
+		m_cmdArgsList( e ),m_type( f ),m_subType( g.isEmpty() ? "" : ",subtype=" + g )
 	{
-		for( const auto& it: utility::split( m_cmdArgsList.opt.mountOptions,',' ) ) {
+		for( const auto& it : utility::split( m_cmdArgsList.opt.mountOptions,',' ) ) {
 
 			if( it.startsWith( '-' ) ){
 
@@ -281,7 +280,7 @@ public:
 	{
 		return m_exeOptions ;
 	}
-	QString fuseOptions( const QString& type,const QString& subtype = QString() )
+	QString fuseOptions()
 	{
 		QString e = [ & ](){
 
@@ -295,40 +294,29 @@ public:
 
 		if( m_fuseOptions.isEmpty() ){
 
-			return e.arg( type,m_cmdArgsList.cipherFolder,subtype ) ;
+			return e.arg( m_type,m_cmdArgsList.cipherFolder,m_subType ) ;
 		}else{
-			return e.arg( type,m_cmdArgsList.cipherFolder,subtype ) + "," + m_fuseOptions ;
+			return e.arg( m_type,m_cmdArgsList.cipherFolder,m_subType ) + "," + m_fuseOptions ;
 		}
 	}
 private:
+	const cmdArgsList& m_cmdArgsList ;
 	QString m_exeOptions ;
 	QString m_fuseOptions ;
-	const cmdArgsList& m_cmdArgsList ;
+	QString m_type ;
+	QString m_subType ;
 };
 
 static QString _ecryptfs( const cmdArgsList& args )
 {
 	auto e = QString( "%1 %2 %3 -a %4 %5 %6" ) ;
 
-	auto s = [ & ]{
-
-		if( args.create ){
-
-			return e.arg( args.exe,
-				      args.opt.createOptions,
-				      args.opt.ro ? "--readonly" : "",
-				      args.configFilePath,
-				      args.cipherFolder,
-				      args.mountPoint ) ;
-		}else{
-			return e.arg( args.exe,
-				      "-o key=passphrase",
-				      args.opt.ro ? "--readonly" : "",
-				      args.configFilePath,
-				      args.cipherFolder,
-				      args.mountPoint ) ;
-		}
-	}() ;
+	auto s = e.arg( args.exe,
+			args.create ? args.opt.createOptions : "-o key=passphrase",
+			args.opt.ro ? "--readonly" : "",
+			args.configFilePath,
+			args.cipherFolder,
+			args.mountPoint ) ;
 
 	if( args.opt.mountOptions.isEmpty() ){
 
@@ -358,7 +346,7 @@ static QString _gocryptfs( const cmdArgsList& args )
 			      args.configFilePath,
 			      args.cipherFolder ) ;
 	}else{
-		mountOptions m( args ) ;
+		mountOptions m( args,"gocryptfs" ) ;
 
 		QString e = "%1 -q %2 %3 %4 %5 %6" ;
 
@@ -367,7 +355,7 @@ static QString _gocryptfs( const cmdArgsList& args )
 			      args.configFilePath,
 			      args.cipherFolder,
 			      args.mountPoint,
-			      m.fuseOptions( "gocryptfs" ) ) ;
+			      m.fuseOptions() ) ;
 	}
 }
 
@@ -381,7 +369,7 @@ static QString _securefs( const cmdArgsList& args )
 			      args.configFilePath,
 			      args.cipherFolder ) ;
 	}else{
-		mountOptions m( args ) ;
+		mountOptions m( args,"securefs","securefs" ) ;
 
 		QString exe = "%1 mount %2 %3 %4 %5 %6 %7" ;
 
@@ -391,34 +379,50 @@ static QString _securefs( const cmdArgsList& args )
 				args.configFilePath,
 				args.cipherFolder,
 				args.mountPoint,
-				m.fuseOptions( "securefs",",subtype=securefs" ) ) ;
+				m.fuseOptions() ) ;
 	}
 }
 
 static QString _cryfs( const cmdArgsList& args )
 {
+	auto separator = [](){
+
+		/*
+		 * declaring this variable as static to force this function to be called only
+		 * once.
+		 */
+		static auto m = utility::backendIsLessThan( "cryfs","0.10" ).get() ;
+
+		if( m && m.value() ){
+
+			return "--" ;
+		}else{
+			return "" ;
+		}
+	}() ;
+
 	auto e = QString( "%1 %2 %3 %4 %5 %6 %7 %8 %9" ) ;
 
-	mountOptions m( args ) ;
+	mountOptions m( args,"cryfs","cryfs" ) ;
 
 	return e.arg( args.exe,
 		      m.exeOptions(),
+		      args.configFilePath,
+		      args.opt.idleTimeout.isEmpty() ? "" : "--unmount-idle " + args.opt.idleTimeout,
 		      args.create ? args.opt.createOptions : QString(),
 		      args.cipherFolder,
 		      args.mountPoint,
-		      args.idleTimeOut,
-		      args.configFilePath,
-		      args.separator,
-		      m.fuseOptions( "cryfs",",subtype=cryfs" ) ) ;
+		      separator,
+		      m.fuseOptions() ) ;
 }
 
 static QString _encfs( const cmdArgsList& args )
 {
 	QString e = "%1 %2 %3 %4 %5 %6 %7 %8 %9" ;
 
-	mountOptions m( args ) ;
+	mountOptions m( args,"encfs","encfs" ) ;
 
-	auto mountOptions = m.fuseOptions( "encfs",",subtype=encfs" ) ;
+	auto mountOptions = m.fuseOptions() ;
 
 	if( utility::platformIsOSX() ){
 
@@ -427,18 +431,18 @@ static QString _encfs( const cmdArgsList& args )
 
 	return e.arg( args.exe,
 		      m.exeOptions(),
+		      args.create ? "--stdinpass --standard" : "--stdinpass",
+		      args.configFilePath,
+		      args.opt.idleTimeout.isEmpty() ? "" : "--idle=" + args.opt.idleTimeout,
 		      utility::platformIsWindows() ? "-f" : "",
 		      args.cipherFolder,
 		      args.mountPoint,
-		      args.idleTimeOut,
-		      args.configFilePath,
-		      args.separator,
 		      mountOptions ) ;
 }
 
 static QString _sshfs( const cmdArgsList& args )
 {
-	auto fuseOptions = mountOptions( args ).fuseOptions( "sshfs",",subtype=sshfs" ) ;
+	auto fuseOptions = mountOptions( args,"sshfs","sshfs" ).fuseOptions() ;
 
 	if( !args.opt.key.isEmpty() ){
 
@@ -473,61 +477,11 @@ static QString _args( const QString& exe,const siritask::options& opt,
 		      bool create )
 {
 	auto cipherFolder = _makePath( opt.cipherFolder ) ;
-
 	auto mountPoint   = _makePath( opt.plainFolder ) ;
-
-	auto idleTimeOut = [ & ](){
-
-		if( !opt.idleTimeout.isEmpty() ){
-
-			if( opt.type == "cryfs" ){
-
-				return QString( "--unmount-idle %1" ).arg( opt.idleTimeout ) ;
-
-			}else if( opt.type == "encfs" ){
-
-				return QString( "--idle=%1" ).arg( opt.idleTimeout ) ;
-			}
-		}
-
-		return QString() ;
-	}() ;
-
-	auto separator = [ & ](){
-
-		if( opt.type == "cryfs" ){
-
-			/*
-			 * declaring this variable as static to force this function to be called only
-			 * once.
-			 */
-			static auto m = utility::backendIsLessThan( "cryfs","0.10" ).get() ;
-
-			if( m && m.value() ){
-
-				return "--" ;
-			}else{
-				return "" ;
-			}
-
-		}else if( opt.type == "encfs" ){
-
-			if( create ){
-
-				return "-S --standard" ;
-			}else{
-				return "-S" ;
-			}
-		}else{
-			return "" ;
-		}
-	}() ;
 
 	cmdArgsList arguments{  exe,
 				opt,
 				configFilePath,
-				separator,
-				idleTimeOut,
 				cipherFolder,
 				mountPoint,
 				create } ;
