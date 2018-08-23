@@ -844,6 +844,10 @@ static siritask::cmdStatus _encrypted_folder_mount( const siritask::options& opt
 
 			return _mount( "gocryptfs",opt,QString() ) ;
 
+		}else if( utility::pathExists( opt.cipherFolder + "/.gocryptfs.reverse.conf" ) ){
+
+			return _mount( "gocryptfs",opt,QString() ) ;
+
 		}else if( utility::pathExists( opt.cipherFolder + "/.securefs.json" ) ){
 
 			return _mount( "securefs",opt,QString() ) ;
@@ -925,7 +929,7 @@ static siritask::cmdStatus _encrypted_folder_mount( const siritask::options& opt
 
 		}else if( utility::pathExists( e ) ){
 
-			if( e.endsWith( "gocryptfs.conf" ) ){
+			if( e.endsWith( "gocryptfs.conf" ) || e.endsWith( "gocryptfs.reverse.conf" ) ){
 
 				return _mount( "gocryptfs",opt,e ) ;
 

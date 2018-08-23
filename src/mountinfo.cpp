@@ -267,7 +267,9 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 					info.volumePath = _decode( cf,true ) ;
 
 				}else if( utility::equalsAtleastOne( fs,"fuse.gocryptfs",
-								     "ecryptfs","fuse.sshfs" ) ){
+								     "fuse.gocryptfs-reverse",
+								     "ecryptfs",
+								     "fuse.sshfs" ) ){
 
 					info.volumePath = _decode( cf,false ) ;
 				}else{

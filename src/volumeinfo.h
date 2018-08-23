@@ -71,6 +71,7 @@ public:
 						    " fuse.encfs ",
 						    " fuse.sshfs ",
 						    " fuse.gocryptfs ",
+						    " fuse.gocryptfs-reverse ",
 						    " fuse.securefs ",
 						    " ecryptfs " ) ;
 	}

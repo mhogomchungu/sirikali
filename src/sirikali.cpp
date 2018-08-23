@@ -1140,7 +1140,7 @@ static void _volume_properties( const QString& cmd,const std::pair<QString,QStri
 {
 	auto exe = utility::executableFullPath( cmd ) ;
 
-	auto path = [ table ](){
+	auto path = [ & ](){
 
 		auto row = table->currentRow() ;
 
@@ -1148,7 +1148,16 @@ static void _volume_properties( const QString& cmd,const std::pair<QString,QStri
 
 			return QString() ;
 		}else{
-			return utility::Task::makePath( table->item( row,0 )->text() ) ;
+			auto m = table->item( row,2 )->text() ;
+
+			utility::debug() << m ;
+
+			if( cmd == "gocryptfs" && m == "gocryptfs-reverse" ){
+
+				return utility::Task::makePath( table->item( row,1 )->text() ) ;
+			}else{
+				return utility::Task::makePath( table->item( row,0 )->text() ) ;
+			}
 		}
 	}() ;
 
@@ -1271,11 +1280,11 @@ void sirikali::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 				return { SLOT( encfsProperties() ),true } ;
 
-			}else if( e == "gocryptfs" ){
+			}else if( utility::containsAtleastOne( e,"gocryptfs","gocryptfs-reverse" ) ){
 
 				return { SLOT( gocryptfsProperties() ),true } ;
 
-			}else if( e == "sshfs"){
+			}else if( e == "sshfs" ){
 
 				if( utility::platformIsWindows() ){
 
