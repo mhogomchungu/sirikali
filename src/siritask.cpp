@@ -265,11 +265,16 @@ public:
 			}else{
 				m_fuseOptions += it + "," ;
 			}
+		}
 
-			if( m_fuseOptions.endsWith( "," ) ){
+		if( m_exeOptions.endsWith( " " ) ){
 
-				m_fuseOptions.remove( m_fuseOptions.size() - 1,1 ) ;
-			}
+			m_exeOptions.remove( m_exeOptions.size() - 1,1 ) ;
+		}
+
+		if( m_fuseOptions.endsWith( "," ) ){
+
+			m_fuseOptions.remove( m_fuseOptions.size() - 1,1 ) ;
 		}
 	}
 	const QString& exeOptions() const
