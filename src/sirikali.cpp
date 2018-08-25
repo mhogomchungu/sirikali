@@ -1150,8 +1150,6 @@ static void _volume_properties( const QString& cmd,const std::pair<QString,QStri
 		}else{
 			auto m = table->item( row,2 )->text() ;
 
-			utility::debug() << m ;
-
 			if( cmd == "gocryptfs" && m == "gocryptfs-reverse" ){
 
 				return utility::Task::makePath( table->item( row,1 )->text() ) ;
