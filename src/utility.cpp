@@ -281,7 +281,7 @@ void utility::Task::execute( const QString& exe,int waitTime,
 	}
 }
 
-void logCommandOutPut( const QString& exe )
+void utility::logCommandOutPut( const QString& exe )
 {
 	utility::logCommandOutPut( ::Task::process::result(),exe ) ;
 }

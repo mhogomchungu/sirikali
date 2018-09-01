@@ -315,7 +315,8 @@ SiriKali::Winfsp::manageInstances::getProcessOutput( QProcess& exe,bool encfs )
 		}
 	}
 
-	if( utility::containsAtleastOne( m,"init","has been started" ) ){
+	if( !m.startsWith( "cygfuse: initialization failed:" ) &&
+			utility::containsAtleastOne( m,"init","has been started" ) ){
 
 		return std::make_tuple( true,QByteArray(),QByteArray() ) ;
 	}else{
