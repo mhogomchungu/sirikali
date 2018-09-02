@@ -59,6 +59,7 @@
 #include "favorites.h"
 #include "plugins.h"
 #include "utility2.h"
+#include "debugwindow.h"
 
 #include <QObject>
 #include <QLabel>
@@ -378,6 +379,7 @@ namespace utility
 	void logCommandOutPut( const ::Task::process::result&,const QString& ) ;
 	void logCommandOutPut( const QString& ) ;
 
+	void setDebugWindow( debugWindow * ) ;
 	void polkitFailedWarning( std::function< void() > ) ;
 	bool useSiriPolkit( void ) ;
 	void quitHelper() ;
@@ -546,7 +548,7 @@ namespace utility
 		}
 		static void wait( int s )
 		{
-			sleep( s ) ;
+			sleep( static_cast< unsigned int >( s ) ) ;
 		}
 		static void waitForOneSecond( void )
 		{

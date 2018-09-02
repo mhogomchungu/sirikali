@@ -38,6 +38,7 @@
 #include "keydialog.h"
 #include "checkforupdates.h"
 #include "configoptions.h"
+#include "debugwindow.h"
 
 #include <vector>
 
@@ -58,6 +59,7 @@ public:
 	int start( QApplication& ) ;
 	~sirikali() ;
 private slots:
+	void showDebugWindow( void ) ;
 	void configurationOptions( void ) ;
 	void FAQ( void ) ;
 	void showTrayIconWhenReady( void ) ;
@@ -165,6 +167,8 @@ private:
 	checkUpdates m_checkUpdates ;
 
 	configOptions m_configOptions ;
+
+	debugWindow m_debugWindow ;
 };
 
 #endif // MAINWINDOW_H

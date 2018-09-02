@@ -77,8 +77,10 @@ sirikali::sirikali() :
 	m_secrets( this ),
 	m_mountInfo( this,true,[ & ](){ QCoreApplication::exit( m_exitStatus ) ; } ),
 	m_checkUpdates( this ),
-	m_configOptions( this,m_secrets,&m_language_menu,this->configOption() )
+	m_configOptions( this,m_secrets,&m_language_menu,this->configOption() ),
+	m_debugWindow()
 {
+	utility::setDebugWindow( &m_debugWindow ) ;
 }
 
 configOptions::functions sirikali::configOption()
@@ -131,6 +133,7 @@ void sirikali::closeApplication( int s,const QString& e )
 
 	if( m_ui ){
 
+		m_debugWindow.Hide() ;
 		this->hide() ;
 		utility::Task::suspendForOneSecond() ;
 	}
@@ -1400,6 +1403,16 @@ void sirikali::setUpShortCuts()
 
 		return e ;
 	}() ) ;
+
+	this->addAction( _addAction( { Qt::CTRL + Qt::Key::Key_D },SLOT( showDebugWindow() ) ) ) ;
+}
+
+void sirikali::showDebugWindow()
+{
+	if( !m_debugWindow.isVisible() ){
+
+		m_debugWindow.Show() ;
+	}
 }
 
 void sirikali::setUpFont()

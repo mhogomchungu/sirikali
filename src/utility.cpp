@@ -145,9 +145,21 @@ static QSettings * _settings ;
 static QByteArray _cookie ;
 static QString _polkit_socket_path ;
 
+static debugWindow * _debugWindow ;
+
 static bool _use_polkit = false ;
 
 static std::function< void() > _failed_to_connect_to_zulupolkit ;
+
+void utility::setDebugWindow( debugWindow * w )
+{
+	_debugWindow = w ;
+}
+
+static void _set_debug_window_text( const QString& e )
+{
+	_debugWindow->UpdateOutPut( e ) ;
+}
 
 QString utility::socketPath()
 {
@@ -288,47 +300,30 @@ void utility::logCommandOutPut( const QString& exe )
 
 void utility::logCommandOutPut( const ::Task::process::result& m,const QString& exe )
 {
-	if( utility::debugFullEnabled() || utility::debugEnabled() ){
+	auto _trim = []( QString e ){
 
-		auto _trim = []( QString e ){
+		while( true ){
 
-			while( true ){
+			if( e.endsWith( '\n' ) ){
 
-				if( e.endsWith( '\n' ) ){
-
-					e.truncate( e.size() - 1 ) ;
-				}else{
-					break ;
-				}
+				e.truncate( e.size() - 1 ) ;
+			}else{
+				break ;
 			}
-
-			return e ;
-		} ;
-
-		QString s = "Exit Code: %1\nExit Status: %2\nStdOut: %3\n-------\nStdError: %4\n-------\nCommand: %5\n-------\n" ;
-
-		auto e = s.arg( QString::number( m.exit_code() ),
-				QString::number( m.exit_status() ),
-				_trim( m.std_out() ),
-				_trim( m.std_error() ),
-				exe ) ;
-
-		if( utility::platformIsWindows() ){
-
-			/*
-			 * We log the output to a file on a user's desktop because output
-			 * dont seem to show up on the terminal on windows
-			 */
-
-			QFile log( QDir::homePath() + "/Desktop/SiriKali.log.txt" ) ;
-
-			log.open( QIODevice::WriteOnly | QIODevice::Append ) ;
-
-			log.write( e.toLatin1() ) ;
-		}else{
-			utility::debug() << e ;
 		}
-	}
+
+		return e ;
+	} ;
+
+	QString s = "Exit Code: %1\nExit Status: %2\n-------\nStdOut: %3\n-------\nStdError: %4\n-------\nCommand: %5\n-------\n" ;
+
+	auto e = s.arg( QString::number( m.exit_code() ),
+			QString::number( m.exit_status() ),
+			_trim( m.std_out() ),
+			_trim( m.std_error() ),
+			exe ) ;
+
+	_set_debug_window_text( e ) ;
 }
 
 static QString siriPolkitExe()
@@ -1652,7 +1647,7 @@ static inline bool _terminalEchoOff( struct termios * old,struct termios * curre
 	}
 
 	*current = *old;
-	current->c_lflag &= ~ECHO;
+	current->c_lflag &= static_cast< unsigned int >( ~ECHO ) ;
 
 	if( tcsetattr( 1,TCSAFLUSH,current ) != 0 ){
 
@@ -1761,7 +1756,7 @@ void utility::windowDimensions::setDimensions( const QStringList& e )
 
 		for( tp i = 0 ; i < m_array.size() ; i++ ){
 
-			m_array[ i ] = e.at( i ).toInt( &m_ok ) ;
+			m_array[ i ] = static_cast< int >( e.at( i ).toInt( &m_ok ) ) ;
 
 			if( !m_ok ){
 
