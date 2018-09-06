@@ -281,11 +281,7 @@ public:
 	{
 		return m_exeOptions ;
 	}
-	QString exeOptions()
-	{
-		return m_exeOptions ;
-	}
-	QString fuseOptions()
+	QString fuseOptions() const
 	{
 		QString e = [ & ](){
 
@@ -427,11 +423,11 @@ static QString _encfs( const cmdArgsList& args )
 
 	mountOptions m( args,"encfs","encfs" ) ;
 
-	auto mountOptions = m.fuseOptions() ;
+	auto fuseOptions = m.fuseOptions() ;
 
 	if( utility::platformIsOSX() ){
 
-		mountOptions += ",volname=" + utility::split( args.opt.plainFolder,'/' ).last() ;
+		fuseOptions += ",volname=" + utility::split( args.opt.plainFolder,'/' ).last() ;
 	}
 
 	return e.arg( args.exe,
@@ -442,12 +438,14 @@ static QString _encfs( const cmdArgsList& args )
 		      utility::platformIsWindows() ? "-f" : "",
 		      args.cipherFolder,
 		      args.mountPoint,
-		      mountOptions ) ;
+		      fuseOptions ) ;
 }
 
 static QString _sshfs( const cmdArgsList& args )
 {
-	auto fuseOptions = mountOptions( args,"sshfs","sshfs" ).fuseOptions() ;
+	mountOptions m( args,"sshfs","sshfs" ) ;
+
+	auto fuseOptions = m.fuseOptions() ;
 
 	if( !args.opt.key.isEmpty() ){
 
@@ -459,7 +457,7 @@ static QString _sshfs( const cmdArgsList& args )
 		}
 	}
 
-	if( !fuseOptions.contains( "StrictHostKeyChecking=") ){
+	if( !fuseOptions.contains( "StrictHostKeyChecking=" ) ){
 
 		if( fuseOptions.isEmpty() ){
 
@@ -469,12 +467,14 @@ static QString _sshfs( const cmdArgsList& args )
 		}
 	}
 
-	QString s = "%1 %2 %3 %4 %5" ;
+	QString s = "%1 %2 %3 %4 %5 %6" ;
 
 	return s.arg( args.exe,
+		      m.exeOptions(),
 		      utility::platformIsWindows() ? "-f" : "",
 		      args.cipherFolder,
-		      args.mountPoint,fuseOptions ) ;
+		      args.mountPoint,
+		      fuseOptions ) ;
 }
 
 static QString _args( const QString& exe,const siritask::options& opt,
