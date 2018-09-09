@@ -431,47 +431,47 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 	return s ;
 }
 
+static QString _clean_path( QString e )
+{
+	if( e.startsWith( '\"' ) ){
+
+		e.remove( 0,1 ) ;
+	}
+
+	if( e.endsWith( '\"' ) ){
+
+		e.truncate( e.size() - 1 ) ;
+	}
+
+	return e ;
+}
+
 SiriKali::Winfsp::mountOptions SiriKali::Winfsp::mountOption( const QStringList& e )
 {
-	const QString& s = e.last() ;
-
 	SiriKali::Winfsp::mountOptions mOpt ;
-
-	mOpt.mode = s.mid( 0,2 ) ;
-
-	auto path = []( QString e ){
-
-		if( e.startsWith( '\"' ) ){
-
-			e.remove( 0,1 ) ;
-		}
-
-		if( e.endsWith( '\"' ) ){
-
-			e.truncate( e.size() - 1 ) ;
-		}
-
-		return e ;
-	} ;
-
-	for( const auto& it : utility::split( s,',' ) ){
-
-		if( it.startsWith( "subtype=" ) ){
-
-			mOpt.subtype = it.mid( 8 ) ;
-		}
-	}
 
 	for( int i = 0 ; i < e.size() ; i++ ){
 
 		const auto& m = e.at( i ) ;
 
-		if( m.endsWith( ":" ) && m.size() == 2 ){
+		if( m == "-o" && i + 1 < e.size() ){
 
-			mOpt.cipherFolder   = path( e.at( i - 1 ) ) ;
-			mOpt.mountPointPath = path( e.at( i ) ) ;
+			mOpt.fuseOptions = e.at( i + 1 ) ;
 
-			break ;
+			mOpt.mode = mOpt.fuseOptions.mid( 0,2 ) ;
+
+			for( const auto& it : utility::split( mOpt.fuseOptions,',' ) ){
+
+				if( it.startsWith( "subtype=" ) ){
+
+					mOpt.subtype = it.mid( 8 ) ;
+				}
+			}
+
+		}else if( m.endsWith( ":" ) && m.size() == 2 ){
+
+			mOpt.cipherFolder   = _clean_path( e.at( i - 1 ) ) ;
+			mOpt.mountPointPath = _clean_path( e.at( i ) ) ;
 		}
 	}
 

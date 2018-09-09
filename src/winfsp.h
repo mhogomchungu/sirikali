@@ -70,6 +70,7 @@ struct mountOptions
 	QString subtype ;
 	QString cipherFolder ;
 	QString mountPointPath ;
+	QString fuseOptions ;
 };
 
 mountOptions mountOption( const QStringList& e ) ;
