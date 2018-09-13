@@ -31,7 +31,8 @@ SOURCES += \
     configfileoption.cpp \
     help.cpp \
     configoptions.cpp \
-    ecryptfscreateoptions.cpp
+    ecryptfscreateoptions.cpp \
+    encfscreateoptions.cpp
 
 HEADERS += \
     securefscreateoptions.h \
@@ -50,6 +51,7 @@ HEADERS += \
     keydialog.h  \
     plugin.h   \
     help.h \
+    encfscreateoptions \
     walletconfig.h   \
     siritask.h  \
     readonlywarning.h \
@@ -80,6 +82,7 @@ FORMS += \
     filemanager.ui \
     plugin.ui \
     help.ui \
+    encfscreateoptions.ui \
     walletconfiginput.ui \
     dialogmsg.ui \
     keydialog.ui \

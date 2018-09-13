@@ -188,6 +188,7 @@ private:
 	Ui::favorites * m_ui ;
 	QWidget * m_parentWidget ;
 	int m_editRow ;
+	bool m_reverseMode ;
 };
 
 #endif // MANAGEDEVICENAMES_H

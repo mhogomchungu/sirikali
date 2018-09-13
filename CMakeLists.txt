@@ -244,9 +244,11 @@ set( UI_FILES 	src/sirikali.ui
                 src/configoptions.ui
                 src/ecryptfscreateoptions.ui
                 src/debugwindow.ui
+                src/encfscreateoptions.ui
 )
 
 set( MOC_FILES
+		src/encfscreateoptions.h
                 src/configoptions.h
                 src/configfileoption.h
                 src/checkforupdates.h
@@ -273,6 +275,7 @@ set( MOC_FILES
 
 set( SRC 	src/dialogok.cpp
 		src/main.cpp
+		src/encfscreateoptions.cpp
 		src/debugwindow.cpp
 		src/gocryptfscreateoptions.cpp
 		src/configoptions.cpp

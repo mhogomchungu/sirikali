@@ -43,6 +43,8 @@ gocryptfscreateoptions::gocryptfscreateoptions( QWidget * parent,
 
 	m_ui->rbEncryptFileNames->setChecked( true ) ;
 
+	m_ui->checkBox->setToolTip( tr( "Normally Gocryptfs provides a plaintext view of data on demand.\nIt stores enciphered data and displays plaintext data.\nWith this option set, it takes as source plaintext data and produces enciphered data on-demand.\nThis can be useful for creating remote encrypted backups,\nwhere you do not wish to keep the local files unencrypted." ) ) ;
+
 	this->show() ;
 }
 
@@ -78,7 +80,17 @@ void gocryptfscreateoptions::pbOK()
 		}
 	}() ;
 
-	this->HideUI( { QString( "%1 %2" ).arg( a,b ),m_ui->lineEdit_2->text() } ) ;
+	auto c = [ this ](){
+
+		if( m_ui->checkBox->isChecked() ){
+
+			return utility::reverseModeOption ;
+		}else{
+			return QString() ;
+		}
+	}() ;
+
+	this->HideUI( { QString( "%1 %2 %3" ).arg( a,b,c ),m_ui->lineEdit_2->text() } ) ;
 }
 
 void gocryptfscreateoptions::pbCancel()

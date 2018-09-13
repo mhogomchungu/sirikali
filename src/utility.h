@@ -72,6 +72,11 @@ class QEvent ;
 
 namespace utility
 {
+	static const QString reverseModeOption = "-SiriKaliReverseMode" ;
+}
+
+namespace utility
+{
 	using volumeList = std::vector< std::pair< favorites::entry,QByteArray > > ;
 
 	template< typename T >
@@ -393,6 +398,8 @@ namespace utility
 	void readFavorites( QMenu * ) ;
 	void removeFavoriteEntry( const favorites::entry& ) ;
 	int favoritesEntrySize() ;
+	QString removeOption( const QStringList&,const QString& option ) ;
+	QString removeOption( const QString& commaSeparatedString,const QString& option ) ;
 	QString getVolumeID( const QString&,bool = false ) ;
 	QString localizationLanguage() ;
 	QString localizationLanguagePath() ;

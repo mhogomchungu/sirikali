@@ -1095,6 +1095,31 @@ QString utility::walletName()
 	return "SiriKali" ;
 }
 
+QString utility::removeOption( const QStringList& e,const QString& s )
+{
+	QString n ;
+
+	for( const auto& it : e ){
+
+		if( it != s ){
+
+			n += it + "," ;
+		}
+	}
+
+	if( n.endsWith( "," ) ){
+
+		n.remove( n.size() - 1,1 ) ;
+	}
+
+	return n ;
+}
+
+QString utility::removeOption( const QString& e,const QString& s )
+{
+	return utility::removeOption( utility::split( e,',' ),s ) ;
+}
+
 QString utility::walletName( LXQt::Wallet::BackEnd s )
 {
 	if( s == LXQt::Wallet::BackEnd::kwallet ){

@@ -342,8 +342,12 @@ static QString _gocryptfs( const cmdArgsList& args )
 	if( args.create ){
 
 		QString e = "%1 --init -q %2 %3 %4" ;
+
+		auto createOptions = args.opt.createOptions ;
+		createOptions.replace( utility::reverseModeOption,"-reverse" ) ;
+
 		return e.arg( args.exe,
-			      args.opt.createOptions,
+			      createOptions,
 			      args.configFilePath,
 			      args.cipherFolder ) ;
 	}else{
@@ -351,8 +355,11 @@ static QString _gocryptfs( const cmdArgsList& args )
 
 		QString e = "%1 -q %2 %3 %4 %5 %6" ;
 
+		auto exeOptions = m.exeOptions() ;
+		exeOptions.replace( utility::reverseModeOption,"-reverse" ) ;
+
 		return e.arg( args.exe,
-			      m.exeOptions(),
+			      exeOptions,
 			      args.configFilePath,
 			      args.cipherFolder,
 			      args.mountPoint,
@@ -430,8 +437,14 @@ static QString _encfs( const cmdArgsList& args )
 		fuseOptions += ",volname=" + utility::split( args.opt.plainFolder,'/' ).last() ;
 	}
 
+	auto exeOptions = m.exeOptions() ;
+	exeOptions.replace( utility::reverseModeOption,"--reverse" ) ;
+
+	auto createOptions = args.opt.createOptions ;
+	createOptions.replace( utility::reverseModeOption,"--reverse" ) ;
+
 	return e.arg( args.exe,
-		      m.exeOptions(),
+		      exeOptions + " " + createOptions,
 		      args.create ? "--stdinpass --standard" : "--stdinpass",
 		      args.configFilePath,
 		      args.opt.idleTimeout.isEmpty() ? "" : "--idle=" + args.opt.idleTimeout,
@@ -1000,7 +1013,26 @@ static siritask::cmdStatus _encrypted_folder_create( const siritask::options& op
 
 				if( opt.type.isOneOf( "gocryptfs","securefs" ) ){
 
-					e = siritask::encryptedFolderMount( opt,true ).get() ;
+					auto e = [ & ](){
+
+						if( opt.createOptions.contains( utility::reverseModeOption ) &&
+								opt.type == "gocryptfs" ){
+
+							auto opts = opt ;
+
+							if( opts.mountOptions.isEmpty() ){
+
+								opts.mountOptions = utility::reverseModeOption ;
+							}else{
+								opts.mountOptions += "," + utility::reverseModeOption ;
+							}
+
+
+							return siritask::encryptedFolderMount( opts,true ).get() ;
+						}else{
+							return siritask::encryptedFolderMount( opt,true ).get() ;
+						}
+					}() ;
 
 					if( e != cs::success ){
 

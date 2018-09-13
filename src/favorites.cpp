@@ -48,6 +48,11 @@ favorites::favorites( QWidget * parent,favorites::type type ) : QDialog( parent 
 	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),this,
 		SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
 
+	connect( m_ui->cbReverseMode,&QCheckBox::toggled,[ this ]( bool e ){
+
+		m_reverseMode = e ;
+	} ) ;
+
 	m_ui->pbAdd->setObjectName( "Add" ) ;
 
 	if( utility::platformIsWindows() ){
@@ -225,14 +230,38 @@ void favorites::edit()
 
 	if( m_editRow >= 0 ){
 
+		m_ui->lineEditEncryptedFolderPath->clear() ;
+		m_ui->lineEditMountPath->clear() ;
+		m_ui->lineEditConfigFilePath->clear() ;
+		m_ui->lineEditIdleTimeOut->clear() ;
+		m_ui->lineEditMountOptions->clear() ;
+
 		m_ui->pbAdd->setText( tr( "Edit" ) ) ;
 		m_ui->pbAdd->setObjectName( "Edit" ) ;
 		m_ui->lineEditEncryptedFolderPath->setText( table->item( m_editRow,0 )->text() ) ;
 		m_ui->lineEditMountPath->setText( table->item( m_editRow,1 )->text() ) ;
 		m_ui->cbAutoMount->setChecked( table->item( m_editRow,2 )->text() == "true" ) ;
-		m_ui->lineEditConfigFilePath->setText( table->item( m_editRow,3 )->text() ) ;
-		m_ui->lineEditIdleTimeOut->setText( table->item( m_editRow,4 )->text() ) ;
-		m_ui->lineEditMountOptions->setText( table->item( m_editRow,5 )->text() ) ;
+
+		auto a = table->item( m_editRow,3 )->text() ;
+		auto b = table->item( m_editRow,4 )->text() ;
+		auto c = table->item( m_editRow,5 )->text() ;
+
+		if( a != "N/A" ){
+
+			m_ui->lineEditConfigFilePath->setText( a ) ;
+		}
+
+		if( b != "N/A" ){
+
+			m_ui->lineEditIdleTimeOut->setText( b ) ;
+		}
+
+		m_ui->cbReverseMode->setChecked( c.contains( utility::reverseModeOption ) ) ;
+
+		if( c != "N/A" ){
+
+			m_ui->lineEditMountOptions->setText( utility::removeOption( c,utility::reverseModeOption ) ) ;
+		}
 	}
 }
 
@@ -345,6 +374,16 @@ void favorites::add()
 	auto path = m_ui->lineEditMountPath->text() ;
 	auto mOpts = m_ui->lineEditMountOptions->text() ;
 
+	if( m_reverseMode ){
+
+		if( mOpts.isEmpty() ){
+
+			mOpts = utility::reverseModeOption ;
+		}else{
+			mOpts += "," + utility::reverseModeOption ;
+		}
+	}
+
 	if( dev.isEmpty() ){
 
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Encrypted Folder Address Field Is Empty" ) ) ;
@@ -399,11 +438,16 @@ void favorites::add()
 		m_ui->lineEditConfigFilePath->clear() ;
 		m_ui->lineEditIdleTimeOut->clear() ;
 		m_ui->lineEditMountOptions->clear() ;
+		m_ui->cbReverseMode->setChecked( false ) ;
 	}else{
 		tablewidget::addRow( m_ui->tableWidget,e ) ;
 		utility::addToFavorite( e ) ;
 		m_ui->lineEditEncryptedFolderPath->clear() ;
 		m_ui->lineEditMountPath->clear() ;
+		m_ui->lineEditConfigFilePath->clear() ;
+		m_ui->lineEditIdleTimeOut->clear() ;
+		m_ui->lineEditMountOptions->clear() ;
+		m_ui->cbReverseMode->setChecked( false ) ;
 	}
 
 	m_ui->lineEditEncryptedFolderPath->clear() ;

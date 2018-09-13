@@ -54,6 +54,10 @@ options::options( QWidget * parent,bool r,const QStringList& l,
 
 	utility2::stringListToStrings( l,idleTimeOut,configFilePath,mountOptions,type ) ;
 
+	m_ui->checkBox->setChecked( mountOptions.contains( utility::reverseModeOption ) ) ;
+
+	mountOptions = utility::removeOption( mountOptions,utility::reverseModeOption ) ;
+
 	m_type = type.toLower() ;
 
 	m_ui->lineEditIdleTime->setText( idleTimeOut ) ;
@@ -174,7 +178,19 @@ void options::pbSet()
 	}else{
 		this->hide() ;
 
-		m_setOptions( { e,m_ui->lineConfigFilePath->text(),m_ui->lineEditMountOptions->text() } ) ;
+		auto m = m_ui->lineEditMountOptions->text() ;
+
+		if( m_ui->checkBox->isChecked() ){
+
+			if( m.isEmpty() ){
+
+				m = utility::reverseModeOption ;
+			}else{
+				m += "," + utility::reverseModeOption ;
+			}
+		}
+
+		m_setOptions( { e,m_ui->lineConfigFilePath->text(),m } ) ;
 
 		this->deleteLater() ;
 	}

@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>522</width>
-    <height>264</height>
+    <height>291</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -144,32 +144,45 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="pbOK">
+   <widget class="QCheckBox" name="checkBox">
     <property name="geometry">
      <rect>
-      <x>130</x>
+      <x>20</x>
       <y>230</y>
-      <width>101</width>
+      <width>421</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>&amp;Set</string>
+     <string>Reverse Mode (Gocryptfs and Encfs Only).</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pbCancel">
-    <property name="geometry">
-     <rect>
-      <x>230</x>
-      <y>230</y>
-      <width>101</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>&amp;Cancel</string>
-    </property>
-   </widget>
+  </widget>
+  <widget class="QPushButton" name="pbOK">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>260</y>
+     <width>101</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&amp;Set</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pbCancel">
+   <property name="geometry">
+    <rect>
+     <x>260</x>
+     <y>260</y>
+     <width>101</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&amp;Cancel</string>
+   </property>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

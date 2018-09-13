@@ -387,7 +387,7 @@ void keyDialog::setDefaultUI()
 {
 	if( m_create ){
 
-		if( utility::equalsAtleastOne( m_exe,"Securefs","Cryfs","Gocryptfs","Ecryptfs" ) ){
+		if( utility::equalsAtleastOne( m_exe,"Securefs","Cryfs","Gocryptfs","Ecryptfs","Encfs" ) ){
 
 			m_ui->pbOptions->setEnabled( true ) ;
 		}else{
@@ -485,6 +485,17 @@ void keyDialog::pbOptions()
 			this->hide() ;
 
 			cryfscreateoptions::instance( m_parentWidget,[ this ]( const QStringList& e ){
+
+				utility2::stringListToStrings( e,m_createOptions,m_configFile ) ;
+
+				this->ShowUI() ;
+			} ) ;
+
+		}else if( m_exe == "Encfs" ){
+
+			this->hide() ;
+
+			encfscreateoptions::instance( m_parentWidget,[ this ]( const QStringList& e ){
 
 				utility2::stringListToStrings( e,m_createOptions,m_configFile ) ;
 
@@ -1113,7 +1124,7 @@ void keyDialog::encryptedFolderCreate()
 
 void keyDialog::pbSetKeyKeyFile()
 {
-	m_ui->lineEditSetKeyKeyFile->setText( QFileDialog::getOpenFileName( this,tr( "KeyFile" ),utility::homePath(),0 ) ) ;
+	m_ui->lineEditSetKeyKeyFile->setText( QFileDialog::getOpenFileName( this,tr( "KeyFile" ),utility::homePath(),nullptr ) ) ;
 }
 
 void keyDialog::pbSetKey()
