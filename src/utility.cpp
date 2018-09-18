@@ -161,9 +161,15 @@ static void _set_debug_window_text( const QString& e )
 	_debugWindow->UpdateOutPut( e ) ;
 }
 
-QString utility::socketPath()
+utility::SocketPaths utility::socketPath()
 {
-	return QStandardPaths::writableLocation( QStandardPaths::RuntimeLocation ) ;
+	if( utility::platformIsWindows() ){
+
+		return { QString(),"\\\\.\\pipe\\SiriKaliSocket" } ;
+	}else{
+		auto a = QStandardPaths::writableLocation( QStandardPaths::RuntimeLocation ) ;
+		return { a,a + "/SiriKali.socket" } ;
+	}
 }
 
 static bool _enable_debug = false ;

@@ -403,13 +403,19 @@ namespace utility
 	QString getVolumeID( const QString&,bool = false ) ;
 	QString localizationLanguage() ;
 	QString localizationLanguagePath() ;
-	QString socketPath() ;
 	void setLocalizationLanguage( const QString& ) ;
 	QString walletName( void ) ;
 	QString walletName( LXQt::Wallet::BackEnd ) ;
 	QString applicationName( void ) ;
 	bool eventFilter( QObject * gui,QObject * watched,QEvent * event,std::function< void() > ) ;
 	void licenseInfo( QWidget * ) ;
+
+	struct SocketPaths{
+		QString folderPath ;
+		QString socketFullPath ;
+	} ;
+
+	SocketPaths socketPath() ;
 
 	::Task::future< utility::result< QString > >& backEndInstalledVersion( const QString& backend ) ;
 
