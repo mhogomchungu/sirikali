@@ -283,7 +283,7 @@ public:
 				m_options += "," + m ;
 			}
 		}
-		const QString& options()
+		const QString& get()
 		{
 			return m_options ;
 		}
@@ -363,7 +363,7 @@ static mountOptions::fuseOptions _add_volume_name( mountOptions::fuseOptions opt
 
 			if( !s.isEmpty() ){
 
-				opts.add( "volname","\"" + s + "\"" ) ;
+				opts.add( "volname",utility::Task::makePath( s ) ) ;
 			}
 		}
 	}
@@ -426,7 +426,7 @@ static QString _gocryptfs( const cmdArgsList& args )
 			      args.configFilePath,
 			      args.cipherFolder,
 			      args.mountPoint,
-			      m.fuseOpts().options() ) ;
+			      m.fuseOpts().get() ) ;
 	}
 }
 
@@ -450,7 +450,7 @@ static QString _securefs( const cmdArgsList& args )
 				args.configFilePath,
 				args.cipherFolder,
 				args.mountPoint,
-				_add_volume_name( m.fuseOpts(),args ).options() ) ;
+				_add_volume_name( m.fuseOpts(),args ).get() ) ;
 	}
 }
 
@@ -484,7 +484,7 @@ static QString _cryfs( const cmdArgsList& args )
 		      args.cipherFolder,
 		      args.mountPoint,
 		      separator,
-		      m.fuseOpts().options() ) ;
+		      m.fuseOpts().get() ) ;
 }
 
 static QString _encfs( const cmdArgsList& args )
@@ -507,7 +507,7 @@ static QString _encfs( const cmdArgsList& args )
 		      utility::platformIsWindows() ? "-f" : "",
 		      args.cipherFolder,
 		      args.mountPoint,
-		      _add_volume_name( m.fuseOpts(),args ).options() ) ;
+		      _add_volume_name( m.fuseOpts(),args ).get() ) ;
 }
 
 static QString _sshfs( const cmdArgsList& args )
@@ -533,7 +533,7 @@ static QString _sshfs( const cmdArgsList& args )
 		      utility::platformIsWindows() ? "-f" : "",
 		      args.cipherFolder,
 		      args.mountPoint,
-		      fuseOptions.options() ) ;
+		      fuseOptions.get() ) ;
 }
 
 static QString _args( const QString& exe,const siritask::options& opt,
