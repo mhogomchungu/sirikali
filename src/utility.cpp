@@ -1093,7 +1093,12 @@ bool utility::pathExists( const QString& path )
 
 QStringList utility::split( const QString& e,char token )
 {
-	return e.split( token,QString::SkipEmptyParts ) ;
+	if( e.isEmpty() ){
+
+		return QStringList( QString() ) ;
+	}else{
+		return e.split( token,QString::SkipEmptyParts ) ;
+	}
 }
 
 QString utility::walletName()
