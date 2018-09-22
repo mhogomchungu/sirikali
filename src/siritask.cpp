@@ -361,7 +361,10 @@ static mountOptions::fuseOptions _add_volume_name( mountOptions::fuseOptions opt
 				s = utility::split( args.opt.cipherFolder,'/' ).last() ;
 			}
 
-			opts.add( "volname",s );
+			if( !s.isEmpty() ){
+
+				opts.add( "volname","\"" + s + "\"" ) ;
+			}
 		}
 	}
 
