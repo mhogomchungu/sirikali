@@ -254,6 +254,43 @@ struct cmdArgsList
 
 class mountOptions{
 public:
+	class fuseOptions{
+	public:
+		fuseOptions()
+		{
+		}
+		fuseOptions( QString m ) : m_options( std::move( m ) )
+		{
+		}
+		bool doesNotContain( const QString& key ) const
+		{
+			return !this->contains( key ) ;
+		}
+		bool contains( const QString& key ) const
+		{
+			return m_options.contains( key ) ;
+		}
+		void add( const QString& key,const QString& value )
+		{
+			this->add( key + "=" + value ) ;
+		}
+		void add( const QString& m )
+		{
+			if( m_options.isEmpty() ){
+
+				m_options = m ;
+			}else{
+				m_options += "," + m ;
+			}
+		}
+		const QString& options()
+		{
+			return m_options ;
+		}
+	private:
+		QString m_options ;
+	} ;
+
 	mountOptions( const cmdArgsList& e,const QString& f,const QString& g = QString() ) :
 		m_cmdArgsList( e ),m_type( f ),m_subType( g.isEmpty() ? "" : ",subtype=" + g )
 	{
@@ -281,7 +318,7 @@ public:
 	{
 		return m_exeOptions ;
 	}
-	QString fuseOptions() const
+	mountOptions::fuseOptions fuseOpts() const
 	{
 		QString e = [ & ](){
 
@@ -307,6 +344,29 @@ private:
 	QString m_type ;
 	QString m_subType ;
 };
+
+static mountOptions::fuseOptions _add_volume_name( mountOptions::fuseOptions opts,
+						   const cmdArgsList& args )
+{
+	if( utility::platformIsOSX() || utility::platformIsWindows() ){
+
+		if( opts.doesNotContain( "volname=" ) ){
+
+			QString s ;
+
+			if( utility::platformIsOSX() ){
+
+				s = utility::split( args.opt.plainFolder,'/' ).last() ;
+			}else{
+				s = utility::split( args.opt.cipherFolder,'/' ).last() ;
+			}
+
+			opts.add( "volname",s );
+		}
+	}
+
+	return opts ;
+}
 
 static QString _ecryptfs( const cmdArgsList& args )
 {
@@ -363,7 +423,7 @@ static QString _gocryptfs( const cmdArgsList& args )
 			      args.configFilePath,
 			      args.cipherFolder,
 			      args.mountPoint,
-			      m.fuseOptions() ) ;
+			      m.fuseOpts().options() ) ;
 	}
 }
 
@@ -387,7 +447,7 @@ static QString _securefs( const cmdArgsList& args )
 				args.configFilePath,
 				args.cipherFolder,
 				args.mountPoint,
-				m.fuseOptions() ) ;
+				_add_volume_name( m.fuseOpts(),args ).options() ) ;
 	}
 }
 
@@ -421,7 +481,7 @@ static QString _cryfs( const cmdArgsList& args )
 		      args.cipherFolder,
 		      args.mountPoint,
 		      separator,
-		      m.fuseOptions() ) ;
+		      m.fuseOpts().options() ) ;
 }
 
 static QString _encfs( const cmdArgsList& args )
@@ -429,13 +489,6 @@ static QString _encfs( const cmdArgsList& args )
 	QString e = "%1 %2 %3 %4 %5 %6 %7 %8 %9" ;
 
 	mountOptions m( args,"encfs","encfs" ) ;
-
-	auto fuseOptions = m.fuseOptions() ;
-
-	if( utility::platformIsOSX() ){
-
-		fuseOptions += ",volname=" + utility::split( args.opt.plainFolder,'/' ).last() ;
-	}
 
 	auto exeOptions = m.exeOptions() ;
 	exeOptions.replace( utility::reverseModeOption,"--reverse" ) ;
@@ -451,33 +504,23 @@ static QString _encfs( const cmdArgsList& args )
 		      utility::platformIsWindows() ? "-f" : "",
 		      args.cipherFolder,
 		      args.mountPoint,
-		      fuseOptions ) ;
+		      _add_volume_name( m.fuseOpts(),args ).options() ) ;
 }
 
 static QString _sshfs( const cmdArgsList& args )
 {
 	mountOptions m( args,"sshfs","sshfs" ) ;
 
-	auto fuseOptions = m.fuseOptions() ;
+	auto fuseOptions = _add_volume_name( m.fuseOpts(),args ) ;
 
 	if( !args.opt.key.isEmpty() ){
 
-		if( fuseOptions.isEmpty() ){
-
-			fuseOptions = "password_stdin" ;
-		}else{
-			fuseOptions += ",password_stdin" ;
-		}
+		fuseOptions.add( "password_stdin" ) ;
 	}
 
-	if( !fuseOptions.contains( "StrictHostKeyChecking=" ) ){
+	if( fuseOptions.doesNotContain( "StrictHostKeyChecking=" ) ){
 
-		if( fuseOptions.isEmpty() ){
-
-			fuseOptions = "StrictHostKeyChecking=no" ;
-		}else{
-			fuseOptions += ",StrictHostKeyChecking=no" ;
-		}
+		fuseOptions.add( "StrictHostKeyChecking","no" ) ;
 	}
 
 	QString s = "%1 %2 %3 %4 %5 %6" ;
@@ -487,7 +530,7 @@ static QString _sshfs( const cmdArgsList& args )
 		      utility::platformIsWindows() ? "-f" : "",
 		      args.cipherFolder,
 		      args.mountPoint,
-		      fuseOptions ) ;
+		      fuseOptions.options() ) ;
 }
 
 static QString _args( const QString& exe,const siritask::options& opt,
