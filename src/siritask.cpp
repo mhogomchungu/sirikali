@@ -283,7 +283,7 @@ public:
 				m_options += "," + m ;
 			}
 		}
-		const QString& get()
+		const QString& get() const
 		{
 			return m_options ;
 		}
@@ -312,6 +312,28 @@ public:
 		if( m_fuseOptions.endsWith( "," ) ){
 
 			m_fuseOptions.remove( m_fuseOptions.size() - 1,1 ) ;
+		}
+
+		if( !utility::platformIsLinux() && !m_fuseOptions.contains( "volname=" ) ){
+
+			QString s ;
+
+			if( utility::platformIsOSX() ){
+
+				s = utility::split( e.opt.plainFolder,'/' ).last() ;
+			}else{
+				s = utility::split( e.opt.cipherFolder,'/' ).last() ;
+			}
+
+			if( !s.isEmpty() ){
+
+				if( m_fuseOptions.isEmpty() ){
+
+					m_fuseOptions = "volname=" + utility::Task::makePath( s ) ;
+				}else{
+					m_fuseOptions = ",volname=" + utility::Task::makePath( s ) ;
+				}
+			}
 		}
 	}
 	const QString& exeOptions() const
@@ -344,32 +366,6 @@ private:
 	QString m_type ;
 	QString m_subType ;
 };
-
-static mountOptions::fuseOptions _add_volume_name( mountOptions::fuseOptions opts,
-						   const cmdArgsList& args )
-{
-	if( utility::platformIsOSX() || utility::platformIsWindows() ){
-
-		if( opts.doesNotContain( "volname=" ) ){
-
-			QString s ;
-
-			if( utility::platformIsOSX() ){
-
-				s = utility::split( args.opt.plainFolder,'/' ).last() ;
-			}else{
-				s = utility::split( args.opt.cipherFolder,'/' ).last() ;
-			}
-
-			if( !s.isEmpty() ){
-
-				opts.add( "volname",utility::Task::makePath( s ) ) ;
-			}
-		}
-	}
-
-	return opts ;
-}
 
 static QString _ecryptfs( const cmdArgsList& args )
 {
@@ -450,7 +446,7 @@ static QString _securefs( const cmdArgsList& args )
 				args.configFilePath,
 				args.cipherFolder,
 				args.mountPoint,
-				_add_volume_name( m.fuseOpts(),args ).get() ) ;
+				m.fuseOpts().get() ) ;
 	}
 }
 
@@ -507,14 +503,14 @@ static QString _encfs( const cmdArgsList& args )
 		      utility::platformIsWindows() ? "-f" : "",
 		      args.cipherFolder,
 		      args.mountPoint,
-		      _add_volume_name( m.fuseOpts(),args ).get() ) ;
+		      m.fuseOpts().get() ) ;
 }
 
 static QString _sshfs( const cmdArgsList& args )
 {
 	mountOptions m( args,"sshfs","sshfs" ) ;
 
-	auto fuseOptions = _add_volume_name( m.fuseOpts(),args ) ;
+	auto fuseOptions = m.fuseOpts() ;
 
 	if( !args.opt.key.isEmpty() ){
 

@@ -281,6 +281,11 @@ void sirikali::setUpApp( const QString& volume )
 	this->startGUI( m ) ;
 
 	QTimer::singleShot( utility::checkForUpdateInterval(),this,SLOT( autoUpdateCheck() ) ) ;
+
+	if( utility::debugEnabled() || utility::debugFullEnabled() ){
+
+		this->showDebugWindow() ;
+	}
 }
 
 void sirikali::showTrayIconWhenReady()
@@ -469,13 +474,6 @@ void sirikali::startGUI( const std::vector< volumeInfo >& m )
 	if( !m_startHidden ){
 
 		this->raiseWindow() ;
-
-		if( m_warnOnMissingExecutable ){
-
-			auto e = tr( "Failed To Locate \"securefs\" Executable.\n\nGo To \"Menu->Settings->Editable Options->Set Executable Search Path\"\n\n And Then Set A Path To Where \"securefs\" Executable Is Located On The Computer And Restart." ) ;
-
-			DialogMsg( this ).ShowUIOK( tr( "WARNING" ),e ) ;
-		}
 	}
 
 	if( utility::autoMountFavoritesOnStartUp() ){
