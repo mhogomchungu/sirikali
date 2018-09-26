@@ -136,8 +136,10 @@ version 1.3.5(August 1st,2018)
 -- Add ability to edit favorites entries.
 -- Fix a bug on windows when unlocking securefs volume with a custom config path.
 
-version 1.3.5(unreleased)
+version 1.3.5(October 1st,2018)
 -- Add ability to pass both fuse options and options specific to backends when unlocking a volume.
+   -- For example, this option will allow passing "--allow-filesystem-upgrade" option to cryfs backend when
+      unlocking a cryfs volume to automatically upgrade the volume's file system when necessary.
 -- Add a GUI way to create and unlock gocryptfs and encfs volumes in reverse mode.
 -- Fix a bug in windows that allowed more than once instance to run.
 -- Create drive letters on Windows with a label equals to the name of the cipher folder when unlocking volumes.
