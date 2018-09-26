@@ -1,4 +1,4 @@
-## SiriKali works on Linux, MACOS and Microsoft Windows
+## SiriKali works on Linux, MACOS and Microsoft Windows Operating Systems
 
 SiriKali is a Qt/C++ GUI application that manages ecryptfs,cryfs,encfs,gocryptfs and securefs based encrypted folders. These projects are compared <a href="https://nuetzlich.net/gocryptfs/comparison/">here.</a> SiriKali can also connect to ssh servers using sshfs.
 
@@ -63,7 +63,7 @@ Latest released version is 1.3.5 and its source code can be downloaded by clicki
 <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.5/SiriKali-1.3.5.tar.xz">SiriKali-1.3.5.tar.xz</a>
 
 Users of Microsoft Windows Operating System should download SiriKali installer by clicking below link. The installer is not
-signed and expect to get a warning from windows saying the installer is from unknown publisher.
+signed and expect to get a warning from windows saying the installer is from an unknown publisher.
 
 <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.5/SiriKali-setup.exe">SiriKali-setup.exe</a>
 
