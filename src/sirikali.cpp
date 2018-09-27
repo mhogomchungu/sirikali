@@ -1108,7 +1108,7 @@ static utility::result< QByteArray > _volume_properties( const QString& cmd,
 
 						return a + " " + b ;
 
-					}else if( cmd.endsWith( "encfsctl\"" ) ){
+					}else if( utility::endsWithAtLeastOne( cmd,"encfsctl\"","encfsctl.exe\"" ) ){
 
 						auto s = it.configFilePath ;
 
