@@ -1,12 +1,27 @@
 
 1. Install Qt Creator and Qt Libraries for windows(gcc version)
    - Download link is somewhere at https://www.qt.io/download
+
 2. Get SiriKali sources.
-3. Start Qt Creator and load CMakeLists.txt file from the root folder of SiriKali sources.
+
+3. Start Qt Creator and load CMakeLists.txt file from the root
+   folder of SiriKali sources.
+
 4. Build SiriKali in release mode.
-5. Create a new folder and go to the build folder to copy "sirikali" binary to the new folder.
-6. Copy all libraries in SiriKali souce folder/libs/lib and put them in the same folder as "sirikali" binary.
-7. Open the terminal and browse to a folder where you have added "sirikali" binary and run the following command
-   to copy all required Qt libraries to this folder "$QtDir/Path/windeployqt.exe --release  sirikali.exe"
-8. Copy "libgcc_s_dw2-1.dll","","libstdc++-6.dll","libwinpthread-1.dll" from somewhere in Qt installation folder
-   and put them in the same folder "sirikali" executable is located.
+
+5. Go to a build folder where Qt Creator build SiriKali and copy
+   "sirikali.exe" executable to a new folder.
+
+6. Copy all libraries in "libs/lib" subfolders located in
+   SiriKali source folder and put them in the same folder as
+   "sirikali" binary.
+
+Below commands assumes Qt is installed at "C:\Qt" and SiriKali was build in release mode using version 5.9.5.
+
+7. Open the terminal and browse to a folder where you have added "sirikali" binary and run the following commands:
+
+7.1 set QtDir=C:\Qt\5.9.5\mingw53_32\bin
+7.2 set PATH=C:\Qt\Tools\mingw530_32\bin;%QtDir%;%PATH%
+7.3 %QtDir%\windeployqt --release sirikali.exe
+
+8. Double click "sirikali.exe" file and SiriKali should start.

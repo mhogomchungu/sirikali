@@ -69,6 +69,8 @@ void updateVolumeList( std::function< void() > function )
 
 #ifdef Q_OS_WIN
 
+#include <windows.h>
+
 int poll( struct pollfd * a,int b,int c )
 {
 	Q_UNUSED( a ) ;
