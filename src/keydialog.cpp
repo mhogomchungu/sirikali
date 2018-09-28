@@ -34,6 +34,7 @@
 #include "lxqt_wallet.h"
 #include "utility2.h"
 #include "plugin.h"
+#include "crypto.h"
 #include "configfileoption.h"
 
 static QString _kwallet()
@@ -1138,7 +1139,7 @@ void keyDialog::pbSetKey()
 
 		if( m_hmac ){
 
-			return plugins::hmac_key( keyFile,passphrase ) ;
+			return crypto::hmac_key( keyFile,passphrase ) ;
 		}else{
 			auto exe = utility::externalPluginExecutable() ;
 
@@ -1457,7 +1458,7 @@ void keyDialog::cbActicated( QString e )
 
 			Task::run( [ q = std::move( q ) ](){
 
-				return plugins::hmac_key( q,QString() ) ;
+				return crypto::hmac_key( q,QString() ) ;
 
 			} ).then( [ this ]( QByteArray key ){
 

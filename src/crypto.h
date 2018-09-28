@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (c) 2015
+ *  Copyright (c) 2018
  *  name : Francis Banyikwa
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -16,13 +16,18 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef PLUGINS_H
-#define PLUGINS_H
 
-namespace plugins
+#ifndef CRYPTO_H
+#define CRYPTO_H
+
+#include <QByteArray>
+#include <QString>
+
+class crypto
 {
-enum class plugin{ hmac_key,externalExecutable } ;
+public:
+        static QByteArray getRandomData( int s ) ;
+        static QByteArray hmac_key( const QString& keyFile,const QString& password ) ;
+};
 
-} //namespace plugins
-
-#endif // PLUGINS_H
+#endif

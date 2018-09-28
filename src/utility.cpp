@@ -60,6 +60,7 @@
 #include "install_prefix.h"
 #include "locale_path.h"
 #include "plugins.h"
+#include "crypto.h"
 #include "json.h"
 #include "winfsp.h"
 #include "readonlywarning.h"
@@ -346,7 +347,7 @@ static QString siriPolkitExe()
 
 static ::Task::future< utility::Task >& _start_siripolkit( const QString& e )
 {
-	_cookie = plugins::getRandomData( 16 ).toHex() ;
+	_cookie = crypto::getRandomData( 16 ).toHex() ;
 
 	return ::Task::run( [ = ]{
 

@@ -56,6 +56,7 @@
 #include "favorites.h"
 #include "walletconfig.h"
 #include "plugins.h"
+#include "crypto.h"
 #include "help.h"
 #include "configoptions.h"
 #include "winfsp.h"
@@ -590,7 +591,7 @@ void sirikali::cliCommand( const QStringList& l )
 
 		auto e = utility::cmdArgumentValue( l,"-f" ) ;
 
-		auto s = plugins::hmac_key( e,utility::readPassword() ) ;
+		auto s = crypto::hmac_key( e,utility::readPassword() ) ;
 
 		if( s.isEmpty() ){
 
@@ -700,7 +701,7 @@ void sirikali::unlockVolume( const QStringList& l )
 
 					return e ;
 				}else{
-					return plugins::hmac_key( keyFile,e ) ;
+					return crypto::hmac_key( keyFile,e ) ;
 				}
 			}() ) ;
 		}

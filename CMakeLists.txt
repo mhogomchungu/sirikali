@@ -275,6 +275,7 @@ set( MOC_FILES
 
 set( SRC 	src/dialogok.cpp
 		src/main.cpp
+		src/crypto.cpp
 		src/encfscreateoptions.cpp
 		src/debugwindow.cpp
 		src/gocryptfscreateoptions.cpp

@@ -20,9 +20,8 @@
 
 #include "plugin.h"
 #include "plugins.h"
-
+#include "crypto.h"
 #include "ui_plugin.h"
-
 #include "utility.h"
 #include "dialogmsg.h"
 
@@ -117,7 +116,7 @@ void plugin::pbSetKey()
 
 		if( m_pluginType == plugins::plugin::hmac_key ){
 
-			return plugins::hmac_key( keyFile,passphrase ) ;
+			return crypto::hmac_key( keyFile,passphrase ) ;
 
 		}else if( m_pluginType == plugins::plugin::externalExecutable ){
 
@@ -158,7 +157,7 @@ void plugin::pbSetKey()
 
 void plugin::pbSelectKeyFile()
 {
-	m_ui->lineEdit_2->setText( QFileDialog::getOpenFileName( this,tr( "KeyFile" ),utility::homePath(),0 ) ) ;
+	m_ui->lineEdit_2->setText( QFileDialog::getOpenFileName( this,tr( "KeyFile" ),utility::homePath(),nullptr ) ) ;
 }
 
 void plugin::pbClose()
