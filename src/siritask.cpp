@@ -331,7 +331,7 @@ public:
 
 					m_fuseOptions = "volname=" + utility::Task::makePath( s ) ;
 				}else{
-					m_fuseOptions = ",volname=" + utility::Task::makePath( s ) ;
+					m_fuseOptions += ",volname=" + utility::Task::makePath( s ) ;
 				}
 			}
 		}
