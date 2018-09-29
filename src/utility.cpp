@@ -152,28 +152,9 @@ static bool _use_polkit = false ;
 
 static std::function< void() > _failed_to_connect_to_zulupolkit ;
 
-void utility::setDebugWindow( debugWindow * w )
-{
-	_debugWindow = w ;
-}
-
-static void _set_debug_window_text( const QString& e )
-{
-	_debugWindow->UpdateOutPut( e ) ;
-}
-
-utility::SocketPaths utility::socketPath()
-{
-	if( utility::platformIsWindows() ){
-
-		return { QString(),"\\\\.\\pipe\\SiriKaliSocket" } ;
-	}else{
-		auto a = QStandardPaths::writableLocation( QStandardPaths::RuntimeLocation ) ;
-		return { a,a + "/SiriKali.socket" } ;
-	}
-}
-
 static bool _enable_debug = false ;
+
+static bool _enable_full_debug = false ;
 
 void utility::enableDebug( bool e )
 {
@@ -185,8 +166,6 @@ bool utility::debugEnabled()
 	return _enable_debug ;
 }
 
-static bool _enable_full_debug = false ;
-
 void utility::enableFullDebug( bool e )
 {
 	_enable_full_debug = e ;
@@ -195,6 +174,27 @@ void utility::enableFullDebug( bool e )
 bool utility::debugFullEnabled()
 {
 	return _enable_full_debug ;
+}
+
+void utility::setDebugWindow( debugWindow * w )
+{
+	_debugWindow = w ;
+}
+
+static void _set_debug_window_text( const QString& e )
+{
+	_debugWindow->UpdateOutPut( e,utility::debugFullEnabled() ) ;
+}
+
+utility::SocketPaths utility::socketPath()
+{
+	if( utility::platformIsWindows() ){
+
+		return { QString(),"\\\\.\\pipe\\SiriKaliSocket" } ;
+	}else{
+		auto a = QStandardPaths::writableLocation( QStandardPaths::RuntimeLocation ) ;
+		return { a,a + "/SiriKali.socket" } ;
+	}
 }
 
 void utility::polkitFailedWarning( std::function< void() > e )
@@ -298,6 +298,48 @@ void utility::Task::execute( const QString& exe,int waitTime,
 
 		utility::logCommandOutPut( s,exe ) ;
 	}
+}
+
+static void _build_debug_msg( const QString& b )
+{
+	QString a = "***************************\n" ;
+	QString c = "\n***************************" ;
+
+	_set_debug_window_text( a + b + c ) ;
+}
+
+utility::debug utility::debug::operator<<( const QString& e )
+{
+	_build_debug_msg( e ) ;
+
+	return utility::debug() ;
+}
+
+utility::debug utility::debug::operator<<( int e )
+{
+	_build_debug_msg( QString::number( e ) ) ;
+
+	return utility::debug() ;
+}
+
+utility::debug utility::debug::operator<<( const char * e )
+{
+	_build_debug_msg( e ) ;
+
+	return utility::debug() ;
+}
+
+utility::debug utility::debug::operator<<( const QByteArray& e )
+{
+	_build_debug_msg( e ) ;
+
+	return utility::debug() ;
+}
+
+utility::debug utility::debug::operator<<( const QStringList& e )
+{
+	_build_debug_msg( e.join( "\n" ) ) ;
+	return utility::debug() ;
 }
 
 void utility::logCommandOutPut( const QString& exe )
@@ -518,7 +560,7 @@ void utility::openPath( const QString& path,const QString& opener,
 		s.f_bavail = e.f_bavail ;
 		s.f_bfree  = e.f_bfree ;
 		s.f_blocks = e.f_blocks ;
-		s.f_bsize  = e.f_bsize ;
+		s.f_bsize  = static_cast< decltype( s.f_bsize ) >( e.f_bsize ) ;
 #endif
 		return s ;
 	} ) ;
@@ -1789,11 +1831,9 @@ void utility::windowDimensions::setDimensions( const QStringList& e )
 
 	if( m_ok ){
 
-		using tp = decltype( m_array.size() ) ;
+		for( size_t i = 0 ; i < m_array.size() ; i++ ){
 
-		for( tp i = 0 ; i < m_array.size() ; i++ ){
-
-			m_array[ i ] = static_cast< int >( e.at( i ).toInt( &m_ok ) ) ;
+			m_array[ i ] = static_cast< int >( e.at( static_cast< int >( i ) ).toInt( &m_ok ) ) ;
 
 			if( !m_ok ){
 

@@ -37,18 +37,22 @@ void debugWindow::Hide()
 	this->hide() ;
 }
 
-void debugWindow::UpdateOutPutSlot( const QString& e )
+void debugWindow::UpdateOutPutSlot( const QString& e,bool s )
 {
-	if( this->isVisible() ){
+	if( this->isVisible() || s ){
 
 		auto s = m_ui->textEdit->toPlainText() ;
 		m_ui->textEdit->setText( s + "\n" + e ) ;
 	}
 }
 
-void debugWindow::UpdateOutPut( const QString& e )
+void debugWindow::UpdateOutPut( const QString& e,bool m )
 {
-	QMetaObject::invokeMethod( this,"UpdateOutPutSlot",Qt::QueuedConnection,Q_ARG( QString,e ) ) ;
+	QMetaObject::invokeMethod( this,
+				   "UpdateOutPutSlot",
+				   Qt::QueuedConnection,
+				   Q_ARG( QString,e ),
+				   Q_ARG( bool,m ) ) ;
 }
 
 void debugWindow::closeEvent( QCloseEvent * e )

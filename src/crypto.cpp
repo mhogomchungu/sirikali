@@ -19,13 +19,7 @@
 
 #include "crypto.h"
 
-#include <QProcess>
-#include <QByteArray>
-#include <QString>
-#include <QObject>
 #include <QFile>
-#include <QVector>
-#include <QDebug>
 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include <gcrypt.h>

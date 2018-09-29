@@ -16,10 +16,10 @@ public:
 	~debugWindow();
         void Show() ;
         void Hide() ;
-        void UpdateOutPut( const QString& ) ;
+	void UpdateOutPut( const QString&,bool ) ;
         void closeEvent( QCloseEvent * ) ;
 private slots:
-        void UpdateOutPutSlot( const QString& ) ;
+	void UpdateOutPutSlot( const QString&,bool ) ;
 private:
         Ui::debugWindow * m_ui ;
 };
