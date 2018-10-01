@@ -58,14 +58,14 @@ Account Number:	0152454497500
 
 ## Download links
 
-Latest released version is 1.3.5 and its source code can be downloaded by clicking below link.
+Latest released version is 1.3.6 and its source code can be downloaded by clicking below link.
 
-<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.5/SiriKali-1.3.5.tar.xz">SiriKali-1.3.5.tar.xz</a>
+<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.6/SiriKali-1.3.6.tar.xz">SiriKali-1.3.6.tar.xz</a>
 
 Users of Microsoft Windows Operating System should download SiriKali installer by clicking below link. The installer is not
 signed and expect to get a warning from windows saying the installer is from an unknown publisher.
 
-<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.5/SiriKali-setup.exe">SiriKali-setup.exe</a>
+<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.6/SiriKali-setup.exe">SiriKali-setup.exe</a>
 
 
 
