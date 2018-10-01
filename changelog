@@ -136,7 +136,7 @@ version 1.3.5(August 1st,2018)
 -- Add ability to edit favorites entries.
 -- Fix a bug on windows when unlocking securefs volume with a custom config path.
 
-version 1.3.5(October 1st,2018)
+version 1.3.6(October 1st,2018)
 -- Add ability to pass both fuse options and options specific to backends when unlocking a volume.
    -- For example, this option will allow passing "--allow-filesystem-upgrade" option to cryfs backend when
       unlocking a cryfs volume to automatically upgrade the volume's file system when necessary.
