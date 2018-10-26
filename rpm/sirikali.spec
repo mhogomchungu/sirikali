@@ -65,7 +65,7 @@ rm -rf $RPM_BUILD_DIR/sirikali
 %defattr(0755,root,root)
 %{_bindir}/sirikali
 %{_bindir}/sirikali.pkexec
-%{_datadir}/applications/sirikali.desktop
+%{_datadir}/applications/io.github.mhogomchungu.sirikali.desktop
 
 %dir %{_datadir}/sirikali/translations
 %dir %{_datadir}/sirikali
