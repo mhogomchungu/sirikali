@@ -2,7 +2,7 @@
 <!-- Copyright 2016 David Steele <steele@debian.org> -->
 <component type="desktop">
   <id>io.github.mhogomchungu.SiriKali</id>
-  <launchable type="desktop-id">io.github.mhogomchungu.SiriKali.desktop</launchable>
+  <launchable type="desktop-id">io.github.mhogomchungu.sirikali.desktop</launchable>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-2.0</project_license>
   <name>SiriKali</name>

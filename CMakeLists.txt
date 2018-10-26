@@ -427,7 +427,7 @@ if( NOT APPLE )
 #install( FILES sirikali.png DESTINATION share/icons/hicolor/32x32/apps )
 
 # desktop file section
-file( WRITE ${PROJECT_BINARY_DIR}/sirikali.desktop
+file( WRITE ${PROJECT_BINARY_DIR}/io.github.mhogomchungu.sirikali.desktop
 
 "[Desktop Entry]
 Comment[en_US]=Manage Encrypted Volumes Hosted In Folders
@@ -445,7 +445,7 @@ Type=Application
 MimeType=inode/directory;
 Categories=Security;Utility;Qt;X-MandrivaLinux-System-FileTools;\n")
 
-install( FILES ${PROJECT_BINARY_DIR}/sirikali.desktop
+install( FILES ${PROJECT_BINARY_DIR}/io.github.mhogomchungu.sirikali.desktop
 	DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications
 	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )
