@@ -412,13 +412,14 @@ static QString _gocryptfs( const cmdArgsList& args )
 	}else{
 		mountOptions m( args,"gocryptfs" ) ;
 
-		QString e = "%1 -q %2 %3 %4 %5 %6" ;
+		QString e = "%1 -q %2 %3 %4 %5 %6 %7" ;
 
 		auto exeOptions = m.exeOptions() ;
 		exeOptions.replace( utility::reverseModeOption,"-reverse" ) ;
 
 		return e.arg( args.exe,
 			      exeOptions,
+			      args.opt.idleTimeout.isEmpty() ? "" : "-idle " + args.opt.idleTimeout,
 			      args.configFilePath,
 			      args.cipherFolder,
 			      args.mountPoint,
