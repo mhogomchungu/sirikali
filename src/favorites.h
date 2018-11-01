@@ -120,6 +120,20 @@ public:
 			return autoMountVolume == "true" ;
 		}
 
+		QString sanitizedMountOptions() const
+		{
+			return sanitizedMountOptions( mountOptions ) ;
+		}
+
+		static QString sanitizedMountOptions( const QString& s )
+		{
+			auto l = s.split( ',',QString::SkipEmptyParts ) ;
+
+			l.removeAll( reverseModeOption ) ;
+
+			return l.join( "," ) ;
+		}
+
 		QString volumePath ;
 		QString mountPointPath ;
 		QString autoMountVolume ;
@@ -132,11 +146,6 @@ public:
 		{
 			reverseMode = e.contains( reverseModeOption ) ;
 
-			if( reverseMode ){
-
-				e.removeAll( reverseModeOption ) ;
-			}
-
 			utility2::stringListToStrings( e,
 						      volumePath,
 						      mountPointPath,
@@ -144,9 +153,6 @@ public:
 						      configFilePath,
 						      idleTimeOut,
 						      mountOptions ) ;
-
-
-			mountOptions.replace( reverseModeOption,"" ) ;
 
 			if( configFilePath == "N/A" ){
 

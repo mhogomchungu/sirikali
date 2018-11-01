@@ -530,7 +530,7 @@ void keyDialog::pbOptions()
 
 			m_idleTimeOut  = f.idleTimeOut ;
 			m_configFile   = f.configFilePath ;
-			m_mountOptions = f.mountOptions ;
+			m_mountOptions = f.sanitizedMountOptions() ;
 			m_reverseMode  = f.reverseMode ;
 		}
 

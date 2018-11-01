@@ -92,7 +92,7 @@ namespace siritask
 			type( QString() ),
 			ro( false ),
 			reverseMode( e.reverseMode ),
-			mountOptions( e.mountOptions )
+			mountOptions( e.sanitizedMountOptions() )
 		{
 		}
 		options( const QString& cipher_folder,
@@ -114,7 +114,7 @@ namespace siritask
 			type( volume_type ),
 			ro( unlock_in_read_only ),
 			reverseMode( unlock_in_reverse_mode ),
-			mountOptions( mount_options ),
+			mountOptions( favorites::entry::sanitizedMountOptions( mount_options ) ),
 			createOptions( create_options )
 		{
 		}
