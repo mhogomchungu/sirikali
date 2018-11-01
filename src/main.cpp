@@ -19,18 +19,16 @@
 
 #include <QApplication>
 #include <QMetaObject>
+#include <QSettings>
 
 #include "sirikali.h"
-#include "utility.h"
+#include "settings.h"
 
 int main( int argc,char * argv[] )
 {
-	QSettings settings( "SiriKali","SiriKali" ) ;
-	utility::setSettingsObject( &settings ) ;
+	settings::instance().scaleGUI() ;
 
 	utility::initGlobals() ;
-
-	utility::scaleGUI() ;
 
 	QApplication SiriKali( argc,argv ) ;
 

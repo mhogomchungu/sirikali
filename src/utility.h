@@ -72,11 +72,6 @@ class QEvent ;
 
 namespace utility
 {
-	static const QString reverseModeOption = "-SiriKaliReverseMode" ;
-}
-
-namespace utility
-{
 	using volumeList = std::vector< std::pair< favorites::entry,QByteArray > > ;
 
 	template< typename T >
@@ -145,45 +140,6 @@ namespace utility
 		QString key ;
 	};
 
-	class walletBackEnd
-	{
-	public:
-		walletBackEnd( LXQt::Wallet::BackEnd s ) : m_valid( true ),m_storage( s )
-		{
-		}
-		walletBackEnd() : m_valid( false )
-		{
-		}
-		bool operator==( LXQt::Wallet::BackEnd s ) const
-		{
-			return m_valid && m_storage == s ;
-		}
-		bool operator==( const utility::walletBackEnd& other ) const
-		{
-			if( this->m_valid && other.m_valid ){
-
-				return this->m_storage == other.m_storage ;
-			}else{
-				return false ;
-			}
-		}
-		bool isValid() const
-		{
-			return m_valid ;
-		}
-		bool isInvalid() const
-		{
-			return !this->isValid() ;
-		}
-		LXQt::Wallet::BackEnd bk() const
-		{
-			return m_storage ;
-		}
-	private:
-		bool m_valid ;
-		LXQt::Wallet::BackEnd m_storage ;
-	};
-
 	struct fsInfo
 	{
 		bool valid ;
@@ -199,13 +155,7 @@ namespace utility
 	bool platformIsOSX() ;
 	bool platformIsWindows() ;
 
-	void setParent( QWidget * parent,QWidget ** localParent,QDialog * dialog ) ;
-
 	void setWindowOptions( QDialog * ) ;
-
-	utility::walletBackEnd autoMountBackEnd( void ) ;
-
-	void autoMountBackEnd( const utility::walletBackEnd& ) ;
 
 	int startApplication( std::function< int() > ) ;
 
@@ -215,11 +165,6 @@ namespace utility
 
 	QString cmdArgumentValue( const QStringList&,const QString& arg,const QString& defaulT = QString() ) ;
 
-	void runCommandOnMount( const QString& ) ;
-	QString runCommandOnMount( void ) ;
-	QString fileManager( void ) ;
-	void setFileManager( const QString& ) ;
-
 	QString readPassword( bool = true ) ;
 
 	QIcon getIcon() ;
@@ -228,20 +173,11 @@ namespace utility
 
 	QString executableFullPath( const QString& ) ;
 
-	QString externalPluginExecutable() ;
-	void setExternalPluginExecutable( const QString& ) ;
-
 	QString freeWindowsDriveLetter() ;
 
 	void setWindowsMountPointOptions( QWidget *,QLineEdit *,QPushButton * ) ;
 
-	bool reUseMountPoint( void ) ;
-	void reUseMountPoint( bool ) ;
-
 	QString homeConfigPath( const QString& = QString() ) ;
-	QString homePath() ;
-	QString mountPath( const QString& path ) ;
-	QString mountPath() ;
 
 	QString getExistingDirectory( QWidget *,const QString& caption,const QString& dir ) ;
 
@@ -251,51 +187,14 @@ namespace utility
 
 	void setDefaultMountPointPrefix( const QString& path ) ;
 
-	void setSettingsObject( QSettings * ) ;
-
-	void preUnMountCommand( const QString& ) ;
-	QString preUnMountCommand( void ) ;
-
 	QString mountPathPostFix( const QString& path ) ;
 	QString mountPathPostFix( const QString& prefix,const QString& path ) ;
 
 	bool pathIsReadable( const QString&,bool isFolder = true ) ;
 	bool pathIsWritable( const QString&,bool isFolder = true ) ;
 
-	bool autoOpenFolderOnMount() ;
-	void autoOpenFolderOnMount( bool ) ;
-
 	QString securefsPath() ;
 	QString winFSPpath() ;
-	int pollForUpdatesInterval() ;
-
-	bool autoCheck() ;
-	void autoCheck( bool ) ;
-
-	bool readOnlyWarning() ;
-	void readOnlyWarning( bool ) ;
-
-	bool doNotShowReadOnlyWarning() ;
-	void doNotShowReadOnlyWarning( bool ) ;
-
-	bool autoMountFavoritesOnStartUp() ;
-	void autoMountFavoritesOnStartUp( bool ) ;
-
-	bool showMountDialogWhenAutoMounting() ;
-	void showMountDialogWhenAutoMounting( bool ) ;
-
-	bool setOpenVolumeReadOnly( QWidget * parent,bool check ) ;
-	bool getOpenVolumeReadOnlyOption() ;
-
-	bool autoMountFavoritesOnAvailable() ;
-	void autoMountFavoritesOnAvailable( bool ) ;
-
-	bool startMinimized() ;
-	void setStartMinimized( bool ) ;
-
-	int checkForUpdateInterval( void ) ;
-
-	bool enableRevealingPasswords( void ) ;
 
 	void enableDebug( bool ) ;
 	bool debugEnabled( void ) ;
@@ -308,9 +207,6 @@ namespace utility
 
 	QProcessEnvironment systemEnvironment() ;
 
-	int networkTimeOut() ;
-
-	QString homePath() ;
 	QString userName() ;
 
 	QString configFilePath( QWidget *,const QString& ) ;
@@ -318,9 +214,6 @@ namespace utility
 	QStringList split( const QString&,char = '\n' ) ;
 	QStringList executableSearchPaths( void ) ;
 	QString executableSearchPaths( const QString& ) ;
-
-	void setWindowsExecutableSearchPath( const QString& ) ;
-	QString windowsExecutableSearchPath() ;
 
 	void logCommandOutPut( const ::Task::process::result&,const QString& ) ;
 	void logCommandOutPut( const QString& ) ;
@@ -331,23 +224,9 @@ namespace utility
 	void quitHelper() ;
 	void initGlobals() ;
 	QString helperSocketPath() ;
-	void clearFavorites( void ) ;
-	void addToFavorite( const QStringList& ) ;
-	std::vector< favorites::entry > readFavorites( void ) ;
-	favorites::entry readFavorite( const QString& ) ;
-	void replaceFavorite( const favorites::entry&,const favorites::entry& ) ;
-	void readFavorites( QMenu * ) ;
-	void removeFavoriteEntry( const favorites::entry& ) ;
-	int favoritesEntrySize() ;
 	QString removeOption( const QStringList&,const QString& option ) ;
 	QString removeOption( const QString& commaSeparatedString,const QString& option ) ;
 	QString getVolumeID( const QString&,bool = false ) ;
-	QString localizationLanguage() ;
-	QString localizationLanguagePath() ;
-	void setLocalizationLanguage( const QString& ) ;
-	QString walletName( void ) ;
-	QString walletName( LXQt::Wallet::BackEnd ) ;
-	QString applicationName( void ) ;
 	bool eventFilter( QObject * gui,QObject * watched,QEvent * event,std::function< void() > ) ;
 	void licenseInfo( QWidget * ) ;
 
@@ -365,28 +244,6 @@ namespace utility
 
 	::Task::future< utility::result< bool > >& backendIsGreaterOrEqualTo( const QString& backend,
 									      const QString& version ) ;
-
-	void setLocalizationLanguage( bool translate,QMenu * m,utility2::translator& ) ;
-	void languageMenu( QMenu *,QAction *,utility2::translator& ) ;
-
-	class windowDimensions{
-	public:
-		static constexpr int size = 8 ;
-		windowDimensions( const QStringList& e ) ;
-		windowDimensions( const QString& e ) ;
-		windowDimensions( const std::array< int,size >& e ) ;
-		operator bool() ;
-		int columnWidthAt( std::array< int,size >::size_type ) const ;
-		QRect geometry() const ;
-		QString dimensions() const ;
-	private:
-		void setDimensions( const QStringList& ) ;
-		std::array< int,size > m_array ;
-		bool m_ok = false ;
-	};
-
-	utility::windowDimensions getWindowDimensions() ;
-	void setWindowDimensions( const utility::windowDimensions& ) ;
 
 	::Task::future< bool >& openPath( const QString& path,const QString& opener ) ;
 

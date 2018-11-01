@@ -24,7 +24,7 @@
 #include "task.hpp"
 
 encfscreateoptions::encfscreateoptions( QWidget * parent,
-					std::function< void( const QStringList& ) > function ) :
+					std::function< void( const Options& ) > function ) :
 	QDialog( parent ),
 	m_ui( new Ui::encfscreateoptions ),
 	m_function( std::move( function ) )
@@ -52,17 +52,7 @@ void encfscreateoptions::pbSelectConfigPath()
 
 void encfscreateoptions::pbOK()
 {
-	QString a = [ this ](){
-
-		if( m_ui->checkBox->isChecked() ){
-
-			return utility::reverseModeOption ;
-		}else{
-			return QString() ;
-		}
-	}() ;
-
-	this->HideUI( { a,QString() } ) ;
+	this->HideUI( { m_ui->checkBox->isChecked() } ) ;
 }
 
 void encfscreateoptions::pbCancel()
@@ -70,12 +60,10 @@ void encfscreateoptions::pbCancel()
 	this->HideUI() ;
 }
 
-void encfscreateoptions::HideUI( const QStringList& e )
+void encfscreateoptions::HideUI( const Options& opts )
 {
 	this->hide() ;
-
-	m_function( e ) ;
-
+	m_function( opts ) ;
 	this->deleteLater() ;
 }
 

@@ -24,6 +24,7 @@
 #include "ui_plugin.h"
 #include "utility.h"
 #include "dialogmsg.h"
+#include "settings.h"
 
 #include <QCloseEvent>
 #include <QEvent>
@@ -49,7 +50,7 @@ plugin::plugin( QWidget * parent,
 
 	m_ui->label->setText( e ) ;
 
-	utility::setParent( parent,&m_parentWidget,this ) ;
+	settings::instance().setParent( parent,&m_parentWidget,this ) ;
 
 	this->setFixedSize( this->size() ) ;
 	this->setFont( parent->font() ) ;
@@ -120,7 +121,7 @@ void plugin::pbSetKey()
 
 		}else if( m_pluginType == plugins::plugin::externalExecutable ){
 
-			auto exe = utility::externalPluginExecutable() ;
+			auto exe = settings::instance().externalPluginExecutable() ;
 
 			if( exe.isEmpty() ){
 
@@ -157,7 +158,8 @@ void plugin::pbSetKey()
 
 void plugin::pbSelectKeyFile()
 {
-	m_ui->lineEdit_2->setText( QFileDialog::getOpenFileName( this,tr( "KeyFile" ),utility::homePath(),nullptr ) ) ;
+	auto a = settings::instance().homePath() ;
+	m_ui->lineEdit_2->setText( QFileDialog::getOpenFileName( this,tr( "KeyFile" ),a,nullptr ) ) ;
 }
 
 void plugin::pbClose()

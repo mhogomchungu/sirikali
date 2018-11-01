@@ -18,9 +18,10 @@
  */
 
 #include "checkforupdates.h"
+#include "settings.h"
 
 checkUpdates::checkUpdates( QWidget * widget ) : m_widget( widget ),
-	m_timeOut( utility::networkTimeOut() ),m_running( false )
+	m_timeOut( settings::instance().networkTimeOut() ),m_running( false )
 {
 	m_networkRequest.setRawHeader( "Host","api.github.com" ) ;
 	m_networkRequest.setRawHeader( "Accept-Encoding","text/plain" ) ;
@@ -43,7 +44,7 @@ void checkUpdates::run( bool e )
 
 		if( e ){
 
-			if( utility::autoCheck() ){
+			if( settings::instance().autoCheck() ){
 
 				this->check( e ) ;
 			}

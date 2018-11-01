@@ -31,6 +31,7 @@
 #include "utility.h"
 #include "dialogmsg.h"
 #include "tablewidget.h"
+#include "settings.h"
 
 favorites::favorites( QWidget * parent,favorites::type type ) : QDialog( parent ),
 	m_ui( new Ui::favorites )
@@ -93,7 +94,7 @@ favorites::favorites( QWidget * parent,favorites::type type ) : QDialog( parent 
 
 	this->installEventFilter( this ) ;
 
-	utility::setParent( parent,&m_parentWidget,this ) ;
+	settings::instance().setParent( parent,&m_parentWidget,this ) ;
 
 	utility::setWindowOptions( this ) ;
 
@@ -104,7 +105,7 @@ favorites::favorites( QWidget * parent,favorites::type type ) : QDialog( parent 
 
 void favorites::checkFavoritesConsistency()
 {
-	int s = m_ui->tableWidget->columnCount() - utility::favoritesEntrySize() ;
+	int s = m_ui->tableWidget->columnCount() - settings::instance().favoritesEntrySize() ;
 
 	if( s == 0 ){
 
@@ -118,13 +119,13 @@ void favorites::checkFavoritesConsistency()
 		 * favorites entries to accomodate it.
 		 */
 
-		auto e = utility::readFavorites() ;
+		auto e = settings::instance().readFavorites() ;
 
-		utility::clearFavorites() ;
+		settings::instance().clearFavorites() ;
 
 		for( const auto& it : e ){
 
-			utility::addToFavorite( it.configStringList() ) ;
+			settings::instance().addToFavorite( it.configStringList() ) ;
 		}
 	}else{
 		/*
@@ -151,7 +152,7 @@ void favorites::devicePathTextChange( QString txt )
 
 			m_ui->lineEditMountPath->setText( txt ) ;
 		}else{
-			auto m = utility::mountPath( s ) ;
+			auto m = settings::instance().mountPath( s ) ;
 			m_ui->lineEditMountPath->setText( m ) ;
 		}
 	}
@@ -177,7 +178,7 @@ void favorites::ShowUI( favorites::type type )
 		}
 	} ;
 
-	for( const auto& it : utility::readFavorites() ){
+	for( const auto& it : settings::instance().readFavorites() ){
 
 		_add_entry( it.list() ) ;
 	}
@@ -256,11 +257,11 @@ void favorites::edit()
 			m_ui->lineEditIdleTimeOut->setText( b ) ;
 		}
 
-		m_ui->cbReverseMode->setChecked( c.contains( utility::reverseModeOption ) ) ;
+		m_ui->cbReverseMode->setChecked( c.contains( favorites::reverseModeOption ) ) ;
 
 		if( c != "N/A" ){
 
-			m_ui->lineEditMountOptions->setText( utility::removeOption( c,utility::reverseModeOption ) ) ;
+			m_ui->lineEditMountOptions->setText( utility::removeOption( c,favorites::reverseModeOption ) ) ;
 		}
 	}
 }
@@ -339,7 +340,7 @@ void favorites::toggleAutoMount()
 
 		auto f = this->getEntry( row ) ;
 
-		utility::replaceFavorite( e,f ) ;
+		settings::instance().replaceFavorite( e,f ) ;
 	}
 }
 
@@ -353,7 +354,7 @@ void favorites::removeEntryFromFavoriteList()
 
 		auto row = table->currentRow() ;
 
-		utility::removeFavoriteEntry( this->getEntry( row ) ) ;
+		settings::instance().removeFavoriteEntry( this->getEntry( row ) ) ;
 
 		tablewidget::deleteRow( table,row ) ;
 
@@ -378,9 +379,9 @@ void favorites::add()
 
 		if( mOpts.isEmpty() ){
 
-			mOpts = utility::reverseModeOption ;
+			mOpts = favorites::reverseModeOption ;
 		}else{
-			mOpts += "," + utility::reverseModeOption ;
+			mOpts += QString( "," ) + favorites::reverseModeOption ;
 		}
 	}
 
@@ -429,7 +430,7 @@ void favorites::add()
 
 		auto f = this->getEntry( m_editRow ) ;
 
-		utility::replaceFavorite( f,e ) ;
+		settings::instance().replaceFavorite( f,e ) ;
 
 		tablewidget::updateRow( m_ui->tableWidget,e,m_editRow ) ;
 
@@ -441,7 +442,7 @@ void favorites::add()
 		m_ui->cbReverseMode->setChecked( false ) ;
 	}else{
 		tablewidget::addRow( m_ui->tableWidget,e ) ;
-		utility::addToFavorite( e ) ;
+		settings::instance().addToFavorite( e ) ;
 		m_ui->lineEditEncryptedFolderPath->clear() ;
 		m_ui->lineEditMountPath->clear() ;
 		m_ui->lineEditConfigFilePath->clear() ;

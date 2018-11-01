@@ -91,6 +91,7 @@ namespace siritask
 			configFilePath( e.configFilePath ),
 			type( QString() ),
 			ro( false ),
+			reverseMode( e.reverseMode ),
 			mountOptions( e.mountOptions )
 		{
 		}
@@ -101,6 +102,7 @@ namespace siritask
 			 const QString& config_file_path,
 			 const QString& volume_type,
 			 bool unlock_in_read_only,
+			 bool unlock_in_reverse_mode,
 			 const QString& mount_options,
 			 const QString& create_options ) :
 
@@ -111,6 +113,7 @@ namespace siritask
 			configFilePath( config_file_path ),
 			type( volume_type ),
 			ro( unlock_in_read_only ),
+			reverseMode( unlock_in_reverse_mode ),
 			mountOptions( mount_options ),
 			createOptions( create_options )
 		{
@@ -123,6 +126,7 @@ namespace siritask
 		QString configFilePath ;
 		siritask::volumeType type ;
 		bool ro ;
+		bool reverseMode ;
 		QString mountOptions ;
 		QString createOptions ;
 	};

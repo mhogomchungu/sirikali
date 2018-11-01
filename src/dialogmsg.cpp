@@ -25,6 +25,7 @@
 
 #include "utility.h"
 #include "dialogok.h"
+#include "settings.h"
 
 DialogMsg::DialogMsg( QWidget * parent,QDialog * dialog ) :
 	QDialog( parent ),m_ui( new Ui::DialogMsg ),m_dialog( dialog )
@@ -33,7 +34,7 @@ DialogMsg::DialogMsg( QWidget * parent,QDialog * dialog ) :
 
 	this->setFont( parent->font() ) ;
 
-	utility::setParent( parent,&m_parent,this ) ;
+	settings::instance().setParent( parent,&m_parent,this ) ;
 
 	connect( m_ui->pbNo,SIGNAL( clicked() ),this,SLOT( pbNo() ) ) ;
 	connect( m_ui->pbYes,SIGNAL( clicked() ),this,SLOT( pbYes() ) ) ;
@@ -51,19 +52,19 @@ bool DialogMsg::eventFilter( QObject * watched,QEvent * event )
 
 void DialogMsg::pbNo()
 {
-	m_status = ( int ) QMessageBox::No ;
+	m_status = static_cast< int >( QMessageBox::No ) ;
 	this->hide() ;
 }
 
 void DialogMsg::pbOK()
 {
-	m_status = ( int ) QMessageBox::Ok ;
+	m_status = static_cast< int >( QMessageBox::Ok ) ;
 	this->hide() ;
 }
 
 void DialogMsg::pbYes()
 {
-	m_status = ( int ) QMessageBox::Yes ;
+	m_status = static_cast< int >( QMessageBox::Yes ) ;
 	this->hide() ;
 }
 

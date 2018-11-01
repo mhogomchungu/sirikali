@@ -21,6 +21,7 @@
 #include "siritask.h"
 #include "mountinfo.h"
 #include "winfsp.h"
+#include "settings.h"
 
 #include <QDir>
 #include <QString>
@@ -37,7 +38,7 @@ static bool _create_folder( const QString& m )
 	}else{
 		if( utility::pathExists( m ) ){
 
-			return utility::reUseMountPoint() ;
+			return settings::instance().reUseMountPoint() ;
 		}else{
 			return utility::createFolder( m ) ;
 		}
@@ -82,7 +83,7 @@ static bool _deleteFolders( const T& ... m )
 
 static void _run_command_on_mount( const siritask::options& opt,const QString& app )
 {
-	auto exe = utility::runCommandOnMount() ;
+	auto exe = settings::instance().runCommandOnMount() ;
 
 	if( !exe.isEmpty() ){
 
@@ -101,7 +102,7 @@ static void _run_command_on_mount( const siritask::options& opt,const QString& a
 
 bool siritask::deleteMountFolder( const QString& m )
 {
-	if( utility::reUseMountPoint() ){
+	if( settings::instance().reUseMountPoint() ){
 
 		return false ;
 	}else{
@@ -130,7 +131,7 @@ static utility::result< utility::Task > _unmount_volume( const QString& exe,
 							 const QString& mountPoint,
 							 bool usePolkit )
 {
-	auto e = utility::preUnMountCommand() ;
+	auto e = settings::instance().preUnMountCommand() ;
 
 	int timeOut = 10000 ;
 
@@ -254,6 +255,8 @@ struct cmdArgsList
 
 class mountOptions{
 public:
+	enum class separator{ space,equal_sign } ;
+
 	class fuseOptions{
 	public:
 		fuseOptions()
@@ -270,18 +273,67 @@ public:
 		{
 			return m_options.contains( key ) ;
 		}
-		void add( const QString& key,const QString& value )
+		void addPair( const QString& key,const QString& value,separator s = separator::equal_sign )
 		{
-			this->add( key + "=" + value ) ;
-		}
-		void add( const QString& m )
-		{
-			if( m_options.isEmpty() ){
+			if( s == separator::space ){
 
-				m_options = m ;
+				this->add( key + " " + value ) ;
 			}else{
-				m_options += "," + m ;
+				this->add( key + "=" + value ) ;
 			}
+		}
+		template< typename E >
+		void add( const E& e )
+		{
+			mountOptions::add( m_options,",",e ) ;
+		}
+		template< typename E,typename ... T >
+		void add( const E& e,T&& ... m )
+		{
+			mountOptions::add( m_options,",",e,std::forward< T >( m ) ... ) ;
+		}
+		const QString& get() const
+		{
+			return m_options ;
+		}
+	private:
+		QString m_options ;
+	} ;
+
+	class exeOptions{
+	public:
+		exeOptions()
+		{
+		}
+		exeOptions( QString m ) : m_options( std::move( m ) )
+		{
+		}
+		bool doesNotContain( const QString& key ) const
+		{
+			return !this->contains( key ) ;
+		}
+		bool contains( const QString& key ) const
+		{
+			return m_options.contains( key ) ;
+		}
+		void addPair( const QString& key,const QString& value,separator s = separator::space )
+		{
+			if( s == separator::space ){
+
+				this->add( key + " " + value ) ;
+			}else{
+				this->add( key + "=" + value ) ;
+			}
+		}
+		template< typename E >
+		void add( const E& e )
+		{
+			mountOptions::add( m_options," ",e ) ;
+		}
+		template< typename E,typename ... T >
+		void add( const E& e,T&& ... m )
+		{
+			mountOptions::add( m_options," ",e,std::forward< T >( m ) ... ) ;
 		}
 		const QString& get() const
 		{
@@ -336,7 +388,7 @@ public:
 			}
 		}
 	}
-	const QString& exeOptions() const
+	mountOptions::exeOptions exeOptions() const
 	{
 		return m_exeOptions ;
 	}
@@ -365,6 +417,23 @@ private:
 	QString m_fuseOptions ;
 	QString m_type ;
 	QString m_subType ;
+
+	template< typename E >
+	static void add( QString& options,const QString& separator,E&& e )
+	{
+		if( options.isEmpty() ){
+
+			options = e ;
+		}else{
+			options += separator + e ;
+		}
+	}
+	template< typename E,typename ... T >
+	static void add( QString& options,const QString& separator,E&& e,T&& ... m )
+	{
+		mountOptions::add( options,separator,e ) ;
+		mountOptions::add( options,separator,std::forward< T >( m ) ... ) ;
+	}
 };
 
 static QString _ecryptfs( const cmdArgsList& args )
@@ -400,27 +469,51 @@ static QString _gocryptfs( const cmdArgsList& args )
 {
 	if( args.create ){
 
-		QString e = "%1 --init -q %2 %3 %4" ;
+		QString e = "%1 %2 %3" ;
 
-		auto createOptions = args.opt.createOptions ;
-		createOptions.replace( utility::reverseModeOption,"-reverse" ) ;
+		mountOptions m( args,"gocryptfs" ) ;
 
-		return e.arg( args.exe,
-			      createOptions,
-			      args.configFilePath,
-			      args.cipherFolder ) ;
+		auto exeOptions = m.exeOptions() ;
+
+		exeOptions.add( "--init","-q",args.opt.createOptions ) ;
+
+		if( !args.configFilePath.isEmpty() ){
+
+			exeOptions.add( args.configFilePath ) ;
+		}
+
+		if( args.opt.reverseMode ){
+
+			exeOptions.add( "-reverse" ) ;
+		}
+
+		return e.arg( args.exe,exeOptions.get(),args.cipherFolder ) ;
 	}else{
 		mountOptions m( args,"gocryptfs" ) ;
 
-		QString e = "%1 -q %2 %3 %4 %5 %6 %7" ;
+		QString e = "%1 %2 %3 %4 %5" ;
 
 		auto exeOptions = m.exeOptions() ;
-		exeOptions.replace( utility::reverseModeOption,"-reverse" ) ;
+
+		exeOptions.add( "-q" ) ;
+
+		if( args.opt.reverseMode ){
+
+			exeOptions.add( "-reverse" ) ;
+		}
+
+		if( !args.opt.idleTimeout.isEmpty() ){
+
+			exeOptions.addPair( "-idle",args.opt.idleTimeout ) ;
+		}
+
+		if( !args.configFilePath.isEmpty() ){
+
+			exeOptions.add( args.configFilePath ) ;
+		}
 
 		return e.arg( args.exe,
-			      exeOptions,
-			      args.opt.idleTimeout.isEmpty() ? "" : "-idle " + args.opt.idleTimeout,
-			      args.configFilePath,
+			      exeOptions.get(),
 			      args.cipherFolder,
 			      args.mountPoint,
 			      m.fuseOpts().get() ) ;
@@ -439,12 +532,22 @@ static QString _securefs( const cmdArgsList& args )
 	}else{
 		mountOptions m( args,"securefs","securefs" ) ;
 
-		QString exe = "%1 mount %2 %3 %4 %5 %6 %7" ;
+		QString exe = "%1 mount %2 %3 %4 %5" ;
+
+		auto exeOptions = m.exeOptions() ;
+
+		if( !utility::platformIsWindows() ){
+
+			exeOptions.add( "-b" ) ;
+		}
+
+		if( !args.configFilePath.isEmpty() ){
+
+			exeOptions.add( args.configFilePath ) ;
+		}
 
 		return exe.arg( args.exe,
-				m.exeOptions(),
-				utility::platformIsWindows() ? "" : "-b",
-				args.configFilePath,
+				exeOptions.get(),
 				args.cipherFolder,
 				args.mountPoint,
 				m.fuseOpts().get() ) ;
@@ -469,15 +572,29 @@ static QString _cryfs( const cmdArgsList& args )
 		}
 	}() ;
 
-	auto e = QString( "%1 %2 %3 %4 %5 %6 %7 %8 %9" ) ;
+	auto e = QString( "%1 %2 %3 %4 %5 %6" ) ;
 
 	mountOptions m( args,"cryfs","cryfs" ) ;
 
+	auto exeOptions = m.exeOptions() ;
+
+	if( !args.opt.idleTimeout.isEmpty() ){
+
+		exeOptions.addPair( "--unmount-idle",args.opt.idleTimeout ) ;
+	}
+
+	if( args.create ){
+
+		exeOptions.add( args.opt.createOptions ) ;
+	}
+
+	if( !args.configFilePath.isEmpty() ){
+
+		exeOptions.add( args.configFilePath ) ;
+	}
+
 	return e.arg( args.exe,
-		      m.exeOptions(),
-		      args.configFilePath,
-		      args.opt.idleTimeout.isEmpty() ? "" : "--unmount-idle " + args.opt.idleTimeout,
-		      args.create ? args.opt.createOptions : QString(),
+		      exeOptions.get(),
 		      args.cipherFolder,
 		      args.mountPoint,
 		      separator,
@@ -486,22 +603,41 @@ static QString _cryfs( const cmdArgsList& args )
 
 static QString _encfs( const cmdArgsList& args )
 {
-	QString e = "%1 %2 %3 %4 %5 %6 %7 %8 %9" ;
+	QString e = "%1 %2 %3 %4 %5" ;
 
 	mountOptions m( args,"encfs","encfs" ) ;
 
 	auto exeOptions = m.exeOptions() ;
-	exeOptions.replace( utility::reverseModeOption,"--reverse" ) ;
 
-	auto createOptions = args.opt.createOptions ;
-	createOptions.replace( utility::reverseModeOption,"--reverse" ) ;
+	if( args.create ){
+
+		exeOptions.add( args.opt.createOptions,"--stdinpass","--standard" ) ;
+	}else{
+		exeOptions.add( "--stdinpass" ) ;
+	}
+
+	if( args.opt.reverseMode ){
+
+		exeOptions.add( "--reverse" ) ;
+	}
+
+	if( utility::platformIsWindows() ){
+
+		exeOptions.add( "-f" ) ;
+	}
+
+	if( !args.configFilePath.isEmpty() ){
+
+		exeOptions.add( args.configFilePath ) ;
+	}
+
+	if( !args.opt.idleTimeout.isEmpty() ){
+
+		exeOptions.addPair( "-i",args.opt.idleTimeout ) ;
+	}
 
 	return e.arg( args.exe,
-		      exeOptions + " " + createOptions,
-		      args.create ? "--stdinpass --standard" : "--stdinpass",
-		      args.configFilePath,
-		      args.opt.idleTimeout.isEmpty() ? "" : "--idle=" + args.opt.idleTimeout,
-		      utility::platformIsWindows() ? "-f" : "",
+		      exeOptions.get(),
 		      args.cipherFolder,
 		      args.mountPoint,
 		      m.fuseOpts().get() ) ;
@@ -520,14 +656,20 @@ static QString _sshfs( const cmdArgsList& args )
 
 	if( fuseOptions.doesNotContain( "StrictHostKeyChecking=" ) ){
 
-		fuseOptions.add( "StrictHostKeyChecking","no" ) ;
+		fuseOptions.addPair( "StrictHostKeyChecking","no" ) ;
 	}
 
-	QString s = "%1 %2 %3 %4 %5 %6" ;
+	auto exeOptions = m.exeOptions() ;
+
+	if( utility::platformIsWindows() ){
+
+		exeOptions.add( "-f" ) ;
+	}
+
+	QString s = "%1 %2 %3 %4 %5" ;
 
 	return s.arg( args.exe,
-		      m.exeOptions(),
-		      utility::platformIsWindows() ? "-f" : "",
+		      exeOptions.get(),
 		      args.cipherFolder,
 		      args.mountPoint,
 		      fuseOptions.get() ) ;
@@ -1056,26 +1198,7 @@ static siritask::cmdStatus _encrypted_folder_create( const siritask::options& op
 
 				if( opt.type.isOneOf( "gocryptfs","securefs" ) ){
 
-					auto e = [ & ](){
-
-						if( opt.createOptions.contains( utility::reverseModeOption ) &&
-								opt.type == "gocryptfs" ){
-
-							auto opts = opt ;
-
-							if( opts.mountOptions.isEmpty() ){
-
-								opts.mountOptions = utility::reverseModeOption ;
-							}else{
-								opts.mountOptions += "," + utility::reverseModeOption ;
-							}
-
-
-							return siritask::encryptedFolderMount( opts,true ).get() ;
-						}else{
-							return siritask::encryptedFolderMount( opt,true ).get() ;
-						}
-					}() ;
+					auto e = siritask::encryptedFolderMount( opt,true ).get() ;
 
 					if( e != cs::success ){
 

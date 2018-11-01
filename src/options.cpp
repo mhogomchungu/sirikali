@@ -23,11 +23,12 @@
 
 #include "utility.h"
 #include "utility2.h"
+#include "settings.h"
 
 #include <QFileDialog>
 
-options::options( QWidget * parent,bool r,const QStringList& l,
-		  std::function< void( const QStringList& ) >&& e ) :
+options::options( QWidget * parent,bool r,const Options& l,
+		  std::function< void( const Options& ) >&& e ) :
 	QDialog( parent ),
 	m_ui( new Ui::options ),
 	m_create( r ),
@@ -52,11 +53,9 @@ options::options( QWidget * parent,bool r,const QStringList& l,
 	QString mountOptions ;
 	QString type ;
 
-	utility2::stringListToStrings( l,idleTimeOut,configFilePath,mountOptions,type ) ;
+	utility2::stringListToStrings( l.options,idleTimeOut,configFilePath,mountOptions,type ) ;
 
-	m_ui->checkBox->setChecked( mountOptions.contains( utility::reverseModeOption ) ) ;
-
-	mountOptions = utility::removeOption( mountOptions,utility::reverseModeOption ) ;
+	m_ui->checkBox->setChecked( l.reverseMode ) ;
 
 	m_type = type.toLower() ;
 
@@ -65,7 +64,7 @@ options::options( QWidget * parent,bool r,const QStringList& l,
 	m_ui->lineEditMountOptions->setText( mountOptions ) ;
 
 	utility::setWindowOptions( this ) ;
-	utility::setParent( parent,&m_parentWidget,this ) ;
+	settings::instance().setParent( parent,&m_parentWidget,this ) ;
 
 	this->show() ;
 	this->raise() ;
@@ -97,7 +96,7 @@ void options::pushButton()
 
 			dialog.setFileMode( QFileDialog::AnyFile ) ;
 
-			dialog.setDirectory( utility::homePath() ) ;
+			dialog.setDirectory( settings::instance().homePath() ) ;
 
 			dialog.setAcceptMode( QFileDialog::AcceptSave ) ;
 
@@ -141,7 +140,7 @@ void options::pushButton()
 		}else{
 			return QFileDialog::getOpenFileName( this,
 							     tr( "Select Cryfs/Gocryptfs Configuration File" ),
-							     utility::homePath() ) ;
+							     settings::instance().homePath() ) ;
 		}
 	}() ;
 
@@ -180,17 +179,7 @@ void options::pbSet()
 
 		auto m = m_ui->lineEditMountOptions->text() ;
 
-		if( m_ui->checkBox->isChecked() ){
-
-			if( m.isEmpty() ){
-
-				m = utility::reverseModeOption ;
-			}else{
-				m += "," + utility::reverseModeOption ;
-			}
-		}
-
-		m_setOptions( { e,m_ui->lineConfigFilePath->text(),m } ) ;
+		m_setOptions( { { e,m_ui->lineConfigFilePath->text(),m },m_ui->checkBox->isChecked() } ) ;
 
 		this->deleteLater() ;
 	}
@@ -199,9 +188,7 @@ void options::pbSet()
 void options::pbCancel()
 {
 	this->hide() ;
-
-	m_setOptions( QStringList() ) ;
-
+	m_setOptions( { {},false } ) ;
 	this->deleteLater() ;
 }
 

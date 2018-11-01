@@ -24,7 +24,7 @@
 #include "task.hpp"
 
 cryfscreateoptions::cryfscreateoptions( QWidget * parent,
-					std::function< void( const QStringList& ) > function ) :
+					std::function< void( const Options& ) > function ) :
 	QDialog( parent ),
 	m_ui( new Ui::cryfscreateoptions ),
 	m_function( std::move( function ) )
@@ -96,7 +96,7 @@ void cryfscreateoptions::pbOK()
 		}
 	}() ;
 
-	this->HideUI( { e,m_ui->lineEdit_2->text() } ) ;
+	this->HideUI( { { e,m_ui->lineEdit_2->text() } } ) ;
 }
 
 void cryfscreateoptions::pbCancel()
@@ -104,12 +104,10 @@ void cryfscreateoptions::pbCancel()
 	this->HideUI() ;
 }
 
-void cryfscreateoptions::HideUI( const QStringList& e )
+void cryfscreateoptions::HideUI( const Options& opts )
 {
 	this->hide() ;
-
-	m_function( e ) ;
-
+	m_function( opts ) ;
 	this->deleteLater() ;
 }
 

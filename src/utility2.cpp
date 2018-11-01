@@ -18,37 +18,3 @@
  */
 
 #include "utility2.h"
-#include "utility.h"
-
-#include <QByteArray>
-#include <QTranslator>
-
-#include <QCoreApplication>
-
-void utility2::translator::setLanguage( const QByteArray& e )
-{
-	QCoreApplication::installTranslator( [ & ](){
-
-		this->clear() ;
-
-		m_translator = new QTranslator() ;
-
-		m_translator->load( e.constData(),utility::localizationLanguagePath() ) ;
-
-		return m_translator ;
-	}() ) ;
-}
-
-utility2::translator::~translator()
-{
-	this->clear() ;
-}
-
-void utility2::translator::clear()
-{
-	if( m_translator ){
-
-		QCoreApplication::removeTranslator( m_translator ) ;
-		delete m_translator ;
-	}
-}

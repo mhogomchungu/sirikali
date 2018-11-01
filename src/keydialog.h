@@ -215,6 +215,7 @@ private :
 	bool m_checked = false ;
 	bool m_hmac ;
 	bool m_closeGUI = false ;
+	bool m_reverseMode = false ;
 
 	secrets& m_secrets ;
 

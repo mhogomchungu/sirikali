@@ -39,6 +39,8 @@ class favorites : public QDialog
 {
 	Q_OBJECT
 public:
+	static constexpr const char * reverseModeOption = "-SiriKaliReverseMode" ;
+
 	struct entry
 	{
 		entry()
@@ -109,7 +111,8 @@ public:
 				this->autoMountVolume == other.autoMountVolume &&
 				this->configFilePath  == other.configFilePath &&
 				this->idleTimeOut     == other.idleTimeOut &&
-				this->mountOptions    == other.mountOptions ;
+				this->mountOptions    == other.mountOptions &&
+				this->reverseMode     == other.reverseMode ;
 		}
 
 		bool autoMount() const
@@ -123,10 +126,17 @@ public:
 		QString configFilePath ;
 		QString idleTimeOut ;
 		QString mountOptions ;
-
+		bool reverseMode ;
 	private:
-		void config( const QStringList& e )
+		void config( QStringList e )
 		{
+			reverseMode = e.contains( reverseModeOption ) ;
+
+			if( reverseMode ){
+
+				e.removeAll( reverseModeOption ) ;
+			}
+
 			utility2::stringListToStrings( e,
 						      volumePath,
 						      mountPointPath,
@@ -134,6 +144,9 @@ public:
 						      configFilePath,
 						      idleTimeOut,
 						      mountOptions ) ;
+
+
+			mountOptions.replace( reverseModeOption,"" ) ;
 
 			if( configFilePath == "N/A" ){
 

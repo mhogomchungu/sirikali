@@ -36,6 +36,7 @@
 #include "plugin.h"
 #include "crypto.h"
 #include "configfileoption.h"
+#include "settings.h"
 
 static QString _kwallet()
 {
@@ -74,7 +75,7 @@ keyDialog::keyDialog( QWidget * parent,
 {
 	m_ui->setupUi( this ) ;
 
-	utility::setParent( parent,&m_parentWidget,this ) ;
+	settings::instance().setParent( parent,&m_parentWidget,this ) ;
 	utility::setWindowOptions( this ) ;
 
 	this->setFont( parent->font() ) ;
@@ -120,7 +121,7 @@ keyDialog::keyDialog( QWidget * parent,
 {
 	m_ui->setupUi( this ) ;
 
-	utility::setParent( parent,&m_parentWidget,this ) ;
+	settings::instance().setParent( parent,&m_parentWidget,this ) ;
 	utility::setWindowOptions( this ) ;
 
 	this->setFont( parent->font() ) ;
@@ -151,7 +152,7 @@ void keyDialog::setUpInitUI()
 		m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
 	}
 
-	m_reUseMountPoint = utility::reUseMountPoint() ;
+	m_reUseMountPoint = settings::instance().reUseMountPoint() ;
 
 	m_checkBoxOriginalText = m_ui->checkBoxOpenReadOnly->text() ;
 
@@ -195,10 +196,10 @@ void keyDialog::setUpInitUI()
 
 			//m_ui->lineEditFolderPath->setText( "Z:" ) ;
 			//utility::setWindowsMountPointOptions( this,m_ui->lineEditFolderPath,m_ui->pbOpenFolderPath ) ;
-			m_ui->lineEditFolderPath->setText( utility::homePath() + "/Desktop/" ) ;
+			m_ui->lineEditFolderPath->setText( settings::instance().homePath() + "/Desktop/" ) ;
 			//m_ui->pbOpenFolderPath->setIcon( QIcon( ":/folder.png" ) ) ;
 		}else{
-			m_ui->lineEditFolderPath->setText( utility::homePath() + "/" ) ;
+			m_ui->lineEditFolderPath->setText( settings::instance().homePath() + "/" ) ;
 		}
 
 		m_ui->lineEditMountPoint->setFocus() ;
@@ -224,7 +225,7 @@ void keyDialog::setUpInitUI()
 
 	this->setFixedSize( this->size() ) ;
 
-	m_ui->checkBoxOpenReadOnly->setChecked( utility::getOpenVolumeReadOnlyOption() ) ;
+	m_ui->checkBoxOpenReadOnly->setChecked( settings::instance().getOpenVolumeReadOnlyOption() ) ;
 
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
 
@@ -277,7 +278,7 @@ void keyDialog::setUpInitUI()
 
 	m_ui->checkBoxVisibleKey->setToolTip( tr( "Check This Box To Make Password Visible" ) ) ;
 
-	m_ui->checkBoxVisibleKey->setEnabled( utility::enableRevealingPasswords() ) ;
+	m_ui->checkBoxVisibleKey->setEnabled( settings::instance().enableRevealingPasswords() ) ;
 }
 
 void keyDialog::setVolumeToUnlock()
@@ -300,7 +301,7 @@ void keyDialog::setVolumeToUnlock()
 void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key )
 {
 	m_path         = e.volumePath() ;
-
+	m_reverseMode  = e.reverseMode() ;
 	m_configFile   = e.configFilePath() ;
 	m_idleTimeOut  = e.idleTimeOut() ;
 	m_mountOptions = e.mountOptions() ;
@@ -365,12 +366,12 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 				if( m.isEmpty() ){
 
-					return utility::mountPath( m_path.split( "/" ).last() ) ;
+					return settings::instance().mountPath( m_path.split( "/" ).last() ) ;
 				}else{
-					return utility::mountPath( m.split( "/" ).last() ) ;
+					return settings::instance().mountPath( m.split( "/" ).last() ) ;
 				}
 			}else{
-				return utility::mountPath( [ &m,this ](){
+				return settings::instance().mountPath( [ &m,this ](){
 
 					if( m.isEmpty() ){
 
@@ -452,9 +453,12 @@ void keyDialog::pbOptions()
 
 			this->hide() ;
 
-			ecryptfscreateoptions::instance( this,[ this ]( const QStringList& e ){
+			ecryptfscreateoptions::instance( this,[ this ]( const ecryptfscreateoptions::Options& e ){
 
-				utility2::stringListToStrings( e,m_createOptions,m_configFile ) ;
+				if( e.success ){
+
+					utility2::stringListToStrings( e.options,m_createOptions,m_configFile ) ;
+				}
 
 				this->ShowUI() ;
 			} ) ;
@@ -463,9 +467,14 @@ void keyDialog::pbOptions()
 
 			this->hide() ;
 
-			gocryptfscreateoptions::instance( m_parentWidget,[ this ]( const QStringList& e ){
+			gocryptfscreateoptions::instance( m_parentWidget,[ this ]( const gocryptfscreateoptions::Options& e ){
 
-				utility2::stringListToStrings( e,m_createOptions,m_configFile ) ;
+				if( e.success ){
+
+					m_reverseMode = e.reverseMode ;
+
+					utility2::stringListToStrings( e.options,m_createOptions,m_configFile ) ;
+				}
 
 				this->ShowUI() ;
 			} ) ;
@@ -474,9 +483,12 @@ void keyDialog::pbOptions()
 
 			this->hide() ;
 
-			securefscreateoptions::instance( m_parentWidget,[ this ]( const QStringList& e ){
+			securefscreateoptions::instance( m_parentWidget,[ this ]( const securefscreateoptions::Options& e ){
 
-				utility2::stringListToStrings( e,m_createOptions,m_configFile ) ;
+				if( e.success ){
+
+					utility2::stringListToStrings( e.options,m_createOptions,m_configFile ) ;
+				}
 
 				this->ShowUI() ;
 			} ) ;
@@ -485,9 +497,12 @@ void keyDialog::pbOptions()
 
 			this->hide() ;
 
-			cryfscreateoptions::instance( m_parentWidget,[ this ]( const QStringList& e ){
+			cryfscreateoptions::instance( m_parentWidget,[ this ]( const cryfscreateoptions::Options& e ){
 
-				utility2::stringListToStrings( e,m_createOptions,m_configFile ) ;
+				if( e.success ){
+
+					utility2::stringListToStrings( e.options,m_createOptions,m_configFile ) ;
+				}
 
 				this->ShowUI() ;
 			} ) ;
@@ -496,9 +511,12 @@ void keyDialog::pbOptions()
 
 			this->hide() ;
 
-			encfscreateoptions::instance( m_parentWidget,[ this ]( const QStringList& e ){
+			encfscreateoptions::instance( m_parentWidget,[ this ]( const encfscreateoptions::Options& e ){
 
-				utility2::stringListToStrings( e,m_createOptions,m_configFile ) ;
+				if( e.success ){
+
+					m_reverseMode = e.reverseMode ;
+				}
 
 				this->ShowUI() ;
 			} ) ;
@@ -508,20 +526,23 @@ void keyDialog::pbOptions()
 
 			m_checked = true ;
 
-			auto f = utility::readFavorite( m_path ) ;
+			auto f = settings::instance().readFavorite( m_path ) ;
 
 			m_idleTimeOut  = f.idleTimeOut ;
 			m_configFile   = f.configFilePath ;
 			m_mountOptions = f.mountOptions ;
+			m_reverseMode  = f.reverseMode ;
 		}
 
-		QStringList e{ m_idleTimeOut,m_configFile,m_mountOptions,m_exe } ;
+		options::Options e{ { m_idleTimeOut,m_configFile,m_mountOptions,m_exe },m_reverseMode } ;
 
 		this->hide() ;
 
-		options::instance( m_parentWidget,m_create,e,[ this ]( const QStringList& e ){
+		options::instance( m_parentWidget,m_create,e,[ this ]( const options::Options& e ){
 
-			utility2::stringListToStrings( e,m_idleTimeOut,m_configFile,m_mountOptions ) ;
+			m_reverseMode = e.reverseMode ;
+
+			utility2::stringListToStrings( e.options,m_idleTimeOut,m_configFile,m_mountOptions ) ;
 
 			if( m_ui->lineEditKey->text().isEmpty() ){
 
@@ -568,7 +589,7 @@ void keyDialog::cbMountReadOnlyStateChanged( int state )
 		return ;
 	}
 
-	auto e = utility::setOpenVolumeReadOnly( this,state == Qt::Checked ) ;
+	auto e = settings::instance().setOpenVolumeReadOnly( this,state == Qt::Checked ) ;
 
 	m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
 	m_ui->checkBoxOpenReadOnly->setChecked( e ) ;
@@ -607,7 +628,7 @@ void keyDialog::textChanged( QString e )
 void keyDialog::pbMountPointPath()
 {
 	auto msg = tr( "Select A Folder To Create A Mount Point In." ) ;
-	auto e = utility::getExistingDirectory( this,msg,utility::homePath() ) ;
+	auto e = utility::getExistingDirectory( this,msg,settings::instance().homePath() ) ;
 
 	if( !e.isEmpty() ){
 
@@ -620,7 +641,7 @@ void keyDialog::pbMountPointPath()
 void keyDialog::pbFolderPath()
 {
 	auto msg = tr( "Select A Folder To Create A Mount Point In." ) ;
-	auto e = utility::getExistingDirectory( this,msg,utility::homePath() ) ;
+	auto e = utility::getExistingDirectory( this,msg,settings::instance().homePath() ) ;
 
 	if( !e.isEmpty() ){
 
@@ -649,7 +670,7 @@ void keyDialog::enableAll()
 
 	m_ui->pbkeyOption->setEnabled( enable ) ;
 
-	if( utility::enableRevealingPasswords() ){
+	if( settings::instance().enableRevealingPasswords() ){
 
 		m_ui->checkBoxVisibleKey->setEnabled( index == keyDialog::Key ) ;
 	}
@@ -720,7 +741,7 @@ void keyDialog::KeyFile()
 	if( m_ui->cbKeyType->currentIndex() == keyDialog::keyfile ){
 
 		auto msg = tr( "Select A File To Be Used As A Keyfile." ) ;
-		auto e = QFileDialog::getOpenFileName( this,msg,utility::homePath() ) ;
+		auto e = QFileDialog::getOpenFileName( this,msg,settings::instance().homePath() ) ;
 
 		if( !e.isEmpty() ){
 
@@ -734,7 +755,7 @@ void keyDialog::KeyFile()
 void keyDialog::pbkeyOption()
 {
 	auto msg = tr( "Select A File To Be Used As A Keyfile." ) ;
-	auto e = QFileDialog::getOpenFileName( this,msg,utility::homePath() ) ;
+	auto e = QFileDialog::getOpenFileName( this,msg,settings::instance().homePath() ) ;
 
 	if( !e.isEmpty() ){
 
@@ -851,7 +872,7 @@ void keyDialog::pbOpen()
 
 void keyDialog::openMountPoint( const QString& m )
 {
-	if( utility::autoOpenFolderOnMount() ){
+	if( settings::instance().autoOpenFolderOnMount() ){
 
 		utility::Task::exec( m_fileManagerOpen + " " + utility::Task::makePath( m ) ) ;
 	}
@@ -1062,7 +1083,7 @@ void keyDialog::encryptedFolderCreate()
 			return this->enableAll() ;
 		}
 	}else{
-		m = utility::mountPath( utility::mountPathPostFix( m ) ) ;
+		m = settings::instance().mountPath( utility::mountPathPostFix( m ) ) ;
 
 		if( utility::pathExists( m ) && !m_reUseMountPoint ){
 
@@ -1093,8 +1114,8 @@ void keyDialog::encryptedFolderCreate()
 
 	m_working = true ;
 
-	siritask::options s{ path,m,m_key,m_idleTimeOut,m_configFile,
-			     m_exe.toLower(),false,m_mountOptions,m_createOptions } ;
+	siritask::options s( path,m,m_key,m_idleTimeOut,m_configFile,
+			     m_exe.toLower(),false,m_reverseMode,m_mountOptions,m_createOptions ) ;
 
 	auto e = siritask::encryptedFolderCreate( s ).await() ;
 
@@ -1125,7 +1146,9 @@ void keyDialog::encryptedFolderCreate()
 
 void keyDialog::pbSetKeyKeyFile()
 {
-	m_ui->lineEditSetKeyKeyFile->setText( QFileDialog::getOpenFileName( this,tr( "KeyFile" ),utility::homePath(),nullptr ) ) ;
+	auto m = settings::instance().homePath() ;
+	auto a = QFileDialog::getOpenFileName( this,tr( "KeyFile" ),m,nullptr ) ;
+	m_ui->lineEditSetKeyKeyFile->setText( a ) ;
 }
 
 void keyDialog::pbSetKey()
@@ -1141,7 +1164,7 @@ void keyDialog::pbSetKey()
 
 			return crypto::hmac_key( keyFile,passphrase ) ;
 		}else{
-			auto exe = utility::externalPluginExecutable() ;
+			auto exe = settings::instance().externalPluginExecutable() ;
 
 			if( exe.isEmpty() ){
 
@@ -1279,7 +1302,7 @@ void keyDialog::encryptedFolderMount()
 
 	m_working = true ;
 
-	siritask::options s{ m_path,m,m_key,m_idleTimeOut,m_configFile,m_exe,ro,m_mountOptions,QString() } ;
+	siritask::options s{ m_path,m,m_key,m_idleTimeOut,m_configFile,m_exe,ro,m_reverseMode,m_mountOptions,QString() } ;
 
 	auto e = siritask::encryptedFolderMount( s ).await() ;
 
@@ -1395,7 +1418,7 @@ void keyDialog::cbActicated( QString e )
 
 	auto _showVisibleKeyOption = [ this ]( bool e ){
 
-		bool s = utility::enableRevealingPasswords() ;
+		bool s = settings::instance().enableRevealingPasswords() ;
 		m_ui->checkBoxVisibleKey->setEnabled( e && s ) ;
 		m_ui->checkBoxVisibleKey->setChecked( false ) ;
 		m_ui->checkBoxVisibleKey->setVisible( e ) ;

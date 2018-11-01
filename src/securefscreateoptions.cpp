@@ -23,7 +23,7 @@
 #include "utility.h"
 
 securefscreateoptions::securefscreateoptions( QWidget * parent,
-					      std::function< void( const QStringList& ) > function ) :
+					      std::function< void( const Options& ) > function ) :
 	QDialog( parent ),
 	m_ui( new Ui::securefscreateoptions ),
 	m_function( std::move( function ) )
@@ -61,19 +61,15 @@ void securefscreateoptions::pbOK()
 
 	if( m_ui->comboBox->currentIndex() == 1 ){
 
-		m_function( { "--format 2",m_ui->lineEdit->text() } ) ;
+		this->HideUI( { { "--format 2",m_ui->lineEdit->text() } } ) ;
 	}else{
-		m_function( {"--format 4",m_ui->lineEdit->text() } ) ;
+		this->HideUI( { { "--format 4",m_ui->lineEdit->text() } } ) ;
 	}
-
-	this->deleteLater() ;
 }
 
 void securefscreateoptions::pbCancel()
 {
-	this->hide() ;
-	m_function( {} ) ;
-	this->deleteLater() ;
+	this->HideUI() ;
 }
 
 void securefscreateoptions::pbConfigFilePath()
@@ -81,9 +77,10 @@ void securefscreateoptions::pbConfigFilePath()
 	m_ui->lineEdit->setText( utility::configFilePath( this,"securefs" ) ) ;
 }
 
-void securefscreateoptions::HideUI()
+void securefscreateoptions::HideUI( const Options& opts )
 {
 	this->hide() ;
+	m_function( opts ) ;
 	this->deleteLater() ;
 }
 

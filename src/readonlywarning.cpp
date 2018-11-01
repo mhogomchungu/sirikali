@@ -21,6 +21,7 @@
 #include "ui_readonlywarning.h"
 
 #include "utility.h"
+#include "settings.h"
 
 #include <QDir>
 
@@ -29,7 +30,7 @@
 
 bool readOnlyWarning::getOpenVolumeReadOnlyOption()
 {
-	return utility::readOnlyWarning() ;
+	return settings::instance().readOnlyWarning() ;
 }
 
 readOnlyWarning::readOnlyWarning( QWidget * parent,bool checked ) :
@@ -57,17 +58,17 @@ void readOnlyWarning::pbOK()
 
 void readOnlyWarning::checkBoxChecked( bool checked )
 {
-	utility::doNotShowReadOnlyWarning( checked ) ;
+	settings::instance().doNotShowReadOnlyWarning( checked ) ;
 }
 
 void readOnlyWarning::setReadOnlyOption( bool readOnly )
 {
-	utility::readOnlyWarning( readOnly ) ;
+	settings::instance().readOnlyWarning( readOnly ) ;
 }
 
 bool readOnlyWarning::showUIwarning()
 {
-	return utility::doNotShowReadOnlyWarning() ;
+	return settings::instance().doNotShowReadOnlyWarning() ;
 }
 
 bool readOnlyWarning::eventFilter( QObject * watched,QEvent * event )

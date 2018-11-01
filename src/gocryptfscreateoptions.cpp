@@ -24,7 +24,7 @@
 #include "task.hpp"
 
 gocryptfscreateoptions::gocryptfscreateoptions( QWidget * parent,
-					std::function< void( const QStringList& ) > function ) :
+					std::function< void( const Options& ) > function ) :
 	QDialog( parent ),
 	m_ui( new Ui::gocryptfscreateoptions ),
 	m_function( std::move( function ) )
@@ -80,17 +80,11 @@ void gocryptfscreateoptions::pbOK()
 		}
 	}() ;
 
-	auto c = [ this ](){
+	auto c = { QString( "%1 %2" ).arg( a,b ),m_ui->lineEdit_2->text() } ;
 
-		if( m_ui->checkBox->isChecked() ){
+	auto d = m_ui->checkBox->isChecked() ;
 
-			return utility::reverseModeOption ;
-		}else{
-			return QString() ;
-		}
-	}() ;
-
-	this->HideUI( { QString( "%1 %2 %3" ).arg( a,b,c ),m_ui->lineEdit_2->text() } ) ;
+	this->HideUI( { { c },d } ) ;
 }
 
 void gocryptfscreateoptions::pbCancel()
@@ -98,12 +92,10 @@ void gocryptfscreateoptions::pbCancel()
 	this->HideUI() ;
 }
 
-void gocryptfscreateoptions::HideUI( const QStringList& e )
+void gocryptfscreateoptions::HideUI( const Options& opts )
 {
 	this->hide() ;
-
-	m_function( e ) ;
-
+	m_function( opts ) ;
 	this->deleteLater() ;
 }
 

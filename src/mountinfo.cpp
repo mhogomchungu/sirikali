@@ -22,6 +22,7 @@
 #include "siritask.h"
 #include "task.hpp"
 #include "winfsp.h"
+#include "settings.h"
 
 #include <QMetaObject>
 #include <QtGlobal>
@@ -387,7 +388,7 @@ void mountinfo::pollForUpdates()
 
 	m_stop = [ this ](){ m_exit = true ; } ;
 
-	auto interval = utility::pollForUpdatesInterval() ;
+	auto interval = settings::instance().pollForUpdatesInterval() ;
 
 	Task::run( [ &,interval ](){
 

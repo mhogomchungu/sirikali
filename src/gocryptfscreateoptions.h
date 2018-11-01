@@ -35,21 +35,33 @@ class gocryptfscreateoptions : public QDialog
 {
 	Q_OBJECT
 public:
-	static void instance( QWidget * parent,std::function< void( const QStringList& ) > function )
+	struct Options{
+		Options( const QStringList& s,bool r ) :
+			options( s ),reverseMode( r ),success( true )
+		{
+		}
+		Options() : success( false )
+		{
+		}
+		QStringList options ;
+		bool reverseMode ;
+		bool success ;
+	} ;
+	static void instance( QWidget * parent,std::function< void( const Options& ) > function )
 	{
                 new gocryptfscreateoptions( parent,std::move( function ) ) ;
 	}
-        gocryptfscreateoptions( QWidget * parent,std::function< void( const QStringList& ) > ) ;
+	gocryptfscreateoptions( QWidget * parent,std::function< void( const Options& ) > ) ;
         ~gocryptfscreateoptions() ;
 private slots:
 	void pbSelectConfigPath() ;
 	void pbOK() ;
 	void pbCancel() ;
 private:
-	void HideUI( const QStringList& = QStringList() ) ;
+	void HideUI( const Options& = Options() ) ;
 	void closeEvent( QCloseEvent * ) ;
         Ui::gocryptfscreateoptions * m_ui ;
-	std::function< void( const QStringList& ) > m_function ;
+	std::function< void( const Options& ) > m_function ;
 };
 
 #endif // GOCRYPTFSCREATEOPTIONS_H

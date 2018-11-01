@@ -39,6 +39,7 @@
 #include "checkforupdates.h"
 #include "configoptions.h"
 #include "debugwindow.h"
+#include "settings.h"
 
 #include <vector>
 
@@ -136,7 +137,7 @@ private:
 
 	secrets m_secrets ;
 
-	utility2::translator m_translator ;
+	settings::translator m_translator ;
 
 	QMenu * m_hidden_volume_menu = nullptr ;
 	QMenu * m_not_hidden_volume_menu = nullptr ;

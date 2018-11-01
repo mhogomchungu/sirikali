@@ -208,16 +208,6 @@ namespace utility2
 
 		return QString() ;
 	}
-
-	class translator
-	{
-	public:
-		void setLanguage( const QByteArray& e ) ;
-		~translator() ;
-	private:
-		void clear( void ) ;
-		QTranslator * m_translator = nullptr ;
-	} ;
 }
 
 #endif
