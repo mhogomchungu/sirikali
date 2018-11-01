@@ -985,7 +985,7 @@ QString utility::readPassword( bool addNewLine )
 	QString s ;
 	int e ;
 
-	int m = _readPasswordMaximumLength() ;
+	int m = settings::instance().readPasswordMaximumLength() ;
 
 	for( int i = 0 ; i < m ; i++ ){
 
