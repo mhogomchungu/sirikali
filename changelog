@@ -143,3 +143,6 @@ version 1.3.6(October 1st,2018)
 -- Add a GUI way to create and unlock gocryptfs and encfs volumes in reverse mode.
 -- Fix a bug in windows that allowed more than once instance to run.
 -- Create drive letters on Windows with a label equals to the name of the cipher folder when unlocking volumes.
+
+version 1.3.7(unreleased)
+-- Add support for gocryptfs "idle" option.

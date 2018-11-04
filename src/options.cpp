@@ -160,14 +160,8 @@ void options::pbSet()
 {
 	auto e = m_ui->lineEditIdleTime->text() ;
 
-	bool ok = true ;
-
-	if( !e.isEmpty() ){
-
-		e.toInt( &ok ) ;
-	}
-
 	auto m = m_ui->lineEditMountOptions->text() ;
+
 	this->Hide( { { e,m_ui->lineConfigFilePath->text(),m },m_ui->checkBox->isChecked() } ) ;
 }
 
