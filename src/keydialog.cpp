@@ -540,15 +540,18 @@ void keyDialog::pbOptions()
 
 		options::instance( m_parentWidget,m_create,e,[ this ]( const options::Options& e ){
 
-			m_reverseMode = e.reverseMode ;
+			if( e.success ){
 
-			utility2::stringListToStrings( e.options,m_idleTimeOut,m_configFile,m_mountOptions ) ;
+				m_reverseMode = e.reverseMode ;
 
-			if( m_ui->lineEditKey->text().isEmpty() ){
+				utility2::stringListToStrings( e.options,m_idleTimeOut,m_configFile,m_mountOptions ) ;
 
-				m_ui->lineEditKey->setFocus() ;
-			}else{
-				m_ui->pbOpen->setFocus() ;
+				if( m_ui->lineEditKey->text().isEmpty() ){
+
+					m_ui->lineEditKey->setFocus() ;
+				}else{
+					m_ui->pbOpen->setFocus() ;
+				}
 			}
 
 			this->ShowUI() ;

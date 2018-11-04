@@ -167,28 +167,19 @@ void options::pbSet()
 		e.toInt( &ok ) ;
 	}
 
-	if( !ok ){
-
-		this->hide() ;
-
-		DialogMsg( m_parentWidget,this ).ShowUIOK( tr( "ERROR" ),tr( "Idle Time Field Requires Digits Only If Not Empty." ) ) ;
-
-		this->show() ;
-	}else{
-		this->hide() ;
-
-		auto m = m_ui->lineEditMountOptions->text() ;
-
-		m_setOptions( { { e,m_ui->lineConfigFilePath->text(),m },m_ui->checkBox->isChecked() } ) ;
-
-		this->deleteLater() ;
-	}
+	auto m = m_ui->lineEditMountOptions->text() ;
+	this->Hide( { { e,m_ui->lineConfigFilePath->text(),m },m_ui->checkBox->isChecked() } ) ;
 }
 
 void options::pbCancel()
 {
+	this->Hide() ;
+}
+
+void options::Hide( const Options& e )
+{
 	this->hide() ;
-	m_setOptions( { {},false } ) ;
+	m_setOptions( e ) ;
 	this->deleteLater() ;
 }
 
