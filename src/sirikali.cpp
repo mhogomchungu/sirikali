@@ -80,9 +80,17 @@ sirikali::sirikali() :
 	m_mountInfo( this,true,[ & ](){ QCoreApplication::exit( m_exitStatus ) ; } ),
 	m_checkUpdates( this ),
 	m_configOptions( this,m_secrets,&m_language_menu,this->configOption() ),
-	m_debugWindow()
+	m_debugWindow(),
+	m_signalHandler( this )
 {
 	utility::setDebugWindow( &m_debugWindow ) ;
+
+	m_signalHandler.setAction( [ this ]( systemSignalHandler::signal s ){
+
+		Q_UNUSED( s ) ;
+
+		this->emergencyShutDown() ;
+	} ) ;
 }
 
 configOptions::functions sirikali::configOption()
@@ -1634,6 +1642,35 @@ void sirikali::pbUmount()
 			this->enableAll() ;
 		}
 	}
+}
+
+void sirikali::emergencyShutDown()
+{
+	this->hide() ;
+
+	m_mountInfo.announceEvents( false ) ;
+
+	auto table = m_ui->tableWidget ;
+
+	const auto cipherFolders = tablewidget::columnEntries( table,0 ) ;
+	const auto mountPoints   = tablewidget::columnEntries( table,1 ) ;
+	const auto fileSystems   = tablewidget::columnEntries( table,2 ) ;
+
+	for( auto r = cipherFolders.size() - 1 ; r >= 0 ; r-- ){
+
+		const auto& a = cipherFolders.at( r ) ;
+		const auto& b = mountPoints.at( r ) ;
+		const auto& c = fileSystems.at( r ) ;
+
+		if( siritask::encryptedFolderUnMount( a,b,c ).await() ){
+
+			tablewidget::deleteRow( table,b,1 ) ;
+
+			siritask::deleteMountFolder( b ) ;
+		}
+	}
+
+	this->closeApplication( 0,"Emergency shut down" ) ;
 }
 
 void sirikali::unMountAll()

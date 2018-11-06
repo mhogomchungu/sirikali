@@ -40,6 +40,7 @@
 #include "configoptions.h"
 #include "debugwindow.h"
 #include "settings.h"
+#include "systemsignalhandler.h"
 
 #include <vector>
 
@@ -88,6 +89,7 @@ private slots:
 	void createVolume( QAction * = nullptr ) ;
 	void slotMount( void ) ;
 	void unMountAll( void ) ;
+	void emergencyShutDown( void ) ;
 	void unMountAllAndQuit( void ) ;
 	void pbUmount( void ) ;
 	void slotTrayClicked( QSystemTrayIcon::ActivationReason = QSystemTrayIcon::Trigger ) ;
@@ -169,6 +171,8 @@ private:
 	configOptions m_configOptions ;
 
 	debugWindow m_debugWindow ;
+
+	systemSignalHandler m_signalHandler ;
 };
 
 #endif // MAINWINDOW_H
