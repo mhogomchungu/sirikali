@@ -1662,7 +1662,7 @@ void sirikali::emergencyShutDown()
 		const auto& b = mountPoints.at( r ) ;
 		const auto& c = fileSystems.at( r ) ;
 
-		if( siritask::encryptedFolderUnMount( a,b,c ).await() ){
+		if( siritask::encryptedFolderUnMount( a,b,c,1 ).await() ){
 
 			tablewidget::deleteRow( table,b,1 ) ;
 

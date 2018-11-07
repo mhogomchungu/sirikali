@@ -148,6 +148,30 @@ static utility::result< utility::Task > _unmount_volume( const QString& exe,
 	}
 }
 
+template< typename Function >
+static bool _unmount_ecryptfs_( Function cmd,const QString& mountPoint,bool& not_set )
+{
+	auto s = _unmount_volume( cmd(),mountPoint,true ) ;
+
+	if( s && s.value().success() ){
+
+		return true ;
+	}else{
+		if( not_set && s.value().stdError().contains( "error: failed to set gid" ) ){
+
+			not_set = false ;
+
+			if( utility::enablePolkit( utility::background_thread::True ) ){
+
+				auto s = _unmount_volume( cmd(),mountPoint,true ) ;
+				return s && s.value().success() ;
+			}
+		}
+
+		return false ;
+	}
+}
+
 static bool _unmount_ecryptfs( const QString& cipherFolder,const QString& mountPoint,int maxCount )
 {
 	bool not_set = true ;
@@ -166,29 +190,29 @@ static bool _unmount_ecryptfs( const QString& cipherFolder,const QString& mountP
 		}
 	} ;
 
-	for( int i = 0 ; i < maxCount ; i++ ){
+	if( _unmount_ecryptfs_( cmd,mountPoint,not_set ) ){
 
-		auto s = _unmount_volume( cmd(),mountPoint,true ) ;
+		return true ;
+	}else{
+		for( int i = 1 ; i < maxCount ; i++ ){
 
-		if( s && s.value().success() ){
+			utility::Task::waitForOneSecond() ;
 
-			return true ;
-		}else{
-			if( not_set && s.value().stdError().contains( "error: failed to set gid" ) ){
+			if( _unmount_ecryptfs_( cmd,mountPoint,not_set ) ){
 
-				if( utility::enablePolkit( utility::background_thread::True ) ){
-
-					not_set = false ;
-				}else{
-					return false ;
-				}
-			}else{
-				utility::Task::waitForOneSecond() ;
+				return true ;
 			}
 		}
-	}
 
-	return false ;
+		return false ;
+	}
+}
+
+static bool _unmount_rest_( const QString& cmd,const QString& mountPoint )
+{
+	auto s = _unmount_volume( cmd,mountPoint,false ) ;
+
+	return s && s.value().success() ;
 }
 
 static bool _unmount_rest( const QString& mountPoint,int maxCount )
@@ -208,37 +232,39 @@ static bool _unmount_rest( const QString& mountPoint,int maxCount )
 		}
 	}() ;
 
-	for( int i = 0 ; i < maxCount ; i++ ){
+	if( _unmount_rest_( cmd,mountPoint ) ){
 
-		auto s = _unmount_volume( cmd,mountPoint,false ) ;
+		return true ;
+	}else{
+		for( int i = 1 ; i < maxCount ; i++ ){
 
-		if( s && s.value().success() ){
-
-			return true ;
-		}else{
 			utility::Task::waitForOneSecond() ;
-		}
-	}
 
-	return false ;
+			if( _unmount_rest_( cmd,mountPoint ) ){
+
+				return true ;
+			}
+		}
+
+		return false ;
+	}
 }
 
 Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFolder,
 							const QString& mountPoint,
-							const QString& fileSystem )
+							const QString& fileSystem,
+							int numberOfAttempts )
 {
 	return Task::run( [ = ](){
-
-		const int max_count = 5 ;
 
 		if( _ecryptfs( fileSystem ) ){
 
 			auto a = _makePath( cipherFolder ) ;
 			auto b = _makePath( mountPoint ) ;
 
-			return _unmount_ecryptfs( a,b,max_count ) ;
+			return _unmount_ecryptfs( a,b,numberOfAttempts ) ;
 		}else{
-			return _unmount_rest( _makePath( mountPoint ),max_count ) ;
+			return _unmount_rest( _makePath( mountPoint ),numberOfAttempts ) ;
 		}
 	} ) ;
 }

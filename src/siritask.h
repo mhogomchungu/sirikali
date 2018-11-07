@@ -275,7 +275,8 @@ namespace siritask
 	bool deleteMountFolder( const QString& ) ;
 	Task::future< bool >& encryptedFolderUnMount( const QString& cipherFolder,
 						      const QString& mountPoint,
-						      const QString& fileSystem ) ;
+						      const QString& fileSystem,
+						      int numberOfAttempts = 5 ) ;
 
 	Task::future< cmdStatus >& encryptedFolderMount( const siritask::options&,bool = false ) ;
 	Task::future< cmdStatus >& encryptedFolderCreate( const siritask::options& ) ;
