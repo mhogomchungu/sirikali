@@ -38,8 +38,12 @@ static void setup_unix_signal_handlers()
 	struct sigaction hup ;
 	struct sigaction term ;
 
-	hup.sa_handler = [](int){
+	hup.sa_handler = []( int q ){
+
+		Q_UNUSED( q ) ;
+
 		char a = 1 ;
+
 		::write( sighupFd[ 0 ],&a,sizeof( a ) ) ;
 	} ;
 
@@ -49,9 +53,12 @@ static void setup_unix_signal_handlers()
 
 	sigaction( SIGHUP,&hup,nullptr ) ;
 
-	term.sa_handler = [](int){
+	term.sa_handler = []( int q ){
+
+		Q_UNUSED( q ) ;
 
 		char a = 1 ;
+
 		::write( sigtermFd[ 0 ],&a,sizeof( a ) ) ;
 	} ;
 
@@ -66,16 +73,13 @@ systemSignalHandler::systemSignalHandler( QObject * parent )
 {
 	setup_unix_signal_handlers() ;
 
-	if( ::socketpair( AF_UNIX,SOCK_STREAM,0,sighupFd ) )
-		qFatal( "Couldn't create HUP socketpair" ) ;
+	::socketpair( AF_UNIX,SOCK_STREAM,0,sighupFd ) ;
 
-	if( ::socketpair(AF_UNIX,SOCK_STREAM,0,sigtermFd ) )
-		qFatal( "Couldn't create TERM socketpair" ) ;
+	::socketpair(AF_UNIX,SOCK_STREAM,0,sigtermFd ) ;
 
-	auto snHup = new QSocketNotifier( sighupFd[ 1 ], QSocketNotifier::Read, m_parent);
+	auto snHup = new QSocketNotifier( sighupFd[ 1 ],QSocketNotifier::Read,m_parent ) ;
 
 	QObject::connect( snHup,&QSocketNotifier::activated,[ snHup,this ]( int ){
-
 #if 1
 		snHup->setEnabled( false ) ;
 		m_function( signal::hup ) ;
@@ -95,7 +99,6 @@ systemSignalHandler::systemSignalHandler( QObject * parent )
 	auto snTerm = new QSocketNotifier( sigtermFd[ 1 ],QSocketNotifier::Read,m_parent ) ;
 
 	QObject::connect( snTerm,&QSocketNotifier::activated,[ snTerm,this ]( int ){
-
 #if 1
 		snTerm->setEnabled( false ) ;
 		m_function( signal::term ) ;
