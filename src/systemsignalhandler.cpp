@@ -67,8 +67,8 @@ static void setup_unix_signal_handlers()
 	sigaction( SIGTERM,&term,nullptr ) ;
 }
 
-eventFilter( QObject * parent,std::function< void( systemSignalHandler::signal ) > function ) :
-	QObject( parent ),m_function( std::move( function ) )
+systemSignalHandler::systemSignalHandler( QObject * parent,std::function< void( signal ) > function ) :
+	m_parent( parent ),m_function( std::move( function ) )
 {
 	setup_unix_signal_handlers() ;
 
@@ -159,7 +159,9 @@ systemSignalHandler::systemSignalHandler( QObject * parent,std::function< void( 
 	QApplication::instance()->installNativeEventFilter( m ) ;
 }
 
-#else
+#endif
+
+#ifdef Q_OS_MACOS
 
 systemSignalHandler::systemSignalHandler( QObject * parent,std::function< void( signal ) > function )
 	: m_parent( parent ),m_function( std::move( function ) )
