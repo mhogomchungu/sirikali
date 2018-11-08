@@ -26,12 +26,11 @@
 class systemSignalHandler
 {
 public:
-	enum class signal{ hup,term };
-        systemSignalHandler( QObject * parent ) ;
-        void setAction( std::function< void( systemSignalHandler::signal ) > ) ;
+	enum class signal{ hup,term,winEndSession } ;
+	systemSignalHandler( QObject * parent,std::function< void( signal ) > ) ;
 private:
 	QObject * m_parent ;
-	std::function< void( systemSignalHandler::signal ) > m_function ;
+	std::function< void( signal ) > m_function ;
 } ;
 
 #endif

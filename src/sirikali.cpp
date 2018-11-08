@@ -81,16 +81,18 @@ sirikali::sirikali() :
 	m_checkUpdates( this ),
 	m_configOptions( this,m_secrets,&m_language_menu,this->configOption() ),
 	m_debugWindow(),
-	m_signalHandler( this )
+	m_signalHandler( this,this->getEmergencyShutDown() )
 {
-	utility::setDebugWindow( &m_debugWindow ) ;
+}
 
-	m_signalHandler.setAction( [ this ]( systemSignalHandler::signal s ){
+std::function< void( systemSignalHandler::signal ) > sirikali::getEmergencyShutDown()
+{
+	return [ this ]( systemSignalHandler::signal s ){
 
 		Q_UNUSED( s ) ;
 
 		this->emergencyShutDown() ;
-	} ) ;
+	} ;
 }
 
 configOptions::functions sirikali::configOption()
@@ -123,7 +125,7 @@ configOptions::functions sirikali::configOption()
 
 void sirikali::closeApplication( int s,const QString& e )
 {
-	if( utility::platformIsWindows() && m_ui ){
+	if( utility::platformIsWindows() && m_ui && !m_emergencyShuttingDown ){
 
 		if( SiriKali::Winfsp::babySittingBackends() && m_ui->tableWidget->rowCount() > 0 ){
 
@@ -145,7 +147,11 @@ void sirikali::closeApplication( int s,const QString& e )
 
 		m_debugWindow.Hide() ;
 		this->hide() ;
-		utility::Task::suspendForOneSecond() ;
+
+		if( !m_emergencyShuttingDown ){
+
+			utility::Task::suspendForOneSecond() ;
+		}
 	}
 
 	m_mountInfo.stop() ;
@@ -1646,6 +1652,8 @@ void sirikali::pbUmount()
 
 void sirikali::emergencyShutDown()
 {
+	m_emergencyShuttingDown = true ;
+
 	this->hide() ;
 
 	m_mountInfo.announceEvents( false ) ;

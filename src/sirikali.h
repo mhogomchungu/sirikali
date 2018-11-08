@@ -90,6 +90,7 @@ private slots:
 	void slotMount( void ) ;
 	void unMountAll( void ) ;
 	void emergencyShutDown( void ) ;
+	std::function< void( systemSignalHandler::signal ) > getEmergencyShutDown() ;
 	void unMountAllAndQuit( void ) ;
 	void pbUmount( void ) ;
 	void slotTrayClicked( QSystemTrayIcon::ActivationReason = QSystemTrayIcon::Trigger ) ;
@@ -156,6 +157,7 @@ private:
 	bool m_startHidden ;
 	bool m_autoOpenFolderOnMount ;
 	bool m_disableEnableAll = false ;
+	bool m_emergencyShuttingDown = false ;
 
 	QString m_sharedFolderPath ;
 	QString m_folderOpener ;

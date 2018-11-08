@@ -18,6 +18,7 @@
  */
 
 #include "systemsignalhandler.h"
+#include <memory>
 
 #ifdef Q_OS_LINUX
 
@@ -25,8 +26,6 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <signal.h>
-
-#include <memory>
 
 #include <QSocketNotifier>
 
@@ -68,8 +67,8 @@ static void setup_unix_signal_handlers()
 	sigaction( SIGTERM,&term,nullptr ) ;
 }
 
-systemSignalHandler::systemSignalHandler( QObject * parent )
-	: m_parent( parent )
+eventFilter( QObject * parent,std::function< void( systemSignalHandler::signal ) > function ) :
+	QObject( parent ),m_function( std::move( function ) )
 {
 	setup_unix_signal_handlers() ;
 
@@ -116,21 +115,55 @@ systemSignalHandler::systemSignalHandler( QObject * parent )
 	} ) ;
 }
 
-void systemSignalHandler::setAction( std::function< void( signal ) > function )
+#endif
+
+#ifdef Q_OS_WIN
+
+#include <QApplication>
+#include <QAbstractNativeEventFilter>
+
+#include "utility.h"
+
+#include <windows.h>
+
+class eventFilter : public QObject,public QAbstractNativeEventFilter
 {
-	m_function = std::move( function ) ;
+public:
+	eventFilter( QObject * parent,std::function< void( systemSignalHandler::signal ) > function ) :
+		QObject( parent ),m_function( std::move( function ) )
+	{
+	}
+	bool nativeEventFilter( const QByteArray& eventType,void * message,long * result )
+	{
+		Q_UNUSED( eventType ) ;
+		Q_UNUSED( result ) ;
+
+		MSG * msg = reinterpret_cast< MSG * >( message ) ;
+
+		if( msg->message == WM_ENDSESSION && msg->wParam != 0 ){
+
+			m_function( systemSignalHandler::signal::winEndSession ) ;
+
+			return false ;
+		}
+
+		return false ;
+	}
+
+	std::function< void( systemSignalHandler::signal ) > m_function ;
+};
+
+systemSignalHandler::systemSignalHandler( QObject * parent,std::function< void( signal ) > function )
+{
+	auto m = new eventFilter( parent,std::move( function ) ) ;
+	QApplication::instance()->installNativeEventFilter( m ) ;
 }
 
 #else
 
-systemSignalHandler::systemSignalHandler( QObject * parent )
-	: m_parent( parent )
+systemSignalHandler::systemSignalHandler( QObject * parent,std::function< void( signal ) > function )
+	: m_parent( parent ),m_function( std::move( function ) )
 {
-}
-
-void systemSignalHandler::setAction( std::function< void( signal ) > function )
-{
-	Q_UNUSED( function ) ;
 }
 
 #endif
