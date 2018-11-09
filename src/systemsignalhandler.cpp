@@ -17,6 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "settings.h"
 #include "systemsignalhandler.h"
 #include <memory>
 
@@ -74,6 +75,11 @@ systemSignalHandler::systemSignalHandler( QObject * parent,std::function< void( 
 
 void systemSignalHandler::listen()
 {
+	if( !settings::instance().unMountVolumesOnLogout() ){
+
+		return ;
+	}
+
 	setup_unix_signal_handlers() ;
 
 	::socketpair( AF_UNIX,SOCK_STREAM,0,sighupFd ) ;
@@ -165,8 +171,11 @@ systemSignalHandler::systemSignalHandler( QObject * parent,std::function< void( 
 
 void systemSignalHandler::listen()
 {
-	auto m = new eventFilter( m_parent,std::move( m_function ) ) ;
-	QApplication::instance()->installNativeEventFilter( m ) ;
+	if( settings::instance().unMountVolumesOnLogout() ){
+
+		auto m = new eventFilter( m_parent,std::move( m_function ) ) ;
+		QApplication::instance()->installNativeEventFilter( m ) ;
+	}
 }
 
 #endif

@@ -175,6 +175,7 @@ public:
 	QString walletName( void ) ;
 	QString applicationName( void ) ;
 	int readPasswordMaximumLength() ;
+	bool unMountVolumesOnLogout( void ) ;
 private:
     QSettings m_settings ;
 };

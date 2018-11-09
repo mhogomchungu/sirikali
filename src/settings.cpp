@@ -305,6 +305,16 @@ int settings::readPasswordMaximumLength()
 	return m_settings.value( "ReadPasswordMaximumLength" ).toInt() ;
 }
 
+bool settings::unMountVolumesOnLogout()
+{
+	if( !m_settings.contains( "unMountVolumesOnLogout" ) ){
+
+		m_settings.setValue( "unMountVolumesOnLogout",false ) ;
+	}
+
+	return m_settings.value( "unMountVolumesOnLogout" ).toBool() ;
+}
+
 favorites::entry settings::readFavorite( const QString& e )
 {
 	for( const auto& it : this->readFavorites() ){
