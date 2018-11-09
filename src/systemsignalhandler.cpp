@@ -85,6 +85,7 @@ void systemSignalHandler::listen()
 	QObject::connect( snHup,&QSocketNotifier::activated,[ snHup,this ]( int ){
 #if 1
 		snHup->setEnabled( false ) ;
+
 		m_function( signal::hup ) ;
 #else
 		snHup->setEnabled( false ) ;

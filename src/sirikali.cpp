@@ -468,7 +468,12 @@ void sirikali::favoriteClicked( QAction * ac )
 
 				if( it.first.volumePath == e ){
 
-					this->mountMultipleVolumes( this->autoUnlockVolumes( { std::move( it ) },true ) ) ;
+					if( it.first.needNoPassword() ){
+
+						siritask::encryptedFolderMount( it.first ).start() ;
+					}else{
+						this->mountMultipleVolumes( this->autoUnlockVolumes( { std::move( it ) },true ) ) ;
+					}
 
 					break ;
 				}

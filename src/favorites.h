@@ -40,6 +40,7 @@ class favorites : public QDialog
 	Q_OBJECT
 public:
 	static constexpr const char * reverseModeOption = "-SiriKaliReverseMode" ;
+	static constexpr const char * volumeNeedNoPassword = "-SiriKaliVolumeNeedNoPassword" ;
 
 	struct entry
 	{
@@ -112,12 +113,18 @@ public:
 				this->configFilePath  == other.configFilePath &&
 				this->idleTimeOut     == other.idleTimeOut &&
 				this->mountOptions    == other.mountOptions &&
-				this->reverseMode     == other.reverseMode ;
+				this->reverseMode     == other.reverseMode &&
+				this->volumeNeedNoPassword == other.volumeNeedNoPassword ;
 		}
 
 		bool autoMount() const
 		{
 			return autoMountVolume == "true" ;
+		}
+
+		bool needNoPassword() const
+		{
+			return mountOptions.contains( favorites::volumeNeedNoPassword ) ;
 		}
 
 		QString sanitizedMountOptions() const
@@ -129,7 +136,8 @@ public:
 		{
 			auto l = s.split( ',',QString::SkipEmptyParts ) ;
 
-			l.removeAll( reverseModeOption ) ;
+			l.removeAll( favorites::reverseModeOption ) ;
+			l.removeAll( favorites::volumeNeedNoPassword ) ;
 
 			return l.join( "," ) ;
 		}
@@ -141,10 +149,12 @@ public:
 		QString idleTimeOut ;
 		QString mountOptions ;
 		bool reverseMode ;
+		bool volumeNeedNoPassword ;
 	private:
-		void config( QStringList e )
+		void config( const QStringList& e )
 		{
-			reverseMode = e.contains( reverseModeOption ) ;
+			reverseMode = e.contains( favorites::reverseModeOption ) ;
+			volumeNeedNoPassword = e.contains( favorites::volumeNeedNoPassword ) ;
 
 			utility2::stringListToStrings( e,
 						      volumePath,
@@ -208,6 +218,7 @@ private:
 	QWidget * m_parentWidget ;
 	int m_editRow ;
 	bool m_reverseMode = false ;
+	bool m_volumeNeedNoPassword = false ;
 };
 
 #endif // MANAGEDEVICENAMES_H

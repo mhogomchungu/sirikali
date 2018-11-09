@@ -54,6 +54,11 @@ favorites::favorites( QWidget * parent,favorites::type type ) : QDialog( parent 
 		m_reverseMode = e ;
 	} ) ;
 
+	connect( m_ui->cbVolumeNoPassword,&QCheckBox::toggled,[ this ]( bool e ){
+
+		m_volumeNeedNoPassword = e ;
+	} ) ;
+
 	m_ui->pbAdd->setObjectName( "Add" ) ;
 
 	if( utility::platformIsWindows() ){
@@ -258,10 +263,12 @@ void favorites::edit()
 		}
 
 		m_ui->cbReverseMode->setChecked( c.contains( favorites::reverseModeOption ) ) ;
+		m_ui->cbVolumeNoPassword->setChecked( c.contains( favorites::volumeNeedNoPassword ) ) ;
 
 		if( c != "N/A" ){
 
 			m_ui->lineEditMountOptions->setText( utility::removeOption( c,favorites::reverseModeOption ) ) ;
+			m_ui->lineEditMountOptions->setText( utility::removeOption( c,favorites::volumeNeedNoPassword ) ) ;
 		}
 	}
 }
@@ -382,6 +389,16 @@ void favorites::add()
 			mOpts = favorites::reverseModeOption ;
 		}else{
 			mOpts += QString( "," ) + favorites::reverseModeOption ;
+		}
+	}
+
+	if( m_volumeNeedNoPassword ){
+
+		if( mOpts.isEmpty() ){
+
+			mOpts = favorites::volumeNeedNoPassword ;
+		}else{
+			mOpts += QString( "," ) + favorites::volumeNeedNoPassword ;
 		}
 	}
 
