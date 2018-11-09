@@ -161,6 +161,8 @@ void sirikali::setUpApp( const QString& volume )
 {
 	this->setLocalizationLanguage( true ) ;
 
+	m_signalHandler.listen() ;
+
 	m_ui = new Ui::sirikali ;
 	m_ui->setupUi( this ) ;
 

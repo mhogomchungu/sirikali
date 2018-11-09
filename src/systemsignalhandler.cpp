@@ -70,6 +70,10 @@ static void setup_unix_signal_handlers()
 systemSignalHandler::systemSignalHandler( QObject * parent,std::function< void( signal ) > function ) :
 	m_parent( parent ),m_function( std::move( function ) )
 {
+}
+
+void systemSignalHandler::listen()
+{
 	setup_unix_signal_handlers() ;
 
 	::socketpair( AF_UNIX,SOCK_STREAM,0,sighupFd ) ;
@@ -140,11 +144,11 @@ public:
 
 		MSG * msg = reinterpret_cast< MSG * >( message ) ;
 
-		if( msg->message == WM_ENDSESSION && msg->wParam != 0 ){
+		if( msg->message == WM_ENDSESSION ){
 
 			m_function( systemSignalHandler::signal::winEndSession ) ;
 
-			return false ;
+			//return true ;
 		}
 
 		return false ;
@@ -153,9 +157,14 @@ public:
 	std::function< void( systemSignalHandler::signal ) > m_function ;
 };
 
-systemSignalHandler::systemSignalHandler( QObject * parent,std::function< void( signal ) > function )
+systemSignalHandler::systemSignalHandler( QObject * parent,std::function< void( signal ) > function ) :
+	m_parent( parent ),m_function( std::move( function ) )
 {
-	auto m = new eventFilter( parent,std::move( function ) ) ;
+}
+
+void systemSignalHandler::listen()
+{
+	auto m = new eventFilter( m_parent,std::move( m_function ) ) ;
 	QApplication::instance()->installNativeEventFilter( m ) ;
 }
 
@@ -165,6 +174,10 @@ systemSignalHandler::systemSignalHandler( QObject * parent,std::function< void( 
 
 systemSignalHandler::systemSignalHandler( QObject * parent,std::function< void( signal ) > function )
 	: m_parent( parent ),m_function( std::move( function ) )
+{
+}
+
+void systemSignalHandler::listen()
 {
 }
 

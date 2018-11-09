@@ -28,6 +28,7 @@ class systemSignalHandler
 public:
 	enum class signal{ hup,term,winEndSession } ;
 	systemSignalHandler( QObject * parent,std::function< void( signal ) > ) ;
+	void listen() ;
 private:
 	QObject * m_parent ;
 	std::function< void( signal ) > m_function ;
