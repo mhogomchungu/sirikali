@@ -148,3 +148,4 @@ version 1.3.7(unreleased)
 -- Add ability to set a favorite volume that does not need a password. Useful when connecting to ssh server
    with a private key that does not need a password.
 -- Add a config option to auto unmount volumes on logout(specifically, when SiriKali receive sighup or sigterm).
+-- Add Russian translations.

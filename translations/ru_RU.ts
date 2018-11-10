@@ -571,7 +571,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/encfscreateoptions.ui" line="14"/>
         <source>Select Volume Creation Options</source>
-        <translation type="unfinished">Укажите параметры создания тома</translation>
+        <translation>Укажите параметры создания тома</translation>
     </message>
     <message>
         <location filename="../src/encfscreateoptions.ui" line="26"/>
@@ -581,7 +581,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/encfscreateoptions.ui" line="58"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished">&amp;Отмена</translation>
+        <translation>&amp;Отмена</translation>
     </message>
     <message>
         <location filename="../src/encfscreateoptions.ui" line="71"/>
