@@ -22,6 +22,7 @@
 #include "siritask.h"
 #include "task.hpp"
 #include "winfsp.h"
+#include "settings.h"
 
 #include <QMetaObject>
 #include <QtGlobal>
@@ -32,16 +33,6 @@
 #include <utility>
 
 enum class background_thread{ True,False } ;
-
-static std::vector< QStringList > _getwinfspInstances( background_thread thread )
-{
-	if( thread == background_thread::True ){
-
-		return SiriKali::Winfsp::commands() ;
-	}else{
-		return Task::await( [](){ return SiriKali::Winfsp::commands() ; } ) ;
-	}
-}
 
 QString mountinfo::encodeMountPath( const QString& e )
 {
@@ -116,61 +107,29 @@ static QStringList _macox_volumes()
 	return s ;
 }
 
+static std::vector< SiriKali::Winfsp::mountOptions > _win_volumes( background_thread thread )
+{
+	if( thread == background_thread::True ){
+
+		return SiriKali::Winfsp::getMountOptions() ;
+	}else{
+		return Task::await( SiriKali::Winfsp::getMountOptions ) ;
+	}
+}
+
 static QStringList _windows_volumes( background_thread thread )
 {
 	QStringList s ;
-	QString mode ;
-	QString m ;
-	QString fs ;
+
 	const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
 
-	auto path = []( QString e ){
+	for( const auto& e : _win_volumes( thread ) ){
 
-		if( e.startsWith( '\"' ) ){
+		auto fs = "fuse." + e.subtype ;
 
-			e.remove( 0,1 ) ;
-		}
+		auto m = e.subtype + "@" + e.cipherFolder ;
 
-		if( e.endsWith( '\"' ) ){
-
-			e.truncate( e.size() - 1 ) ;
-		}
-
-		return e ;
-	} ;
-
-	for( const QStringList& e : _getwinfspInstances( thread ) ){
-
-		if( e.contains( "ro" ) ){
-
-			mode = "ro" ;
-		}else{
-			mode = "rw" ;
-		}
-
-		for( const auto& it : e ){
-
-			if( it.startsWith( "subtype=" ) ){
-
-				m = it ;
-				m.replace( "subtype=","" ) ;
-			}
-		}
-
-		fs = "fuse." + m ;
-
-		if( m == "encfs" ){
-
-			m += "@" + path( e.at( 1 ) ) ;
-
-			auto q = e.at( 2 ) ;
-
-			s.append( w.arg( path( q ),mode,fs,m ) ) ;
-		}else{
-			m += "@" + path( e.at( e.size() - 2 ) ) ;
-
-			s.append( w.arg( path( e.last() ),mode,fs,m ) ) ;
-		}
+		s.append( w.arg( e.mountPointPath,e.mode,fs,m ) ) ;
 	}
 
 	return s ;
@@ -234,7 +193,7 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 
 			for( decltype( l ) i = 0 ; i < l ; i++ ){
 
-				hash += *( key + i ) ;
+				hash += static_cast< uint32_t>( *( key + i ) ) ;
 
 				hash += ( hash << 10 ) ;
 
@@ -309,7 +268,9 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 					info.volumePath = _decode( cf,true ) ;
 
 				}else if( utility::equalsAtleastOne( fs,"fuse.gocryptfs",
-								     "ecryptfs" ) ){
+								     "fuse.gocryptfs-reverse",
+								     "ecryptfs",
+								     "fuse.sshfs" ) ){
 
 					info.volumePath = _decode( cf,false ) ;
 				}else{
@@ -427,7 +388,7 @@ void mountinfo::pollForUpdates()
 
 	m_stop = [ this ](){ m_exit = true ; } ;
 
-	auto interval = utility::pollForUpdatesInterval() ;
+	auto interval = settings::instance().pollForUpdatesInterval() ;
 
 	Task::run( [ &,interval ](){
 

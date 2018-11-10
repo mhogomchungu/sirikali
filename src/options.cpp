@@ -23,11 +23,12 @@
 
 #include "utility.h"
 #include "utility2.h"
+#include "settings.h"
 
 #include <QFileDialog>
 
-options::options( QWidget * parent,bool r,const QStringList& l,
-		  std::function< void( const QStringList& ) >&& e ) :
+options::options( QWidget * parent,bool r,const Options& l,
+		  std::function< void( const Options& ) >&& e ) :
 	QDialog( parent ),
 	m_ui( new Ui::options ),
 	m_create( r ),
@@ -52,7 +53,9 @@ options::options( QWidget * parent,bool r,const QStringList& l,
 	QString mountOptions ;
 	QString type ;
 
-	utility2::stringListToStrings( l,idleTimeOut,configFilePath,mountOptions,type ) ;
+	utility2::stringListToStrings( l.options,idleTimeOut,configFilePath,mountOptions,type ) ;
+
+	m_ui->checkBox->setChecked( l.reverseMode ) ;
 
 	m_type = type.toLower() ;
 
@@ -61,7 +64,7 @@ options::options( QWidget * parent,bool r,const QStringList& l,
 	m_ui->lineEditMountOptions->setText( mountOptions ) ;
 
 	utility::setWindowOptions( this ) ;
-	utility::setParent( parent,&m_parentWidget,this ) ;
+	settings::instance().setParent( parent,&m_parentWidget,this ) ;
 
 	this->show() ;
 	this->raise() ;
@@ -93,7 +96,7 @@ void options::pushButton()
 
 			dialog.setFileMode( QFileDialog::AnyFile ) ;
 
-			dialog.setDirectory( utility::homePath() ) ;
+			dialog.setDirectory( settings::instance().homePath() ) ;
 
 			dialog.setAcceptMode( QFileDialog::AcceptSave ) ;
 
@@ -137,7 +140,7 @@ void options::pushButton()
 		}else{
 			return QFileDialog::getOpenFileName( this,
 							     tr( "Select Cryfs/Gocryptfs Configuration File" ),
-							     utility::homePath() ) ;
+							     settings::instance().homePath() ) ;
 		}
 	}() ;
 
@@ -157,35 +160,20 @@ void options::pbSet()
 {
 	auto e = m_ui->lineEditIdleTime->text() ;
 
-	bool ok = true ;
+	auto m = m_ui->lineEditMountOptions->text() ;
 
-	if( !e.isEmpty() ){
-
-		e.toInt( &ok ) ;
-	}
-
-	if( !ok ){
-
-		this->hide() ;
-
-		DialogMsg( m_parentWidget,this ).ShowUIOK( tr( "ERROR" ),tr( "Idle Time Field Requires Digits Only If Not Empty." ) ) ;
-
-		this->show() ;
-	}else{
-		this->hide() ;
-
-		m_setOptions( { e,m_ui->lineConfigFilePath->text(),m_ui->lineEditMountOptions->text() } ) ;
-
-		this->deleteLater() ;
-	}
+	this->Hide( { { e,m_ui->lineConfigFilePath->text(),m },m_ui->checkBox->isChecked() } ) ;
 }
 
 void options::pbCancel()
 {
+	this->Hide() ;
+}
+
+void options::Hide( const Options& e )
+{
 	this->hide() ;
-
-	m_setOptions( QStringList() ) ;
-
+	m_setOptions( e ) ;
 	this->deleteLater() ;
 }
 

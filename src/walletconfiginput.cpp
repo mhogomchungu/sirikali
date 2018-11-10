@@ -25,6 +25,8 @@
 
 #include "dialogmsg.h"
 #include "utility.h"
+#include "settings.h"
+
 #include <QDebug>
 
 walletconfiginput::walletconfiginput( QWidget * parent,QDialog * dialog,
@@ -60,7 +62,7 @@ walletconfiginput::walletconfiginput( QWidget * parent,QDialog * dialog,
 
 	utility::setWindowOptions( this ) ;
 
-	utility::setParent( parent,&m_parentWidget,this ) ;
+	settings::instance().setParent( parent,&m_parentWidget,this ) ;
 
 	this->ShowUI() ;
 }
@@ -129,7 +131,7 @@ void walletconfiginput::slotCancel()
 
 void walletconfiginput::pbImageFilePath()
 {
-	auto x = utility::getExistingDirectory( this,tr( "Select A Volume" ),utility::homePath() ) ;
+	auto x = utility::getExistingDirectory( this,tr( "Select A Volume" ),settings::instance().homePath() ) ;
 
 	if( !x.isEmpty() ){
 

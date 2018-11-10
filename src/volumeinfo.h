@@ -71,6 +71,7 @@ public:
 						    " fuse.encfs ",
 						    " fuse.sshfs ",
 						    " fuse.gocryptfs ",
+						    " fuse.gocryptfs-reverse ",
 						    " fuse.securefs ",
 						    " ecryptfs " ) ;
 	}
@@ -90,6 +91,7 @@ public:
 	{
 		m_mountinfo.volumePath = e.volumePath ;
 		m_mountinfo.mountPoint = e.mountPointPath ;
+		m_reverseMode = e.reverseMode ;
 
 		if( e.configFilePath != "N/A" ){
 
@@ -105,6 +107,10 @@ public:
 
 			m_mountinfo.mountOptions = e.mountOptions ;
 		}
+	}
+	bool reverseMode() const
+	{
+		return m_reverseMode ;
 	}
 	const QString& volumePath() const
 	{
@@ -152,6 +158,7 @@ public:
 	}
 private:
 	volumeInfo::mountinfo m_mountinfo ;
+	bool m_reverseMode = false ;
 };
 
 #endif // VOLUMEENTRYPROPERTIES_H

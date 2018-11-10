@@ -39,132 +39,47 @@ class favorites : public QDialog
 {
 	Q_OBJECT
 public:
+	static constexpr const char * reverseModeOption = "-SiriKaliReverseMode" ;
+	static constexpr const char * volumeNeedNoPassword = "-SiriKaliVolumeNeedNoPassword" ;
+
 	struct entry
 	{
-		entry()
-		{
-		}
-
-		entry( const QStringList& e )
-		{
-			this->config( e ) ;
-		}
-
-		entry( const QString& r )
-		{
-			this->config( r.split( '\t',QString::SkipEmptyParts ) ) ;
-		}
-
-		QStringList list( bool e = true ) const
-		{
-			if( e ){
-
-				return this->configString().split( '\t',QString::SkipEmptyParts ) ;
-			}else{
-				return { volumePath,
-					 mountPointPath,
-					 autoMountVolume,
-					 configFilePath,
-					 idleTimeOut,
-					 mountOptions } ;
-			}
-		}
-
-		QString string( char s = '\t' ) const
-		{
-			return this->list().join( QString( s ) ) ;
-		}
-
-		QString configString() const
-		{
-			auto _opt = [ ]( const QString& e )->QString{
-
-				if( e.isEmpty() ){
-
-					return "N/A" ;
-				}else{
-					return e ;
-				}
-			} ;
-
-			auto e = "%1\t%2\t%3\t%4\t%5\t%6\t" ;
-
-			return QString( e ).arg( volumePath,mountPointPath,autoMountVolume,
-						 _opt( configFilePath ),_opt( idleTimeOut ),
-						 _opt( mountOptions ) ) ;
-		}
-		QStringList configStringList() const
-		{
-			return this->configString().split( "\t",QString::SkipEmptyParts ) ;
-		}
-		bool operator!=( const favorites::entry& other ) const
-		{
-			return !( *this == other ) ;
-		}
-
-		bool operator==( const favorites::entry& other ) const
-		{
-			return  this->volumePath      == other.volumePath &&
-				this->mountPointPath  == other.mountPointPath &&
-				this->autoMountVolume == other.autoMountVolume &&
-				this->configFilePath  == other.configFilePath &&
-				this->idleTimeOut     == other.idleTimeOut &&
-				this->mountOptions    == other.mountOptions ;
-		}
-
-		bool autoMount() const
-		{
-			return autoMountVolume == "true" ;
-		}
-
+		entry() ;
+		entry( const QStringList& e ) ;
+		entry( const QString& r ) ;
+		QStringList list( bool e = true ) const ;
+		QString string( char s = '\t' ) const ;
+		QString configString() const ;
+		QStringList configStringList() const;
+		bool operator!=( const favorites::entry& other ) const ;
+		bool operator==( const favorites::entry& other ) const ;
+		bool autoMount() const ;
+		QString sanitizedMountOptions() const ;
+		static QString sanitizedMountOptions( const QString& s ) ;
 		QString volumePath ;
 		QString mountPointPath ;
 		QString autoMountVolume ;
 		QString configFilePath ;
 		QString idleTimeOut ;
 		QString mountOptions ;
-
+		bool reverseMode ;
+		bool volumeNeedNoPassword ;
 	private:
-		void config( const QStringList& e )
-		{
-			utility2::stringListToStrings( e,
-						      volumePath,
-						      mountPointPath,
-						      autoMountVolume,
-						      configFilePath,
-						      idleTimeOut,
-						      mountOptions ) ;
-
-			if( configFilePath == "N/A" ){
-
-				configFilePath.clear() ;
-			}
-
-			if( idleTimeOut == "N/A" ){
-
-				idleTimeOut.clear() ;
-			}
-
-			if( mountOptions == "N/A" ){
-
-				mountOptions.clear() ;
-			}
-		}
+		void config( const QStringList& e ) ;
 	};
 
-	static favorites& instance( QWidget * parent = 0 )
+	enum class type{ sshfs,others } ;
+	static favorites& instance( QWidget * parent = 0,favorites::type type = favorites::type::others )
 	{
-		return *( new favorites( parent ) ) ;
+		return *( new favorites( parent,type ) ) ;
 	}
-	explicit favorites( QWidget * parent = 0 ) ;
+	explicit favorites( QWidget * parent = 0,favorites::type type = favorites::type::others ) ;
 	~favorites() ;
 signals:
 	void ShowPartitionUI( void ) ;
-public slots:
-	void ShowUI( void ) ;
-	void HideUI( void ) ;
 private slots:
 	void toggleAutoMount( void ) ;
+	void edit( void ) ;
 	void configPath( void ) ;
 	void removeEntryFromFavoriteList( void ) ;
 	void add( void ) ;
@@ -177,6 +92,8 @@ private slots:
 	void shortcutPressed( void ) ;
 	void devicePathTextChange( QString ) ;
 private:
+	void ShowUI( favorites::type ) ;
+	void HideUI( void ) ;
 	void checkFavoritesConsistency() ;
 	favorites::entry getEntry( int ) ;
 	QString getExistingFile( const QString& ) ;
@@ -186,6 +103,9 @@ private:
 	void addEntries( const QStringList& ) ;
 	Ui::favorites * m_ui ;
 	QWidget * m_parentWidget ;
+	int m_editRow ;
+	bool m_reverseMode = false ;
+	bool m_volumeNeedNoPassword = false ;
 };
 
 #endif // MANAGEDEVICENAMES_H

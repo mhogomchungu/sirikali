@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (c) 2012-2015
+ *  Copyright (c) 2018
  *  name : Francis Banyikwa
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -17,20 +17,30 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QApplication>
-#include <QMetaObject>
-#include <QSettings>
+#ifndef DEBUGWINDOW_H
+#define DEBUGWINDOW_H
 
-#include "sirikali.h"
-#include "settings.h"
+#include <QWidget>
+#include <QCloseEvent>
 
-int main( int argc,char * argv[] )
-{
-	settings::instance().scaleGUI() ;
-
-	utility::initGlobals() ;
-
-	QApplication SiriKali( argc,argv ) ;
-
-	return sirikali().start( SiriKali ) ;
+namespace Ui {
+class debugWindow;
 }
+
+class debugWindow : public QWidget
+{
+	Q_OBJECT
+public:
+        explicit debugWindow( QWidget * parent = nullptr ) ;
+	~debugWindow();
+        void Show() ;
+        void Hide() ;
+	void UpdateOutPut( const QString&,bool ) ;
+        void closeEvent( QCloseEvent * ) ;
+private slots:
+	void UpdateOutPutSlot( const QString&,bool ) ;
+private:
+        Ui::debugWindow * m_ui ;
+};
+
+#endif // DEBUGWINDOW_H

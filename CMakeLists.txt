@@ -4,7 +4,7 @@ set_property( GLOBAL PROPERTY ALLOW_DUPLICATE_CUSTOM_TARGETS ON )
 
 project( sirikali )
 
-set( PGR_VERSION "1.3.4" )
+set( PGR_VERSION "1.3.6" )
 
 add_definitions( -Wextra -Wall -pedantic )
 
@@ -243,9 +243,12 @@ set( UI_FILES 	src/sirikali.ui
                 src/configfileoption.ui
                 src/configoptions.ui
                 src/ecryptfscreateoptions.ui
+                src/debugwindow.ui
+                src/encfscreateoptions.ui
 )
 
 set( MOC_FILES
+		src/encfscreateoptions.h
                 src/configoptions.h
                 src/configfileoption.h
                 src/checkforupdates.h
@@ -267,10 +270,15 @@ set( MOC_FILES
 		src/securefscreateoptions.h
 		src/cryfscreateoptions.h
 		src/ecryptfscreateoptions.h
+		src/debugwindow.h
  )
 
 set( SRC 	src/dialogok.cpp
 		src/main.cpp
+		src/systemsignalhandler.cpp
+		src/crypto.cpp
+		src/encfscreateoptions.cpp
+		src/debugwindow.cpp
 		src/gocryptfscreateoptions.cpp
 		src/configoptions.cpp
                 src/configfileoption.cpp
@@ -297,6 +305,7 @@ set( SRC 	src/dialogok.cpp
 		src/utility2.cpp
 		src/ecryptfscreateoptions.cpp
 		src/winfsp.cpp
+		src/settings.cpp
 )
 
 if( APPLE )
@@ -420,7 +429,7 @@ if( NOT APPLE )
 #install( FILES sirikali.png DESTINATION share/icons/hicolor/32x32/apps )
 
 # desktop file section
-file( WRITE ${PROJECT_BINARY_DIR}/sirikali.desktop
+file( WRITE ${PROJECT_BINARY_DIR}/io.github.mhogomchungu.sirikali.desktop
 
 "[Desktop Entry]
 Comment[en_US]=Manage Encrypted Volumes Hosted In Folders
@@ -438,7 +447,7 @@ Type=Application
 MimeType=inode/directory;
 Categories=Security;Utility;Qt;X-MandrivaLinux-System-FileTools;\n")
 
-install( FILES ${PROJECT_BINARY_DIR}/sirikali.desktop
+install( FILES ${PROJECT_BINARY_DIR}/io.github.mhogomchungu.sirikali.desktop
 	DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications
 	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )

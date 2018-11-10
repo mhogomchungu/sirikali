@@ -21,6 +21,7 @@
 #include "ui_configoptions.h"
 
 #include "utility.h"
+#include "settings.h"
 #include "walletconfig.h"
 
 #include <QFileDialog>
@@ -44,35 +45,35 @@ configOptions::configOptions( QWidget * parent,
 
 	connect( m_ui->pushButton,&QPushButton::clicked,[ this ](){ this->HideUI() ; } ) ;
 
-	m_ui->cbAutoOpenMountPoint->setChecked( utility::autoOpenFolderOnMount() ) ;
+	m_ui->cbAutoOpenMountPoint->setChecked( settings::instance().autoOpenFolderOnMount() ) ;
 
 	connect( m_ui->cbAutoOpenMountPoint,&QCheckBox::toggled,[]( bool e ){
 
-		utility::autoOpenFolderOnMount( e ) ;
+		settings::instance().autoOpenFolderOnMount( e ) ;
 	} ) ;
 
-	m_ui->cbReUseMountPoint->setChecked( utility::reUseMountPoint() ) ;
+	m_ui->cbReUseMountPoint->setChecked( settings::instance().reUseMountPoint() ) ;
 
 	connect( m_ui->cbReUseMountPoint,&QCheckBox::toggled,[]( bool e ){
 
-		utility::reUseMountPoint( e ) ;
+		settings::instance().reUseMountPoint( e ) ;
 	} ) ;
 
-	m_ui->cbAutoCheckForUpdates->setChecked( utility::autoCheck() ) ;
+	m_ui->cbAutoCheckForUpdates->setChecked( settings::instance().autoCheck() ) ;
 
 	connect( m_ui->cbAutoCheckForUpdates,&QCheckBox::toggled,[]( bool e ){
 
-		utility::autoCheck( e ) ;
+		settings::instance().autoCheck( e ) ;
 	} ) ;
 
 #ifdef Q_OS_WIN
 	m_ui->cbAutoCheckForUpdates->setEnabled( false ) ;
 #endif
-	m_ui->cbStartMinimized->setChecked( utility::startMinimized() ) ;
+	m_ui->cbStartMinimized->setChecked( settings::instance().startMinimized() ) ;
 
 	connect( m_ui->cbStartMinimized,&QCheckBox::toggled,[]( bool e ){
 
-		utility::setStartMinimized( e ) ;
+		settings::instance().setStartMinimized( e ) ;
 	} ) ;
 
 	if( utility::platformIsWindows() ){
@@ -81,9 +82,9 @@ configOptions::configOptions( QWidget * parent,
 		m_ui->lineEditMountPointPrefix->clear() ;
 		m_ui->lineEditMountPointPrefix->setEnabled( true ) ;
 		m_ui->pbMountPointPrefix->setEnabled( true ) ;
-		m_ui->lineEditMountPointPrefix->setText( utility::windowsExecutableSearchPath() ) ;
+		m_ui->lineEditMountPointPrefix->setText( settings::instance().windowsExecutableSearchPath() ) ;
 	}else{
-		m_ui->lineEditMountPointPrefix->setText( utility::mountPath() ) ;
+		m_ui->lineEditMountPointPrefix->setText( settings::instance().mountPath() ) ;
 	}
 
 	connect( m_ui->pbMountPointPrefix,&QPushButton::clicked,[ this ](){
@@ -96,46 +97,46 @@ configOptions::configOptions( QWidget * parent,
 
 			if( utility::platformIsWindows() ){
 
-				utility::setWindowsExecutableSearchPath( e ) ;
+				settings::instance().setWindowsExecutableSearchPath( e ) ;
 			}else{
-				utility::setDefaultMountPointPrefix( e ) ;
+				settings::instance().setDefaultMountPointPrefix( e ) ;
 			}
 		}
 	} ) ;
 
-	m_ui->cbAutoMountAtStartUp->setChecked( utility::autoMountFavoritesOnStartUp() ) ;
+	m_ui->cbAutoMountAtStartUp->setChecked( settings::instance().autoMountFavoritesOnStartUp() ) ;
 
 	connect( m_ui->cbAutoMountAtStartUp,&QCheckBox::toggled,[]( bool e ){
 
-		utility::autoMountFavoritesOnStartUp( e ) ;
+		settings::instance().autoMountFavoritesOnStartUp( e ) ;
 	} ) ;
 
-	m_ui->cbAutoMountWhenAvailable->setChecked( utility::autoMountFavoritesOnAvailable() ) ;
+	m_ui->cbAutoMountWhenAvailable->setChecked( settings::instance().autoMountFavoritesOnAvailable() ) ;
 
 	connect( m_ui->cbAutoMountWhenAvailable,&QCheckBox::toggled,[]( bool e ){
 
-		utility::autoMountFavoritesOnAvailable( e ) ;
+		settings::instance().autoMountFavoritesOnAvailable( e ) ;
 	} ) ;
 
-	m_ui->cbShowMountDialogWhenAutoMounting->setChecked( utility::showMountDialogWhenAutoMounting() ) ;
+	m_ui->cbShowMountDialogWhenAutoMounting->setChecked( settings::instance().showMountDialogWhenAutoMounting() ) ;
 
 	connect( m_ui->cbShowMountDialogWhenAutoMounting,&QCheckBox::toggled,[]( bool e ){
 
-		utility::showMountDialogWhenAutoMounting( e ) ;
+		settings::instance().showMountDialogWhenAutoMounting( e ) ;
 	} ) ;
 
 	m_ui->pbChangeWalletPassword->setEnabled( [](){
 
-		auto a = utility::walletName() ;
-		auto b = utility::applicationName() ;
+		auto a = settings::instance().walletName() ;
+		auto b = settings::instance().applicationName() ;
 
 		return LXQt::Wallet::walletExists( LXQt::Wallet::BackEnd::internal,a,b ) ;
 	}() ) ;
 
 	connect( m_ui->pbChangeWalletPassword,&QPushButton::clicked,[ this ](){
 
-		auto a = utility::walletName() ;
-		auto b = utility::applicationName() ;
+		auto a = settings::instance().walletName() ;
+		auto b = settings::instance().applicationName() ;
 
 		this->hide() ;
 
@@ -183,7 +184,7 @@ configOptions::configOptions( QWidget * parent,
 
 	using bk = LXQt::Wallet::BackEnd ;
 
-	auto walletBk = utility::autoMountBackEnd() ;
+	auto walletBk = settings::instance().autoMountBackEnd() ;
 
 	if( walletBk == bk::internal ){
 
@@ -214,7 +215,7 @@ configOptions::configOptions( QWidget * parent,
 
 		if( e ){
 
-			utility::autoMountBackEnd( bk::internal ) ;
+			settings::instance().autoMountBackEnd( bk::internal ) ;
 		}
 	} ) ;
 
@@ -222,7 +223,7 @@ configOptions::configOptions( QWidget * parent,
 
 		if( e ){
 
-			utility::autoMountBackEnd( bk::kwallet ) ;
+			settings::instance().autoMountBackEnd( bk::kwallet ) ;
 		}
 	} ) ;
 
@@ -230,7 +231,7 @@ configOptions::configOptions( QWidget * parent,
 
 		if( e ){
 
-			utility::autoMountBackEnd( bk::libsecret ) ;
+			settings::instance().autoMountBackEnd( bk::libsecret ) ;
 		}
 	} ) ;
 
@@ -238,13 +239,13 @@ configOptions::configOptions( QWidget * parent,
 
 		if( e ){
 
-			utility::autoMountBackEnd( bk::osxkeychain ) ;
+			settings::instance().autoMountBackEnd( bk::osxkeychain ) ;
 		}
 	} ) ;
 
 	connect( m_ui->rbNone,&QRadioButton::toggled,[](){
 
-		utility::autoMountBackEnd( utility::walletBackEnd() ) ;
+		settings::instance().autoMountBackEnd( settings::walletBackEnd() ) ;
 	} ) ;
 }
 
@@ -270,19 +271,21 @@ void configOptions::translateUI()
 
 void configOptions::ShowUI()
 {
-	m_ui->lineEditFileManager->setText( utility::fileManager() ) ;
+	settings& s = settings::instance() ;
 
-	m_ui->lineEditExecutableKeySource->setText( utility::externalPluginExecutable() ) ;
+	m_ui->lineEditFileManager->setText( settings::instance().fileManager() ) ;
 
-	m_ui->lineEditAfterMountCommand->setText( utility::runCommandOnMount() ) ;
+	m_ui->lineEditExecutableKeySource->setText( s.externalPluginExecutable() ) ;
 
-	m_ui->lineEditBeforesUnMount->setText( utility::preUnMountCommand() ) ;
+	m_ui->lineEditAfterMountCommand->setText( s.runCommandOnMount() ) ;
+
+	m_ui->lineEditBeforesUnMount->setText( s.preUnMountCommand() ) ;
 
 	if( utility::platformIsWindows() ){
 
-		m_ui->lineEditMountPointPrefix->setText( utility::windowsExecutableSearchPath() ) ;
+		m_ui->lineEditMountPointPrefix->setText( s.windowsExecutableSearchPath() ) ;
 	}else{
-		m_ui->lineEditMountPointPrefix->setText( utility::mountPath() ) ;
+		m_ui->lineEditMountPointPrefix->setText( s.mountPath() ) ;
 	}
 
 	this->show() ;
@@ -292,16 +295,18 @@ void configOptions::HideUI()
 {
 	m_functions.function_1() ;
 
-	utility::setFileManager( m_ui->lineEditFileManager->text() ) ;
-	utility::setExternalPluginExecutable( m_ui->lineEditExecutableKeySource->text() ) ;
-	utility::preUnMountCommand( m_ui->lineEditBeforesUnMount->text() ) ;
-	utility::runCommandOnMount( m_ui->lineEditAfterMountCommand->text() ) ;
+	settings& s = settings::instance() ;
+
+	s.setFileManager( m_ui->lineEditFileManager->text() ) ;
+	s.setExternalPluginExecutable( m_ui->lineEditExecutableKeySource->text() ) ;
+	s.preUnMountCommand( m_ui->lineEditBeforesUnMount->text() ) ;
+	s.runCommandOnMount( m_ui->lineEditAfterMountCommand->text() ) ;
 
 	if( utility::platformIsWindows() ){
 
-		utility::setWindowsExecutableSearchPath( m_ui->lineEditMountPointPrefix->text() ) ;
+		s.setWindowsExecutableSearchPath( m_ui->lineEditMountPointPrefix->text() ) ;
 	}else{
-		utility::setDefaultMountPointPrefix( m_ui->lineEditMountPointPrefix->text() ) ;
+		s.setDefaultMountPointPrefix( m_ui->lineEditMountPointPrefix->text() ) ;
 	}
 
 	this->hide() ;

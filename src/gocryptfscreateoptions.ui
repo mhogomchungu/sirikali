@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>502</width>
-    <height>273</height>
+    <height>302</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -46,7 +46,7 @@
    <property name="geometry">
     <rect>
      <x>150</x>
-     <y>240</y>
+     <y>270</y>
      <width>101</width>
      <height>31</height>
     </rect>
@@ -59,7 +59,7 @@
    <property name="geometry">
     <rect>
      <x>250</x>
-     <y>240</y>
+     <y>270</y>
      <width>101</width>
      <height>31</height>
     </rect>
@@ -72,7 +72,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>170</y>
+     <y>200</y>
      <width>481</width>
      <height>41</height>
     </rect>
@@ -91,7 +91,7 @@
    <property name="geometry">
     <rect>
      <x>90</x>
-     <y>210</y>
+     <y>240</y>
      <width>321</width>
      <height>31</height>
     </rect>
@@ -107,7 +107,7 @@
    <property name="geometry">
     <rect>
      <x>410</x>
-     <y>210</y>
+     <y>240</y>
      <width>31</width>
      <height>33</height>
     </rect>
@@ -186,6 +186,19 @@
      <bool>true</bool>
     </property>
    </widget>
+  </widget>
+  <widget class="QCheckBox" name="checkBox">
+   <property name="geometry">
+    <rect>
+     <x>90</x>
+     <y>180</y>
+     <width>321</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Reverse Mode</string>
+   </property>
   </widget>
  </widget>
  <tabstops>

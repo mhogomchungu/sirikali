@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (c) 2012-2015
+ *  Copyright (c) 2018
  *  name : Francis Banyikwa
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -17,20 +17,17 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QApplication>
-#include <QMetaObject>
-#include <QSettings>
+#ifndef CRYPTO_H
+#define CRYPTO_H
 
-#include "sirikali.h"
-#include "settings.h"
+#include <QByteArray>
+#include <QString>
 
-int main( int argc,char * argv[] )
+class crypto
 {
-	settings::instance().scaleGUI() ;
+public:
+        static QByteArray getRandomData( int s ) ;
+        static QByteArray hmac_key( const QString& keyFile,const QString& password ) ;
+};
 
-	utility::initGlobals() ;
-
-	QApplication SiriKali( argc,argv ) ;
-
-	return sirikali().start( SiriKali ) ;
-}
+#endif

@@ -91,7 +91,8 @@ namespace siritask
 			configFilePath( e.configFilePath ),
 			type( QString() ),
 			ro( false ),
-			mountOptions( e.mountOptions )
+			reverseMode( e.reverseMode ),
+			mountOptions( e.sanitizedMountOptions() )
 		{
 		}
 		options( const QString& cipher_folder,
@@ -101,6 +102,7 @@ namespace siritask
 			 const QString& config_file_path,
 			 const QString& volume_type,
 			 bool unlock_in_read_only,
+			 bool unlock_in_reverse_mode,
 			 const QString& mount_options,
 			 const QString& create_options ) :
 
@@ -111,7 +113,8 @@ namespace siritask
 			configFilePath( config_file_path ),
 			type( volume_type ),
 			ro( unlock_in_read_only ),
-			mountOptions( mount_options ),
+			reverseMode( unlock_in_reverse_mode ),
+			mountOptions( favorites::entry::sanitizedMountOptions( mount_options ) ),
 			createOptions( create_options )
 		{
 		}
@@ -123,6 +126,7 @@ namespace siritask
 		QString configFilePath ;
 		siritask::volumeType type ;
 		bool ro ;
+		bool reverseMode ;
 		QString mountOptions ;
 		QString createOptions ;
 	};
@@ -141,9 +145,11 @@ namespace siritask
 		ecryptfsIllegalPath,
 		ecrypfsBadExePermissions,
 		gocryptfsNotFound,
+		sshfsNotFound,
 		cryfsNotFound,
 		encfsNotFound,
 		securefsNotFound,
+		backEndDoesNotSupportCustomConfigPath,
 		ecryptfs_simpleNotFound,
 		unknown,
 		failedToCreateMountPoint,
@@ -269,7 +275,8 @@ namespace siritask
 	bool deleteMountFolder( const QString& ) ;
 	Task::future< bool >& encryptedFolderUnMount( const QString& cipherFolder,
 						      const QString& mountPoint,
-						      const QString& fileSystem ) ;
+						      const QString& fileSystem,
+						      int numberOfAttempts = 5 ) ;
 
 	Task::future< cmdStatus >& encryptedFolderMount( const siritask::options&,bool = false ) ;
 	Task::future< cmdStatus >& encryptedFolderCreate( const siritask::options& ) ;

@@ -35,6 +35,17 @@ class ecryptfscreateoptions : public QDialog
 {
 	Q_OBJECT
 public:
+	struct Options{
+		Options( const QStringList& s ) :
+			options( s ),success( true )
+		{
+		}
+		Options() : success( false )
+		{
+		}
+		QStringList options ;
+		bool success ;
+	} ;
 	static QString defaultCreateOptions()
 	{
 		return "key=passphrase,ecryptfs_key_bytes=32,ecryptfs_cipher=aes,ecryptfs_passthrough=n,ecryptfs_enable_filename_crypto=y" ;
@@ -43,21 +54,21 @@ public:
 	{
 		return "key=passphrase,ecryptfs_key_bytes=32,ecryptfs_cipher=aes" ;
 	}
-	static void instance( QWidget * parent,std::function< void( const QStringList& ) > function )
+	static void instance( QWidget * parent,std::function< void( const Options& ) > function )
 	{
                 new ecryptfscreateoptions( parent,std::move( function ) ) ;
 	}
-        ecryptfscreateoptions( QWidget * parent,std::function< void( const QStringList& ) > ) ;
+	ecryptfscreateoptions( QWidget * parent,std::function< void( const Options& ) > ) ;
         ~ecryptfscreateoptions() ;
 private slots:
 	void pbSelectConfigPath() ;
 	void pbOK() ;
 	void pbCancel() ;
 private:
-	void HideUI( const QStringList& = QStringList() ) ;
+	void HideUI( const Options& = Options() ) ;
 	void closeEvent( QCloseEvent * ) ;
         Ui::ecryptfscreateoptions * m_ui ;
-	std::function< void( const QStringList& ) > m_function ;
+	std::function< void( const Options& ) > m_function ;
 };
 
 #endif // ECRYPTFSCREATEOPTIONS_H

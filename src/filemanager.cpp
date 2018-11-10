@@ -21,6 +21,7 @@
 #include "ui_filemanager.h"
 
 #include "utility.h"
+#include "settings.h"
 
 fileManager::fileManager( QWidget * parent,QString& e,bool s ) :
 	QDialog( parent ),
@@ -39,7 +40,7 @@ fileManager::fileManager( QWidget * parent,QString& e,bool s ) :
 
 		m_ui->label->setText( tr( "Enter Below The Name Of The Application You Want To Be Used To Open Mount Points." ) ) ;
 
-		m_ui->lineEdit->setText( utility::fileManager() ) ;
+		m_ui->lineEdit->setText( settings::instance().fileManager() ) ;
 
 		m_ui->lineEdit->setVisible( true ) ;
 		m_ui->lineEdit_2->setVisible( false ) ;
@@ -55,7 +56,7 @@ fileManager::fileManager( QWidget * parent,QString& e,bool s ) :
 		m_ui->lineEdit->setVisible( false ) ;
 		m_ui->lineEdit_2->setVisible( true ) ;
 
-		m_ui->lineEdit_2->setText( utility::externalPluginExecutable() ) ;
+		m_ui->lineEdit_2->setText( settings::instance().externalPluginExecutable() ) ;
 
 		//m_ui->lineEdit_2->setFocus() ;
 	}
@@ -72,13 +73,15 @@ fileManager::~fileManager()
 
 void fileManager::set()
 {
+	settings& s = settings::instance() ;
+
 	if( m_setFileManager ){
 
-		utility::setFileManager( m_ui->lineEdit->text() ) ;
+		s.setFileManager( m_ui->lineEdit->text() ) ;
 
-		m_fileManager = utility::fileManager() ;
+		m_fileManager = s.fileManager() ;
 	}else{
-		utility::setExternalPluginExecutable( m_ui->lineEdit_2->text() ) ;
+		s.setExternalPluginExecutable( m_ui->lineEdit_2->text() ) ;
 	}
 
 	this->hide() ;

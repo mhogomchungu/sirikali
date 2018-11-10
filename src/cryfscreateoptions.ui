@@ -145,6 +145,19 @@
     <string/>
    </property>
   </widget>
+  <widget class="QPushButton" name="pbOptions">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>120</y>
+     <width>31</width>
+     <height>33</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
  </widget>
  <tabstops>
   <tabstop>comboBox</tabstop>

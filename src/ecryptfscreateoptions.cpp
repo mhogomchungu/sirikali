@@ -24,7 +24,7 @@
 #include "task.hpp"
 
 ecryptfscreateoptions::ecryptfscreateoptions( QWidget * parent,
-					std::function< void( const QStringList& ) > function ) :
+					std::function< void( const Options& ) > function ) :
 	QDialog( parent ),
 	m_ui( new Ui::ecryptfscreateoptions ),
 	m_function( std::move( function ) )
@@ -73,7 +73,7 @@ void ecryptfscreateoptions::pbOK()
 		e += ",ecryptfs_enable_filename_crypto=n" ;
 	}
 
-	this->HideUI( { e,m_ui->lineEdit_2->text() } ) ;
+	this->HideUI( { { e,m_ui->lineEdit_2->text() } } ) ;
 }
 
 void ecryptfscreateoptions::pbCancel()
@@ -81,12 +81,10 @@ void ecryptfscreateoptions::pbCancel()
 	this->HideUI() ;
 }
 
-void ecryptfscreateoptions::HideUI( const QStringList& e )
+void ecryptfscreateoptions::HideUI( const Options& opts )
 {
 	this->hide() ;
-
-	m_function( e ) ;
-
+	m_function( opts ) ;
 	this->deleteLater() ;
 }
 

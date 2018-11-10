@@ -26,6 +26,7 @@
 #include "walletconfiginput.h"
 #include "utility.h"
 #include "task.hpp"
+#include "settings.h"
 
 #include <Qt>
 #include <QTableWidget>
@@ -46,7 +47,7 @@ walletconfig::walletconfig( QWidget * parent,secrets::wallet&& wallet,std::funct
 
 	this->setFixedSize( this->size() ) ;
 
-	utility::setParent( parent,&m_parentWidget,this ) ;
+	settings::instance().setParent( parent,&m_parentWidget,this ) ;
 
 	this->setFont( parent->font() ) ;
 
@@ -72,8 +73,8 @@ walletconfig::walletconfig( QWidget * parent,secrets::wallet&& wallet,std::funct
 	}else{
 		m_wallet->setImage( QIcon( ":/sirikali" ) ) ;
 
-		auto a = utility::walletName( m_wallet->backEnd() ) ;
-		auto b = utility::applicationName() ;
+		auto a = settings::instance().walletName( m_wallet->backEnd() ) ;
+		auto b = settings::instance().applicationName() ;
 
 		m_wallet->open( a,b,[ this ]( bool opened ){
 

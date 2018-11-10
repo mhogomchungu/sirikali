@@ -41,24 +41,37 @@ class options : public QDialog
 {
 	Q_OBJECT
 public:
-	static void instance( QWidget * parent,bool r,const QStringList& l,
-			      std::function< void( const QStringList& ) >&& e )
+	struct Options{
+		Options( const QStringList& e,bool r ) :
+			options( e ),reverseMode( r ),success( true )
+		{
+		}
+		Options() : success( false )
+		{
+		}
+		QStringList options ;
+		bool reverseMode ;
+		bool success ;
+	} ;
+	static void instance( QWidget * parent,bool r,const Options& l,
+			      std::function< void( const Options& ) >&& e )
 	{
 		new options( parent,r,l,std::move( e ) ) ;
 	}
 
-	options( QWidget * parent,bool,const QStringList&,std::function< void( const QStringList& ) >&& ) ;
+	options( QWidget * parent,bool,const Options&,std::function< void( const Options& ) >&& ) ;
 	~options() ;
 private slots:
         void pushButton( void ) ;
 	void pbSet( void ) ;
 	void pbCancel( void ) ;
 private:
+	void Hide( const Options& = Options() ) ;
 	void closeEvent( QCloseEvent * ) ;
 	Ui::options * m_ui ;
 	bool m_create ;
 	QString m_type ;
-	std::function< void( const QStringList& ) > m_setOptions ;
+	std::function< void( const Options& ) > m_setOptions ;
 	QWidget * m_parentWidget ;
 };
 

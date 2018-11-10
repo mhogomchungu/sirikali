@@ -35,21 +35,32 @@ class cryfscreateoptions : public QDialog
 {
 	Q_OBJECT
 public:
-	static void instance( QWidget * parent,std::function< void( const QStringList& ) > function )
+	struct Options{
+		Options( const QStringList& s ) :
+			options( s ),success( true )
+		{
+		}
+		Options() : success( false )
+		{
+		}
+		QStringList options ;
+		bool success ;
+	} ;
+	static void instance( QWidget * parent,std::function< void( const Options& ) > function )
 	{
 		new cryfscreateoptions( parent,std::move( function ) ) ;
 	}
-	explicit cryfscreateoptions( QWidget * parent,std::function< void( const QStringList& ) > ) ;
+	explicit cryfscreateoptions( QWidget * parent,std::function< void( const Options& ) > ) ;
 	~cryfscreateoptions() ;
 private slots:
 	void pbSelectConfigPath() ;
 	void pbOK() ;
 	void pbCancel() ;
 private:
-	void HideUI( const QStringList& = QStringList() ) ;
+	void HideUI( const Options& = Options() ) ;
 	void closeEvent( QCloseEvent * ) ;
 	Ui::cryfscreateoptions * m_ui ;
-	std::function< void( const QStringList& ) > m_function ;
+	std::function< void( const Options& ) > m_function ;
 };
 
 #endif // CRYFSCREATEOPTIONS_H

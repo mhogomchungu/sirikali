@@ -58,12 +58,24 @@ QString volumeProperties( const QString& mountPath ) ;
 
 int terminateProcess( unsigned long pid ) ;
 
-QString readRegister( const char * path,const char * key ) ;
 QString sshfsInstallDir() ;
 QString encfsInstallDir() ;
 QString securefsInstallDir() ;
 
 std::vector< QStringList > commands() ;
+
+struct mountOptions
+{
+	QString mode ;
+	QString subtype ;
+	QString cipherFolder ;
+	QString mountPointPath ;
+	QString fuseOptions ;
+};
+
+mountOptions mountOption( const QStringList& e ) ;
+
+std::vector< mountOptions > getMountOptions() ;
 
 bool babySittingBackends() ;
 

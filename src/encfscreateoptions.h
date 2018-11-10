@@ -17,8 +17,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GOCRYPTFSCREATEOPTIONS_H
-#define GOCRYPTFSCREATEOPTIONS_H
+#ifndef ENCFSCREATEOPTIONS_H
+#define ENCFSCREATEOPTIONS_H
 
 #include <functional>
 #include <utility>
@@ -28,31 +28,29 @@
 #include <QDialog>
 
 namespace Ui {
-class gocryptfscreateoptions;
+class encfscreateoptions;
 }
 
-class gocryptfscreateoptions : public QDialog
+class encfscreateoptions : public QDialog
 {
 	Q_OBJECT
 public:
 	struct Options{
-		Options( const QStringList& s,bool r ) :
-			options( s ),reverseMode( r ),success( true )
+		Options( bool r ) : reverseMode( r ),success( true )
 		{
 		}
 		Options() : success( false )
 		{
 		}
-		QStringList options ;
 		bool reverseMode ;
 		bool success ;
 	} ;
 	static void instance( QWidget * parent,std::function< void( const Options& ) > function )
 	{
-                new gocryptfscreateoptions( parent,std::move( function ) ) ;
+                new encfscreateoptions( parent,std::move( function ) ) ;
 	}
-	gocryptfscreateoptions( QWidget * parent,std::function< void( const Options& ) > ) ;
-        ~gocryptfscreateoptions() ;
+	encfscreateoptions( QWidget * parent,std::function< void( const Options& ) > ) ;
+        ~encfscreateoptions() ;
 private slots:
 	void pbSelectConfigPath() ;
 	void pbOK() ;
@@ -60,7 +58,7 @@ private slots:
 private:
 	void HideUI( const Options& = Options() ) ;
 	void closeEvent( QCloseEvent * ) ;
-        Ui::gocryptfscreateoptions * m_ui ;
+        Ui::encfscreateoptions * m_ui ;
 	std::function< void( const Options& ) > m_function ;
 };
 

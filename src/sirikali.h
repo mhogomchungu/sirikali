@@ -38,6 +38,9 @@
 #include "keydialog.h"
 #include "checkforupdates.h"
 #include "configoptions.h"
+#include "debugwindow.h"
+#include "settings.h"
+#include "systemsignalhandler.h"
 
 #include <vector>
 
@@ -58,6 +61,7 @@ public:
 	int start( QApplication& ) ;
 	~sirikali() ;
 private slots:
+	void showDebugWindow( void ) ;
 	void configurationOptions( void ) ;
 	void FAQ( void ) ;
 	void showTrayIconWhenReady( void ) ;
@@ -85,6 +89,8 @@ private slots:
 	void createVolume( QAction * = nullptr ) ;
 	void slotMount( void ) ;
 	void unMountAll( void ) ;
+	void emergencyShutDown( void ) ;
+	std::function< void( systemSignalHandler::signal ) > getEmergencyShutDown() ;
 	void unMountAllAndQuit( void ) ;
 	void pbUmount( void ) ;
 	void slotTrayClicked( QSystemTrayIcon::ActivationReason = QSystemTrayIcon::Trigger ) ;
@@ -134,7 +140,7 @@ private:
 
 	secrets m_secrets ;
 
-	utility2::translator m_translator ;
+	settings::translator m_translator ;
 
 	QMenu * m_hidden_volume_menu = nullptr ;
 	QMenu * m_not_hidden_volume_menu = nullptr ;
@@ -151,7 +157,7 @@ private:
 	bool m_startHidden ;
 	bool m_autoOpenFolderOnMount ;
 	bool m_disableEnableAll = false ;
-	bool m_warnOnMissingExecutable = false ;
+	bool m_emergencyShuttingDown = false ;
 
 	QString m_sharedFolderPath ;
 	QString m_folderOpener ;
@@ -165,6 +171,10 @@ private:
 	checkUpdates m_checkUpdates ;
 
 	configOptions m_configOptions ;
+
+	debugWindow m_debugWindow ;
+
+	systemSignalHandler m_signalHandler ;
 };
 
 #endif // MAINWINDOW_H

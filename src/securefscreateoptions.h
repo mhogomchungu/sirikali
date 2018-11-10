@@ -36,21 +36,32 @@ class securefscreateoptions : public QDialog
 {
 	Q_OBJECT
 public:
-	static void instance( QWidget * parent,std::function< void( const QStringList& ) > function )
+	struct Options{
+		Options( const QStringList& s ) :
+			options( s ),success( true )
+		{
+		}
+		Options() : success( false )
+		{
+		}
+		QStringList options ;
+		bool success ;
+	} ;
+	static void instance( QWidget * parent,std::function< void( const Options& ) > function )
 	{
 		new securefscreateoptions( parent,std::move( function ) ) ;
 	}
-	explicit securefscreateoptions( QWidget * parent,std::function< void( const QStringList& ) > ) ;
+	explicit securefscreateoptions( QWidget * parent,std::function< void( const Options& ) > ) ;
 	~securefscreateoptions() ;
 private slots:
 	void pbOK() ;
 	void pbCancel() ;
 	void pbConfigFilePath() ;
 private:
-	void HideUI() ;
+	void HideUI( const Options& = Options() ) ;
 	void closeEvent( QCloseEvent * ) ;
 	Ui::securefscreateoptions * m_ui ;
-	std::function< void( const QStringList& ) > m_function ;
+	std::function< void( const Options& ) > m_function ;
 };
 
 #endif // SECUREFSCREATEOPTIONS_H

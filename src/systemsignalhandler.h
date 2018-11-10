@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (c) 2012-2015
+ *  Copyright (c) 2018
  *  name : Francis Banyikwa
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -17,20 +17,21 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QApplication>
-#include <QMetaObject>
-#include <QSettings>
+#ifndef HANDLE_SYSTEM_SIGNAL_H
+#define HANDLE_SYSTEM_SIGNAL_H
 
-#include "sirikali.h"
-#include "settings.h"
+#include <QObject>
+#include <functional>
 
-int main( int argc,char * argv[] )
+class systemSignalHandler
 {
-	settings::instance().scaleGUI() ;
+public:
+	enum class signal{ hup,term,winEndSession } ;
+	systemSignalHandler( QObject * parent,std::function< void( signal ) > ) ;
+	void listen() ;
+private:
+	QObject * m_parent ;
+	std::function< void( signal ) > m_function ;
+} ;
 
-	utility::initGlobals() ;
-
-	QApplication SiriKali( argc,argv ) ;
-
-	return sirikali().start( SiriKali ) ;
-}
+#endif

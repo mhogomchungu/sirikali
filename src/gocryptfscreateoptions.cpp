@@ -24,7 +24,7 @@
 #include "task.hpp"
 
 gocryptfscreateoptions::gocryptfscreateoptions( QWidget * parent,
-					std::function< void( const QStringList& ) > function ) :
+					std::function< void( const Options& ) > function ) :
 	QDialog( parent ),
 	m_ui( new Ui::gocryptfscreateoptions ),
 	m_function( std::move( function ) )
@@ -42,6 +42,8 @@ gocryptfscreateoptions::gocryptfscreateoptions( QWidget * parent,
 	m_ui->comboBox->addItems( { "AES256-GCM","AES256-SIV" } ) ;
 
 	m_ui->rbEncryptFileNames->setChecked( true ) ;
+
+	m_ui->checkBox->setToolTip( tr( "Normally Gocryptfs provides a plaintext view of data on demand.\nIt stores enciphered data and displays plaintext data.\nWith this option set, it takes as source plaintext data and produces enciphered data on-demand.\nThis can be useful for creating remote encrypted backups,\nwhere you do not wish to keep the local files unencrypted." ) ) ;
 
 	this->show() ;
 }
@@ -78,7 +80,11 @@ void gocryptfscreateoptions::pbOK()
 		}
 	}() ;
 
-	this->HideUI( { QString( "%1 %2" ).arg( a,b ),m_ui->lineEdit_2->text() } ) ;
+	auto c = { QString( "%1 %2" ).arg( a,b ),m_ui->lineEdit_2->text() } ;
+
+	auto d = m_ui->checkBox->isChecked() ;
+
+	this->HideUI( { { c },d } ) ;
 }
 
 void gocryptfscreateoptions::pbCancel()
@@ -86,12 +92,10 @@ void gocryptfscreateoptions::pbCancel()
 	this->HideUI() ;
 }
 
-void gocryptfscreateoptions::HideUI( const QStringList& e )
+void gocryptfscreateoptions::HideUI( const Options& opts )
 {
 	this->hide() ;
-
-	m_function( e ) ;
-
+	m_function( opts ) ;
 	this->deleteLater() ;
 }
 

@@ -41,6 +41,7 @@ class QTableWidget ;
 #include "cryfscreateoptions.h"
 #include "gocryptfscreateoptions.h"
 #include "ecryptfscreateoptions.h"
+#include "encfscreateoptions.h"
 
 #include <functional>
 #include <memory>
@@ -214,6 +215,7 @@ private :
 	bool m_checked = false ;
 	bool m_hmac ;
 	bool m_closeGUI = false ;
+	bool m_reverseMode = false ;
 
 	secrets& m_secrets ;
 
