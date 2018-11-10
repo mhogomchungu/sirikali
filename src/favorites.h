@@ -44,104 +44,18 @@ public:
 
 	struct entry
 	{
-		entry()
-		{
-		}
-
-		entry( const QStringList& e )
-		{
-			this->config( e ) ;
-		}
-
-		entry( const QString& r )
-		{
-			this->config( r.split( '\t',QString::SkipEmptyParts ) ) ;
-		}
-
-		QStringList list( bool e = true ) const
-		{
-			if( e ){
-
-				return this->configString().split( '\t',QString::SkipEmptyParts ) ;
-			}else{
-				return { volumePath,
-					 mountPointPath,
-					 autoMountVolume,
-					 configFilePath,
-					 idleTimeOut,
-					 mountOptions } ;
-			}
-		}
-
-		QString string( char s = '\t' ) const
-		{
-			return this->list().join( QString( s ) ) ;
-		}
-
-		QString configString() const
-		{
-			auto _opt = [ ]( const QString& e )->QString{
-
-				if( e.isEmpty() ){
-
-					return "N/A" ;
-				}else{
-					return e ;
-				}
-			} ;
-
-			auto e = "%1\t%2\t%3\t%4\t%5\t%6\t" ;
-
-			return QString( e ).arg( volumePath,mountPointPath,autoMountVolume,
-						 _opt( configFilePath ),_opt( idleTimeOut ),
-						 _opt( mountOptions ) ) ;
-		}
-		QStringList configStringList() const
-		{
-			return this->configString().split( "\t",QString::SkipEmptyParts ) ;
-		}
-		bool operator!=( const favorites::entry& other ) const
-		{
-			return !( *this == other ) ;
-		}
-
-		bool operator==( const favorites::entry& other ) const
-		{
-			return  this->volumePath      == other.volumePath &&
-				this->mountPointPath  == other.mountPointPath &&
-				this->autoMountVolume == other.autoMountVolume &&
-				this->configFilePath  == other.configFilePath &&
-				this->idleTimeOut     == other.idleTimeOut &&
-				this->mountOptions    == other.mountOptions &&
-				this->reverseMode     == other.reverseMode &&
-				this->volumeNeedNoPassword == other.volumeNeedNoPassword ;
-		}
-
-		bool autoMount() const
-		{
-			return autoMountVolume == "true" ;
-		}
-
-		bool needNoPassword() const
-		{
-			return mountOptions.contains( favorites::volumeNeedNoPassword ) ;
-		}
-
-		QString sanitizedMountOptions() const
-		{
-			return sanitizedMountOptions( mountOptions ) ;
-		}
-
-		static QString sanitizedMountOptions( const QString& s )
-		{
-			auto l = s.split( ',',QString::SkipEmptyParts ) ;
-
-			l.removeAll( favorites::reverseModeOption ) ;
-			l.removeAll( favorites::volumeNeedNoPassword ) ;
-
-			return l.join( "," ) ;
-		}
-
+		entry() ;
+		entry( const QStringList& e ) ;
+		entry( const QString& r ) ;
+		QStringList list( bool e = true ) const ;
+		QString string( char s = '\t' ) const ;
+		QString configString() const ;
+		QStringList configStringList() const;
+		bool operator!=( const favorites::entry& other ) const ;
+		bool operator==( const favorites::entry& other ) const ;
+		bool autoMount() const ;
+		QString sanitizedMountOptions() const ;
+		static QString sanitizedMountOptions( const QString& s ) ;
 		QString volumePath ;
 		QString mountPointPath ;
 		QString autoMountVolume ;
@@ -151,34 +65,7 @@ public:
 		bool reverseMode ;
 		bool volumeNeedNoPassword ;
 	private:
-		void config( const QStringList& e )
-		{
-			reverseMode = e.contains( favorites::reverseModeOption ) ;
-			volumeNeedNoPassword = e.contains( favorites::volumeNeedNoPassword ) ;
-
-			utility2::stringListToStrings( e,
-						      volumePath,
-						      mountPointPath,
-						      autoMountVolume,
-						      configFilePath,
-						      idleTimeOut,
-						      mountOptions ) ;
-
-			if( configFilePath == "N/A" ){
-
-				configFilePath.clear() ;
-			}
-
-			if( idleTimeOut == "N/A" ){
-
-				idleTimeOut.clear() ;
-			}
-
-			if( mountOptions == "N/A" ){
-
-				mountOptions.clear() ;
-			}
-		}
+		void config( const QStringList& e ) ;
 	};
 
 	enum class type{ sshfs,others } ;

@@ -545,3 +545,127 @@ void favorites::currentItemChanged( QTableWidgetItem * current,QTableWidgetItem 
 {
 	tablewidget::selectRow( current,previous ) ;
 }
+
+favorites::entry::entry()
+{
+}
+
+favorites::entry::entry( const QStringList& e )
+{
+	this->config( e ) ;
+}
+
+favorites::entry::entry( const QString& r )
+{
+	this->config( r.split( '\t',QString::SkipEmptyParts ) ) ;
+}
+
+QStringList favorites::entry::list( bool e ) const
+{
+	if( e ){
+
+		return this->configString().split( '\t',QString::SkipEmptyParts ) ;
+	}else{
+		return { volumePath,
+					mountPointPath,
+					autoMountVolume,
+					configFilePath,
+					idleTimeOut,
+					mountOptions } ;
+	}
+}
+
+QString favorites::entry::string( char s ) const
+{
+	return this->list().join( QString( s ) ) ;
+}
+
+QString favorites::entry::configString() const
+{
+	auto _opt = [ ]( const QString& e )->QString{
+
+		if( e.isEmpty() ){
+
+			return "N/A" ;
+		}else{
+			return e ;
+		}
+	} ;
+
+	auto e = "%1\t%2\t%3\t%4\t%5\t%6\t" ;
+
+	return QString( e ).arg( volumePath,mountPointPath,autoMountVolume,
+				 _opt( configFilePath ),_opt( idleTimeOut ),
+				 _opt( mountOptions ) ) ;
+}
+
+QStringList favorites::entry::configStringList() const
+{
+	return this->configString().split( "\t",QString::SkipEmptyParts ) ;
+}
+
+bool favorites::entry::operator!=( const favorites::entry& other ) const
+{
+	return !( *this == other ) ;
+}
+
+bool favorites::entry::operator==( const favorites::entry& other ) const
+{
+	return  this->volumePath      == other.volumePath &&
+		this->mountPointPath  == other.mountPointPath &&
+		this->autoMountVolume == other.autoMountVolume &&
+		this->configFilePath  == other.configFilePath &&
+		this->idleTimeOut     == other.idleTimeOut &&
+		this->mountOptions    == other.mountOptions &&
+		this->reverseMode     == other.reverseMode &&
+		this->volumeNeedNoPassword == other.volumeNeedNoPassword ;
+}
+
+bool favorites::entry::autoMount() const
+{
+	return autoMountVolume == "true" ;
+}
+
+QString favorites::entry::sanitizedMountOptions() const
+{
+	return sanitizedMountOptions( mountOptions ) ;
+}
+
+QString favorites::entry::sanitizedMountOptions( const QString& s )
+{
+	auto l = s.split( ',',QString::SkipEmptyParts ) ;
+
+	l.removeAll( favorites::reverseModeOption ) ;
+	l.removeAll( favorites::volumeNeedNoPassword ) ;
+
+	return l.join( "," ) ;
+}
+
+void favorites::entry::config( const QStringList& e )
+{
+	utility2::stringListToStrings( e,
+				       volumePath,
+				       mountPointPath,
+				       autoMountVolume,
+				       configFilePath,
+				       idleTimeOut,
+				       mountOptions ) ;
+
+	if( configFilePath == "N/A" ){
+
+		configFilePath.clear() ;
+	}
+
+	if( idleTimeOut == "N/A" ){
+
+		idleTimeOut.clear() ;
+	}
+
+	if( mountOptions == "N/A" ){
+
+		mountOptions.clear() ;
+	}
+
+	reverseMode          = mountOptions.contains( favorites::reverseModeOption ) ;
+	volumeNeedNoPassword = mountOptions.contains( favorites::volumeNeedNoPassword ) ;
+}

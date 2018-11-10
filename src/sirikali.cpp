@@ -468,7 +468,7 @@ void sirikali::favoriteClicked( QAction * ac )
 
 				if( it.first.volumePath == e ){
 
-					if( it.first.needNoPassword() ){
+					if( it.first.volumeNeedNoPassword ){
 
 						siritask::encryptedFolderMount( it.first ).start() ;
 					}else{
