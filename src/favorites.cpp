@@ -59,6 +59,13 @@ favorites::favorites( QWidget * parent,favorites::type type ) : QDialog( parent 
 		m_volumeNeedNoPassword = e ;
 	} ) ;
 
+	connect( m_ui->cbReadOnlyMode,&QCheckBox::toggled,[ this ]( bool e ){
+
+		m_mountReadOnly = e ;
+	} ) ;
+
+	m_ui->cbReadOnlyMode->setEnabled( !utility::platformIsWindows() ) ;
+
 	m_ui->pbAdd->setObjectName( "Add" ) ;
 
 	if( utility::platformIsWindows() ){
@@ -264,11 +271,15 @@ void favorites::edit()
 
 		m_ui->cbReverseMode->setChecked( c.contains( favorites::reverseModeOption ) ) ;
 		m_ui->cbVolumeNoPassword->setChecked( c.contains( favorites::volumeNeedNoPassword ) ) ;
+		m_ui->cbReadOnlyMode->setChecked( c.contains( favorites::mountReadOnly ) ) ;
 
 		if( c != "N/A" ){
 
-			m_ui->lineEditMountOptions->setText( utility::removeOption( c,favorites::reverseModeOption ) ) ;
-			m_ui->lineEditMountOptions->setText( utility::removeOption( c,favorites::volumeNeedNoPassword ) ) ;
+			QString aa = favorites::reverseModeOption ;
+			QString bb = favorites::volumeNeedNoPassword ;
+			QString cc = favorites::mountReadOnly ;
+
+			m_ui->lineEditMountOptions->setText( utility::removeOption( c,aa,bb,cc ) ) ;
 		}
 	}
 }
@@ -402,6 +413,16 @@ void favorites::add()
 		}
 	}
 
+	if( m_mountReadOnly ){
+
+		if( mOpts.isEmpty() ){
+
+			mOpts = favorites::mountReadOnly ;
+		}else{
+			mOpts += QString( "," ) + favorites::mountReadOnly ;
+		}
+	}
+
 	if( dev.isEmpty() ){
 
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Encrypted Folder Address Field Is Empty" ) ) ;
@@ -456,7 +477,6 @@ void favorites::add()
 		m_ui->lineEditConfigFilePath->clear() ;
 		m_ui->lineEditIdleTimeOut->clear() ;
 		m_ui->lineEditMountOptions->clear() ;
-		m_ui->cbReverseMode->setChecked( false ) ;
 	}else{
 		tablewidget::addRow( m_ui->tableWidget,e ) ;
 		settings::instance().addToFavorite( e ) ;
@@ -465,8 +485,12 @@ void favorites::add()
 		m_ui->lineEditConfigFilePath->clear() ;
 		m_ui->lineEditIdleTimeOut->clear() ;
 		m_ui->lineEditMountOptions->clear() ;
-		m_ui->cbReverseMode->setChecked( false ) ;
 	}
+
+	m_ui->cbReverseMode->setChecked( false ) ;
+	m_ui->cbReadOnlyMode->setChecked( false ) ;
+	m_ui->cbVolumeNoPassword->setChecked( false ) ;
+	m_ui->cbAutoMount->setChecked( false ) ;
 
 	m_ui->lineEditEncryptedFolderPath->clear() ;
 	m_ui->lineEditMountPath->clear() ;
@@ -616,9 +640,11 @@ bool favorites::entry::operator==( const favorites::entry& other ) const
 		this->autoMountVolume == other.autoMountVolume &&
 		this->configFilePath  == other.configFilePath &&
 		this->idleTimeOut     == other.idleTimeOut &&
+		this->readOnlyMode    == other.readOnlyMode &&
 		this->mountOptions    == other.mountOptions &&
 		this->reverseMode     == other.reverseMode &&
 		this->volumeNeedNoPassword == other.volumeNeedNoPassword ;
+
 }
 
 bool favorites::entry::autoMount() const
@@ -637,6 +663,7 @@ QString favorites::entry::sanitizedMountOptions( const QString& s )
 
 	l.removeAll( favorites::reverseModeOption ) ;
 	l.removeAll( favorites::volumeNeedNoPassword ) ;
+	l.removeAll( favorites::mountReadOnly ) ;
 
 	return l.join( "," ) ;
 }
@@ -668,4 +695,37 @@ void favorites::entry::config( const QStringList& e )
 
 	reverseMode          = mountOptions.contains( favorites::reverseModeOption ) ;
 	volumeNeedNoPassword = mountOptions.contains( favorites::volumeNeedNoPassword ) ;
+
+	if( mountOptions.contains( favorites::mountReadOnly ) ){
+
+		readOnlyMode = readOnly( true ) ;
+	}
+}
+
+favorites::entry::readOnly::readOnly() : m_isSet( false )
+{
+}
+
+favorites::entry::readOnly::readOnly( bool e ) : m_readOnlyVolume( e ),m_isSet( true )
+{
+}
+
+bool favorites::entry::readOnly::onlyRead() const
+{
+	return m_readOnlyVolume ;
+}
+
+bool favorites::entry::readOnly::operator==( const favorites::entry::readOnly& other )
+{
+	if( other.m_isSet && this->m_isSet ){
+
+		return this->m_readOnlyVolume == other.m_readOnlyVolume ;
+	}else{
+		return false ;
+	}
+}
+
+favorites::entry::readOnly::operator bool() const
+{
+	return m_isSet;
 }

@@ -17,8 +17,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MANAGEDEVICENAMES_H
-#define MANAGEDEVICENAMES_H
+#ifndef FAVORITES_H
+#define FAVORITES_H
 
 #include <QDialog>
 #include <QString>
@@ -41,9 +41,23 @@ class favorites : public QDialog
 public:
 	static constexpr const char * reverseModeOption = "-SiriKaliReverseMode" ;
 	static constexpr const char * volumeNeedNoPassword = "-SiriKaliVolumeNeedNoPassword" ;
+	static constexpr const char * mountReadOnly = "-SiriKaliMountReadOnly" ;
 
 	struct entry
 	{
+		class readOnly
+		{
+		public:
+			readOnly() ;
+			readOnly( bool e ) ;
+			operator bool() const ;
+			bool onlyRead() const ;
+			bool operator==( const readOnly& other ) ;
+		private:
+			bool m_readOnlyVolume = false ;
+			bool m_isSet = false ;
+		} ;
+
 		entry() ;
 		entry( const QStringList& e ) ;
 		entry( const QString& r ) ;
@@ -62,8 +76,9 @@ public:
 		QString configFilePath ;
 		QString idleTimeOut ;
 		QString mountOptions ;
-		bool reverseMode ;
-		bool volumeNeedNoPassword ;
+		bool reverseMode = false ;
+		bool volumeNeedNoPassword = false ;
+		favorites::entry::readOnly readOnlyMode = readOnly() ;
 	private:
 		void config( const QStringList& e ) ;
 	};
@@ -106,6 +121,7 @@ private:
 	int m_editRow ;
 	bool m_reverseMode = false ;
 	bool m_volumeNeedNoPassword = false ;
+	bool m_mountReadOnly = false ;
 };
 
-#endif // MANAGEDEVICENAMES_H
+#endif // FAVORITES_H

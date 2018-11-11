@@ -90,7 +90,7 @@ namespace siritask
 			idleTimeout( e.idleTimeOut ),
 			configFilePath( e.configFilePath ),
 			type( QString() ),
-			ro( false ),
+			ro( e.readOnlyMode ? e.readOnlyMode.onlyRead() : false ),
 			reverseMode( e.reverseMode ),
 			mountOptions( e.sanitizedMountOptions() )
 		{

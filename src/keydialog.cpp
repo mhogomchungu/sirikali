@@ -307,6 +307,14 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 	m_mountOptions = e.mountOptions() ;
 	m_working      = false ;
 
+	m_favoriteReadOnly = e.mountReadOnly() ;
+
+	if( m_favoriteReadOnly ){
+
+		m_ui->checkBoxOpenReadOnly->setChecked( m_favoriteReadOnly.onlyRead() ) ;
+		m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
+	}
+
 	m_ui->lineEditKey->setText( key ) ;
 
 	this->setUIVisible( true ) ;
@@ -1244,7 +1252,14 @@ void keyDialog::SetUISetKey( bool e )
 
 void keyDialog::encryptedFolderMount()
 {
-	auto ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
+	bool ro ;
+
+	if( m_favoriteReadOnly ){
+
+		ro = true ;
+	}else{
+		ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
+	}
 
 	auto m = m_ui->lineEditMountPoint->text() ;
 

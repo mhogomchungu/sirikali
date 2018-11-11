@@ -10,14 +10,14 @@
     <x>0</x>
     <y>0</y>
     <width>1105</width>
-    <height>535</height>
+    <height>592</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Manage Favorites</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="12" column="2">
+   <item row="13" column="2">
     <widget class="QPushButton" name="pbCancel">
      <property name="text">
       <string>&amp;Done</string>
@@ -188,7 +188,7 @@
      </property>
     </widget>
    </item>
-   <item row="12" column="1">
+   <item row="13" column="1">
     <widget class="QPushButton" name="pbAdd">
      <property name="text">
       <string>&amp;Add</string>
@@ -214,7 +214,7 @@
      </property>
     </widget>
    </item>
-   <item row="11" column="1" colspan="2">
+   <item row="12" column="1" colspan="2">
     <widget class="QCheckBox" name="cbReverseMode">
      <property name="text">
       <string>Reverse Mode (Gocryptfs and Encfs Only)</string>
@@ -232,6 +232,13 @@
     <widget class="QCheckBox" name="cbVolumeNoPassword">
      <property name="text">
       <string>Volume Does Not Use A Password</string>
+     </property>
+    </widget>
+   </item>
+   <item row="11" column="1">
+    <widget class="QCheckBox" name="cbReadOnlyMode">
+     <property name="text">
+      <string>Mount In Read Only Mode</string>
      </property>
     </widget>
    </item>
