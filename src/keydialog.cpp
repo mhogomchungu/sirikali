@@ -313,6 +313,14 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 		m_ui->checkBoxOpenReadOnly->setChecked( m_favoriteReadOnly.onlyRead() ) ;
 		m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
+	}else{
+		if( utility::platformIsWindows() ){
+
+			m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
+		}else{
+			m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
+			m_ui->checkBoxOpenReadOnly->setChecked( settings::instance().getOpenVolumeReadOnlyOption() ) ;
+		}
 	}
 
 	m_ui->lineEditKey->setText( key ) ;
@@ -686,7 +694,7 @@ void keyDialog::enableAll()
 		m_ui->checkBoxVisibleKey->setEnabled( index == keyDialog::Key ) ;
 	}
 
-	if( !utility::platformIsWindows() ){
+	if( !utility::platformIsWindows() && !m_favoriteReadOnly ){
 
 		m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
 	}
