@@ -567,11 +567,11 @@ QStringList favorites::entry::list( bool e ) const
 		return this->configString().split( '\t',QString::SkipEmptyParts ) ;
 	}else{
 		return { volumePath,
-					mountPointPath,
-					autoMountVolume,
-					configFilePath,
-					idleTimeOut,
-					mountOptions } ;
+			 mountPointPath,
+			 autoMountVolume,
+			 configFilePath,
+			 idleTimeOut,
+			 mountOptions } ;
 	}
 }
 

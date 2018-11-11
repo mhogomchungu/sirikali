@@ -97,5 +97,6 @@ TRANSLATIONS = ../translations/en_US.ts \
                ../translations/fr_FR.ts \
                ../translations/es_MX.ts \
                ../translations/ar_SA.ts \
-               ../translations/de_DE.ts
+               ../translations/de_DE.ts \
+               ../translations/ru_RU.ts
 
