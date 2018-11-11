@@ -143,10 +143,10 @@ namespace utility
 	struct fsInfo
 	{
 		bool valid ;
-        uint64_t f_blocks ;
-        uint64_t f_bavail ;
-        uint64_t f_bsize ;
-        uint64_t f_bfree ;
+		uint64_t f_blocks ;
+		uint64_t f_bavail ;
+		uint64_t f_bsize ;
+		uint64_t f_bfree ;
 	};
 
 	::Task::future< utility::fsInfo >& fileSystemInfo( const QString& ) ;
