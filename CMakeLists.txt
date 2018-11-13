@@ -286,6 +286,7 @@ set( SRC 	src/dialogok.cpp
 		src/keydialog.cpp
 		src/siritask.cpp
 		src/help.cpp
+		src/backends.cpp
 		src/oneinstance.cpp
 		src/mountinfo.cpp
 		src/utility.cpp

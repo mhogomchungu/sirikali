@@ -23,6 +23,7 @@
 #include "task.hpp"
 #include "winfsp.h"
 #include "settings.h"
+#include "backends.h"
 
 #include <QMetaObject>
 #include <QtGlobal>
@@ -242,7 +243,7 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 
 		for( const auto& it : _unlocked_volumes( background_thread::True ) ){
 
-			if( volumeInfo::supported( it ) ){
+			if( backEnd::supported( it ) ){
 
 				const auto& k = utility::split( it,' ' ) ;
 
@@ -259,18 +260,11 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 
 				const auto& fs = k.at( s - 3 ) ;
 
-				if( utility::startsWithAtLeastOne( cf,"encfs@",
-								   "cryfs@",
-								   "securefs@",
-								   "gocryptfs@",
-								   "sshfs@" ) ){
+				if( backEnd::supported( cf,backEnd::Attempt::First ) ){
 
 					info.volumePath = _decode( cf,true ) ;
 
-				}else if( utility::equalsAtleastOne( fs,"fuse.gocryptfs",
-								     "fuse.gocryptfs-reverse",
-								     "ecryptfs",
-								     "fuse.sshfs" ) ){
+				}else if( backEnd::supported( fs,backEnd::Attempt::Second ) ){
 
 					info.volumePath = _decode( cf,false ) ;
 				}else{

@@ -225,6 +225,8 @@ namespace utility
 	void initGlobals() ;
 	QString helperSocketPath() ;
 
+	QString wrap_su( const QString& ) ;
+
 	QString getVolumeID( const QString&,bool = false ) ;
 	bool eventFilter( QObject * gui,QObject * watched,QEvent * event,std::function< void() > ) ;
 	void licenseInfo( QWidget * ) ;

@@ -64,17 +64,6 @@ public:
 		QString mountOptions ;
 		QString configPath ;
 	};
-
-	static bool supported( const QString& e )
-	{
-		return utility::containsAtleastOne( e," fuse.cryfs ",
-						    " fuse.encfs ",
-						    " fuse.sshfs ",
-						    " fuse.gocryptfs ",
-						    " fuse.gocryptfs-reverse ",
-						    " fuse.securefs ",
-						    " ecryptfs " ) ;
-	}
 	volumeInfo()
 	{
 	}

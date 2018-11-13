@@ -644,7 +644,6 @@ bool favorites::entry::operator==( const favorites::entry& other ) const
 		this->mountOptions    == other.mountOptions &&
 		this->reverseMode     == other.reverseMode &&
 		this->volumeNeedNoPassword == other.volumeNeedNoPassword ;
-
 }
 
 bool favorites::entry::autoMount() const
