@@ -431,7 +431,7 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opts,
 				auto cc = _makePath( opts.cipherFolder ) ;
 				auto mm = _makePath( opts.plainFolder ) ;
 
-				auto cmd = backend.command( { exe,opts,configFilePath,cc,mm,create } ) ;
+				auto cmd = backend.command( { exe,opts,m.value(),cc,mm,create } ) ;
 
 				auto s = _run_task( cmd,password,opts,create,_ecryptfs( backend.type ) ) ;
 
