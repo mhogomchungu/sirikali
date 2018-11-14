@@ -24,12 +24,10 @@ class mountOptions{
 public:
 	enum class separator{ space,equal_sign } ;
 
-	class fuseOptions{
+	class Options{
 	public:
-		fuseOptions()
-		{
-		}
-		fuseOptions( QString m ) : m_options( std::move( m ) )
+		Options( QString m,QString s ) :
+			m_options( std::move( m ) ),m_separator( s )
 		{
 		}
 		bool doesNotContain( const QString& key ) const
@@ -40,7 +38,7 @@ public:
 		{
 			return m_options.contains( key ) ;
 		}
-		void addPair( const QString& key,const QString& value,separator s = separator::equal_sign )
+		void addPair( const QString& key,const QString& value,separator s )
 		{
 			if( s == separator::space ){
 
@@ -50,14 +48,20 @@ public:
 			}
 		}
 		template< typename E >
-		void add( const E& e )
+		void add( E&& e )
 		{
-			mountOptions::add( m_options,",",e ) ;
+			if( m_options.isEmpty() ){
+
+				m_options = std::forward< E >( e ) ;
+			}else{
+				m_options += m_separator + std::forward< E >( e ) ;
+			}
 		}
 		template< typename E,typename ... T >
-		void add( const E& e,T&& ... m )
+		void add( E&& e,T&& ... m )
 		{
-			mountOptions::add( m_options,",",e,std::forward< T >( m ) ... ) ;
+			this->add( std::forward< E >( e ) ) ;
+			this->add( std::forward< T >( m ) ... ) ;
 		}
 		const QString& get() const
 		{
@@ -65,49 +69,33 @@ public:
 		}
 	private:
 		QString m_options ;
+		QString m_separator ;
+	};
+
+	class fuseOptions : public Options
+	{
+	public:
+		fuseOptions( QString m ) : Options( std::move( m ),"," )
+		{
+		}
+		void addPair( const QString& key,const QString& value,
+			      separator s = separator::equal_sign )
+		{
+			Options::addPair( key,value,s ) ;
+		}
 	} ;
 
-	class exeOptions{
+	class exeOptions : public Options
+	{
 	public:
-		exeOptions()
+		exeOptions( QString m ) : Options( std::move( m )," " )
 		{
 		}
-		exeOptions( QString m ) : m_options( std::move( m ) )
+		void addPair( const QString& key,const QString& value,
+			      separator s = separator::space )
 		{
+			Options::addPair( key,value,s ) ;
 		}
-		bool doesNotContain( const QString& key ) const
-		{
-			return !this->contains( key ) ;
-		}
-		bool contains( const QString& key ) const
-		{
-			return m_options.contains( key ) ;
-		}
-		void addPair( const QString& key,const QString& value,separator s = separator::space )
-		{
-			if( s == separator::space ){
-
-				this->add( key + " " + value ) ;
-			}else{
-				this->add( key + "=" + value ) ;
-			}
-		}
-		template< typename E >
-		void add( const E& e )
-		{
-			mountOptions::add( m_options," ",e ) ;
-		}
-		template< typename E,typename ... T >
-		void add( const E& e,T&& ... m )
-		{
-			mountOptions::add( m_options," ",e,std::forward< T >( m ) ... ) ;
-		}
-		const QString& get() const
-		{
-			return m_options ;
-		}
-	private:
-		QString m_options ;
 	} ;
 
 	mountOptions( const backEnd::cmdArgsList& e,const QString& f,const QString& g = QString() ) :
@@ -184,23 +172,6 @@ private:
 	QString m_fuseOptions ;
 	QString m_type ;
 	QString m_subType ;
-
-	template< typename E >
-	static void add( QString& options,const QString& separator,E&& e )
-	{
-		if( options.isEmpty() ){
-
-			options = e ;
-		}else{
-			options += separator + e ;
-		}
-	}
-	template< typename E,typename ... T >
-	static void add( QString& options,const QString& separator,E&& e,T&& ... m )
-	{
-		mountOptions::add( options,separator,std::forward< E >( e ) ) ;
-		mountOptions::add( options,separator,std::forward< T >( m ) ... ) ;
-	}
 };
 
 static QString _ecryptfs( const backEnd::cmdArgsList& args )
@@ -229,6 +200,20 @@ static QString _ecryptfs( const backEnd::cmdArgsList& args )
 		}else{
 			return s + " -o " + args.opt.mountOptions ;
 		}
+	}
+}
+
+static siritask::status _error_code_ecryptfs( const QString& e,int )
+{
+	if( e.contains( "operation not permitted" ) ){
+
+		return siritask::status::ecrypfsBadExePermissions ;
+
+	}else if( e.contains( "error: mount failed" ) ){
+
+		return siritask::status::ecryptfs ;
+	}else{
+		return siritask::status::backendFail ;
 	}
 }
 
@@ -287,6 +272,23 @@ static QString _gocryptfs( const backEnd::cmdArgsList& args )
 	}
 }
 
+static siritask::status _error_code_gocryptfs( const QString& e,int m )
+{
+	/*
+	 * This error code was added in gocryptfs 1.2.1
+	 */
+	if( m == 12 ){
+
+		return siritask::status::gocryptfs ;
+
+	}else if( e.contains( "password" ) ){
+
+		return siritask::status::gocryptfs ;
+	}else{
+		return siritask::status::backendFail ;
+	}
+}
+
 static QString _securefs( const backEnd::cmdArgsList& args )
 {
 	if( args.create ){
@@ -318,6 +320,22 @@ static QString _securefs( const backEnd::cmdArgsList& args )
 				args.cipherFolder,
 				args.mountPoint,
 				m.fuseOpts().get() ) ;
+	}
+}
+
+static siritask::status _error_code_securefs( const QString& e,int s )
+{
+	Q_UNUSED( s ) ;
+
+	if( e.contains( "password" ) ){
+
+		return siritask::status::securefs ;
+
+	}else if( e.contains( "winfsp" ) ){
+
+		return siritask::status::failedToLoadWinfsp ;
+	}else{
+		return siritask::status::backendFail ;
 	}
 }
 
@@ -368,6 +386,40 @@ static QString _cryfs( const backEnd::cmdArgsList& args )
 		      m.fuseOpts().get() ) ;
 }
 
+static siritask::status _error_code_cryfs( const QString& e,int s )
+{
+	/*
+	 * Error codes are here: https://github.com/cryfs/cryfs/blob/develop/src/cryfs/ErrorCodes.h
+	 *
+	 * Valid for cryfs > 0.9.8
+	 */
+
+	if( s == 11 ){
+
+		return siritask::status::cryfs ;
+
+	}else if( s == 14 ){
+
+		return siritask::status::cryfsMigrateFileSystem ;
+	}else{
+		/*
+		 * Falling back to parsing strings
+		 */
+
+		if( e.contains( "password" ) ){
+
+			return siritask::status::cryfs ;
+
+		}else if( e.contains( "this filesystem is for cryfs" ) &&
+			  e.contains( "it has to be migrated" ) ){
+
+			return siritask::status::cryfsMigrateFileSystem ;
+		}else{
+			return siritask::status::backendFail ;
+		}
+	}
+}
+
 static QString _encfs( const backEnd::cmdArgsList& args )
 {
 	QString e = "%1 %2 %3 %4 %5" ;
@@ -410,6 +462,22 @@ static QString _encfs( const backEnd::cmdArgsList& args )
 		      m.fuseOpts().get() ) ;
 }
 
+static siritask::status _error_code_encfs( const QString& e,int s )
+{
+	Q_UNUSED( s ) ;
+
+	if( e.contains( "password" ) ){
+
+		return siritask::status::encfs ;
+
+	}else if( e.contains( "winfsp" ) ){
+
+		return siritask::status::failedToLoadWinfsp ;
+	}else{
+		return siritask::status::backendFail ;
+	}
+}
+
 static QString _sshfs( const backEnd::cmdArgsList& args )
 {
 	mountOptions m( args,"sshfs","sshfs" ) ;
@@ -440,6 +508,35 @@ static QString _sshfs( const backEnd::cmdArgsList& args )
 		      args.cipherFolder,
 		      args.mountPoint,
 		      fuseOptions.get() ) ;
+}
+
+static siritask::status _error_code_sshfs( const QString& e,int s )
+{
+	Q_UNUSED( s ) ;
+
+	if( e.contains( "password" ) ){
+
+		return siritask::status::sshfs ;
+
+	}else if( e.contains( "winfsp" ) ){
+
+		return siritask::status::failedToLoadWinfsp ;
+	}else{
+		return siritask::status::backendFail ;
+	}
+}
+
+static siritask::status _error_code_unknown_backend( const QString& e,int s )
+{
+	Q_UNUSED( e ) ;
+	Q_UNUSED( s ) ;
+	return siritask::status::backendFail ;
+}
+
+static QString _unknown_backend( const backEnd::cmdArgsList& args )
+{
+	Q_UNUSED( args ) ;
+	return QString() ;
 }
 
 const backEnd& backEnd::instance()
@@ -480,13 +577,13 @@ using cs = siritask::status ;
 
 backEnd::backEnd() :
 	entities( { {
-		{ "gocryptfs",cs::gocryptfsNotFound,cs::gocryptfs,_gocryptfs },
-		{ "securefs",cs::securefsNotFound,cs::securefs,_securefs },
-		{ "cryfs",cs::cryfsNotFound,cs::cryfs,_cryfs },
-		{ "encfs",cs::encfsNotFound,cs::encfs,_encfs },
-		{ "sshfs",cs::sshfsNotFound,cs::sshfs,_sshfs },
-		{ "ecryptfs",cs::ecryptfs_simpleNotFound,cs::ecryptfs,_ecryptfs },
-		{ "ecryptfs-simple",cs::ecryptfs_simpleNotFound,cs::ecryptfs,_ecryptfs } } } )
+		{ "gocryptfs",cs::gocryptfsNotFound,cs::gocryptfs,_gocryptfs,_error_code_gocryptfs },
+		{ "securefs",cs::securefsNotFound,cs::securefs,_securefs,_error_code_securefs },
+		{ "cryfs",cs::cryfsNotFound,cs::cryfs,_cryfs,_error_code_cryfs },
+		{ "encfs",cs::encfsNotFound,cs::encfs,_encfs,_error_code_encfs },
+		{ "sshfs",cs::sshfsNotFound,cs::sshfs,_sshfs,_error_code_sshfs },
+		{ "ecryptfs",cs::ecryptfs_simpleNotFound,cs::ecryptfs,_ecryptfs,_error_code_ecryptfs },
+		{ "ecryptfs-simple",cs::ecryptfs_simpleNotFound,cs::ecryptfs,_ecryptfs,_error_code_ecryptfs } } } )
 {
 }
 
@@ -505,7 +602,8 @@ const backEnd::entity& backEnd::get( const siritask::options& e ) const
 	static entity shouldNotGetHere{ "",
 					cs::unknown,
 					cs::unknown,
-					[]( const cmdArgsList& ){ return QString() ; } } ;
+					_unknown_backend,
+					_error_code_unknown_backend } ;
 	return shouldNotGetHere ;
 }
 

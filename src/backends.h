@@ -47,7 +47,7 @@ public:
 		siritask::status exeNotFound ;
 		siritask::status name ;
 		std::function< QString( const cmdArgsList& ) > command ;
-
+		std::function< siritask::status( const QString&,int ) > status ;
 		QString executableFullPath() const ;
 	} ;
 

@@ -258,121 +258,6 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 	} ) ;
 }
 
-static siritask::cmdStatus _status( const utility::Task& r,siritask::status s )
-{
-	if( r.success() ){
-
-		return siritask::cmdStatus( siritask::status::success,r.exitCode() ) ;
-	}
-
-	siritask::cmdStatus e( r.exitCode(),r.stdError().isEmpty() ? r.stdOut() : r.stdError() ) ;
-
-	const auto msg = e.msg().toLower() ;
-
-	/*
-	 *
-	 * When trying to figure out what error occured,check for status value
-	 * if the backend supports them and fallback to parsing output strings
-	 * if backend does not support error codes.
-	 *
-	 */
-
-	if( s == siritask::status::ecryptfs ){
-
-		if( msg.contains( "operation not permitted" ) ){
-
-			e = siritask::status::ecrypfsBadExePermissions ;
-
-		}else if( msg.contains( "error: mount failed" ) ){
-
-			e = s ;
-		}
-
-	}else if( s == siritask::status::cryfs ){
-
-		/*
-		 * Error codes are here: https://github.com/cryfs/cryfs/blob/develop/src/cryfs/ErrorCodes.h
-		 *
-		 * Valid for cryfs > 0.9.8
-		 */
-
-		auto m = e.exitCode() ;
-
-		if( m == 11 ){
-
-			e = s ;
-
-		}else if( m == 14 ){
-
-			e = siritask::status::cryfsMigrateFileSystem ;
-		}else{
-			/*
-			 * Falling back to parsing strings
-			 */
-
-			if( msg.contains( "password" ) ){
-
-				e = s ;
-
-			}else if( msg.contains( "this filesystem is for cryfs" ) &&
-				  msg.contains( "it has to be migrated" ) ){
-
-				e = siritask::status::cryfsMigrateFileSystem ;
-			}
-		}
-
-	}else if( s == siritask::status::encfs ){
-
-		if( msg.contains( "password" ) ){
-
-			e = s ;
-
-		}else if( msg.contains( "winfsp" ) ){
-
-			e = cs::failedToLoadWinfsp ;
-		}
-
-	}else if( s == siritask::status::gocryptfs ){
-
-		/*
-		 * This error code was added in gocryptfs 1.2.1
-		 */
-		if( e.exitCode() == 12 ){
-
-			e = s ;
-		}else{
-			if( msg.contains( "password" ) ){
-
-				e = s ;
-			}
-		}
-
-	}else if( s == siritask::status::securefs ){
-
-		if( msg.contains( "password" ) ){
-
-			e = s ;
-
-		}else if( msg.contains( "winfsp" ) ){
-
-			e = cs::failedToLoadWinfsp ;
-		}
-
-	}else if( s == siritask::status::sshfs ){
-
-		if( msg.contains( "password" ) ){
-
-			e = s ;
-
-		}else if( msg.contains( "winfsp" ) ){
-
-			e = cs::failedToLoadWinfsp ;
-		}
-	}
-
-	return e ;
-}
-
 static utility::Task _run_task( const QString& cmd,
 				const QString& password,
 				const siritask::options& opts,
@@ -435,7 +320,15 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opts,
 
 				auto s = _run_task( cmd,password,opts,create,_ecryptfs( backend.type ) ) ;
 
-				return _status( s,backend.name ) ;
+				if( s.success() ){
+
+					return { siritask::status::success,s.exitCode() } ;
+				}else{
+					auto m = s.stdError().isEmpty() ? s.stdOut() : s.stdError() ;
+					auto n = backend.status( m.toLower(),s.exitCode() ) ;
+
+					return { n,s.exitCode(),m } ;
+				}
 			}else{
 				return cs::backEndDoesNotSupportCustomConfigPath ;
 			}
