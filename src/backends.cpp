@@ -203,8 +203,10 @@ static QString _ecryptfs( const backEnd::cmdArgsList& args )
 	}
 }
 
-static siritask::status _error_code_ecryptfs( const QString& e,int )
+static siritask::status _error_code_ecryptfs( const QString& e,int s )
 {
+	Q_UNUSED( s ) ;
+
 	if( e.contains( "operation not permitted" ) ){
 
 		return siritask::status::ecrypfsBadExePermissions ;

@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "SiriKali"
-#define MyAppVersion "1.3.4"
+#define MyAppVersion "1.3.6"
 #define MyAppPublisher "Francis Banyikwa"
 #define MyAppURL "https://mhogomchungu.github.io/sirikali"
 #define MyAppExeName "sirikali.exe"
@@ -41,7 +41,7 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 Source: "{#MyEXELocation}"; DestDir: "{app}"; Flags: ignoreversion
 
 Source: "{#MyLibrariesLocation}\*.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyGcryptLibraryPath}\*.dll"; DestDir: "{app}"; Flags: ignoreversion    
+Source: "{#MyGcryptLibraryPath}\*.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 Source: "{#MySourcesPath}\LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 

@@ -177,7 +177,7 @@ public:
 	int readPasswordMaximumLength() ;
 	bool unMountVolumesOnLogout( void ) ;
 private:
-    QSettings m_settings ;
+	QSettings m_settings ;
 };
 
 #endif //SETTINGS_H
