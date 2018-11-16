@@ -20,16 +20,19 @@
 #ifndef BACKEND_H
 #define BACKEND_H
 
+#include <vector>
+#include <memory>
+
 #include <QString>
+#include <QStringList>
+
 #include "siritask.h"
 
 class backEnd
 {
 public:
 	static const backEnd& instance() ;
-	static bool supported( const QString& ) ;
-	enum class Attempt{ First,Second } ;
-	static bool supported( const QString&,Attempt ) ;
+	static QStringList supported() ;
 
 	struct cmdArgsList
 	{
@@ -41,20 +44,35 @@ public:
 		const bool create ;
 	} ;
 
-	struct entity
+	class engine
 	{
-		QString type ;
-		siritask::status exeNotFound ;
-		siritask::status name ;
-		std::function< QString( const cmdArgsList& ) > command ;
-		std::function< siritask::status( const QString&,int ) > status ;
+	public:
+		engine( const QString& name ) ;
 		QString executableFullPath() const ;
-	} ;
+		bool isInstalled() const ;
+		bool isNotInstalled() const ;
+		bool unknown() const ;		
+		virtual ~engine() ;
+		virtual QString command( const backEnd::cmdArgsList& args ) const = 0 ;
+		virtual siritask::status errorCode( const QString& e,int s ) const = 0 ;
+		virtual siritask::status notFoundCode() const = 0 ;
+		virtual const QStringList& names() const = 0 ;
+		virtual const QStringList& fuseNames() const = 0 ;
+		virtual bool setsCipherPath() const = 0 ;
+		virtual bool supportsConfigFile() const = 0 ;
+		virtual bool needDoublePassword() const = 0 ;
+		virtual bool autoMountsOnCreate() const = 0 ;
+		virtual QStringList configFileNames() const = 0 ;
+	private:
+		QString m_name ;
+	};
 
 	backEnd() ;
-	const entity& get( const siritask::options& e ) const ;
+	const engine& getByName( const siritask::options& e ) const ;
+	const engine& getByName( const QString& e ) const ;
+	const engine& getByFuseName( const QString& e ) const ;
 private:
-	std::array< entity,7 > entities ;
+	std::vector< std::unique_ptr< backEnd::engine > > m_backends ;
 };
 
 #endif

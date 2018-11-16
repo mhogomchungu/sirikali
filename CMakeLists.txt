@@ -307,6 +307,14 @@ set( SRC 	src/dialogok.cpp
 		src/ecryptfscreateoptions.cpp
 		src/winfsp.cpp
 		src/settings.cpp
+		src/engines/cryfs.cpp
+		src/engines/ecryptfs.cpp
+		src/engines/gocryptfs.cpp
+		src/engines/securefs.cpp
+		src/engines/sshfs.cpp
+		src/engines/encfs.cpp
+		src/engines/unknown.cpp
+		src/engines/commandOptions.cpp
 )
 
 if( APPLE )

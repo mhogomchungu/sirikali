@@ -278,14 +278,14 @@ static utility::Task _run_task( const QString& cmd,
 	}
 }
 
-static utility::result< QString > _build_config_file_path( const siritask::options& opt,
+static utility::result< QString > _build_config_file_path( const backEnd::engine& engine,
 							   const QString& configFilePath )
 {
 	if( configFilePath.isEmpty() ){
 
 		return QString() ;
 	}else{
-		if( opt.type.isOneOf( "cryfs","gocryptfs","securefs","ecryptfs","encfs" ) ){
+		if( engine.supportsConfigFile() ){
 
 			return "--config " + _makePath( configFilePath ) ;
 		}else{
@@ -294,31 +294,32 @@ static utility::result< QString > _build_config_file_path( const siritask::optio
 	}
 }
 
-static siritask::cmdStatus _cmd( bool create,const siritask::options& opts,
-		const QString& password,const QString& configFilePath )
+static siritask::cmdStatus _cmd( const backEnd::engine& engine,
+				 bool create,
+				 const siritask::options& opts,
+				 const QString& password,
+				 const QString& configFilePath )
 {
-	auto& backend = backEnd::instance().get( opts ) ;
-
-	auto exe = backend.executableFullPath() ;
+	auto exe = engine.executableFullPath() ;
 
 	if( exe.isEmpty() ){
 
-		return backend.exeNotFound ;
+		return engine.notFoundCode() ;
 	}else{
 		exe = utility::Task::makePath( exe ) ;
 
 		auto _run = [ & ]()->siritask::cmdStatus{
 
-			auto m = _build_config_file_path( opts,configFilePath ) ;
+			auto m = _build_config_file_path( engine,configFilePath ) ;
 
 			if( m ){
 
 				auto cc = _makePath( opts.cipherFolder ) ;
 				auto mm = _makePath( opts.plainFolder ) ;
 
-				auto cmd = backend.command( { exe,opts,m.value(),cc,mm,create } ) ;
+				auto cmd = engine.command( { exe,opts,m.value(),cc,mm,create } ) ;
 
-				auto s = _run_task( cmd,password,opts,create,_ecryptfs( backend.type ) ) ;
+				auto s = _run_task( cmd,password,opts,create,_ecryptfs( engine.names().first() ) ) ;
 
 				if( s.success() ){
 
@@ -326,7 +327,7 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opts,
 				}else{
 					auto m = s.stdError().isEmpty() ? s.stdOut() : s.stdError() ;
 
-					auto n = backend.status( m.toLower(),s.exitCode() ) ;
+					auto n = engine.errorCode( m.toLower(),s.exitCode() ) ;
 
 					return { n,s.exitCode(),m } ;
 				}
@@ -359,36 +360,77 @@ static QString _configFilePath( const siritask::options& opt )
 	}
 }
 
-static siritask::cmdStatus _encrypted_folder_mount( const siritask::options& opt,bool reUseMountPoint )
+struct engine
 {
-	auto _mount = [ reUseMountPoint ]( const QString& app,const siritask::options& copt,
-			const QString& configFilePath )->siritask::cmdStatus{
+	const backEnd::engine& engine ;
+	QString path ;
+};
 
-		auto opt = copt ;
+template< typename Function >
+static engine _get_engine( const backEnd& backend,Function function )
+{
+	for( const auto& it : backEnd::supported() ){
 
-		opt.type = app ;
+		const auto& s = backend.getByName( it.toLower() ) ;
 
-		if( _ecryptfs_illegal_path( opt ) ){
+		for( const auto& xt : s.configFileNames() ){
 
-			return cs::ecryptfsIllegalPath ;
-		}
+			if( function( xt ) ){
 
-		if( _create_folder( opt.plainFolder ) || reUseMountPoint ){
-
-			auto e = _cmd( false,opt,opt.key,configFilePath ) ;
-
-			if( e == cs::success ){
-
-				_run_command_on_mount( opt,app ) ;
-			}else{
-				siritask::deleteMountFolder( opt.plainFolder ) ;
+				return { s,xt } ;
 			}
-
-			return e ;
-		}else{
-			return cs::failedToCreateMountPoint ;
 		}
-	} ;
+	}
+
+	return { backend.getByName( QString() ),QString() } ;
+}
+
+static siritask::cmdStatus _mount( bool reUseMountPoint,
+				   const backEnd::engine& engine,
+				   const siritask::options& copt,
+				   const QString& configFilePath )
+{
+	auto opt = copt ;
+
+	opt.type = engine.names().first() ;
+
+	if( _ecryptfs_illegal_path( opt ) ){
+
+		return cs::ecryptfsIllegalPath ;
+	}
+
+	if( _create_folder( opt.plainFolder ) || reUseMountPoint ){
+
+		auto e = _cmd( engine,false,opt,opt.key,configFilePath ) ;
+
+		if( e == cs::success ){
+
+			_run_command_on_mount( opt,opt.type.name() ) ;
+		}else{
+			siritask::deleteMountFolder( opt.plainFolder ) ;
+		}
+
+		return e ;
+	}else{
+		return cs::failedToCreateMountPoint ;
+	}
+}
+
+static utility::result< QString > _path_exist( QString e,const QString& m )
+{
+	e.remove( 0,m.size() ) ;
+
+	if( utility::pathExists( e ) ){
+
+		return e ;
+	}else{
+		return {} ;
+	}
+}
+
+static siritask::cmdStatus _encrypted_folder_mount( const siritask::options& opt,bool reUseMP )
+{
+	const auto& backend = backEnd::instance() ;
 
 	if( opt.cipherFolder.startsWith( "sshfs " ) ){
 
@@ -410,130 +452,60 @@ static siritask::cmdStatus _encrypted_folder_mount( const siritask::options& opt
 			}
 		}
 
-		return _mount( "sshfs",opts,QString() ) ;
-	}
+		return _mount( reUseMP,backend.getByName( "sshfs" ),opts,QString() ) ;
 
-	if( opt.configFilePath.isEmpty() ){
+	}else if( opt.configFilePath.isEmpty() ){
 
-		if( utility::pathExists( opt.cipherFolder + "/cryfs.config" ) ){
+		const auto& m = _get_engine( backend,[ & ]( const QString& e ){
 
-			return _mount( "cryfs",opt,QString() ) ;
+			return utility::pathExists( opt.cipherFolder + "/" + e ) ;
+		} ) ;
 
-		}else if( utility::pathExists( opt.cipherFolder + "/gocryptfs.conf" ) ){
+		if( !m.engine.unknown() ){
 
-			return _mount( "gocryptfs",opt,QString() ) ;
+			if( m.path == ".gocryptfs.reverse.conf" ){
 
-		}else if( utility::pathExists( opt.cipherFolder + "/.gocryptfs.reverse.conf" ) ){
+				if( opt.reverseMode ){
 
-			if( opt.reverseMode ){
-
-				return _mount( "gocryptfs",opt,QString() ) ;
+					return _mount( reUseMP,m.engine,opt,QString() ) ;
+				}else{
+					auto opts = opt ;
+					opts.reverseMode = true ;
+					return _mount( reUseMP,m.engine,opts,QString() ) ;
+				}
 			}else{
-				auto opts = opt ;
-				opts.reverseMode = true ;
-				return _mount( "gocryptfs",opts,QString() ) ;
-			}
-
-		}else if( utility::pathExists( opt.cipherFolder + "/.securefs.json" ) ){
-
-			return _mount( "securefs",opt,QString() ) ;
-
-		}else if( utility::pathExists( opt.cipherFolder + "/.ecryptfs.config" ) ){
-
-			return _mount( "ecryptfs",opt,opt.cipherFolder + "/.ecryptfs.config" ) ;
-		}else{
-			auto encfs6 = opt.cipherFolder + "/.encfs6.xml" ;
-			auto encfs5 = opt.cipherFolder + "/.encfs5" ;
-			auto encfs4 = opt.cipherFolder + "/.encfs4" ;
-
-			if( utility::atLeastOnePathExists( encfs6,encfs5,encfs4 ) ){
-
-				return _mount( "encfs",opt,QString() ) ;
-			}else{
-				return cs::unknown ;
+				return _mount( reUseMP,m.engine,opt,QString() ) ;
 			}
 		}
+
+	}else if( utility::pathExists( opt.configFilePath ) ){
+
+		const auto& m = _get_engine( backend,[ & ]( const QString& e ){
+
+			return opt.configFilePath.endsWith( e ) ;
+		} ) ;
+
+		if( !m.engine.unknown() ){
+
+			return _mount( reUseMP,m.engine,opt,opt.configFilePath ) ;
+		}
 	}else{
-		auto _path_exist = []( QString e,const QString& m )->utility::result< QString >{
-
-			e.remove( 0,m.size() ) ;
-
-			if( utility::pathExists( e ) ){
-
-				return e ;
-			}else{
-				return {} ;
-			}
-		} ;
-
 		auto e = opt.configFilePath ;
 
-		if( e.startsWith( "[[[gocryptfs]]]" ) ){
+		for( const auto& it : backEnd::supported() ){
 
-			auto m = _path_exist( e,"[[[gocryptfs]]]" ) ;
+			auto n = it.toLower() ;
 
-			if( m ){
+			auto s = "[[[" + n + "]]]" ;
 
-				return _mount( "gocryptfs",opt,m.value() ) ;
-			}
+			if( e.startsWith( s ) ){
 
-		}else if( e.startsWith( "[[[ecryptfs]]]" ) ){
+				auto m = _path_exist( e,s ) ;
 
-			auto m = _path_exist( e,"[[[ecryptfs]]]" ) ;
+				if( m ){
 
-			if( m ){
-
-				return _mount( "ecryptfs",opt,m.value() ) ;
-			}
-
-		}else if( e.startsWith( "[[[cryfs]]]" ) ){
-
-			auto m = _path_exist( e,"[[[cryfs]]]" ) ;
-
-			if( m ){
-
-				return _mount( "cryfs",opt,m.value() ) ;
-			}
-
-		}else if( e.startsWith( "[[[securefs]]]" ) ){
-
-			auto m = _path_exist( e,"[[[securefs]]]" ) ;
-
-			if( m ){
-
-				return _mount( "securefs",opt,m.value() ) ;
-			}
-
-		}else if( e.startsWith( "[[[encfs]]]" ) ){
-
-			auto m = _path_exist( e,"[[[encfs]]]" ) ;
-
-			if( m ){
-
-				return _mount( "encfs",opt,m.value() ) ;
-			}
-
-		}else if( utility::pathExists( e ) ){
-
-			if( e.endsWith( "gocryptfs.conf" ) || e.endsWith( "gocryptfs.reverse.conf" ) ){
-
-				return _mount( "gocryptfs",opt,e ) ;
-
-			}else if( e.endsWith( "securefs.json" ) ){
-
-				return _mount( "securefs",opt,e ) ;
-
-			}else if( e.endsWith( "ecryptfs.config" ) ){
-
-				return _mount( "ecryptfs",opt,e ) ;
-
-			}else if( e.endsWith( "cryfs.config" ) ){
-
-				return _mount( "cryfs",opt,e ) ;
-
-			}else if( utility::endsWithAtLeastOne( e,".encfs6.xml",".encfs5",".encfs4" ) ){
-
-				return _mount( "encfs",opt,e ) ;
+					return _mount( reUseMP,backend.getByName( n ),opt,m.value() ) ;
+				}
 			}
 		}
 	}
@@ -552,9 +524,11 @@ static siritask::cmdStatus _encrypted_folder_create( const siritask::options& op
 
 		if( _create_folder( opt.plainFolder ) ){
 
-			auto e = _cmd( true,opt,[ & ]()->QString{
+			auto& m = backEnd::instance().getByName( opt ) ;
 
-				if( opt.type.isOneOf( "securefs","encfs" ) ){
+			auto e = _cmd( m,true,opt,[ & ]()->QString{
+
+				if( m.needDoublePassword() ){
 
 					return opt.key + "\n" + opt.key ;
 				}else{
@@ -565,9 +539,9 @@ static siritask::cmdStatus _encrypted_folder_create( const siritask::options& op
 
 				auto e = _configFilePath( opt ) ;
 
-				if( e.isEmpty() && opt.type == "ecryptfs" ){
+				if( e.isEmpty() && m.names().first() == "ecryptfs" ){
 
-					return opt.cipherFolder + "/.ecryptfs.config" ;
+					return opt.cipherFolder + "/" + m.configFileNames().first() ;
 				}else{
 					return e ;
 				}
@@ -575,7 +549,7 @@ static siritask::cmdStatus _encrypted_folder_create( const siritask::options& op
 
 			if( e == cs::success ){
 
-				if( opt.type.isOneOf( "gocryptfs","securefs" ) ){
+				if( !m.autoMountsOnCreate() ){
 
 					auto e = siritask::encryptedFolderMount( opt,true ).get() ;
 

@@ -134,27 +134,33 @@ namespace siritask
 	enum class status
 	{
 		success,
-		cryfs,
-		cryfsMigrateFileSystem,
-		encfs,
-		sshfs,
-		gocryptfs,
-		securefs,
-		failedToLoadWinfsp,
-		ecryptfs,
-		ecryptfsIllegalPath,
-		ecrypfsBadExePermissions,
-		gocryptfsNotFound,
+		volumeCreatedSuccessfully,
+
+		cryfsBadPassword,
+		encfsBadPassword,
+		sshfsBadPassword,
+		gocryptfsBadPassword,
+		securefsBadPassword,
+		ecryptfsBadPassword,
+
 		sshfsNotFound,
 		cryfsNotFound,
 		encfsNotFound,
 		securefsNotFound,
-		backEndDoesNotSupportCustomConfigPath,
+		gocryptfsNotFound,
 		ecryptfs_simpleNotFound,
+
+		cryfsMigrateFileSystem,
+
+		failedToLoadWinfsp,
+
+		ecryptfsIllegalPath,
+		ecrypfsBadExePermissions,
+
+		backEndDoesNotSupportCustomConfigPath,
 		unknown,
 		failedToCreateMountPoint,
-		backendFail,
-		volumeCreatedSuccessfully
+		backendFail
 	};
 
 	class cmdStatus

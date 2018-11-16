@@ -62,6 +62,7 @@
 #include "winfsp.h"
 #include "json.h"
 #include "settings.h"
+#include "backends.h"
 
 static utility::volumeList _readFavorites()
 {
@@ -224,42 +225,23 @@ void sirikali::setUpApp( const QString& volume )
 		connect( m,SIGNAL( triggered( QAction * ) ),
 			 this,SLOT( createVolume( QAction * ) ) ) ;
 
-		auto _enable = []( QAction * ac,const QString& exe ){
+		for( const auto& it : backEnd::supported() ){
 
-			ac->setObjectName( exe ) ;
+			auto ac = m->addAction( it ) ;
 
-			if( utility::executableFullPath( exe.toLower() ).isEmpty() ){
+			ac->setObjectName( it ) ;
+
+			if( backEnd::instance().getByName( it.toLower() ).isNotInstalled() ){
 
 				ac->setEnabled( false ) ;
 
-				if( exe == "Ecryptfs" ){
+				if( it == "Ecryptfs" ){
 
 					ac->setText( tr( "%1 Is Not Installed" ).arg( "Ecryptfs-simple" ) ) ;
 				}else{
-					ac->setText( tr( "%1 Is Not Installed" ).arg( exe ) ) ;
+					ac->setText( tr( "%1 Is Not Installed" ).arg( it ) ) ;
 				}
 			}
-		} ;
-
-		if( utility::platformIsWindows() ){
-
-			_enable( m->addAction( "Encfs" ),"Encfs" ) ;
-			_enable( m->addAction( "Securefs" ),"Securefs" ) ;
-			_enable( m->addAction( "Sshfs" ),"Sshfs" ) ;
-
-		}else if( utility::platformIsOSX() ){
-
-			_enable( m->addAction( "Cryfs" ),"Cryfs" ) ;
-			_enable( m->addAction( "Gocryptfs" ),"Gocryptfs" ) ;
-			_enable( m->addAction( "Securefs" ),"Securefs" ) ;
-			_enable( m->addAction( "Encfs" ),"Encfs" ) ;
-		}else{
-			_enable( m->addAction( "Cryfs" ),"Cryfs" ) ;
-			_enable( m->addAction( "Gocryptfs" ),"Gocryptfs" ) ;
-			_enable( m->addAction( "Securefs" ),"Securefs" ) ;
-			_enable( m->addAction( "Encfs" ),"Encfs" ) ;
-			_enable( m->addAction( "Ecryptfs" ),"Ecryptfs" ) ;
-			_enable( m->addAction( "Sshfs" ),"Sshfs" ) ;
 		}
 
 		return m ;

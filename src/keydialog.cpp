@@ -921,27 +921,27 @@ void keyDialog::reportErrorMessage( const siritask::cmdStatus& s )
 		msg = tr( "Volume Created Successfully." ) ;
 		break ;
 
-	case siritask::status::cryfs :
+	case siritask::status::cryfsBadPassword :
 
 		msg = tr( "Failed To Unlock A Cryfs Volume.\nWrong Password Entered." ) ;
 		break;
 
-	case siritask::status::sshfs :
+	case siritask::status::sshfsBadPassword :
 
 		msg = tr( "Failed To Connect To The Remote Computer.\nWrong Password Entered." ) ;
 		break;
 
-	case siritask::status::encfs :
+	case siritask::status::encfsBadPassword :
 
 		msg = tr( "Failed To Unlock An Encfs Volume.\nWrong Password Entered." ) ;
 		break;
 
-	case siritask::status::gocryptfs :
+	case siritask::status::gocryptfsBadPassword :
 
 		msg = tr( "Failed To Unlock A Gocryptfs Volume.\nWrong Password Entered." ) ;
 		break;
 
-	case siritask::status::ecryptfs :
+	case siritask::status::ecryptfsBadPassword :
 
 		msg = tr( "Failed To Unlock An Ecryptfs Volume.\nWrong Password Entered." ) ;
 		break;
@@ -956,7 +956,7 @@ void keyDialog::reportErrorMessage( const siritask::cmdStatus& s )
 		msg = tr( "This Backend Requires Root's Privileges And An attempt To Acquire Them Has Failed." ) ;
 		break;
 
-	case siritask::status::securefs :
+	case siritask::status::securefsBadPassword :
 
 		msg = tr( "Failed To Unlock A Securefs Volume.\nWrong Password Entered." ) ;
 		break;
