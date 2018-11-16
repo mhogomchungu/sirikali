@@ -131,7 +131,7 @@ bool gocryptfs::autoMountsOnCreate() const
 	return false ;
 }
 
-bool gocryptfs::needDoublePassword() const
+QString gocryptfs::setPassword( const QString& e ) const
 {
-	return false ;
+	return e ;
 }

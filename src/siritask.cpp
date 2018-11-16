@@ -434,25 +434,17 @@ static siritask::cmdStatus _encrypted_folder_mount( const siritask::options& opt
 
 	if( opt.cipherFolder.startsWith( "sshfs " ) ){
 
+		const auto& engine = backend.getByName( "sshfs" ) ;
+
 		auto opts = opt ;
 		opts.cipherFolder = opts.cipherFolder.remove( 0,6 ) ; // 6 is the size of "sshfs "
 
 		if( !opts.key.isEmpty() ){
 
-			auto m = opts.key ;
-
-			/*
-			 * On my linux box, sshfs prompts six times when entered password is wrong before
-			 * giving up, here, we simulate replaying the password 10 times hoping it will be
-			 * enough for sshfs.
-			 */
-			for( int i = 0 ; i < 9 ; i++ ){
-
-				opts.key += "\n" + m ;
-			}
+			opts.key = engine.setPassword( opts.key ) ;
 		}
 
-		return _mount( reUseMP,backend.getByName( "sshfs" ),opts,QString() ) ;
+		return _mount( reUseMP,engine,opts,QString() ) ;
 
 	}else if( opt.configFilePath.isEmpty() ){
 
@@ -526,16 +518,7 @@ static siritask::cmdStatus _encrypted_folder_create( const siritask::options& op
 
 			auto& m = backEnd::instance().getByName( opt ) ;
 
-			auto e = _cmd( m,true,opt,[ & ]()->QString{
-
-				if( m.needDoublePassword() ){
-
-					return opt.key + "\n" + opt.key ;
-				}else{
-					return opt.key ;
-				}
-
-			}(),[ & ](){
+			auto e = _cmd( m,true,opt,m.setPassword( opt.key ),[ & ](){
 
 				auto e = _configFilePath( opt ) ;
 

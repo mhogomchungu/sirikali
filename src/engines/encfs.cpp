@@ -117,7 +117,7 @@ bool encfs::autoMountsOnCreate() const
 	return true ;
 }
 
-bool encfs::needDoublePassword() const
+QString encfs::setPassword( const QString& e ) const
 {
-	return true ;
+	return e + "\n" + e ;
 }

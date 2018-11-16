@@ -32,7 +32,7 @@ public:
 	bool supportsConfigFile() const override ;
 	QStringList configFileNames() const override ;
 	bool autoMountsOnCreate() const override ;
-	bool needDoublePassword() const override ;
+	QString setPassword( const QString& ) const override ;
 private:
 	QStringList m_names{ "" } ;
 	QStringList m_fuseNames{ "" } ;

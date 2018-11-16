@@ -109,7 +109,7 @@ bool securefs::autoMountsOnCreate() const
 	return false ;
 }
 
-bool securefs::needDoublePassword() const
+QString securefs::setPassword( const QString& e ) const
 {
-	return true ;
+	return e + "\n" + e ;
 }

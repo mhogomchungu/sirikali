@@ -107,7 +107,19 @@ bool sshfs::autoMountsOnCreate() const
 	return true ;
 }
 
-bool sshfs::needDoublePassword() const
+QString sshfs::setPassword( const QString& e ) const
 {
-	return false ;
+	auto m = e ;
+
+	/*
+	 * On my linux box, sshfs prompts six times when entered password is wrong before
+	 * giving up, here, we simulate replaying the password 10 times hoping it will be
+	 * enough for sshfs.
+	 */
+	for( int i = 0 ; i < 9 ; i++ ){
+
+		m += "\n" + m ;
+	}
+
+	return m ;
 }

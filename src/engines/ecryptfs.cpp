@@ -104,7 +104,7 @@ bool ecryptfs::autoMountsOnCreate() const
 	return true ;
 }
 
-bool ecryptfs::needDoublePassword() const
+QString ecryptfs::setPassword( const QString& e ) const
 {
-	return false ;
+	return e ;
 }

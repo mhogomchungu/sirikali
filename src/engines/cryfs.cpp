@@ -140,7 +140,7 @@ bool cryfs::autoMountsOnCreate() const
 	return true ;
 }
 
-bool cryfs::needDoublePassword() const
+QString cryfs::setPassword( const QString& e ) const
 {
-	return false ;
+	return e ;
 }

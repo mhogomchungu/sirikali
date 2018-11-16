@@ -72,7 +72,8 @@ bool unknown::autoMountsOnCreate() const
 	return true ;
 }
 
-bool unknown::needDoublePassword() const
+QString unknown::setPassword( const QString& e ) const
 {
-	return false ;
+	Q_UNUSED( e ) ;
+	return QString() ;
 }
