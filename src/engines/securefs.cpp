@@ -20,6 +20,8 @@
 #include "securefs.h"
 #include "commandOptions.h"
 
+#include "securefscreateoptions.h"
+
 securefs::securefs() : backEnd::engine( "securefs" )
 {
 }
@@ -112,4 +114,20 @@ bool securefs::autoMountsOnCreate() const
 QString securefs::setPassword( const QString& e ) const
 {
 	return e + "\n" + e ;
+}
+
+bool securefs::hasGUICreateOptions() const
+{
+	return true ;
+}
+
+QString securefs::defaultCreateOptions() const
+{
+	return QString() ;
+}
+
+void securefs::GUICreateOptionsinstance( QWidget * parent,
+					 std::function< void( const backEnd::engine::Options& ) > function ) const
+{
+	securefscreateoptions::instance( parent,std::move( function ) ) ;
 }

@@ -17,51 +17,42 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GOCRYPTFSCREATEOPTIONS_H
-#define GOCRYPTFSCREATEOPTIONS_H
+#ifndef SECUREFSCREATEOPTIONS_H
+#define SECUREFSCREATEOPTIONS_H
 
 #include <functional>
 #include <utility>
 
 #include <QCloseEvent>
 #include <QString>
+#include <QStringList>
 #include <QDialog>
 
+#include "../backends.h"
+
 namespace Ui {
-class gocryptfscreateoptions;
+class securefscreateoptions;
 }
 
-class gocryptfscreateoptions : public QDialog
+class securefscreateoptions : public QDialog
 {
 	Q_OBJECT
 public:
-	struct Options{
-		Options( const QStringList& s,bool r ) :
-			options( s ),reverseMode( r ),success( true )
-		{
-		}
-		Options() : success( false )
-		{
-		}
-		QStringList options ;
-		bool reverseMode ;
-		bool success ;
-	} ;
-	static void instance( QWidget * parent,std::function< void( const Options& ) > function )
+	static void instance( QWidget * parent,std::function< void( const backEnd::engine::Options& ) > function )
 	{
-                new gocryptfscreateoptions( parent,std::move( function ) ) ;
+		new securefscreateoptions( parent,std::move( function ) ) ;
 	}
-	gocryptfscreateoptions( QWidget * parent,std::function< void( const Options& ) > ) ;
-        ~gocryptfscreateoptions() ;
+	explicit securefscreateoptions( QWidget * parent,std::function< void( const backEnd::engine::Options& ) > ) ;
+	~securefscreateoptions() ;
 private slots:
-	void pbSelectConfigPath() ;
 	void pbOK() ;
 	void pbCancel() ;
+	void pbConfigFilePath() ;
 private:
-	void HideUI( const Options& = Options() ) ;
+	void HideUI( const backEnd::engine::Options& = backEnd::engine::Options() ) ;
 	void closeEvent( QCloseEvent * ) ;
-        Ui::gocryptfscreateoptions * m_ui ;
-	std::function< void( const Options& ) > m_function ;
+	Ui::securefscreateoptions * m_ui ;
+	std::function< void( const backEnd::engine::Options& ) > m_function ;
 };
 
-#endif // GOCRYPTFSCREATEOPTIONS_H
+#endif // SECUREFSCREATEOPTIONS_H

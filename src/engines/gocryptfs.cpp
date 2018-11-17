@@ -20,6 +20,8 @@
 #include "gocryptfs.h"
 #include "commandOptions.h"
 
+#include "gocryptfscreateoptions.h"
+
 gocryptfs::gocryptfs() : backEnd::engine( "gocryptfs" )
 {
 }
@@ -123,7 +125,10 @@ QString gocryptfs::configFileArgument() const
 
 QStringList gocryptfs::configFileNames() const
 {
-	return { "gocryptfs.conf","gocryptfs.reverse.conf" } ;
+	return { "gocryptfs.conf",
+		".gocryptfs.conf",
+		 ".gocryptfs.reverse.conf",
+		 "gocryptfs.reverse.conf"} ;
 }
 
 bool gocryptfs::autoMountsOnCreate() const
@@ -134,4 +139,20 @@ bool gocryptfs::autoMountsOnCreate() const
 QString gocryptfs::setPassword( const QString& e ) const
 {
 	return e ;
+}
+
+bool gocryptfs::hasGUICreateOptions() const
+{
+	return true ;
+}
+
+QString gocryptfs::defaultCreateOptions() const
+{
+	return QString() ;
+}
+
+void gocryptfs::GUICreateOptionsinstance( QWidget * parent,
+					  std::function< void( const backEnd::engine::Options& ) > function ) const
+{
+	gocryptfscreateoptions::instance( parent,std::move( function ) ) ;
 }

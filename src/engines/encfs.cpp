@@ -20,6 +20,8 @@
 #include "encfs.h"
 #include "commandOptions.h"
 
+#include "encfscreateoptions.h"
+
 encfs::encfs() : backEnd::engine( "encfs" )
 {
 }
@@ -120,4 +122,20 @@ bool encfs::autoMountsOnCreate() const
 QString encfs::setPassword( const QString& e ) const
 {
 	return e + "\n" + e ;
+}
+
+bool encfs::hasGUICreateOptions() const
+{
+	return true ;
+}
+
+QString encfs::defaultCreateOptions() const
+{
+	return QString() ;
+}
+
+void encfs::GUICreateOptionsinstance( QWidget * parent,
+				      std::function< void( const backEnd::engine::Options& ) > function ) const
+{
+	encfscreateoptions::instance( parent,std::move( function ) ) ;
 }

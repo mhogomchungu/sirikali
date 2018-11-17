@@ -123,5 +123,5 @@ const backEnd::engine& backEnd::getByFuseName( const QString& e ) const
 
 const backEnd::engine& backEnd::getByName( const QString& e ) const
 {
-	return _get_engine( m_backends,e,[]( const backEnd::engine& s ){ return s.names() ; } ) ;
+	return _get_engine( m_backends,e.toLower(),[]( const backEnd::engine& s ){ return s.names() ; } ) ;
 }

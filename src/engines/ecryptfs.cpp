@@ -19,6 +19,7 @@
 
 #include "ecryptfs.h"
 #include "commandOptions.h"
+#include "ecryptfscreateoptions.h"
 
 ecryptfs::ecryptfs() : backEnd::engine( "ecryptfs" )
 {
@@ -108,3 +109,20 @@ QString ecryptfs::setPassword( const QString& e ) const
 {
 	return e ;
 }
+
+bool ecryptfs::hasGUICreateOptions() const
+{
+	return true ;
+}
+
+QString ecryptfs::defaultCreateOptions() const
+{
+	return "-o " + ecryptfscreateoptions::defaultCreateOptions() ; ;
+}
+
+void ecryptfs::GUICreateOptionsinstance( QWidget * parent,
+					 std::function< void( const backEnd::engine::Options& ) > function ) const
+{
+	ecryptfscreateoptions::instance( parent,std::move( function ) ) ;
+}
+

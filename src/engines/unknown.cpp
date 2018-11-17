@@ -77,3 +77,20 @@ QString unknown::setPassword( const QString& e ) const
 	Q_UNUSED( e ) ;
 	return QString() ;
 }
+
+bool unknown::hasGUICreateOptions() const
+{
+	return false ;
+}
+
+QString unknown::defaultCreateOptions() const
+{
+	return QString() ;
+}
+
+void unknown::GUICreateOptionsinstance( QWidget * parent,
+				      std::function< void( const backEnd::engine::Options& ) > function ) const
+{
+	Q_UNUSED( parent ) ;
+	Q_UNUSED( function ) ;
+}

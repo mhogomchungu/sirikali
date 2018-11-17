@@ -373,7 +373,7 @@ static engine _get_engine( const backEnd& backend,Function function )
 {
 	for( const auto& it : backEnd::supported() ){
 
-		const auto& s = backend.getByName( it.toLower() ) ;
+		const auto& s = backend.getByName( it ) ;
 
 		for( const auto& xt : s.configFileNames() ){
 

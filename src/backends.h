@@ -22,9 +22,11 @@
 
 #include <vector>
 #include <memory>
+#include <functional>
 
 #include <QString>
 #include <QStringList>
+#include <QWidget>
 
 #include "siritask.h"
 
@@ -47,12 +49,34 @@ public:
 	class engine
 	{
 	public:
+		struct Options{
+			Options( QStringList s,bool r ) :
+				options( std::move( s ) ),reverseMode( r ),success( true )
+			{
+			}
+			Options( QStringList s ) :
+				options( std::move( s ) ),reverseMode( false ),success( true )
+			{
+			}
+			Options( bool r ) :
+				reverseMode( r ),success( true )
+			{
+			}
+			Options() : success( false )
+			{
+			}
+			QStringList options ;
+			bool reverseMode ;
+			bool success ;
+		} ;
+
 		engine( const QString& name ) ;
 		QString executableFullPath() const ;
 		bool isInstalled() const ;
 		bool isNotInstalled() const ;
 		bool unknown() const ;		
 		virtual ~engine() ;
+		virtual QString defaultCreateOptions() const = 0 ;
 		virtual QString configFileArgument() const = 0 ;
 		virtual QString setPassword( const QString& ) const = 0 ;
 		virtual QString command( const backEnd::cmdArgsList& args ) const = 0 ;
@@ -62,7 +86,10 @@ public:
 		virtual const QStringList& fuseNames() const = 0 ;
 		virtual bool setsCipherPath() const = 0 ;
 		virtual bool autoMountsOnCreate() const = 0 ;
+		virtual bool hasGUICreateOptions() const = 0 ;
 		virtual QStringList configFileNames() const = 0 ;
+		virtual void GUICreateOptionsinstance( QWidget * parent,
+						       std::function< void( const Options& ) > )  const = 0 ;
 	private:
 		QString m_name ;
 	};

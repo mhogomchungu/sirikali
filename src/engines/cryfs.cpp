@@ -19,6 +19,7 @@
 
 #include "cryfs.h"
 #include "commandOptions.h"
+#include "cryfscreateoptions.h"
 
 cryfs::cryfs() : backEnd::engine( "cryfs" )
 {
@@ -132,7 +133,7 @@ QString cryfs::configFileArgument() const
 
 QStringList cryfs::configFileNames() const
 {
-	return { "cryfs.config" } ;
+	return { "cryfs.config",".cryfs.config" } ;
 }
 
 bool cryfs::autoMountsOnCreate() const
@@ -143,4 +144,20 @@ bool cryfs::autoMountsOnCreate() const
 QString cryfs::setPassword( const QString& e ) const
 {
 	return e ;
+}
+
+bool cryfs::hasGUICreateOptions() const
+{
+	return true ;
+}
+
+QString cryfs::defaultCreateOptions() const
+{
+	return QString() ;
+}
+
+void cryfs::GUICreateOptionsinstance( QWidget * parent,
+				      std::function< void( const backEnd::engine::Options& ) > function ) const
+{
+	cryfscreateoptions::instance( parent,std::move( function ) ) ;
 }

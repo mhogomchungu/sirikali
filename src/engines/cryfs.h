@@ -33,9 +33,10 @@ public:
 	QStringList configFileNames() const override ;
 	bool autoMountsOnCreate() const override ;
 	QString setPassword( const QString& ) const override ;
+	bool hasGUICreateOptions() const override ;
+	QString defaultCreateOptions() const override ;
+	void GUICreateOptionsinstance( QWidget * parent,std::function< void( const Options& ) > ) const override ;
 private:
 	QStringList m_names{ "cryfs" } ;
 	QStringList m_fuseNames{ "fuse.cryfs" } ;
-public:
-
 };

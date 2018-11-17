@@ -231,7 +231,7 @@ void sirikali::setUpApp( const QString& volume )
 
 			ac->setObjectName( it ) ;
 
-			if( backEnd::instance().getByName( it.toLower() ).isNotInstalled() ){
+			if( backEnd::instance().getByName( it ).isNotInstalled() ){
 
 				ac->setEnabled( false ) ;
 

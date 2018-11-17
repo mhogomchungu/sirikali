@@ -123,3 +123,20 @@ QString sshfs::setPassword( const QString& e ) const
 
 	return m ;
 }
+
+bool sshfs::hasGUICreateOptions() const
+{
+	return false ;
+}
+
+QString sshfs::defaultCreateOptions() const
+{
+	return QString() ;
+}
+
+void sshfs::GUICreateOptionsinstance( QWidget * parent,
+				      std::function< void( const backEnd::engine::Options& ) > function ) const
+{
+	Q_UNUSED( parent ) ;
+	Q_UNUSED( function ) ;
+}

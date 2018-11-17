@@ -37,6 +37,7 @@
 #include "crypto.h"
 #include "configfileoption.h"
 #include "settings.h"
+#include "backends.h"
 
 static QString _kwallet()
 {
@@ -405,12 +406,9 @@ void keyDialog::setDefaultUI()
 {
 	if( m_create ){
 
-		if( utility::equalsAtleastOne( m_exe,"Securefs","Cryfs","Gocryptfs","Ecryptfs","Encfs" ) ){
+		auto e = backEnd::instance().getByName( m_exe ).hasGUICreateOptions() ;
 
-			m_ui->pbOptions->setEnabled( true ) ;
-		}else{
-			m_ui->pbOptions->setEnabled( false ) ;
-		}
+		m_ui->pbOptions->setEnabled( e ) ;
 
 		m_ui->label_3->setVisible( true ) ;
 
@@ -465,78 +463,21 @@ void keyDialog::pbOptions()
 {
 	if( m_create ){
 
-		if( m_exe == "Ecryptfs" ){
+		auto& e = backEnd::instance().getByName( m_exe ) ;
 
-			this->hide() ;
+		this->hide() ;
 
-			ecryptfscreateoptions::instance( this,[ this ]( const ecryptfscreateoptions::Options& e ){
+		e.GUICreateOptionsinstance( m_parentWidget,[ this ]( const backEnd::engine::Options& e ){
 
-				if( e.success ){
+			if( e.success ){
 
-					utility2::stringListToStrings( e.options,m_createOptions,m_configFile ) ;
-				}
+				m_reverseMode = e.reverseMode ;
 
-				this->ShowUI() ;
-			} ) ;
+				utility2::stringListToStrings( e.options,m_createOptions,m_configFile ) ;
+			}
 
-		}else if( m_exe == "Gocryptfs" ){
-
-			this->hide() ;
-
-			gocryptfscreateoptions::instance( m_parentWidget,[ this ]( const gocryptfscreateoptions::Options& e ){
-
-				if( e.success ){
-
-					m_reverseMode = e.reverseMode ;
-
-					utility2::stringListToStrings( e.options,m_createOptions,m_configFile ) ;
-				}
-
-				this->ShowUI() ;
-			} ) ;
-
-		}else if( m_exe == "Securefs" ){
-
-			this->hide() ;
-
-			securefscreateoptions::instance( m_parentWidget,[ this ]( const securefscreateoptions::Options& e ){
-
-				if( e.success ){
-
-					utility2::stringListToStrings( e.options,m_createOptions,m_configFile ) ;
-				}
-
-				this->ShowUI() ;
-			} ) ;
-
-		}else if( m_exe == "Cryfs" ){
-
-			this->hide() ;
-
-			cryfscreateoptions::instance( m_parentWidget,[ this ]( const cryfscreateoptions::Options& e ){
-
-				if( e.success ){
-
-					utility2::stringListToStrings( e.options,m_createOptions,m_configFile ) ;
-				}
-
-				this->ShowUI() ;
-			} ) ;
-
-		}else if( m_exe == "Encfs" ){
-
-			this->hide() ;
-
-			encfscreateoptions::instance( m_parentWidget,[ this ]( const encfscreateoptions::Options& e ){
-
-				if( e.success ){
-
-					m_reverseMode = e.reverseMode ;
-				}
-
-				this->ShowUI() ;
-			} ) ;
-		}
+			this->ShowUI() ;
+		} ) ;
 	}else{
 		if( !m_checked ){
 
@@ -1123,12 +1064,11 @@ void keyDialog::encryptedFolderCreate()
 		return ;
 	}
 
-	if( m_exe == "Ecryptfs" ){
+	if( m_createOptions.isEmpty() ){
 
-		if( m_createOptions.isEmpty() ){
+		auto& e = backEnd::instance().getByName( m_exe ) ;
 
-			m_createOptions = "-o " + ecryptfscreateoptions::defaultCreateOptions() ;
-		}
+		m_createOptions = e.defaultCreateOptions() ;
 	}
 
 	m_working = true ;

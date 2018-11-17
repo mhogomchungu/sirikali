@@ -33,6 +33,9 @@ public:
 	QStringList configFileNames() const override ;
 	bool autoMountsOnCreate() const override ;
 	QString setPassword( const QString& ) const override ;
+	bool hasGUICreateOptions() const override ;
+	QString defaultCreateOptions() const override ;
+	void GUICreateOptionsinstance( QWidget * parent,std::function< void( const Options& ) > ) const override ;
 private:
 	QStringList m_names{ "gocryptfs","gocryptfs.reverse" } ;
 	QStringList m_fuseNames{ "fuse.gocryptfs","fuse.gocryptfs-reverse" } ;
