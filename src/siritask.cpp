@@ -285,11 +285,13 @@ static utility::result< QString > _build_config_file_path( const backEnd::engine
 
 		return QString() ;
 	}else{
-		if( engine.supportsConfigFile() ){
+		auto s = engine.configFileArgument() ;
 
-			return "--config " + _makePath( configFilePath ) ;
-		}else{
+		if( s.isEmpty() ){
+
 			return {} ;
+		}else{
+			return s + " " + _makePath( configFilePath ) ;
 		}
 	}
 }

@@ -116,9 +116,9 @@ bool gocryptfs::setsCipherPath() const
 	return true ;
 }
 
-bool gocryptfs::supportsConfigFile() const
+QString gocryptfs::configFileArgument() const
 {
-	return true ;
+	return "--config" ;
 }
 
 QStringList gocryptfs::configFileNames() const

@@ -53,14 +53,14 @@ public:
 		bool isNotInstalled() const ;
 		bool unknown() const ;		
 		virtual ~engine() ;
+		virtual QString configFileArgument() const = 0 ;
 		virtual QString setPassword( const QString& ) const = 0 ;
 		virtual QString command( const backEnd::cmdArgsList& args ) const = 0 ;
 		virtual siritask::status errorCode( const QString& e,int s ) const = 0 ;
-		virtual siritask::status notFoundCode() const = 0 ;
+		virtual siritask::status notFoundCode() const = 0 ;		
 		virtual const QStringList& names() const = 0 ;
 		virtual const QStringList& fuseNames() const = 0 ;
 		virtual bool setsCipherPath() const = 0 ;
-		virtual bool supportsConfigFile() const = 0 ;
 		virtual bool autoMountsOnCreate() const = 0 ;
 		virtual QStringList configFileNames() const = 0 ;
 	private:

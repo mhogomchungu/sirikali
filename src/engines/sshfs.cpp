@@ -92,9 +92,9 @@ bool sshfs::setsCipherPath() const
 	return true ;
 }
 
-bool sshfs::supportsConfigFile() const
+QString sshfs::configFileArgument() const
 {
-	return false ;
+	return QString() ;
 }
 
 QStringList sshfs::configFileNames() const

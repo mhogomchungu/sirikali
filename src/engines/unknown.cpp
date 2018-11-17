@@ -57,9 +57,9 @@ bool unknown::setsCipherPath() const
 	return false ;
 }
 
-bool unknown::supportsConfigFile() const
+QString unknown::configFileArgument() const
 {
-	return false ;
+	return QString() ;
 }
 
 QStringList unknown::configFileNames() const

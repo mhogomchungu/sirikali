@@ -102,14 +102,14 @@ bool encfs::setsCipherPath() const
 	return false ;
 }
 
-bool encfs::supportsConfigFile() const
+QString encfs::configFileArgument() const
 {
-	return true ;
+	return "--config" ;
 }
 
 QStringList encfs::configFileNames() const
 {
-	return { ".encfs6.xml",".encfs5",".encfs4" } ;
+	return { ".encfs6.xml","encfs6.xml",".encfs5",".encfs4" } ;
 }
 
 bool encfs::autoMountsOnCreate() const

@@ -89,9 +89,9 @@ bool ecryptfs::setsCipherPath() const
 	return true ;
 }
 
-bool ecryptfs::supportsConfigFile() const
+QString ecryptfs::configFileArgument() const
 {
-	return true ;
+	return "--config" ;
 }
 
 QStringList ecryptfs::configFileNames() const

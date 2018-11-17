@@ -29,7 +29,7 @@ public:
 	QString command( const backEnd::cmdArgsList& args ) const override ;
 	siritask::status errorCode( const QString& e,int s ) const override ;
 	bool setsCipherPath() const override ;
-	bool supportsConfigFile() const override ;
+	virtual QString configFileArgument() const override ;
 	QStringList configFileNames() const override ;
 	bool autoMountsOnCreate() const override ;
 	QString setPassword( const QString& ) const override ;

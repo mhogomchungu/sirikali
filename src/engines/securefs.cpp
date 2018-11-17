@@ -94,9 +94,9 @@ bool securefs::setsCipherPath() const
 	return false ;
 }
 
-bool securefs::supportsConfigFile() const
+QString securefs::configFileArgument() const
 {
-	return true ;
+	return "--config" ;
 }
 
 QStringList securefs::configFileNames() const

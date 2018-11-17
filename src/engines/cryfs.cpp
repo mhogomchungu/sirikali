@@ -125,9 +125,9 @@ bool cryfs::setsCipherPath() const
 	return true ;
 }
 
-bool cryfs::supportsConfigFile() const
+QString cryfs::configFileArgument() const
 {
-	return true ;
+	return "--config" ;
 }
 
 QStringList cryfs::configFileNames() const
