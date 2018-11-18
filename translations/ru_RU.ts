@@ -586,7 +586,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/encfscreateoptions.ui" line="71"/>
         <source>&amp;OK</source>
-        <translation></translation>
+        <translation>&amp;OK</translation>
     </message>
 </context>
 <context>
