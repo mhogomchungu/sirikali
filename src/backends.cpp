@@ -33,7 +33,7 @@ backEnd::engine::~engine()
 {
 }
 
-backEnd::engine::engine( const QString& e ) : m_name( e )
+backEnd::engine::engine( const QString& e ) : m_name( e.toLower() )
 {
 }
 

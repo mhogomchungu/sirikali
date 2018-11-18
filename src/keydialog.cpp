@@ -1064,13 +1064,6 @@ void keyDialog::encryptedFolderCreate()
 		return ;
 	}
 
-	if( m_createOptions.isEmpty() ){
-
-		auto& e = backEnd::instance().getByName( m_exe ) ;
-
-		m_createOptions = e.defaultCreateOptions() ;
-	}
-
 	m_working = true ;
 
 	siritask::options s( path,m,m_key,m_idleTimeOut,m_configFile,

@@ -450,7 +450,7 @@ static siritask::cmdStatus _encrypted_folder_mount( const siritask::options& opt
 
 	}else if( opt.configFilePath.isEmpty() ){
 
-		const auto& m = _get_engine( backend,[ & ]( const QString& e ){
+		auto m = _get_engine( backend,[ & ]( const QString& e ){
 
 			return utility::pathExists( opt.cipherFolder + "/" + e ) ;
 		} ) ;
@@ -474,7 +474,7 @@ static siritask::cmdStatus _encrypted_folder_mount( const siritask::options& opt
 
 	}else if( utility::pathExists( opt.configFilePath ) ){
 
-		const auto& m = _get_engine( backend,[ & ]( const QString& e ){
+		auto m = _get_engine( backend,[ & ]( const QString& e ){
 
 			return opt.configFilePath.endsWith( e ) ;
 		} ) ;
@@ -507,18 +507,25 @@ static siritask::cmdStatus _encrypted_folder_mount( const siritask::options& opt
 	return cs::unknown ;
 }
 
-static siritask::cmdStatus _encrypted_folder_create( const siritask::options& opt )
+static siritask::cmdStatus _encrypted_folder_create( const siritask::options& opts )
 {
-	if( _ecryptfs_illegal_path( opt ) ){
+	if( _ecryptfs_illegal_path( opts ) ){
 
 		return cs::ecryptfsIllegalPath ;
 	}
 
-	if( _create_folder( opt.cipherFolder ) ){
+	if( _create_folder( opts.cipherFolder ) ){
 
-		if( _create_folder( opt.plainFolder ) ){
+		if( _create_folder( opts.plainFolder ) ){
 
-			auto& m = backEnd::instance().getByName( opt ) ;
+			auto& m = backEnd::instance().getByName( opts ) ;
+
+			auto opt = opts ;
+
+			if( opt.createOptions.isEmpty() ){
+
+				opt.createOptions = m.defaultCreateOptions() ;
+			}
 
 			auto e = _cmd( m,true,opt,m.setPassword( opt.key ),[ & ](){
 
@@ -549,7 +556,7 @@ static siritask::cmdStatus _encrypted_folder_create( const siritask::options& op
 
 			return e ;
 		}else{
-			_deleteFolders( opt.cipherFolder ) ;
+			_deleteFolders( opts.cipherFolder ) ;
 
 			return cs::failedToCreateMountPoint ;
 		}

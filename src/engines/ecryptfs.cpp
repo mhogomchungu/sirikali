@@ -117,7 +117,7 @@ bool ecryptfs::hasGUICreateOptions() const
 
 QString ecryptfs::defaultCreateOptions() const
 {
-	return "-o " + ecryptfscreateoptions::defaultCreateOptions() ; ;
+	return "-o " + ecryptfscreateoptions::defaultCreateOptions() ;
 }
 
 void ecryptfs::GUICreateOptionsinstance( QWidget * parent,

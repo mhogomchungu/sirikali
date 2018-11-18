@@ -128,7 +128,7 @@ QStringList gocryptfs::configFileNames() const
 	return { "gocryptfs.conf",
 		".gocryptfs.conf",
 		 ".gocryptfs.reverse.conf",
-		 "gocryptfs.reverse.conf"} ;
+		 "gocryptfs.reverse.conf" } ;
 }
 
 bool gocryptfs::autoMountsOnCreate() const
