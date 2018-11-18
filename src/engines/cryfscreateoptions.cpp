@@ -24,7 +24,7 @@
 #include "task.hpp"
 
 cryfscreateoptions::cryfscreateoptions( QWidget * parent,
-					std::function< void( const backEnd::engine::Options& ) > function ) :
+					std::function< void( const engines::engine::Options& ) > function ) :
 	QDialog( parent ),
 	m_ui( new Ui::cryfscreateoptions ),
 	m_function( std::move( function ) )
@@ -125,7 +125,7 @@ void cryfscreateoptions::pbCancel()
 	this->HideUI() ;
 }
 
-void cryfscreateoptions::HideUI( const backEnd::engine::Options& opts )
+void cryfscreateoptions::HideUI( const engines::engine::Options& opts )
 {
 	this->hide() ;
 	m_function( opts ) ;

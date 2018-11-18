@@ -21,7 +21,7 @@
 #include "commandOptions.h"
 #include "ecryptfscreateoptions.h"
 
-ecryptfs::ecryptfs() : backEnd::engine( "ecryptfs" )
+ecryptfs::ecryptfs() : engines::engine( "ecryptfs" )
 {
 }
 
@@ -40,7 +40,7 @@ siritask::status ecryptfs::notFoundCode() const
 	return siritask::status::ecryptfs_simpleNotFound ;
 }
 
-QString ecryptfs::command( const backEnd::cmdArgsList& args ) const
+QString ecryptfs::command( const engines::cmdArgsList& args ) const
 {
 	auto e = QString( "%1 %2 %3 -a %4 %5 %6" ) ;
 
@@ -121,7 +121,7 @@ QString ecryptfs::defaultCreateOptions() const
 }
 
 void ecryptfs::GUICreateOptionsinstance( QWidget * parent,
-					 std::function< void( const backEnd::engine::Options& ) > function ) const
+					 std::function< void( const engines::engine::Options& ) > function ) const
 {
 	ecryptfscreateoptions::instance( parent,std::move( function ) ) ;
 }

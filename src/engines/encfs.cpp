@@ -22,7 +22,7 @@
 
 #include "encfscreateoptions.h"
 
-encfs::encfs() : backEnd::engine( "encfs" )
+encfs::encfs() : engines::engine( "encfs" )
 {
 }
 
@@ -41,7 +41,7 @@ siritask::status encfs::notFoundCode() const
 	return siritask::status::encfsNotFound ;
 }
 
-QString encfs::command( const backEnd::cmdArgsList& args ) const
+QString encfs::command( const engines::cmdArgsList& args ) const
 {
 	QString e = "%1 %2 %3 %4 %5" ;
 
@@ -135,7 +135,7 @@ QString encfs::defaultCreateOptions() const
 }
 
 void encfs::GUICreateOptionsinstance( QWidget * parent,
-				      std::function< void( const backEnd::engine::Options& ) > function ) const
+				      std::function< void( const engines::engine::Options& ) > function ) const
 {
 	encfscreateoptions::instance( parent,std::move( function ) ) ;
 }

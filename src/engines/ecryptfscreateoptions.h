@@ -27,7 +27,7 @@
 #include <QString>
 #include <QDialog>
 
-#include "../backends.h"
+#include "../engines.h"
 
 namespace Ui {
 class ecryptfscreateoptions;
@@ -45,21 +45,21 @@ public:
 	{
 		return "key=passphrase,ecryptfs_key_bytes=32,ecryptfs_cipher=aes" ;
 	}
-	static void instance( QWidget * parent,std::function< void( const backEnd::engine::Options& ) > function )
+	static void instance( QWidget * parent,std::function< void( const engines::engine::Options& ) > function )
 	{
                 new ecryptfscreateoptions( parent,std::move( function ) ) ;
 	}
-	ecryptfscreateoptions( QWidget * parent,std::function< void( const backEnd::engine::Options& ) > ) ;
+	ecryptfscreateoptions( QWidget * parent,std::function< void( const engines::engine::Options& ) > ) ;
         ~ecryptfscreateoptions() ;
 private slots:
 	void pbSelectConfigPath() ;
 	void pbOK() ;
 	void pbCancel() ;
 private:
-	void HideUI( const backEnd::engine::Options& = backEnd::engine::Options() ) ;
+	void HideUI( const engines::engine::Options& = engines::engine::Options() ) ;
 	void closeEvent( QCloseEvent * ) ;
         Ui::ecryptfscreateoptions * m_ui ;
-	std::function< void( const backEnd::engine::Options& ) > m_function ;
+	std::function< void( const engines::engine::Options& ) > m_function ;
 };
 
 #endif // ECRYPTFSCREATEOPTIONS_H

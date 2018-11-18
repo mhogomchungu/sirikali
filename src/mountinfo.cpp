@@ -23,7 +23,7 @@
 #include "task.hpp"
 #include "winfsp.h"
 #include "settings.h"
-#include "backends.h"
+#include "engines.h"
 
 #include <QMetaObject>
 #include <QtGlobal>
@@ -225,7 +225,7 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 			}
 		} ;
 
-		auto _starts_with = []( const backEnd::engine& e,const QString& s ){
+		auto _starts_with = []( const engines::engine& e,const QString& s ){
 
 			auto m = e.names() ;
 
@@ -273,7 +273,7 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 
 			const auto& fs = k.at( s - 3 ) ;
 
-			const auto& engine = backEnd::instance().getByFuseName( fs ) ;
+			const auto& engine = engines::instance().getByFuseName( fs ) ;
 
 			if( engine.unknown() ){
 

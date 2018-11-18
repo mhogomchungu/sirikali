@@ -20,7 +20,7 @@
 #include "unknown.h"
 #include "commandOptions.h"
 
-unknown::unknown() : backEnd::engine( QString() )
+unknown::unknown() : engines::engine( QString() )
 {
 }
 
@@ -39,7 +39,7 @@ siritask::status unknown::notFoundCode() const
 	return siritask::status::unknown ;
 }
 
-QString unknown::command( const backEnd::cmdArgsList& args ) const
+QString unknown::command( const engines::cmdArgsList& args ) const
 {
 	Q_UNUSED( args ) ;
 	return QString() ;
@@ -89,7 +89,7 @@ QString unknown::defaultCreateOptions() const
 }
 
 void unknown::GUICreateOptionsinstance( QWidget * parent,
-				      std::function< void( const backEnd::engine::Options& ) > function ) const
+				      std::function< void( const engines::engine::Options& ) > function ) const
 {
 	Q_UNUSED( parent ) ;
 	Q_UNUSED( function ) ;

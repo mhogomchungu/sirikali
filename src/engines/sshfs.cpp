@@ -20,7 +20,7 @@
 #include "sshfs.h"
 #include "commandOptions.h"
 
-sshfs::sshfs() : backEnd::engine( "sshfs" )
+sshfs::sshfs() : engines::engine( "sshfs" )
 {
 }
 
@@ -39,7 +39,7 @@ siritask::status sshfs::notFoundCode() const
 	return siritask::status::sshfsNotFound ;
 }
 
-QString sshfs::command( const backEnd::cmdArgsList& args ) const
+QString sshfs::command( const engines::cmdArgsList& args ) const
 {
 	commandOptions m( args,m_names.first(),m_names.first() ) ;
 
@@ -135,7 +135,7 @@ QString sshfs::defaultCreateOptions() const
 }
 
 void sshfs::GUICreateOptionsinstance( QWidget * parent,
-				      std::function< void( const backEnd::engine::Options& ) > function ) const
+				      std::function< void( const engines::engine::Options& ) > function ) const
 {
 	Q_UNUSED( parent ) ;
 	Q_UNUSED( function ) ;

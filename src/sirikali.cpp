@@ -62,7 +62,7 @@
 #include "winfsp.h"
 #include "json.h"
 #include "settings.h"
-#include "backends.h"
+#include "engines.h"
 
 static utility::volumeList _readFavorites()
 {
@@ -225,13 +225,13 @@ void sirikali::setUpApp( const QString& volume )
 		connect( m,SIGNAL( triggered( QAction * ) ),
 			 this,SLOT( createVolume( QAction * ) ) ) ;
 
-		for( const auto& it : backEnd::supported() ){
+		for( const auto& it : engines::supported() ){
 
 			auto ac = m->addAction( it ) ;
 
 			ac->setObjectName( it ) ;
 
-			if( backEnd::instance().getByName( it ).isNotInstalled() ){
+			if( engines::instance().getByName( it ).isNotInstalled() ){
 
 				ac->setEnabled( false ) ;
 

@@ -30,10 +30,10 @@
 
 #include "siritask.h"
 
-class backEnd
+class engines
 {
 public:
-	static const backEnd& instance() ;
+	static const engines& instance() ;
 	static QStringList supported() ;
 
 	struct cmdArgsList
@@ -74,14 +74,14 @@ public:
 		QString executableFullPath() const ;
 		bool isInstalled() const ;
 		bool isNotInstalled() const ;
-		bool unknown() const ;		
+		bool unknown() const ;
 		virtual ~engine() ;
 		virtual QString defaultCreateOptions() const = 0 ;
 		virtual QString configFileArgument() const = 0 ;
 		virtual QString setPassword( const QString& ) const = 0 ;
-		virtual QString command( const backEnd::cmdArgsList& args ) const = 0 ;
+		virtual QString command( const engines::cmdArgsList& args ) const = 0 ;
 		virtual siritask::status errorCode( const QString& e,int s ) const = 0 ;
-		virtual siritask::status notFoundCode() const = 0 ;		
+		virtual siritask::status notFoundCode() const = 0 ;
 		virtual const QStringList& names() const = 0 ;
 		virtual const QStringList& fuseNames() const = 0 ;
 		virtual bool setsCipherPath() const = 0 ;
@@ -94,12 +94,12 @@ public:
 		QString m_name ;
 	};
 
-	backEnd() ;
+	engines() ;
 	const engine& getByName( const siritask::options& e ) const ;
 	const engine& getByName( const QString& e ) const ;
 	const engine& getByFuseName( const QString& e ) const ;
 private:
-	std::vector< std::unique_ptr< backEnd::engine > > m_backends ;
+	std::vector< std::unique_ptr< engines::engine > > m_backends ;
 };
 
 #endif

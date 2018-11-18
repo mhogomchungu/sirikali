@@ -17,16 +17,16 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../backends.h"
+#include "../engines.h"
 
-class cryfs : public backEnd::engine
+class cryfs : public engines::engine
 {
 public:
 	cryfs() ;
 	const QStringList& names() const override ;
 	const QStringList& fuseNames() const override ;
 	siritask::status notFoundCode() const override ;
-	QString command( const backEnd::cmdArgsList& args ) const override ;
+	QString command( const engines::cmdArgsList& args ) const override ;
 	siritask::status errorCode( const QString& e,int s ) const override ;
 	bool setsCipherPath() const override ;
 	virtual QString configFileArgument() const override ;

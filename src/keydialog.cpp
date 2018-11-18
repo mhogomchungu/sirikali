@@ -37,7 +37,7 @@
 #include "crypto.h"
 #include "configfileoption.h"
 #include "settings.h"
-#include "backends.h"
+#include "engines.h"
 
 static QString _kwallet()
 {
@@ -406,7 +406,7 @@ void keyDialog::setDefaultUI()
 {
 	if( m_create ){
 
-		auto e = backEnd::instance().getByName( m_exe ).hasGUICreateOptions() ;
+		auto e = engines::instance().getByName( m_exe ).hasGUICreateOptions() ;
 
 		m_ui->pbOptions->setEnabled( e ) ;
 
@@ -463,11 +463,11 @@ void keyDialog::pbOptions()
 {
 	if( m_create ){
 
-		auto& e = backEnd::instance().getByName( m_exe ) ;
+		auto& e = engines::instance().getByName( m_exe ) ;
 
 		this->hide() ;
 
-		e.GUICreateOptionsinstance( m_parentWidget,[ this ]( const backEnd::engine::Options& e ){
+		e.GUICreateOptionsinstance( m_parentWidget,[ this ]( const engines::engine::Options& e ){
 
 			if( e.success ){
 

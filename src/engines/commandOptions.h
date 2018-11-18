@@ -20,9 +20,7 @@
 #ifndef COMMANDOPTIONS_H
 #define COMMANDOPTIONS_H
 
-#include "QString"
-
-#include "../backends.h"
+#include "../engines.h"
 
 class commandOptions{
 public:
@@ -102,7 +100,7 @@ public:
 		}
 	} ;
 
-	commandOptions( const backEnd::cmdArgsList& e,const QString& f,const QString& g = QString() ) :
+	commandOptions( const engines::cmdArgsList& e,const QString& f,const QString& g = QString() ) :
 		m_cmdArgsList( e ),m_type( f ),m_subType( g.isEmpty() ? "" : ",subtype=" + g )
 	{
 		for( const auto& it : utility::split( m_cmdArgsList.opt.mountOptions,',' ) ) {
@@ -171,7 +169,7 @@ public:
 		}
 	}
 private:
-	const backEnd::cmdArgsList& m_cmdArgsList ;
+	const engines::cmdArgsList& m_cmdArgsList ;
 	QString m_exeOptions ;
 	QString m_fuseOptions ;
 	QString m_type ;

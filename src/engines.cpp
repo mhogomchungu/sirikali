@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "backends.h"
+#include "engines.h"
 
 #include "engines/ecryptfs.h"
 #include "engines/cryfs.h"
@@ -29,41 +29,41 @@
 
 #include "utility.h"
 
-backEnd::engine::~engine()
+engines::engine::~engine()
 {
 }
 
-backEnd::engine::engine( const QString& e ) : m_name( e.toLower() )
+engines::engine::engine( const QString& e ) : m_name( e.toLower() )
 {
 }
 
-QString backEnd::engine::executableFullPath() const
+QString engines::engine::executableFullPath() const
 {
 	return utility::executableFullPath( m_name ) ;
 }
 
-bool backEnd::engine::isInstalled() const
+bool engines::engine::isInstalled() const
 {
 	return !this->isNotInstalled() ;
 }
 
-bool backEnd::engine::isNotInstalled() const
+bool engines::engine::isNotInstalled() const
 {
 	return this->executableFullPath().isEmpty() ;
 }
 
-bool backEnd::engine::unknown() const
+bool engines::engine::unknown() const
 {
 	return m_name.isEmpty() ;
 }
 
-const backEnd& backEnd::instance()
+const engines& engines::instance()
 {
-	static backEnd v ;
+	static engines v ;
 	return v ;
 }
 
-QStringList backEnd::supported()
+QStringList engines::supported()
 {
 	if( utility::platformIsWindows() ){
 
@@ -77,7 +77,7 @@ QStringList backEnd::supported()
 	}
 }
 
-backEnd::backEnd()
+engines::engines()
 {
 	m_backends.emplace_back( std::make_unique< unknown >() ) ;
 	m_backends.emplace_back( std::make_unique< securefs >() ) ;
@@ -88,17 +88,17 @@ backEnd::backEnd()
 	m_backends.emplace_back( std::make_unique< sshfs >() ) ;
 }
 
-const backEnd::engine& backEnd::getByName( const siritask::options& e ) const
+const engines::engine& engines::getByName( const siritask::options& e ) const
 {
 	return this->getByName( e.type.name() ) ;
 }
 
 template< typename T,typename Function >
-const backEnd::engine& _get_engine( const T& engine,const QString& e,Function function )
+const engines::engine& _get_engine( const T& engines,const QString& e,Function function )
 {
-	auto data = engine.data() ;
+	const auto data = engines.data() ;
 
-	for( size_t i = 1 ; i < engine.size() ; i++ ){
+	for( size_t i = 1 ; i < engines.size() ; i++ ){
 
 		const auto& s = *( data + i ) ;
 
@@ -116,12 +116,12 @@ const backEnd::engine& _get_engine( const T& engine,const QString& e,Function fu
 	return **data ;
 }
 
-const backEnd::engine& backEnd::getByFuseName( const QString& e ) const
+const engines::engine& engines::getByFuseName( const QString& e ) const
 {
-	return _get_engine( m_backends,e,[]( const backEnd::engine& s ){ return s.fuseNames() ; } ) ;
+	return _get_engine( m_backends,e,[]( const engines::engine& s ){ return s.fuseNames() ; } ) ;
 }
 
-const backEnd::engine& backEnd::getByName( const QString& e ) const
+const engines::engine& engines::getByName( const QString& e ) const
 {
-	return _get_engine( m_backends,e.toLower(),[]( const backEnd::engine& s ){ return s.names() ; } ) ;
+	return _get_engine( m_backends,e.toLower(),[]( const engines::engine& s ){ return s.names() ; } ) ;
 }

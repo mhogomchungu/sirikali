@@ -22,7 +22,7 @@
 
 #include "securefscreateoptions.h"
 
-securefs::securefs() : backEnd::engine( "securefs" )
+securefs::securefs() : engines::engine( "securefs" )
 {
 }
 
@@ -41,7 +41,7 @@ siritask::status securefs::notFoundCode() const
 	return siritask::status::securefsNotFound ;
 }
 
-QString securefs::command( const backEnd::cmdArgsList& args ) const
+QString securefs::command( const engines::cmdArgsList& args ) const
 {
 	if( args.create ){
 
@@ -127,7 +127,7 @@ QString securefs::defaultCreateOptions() const
 }
 
 void securefs::GUICreateOptionsinstance( QWidget * parent,
-					 std::function< void( const backEnd::engine::Options& ) > function ) const
+					 std::function< void( const engines::engine::Options& ) > function ) const
 {
 	securefscreateoptions::instance( parent,std::move( function ) ) ;
 }

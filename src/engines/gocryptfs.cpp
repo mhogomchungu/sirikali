@@ -22,7 +22,7 @@
 
 #include "gocryptfscreateoptions.h"
 
-gocryptfs::gocryptfs() : backEnd::engine( "gocryptfs" )
+gocryptfs::gocryptfs() : engines::engine( "gocryptfs" )
 {
 }
 
@@ -41,7 +41,7 @@ siritask::status gocryptfs::notFoundCode() const
 	return siritask::status::gocryptfsNotFound ;
 }
 
-QString gocryptfs::command( const backEnd::cmdArgsList& args ) const
+QString gocryptfs::command( const engines::cmdArgsList& args ) const
 {
 	if( args.create ){
 
@@ -152,7 +152,7 @@ QString gocryptfs::defaultCreateOptions() const
 }
 
 void gocryptfs::GUICreateOptionsinstance( QWidget * parent,
-					  std::function< void( const backEnd::engine::Options& ) > function ) const
+					  std::function< void( const engines::engine::Options& ) > function ) const
 {
 	gocryptfscreateoptions::instance( parent,std::move( function ) ) ;
 }

@@ -27,7 +27,7 @@
 #include <QString>
 #include <QDialog>
 
-#include "../backends.h"
+#include "../engines.h"
 
 namespace Ui {
 class encfscreateoptions;
@@ -37,21 +37,21 @@ class encfscreateoptions : public QDialog
 {
 	Q_OBJECT
 public:
-	static void instance( QWidget * parent,std::function< void( const backEnd::engine::Options& ) > function )
+	static void instance( QWidget * parent,std::function< void( const engines::engine::Options& ) > function )
 	{
                 new encfscreateoptions( parent,std::move( function ) ) ;
 	}
-	encfscreateoptions( QWidget * parent,std::function< void( const backEnd::engine::Options& ) > ) ;
+	encfscreateoptions( QWidget * parent,std::function< void( const engines::engine::Options& ) > ) ;
         ~encfscreateoptions() ;
 private slots:
 	void pbSelectConfigPath() ;
 	void pbOK() ;
 	void pbCancel() ;
 private:
-	void HideUI( const backEnd::engine::Options& = backEnd::engine::Options() ) ;
+	void HideUI( const engines::engine::Options& = engines::engine::Options() ) ;
 	void closeEvent( QCloseEvent * ) ;
         Ui::encfscreateoptions * m_ui ;
-	std::function< void( const backEnd::engine::Options& ) > m_function ;
+	std::function< void( const engines::engine::Options& ) > m_function ;
 };
 
 #endif // GOCRYPTFSCREATEOPTIONS_H

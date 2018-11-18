@@ -21,7 +21,7 @@
 #include "commandOptions.h"
 #include "cryfscreateoptions.h"
 
-cryfs::cryfs() : backEnd::engine( "cryfs" )
+cryfs::cryfs() : engines::engine( "cryfs" )
 {
 }
 
@@ -40,7 +40,7 @@ siritask::status cryfs::notFoundCode() const
 	return siritask::status::cryfsNotFound ;
 }
 
-QString cryfs::command( const backEnd::cmdArgsList& args ) const
+QString cryfs::command( const engines::cmdArgsList& args ) const
 {
 	auto separator = [](){
 
@@ -157,7 +157,7 @@ QString cryfs::defaultCreateOptions() const
 }
 
 void cryfs::GUICreateOptionsinstance( QWidget * parent,
-				      std::function< void( const backEnd::engine::Options& ) > function ) const
+				      std::function< void( const engines::engine::Options& ) > function ) const
 {
 	cryfscreateoptions::instance( parent,std::move( function ) ) ;
 }

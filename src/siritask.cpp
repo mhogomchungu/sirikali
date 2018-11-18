@@ -22,7 +22,7 @@
 #include "mountinfo.h"
 #include "winfsp.h"
 #include "settings.h"
-#include "backends.h"
+#include "engines.h"
 
 #include <QDir>
 #include <QString>
@@ -278,7 +278,7 @@ static utility::Task _run_task( const QString& cmd,
 	}
 }
 
-static utility::result< QString > _build_config_file_path( const backEnd::engine& engine,
+static utility::result< QString > _build_config_file_path( const engines::engine& engine,
 							   const QString& configFilePath )
 {
 	if( configFilePath.isEmpty() ){
@@ -296,7 +296,7 @@ static utility::result< QString > _build_config_file_path( const backEnd::engine
 	}
 }
 
-static siritask::cmdStatus _cmd( const backEnd::engine& engine,
+static siritask::cmdStatus _cmd( const engines::engine& engine,
 				 bool create,
 				 const siritask::options& opts,
 				 const QString& password,
@@ -364,14 +364,14 @@ static QString _configFilePath( const siritask::options& opt )
 
 struct engine
 {
-	const backEnd::engine& engine ;
+	const engines::engine& engine ;
 	QString path ;
 };
 
 template< typename Function >
-static engine _get_engine( const backEnd& backend,Function function )
+static engine _get_engine( const engines& backend,Function function )
 {
-	for( const auto& it : backEnd::supported() ){
+	for( const auto& it : engines::supported() ){
 
 		const auto& s = backend.getByName( it ) ;
 
@@ -388,7 +388,7 @@ static engine _get_engine( const backEnd& backend,Function function )
 }
 
 static siritask::cmdStatus _mount( bool reUseMountPoint,
-				   const backEnd::engine& engine,
+				   const engines::engine& engine,
 				   const siritask::options& copt,
 				   const QString& configFilePath )
 {
@@ -432,7 +432,7 @@ static utility::result< QString > _path_exist( QString e,const QString& m )
 
 static siritask::cmdStatus _encrypted_folder_mount( const siritask::options& opt,bool reUseMP )
 {
-	const auto& backend = backEnd::instance() ;
+	const auto& backend = engines::instance() ;
 
 	if( opt.cipherFolder.startsWith( "sshfs " ) ){
 
@@ -486,7 +486,7 @@ static siritask::cmdStatus _encrypted_folder_mount( const siritask::options& opt
 	}else{
 		auto e = opt.configFilePath ;
 
-		for( const auto& it : backEnd::supported() ){
+		for( const auto& it : engines::supported() ){
 
 			auto n = it.toLower() ;
 
@@ -518,7 +518,7 @@ static siritask::cmdStatus _encrypted_folder_create( const siritask::options& op
 
 		if( _create_folder( opts.plainFolder ) ){
 
-			auto& m = backEnd::instance().getByName( opts ) ;
+			auto& m = engines::instance().getByName( opts ) ;
 
 			auto opt = opts ;
 
