@@ -588,11 +588,6 @@ p, li { white-space: pre-wrap; }
         <source>&amp;OK</source>
         <translation></translation>
     </message>
-    <message>
-        <location filename="../src/encfscreateoptions.cpp" line="39"/>
-        <source>Normally EncFS provides a plaintext view of data on demand: it stores enciphered data and displays plaintext data.  With this option set, it takes as source plaintext data and produces enciphered data on-demand. This can be useful for creating remote encrypted backups, where you do not wish to keep the local files unencrypted.</source>
-        <translation>Обычно EncFS предоставляет отображение в виде обычного текста по запросу: он хранит зашифрованные данные и отображает данные открытого текста. С помощью этой опции он принимает в качестве исходных данных открытого текста и создает кодированные данные по требованию. Это может быть полезно для создания удаленных зашифрованных резервных копий, где вы не хотите, чтобы локальные файлы были незашифрованными.</translation>
-    </message>
 </context>
 <context>
     <name>favorites</name>
