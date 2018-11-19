@@ -103,7 +103,8 @@ Latest Version Is : %4.</source>
         <location filename="../src/sirikali.cpp" line="443"/>
         <source>Failed To Complete The Request.
 Sshfs Executable Could Not Be Found.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Не удалось выполнить запрос.
+ Исполняемый файл sshfs не найден.</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="449"/>
@@ -147,7 +148,7 @@ Sshfs Executable Could Not Be Found.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1363"/>
+        <location filename="../src/keydialog.cpp" line="1356"/>
         <source>Not Supported KeyFile Encountered Since It Contains AtLeast One Illegal Character(&apos;\n&apos;,&apos;\0&apos;,&apos;\r&apos;).
 
 Please Use a Hash Of The KeyFile Through &quot;HMAC+KeyFile&quot; Option.</source>
@@ -156,7 +157,7 @@ Please Use a Hash Of The KeyFile Through &quot;HMAC+KeyFile&quot; Option.</sourc
 Пожалуйста, используйте хэш Файлового ключа с помощью опции «HMAC + Файл ключа».</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1414"/>
+        <location filename="../src/keydialog.cpp" line="1407"/>
         <source>Effective Key Is Generated With Below Formula:
 
 key = hmac_sha256(password,keyfile contents)</source>
@@ -223,7 +224,7 @@ options:
         <translation>О SiriKali</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1418"/>
+        <location filename="../src/keydialog.cpp" line="1411"/>
         <source>This plugin delegates key generation to an external application</source>
         <translation>Этот плагин делегирует генерацию ключей во внешнее приложение</translation>
     </message>
@@ -846,15 +847,6 @@ p, li { white-space: pre-wrap; }
         <source>Reverse Mode</source>
         <translation>Режим &quot;reverse&quot;</translation>
     </message>
-    <message>
-        <location filename="../src/gocryptfscreateoptions.cpp" line="46"/>
-        <source>Normally Gocryptfs provides a plaintext view of data on demand.
-It stores enciphered data and displays plaintext data.
-With this option set, it takes as source plaintext data and produces enciphered data on-demand.
-This can be useful for creating remote encrypted backups,
-where you do not wish to keep the local files unencrypted.</source>
-        <translation>Обычно Gocryptfs предоставляет отображение в виде обычного текста по запросу: он хранит зашифрованные данные и отображает данные открытого текста. С помощью этой опции он принимает в качестве исходных данных открытого текста и создает кодированные данные по требованию. Это может быть полезно для создания удаленных зашифрованных резервных копий, где вы не хотите, чтобы локальные файлы были незашифрованными.</translation>
-    </message>
 </context>
 <context>
     <name>help</name>
@@ -957,8 +949,8 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.ui" line="58"/>
         <location filename="../src/keydialog.cpp" line="233"/>
-        <location filename="../src/keydialog.cpp" line="1394"/>
-        <location filename="../src/keydialog.cpp" line="1534"/>
+        <location filename="../src/keydialog.cpp" line="1387"/>
+        <location filename="../src/keydialog.cpp" line="1527"/>
         <source>Key</source>
         <translation>Пароль</translation>
     </message>
@@ -1027,29 +1019,29 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.ui" line="339"/>
         <location filename="../src/keydialog.cpp" line="234"/>
-        <location filename="../src/keydialog.cpp" line="1109"/>
-        <location filename="../src/keydialog.cpp" line="1400"/>
-        <location filename="../src/keydialog.cpp" line="1499"/>
+        <location filename="../src/keydialog.cpp" line="1102"/>
+        <location filename="../src/keydialog.cpp" line="1393"/>
+        <location filename="../src/keydialog.cpp" line="1492"/>
         <source>KeyFile</source>
         <translation>Файловый ключ</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="236"/>
-        <location filename="../src/keydialog.cpp" line="1435"/>
+        <location filename="../src/keydialog.cpp" line="1428"/>
         <source>HMAC+KeyFile</source>
         <translation>HMAC+Файловый ключ</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="235"/>
-        <location filename="../src/keydialog.cpp" line="1408"/>
-        <location filename="../src/keydialog.cpp" line="1412"/>
-        <location filename="../src/keydialog.cpp" line="1513"/>
+        <location filename="../src/keydialog.cpp" line="1401"/>
+        <location filename="../src/keydialog.cpp" line="1405"/>
+        <location filename="../src/keydialog.cpp" line="1506"/>
         <source>Key+KeyFile</source>
         <translation>Пароль+Файловый ключ</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="237"/>
-        <location filename="../src/keydialog.cpp" line="1408"/>
+        <location filename="../src/keydialog.cpp" line="1401"/>
         <source>ExternalExecutable</source>
         <translation>Внешнее приложение</translation>
     </message>
@@ -1080,7 +1072,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="534"/>
-        <location filename="../src/keydialog.cpp" line="1462"/>
+        <location filename="../src/keydialog.cpp" line="1455"/>
         <source>Passphrase Quality: 100%</source>
         <translation>Сложность пароля: 100%</translation>
     </message>
@@ -1113,7 +1105,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="847"/>
-        <location filename="../src/keydialog.cpp" line="1296"/>
+        <location filename="../src/keydialog.cpp" line="1289"/>
         <source>Upgrade File System</source>
         <translation>Обновление файловой системы</translation>
     </message>
@@ -1240,12 +1232,12 @@ Not Supported Volume Encountered.</source>
 </translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1150"/>
+        <location filename="../src/keydialog.cpp" line="1143"/>
         <source>Failed To Generate Key.</source>
         <translation>Не удалось создать ключ.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1439"/>
+        <location filename="../src/keydialog.cpp" line="1432"/>
         <source>Select A KeyFile</source>
         <translation>Выберите Файловый ключ</translation>
     </message>
@@ -1275,30 +1267,30 @@ To Do The Upgrade, Check The &quot;Upgrade File System&quot; Option And Unlock T
     <message>
         <location filename="../src/keydialog.cpp" line="1041"/>
         <location filename="../src/keydialog.cpp" line="1050"/>
-        <location filename="../src/keydialog.cpp" line="1227"/>
+        <location filename="../src/keydialog.cpp" line="1220"/>
         <source>Mount Point Path Already Taken.</source>
         <translation>Путь точки монтирования уже указан.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1058"/>
-        <location filename="../src/keydialog.cpp" line="1216"/>
-        <location filename="../src/keydialog.cpp" line="1246"/>
+        <location filename="../src/keydialog.cpp" line="1209"/>
+        <location filename="../src/keydialog.cpp" line="1239"/>
         <source>Atleast One Required Field Is Empty.</source>
         <translation>По крайней мере одно обязательное поле пустое.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1236"/>
+        <location filename="../src/keydialog.cpp" line="1229"/>
         <source>Encrypted Folder Appear To Not Be Present.</source>
         <translation>Зашифрованная папка может быть не указанна.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1511"/>
-        <location filename="../src/keydialog.cpp" line="1523"/>
+        <location filename="../src/keydialog.cpp" line="1504"/>
+        <location filename="../src/keydialog.cpp" line="1516"/>
         <source>Plugin name</source>
         <translation>Имя плагина</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1548"/>
+        <location filename="../src/keydialog.cpp" line="1541"/>
         <source>Keyfile path</source>
         <translation>Путь к Файловому ключу</translation>
     </message>
