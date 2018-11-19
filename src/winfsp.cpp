@@ -33,7 +33,7 @@ class manageInstances
 public:
 	Task::process::result addInstance( const QString& args,
 					   const QByteArray& password,
-					   const siritask::options& opts ) ;
+					   const engines::engine::options& opts ) ;
 	Task::process::result removeInstance( const QString& mountPoint ) ;
 	std::vector< QStringList > commands() const ;
 	QString volumeProperties( const QString& mountPath ) ;
@@ -358,7 +358,7 @@ static QProcessEnvironment _update_environment( const QString& type )
 
 Task::process::result SiriKali::Winfsp::FspLaunchRun( const QString& exe,
 						      const QByteArray& password,
-						      const siritask::options& opts )
+						      const engines::engine::options& opts )
 {
 	if( opts.type == "encfs" ){
 
@@ -387,11 +387,11 @@ Task::process::result SiriKali::Winfsp::FspLaunchRun( const QString& exe,
 
 Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QString& args,
 								      const QByteArray& password,
-								      const siritask::options& opts )
+								      const engines::engine::options& opts )
 {
 	auto exe = utility2::unique_qptr< QProcess >() ;
 
-	auto env = _update_environment( opts.type.name() ) ;
+	auto env = _update_environment( opts.type ) ;
 
 	auto ssh_auth = opts.configFilePath ;
 
@@ -638,7 +638,7 @@ Task::process::result SiriKali::Winfsp::FspLaunchStop( const QString& m )
 
 Task::process::result SiriKali::Winfsp::FspLaunchStart( const QString& exe,
 							const QByteArray& password,
-							const siritask::options& opts )
+							const engines::engine::options& opts )
 {
 	if( SiriKali::Winfsp::babySittingBackends() ){
 

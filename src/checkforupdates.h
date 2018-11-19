@@ -48,7 +48,7 @@ private:
 
 	void showResult() ;
 
-	QString InstalledVersion( const siritask::volumeType& e ) ;
+	QString InstalledVersion( const QString& ) ;
 	QString latestVersion( const QByteArray& data ) ;
 
 	using backends_t = std::array< std::pair< const char *,const char * >,6 > ;

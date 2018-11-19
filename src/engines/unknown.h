@@ -25,9 +25,9 @@ public:
 	unknown() ;
 	const QStringList& names() const override ;
 	const QStringList& fuseNames() const override ;
-	siritask::status notFoundCode() const override ;
-	QString command( const engines::cmdArgsList& args ) const override ;
-	siritask::status errorCode( const QString& e,int s ) const override ;
+	engines::engine::status notFoundCode() const override ;
+	QString command( const engines::engine::cmdArgsList& args ) const override ;
+	engines::engine::status errorCode( const QString& e,int s ) const override ;
 	bool setsCipherPath() const override ;
 	QString configFileArgument() const override ;
 	QStringList configFileNames() const override ;

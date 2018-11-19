@@ -95,13 +95,13 @@ void checkUpdates::showResult()
 	}
 }
 
-QString checkUpdates::InstalledVersion( const siritask::volumeType& e )
+QString checkUpdates::InstalledVersion( const QString& e )
 {
 	if( e == "sirikali" ){
 
 		return THIS_VERSION ;
 	}else{
-		auto s = utility::backEndInstalledVersion( e.name() ).await() ;
+		auto s = utility::backEndInstalledVersion( e ).await() ;
 
 		if( s ){
 

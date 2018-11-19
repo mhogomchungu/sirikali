@@ -36,12 +36,12 @@ const QStringList& encfs::fuseNames() const
 	return m_fuseNames ;
 }
 
-siritask::status encfs::notFoundCode() const
+engines::engine::status encfs::notFoundCode() const
 {
-	return siritask::status::encfsNotFound ;
+	return engines::engine::status::encfsNotFound ;
 }
 
-QString encfs::command( const engines::cmdArgsList& args ) const
+QString encfs::command( const engines::engine::cmdArgsList& args ) const
 {
 	QString e = "%1 %2 %3 %4 %5" ;
 
@@ -83,19 +83,19 @@ QString encfs::command( const engines::cmdArgsList& args ) const
 		      m.fuseOpts().get() ) ;
 }
 
-siritask::status encfs::errorCode( const QString& e,int s ) const
+engines::engine::status encfs::errorCode( const QString& e,int s ) const
 {
 	Q_UNUSED( s ) ;
 
 	if( e.contains( "password" ) ){
 
-		return siritask::status::encfsBadPassword ;
+		return engines::engine::status::encfsBadPassword ;
 
 	}else if( e.contains( "winfsp" ) ){
 
-		return siritask::status::failedToLoadWinfsp ;
+		return engines::engine::status::failedToLoadWinfsp ;
 	}else{
-		return siritask::status::backendFail ;
+		return engines::engine::status::backendFail ;
 	}
 }
 

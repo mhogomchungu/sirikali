@@ -57,6 +57,11 @@ bool engines::engine::unknown() const
 	return m_name.isEmpty() ;
 }
 
+bool engines::engine::known() const
+{
+	return !this->unknown() ;
+}
+
 const engines& engines::instance()
 {
 	static engines v ;
@@ -88,9 +93,9 @@ engines::engines()
 	m_backends.emplace_back( std::make_unique< sshfs >() ) ;
 }
 
-const engines::engine& engines::getByName( const siritask::options& e ) const
+const engines::engine& engines::getByName( const engines::engine::options& e ) const
 {
-	return this->getByName( e.type.name() ) ;
+	return this->getByName( e.type ) ;
 }
 
 template< typename T,typename Function >
@@ -124,4 +129,140 @@ const engines::engine& engines::getByFuseName( const QString& e ) const
 const engines::engine& engines::getByName( const QString& e ) const
 {
 	return _get_engine( m_backends,e.toLower(),[]( const engines::engine& s ){ return s.names() ; } ) ;
+}
+
+engines::engine::cmdStatus::cmdStatus()
+{
+}
+
+engines::engine::cmdStatus::cmdStatus( const engines::engine::cmdStatus& s,const QString& e )
+{
+	m_status = s.status() ;
+	m_exitCode = s.exitCode() ;
+
+	if( e.isEmpty() ){
+
+		this->message( s.msg() ) ;
+	}else{
+		this->message( e ) ;
+	}
+}
+
+engines::engine::cmdStatus::cmdStatus(engines::engine::status s,int c,const QString& e ) :
+	m_exitCode( c ),m_status( s )
+{
+	this->message( e ) ;
+}
+
+engines::engine::cmdStatus::cmdStatus( engines::engine::status s,const QString& e ) :
+	m_status( s )
+{
+	this->message( e ) ;
+}
+
+engines::engine::cmdStatus::cmdStatus( int s,const QString& e ) :
+	m_exitCode( s )
+{
+	this->message( e ) ;
+}
+
+engines::engine::status engines::engine::cmdStatus::status() const
+{
+	return m_status ;
+}
+
+bool engines::engine::cmdStatus::operator==( engines::engine::status s ) const
+{
+	return m_status == s ;
+}
+
+bool engines::engine::cmdStatus::operator!=( engines::engine::status s ) const
+{
+	return m_status != s ;
+}
+
+engines::engine::cmdStatus& engines::engine::cmdStatus::setExitCode( int s )
+{
+	m_exitCode = s ;
+	return *this ;
+}
+
+engines::engine::cmdStatus& engines::engine::cmdStatus::setStatus( engines::engine::status s )
+{
+	m_status = s ;
+	return *this ;
+}
+
+engines::engine::cmdStatus& engines::engine::cmdStatus::setMessage( const QString& e )
+{
+	this->message( e ) ;
+	return *this ;
+}
+
+const QString& engines::engine::cmdStatus::msg() const
+{
+	return m_message ;
+}
+
+QString engines::engine::cmdStatus::report( const QString& cmd ) const
+{
+	auto s = QString::number( m_exitCode ) ;
+
+	QString e ;
+
+	e += "-------------------------" ;
+	e += QString( "\nBackend Generated Output:\nExit Code: %1" ).arg( s ) ;
+
+	if( !m_message.isEmpty() ){
+
+		e += QString( "\nExit String: \"%1\"" ).arg( m_message ) ;
+	}
+
+	if( !cmd.isEmpty() ){
+
+		e += "\nCommand Sent To Backend: " + cmd ;
+	}
+
+	e+= "\n-------------------------" ;
+
+	return e ;
+}
+
+int engines::engine::cmdStatus::exitCode() const
+{
+	return m_exitCode ;
+}
+
+void engines::engine::cmdStatus::message( const QString& e )
+{
+	m_message = e ;
+
+	while( true ){
+
+		if( m_message.endsWith( '\n' ) ){
+
+			m_message.truncate( m_message.size() - 1 ) ;
+		}else{
+			break ;
+		}
+	}
+}
+
+engines::engine::Options::Options( QStringList s,bool r ) :
+	options( std::move( s ) ),reverseMode( r ),success( true )
+{
+}
+
+engines::engine::Options::Options( QStringList s ) :
+	options( std::move( s ) ),reverseMode( false ),success( true )
+{
+}
+
+engines::engine::Options::Options( bool r ) :
+	reverseMode( r ),success( true )
+{
+}
+
+engines::engine::Options::Options() : success( false )
+{
 }

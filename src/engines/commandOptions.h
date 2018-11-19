@@ -21,6 +21,7 @@
 #define COMMANDOPTIONS_H
 
 #include "../engines.h"
+#include "../utility.h"
 
 class commandOptions{
 public:
@@ -100,7 +101,7 @@ public:
 		}
 	} ;
 
-	commandOptions( const engines::cmdArgsList& e,const QString& f,const QString& g = QString() ) :
+	commandOptions( const engines::engine::cmdArgsList& e,const QString& f,const QString& g = QString() ) :
 		m_cmdArgsList( e ),m_type( f ),m_subType( g.isEmpty() ? "" : ",subtype=" + g )
 	{
 		for( const auto& it : utility::split( m_cmdArgsList.opt.mountOptions,',' ) ) {
@@ -169,7 +170,7 @@ public:
 		}
 	}
 private:
-	const engines::cmdArgsList& m_cmdArgsList ;
+	const engines::engine::cmdArgsList& m_cmdArgsList ;
 	QString m_exeOptions ;
 	QString m_fuseOptions ;
 	QString m_type ;

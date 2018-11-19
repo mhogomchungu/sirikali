@@ -36,12 +36,12 @@ const QStringList& securefs::fuseNames() const
 	return m_fuseNames ;
 }
 
-siritask::status securefs::notFoundCode() const
+engines::engine::status securefs::notFoundCode() const
 {
-	return siritask::status::securefsNotFound ;
+	return engines::engine::status::securefsNotFound ;
 }
 
-QString securefs::command( const engines::cmdArgsList& args ) const
+QString securefs::command( const engines::engine::cmdArgsList& args ) const
 {
 	if( args.create ){
 
@@ -75,19 +75,19 @@ QString securefs::command( const engines::cmdArgsList& args ) const
 	}
 }
 
-siritask::status securefs::errorCode( const QString& e,int s ) const
+engines::engine::status securefs::errorCode( const QString& e,int s ) const
 {
 	Q_UNUSED( s ) ;
 
 	if( e.contains( "password" ) ){
 
-		return siritask::status::securefsBadPassword ;
+		return engines::engine::status::securefsBadPassword ;
 
 	}else if( e.contains( "winfsp" ) ){
 
-		return siritask::status::failedToLoadWinfsp ;
+		return engines::engine::status::failedToLoadWinfsp ;
 	}else{
-		return siritask::status::backendFail ;
+		return engines::engine::status::backendFail ;
 	}
 }
 

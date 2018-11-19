@@ -35,12 +35,12 @@ const QStringList& cryfs::fuseNames() const
 	return m_fuseNames ;
 }
 
-siritask::status cryfs::notFoundCode() const
+engines::engine::status cryfs::notFoundCode() const
 {
-	return siritask::status::cryfsNotFound ;
+	return engines::engine::status::cryfsNotFound ;
 }
 
-QString cryfs::command( const engines::cmdArgsList& args ) const
+QString cryfs::command( const engines::engine::cmdArgsList& args ) const
 {
 	auto separator = [](){
 
@@ -87,7 +87,7 @@ QString cryfs::command( const engines::cmdArgsList& args ) const
 		      m.fuseOpts().get() ) ;
 }
 
-siritask::status cryfs::errorCode( const QString& e,int s ) const
+engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 {
 	/*
 		 * Error codes are here: https://github.com/cryfs/cryfs/blob/develop/src/cryfs/ErrorCodes.h
@@ -97,11 +97,11 @@ siritask::status cryfs::errorCode( const QString& e,int s ) const
 
 	if( s == 11 ){
 
-		return siritask::status::cryfsBadPassword ;
+		return engines::engine::status::cryfsBadPassword ;
 
 	}else if( s == 14 ){
 
-		return siritask::status::cryfsMigrateFileSystem ;
+		return engines::engine::status::cryfsMigrateFileSystem ;
 	}else{
 		/*
 			 * Falling back to parsing strings
@@ -109,14 +109,14 @@ siritask::status cryfs::errorCode( const QString& e,int s ) const
 
 		if( e.contains( "password" ) ){
 
-			return siritask::status::cryfsBadPassword ;
+			return engines::engine::status::cryfsBadPassword ;
 
 		}else if( e.contains( "this filesystem is for cryfs" ) &&
 			  e.contains( "it has to be migrated" ) ){
 
-			return siritask::status::cryfsMigrateFileSystem ;
+			return engines::engine::status::cryfsMigrateFileSystem ;
 		}else{
-			return siritask::status::backendFail ;
+			return engines::engine::status::backendFail ;
 		}
 	}
 }

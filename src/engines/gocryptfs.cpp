@@ -36,12 +36,12 @@ const QStringList& gocryptfs::fuseNames() const
 	return m_fuseNames ;
 }
 
-siritask::status gocryptfs::notFoundCode() const
+engines::engine::status gocryptfs::notFoundCode() const
 {
-	return siritask::status::gocryptfsNotFound ;
+	return engines::engine::status::gocryptfsNotFound ;
 }
 
-QString gocryptfs::command( const engines::cmdArgsList& args ) const
+QString gocryptfs::command( const engines::engine::cmdArgsList& args ) const
 {
 	if( args.create ){
 
@@ -96,20 +96,20 @@ QString gocryptfs::command( const engines::cmdArgsList& args ) const
 	}
 }
 
-siritask::status gocryptfs::errorCode( const QString& e,int s ) const
+engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const
 {
 	/*
 	 * This error code was added in gocryptfs 1.2.1
 	 */
 	if( s == 12 ){
 
-		return siritask::status::gocryptfsBadPassword ;
+		return engines::engine::status::gocryptfsBadPassword ;
 
 	}else if( e.contains( "password" ) ){
 
-		return siritask::status::gocryptfsBadPassword ;
+		return engines::engine::status::gocryptfsBadPassword ;
 	}else{
-		return siritask::status::backendFail ;
+		return engines::engine::status::backendFail ;
 	}
 }
 

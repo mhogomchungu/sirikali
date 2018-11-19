@@ -34,12 +34,12 @@ const QStringList& sshfs::fuseNames() const
 	return m_fuseNames ;
 }
 
-siritask::status sshfs::notFoundCode() const
+engines::engine::status sshfs::notFoundCode() const
 {
-	return siritask::status::sshfsNotFound ;
+	return engines::engine::status::sshfsNotFound ;
 }
 
-QString sshfs::command( const engines::cmdArgsList& args ) const
+QString sshfs::command( const engines::engine::cmdArgsList& args ) const
 {
 	commandOptions m( args,m_names.first(),m_names.first() ) ;
 
@@ -71,19 +71,19 @@ QString sshfs::command( const engines::cmdArgsList& args ) const
 		      fuseOptions.get() ) ;
 }
 
-siritask::status sshfs::errorCode( const QString& e,int s ) const
+engines::engine::status sshfs::errorCode( const QString& e,int s ) const
 {
 	Q_UNUSED( s ) ;
 
 	if( e.contains( "password" ) ){
 
-		return siritask::status::sshfsBadPassword ;
+		return engines::engine::status::sshfsBadPassword ;
 
 	}else if( e.contains( "winfsp" ) ){
 
-		return siritask::status::failedToLoadWinfsp ;
+		return engines::engine::status::failedToLoadWinfsp ;
 	}else{
-		return siritask::status::backendFail ;
+		return engines::engine::status::backendFail ;
 	}
 }
 

@@ -37,7 +37,6 @@
 #include "crypto.h"
 #include "configfileoption.h"
 #include "settings.h"
-#include "engines.h"
 
 static QString _kwallet()
 {
@@ -838,11 +837,11 @@ void keyDialog::openMountPoint( const QString& m )
 	}
 }
 
-void keyDialog::reportErrorMessage( const siritask::cmdStatus& s )
+void keyDialog::reportErrorMessage( const engines::engine::cmdStatus& s )
 {
 	QString msg ;
 
-	if( s == siritask::status::cryfsMigrateFileSystem ){
+	if( s == engines::engine::status::cryfsMigrateFileSystem ){
 
 		m_ui->checkBoxOpenReadOnly->setText( tr( "Upgrade File System" ) ) ;
 	}else{
@@ -851,114 +850,114 @@ void keyDialog::reportErrorMessage( const siritask::cmdStatus& s )
 
 	switch( s.status() ){
 
-	case siritask::status::success :
+	case engines::engine::status::success :
 
 		/*
 		 * Should not get here
 		 */
 
-	case siritask::status::volumeCreatedSuccessfully :
+	case engines::engine::status::volumeCreatedSuccessfully :
 
 		msg = tr( "Volume Created Successfully." ) ;
 		break ;
 
-	case siritask::status::cryfsBadPassword :
+	case engines::engine::status::cryfsBadPassword :
 
 		msg = tr( "Failed To Unlock A Cryfs Volume.\nWrong Password Entered." ) ;
 		break;
 
-	case siritask::status::sshfsBadPassword :
+	case engines::engine::status::sshfsBadPassword :
 
 		msg = tr( "Failed To Connect To The Remote Computer.\nWrong Password Entered." ) ;
 		break;
 
-	case siritask::status::encfsBadPassword :
+	case engines::engine::status::encfsBadPassword :
 
 		msg = tr( "Failed To Unlock An Encfs Volume.\nWrong Password Entered." ) ;
 		break;
 
-	case siritask::status::gocryptfsBadPassword :
+	case engines::engine::status::gocryptfsBadPassword :
 
 		msg = tr( "Failed To Unlock A Gocryptfs Volume.\nWrong Password Entered." ) ;
 		break;
 
-	case siritask::status::ecryptfsBadPassword :
+	case engines::engine::status::ecryptfsBadPassword :
 
 		msg = tr( "Failed To Unlock An Ecryptfs Volume.\nWrong Password Entered." ) ;
 		break;
 
-	case siritask::status::ecryptfsIllegalPath :
+	case engines::engine::engine::status::ecryptfsIllegalPath :
 
 		msg = tr( "A Space Character Is Not Allowed In Paths When Using Ecryptfs Backend And Polkit." ) ;
 		break;
 
-	case siritask::status::ecrypfsBadExePermissions :
+	case engines::engine::status::ecrypfsBadExePermissions :
 
 		msg = tr( "This Backend Requires Root's Privileges And An attempt To Acquire Them Has Failed." ) ;
 		break;
 
-	case siritask::status::securefsBadPassword :
+	case engines::engine::status::securefsBadPassword :
 
 		msg = tr( "Failed To Unlock A Securefs Volume.\nWrong Password Entered." ) ;
 		break;
 
-	case siritask::status::sshfsNotFound :
+	case engines::engine::status::sshfsNotFound :
 
 		msg = tr( "Failed To Complete The Request.\nSshfs Executable Could Not Be Found." ) ;
 		break;
 
-	case siritask::status::backEndDoesNotSupportCustomConfigPath :
+	case engines::engine::status::backEndDoesNotSupportCustomConfigPath :
 
 		msg = tr( "Backend Does Not Support Custom Configuration File Path." ) ;
 		break;
 
-	case siritask::status::cryfsNotFound :
+	case engines::engine::status::cryfsNotFound :
 
 		msg = tr( "Failed To Complete The Request.\nCryfs Executable Could Not Be Found." ) ;
 		break;
 
-	case siritask::status::cryfsMigrateFileSystem :
+	case engines::engine::status::cryfsMigrateFileSystem :
 
 		msg = tr( "This Volume Of Cryfs Needs To Be Upgraded To Work With The Version Of Cryfs You Are Using.\n\nThe Upgrade is IRREVERSIBLE And The Volume Will No Longer Work With Older Versions of Cryfs.\n\nTo Do The Upgrade, Check The \"Upgrade File System\" Option And Unlock The Volume Again." ) ;
 
 		break;
 
-	case siritask::status::encfsNotFound :
+	case engines::engine::status::encfsNotFound :
 
 		msg = tr( "Failed To Complete The Request.\nEncfs Executable Could Not Be Found." ) ;
 		break;
 
-	case siritask::status::ecryptfs_simpleNotFound :
+	case engines::engine::status::ecryptfs_simpleNotFound :
 
 		msg = tr( "Failed To Complete The Request.\nEcryptfs-simple Executable Could Not Be Found." ) ;
 		break;
 
-	case siritask::status::gocryptfsNotFound :
+	case engines::engine::status::gocryptfsNotFound :
 
 		msg = tr( "Failed To Complete The Request.\nGocryptfs Executable Could Not Be Found." ) ;
 		break;
 
-	case siritask::status::securefsNotFound :
+	case engines::engine::status::securefsNotFound :
 
 		msg = tr( "Failed To Complete The Request.\nSecurefs Executable Could Not Be Found." ) ;
 		break;
 
-	case siritask::status::failedToCreateMountPoint :
+	case engines::engine::status::failedToCreateMountPoint :
 
 		msg = tr( "Failed To Create Mount Point." ) ;
 		break;
 
-	case siritask::status::failedToLoadWinfsp :
+	case engines::engine::status::failedToLoadWinfsp :
 
 		msg = tr( "Backend Could Not Load WinFsp. Please Make Sure You Have WinFsp Properly Installed" ) ;
 		break;
 
-	case siritask::status::unknown :
+	case engines::engine::status::unknown :
 
 		msg = tr( "Failed To Unlock The Volume.\nNot Supported Volume Encountered." ) ;
 		break;
 
-	case siritask::status::backendFail :
+	case engines::engine::status::backendFail :
 	default:
 		msg = [ & ](){
 
@@ -980,9 +979,9 @@ void keyDialog::showErrorMessage( const QString& e )
 	m_ui->pbOK->setFocus() ;
 }
 
-void keyDialog::showErrorMessage( const siritask::cmdStatus& e )
+void keyDialog::showErrorMessage( const engines::engine::cmdStatus& e )
 {
-	if( e == siritask::status::backendFail ){
+	if( e == engines::engine::status::backendFail ){
 
 		this->setUIVisible( false ) ;
 
@@ -1066,21 +1065,29 @@ void keyDialog::encryptedFolderCreate()
 
 	m_working = true ;
 
-	siritask::options s( path,m,m_key,m_idleTimeOut,m_configFile,
-			     m_exe.toLower(),false,m_reverseMode,m_mountOptions,m_createOptions ) ;
+	engines::engine::options s( path,
+				    m,
+				    m_key,
+				    m_idleTimeOut,
+				    m_configFile,
+				    m_exe.toLower(),
+				    false,
+				    m_reverseMode,
+				    m_mountOptions,
+				    m_createOptions ) ;
 
 	auto e = siritask::encryptedFolderCreate( s ).await() ;
 
 	m_working = false ;
 
-	if( e == siritask::status::success ){
+	if( e == engines::engine::status::success ){
 
 		this->openMountPoint( m ) ;
 		this->HideUI() ;
 	}else{
 		this->reportErrorMessage( e ) ;
 
-		if( e == siritask::status::volumeCreatedSuccessfully ){
+		if( e == engines::engine::status::volumeCreatedSuccessfully ){
 
 			m_closeGUI = true ;
 		}else{
@@ -1261,13 +1268,22 @@ void keyDialog::encryptedFolderMount()
 
 	m_working = true ;
 
-	siritask::options s{ m_path,m,m_key,m_idleTimeOut,m_configFile,m_exe,ro,m_reverseMode,m_mountOptions,QString() } ;
+	engines::engine::options s{ m_path,
+				    m,
+				    m_key,
+				    m_idleTimeOut,
+				    m_configFile,
+				    m_exe,
+				    ro,
+				    m_reverseMode,
+				    m_mountOptions,
+				    QString() } ;
 
 	auto e = siritask::encryptedFolderMount( s ).await() ;
 
 	m_working = false ;
 
-	if( e == siritask::status::success ){
+	if( e == engines::engine::status::success ){
 
 		this->openMountPoint( m ) ;
 

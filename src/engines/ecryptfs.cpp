@@ -35,12 +35,12 @@ const QStringList& ecryptfs::fuseNames() const
 	return m_fuseNames ;
 }
 
-siritask::status ecryptfs::notFoundCode() const
+engines::engine::status ecryptfs::notFoundCode() const
 {
-	return siritask::status::ecryptfs_simpleNotFound ;
+	return engines::engine::status::ecryptfs_simpleNotFound ;
 }
 
-QString ecryptfs::command( const engines::cmdArgsList& args ) const
+QString ecryptfs::command( const engines::engine::cmdArgsList& args ) const
 {
 	auto e = QString( "%1 %2 %3 -a %4 %5 %6" ) ;
 
@@ -69,19 +69,19 @@ QString ecryptfs::command( const engines::cmdArgsList& args ) const
 	}
 }
 
-siritask::status ecryptfs::errorCode( const QString& e,int s ) const
+engines::engine::status ecryptfs::errorCode( const QString& e,int s ) const
 {
 	Q_UNUSED( s ) ;
 
 	if( e.contains( "operation not permitted" ) ){
 
-		return siritask::status::ecrypfsBadExePermissions ;
+		return engines::engine::status::ecrypfsBadExePermissions ;
 
 	}else if( e.contains( "error: mount failed" ) ){
 
-		return siritask::status::ecryptfsBadPassword ;
+		return engines::engine::status::ecryptfsBadPassword ;
 	}else{
-		return siritask::status::backendFail ;
+		return engines::engine::status::backendFail ;
 	}
 }
 

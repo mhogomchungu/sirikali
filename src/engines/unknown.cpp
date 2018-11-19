@@ -34,22 +34,22 @@ const QStringList& unknown::fuseNames() const
 	return m_fuseNames ;
 }
 
-siritask::status unknown::notFoundCode() const
+engines::engine::status unknown::notFoundCode() const
 {
-	return siritask::status::unknown ;
+	return engines::engine::status::unknown ;
 }
 
-QString unknown::command( const engines::cmdArgsList& args ) const
+QString unknown::command( const engines::engine::cmdArgsList& args ) const
 {
 	Q_UNUSED( args ) ;
 	return QString() ;
 }
 
-siritask::status unknown::errorCode( const QString& e,int s ) const
+engines::engine::status unknown::errorCode( const QString& e,int s ) const
 {
 	Q_UNUSED( e ) ;
 	Q_UNUSED( s ) ;
-	return siritask::status::backendFail ;
+	return engines::engine::status::backendFail ;
 }
 
 bool unknown::setsCipherPath() const
@@ -89,7 +89,7 @@ QString unknown::defaultCreateOptions() const
 }
 
 void unknown::GUICreateOptionsinstance( QWidget * parent,
-				      std::function< void( const engines::engine::Options& ) > function ) const
+					std::function< void( const engines::engine::Options& ) > function ) const
 {
 	Q_UNUSED( parent ) ;
 	Q_UNUSED( function ) ;
