@@ -266,3 +266,39 @@ engines::engine::Options::Options( bool r ) :
 engines::engine::Options::Options() : success( false )
 {
 }
+
+engines::engine::options::options( const favorites::entry& e,const QString& volumeKey ) :
+	cipherFolder( e.volumePath ),
+	plainFolder( e.mountPointPath ),
+	key( volumeKey ),
+	idleTimeout( e.idleTimeOut ),
+	configFilePath( e.configFilePath ),
+	type( QString() ),
+	ro( e.readOnlyMode ? e.readOnlyMode.onlyRead() : false ),
+	reverseMode( e.reverseMode ),
+	mountOptions( e.sanitizedMountOptions() )
+{
+}
+
+engines::engine::options::options( const QString& cipher_folder,
+				   const QString& plain_folder,
+				   const QString& volume_key,
+				   const QString& idle_timeout,
+				   const QString& config_file_path,
+				   const QString& volume_type,
+				   bool unlock_in_read_only,
+				   bool unlock_in_reverse_mode,
+				   const QString& mount_options,
+				   const QString& create_options ) :
+	cipherFolder( cipher_folder ),
+	plainFolder( plain_folder ),
+	key( volume_key ),
+	idleTimeout( idle_timeout ),
+	configFilePath( config_file_path ),
+	type( volume_type ),
+	ro( unlock_in_read_only ),
+	reverseMode( unlock_in_reverse_mode ),
+	mountOptions( favorites::entry::sanitizedMountOptions( mount_options ) ),
+	createOptions( create_options )
+{
+}

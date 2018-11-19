@@ -67,28 +67,15 @@ public:
 
 			backEndDoesNotSupportCustomConfigPath,
 			failedToCreateMountPoint,
-			unknown,
-			backendFail
-		};
+			backendFail,
+			unknown
+		} ;
 
 		struct options
 		{
-			using function_t = std::function< void( const QString& ) > ;
-
 			options( const favorites::entry& e,
-				 const QString& volumeKey = QString() ) :
+				 const QString& volumeKey = QString() ) ;
 
-				cipherFolder( e.volumePath ),
-				plainFolder( e.mountPointPath ),
-				key( volumeKey ),
-				idleTimeout( e.idleTimeOut ),
-				configFilePath( e.configFilePath ),
-				type( QString() ),
-				ro( e.readOnlyMode ? e.readOnlyMode.onlyRead() : false ),
-				reverseMode( e.reverseMode ),
-				mountOptions( e.sanitizedMountOptions() )
-			{
-			}
 			options( const QString& cipher_folder,
 				 const QString& plain_folder,
 				 const QString& volume_key,
@@ -98,21 +85,7 @@ public:
 				 bool unlock_in_read_only,
 				 bool unlock_in_reverse_mode,
 				 const QString& mount_options,
-				 const QString& create_options ) :
-
-				cipherFolder( cipher_folder ),
-				plainFolder( plain_folder ),
-				key( volume_key ),
-				idleTimeout( idle_timeout ),
-				configFilePath( config_file_path ),
-				type( volume_type ),
-				ro( unlock_in_read_only ),
-				reverseMode( unlock_in_reverse_mode ),
-				mountOptions( favorites::entry::sanitizedMountOptions( mount_options ) ),
-				createOptions( create_options )
-			{
-			}
-
+				 const QString& create_options ) ;
 			QString cipherFolder ;
 			QString plainFolder ;
 			QString key ;
@@ -123,7 +96,7 @@ public:
 			bool reverseMode ;
 			QString mountOptions ;
 			QString createOptions ;
-		};
+		} ;
 
 		struct cmdArgsList
 		{
@@ -158,9 +131,10 @@ public:
 			int m_exitCode = -1 ;
 			engines::engine::status m_status = engines::engine::status::backendFail ;
 			QString m_message ;
-		};
+		} ;
 
-		struct Options{
+		struct Options
+		{
 			Options( QStringList s,bool r ) ;
 			Options( QStringList s ) ;
 			Options( bool r ) ;
@@ -193,7 +167,7 @@ public:
 						       std::function< void( const Options& ) > )  const = 0 ;
 	private:
 		QString m_name ;
-	};
+	} ;
 
 	engines() ;
 	const engine& getByName( const engines::engine::options& e ) const ;
