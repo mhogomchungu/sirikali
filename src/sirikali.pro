@@ -32,15 +32,16 @@ SOURCES += \
     help.cpp \
     configoptions.cpp \
     ecryptfscreateoptions.cpp \
-    encfscreateoptions.cpp
+    encfscreateoptions.cpp \
+    settings.cpp
 
 HEADERS += \
-    securefscreateoptions.h \
-    ecryptfscreateoptions.h \
-    cryfscreateoptions.h \
+    engines/securefscreateoptions.h \
+    engines/ecryptfscreateoptions.h \
+    engines/cryfscreateoptions.h \
     dialogok.h \
     configoptions.h \
-    gocryptfscreateoptions.h \
+    engines/gocryptfscreateoptions.h \
     configfileoption.h \
     checkforupdates.h \
     favorites.h \
@@ -51,7 +52,7 @@ HEADERS += \
     keydialog.h  \
     plugin.h   \
     help.h \
-    encfscreateoptions \
+    engines/encfscreateoptions \
     walletconfig.h   \
     siritask.h  \
     readonlywarning.h \
@@ -70,19 +71,19 @@ HEADERS += \
     3rdParty/lxqt_wallet/frontend/changepassworddialog.h
 
 FORMS += \
-    securefscreateoptions.ui \
-    ecryptfscreateoptions.ui \
-    cryfscreateoptions.ui \
+    engines/securefscreateoptions.ui \
+    engines/ecryptfscreateoptions.ui \
+    engines/cryfscreateoptions.ui \
     dialogok.ui \
     sirikali.ui \
-    gocryptfscreateoptions.ui \
+    engines/gocryptfscreateoptions.ui \
     configoptions.ui \
     configfileoption.ui \
     favorites.ui \
     filemanager.ui \
     plugin.ui \
     help.ui \
-    encfscreateoptions.ui \
+    engines/encfscreateoptions.ui \
     walletconfiginput.ui \
     dialogmsg.ui \
     keydialog.ui \

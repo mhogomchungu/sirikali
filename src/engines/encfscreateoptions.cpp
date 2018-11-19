@@ -17,15 +17,16 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "securefscreateoptions.h"
-#include "ui_securefscreateoptions.h"
+#include "encfscreateoptions.h"
+#include "ui_encfscreateoptions.h"
 
-#include "utility.h"
+#include "../utility.h"
+#include "task.hpp"
 
-securefscreateoptions::securefscreateoptions( QWidget * parent,
-					      std::function< void( const Options& ) > function ) :
+encfscreateoptions::encfscreateoptions( QWidget * parent,
+					std::function< void( const engines::engine::Options& ) > function ) :
 	QDialog( parent ),
-	m_ui( new Ui::securefscreateoptions ),
+	m_ui( new Ui::encfscreateoptions ),
 	m_function( std::move( function ) )
 {
 	m_ui->setupUi( this ) ;
@@ -34,57 +35,39 @@ securefscreateoptions::securefscreateoptions( QWidget * parent,
 
 	connect( m_ui->pbOK,SIGNAL( clicked() ),this,SLOT( pbOK() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
-	connect( m_ui->pbConfigFile,SIGNAL( clicked() ),this,SLOT( pbConfigFilePath() ) ) ;
 
-	m_ui->pbConfigFile->setIcon( QIcon( ":/folder.png" ) ) ;
-
-	m_ui->comboBox->setFocus() ;
+	m_ui->label->setText( tr( "Normally EncFS provides a plaintext view of data on demand: it stores enciphered data and displays plaintext data.  With this option set, it takes as source plaintext data and produces enciphered data on-demand. This can be useful for creating remote encrypted backups, where you do not wish to keep the local files unencrypted." ) ) ;
 
 	this->show() ;
 }
 
-securefscreateoptions::~securefscreateoptions()
+encfscreateoptions::~encfscreateoptions()
 {
 	delete m_ui ;
 }
 
-void securefscreateoptions::pbOK()
+void encfscreateoptions::pbSelectConfigPath()
 {
-	this->hide() ;
-
-	auto e = m_ui->lineEdit->text() ;
-
-	if( !e.isEmpty() ){
-
-		e = "--config " + e ;
-	}
-
-	if( m_ui->comboBox->currentIndex() == 1 ){
-
-		this->HideUI( { { "--format 2",m_ui->lineEdit->text() } } ) ;
-	}else{
-		this->HideUI( { { "--format 4",m_ui->lineEdit->text() } } ) ;
-	}
 }
 
-void securefscreateoptions::pbCancel()
+void encfscreateoptions::pbOK()
+{
+	this->HideUI( { m_ui->checkBox->isChecked() } ) ;
+}
+
+void encfscreateoptions::pbCancel()
 {
 	this->HideUI() ;
 }
 
-void securefscreateoptions::pbConfigFilePath()
-{
-	m_ui->lineEdit->setText( utility::configFilePath( this,"securefs" ) ) ;
-}
-
-void securefscreateoptions::HideUI( const Options& opts )
+void encfscreateoptions::HideUI( const engines::engine::Options& opts )
 {
 	this->hide() ;
 	m_function( opts ) ;
 	this->deleteLater() ;
 }
 
-void securefscreateoptions::closeEvent( QCloseEvent * e )
+void encfscreateoptions::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
 	this->pbCancel() ;

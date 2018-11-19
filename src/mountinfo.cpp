@@ -23,6 +23,7 @@
 #include "task.hpp"
 #include "winfsp.h"
 #include "settings.h"
+#include "engines.h"
 
 #include <QMetaObject>
 #include <QtGlobal>
@@ -224,6 +225,21 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 			}
 		} ;
 
+		auto _starts_with = []( const engines::engine& e,const QString& s ){
+
+			auto m = e.names() ;
+
+			for( int i = 0 ; i < m.size() ; i++ ){
+
+				if( s.startsWith( m.at( i ) + "@" ) ){
+
+					return true ;
+				}
+			}
+
+			return false ;
+		} ;
+
 		auto _fs = []( QString e ){
 
 			e.replace( "fuse.","" ) ;
@@ -242,48 +258,45 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 
 		for( const auto& it : _unlocked_volumes( background_thread::True ) ){
 
-			if( volumeInfo::supported( it ) ){
+			const auto& k = utility::split( it,' ' ) ;
 
-				const auto& k = utility::split( it,' ' ) ;
+			const auto s = k.size() ;
 
-				const auto s = k.size() ;
+			if( s < 6 ){
 
-				if( s < 6 ){
-
-					continue ;
-				}
-
-				const auto& cf = k.at( s - 2 ) ;
-
-				const auto& m = k.at( 4 ) ;
-
-				const auto& fs = k.at( s - 3 ) ;
-
-				if( utility::startsWithAtLeastOne( cf,"encfs@",
-								   "cryfs@",
-								   "securefs@",
-								   "gocryptfs@",
-								   "sshfs@" ) ){
-
-					info.volumePath = _decode( cf,true ) ;
-
-				}else if( utility::equalsAtleastOne( fs,"fuse.gocryptfs",
-								     "fuse.gocryptfs-reverse",
-								     "ecryptfs",
-								     "fuse.sshfs" ) ){
-
-					info.volumePath = _decode( cf,false ) ;
-				}else{
-					info.volumePath = _hash( m ) ;
-				}
-
-				info.mountPoint   = _decode( m,false ) ;
-				info.fileSystem   = _fs( fs ) ;
-				info.mode         = _ro( k ) ;
-				info.mountOptions = k.last() ;
-
-				e.emplace_back( info ) ;
+				continue ;
 			}
+
+			const auto& cf = k.at( s - 2 ) ;
+
+			const auto& m = k.at( 4 ) ;
+
+			const auto& fs = k.at( s - 3 ) ;
+
+			const auto& engine = engines::instance().getByFuseName( fs ) ;
+
+			if( engine.unknown() ){
+
+				continue ;
+			}
+
+			if( _starts_with( engine,cf ) ){
+
+				info.volumePath = _decode( cf,true ) ;
+
+			}else if( engine.setsCipherPath() ){
+
+				info.volumePath = _decode( cf,false ) ;
+			}else{
+				info.volumePath = _hash( m ) ;
+			}
+
+			info.mountPoint   = _decode( m,false ) ;
+			info.fileSystem   = _fs( fs ) ;
+			info.mode         = _ro( k ) ;
+			info.mountOptions = k.last() ;
+
+			e.emplace_back( info ) ;
 		}
 
 		return e ;

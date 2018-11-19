@@ -20,11 +20,11 @@
 #include "gocryptfscreateoptions.h"
 #include "ui_gocryptfscreateoptions.h"
 
-#include "utility.h"
+#include "../utility.h"
 #include "task.hpp"
 
 gocryptfscreateoptions::gocryptfscreateoptions( QWidget * parent,
-					std::function< void( const Options& ) > function ) :
+					std::function< void( const engines::engine::Options& ) > function ) :
 	QDialog( parent ),
 	m_ui( new Ui::gocryptfscreateoptions ),
 	m_function( std::move( function ) )
@@ -92,7 +92,7 @@ void gocryptfscreateoptions::pbCancel()
 	this->HideUI() ;
 }
 
-void gocryptfscreateoptions::HideUI( const Options& opts )
+void gocryptfscreateoptions::HideUI( const engines::engine::Options& opts )
 {
 	this->hide() ;
 	m_function( opts ) ;

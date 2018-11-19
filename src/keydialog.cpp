@@ -37,6 +37,7 @@
 #include "crypto.h"
 #include "configfileoption.h"
 #include "settings.h"
+#include "engines.h"
 
 static QString _kwallet()
 {
@@ -307,6 +308,22 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 	m_mountOptions = e.mountOptions() ;
 	m_working      = false ;
 
+	m_favoriteReadOnly = e.mountReadOnly() ;
+
+	if( m_favoriteReadOnly ){
+
+		m_ui->checkBoxOpenReadOnly->setChecked( m_favoriteReadOnly.onlyRead() ) ;
+		m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
+	}else{
+		if( utility::platformIsWindows() ){
+
+			m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
+		}else{
+			m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
+			m_ui->checkBoxOpenReadOnly->setChecked( settings::instance().getOpenVolumeReadOnlyOption() ) ;
+		}
+	}
+
 	m_ui->lineEditKey->setText( key ) ;
 
 	this->setUIVisible( true ) ;
@@ -389,12 +406,9 @@ void keyDialog::setDefaultUI()
 {
 	if( m_create ){
 
-		if( utility::equalsAtleastOne( m_exe,"Securefs","Cryfs","Gocryptfs","Ecryptfs","Encfs" ) ){
+		auto e = engines::instance().getByName( m_exe ).hasGUICreateOptions() ;
 
-			m_ui->pbOptions->setEnabled( true ) ;
-		}else{
-			m_ui->pbOptions->setEnabled( false ) ;
-		}
+		m_ui->pbOptions->setEnabled( e ) ;
 
 		m_ui->label_3->setVisible( true ) ;
 
@@ -449,78 +463,21 @@ void keyDialog::pbOptions()
 {
 	if( m_create ){
 
-		if( m_exe == "Ecryptfs" ){
+		auto& e = engines::instance().getByName( m_exe ) ;
 
-			this->hide() ;
+		this->hide() ;
 
-			ecryptfscreateoptions::instance( this,[ this ]( const ecryptfscreateoptions::Options& e ){
+		e.GUICreateOptionsinstance( m_parentWidget,[ this ]( const engines::engine::Options& e ){
 
-				if( e.success ){
+			if( e.success ){
 
-					utility2::stringListToStrings( e.options,m_createOptions,m_configFile ) ;
-				}
+				m_reverseMode = e.reverseMode ;
 
-				this->ShowUI() ;
-			} ) ;
+				utility2::stringListToStrings( e.options,m_createOptions,m_configFile ) ;
+			}
 
-		}else if( m_exe == "Gocryptfs" ){
-
-			this->hide() ;
-
-			gocryptfscreateoptions::instance( m_parentWidget,[ this ]( const gocryptfscreateoptions::Options& e ){
-
-				if( e.success ){
-
-					m_reverseMode = e.reverseMode ;
-
-					utility2::stringListToStrings( e.options,m_createOptions,m_configFile ) ;
-				}
-
-				this->ShowUI() ;
-			} ) ;
-
-		}else if( m_exe == "Securefs" ){
-
-			this->hide() ;
-
-			securefscreateoptions::instance( m_parentWidget,[ this ]( const securefscreateoptions::Options& e ){
-
-				if( e.success ){
-
-					utility2::stringListToStrings( e.options,m_createOptions,m_configFile ) ;
-				}
-
-				this->ShowUI() ;
-			} ) ;
-
-		}else if( m_exe == "Cryfs" ){
-
-			this->hide() ;
-
-			cryfscreateoptions::instance( m_parentWidget,[ this ]( const cryfscreateoptions::Options& e ){
-
-				if( e.success ){
-
-					utility2::stringListToStrings( e.options,m_createOptions,m_configFile ) ;
-				}
-
-				this->ShowUI() ;
-			} ) ;
-
-		}else if( m_exe == "Encfs" ){
-
-			this->hide() ;
-
-			encfscreateoptions::instance( m_parentWidget,[ this ]( const encfscreateoptions::Options& e ){
-
-				if( e.success ){
-
-					m_reverseMode = e.reverseMode ;
-				}
-
-				this->ShowUI() ;
-			} ) ;
-		}
+			this->ShowUI() ;
+		} ) ;
 	}else{
 		if( !m_checked ){
 
@@ -678,7 +635,7 @@ void keyDialog::enableAll()
 		m_ui->checkBoxVisibleKey->setEnabled( index == keyDialog::Key ) ;
 	}
 
-	if( !utility::platformIsWindows() ){
+	if( !utility::platformIsWindows() && !m_favoriteReadOnly ){
 
 		m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
 	}
@@ -905,27 +862,27 @@ void keyDialog::reportErrorMessage( const siritask::cmdStatus& s )
 		msg = tr( "Volume Created Successfully." ) ;
 		break ;
 
-	case siritask::status::cryfs :
+	case siritask::status::cryfsBadPassword :
 
 		msg = tr( "Failed To Unlock A Cryfs Volume.\nWrong Password Entered." ) ;
 		break;
 
-	case siritask::status::sshfs :
+	case siritask::status::sshfsBadPassword :
 
 		msg = tr( "Failed To Connect To The Remote Computer.\nWrong Password Entered." ) ;
 		break;
 
-	case siritask::status::encfs :
+	case siritask::status::encfsBadPassword :
 
 		msg = tr( "Failed To Unlock An Encfs Volume.\nWrong Password Entered." ) ;
 		break;
 
-	case siritask::status::gocryptfs :
+	case siritask::status::gocryptfsBadPassword :
 
 		msg = tr( "Failed To Unlock A Gocryptfs Volume.\nWrong Password Entered." ) ;
 		break;
 
-	case siritask::status::ecryptfs :
+	case siritask::status::ecryptfsBadPassword :
 
 		msg = tr( "Failed To Unlock An Ecryptfs Volume.\nWrong Password Entered." ) ;
 		break;
@@ -940,7 +897,7 @@ void keyDialog::reportErrorMessage( const siritask::cmdStatus& s )
 		msg = tr( "This Backend Requires Root's Privileges And An attempt To Acquire Them Has Failed." ) ;
 		break;
 
-	case siritask::status::securefs :
+	case siritask::status::securefsBadPassword :
 
 		msg = tr( "Failed To Unlock A Securefs Volume.\nWrong Password Entered." ) ;
 		break;
@@ -1107,14 +1064,6 @@ void keyDialog::encryptedFolderCreate()
 		return ;
 	}
 
-	if( m_exe == "Ecryptfs" ){
-
-		if( m_createOptions.isEmpty() ){
-
-			m_createOptions = "-o " + ecryptfscreateoptions::defaultCreateOptions() ;
-		}
-	}
-
 	m_working = true ;
 
 	siritask::options s( path,m,m_key,m_idleTimeOut,m_configFile,
@@ -1244,7 +1193,14 @@ void keyDialog::SetUISetKey( bool e )
 
 void keyDialog::encryptedFolderMount()
 {
-	auto ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
+	bool ro ;
+
+	if( m_favoriteReadOnly ){
+
+		ro = true ;
+	}else{
+		ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
+	}
 
 	auto m = m_ui->lineEditMountPoint->text() ;
 

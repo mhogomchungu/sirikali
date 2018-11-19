@@ -236,19 +236,18 @@ set( UI_FILES 	src/sirikali.ui
 		src/options.ui
 		src/dialogok.ui
 		src/help.ui
-		src/gocryptfscreateoptions.ui
 		src/filemanager.ui
-		src/securefscreateoptions.ui
-		src/cryfscreateoptions.ui
-                src/configfileoption.ui
-                src/configoptions.ui
-                src/ecryptfscreateoptions.ui
-                src/debugwindow.ui
-                src/encfscreateoptions.ui
+		src/debugwindow.ui
+		src/configfileoption.ui
+		src/configoptions.ui
+		src/engines/gocryptfscreateoptions.ui
+		src/engines/ecryptfscreateoptions.ui
+		src/engines/securefscreateoptions.ui
+		src/engines/encfscreateoptions.ui
+		src/engines/cryfscreateoptions.ui
 )
 
 set( MOC_FILES
-		src/encfscreateoptions.h
                 src/configoptions.h
                 src/configfileoption.h
                 src/checkforupdates.h
@@ -260,32 +259,32 @@ set( MOC_FILES
 		src/dialogmsg.h
 		src/plugin.h
 		src/favorites.h
-		src/gocryptfscreateoptions.h
 		src/readonlywarning.h
 		src/walletconfig.h
 		src/walletconfiginput.h
 		src/options.h
 		src/filemanager.h
 		src/mountinfo.h
-		src/securefscreateoptions.h
-		src/cryfscreateoptions.h
-		src/ecryptfscreateoptions.h
 		src/debugwindow.h
+		src/engines/gocryptfscreateoptions.h
+		src/engines/ecryptfscreateoptions.h
+		src/engines/securefscreateoptions.h
+		src/engines/encfscreateoptions.h
+		src/engines/cryfscreateoptions.h
  )
 
 set( SRC 	src/dialogok.cpp
 		src/main.cpp
 		src/systemsignalhandler.cpp
 		src/crypto.cpp
-		src/encfscreateoptions.cpp
 		src/debugwindow.cpp
-		src/gocryptfscreateoptions.cpp
 		src/configoptions.cpp
-                src/configfileoption.cpp
+		src/configfileoption.cpp
 		src/sirikali.cpp
 		src/keydialog.cpp
 		src/siritask.cpp
 		src/help.cpp
+		src/engines.cpp
 		src/oneinstance.cpp
 		src/mountinfo.cpp
 		src/utility.cpp
@@ -300,12 +299,22 @@ set( SRC 	src/dialogok.cpp
 		src/options.cpp
 		src/secrets.cpp
 		src/filemanager.cpp
-		src/securefscreateoptions.cpp
-		src/cryfscreateoptions.cpp
 		src/utility2.cpp
-		src/ecryptfscreateoptions.cpp
 		src/winfsp.cpp
 		src/settings.cpp
+		src/engines/cryfs.cpp
+		src/engines/ecryptfs.cpp
+		src/engines/gocryptfs.cpp
+		src/engines/securefs.cpp
+		src/engines/sshfs.cpp
+		src/engines/encfs.cpp
+		src/engines/unknown.cpp
+		src/engines/commandOptions.cpp
+		src/engines/gocryptfscreateoptions.cpp
+		src/engines/ecryptfscreateoptions.cpp
+		src/engines/securefscreateoptions.cpp
+		src/engines/encfscreateoptions.cpp
+		src/engines/cryfscreateoptions.cpp
 )
 
 if( APPLE )

@@ -1378,3 +1378,15 @@ template< typename Function >
 {
 	return _compare_versions( backend,version,std::less<int>() ) ;
 }
+
+QString utility::wrap_su( const QString& s )
+{
+	auto su = utility::executableFullPath( "su" ) ;
+
+	if( su.isEmpty() ){
+
+		return s ;
+	}else{
+		return QString( "%1 - -c \"%2\"" ).arg( su,QString( s ).replace( "\"","'" ) ) ;
+	}
+}

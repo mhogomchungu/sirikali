@@ -143,10 +143,10 @@ namespace utility
 	struct fsInfo
 	{
 		bool valid ;
-        uint64_t f_blocks ;
-        uint64_t f_bavail ;
-        uint64_t f_bsize ;
-        uint64_t f_bfree ;
+		uint64_t f_blocks ;
+		uint64_t f_bavail ;
+		uint64_t f_bsize ;
+		uint64_t f_bfree ;
 	};
 
 	::Task::future< utility::fsInfo >& fileSystemInfo( const QString& ) ;
@@ -224,11 +224,21 @@ namespace utility
 	void quitHelper() ;
 	void initGlobals() ;
 	QString helperSocketPath() ;
-	QString removeOption( const QStringList&,const QString& option ) ;
-	QString removeOption( const QString& commaSeparatedString,const QString& option ) ;
+
+	QString wrap_su( const QString& ) ;
+
 	QString getVolumeID( const QString&,bool = false ) ;
 	bool eventFilter( QObject * gui,QObject * watched,QEvent * event,std::function< void() > ) ;
 	void licenseInfo( QWidget * ) ;
+
+	QString removeOption( const QStringList&,const QString& option ) ;
+	QString removeOption( const QString& commaSeparatedString,const QString& option ) ;
+
+	template< typename E,typename F,typename ... G >
+	QString removeOption( const E& e,const F& f,G&& ... g )
+	{
+		return removeOption( removeOption( e,f ),std::forward< G >( g ) ... ) ;
+	}
 
 	struct SocketPaths{
 		QString folderPath ;

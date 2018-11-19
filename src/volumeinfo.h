@@ -64,17 +64,6 @@ public:
 		QString mountOptions ;
 		QString configPath ;
 	};
-
-	static bool supported( const QString& e )
-	{
-		return utility::containsAtleastOne( e," fuse.cryfs ",
-						    " fuse.encfs ",
-						    " fuse.sshfs ",
-						    " fuse.gocryptfs ",
-						    " fuse.gocryptfs-reverse ",
-						    " fuse.securefs ",
-						    " ecryptfs " ) ;
-	}
 	volumeInfo()
 	{
 	}
@@ -91,7 +80,8 @@ public:
 	{
 		m_mountinfo.volumePath = e.volumePath ;
 		m_mountinfo.mountPoint = e.mountPointPath ;
-		m_reverseMode = e.reverseMode ;
+		m_reverseMode          = e.reverseMode ;
+		m_readOnlyMode         = e.readOnlyMode ;
 
 		if( e.configFilePath != "N/A" ){
 
@@ -107,6 +97,10 @@ public:
 
 			m_mountinfo.mountOptions = e.mountOptions ;
 		}
+	}
+	const favorites::entry::readOnly& mountReadOnly() const
+	{
+		return m_readOnlyMode ;
 	}
 	bool reverseMode() const
 	{
@@ -159,6 +153,7 @@ public:
 private:
 	volumeInfo::mountinfo m_mountinfo ;
 	bool m_reverseMode = false ;
+	favorites::entry::readOnly m_readOnlyMode ;
 };
 
 #endif // VOLUMEENTRYPROPERTIES_H

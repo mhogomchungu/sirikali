@@ -37,11 +37,8 @@ class QTableWidget ;
 #include "siritask.h"
 #include "can_build_pwquality.h"
 #include "secrets.h"
-#include "securefscreateoptions.h"
-#include "cryfscreateoptions.h"
-#include "gocryptfscreateoptions.h"
-#include "ecryptfscreateoptions.h"
-#include "encfscreateoptions.h"
+
+#include "favorites.h"
 
 #include <functional>
 #include <memory>
@@ -217,6 +214,7 @@ private :
 	bool m_closeGUI = false ;
 	bool m_reverseMode = false ;
 
+	favorites::entry::readOnly m_favoriteReadOnly ;
 	secrets& m_secrets ;
 
 	keystrength m_keyStrength ;

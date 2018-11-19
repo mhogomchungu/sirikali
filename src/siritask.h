@@ -90,7 +90,7 @@ namespace siritask
 			idleTimeout( e.idleTimeOut ),
 			configFilePath( e.configFilePath ),
 			type( QString() ),
-			ro( false ),
+			ro( e.readOnlyMode ? e.readOnlyMode.onlyRead() : false ),
 			reverseMode( e.reverseMode ),
 			mountOptions( e.sanitizedMountOptions() )
 		{
@@ -134,27 +134,33 @@ namespace siritask
 	enum class status
 	{
 		success,
-		cryfs,
-		cryfsMigrateFileSystem,
-		encfs,
-		sshfs,
-		gocryptfs,
-		securefs,
-		failedToLoadWinfsp,
-		ecryptfs,
-		ecryptfsIllegalPath,
-		ecrypfsBadExePermissions,
-		gocryptfsNotFound,
+		volumeCreatedSuccessfully,
+
+		cryfsBadPassword,
+		encfsBadPassword,
+		sshfsBadPassword,
+		gocryptfsBadPassword,
+		securefsBadPassword,
+		ecryptfsBadPassword,
+
 		sshfsNotFound,
 		cryfsNotFound,
 		encfsNotFound,
 		securefsNotFound,
-		backEndDoesNotSupportCustomConfigPath,
+		gocryptfsNotFound,
 		ecryptfs_simpleNotFound,
+
+		cryfsMigrateFileSystem,
+
+		failedToLoadWinfsp,
+
+		ecryptfsIllegalPath,
+		ecrypfsBadExePermissions,
+
+		backEndDoesNotSupportCustomConfigPath,
 		unknown,
 		failedToCreateMountPoint,
-		backendFail,
-		volumeCreatedSuccessfully
+		backendFail
 	};
 
 	class cmdStatus
@@ -163,7 +169,8 @@ namespace siritask
 		cmdStatus()
 		{
 		}
-		cmdStatus( siritask::status s,int c ) : m_exitCode( c ),m_status( s )
+		cmdStatus( siritask::status s,int c ) :
+			m_exitCode( c ),m_status( s )
 		{
 		}
 		template< typename T = QString >
@@ -178,6 +185,12 @@ namespace siritask
 			}else{
 				this->message( e ) ;
 			}
+		}
+		template< typename T = QString >
+		cmdStatus( siritask::status s,int c,const T& e = T() ) :
+			m_exitCode( c ),m_status( s )
+		{
+			this->message( e ) ;
 		}
 		template< typename T = QString >
 		cmdStatus( siritask::status s,const T& e = T() ) :

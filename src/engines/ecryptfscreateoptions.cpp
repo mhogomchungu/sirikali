@@ -20,11 +20,11 @@
 #include "ecryptfscreateoptions.h"
 #include "ui_ecryptfscreateoptions.h"
 
-#include "utility.h"
+#include "../utility.h"
 #include "task.hpp"
 
 ecryptfscreateoptions::ecryptfscreateoptions( QWidget * parent,
-					std::function< void( const Options& ) > function ) :
+					std::function< void( const engines::engine::Options& ) > function ) :
 	QDialog( parent ),
 	m_ui( new Ui::ecryptfscreateoptions ),
 	m_function( std::move( function ) )
@@ -81,7 +81,7 @@ void ecryptfscreateoptions::pbCancel()
 	this->HideUI() ;
 }
 
-void ecryptfscreateoptions::HideUI( const Options& opts )
+void ecryptfscreateoptions::HideUI( const engines::engine::Options& opts )
 {
 	this->hide() ;
 	m_function( opts ) ;
