@@ -201,6 +201,16 @@ options:
         <source>This plugin delegates key generation to an external application</source>
         <translation>Esta extension delega la generacion de contrasenas a una aplicion externa</translation>
     </message>
+    <message>
+        <location filename="../src/settings.cpp" line="345"/>
+        <source>Manage Favorites</source>
+        <translation type="unfinished">Administrar Favoritos</translation>
+    </message>
+    <message>
+        <location filename="../src/settings.cpp" line="346"/>
+        <source>Mount All</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>changePassWordDialog</name>

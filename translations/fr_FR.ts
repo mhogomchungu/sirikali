@@ -228,6 +228,16 @@ L&apos;exécutable Sshfs n&apos;a pu être trouvé.</translation>
         <source>Failed To Get Volume Properties</source>
         <translation>Echec de l&apos;obtention des propriétés du volume</translation>
     </message>
+    <message>
+        <location filename="../src/settings.cpp" line="345"/>
+        <source>Manage Favorites</source>
+        <translation type="unfinished">Gérer les Favoris</translation>
+    </message>
+    <message>
+        <location filename="../src/settings.cpp" line="346"/>
+        <source>Mount All</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>changePassWordDialog</name>

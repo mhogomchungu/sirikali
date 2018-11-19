@@ -103,7 +103,7 @@ Latest Version Is : %4.</source>
         <location filename="../src/sirikali.cpp" line="443"/>
         <source>Failed To Complete The Request.
 Sshfs Executable Could Not Be Found.</source>
-        <translation type="unfinished">Не удалось выполнить запрос.
+        <translation>Не удалось выполнить запрос.
  Исполняемый файл sshfs не найден.</translation>
     </message>
     <message>
@@ -227,6 +227,16 @@ options:
         <location filename="../src/keydialog.cpp" line="1411"/>
         <source>This plugin delegates key generation to an external application</source>
         <translation>Этот плагин делегирует генерацию ключей во внешнее приложение</translation>
+    </message>
+    <message>
+        <location filename="../src/settings.cpp" line="345"/>
+        <source>Manage Favorites</source>
+        <translation>Управление Избранным</translation>
+    </message>
+    <message>
+        <location filename="../src/settings.cpp" line="346"/>
+        <source>Mount All</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

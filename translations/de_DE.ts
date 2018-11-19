@@ -229,6 +229,16 @@ options:
         <source>about SiriKali</source>
         <translation>über SiriKali</translation>
     </message>
+    <message>
+        <location filename="../src/settings.cpp" line="345"/>
+        <source>Manage Favorites</source>
+        <translation type="unfinished">Favoriten verwalten</translation>
+    </message>
+    <message>
+        <location filename="../src/settings.cpp" line="346"/>
+        <source>Mount All</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>changePassWordDialog</name>

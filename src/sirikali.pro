@@ -32,7 +32,8 @@ SOURCES += \
     help.cpp \
     configoptions.cpp \
     ecryptfscreateoptions.cpp \
-    encfscreateoptions.cpp
+    encfscreateoptions.cpp \
+    settings.cpp
 
 HEADERS += \
     engines/securefscreateoptions.h \
