@@ -60,7 +60,7 @@
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/changepassworddialog.cpp" line="232"/>
         <source>Wallet could not be opened with the presented key</source>
-        <translation>Хранилище ключей не может быть открыто с помощью данного ключа</translation>
+        <translation>Хранилище ключей не может быть открыто с помощью данного пароля</translation>
     </message>
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/changepassworddialog.cpp" line="242"/>
@@ -73,7 +73,7 @@
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/password_dialog.cpp" line="72"/>
         <source>Wallet could not be opened with the presented key</source>
-        <translation>Хранилище ключей не может быть открыто с помощью данного ключа</translation>
+        <translation>Хранилище ключей не может быть открыто с помощью данного пароля</translation>
     </message>
 </context>
 <context>
@@ -151,18 +151,18 @@ Sshfs Executable Could Not Be Found.</source>
         <source>Not Supported KeyFile Encountered Since It Contains AtLeast One Illegal Character(&apos;\n&apos;,&apos;\0&apos;,&apos;\r&apos;).
 
 Please Use a Hash Of The KeyFile Through &quot;HMAC+KeyFile&quot; Option.</source>
-        <translation>Не корректный KeyFile, так как он содержит как минимум один недопустимый символ (&apos;\n&apos;, &apos;\0&apos;, &apos;\r&apos;).
+        <translation>Не корректный Файловый ключ, так как он содержит как минимум один недопустимый символ (&apos;\n&apos;, &apos;\0&apos;, &apos;\r&apos;).
 
-Пожалуйста, используйте хэш ключа с помощью опции «HMAC + KeyFile».</translation>
+Пожалуйста, используйте хэш Файлового ключа с помощью опции «HMAC + Файл ключа».</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1414"/>
         <source>Effective Key Is Generated With Below Formula:
 
 key = hmac_sha256(password,keyfile contents)</source>
-        <translation>Эффективный ключ генерируется по формуле:
+        <translation>Эффективный ключ шифрования генерируется по формуле:
 
-key = hmac_sha256 (пароль, содержимое файла ключа)</translation>
+key = hmac_sha256 (пароль, содержимое Файлового ключа)</translation>
     </message>
     <message>
         <location filename="../src/utility.cpp" line="560"/>
@@ -197,7 +197,7 @@ options:
 	-m   Инструмент для открытия файлового менеджера (по умолчанию - xdg-open).
 	-e     Запустить приложение, не показывая графический интерфейс(GUI).
 	-b    Имя бэкэнда для получения пароля, когда запускаем открытие тома из командной строки (CLI).
-	        Поддерживаемые бэкэнды: «внутренний», «stdin», «keyfile», «osxkeychain», «kwallet» и «libsecret».
+	        Поддерживаемые бэкэнды: «internal», «stdin», «keyfile», «osxkeychain», «kwallet» и «libsecret».
 	        Первые три всегда присутствуют, но остальные являются зависимыми от версии программы.
 	        Параметр «внутренний» заставляет SiriKali считывать пароль из внутреннего бэкэнда lxqt-кошелька.
 	        Параметр «stdin» заставляет SiriKali читать пароль со стандартного ввода.
@@ -212,7 +212,7 @@ options:
 	-c     Установить путь к файлу конфигурации тома, когда том открывается из командной строки (CLI).
 	-i      Установите тайм-аут (в минутах), по истечению которого нужно будет отмонтировать том при запуске из командной строки (CLI).
 	-o    Установите параметры монтирования тома из командной строки (CLI).
-	-f     Путь к файлу ключей.
+	-f     Путь к файловому ключу.
 	-u    Отмонтировать том.
 	-p    Показать список разблокированных томов.
 	-s     Возможность запуска генерации хэша паролей.</translation>
@@ -411,7 +411,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configoptions.ui" line="257"/>
         <source>Manage Keys In Wallets</source>
-        <translation>Управление ключами в хранилище</translation>
+        <translation>Управление ключами в хранилище ключей</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="269"/>
@@ -590,7 +590,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/engines/encfscreateoptions.ui" line="26"/>
         <source>Reverse Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Режим &quot;reverse&quot;</translation>
     </message>
     <message>
         <location filename="../src/engines/encfscreateoptions.ui" line="58"/>
@@ -600,7 +600,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/engines/encfscreateoptions.ui" line="71"/>
         <source>&amp;OK</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;OK</translation>
     </message>
 </context>
 <context>
@@ -628,7 +628,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites.ui" line="220"/>
         <source>Reverse Mode (Gocryptfs and Encfs Only)</source>
-        <translation type="unfinished"></translation>
+        <translation>Режим &quot;reverse&quot; (только для Gocryptfs и Encfs)</translation>
     </message>
     <message>
         <location filename="../src/favorites.ui" line="227"/>
@@ -678,7 +678,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites.ui" line="234"/>
         <source>Volume Does Not Use A Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Том не использует пароль</translation>
     </message>
     <message>
         <location filename="../src/favorites.ui" line="241"/>
@@ -704,18 +704,19 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/favorites.cpp" line="212"/>
         <source>Remote Ssh Server Address
 (Example: sshfs woof@bar.foo:/remote/path)</source>
-        <translation type="unfinished"></translation>
+        <translation>Удаленный адрес  Ssh сервера
+(Например: sshfs woof@bar.foo:/remote/path)</translation>
     </message>
     <message>
         <location filename="../src/favorites.cpp" line="213"/>
         <source>SSH_AUTH_SOCK Socket Path (Optional)</source>
-        <translation type="unfinished"></translation>
+        <translation>Путь сокета SSH_AUTH_SOCK (Опционально)</translation>
     </message>
     <message>
         <location filename="../src/favorites.cpp" line="252"/>
         <location filename="../src/favorites.cpp" line="300"/>
         <source>Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Редактировать</translation>
     </message>
     <message>
         <location filename="../src/favorites.cpp" line="295"/>
@@ -751,7 +752,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites.cpp" line="466"/>
         <source>Add</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить</translation>
     </message>
     <message>
         <location filename="../src/favorites.cpp" line="503"/>
@@ -843,7 +844,16 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/engines/gocryptfscreateoptions.ui" line="200"/>
         <source>Reverse Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Режим &quot;reverse&quot;</translation>
+    </message>
+    <message>
+        <location filename="../src/gocryptfscreateoptions.cpp" line="46"/>
+        <source>Normally Gocryptfs provides a plaintext view of data on demand.
+It stores enciphered data and displays plaintext data.
+With this option set, it takes as source plaintext data and produces enciphered data on-demand.
+This can be useful for creating remote encrypted backups,
+where you do not wish to keep the local files unencrypted.</source>
+        <translation>Обычно Gocryptfs предоставляет отображение в виде обычного текста по запросу: он хранит зашифрованные данные и отображает данные открытого текста. С помощью этой опции он принимает в качестве исходных данных открытого текста и создает кодированные данные по требованию. Это может быть полезно для создания удаленных зашифрованных резервных копий, где вы не хотите, чтобы локальные файлы были незашифрованными.</translation>
     </message>
 </context>
 <context>
@@ -892,9 +902,7 @@ p, li { white-space: pre-wrap; }
 &lt;ol style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Click &amp;quot;Menu-&amp;gt;Settings-&amp;gt;Manage Keys In Wallets-&amp;gt;Key Storage&amp;quot; and then select your preferred key storage system.&lt;/li&gt;
 &lt;li style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;On the dialog window that shows up,click &amp;quot;Add&amp;quot;.&lt;/li&gt;
 &lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;On the dialog window that shows up,add your password in the appropriate fields. &amp;quot;Volume ID&amp;quot; is the full path to the encrypted volume folder. Click the button to the right of the field to invoke file dialog window where you will get the opportunity to browse to where the folder is to select it.&lt;/li&gt;&lt;/ol&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translatorcomment>По умолчанию SiriKali использует префикс точки монтирования «~ / .SiriKali.tmp /».
-Вы можете изменить его на что-то еще, нажав «Menu-&gt; Settings-&gt; Editable Options-&gt; Set Mount Prefix», а затем установите папку, которую вы хотите использовать в качестве префикса точки монтирования по умолчанию.</translatorcomment>
-        <translation type="unfinished">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Noto Sans&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
@@ -905,27 +913,28 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Пользовательский путь точки монтирования можно задать, добавив том в Избранное, а затем установить собственный путь точки монтирования в поле &amp;quot;Путь к точке монтирования&amp;quot;. Затем этот том должен быть доступен в Избранном.&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Список избранного можно изменить в Избранное-&amp;gt;Управление Избранным.&lt;/p&gt;
 &lt;p style=&quot; margin-top:16px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a name=&quot;user-content-30-how-do-i-start-the-application-minimized&quot;&gt;&lt;/a&gt;&lt;span style=&quot; font-size:x-large; font-weight:600;&quot;&gt;3&lt;/span&gt;&lt;span style=&quot; font-size:x-large; font-weight:600;&quot;&gt;.0 Как запускать приложение свернутым?&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Запустите приложение с параметром &amp;quot;-e&amp;quot; или настройте через графический интерфейс в&amp;quot;Меню-&amp;gt;Настройки-&amp;gt;Общие параметры-&amp;gt;Стартовать свернутым&amp;quot;.&lt;/p&gt;
-&lt;p style=&quot; margin-top:16px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a name=&quot;user-content-40-what-does-different-key-options-means-in-the-dialog-for-creatingunlocking-volume&quot;&gt;&lt;/a&gt;&lt;span style=&quot; font-size:x-large; font-weight:600;&quot;&gt;4&lt;/span&gt;&lt;span style=&quot; font-size:x-large; font-weight:600;&quot;&gt;.0 What does different key options means in the dialog for creating/unlocking volume?&lt;/span&gt;&lt;/p&gt;
-&lt;ol style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;Key&amp;quot; entry means the password you enter will be used to create/unlock the volume.&lt;/li&gt;
-&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;KeyFile&amp;quot; entry means the contents of a specified file will be used as a password to create/unlock the volume. This option is not very safe as the file contents will most likely be truncated on the first encountered new line character making effective password not as strong as expected. It is advised to use one of the next two options if a key file is to be used.&lt;/li&gt;
-&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;HMAC+KeyFile&amp;quot; entry means the effective password will be a combination of key file contents and an empty password. The effective password will be produced with the following formula: password = hmac_sha256( key file contents,empty password ).&lt;/li&gt;
-&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;Key+KeyFile&amp;quot; entry means the effective password will be a combination of key file contents and a password. The effective password will be produced with the following formula: password = hmac_sha256( key file contents,password ).&lt;/li&gt;
-&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;Internal Wallet&amp;quot; entry means the effective password will be retrieved from LXQt internal secure storage system. Section 8.0 has information on how to add passwords to this backend.&lt;/li&gt;
-&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;KDE Wallet&amp;quot; entry means the effective password will be retrieved from LXQt secure storage system through KDE&apos;s KWallet backend. Section 8.0 has information on how to add passwords to this backend.&lt;/li&gt;
-&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;GNOME Wallet&amp;quot; entry means the effective password will be retrieved from LXQt secure storage system through libsecret backend. Section 8.0 has information on how to add passwords to this backend.&lt;/li&gt;
-&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;OSX keychain&amp;quot; entry means the effective password will be retrieved from LXQt secure storage system through OSX keychain backend. Section 8.0 has information on how to add passwords to this backend.&lt;/li&gt;&lt;/ol&gt;
-&lt;p style=&quot; margin-top:16px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a name=&quot;user-content-50-what-directories-does-sirikali-check-for-its-backend-executables&quot;&gt;&lt;/a&gt;&lt;span style=&quot; font-size:x-large; font-weight:600;&quot;&gt;5&lt;/span&gt;&lt;span style=&quot; font-size:x-large; font-weight:600;&quot;&gt;.0 What directories does SiriKali check for its backend executables?&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Backend executables are searched in the following directories with the first entry searched first and the last entry searched last: &amp;quot;/usr/local/bin/&amp;quot;,&amp;quot;/usr/local/sbin/&amp;quot;,&amp;quot;/usr/bin/&amp;quot;,&amp;quot;/usr/sbin/&amp;quot;,&amp;quot;/bin/&amp;quot;,&amp;quot;/sbin/&amp;quot;, &amp;quot;/opt/local/bin&amp;quot;,&amp;quot;/opt/local/sbin&amp;quot;,&amp;quot;/opt/bin&amp;quot;,&amp;quot;/opt/sbin&amp;quot;,&amp;quot;~/bin&amp;quot;,&amp;quot;~/.bin&amp;quot;.&lt;/p&gt;
-&lt;p style=&quot; margin-top:16px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a name=&quot;user-content-60-how-do-i-unlock-a-volume-through-a-favorite-entry-without-invoking-a-wallet&quot;&gt;&lt;/a&gt;&lt;span style=&quot; font-size:x-large; font-weight:600;&quot;&gt;6&lt;/span&gt;&lt;span style=&quot; font-size:x-large; font-weight:600;&quot;&gt;.0 How do i unlock a volume through a favorite feature without invoking a wallet?&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Disable the feature by setting an option through &amp;quot;Menu-&amp;gt;Settings-&amp;gt;Manage Keys In Wallets-&amp;gt;none&amp;quot;&lt;/p&gt;
-&lt;p style=&quot; margin-top:16px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a name=&quot;user-content-70-how-do-i-unlock-a-volume-through-a-favorite-entry-using-a-key-in-a-wallet-and-without-showing-mount-dialog-prompt&quot;&gt;&lt;/a&gt;&lt;span style=&quot; font-size:x-large; font-weight:600;&quot;&gt;7&lt;/span&gt;&lt;span style=&quot; font-size:x-large; font-weight:600;&quot;&gt;.0 How do i unlock a volume through a favorite feature using a key in a wallet and without showing mount dialog prompt?&lt;/span&gt;&lt;/p&gt;
-&lt;ol style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Set your preferred password storage system at &amp;quot;Menu-&amp;gt;Settings-&amp;gt;Manage Keys In Wallets&amp;quot;.&lt;/li&gt;
-&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Unset &amp;quot;Menu-&amp;gt;Settings-&amp;gt;Auto Mount-&amp;gt;Show Mount Dialog When Auto Mounting&amp;quot;.&lt;/li&gt;&lt;/ol&gt;
-&lt;p style=&quot; margin-top:16px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a name=&quot;user-content-80-how-do-i-add-a-key-to-a-secured-storage-system&quot;&gt;&lt;/a&gt;&lt;span style=&quot; font-size:x-large; font-weight:600;&quot;&gt;8&lt;/span&gt;&lt;span style=&quot; font-size:x-large; font-weight:600;&quot;&gt;.0 How do i add a key to a secured storage system?&lt;/span&gt;&lt;/p&gt;
-&lt;ol style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Click &amp;quot;Menu-&amp;gt;Settings-&amp;gt;Manage Keys In Wallets-&amp;gt;Key Storage&amp;quot; and then select your preferred key storage system.&lt;/li&gt;
-&lt;li style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;On the dialog window that shows up,click &amp;quot;Add&amp;quot;.&lt;/li&gt;
-&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;On the dialog window that shows up,add your password in the appropriate fields. &amp;quot;Volume ID&amp;quot; is the full path to the encrypted volume folder. Click the button to the right of the field to invoke file dialog window where you will get the opportunity to browse to where the folder is to select it.&lt;/li&gt;&lt;/ol&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Запустите приложение с параметром &amp;quot;-e&amp;quot; или настройте через графический интерфейс в &amp;quot;Меню-&amp;gt;Настройки-&amp;gt;Общие параметры-&amp;gt;Стартовать свернутым&amp;quot;.&lt;/p&gt;
+&lt;p style=&quot; margin-top:16px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a name=&quot;user-content-40-what-does-different-key-options-means-in-the-dialog-for-creatingunlocking-volume&quot;&gt;&lt;/a&gt;&lt;span style=&quot; font-size:x-large; font-weight:600;&quot;&gt;4&lt;/span&gt;&lt;span style=&quot; font-size:x-large; font-weight:600;&quot;&gt;.0 Что означают различные опции в диалоге создани/разблокировки тома?&lt;/span&gt;&lt;/p&gt;
+&lt;ol style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;Пароль&amp;quot; - введенный вами пароль будет использоваться для создания/разблокировки тома.&lt;/li&gt;
+&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;Файловый ключ&amp;quot; - содержимое указанного файла будет использоваться в качестве пароля для создания/разблокировки тома. Этот параметр не очень безопасен, поскольку содержимое файла, скорее всего, будет обрезанно на первом встреченном новом символе строки, что делает эффективный пароль не столь сильным, как ожидалось. Рекомендуется использовать один из следующих двух вариантов, если планируете использовать Файл ключей.&lt;/li&gt;
+&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;HMAC+Файловый ключ &amp;quot; - эффективным паролем будет комбинация содержимого файла ключа и пустого пароля. Ключ шифрования будет создан со следующей формулой: key = hmac_sha256 (содержимое Файлового ключа, пустой пароль).&lt;/li&gt;
+&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;Пароль+Файловый ключ&amp;quot; - эффективным паролем будет комбинация содержимого ключевого файла и пароля. Действующий пароль будет создан по следующей формуле: key = hmac_sha256 (содержимое Файлового ключа, пароль).&lt;/li&gt;
+&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;Internal Wallet&amp;quot; - эффективный пароль будет получен из внутренней защищенной системы хранения LXQt. В разделе 8.0 содержится информация о том, как добавить пароли к этому бэкенду.&lt;/li&gt;
+&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;KDE Wallet&amp;quot; - эффективный пароль будет получен из защищенной системы хранения LXQt через KDE-сервер KWallet. В разделе 8.0 содержится информация о том, как добавить пароли к этому бэкенду.&lt;/li&gt;
+&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;GNOME Wallet&amp;quot; - эффективный пароль будет получен из защищенной системы хранения LXQt с помощью libsecret. В разделе 8.0 содержится информация о том, как добавить пароли к этому бэкенду.&lt;/li&gt;
+&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;OSX keychain&amp;quot; - эффективный пароль будет извлекаться из защищенной системы хранения LXQt через бэкэнд брекетинга OSX. В разделе 8.0 содержится информация о том, как добавить пароли к этому бэкенду.&lt;/li&gt;&lt;/ol&gt;
+&lt;p style=&quot; margin-top:16px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a name=&quot;user-content-50-what-directories-does-sirikali-check-for-its-backend-executables&quot;&gt;&lt;/a&gt;&lt;span style=&quot; font-size:x-large; font-weight:600;&quot;&gt;5&lt;/span&gt;&lt;span style=&quot; font-size:x-large; font-weight:600;&quot;&gt;.0 В каких каталогах SiriKali проверяет свои исполняемые файлы?&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Исполняемые файлы ищутся в следующих каталогах в таком порядке:  &amp;quot;/usr/local/bin/&amp;quot;,&amp;quot;/usr/local/sbin/&amp;quot;,&amp;quot;/usr/bin/&amp;quot;,&amp;quot;/usr/sbin/&amp;quot;,&amp;quot;/bin/&amp;quot;,&amp;quot;/sbin/&amp;quot;, &amp;quot;/opt/local/bin&amp;quot;,&amp;quot;/opt/local/sbin&amp;quot;,&amp;quot;/opt/bin&amp;quot;,&amp;quot;/opt/sbin&amp;quot;,&amp;quot;~/bin&amp;quot;,&amp;quot;~/.bin&amp;quot;.&lt;/p&gt;
+&lt;p style=&quot; margin-top:16px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a name=&quot;user-content-60-how-do-i-unlock-a-volume-through-a-favorite-entry-without-invoking-a-wallet&quot;&gt;&lt;/a&gt;&lt;span style=&quot; font-size:x-large; font-weight:600;&quot;&gt;6&lt;/span&gt;&lt;span style=&quot; font-size:x-large; font-weight:600;&quot;&gt;.0 Как отключить использование хранилища ключей при разблокировке тома?&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Отключите данную функцию в Настройках &amp;quot;Меню-&amp;gt;Настройки-&amp;gt;Управление ключами в хранилище-&amp;gt;Не использовать&amp;quot;&lt;/p&gt;
+&lt;p style=&quot; margin-top:16px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a name=&quot;user-content-70-how-do-i-unlock-a-volume-through-a-favorite-entry-using-a-key-in-a-wallet-and-without-showing-mount-dialog-prompt&quot;&gt;&lt;/a&gt;&lt;span style=&quot; font-size:x-large; font-weight:600;&quot;&gt;7&lt;/span&gt;&lt;span style=&quot; font-size:x-large; font-weight:600;&quot;&gt;.0 Как автоматически разблокировать том ключем сохраненным в хранилище ключей без отображение диалога монтирования тома?&lt;/span&gt;&lt;/p&gt;
+&lt;ol style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Задайте предпочитаемую систему хранения ключей в &amp;quot;Меню-&amp;gt;Настройки-&amp;gt;Управление ключами в хранилище ключей&amp;quot;.&lt;/li&gt;
+&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Деактивируйте опцию &amp;quot;Меню-&amp;gt;Настройки-&amp;gt;Общие параметры-&amp;gt;Показывать диалог при автоматическом монтировании тома&amp;quot;.&lt;/li&gt;&lt;/ol&gt;
+&lt;p style=&quot; margin-top:16px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a name=&quot;user-content-80-how-do-i-add-a-key-to-a-secured-storage-system&quot;&gt;&lt;/a&gt;&lt;span style=&quot; font-size:x-large; font-weight:600;&quot;&gt;8&lt;/span&gt;&lt;span style=&quot; font-size:x-large; font-weight:600;&quot;&gt;.0 Как добавить ключ в защищенное хранилище ключей?&lt;/span&gt;&lt;/p&gt;
+&lt;ol style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Нажмите &amp;quot;Меню-&amp;gt;Настройки-&amp;gt;
+Управление ключами в хранилище ключей-&amp;gt;Хранилище ключей&amp;quot; и выберите предпочитаемую систему хранения ключей из списка.&lt;/li&gt;
+&lt;li style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;В появившемся диалоговом окне нажмите &amp;quot;Добавить&amp;quot;.&lt;/li&gt;
+&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;В новом появившемся диалоговом окне, добавьте свой пароль в соответствующие поля. &amp;quot;ID тома&amp;quot; - это полный путь к зашифрованной папке тома. Нажмите кнопку справа от поля, чтобы вызвать диалоговое окно в котором вы сможете выбрать нужную папку.&lt;/li&gt;&lt;/ol&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/help.ui" line="99"/>
@@ -951,7 +960,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/keydialog.cpp" line="1394"/>
         <location filename="../src/keydialog.cpp" line="1534"/>
         <source>Key</source>
-        <translation></translation>
+        <translation>Пароль</translation>
     </message>
     <message>
         <location filename="../src/keydialog.ui" line="100"/>
@@ -972,7 +981,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.ui" line="290"/>
         <source>Set Key</source>
-        <translation>Применить ключ</translation>
+        <translation>Применить</translation>
     </message>
     <message>
         <location filename="../src/keydialog.ui" line="303"/>
@@ -1022,13 +1031,13 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/keydialog.cpp" line="1400"/>
         <location filename="../src/keydialog.cpp" line="1499"/>
         <source>KeyFile</source>
-        <translation>Файл ключей</translation>
+        <translation>Файловый ключ</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="236"/>
         <location filename="../src/keydialog.cpp" line="1435"/>
         <source>HMAC+KeyFile</source>
-        <translation></translation>
+        <translation>HMAC+Файловый ключ</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="235"/>
@@ -1036,7 +1045,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/keydialog.cpp" line="1412"/>
         <location filename="../src/keydialog.cpp" line="1513"/>
         <source>Key+KeyFile</source>
-        <translation>Ключ+Файл ключей</translation>
+        <translation>Пароль+Файловый ключ</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="237"/>
@@ -1085,7 +1094,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/keydialog.cpp" line="703"/>
         <location filename="../src/keydialog.cpp" line="717"/>
         <source>Select A File To Be Used As A Keyfile.</source>
-        <translation>Выберите файл для использования в качестве файла ключа.</translation>
+        <translation>Выберите файл для использования в качестве Файлового ключа.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="743"/>
@@ -1095,7 +1104,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.cpp" line="752"/>
         <source>Key Field Is Empty.</source>
-        <translation>Поле &quot;Ключ&quot; пустое.</translation>
+        <translation>Поле &quot;Пароль&quot; пустое.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="805"/>
@@ -1161,25 +1170,26 @@ Wrong Password Entered.</source>
         <location filename="../src/keydialog.cpp" line="902"/>
         <source>Failed To Unlock A Securefs Volume.
 Wrong Password Entered.</source>
-        <translation>Не удалось разблокировать том Securefs. 
+        <translation>Не удалось разблокировать том Securefs.
 Введен неверный пароль.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="907"/>
         <source>Failed To Complete The Request.
 Sshfs Executable Could Not Be Found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось выполнить запрос.
+ Исполняемый файл sshfs не найден.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="912"/>
         <source>Backend Does Not Support Custom Configuration File Path.</source>
-        <translation type="unfinished"></translation>
+        <translation>Бэкэнд не поддерживает изменение пути к файлу.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="917"/>
         <source>Failed To Complete The Request.
 Cryfs Executable Could Not Be Found.</source>
-        <translation>Не удалось выполнить запрос. 
+        <translation>Не удалось выполнить запрос.
 Исполняемый файл Cryfs не может быть найден.</translation>
     </message>
     <message>
@@ -1237,7 +1247,7 @@ Not Supported Volume Encountered.</source>
     <message>
         <location filename="../src/keydialog.cpp" line="1439"/>
         <source>Select A KeyFile</source>
-        <translation>Выберите файл ключа</translation>
+        <translation>Выберите Файловый ключ</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1030"/>
@@ -1290,7 +1300,7 @@ To Do The Upgrade, Check The &quot;Upgrade File System&quot; Option And Unlock T
     <message>
         <location filename="../src/keydialog.cpp" line="1548"/>
         <source>Keyfile path</source>
-        <translation>Путь к файлу ключа</translation>
+        <translation>Путь к Файловому ключу</translation>
     </message>
 </context>
 <context>
@@ -1331,7 +1341,7 @@ To Do The Upgrade, Check The &quot;Upgrade File System&quot; Option And Unlock T
     <message>
         <location filename="../src/options.ui" line="157"/>
         <source>Reverse Mode (Gocryptfs and Encfs Only).</source>
-        <translation type="unfinished"></translation>
+        <translation>Режим &quot;reverse&quot; (только для Gocryptfs и Encfs).</translation>
     </message>
     <message>
         <location filename="../src/options.ui" line="171"/>
@@ -1418,12 +1428,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/plugin.ui" line="17"/>
         <source>Key Generator Using A Passphrase And A KeyFile</source>
-        <translation>Генератор ключей с использованием парольной фразы и ключа</translation>
+        <translation>Генератор ключей с использованием Пароля и Файлового ключа</translation>
     </message>
     <message>
         <location filename="../src/plugin.ui" line="29"/>
         <source>&amp;Set Key</source>
-        <translation>&amp;Задать ключ</translation>
+        <translation>&amp;Применить</translation>
     </message>
     <message>
         <location filename="../src/plugin.ui" line="42"/>
@@ -1439,7 +1449,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/plugin.ui" line="142"/>
         <location filename="../src/plugin.cpp" line="162"/>
         <source>KeyFile</source>
-        <translation>Файл ключа</translation>
+        <translation>Файловый ключ</translation>
     </message>
     <message>
         <location filename="../src/plugin.cpp" line="111"/>
@@ -1450,7 +1460,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/plugin.cpp" line="111"/>
         <source>KeyFile Not Set</source>
-        <translation>Файл ключа не задан</translation>
+        <translation>Файловый ключ не задан</translation>
     </message>
     <message>
         <location filename="../src/plugin.cpp" line="150"/>
@@ -1832,7 +1842,7 @@ The Volume Is Not Supported</source>
     <message>
         <location filename="../src/walletconfig.cpp" line="204"/>
         <source>Failed To Add the Key In The Wallet.</source>
-        <translation>Не удалось добавить ключ в кошелек.</translation>
+        <translation>Не удалось добавить пароль в хранилище ключей.</translation>
     </message>
 </context>
 <context>
@@ -1865,12 +1875,12 @@ The Volume Is Not Supported</source>
     <message>
         <location filename="../src/walletconfiginput.ui" line="102"/>
         <source>Key</source>
-        <translation>Ключ</translation>
+        <translation>Пароль</translation>
     </message>
     <message>
         <location filename="../src/walletconfiginput.ui" line="121"/>
         <source>Repeat Key</source>
-        <translation>Повторите ключ</translation>
+        <translation>Повторите пароль</translation>
     </message>
     <message>
         <location filename="../src/walletconfiginput.cpp" line="104"/>
