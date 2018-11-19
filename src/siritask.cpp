@@ -369,11 +369,11 @@ struct engine
 };
 
 template< typename Function >
-static engine _get_engine( const engines& backend,Function function )
+static engine _get_engine( const engines& engines,Function function )
 {
 	for( const auto& it : engines::supported() ){
 
-		const auto& s = backend.getByName( it ) ;
+		const auto& s = engines.getByName( it ) ;
 
 		for( const auto& xt : s.configFileNames() ){
 
@@ -384,7 +384,7 @@ static engine _get_engine( const engines& backend,Function function )
 		}
 	}
 
-	return { backend.getByName( QString() ),QString() } ;
+	return { engines.getByName( QString() ),QString() } ;
 }
 
 static siritask::cmdStatus _mount( bool reUseMountPoint,
@@ -432,11 +432,11 @@ static utility::result< QString > _path_exist( QString e,const QString& m )
 
 static siritask::cmdStatus _encrypted_folder_mount( const siritask::options& opt,bool reUseMP )
 {
-	const auto& backend = engines::instance() ;
+	const auto& engines = engines::instance() ;
 
 	if( opt.cipherFolder.startsWith( "sshfs " ) ){
 
-		const auto& engine = backend.getByName( "sshfs" ) ;
+		const auto& engine = engines.getByName( "sshfs" ) ;
 
 		auto opts = opt ;
 		opts.cipherFolder = opts.cipherFolder.remove( 0,6 ) ; // 6 is the size of "sshfs "
@@ -450,7 +450,7 @@ static siritask::cmdStatus _encrypted_folder_mount( const siritask::options& opt
 
 	}else if( opt.configFilePath.isEmpty() ){
 
-		auto m = _get_engine( backend,[ & ]( const QString& e ){
+		auto m = _get_engine( engines,[ & ]( const QString& e ){
 
 			return utility::pathExists( opt.cipherFolder + "/" + e ) ;
 		} ) ;
@@ -474,7 +474,7 @@ static siritask::cmdStatus _encrypted_folder_mount( const siritask::options& opt
 
 	}else if( utility::pathExists( opt.configFilePath ) ){
 
-		auto m = _get_engine( backend,[ & ]( const QString& e ){
+		auto m = _get_engine( engines,[ & ]( const QString& e ){
 
 			return opt.configFilePath.endsWith( e ) ;
 		} ) ;
@@ -498,7 +498,7 @@ static siritask::cmdStatus _encrypted_folder_mount( const siritask::options& opt
 
 				if( m ){
 
-					return _mount( reUseMP,backend.getByName( n ),opt,m.value() ) ;
+					return _mount( reUseMP,engines.getByName( n ),opt,m.value() ) ;
 				}
 			}
 		}

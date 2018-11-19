@@ -471,7 +471,7 @@ void sirikali::favoriteClicked( QAction * ac )
 
 				if( it.first.volumePath == e ){
 
-					if( it.first.volumeNeedNoPassword ){
+					if( it.first.volumeNeedNoPassword && it.first.volumePath.startsWith( "sshfs " ) ){
 
 						_connect_to_ssh_server( this,it.first ) ;
 					}else{
