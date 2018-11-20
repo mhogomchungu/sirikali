@@ -135,19 +135,6 @@ engines::engine::cmdStatus::cmdStatus()
 {
 }
 
-engines::engine::cmdStatus::cmdStatus( const engines::engine::cmdStatus& s,const QString& e )
-{
-	m_status = s.status() ;
-	m_exitCode = s.exitCode() ;
-
-	if( e.isEmpty() ){
-
-		this->message( s.msg() ) ;
-	}else{
-		this->message( e ) ;
-	}
-}
-
 engines::engine::cmdStatus::cmdStatus(engines::engine::status s,int c,const QString& e ) :
 	m_exitCode( c ),m_status( s )
 {
@@ -181,56 +168,110 @@ bool engines::engine::cmdStatus::operator!=( engines::engine::status s ) const
 	return m_status != s ;
 }
 
-engines::engine::cmdStatus& engines::engine::cmdStatus::setExitCode( int s )
-{
-	m_exitCode = s ;
-	return *this ;
-}
-
-engines::engine::cmdStatus& engines::engine::cmdStatus::setStatus( engines::engine::status s )
-{
-	m_status = s ;
-	return *this ;
-}
-
-engines::engine::cmdStatus& engines::engine::cmdStatus::setMessage( const QString& e )
-{
-	this->message( e ) ;
-	return *this ;
-}
-
-const QString& engines::engine::cmdStatus::msg() const
+QString engines::engine::cmdStatus::toMiniString() const
 {
 	return m_message ;
 }
 
-QString engines::engine::cmdStatus::report( const QString& cmd ) const
+QString engines::engine::cmdStatus::toString() const
 {
-	auto s = QString::number( m_exitCode ) ;
+	switch( m_status ){
 
-	QString e ;
+	case engines::engine::status::success :
 
-	e += "-------------------------" ;
-	e += QString( "\nBackend Generated Output:\nExit Code: %1" ).arg( s ) ;
+		/*
+		 * Should not get here
+		 */
 
-	if( !m_message.isEmpty() ){
+		return "Success" ;
 
-		e += QString( "\nExit String: \"%1\"" ).arg( m_message ) ;
+	case engines::engine::status::volumeCreatedSuccessfully :
+
+		return QObject::tr( "Volume Created Successfully." ) ;
+
+	case engines::engine::status::cryfsBadPassword :
+
+		return QObject::tr( "Failed To Unlock A Cryfs Volume.\nWrong Password Entered." ) ;
+
+	case engines::engine::status::sshfsBadPassword :
+
+		return QObject::tr( "Failed To Connect To The Remote Computer.\nWrong Password Entered." ) ;
+
+	case engines::engine::status::encfsBadPassword :
+
+		return QObject::tr( "Failed To Unlock An Encfs Volume.\nWrong Password Entered." ) ;
+
+	case engines::engine::status::gocryptfsBadPassword :
+
+		return QObject::tr( "Failed To Unlock A Gocryptfs Volume.\nWrong Password Entered." ) ;
+
+	case engines::engine::status::ecryptfsBadPassword :
+
+		return QObject::tr( "Failed To Unlock An Ecryptfs Volume.\nWrong Password Entered." ) ;
+
+	case engines::engine::engine::status::ecryptfsIllegalPath :
+
+		return QObject::tr( "A Space Character Is Not Allowed In Paths When Using Ecryptfs Backend And Polkit." ) ;
+
+	case engines::engine::status::ecrypfsBadExePermissions :
+
+		return QObject::tr( "This Backend Requires Root's Privileges And An attempt To Acquire Them Has Failed." ) ;
+
+	case engines::engine::status::securefsBadPassword :
+
+		return QObject::tr( "Failed To Unlock A Securefs Volume.\nWrong Password Entered." ) ;
+
+	case engines::engine::status::sshfsNotFound :
+
+		return QObject::tr( "Failed To Complete The Request.\nSshfs Executable Could Not Be Found." ) ;
+
+	case engines::engine::status::backEndDoesNotSupportCustomConfigPath :
+
+		return QObject::tr( "Backend Does Not Support Custom Configuration File Path." ) ;
+
+	case engines::engine::status::cryfsNotFound :
+
+		return QObject::tr( "Failed To Complete The Request.\nCryfs Executable Could Not Be Found." ) ;
+
+	case engines::engine::status::cryfsMigrateFileSystem :
+
+		return QObject::tr( "This Volume Of Cryfs Needs To Be Upgraded To Work With The Version Of Cryfs You Are Using.\n\nThe Upgrade is IRREVERSIBLE And The Volume Will No Longer Work With Older Versions of Cryfs.\n\nTo Do The Upgrade, Check The \"Upgrade File System\" Option And Unlock The Volume Again." ) ;
+
+	case engines::engine::status::encfsNotFound :
+
+		return QObject::tr( "Failed To Complete The Request.\nEncfs Executable Could Not Be Found." ) ;
+
+	case engines::engine::status::ecryptfs_simpleNotFound :
+
+		return QObject::tr( "Failed To Complete The Request.\nEcryptfs-simple Executable Could Not Be Found." ) ;
+
+	case engines::engine::status::gocryptfsNotFound :
+
+		return QObject::tr( "Failed To Complete The Request.\nGocryptfs Executable Could Not Be Found." ) ;
+
+	case engines::engine::status::securefsNotFound :
+
+		return QObject::tr( "Failed To Complete The Request.\nSecurefs Executable Could Not Be Found." ) ;
+
+	case engines::engine::status::failedToCreateMountPoint :
+
+		return QObject::tr( "Failed To Create Mount Point." ) ;
+
+	case engines::engine::status::failedToLoadWinfsp :
+
+		return QObject::tr( "Backend Could Not Load WinFsp. Please Make Sure You Have WinFsp Properly Installed" ) ;
+
+	case engines::engine::status::unknown :
+
+		return QObject::tr( "Failed To Unlock The Volume.\nNot Supported Volume Encountered." ) ;
+
+	case engines::engine::status::backendFail :
+
+		;
 	}
 
-	if( !cmd.isEmpty() ){
-
-		e += "\nCommand Sent To Backend: " + cmd ;
-	}
-
-	e+= "\n-------------------------" ;
-
-	return e ;
-}
-
-int engines::engine::cmdStatus::exitCode() const
-{
-	return m_exitCode ;
+	auto e = QObject::tr( "Failed To Complete The Task And Below Log was Generated By The Backend.\n" ) ;
+	return e + "\n----------------------------------------\n" + m_message ;
 }
 
 void engines::engine::cmdStatus::message( const QString& e )

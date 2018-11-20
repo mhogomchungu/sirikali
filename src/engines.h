@@ -112,19 +112,14 @@ public:
 		{
 		public:
 			cmdStatus() ;
-			cmdStatus( const engine::cmdStatus& s,const QString& e = QString() ) ;
 			cmdStatus( engines::engine::status s,int c,const QString& e = QString() ) ;
 			cmdStatus( engines::engine::status s,const QString& e = QString() ) ;
 			cmdStatus( int s,const QString& e = QString() ) ;
 			engines::engine::status status() const ;
-			bool operator==( engine::status s ) const ;
-			bool operator!=( engine::status s ) const ;
-			engines::engine::cmdStatus& setExitCode( int s ) ;
-			engines::engine::cmdStatus& setStatus( engines::engine::status s ) ;
-			engines::engine::cmdStatus& setMessage( const QString& e ) ;
-			const QString& msg() const ;
-			QString report( const QString& cmd = QString() ) const ;
-			int exitCode() const ;
+			bool operator==( engines::engine::status s ) const ;
+			bool operator!=( engines::engine::status s ) const ;
+			QString toString() const ;
+			QString toMiniString() const ;
 		private:
 			void message( const QString& e ) ;
 
