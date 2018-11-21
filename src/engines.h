@@ -23,6 +23,7 @@
 #include <vector>
 #include <memory>
 #include <functional>
+#include <utility>
 
 #include <QString>
 #include <QStringList>
@@ -191,6 +192,8 @@ public:
 	const engine& getByName( const engines::engine::options& e ) const ;
 	const engine& getByName( const QString& e ) const ;
 	const engine& getByFuseName( const QString& e ) const ;
+	std::pair< const engines::engine&,QString >
+	getByConfigFileNames( std::function< bool( const QString& ) > function ) const ;
 private:
 	std::vector< std::unique_ptr< engines::engine > > m_backends ;
 };

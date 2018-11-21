@@ -365,25 +365,6 @@ struct engine
 	QString path ;
 };
 
-template< typename Function >
-static engine _get_engine( const engines& engines,Function function )
-{
-	for( const auto& it : engines::supported() ){
-
-		const auto& s = engines.getByName( it ) ;
-
-		for( const auto& xt : s.configFileNames() ){
-
-			if( function( xt ) ){
-
-				return { s,xt } ;
-			}
-		}
-	}
-
-	return { engines.getByName( QString() ),QString() } ;
-}
-
 static engines::engine::cmdStatus _mount( bool reUseMountPoint,
 				   const engines::engine& engine,
 				   const engines::engine::options& copt,
@@ -447,42 +428,46 @@ static engines::engine::cmdStatus _encrypted_folder_mount( const engines::engine
 
 	}else if( opt.configFilePath.isEmpty() ){
 
-		auto m = _get_engine( engines,[ & ]( const QString& e ){
+		auto m = engines.getByConfigFileNames( [ & ]( const QString& e ){
 
 			return utility::pathExists( opt.cipherFolder + "/" + e ) ;
 		} ) ;
 
-		if( m.engine.known() ){
+		const auto& engine = m.first ;
 
-			if( m.path.endsWith( "gocryptfs.reverse.conf" ) ){
+		if( engine.known() ){
+
+			if( m.second.endsWith( "gocryptfs.reverse.conf" ) ){
 
 				if( opt.reverseMode ){
 
-					return _mount( reUseMP,m.engine,opt,QString() ) ;
+					return _mount( reUseMP,engine,opt,QString() ) ;
 				}else{
 					auto opts = opt ;
 					opts.reverseMode = true ;
-					return _mount( reUseMP,m.engine,opts,QString() ) ;
+					return _mount( reUseMP,engine,opts,QString() ) ;
 				}
 
-			}else if( m.engine.name() == "ecryptfs" ){
+			}else if( engine.name() == "ecryptfs" ){
 
-				return _mount( reUseMP,m.engine,opt,opt.cipherFolder + "/" + m.path ) ;
+				return _mount( reUseMP,engine,opt,opt.cipherFolder + "/" + m.second ) ;
 			}else{
-				return _mount( reUseMP,m.engine,opt,QString() ) ;
+				return _mount( reUseMP,engine,opt,QString() ) ;
 			}
 		}
 
 	}else if( utility::pathExists( opt.configFilePath ) ){
 
-		auto m = _get_engine( engines,[ & ]( const QString& e ){
+		auto m = engines.getByConfigFileNames( [ & ]( const QString& e ){
 
 			return opt.configFilePath.endsWith( e ) ;
 		} ) ;
 
-		if( m.engine.known() ){
+		const auto& engine = m.first ;
 
-			return _mount( reUseMP,m.engine,opt,opt.configFilePath ) ;
+		if( engine.known() ){
+
+			return _mount( reUseMP,engine,opt,opt.configFilePath ) ;
 		}
 	}else{
 		auto e = opt.configFilePath ;

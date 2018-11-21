@@ -166,44 +166,63 @@ const engines::engine& engines::getByName( const engines::engine::options& e ) c
 	return this->getByName( e.type ) ;
 }
 
-template< typename T,typename Function >
-const engines::engine& _get_engine( const T& engines,const QString& e,Function function )
+template< typename Engines,typename Compare,typename listSource >
+static std::pair< const engines::engine&,QString > _get_engine( const Engines& engines,
+								Compare compareFunction,
+								listSource listSourceFunction )
 {
 	const auto data = engines.data() ;
 
+	const auto supported = engines::supported() ;
+
 	for( size_t i = 1 ; i < engines.size() ; i++ ){
 
-		const auto& s = *( data + i ) ;
+		const auto& s = **( data + i ) ;
 
-		const auto& m = function( *s ) ;
+		if( supported.contains( s.name(),Qt::CaseInsensitive ) ){
 
-		for( int z = 0 ; z < m.size() ; z++ ){
+			for( const auto& xt : listSourceFunction( s ) ){
 
-			if( e == m.at( z ) ){
+				if( compareFunction( xt ) ){
 
-				return *s ;
+					return { s,xt } ;
+				}
 			}
 		}
 	}
 
-	return **data ;
+	return { **data,QString() } ;
+}
+
+std::pair< const engines::engine&,QString >
+engines::getByConfigFileNames( std::function< bool( const QString& ) > function ) const
+{
+	return _get_engine( m_backends,
+			    std::move( function ),
+			    []( const engines::engine& s ){ return s.configFileNames() ; } ) ;
 }
 
 const engines::engine& engines::getByFuseName( const QString& e ) const
 {
-	return _get_engine( m_backends,e,[]( const engines::engine& s ){ return s.fuseNames() ; } ) ;
+	auto m = _get_engine( m_backends,
+			      [ & ]( const QString& s ){ return !e.compare( s,Qt::CaseInsensitive ) ; },
+			      []( const engines::engine& s ){ return s.fuseNames() ; } ) ;
+	return m.first ;
 }
 
 const engines::engine& engines::getByName( const QString& e ) const
 {
-	return _get_engine( m_backends,e.toLower(),[]( const engines::engine& s ){ return s.names() ; } ) ;
+	auto m = _get_engine( m_backends,
+			      [ & ]( const QString& s ){ return !e.compare( s,Qt::CaseInsensitive ) ; },
+			      []( const engines::engine& s ){ return s.names() ; } ) ;
+	return m.first ;
 }
 
 engines::engine::cmdStatus::cmdStatus()
 {
 }
 
-engines::engine::cmdStatus::cmdStatus(engines::engine::status s,int c,const QString& e ) :
+engines::engine::cmdStatus::cmdStatus( engines::engine::status s,int c,const QString& e ) :
 	m_exitCode( c ),m_status( s )
 {
 	this->message( e ) ;
