@@ -22,23 +22,28 @@
 
 #include "securefscreateoptions.h"
 
-securefs::securefs() : engines::engine( "securefs" )
+engines::engine::BaseOptions securefs::setOptions()
 {
+	BaseOptions s ;
+
+	s.autoMountsOnCreate  = false ;
+	s.hasGUICreateOptions = true ;
+	s.setsCipherPath      = false ;
+
+	s.configFileArgument  = "--config" ;
+
+	s.configFileNames = QStringList{ ".securefs.json","securefs.json" } ;
+
+	s.fuseNames = QStringList{ "fuse.securefs" } ;
+	s.names     = QStringList{ "securefs" } ;
+
+	s.notFoundCode = engines::engine::status::securefsNotFound ;
+
+	return s ;
 }
 
-const QStringList& securefs::names() const
+securefs::securefs() : engines::engine( this->setOptions() )
 {
-	return m_names ;
-}
-
-const QStringList& securefs::fuseNames() const
-{
-	return m_fuseNames ;
-}
-
-engines::engine::status securefs::notFoundCode() const
-{
-	return engines::engine::status::securefsNotFound ;
 }
 
 QString securefs::command( const engines::engine::cmdArgsList& args ) const
@@ -51,7 +56,7 @@ QString securefs::command( const engines::engine::cmdArgsList& args ) const
 			      args.configFilePath,
 			      args.cipherFolder ) ;
 	}else{
-		commandOptions m( args,m_names.first(),m_names.first() ) ;
+		commandOptions m( args,this->name(),this->name() ) ;
 
 		QString exe = "%1 mount %2 %3 %4 %5" ;
 
@@ -91,43 +96,12 @@ engines::engine::status securefs::errorCode( const QString& e,int s ) const
 	}
 }
 
-bool securefs::setsCipherPath() const
-{
-	return false ;
-}
-
-QString securefs::configFileArgument() const
-{
-	return "--config" ;
-}
-
-QStringList securefs::configFileNames() const
-{
-	return { ".securefs.json","securefs.json" } ;
-}
-
-bool securefs::autoMountsOnCreate() const
-{
-	return false ;
-}
-
 QString securefs::setPassword( const QString& e ) const
 {
 	return e + "\n" + e ;
 }
 
-bool securefs::hasGUICreateOptions() const
-{
-	return true ;
-}
-
-QString securefs::defaultCreateOptions() const
-{
-	return QString() ;
-}
-
-void securefs::GUICreateOptionsinstance( QWidget * parent,
-					 std::function< void( const engines::engine::Options& ) > function ) const
+void securefs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
 {
 	securefscreateoptions::instance( parent,std::move( function ) ) ;
 }

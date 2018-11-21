@@ -22,30 +22,35 @@
 
 #include "encfscreateoptions.h"
 
-encfs::encfs() : engines::engine( "encfs" )
+engines::engine::BaseOptions encfs::setOptions()
 {
+	BaseOptions s ;
+
+	s.autoMountsOnCreate  = true ;
+	s.hasGUICreateOptions = true ;
+	s.setsCipherPath      = false ;
+
+	s.configFileArgument  = "--config" ;
+
+	s.configFileNames = QStringList{ ".encfs6.xml","encfs6.xml",".encfs5",".encfs4" } ;
+
+	s.fuseNames = QStringList{ "fuse.encfs" } ;
+	s.names     = QStringList{ "encfs" } ;
+
+	s.notFoundCode = engines::engine::status::encfsNotFound ;
+
+	return s ;
 }
 
-const QStringList& encfs::names() const
+encfs::encfs() : engines::engine( this->setOptions() )
 {
-	return m_names ;
-}
-
-const QStringList& encfs::fuseNames() const
-{
-	return m_fuseNames ;
-}
-
-engines::engine::status encfs::notFoundCode() const
-{
-	return engines::engine::status::encfsNotFound ;
 }
 
 QString encfs::command( const engines::engine::cmdArgsList& args ) const
 {
 	QString e = "%1 %2 %3 %4 %5" ;
 
-	commandOptions m( args,m_names.first(),m_names.first() ) ;
+	commandOptions m( args,this->name(),this->name() ) ;
 
 	auto exeOptions = m.exeOptions() ;
 
@@ -99,43 +104,12 @@ engines::engine::status encfs::errorCode( const QString& e,int s ) const
 	}
 }
 
-bool encfs::setsCipherPath() const
-{
-	return false ;
-}
-
-QString encfs::configFileArgument() const
-{
-	return "--config" ;
-}
-
-QStringList encfs::configFileNames() const
-{
-	return { ".encfs6.xml","encfs6.xml",".encfs5",".encfs4" } ;
-}
-
-bool encfs::autoMountsOnCreate() const
-{
-	return true ;
-}
-
 QString encfs::setPassword( const QString& e ) const
 {
 	return e + "\n" + e ;
 }
 
-bool encfs::hasGUICreateOptions() const
-{
-	return true ;
-}
-
-QString encfs::defaultCreateOptions() const
-{
-	return QString() ;
-}
-
-void encfs::GUICreateOptionsinstance( QWidget * parent,
-				      std::function< void( const engines::engine::Options& ) > function ) const
+void encfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
 {
 	encfscreateoptions::instance( parent,std::move( function ) ) ;
 }

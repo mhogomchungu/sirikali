@@ -23,20 +23,13 @@ class unknown : public engines::engine
 {
 public:
 	unknown() ;
-	const QStringList& names() const override ;
-	const QStringList& fuseNames() const override ;
-	engines::engine::status notFoundCode() const override ;
-	QString command( const engines::engine::cmdArgsList& args ) const override ;
+
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
-	bool setsCipherPath() const override ;
-	QString configFileArgument() const override ;
-	QStringList configFileNames() const override ;
-	bool autoMountsOnCreate() const override ;
+
+	QString command( const engines::engine::cmdArgsList& args ) const override ;
 	QString setPassword( const QString& ) const override ;
-	bool hasGUICreateOptions() const override ;
-	QString defaultCreateOptions() const override ;
-	void GUICreateOptionsinstance( QWidget * parent,std::function< void( const Options& ) > ) const override ;
+
+	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
 private:
-	QStringList m_names{ "" } ;
-	QStringList m_fuseNames{ "" } ;
+	BaseOptions setOptions() ;
 };

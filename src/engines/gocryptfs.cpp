@@ -22,23 +22,32 @@
 
 #include "gocryptfscreateoptions.h"
 
-gocryptfs::gocryptfs() : engines::engine( "gocryptfs" )
+engines::engine::BaseOptions gocryptfs::setOptions()
 {
+	BaseOptions s ;
+
+	s.autoMountsOnCreate  = false ;
+	s.hasGUICreateOptions = true ;
+	s.setsCipherPath      = true ;
+
+	s.configFileArgument  = "--config" ;
+
+	s.configFileNames = QStringList{ "gocryptfs.conf",
+					 ".gocryptfs.conf",
+					 ".gocryptfs.reverse.conf",
+					 "gocryptfs.reverse.conf" } ;
+
+	s.fuseNames = QStringList{ "fuse.gocryptfs","fuse.gocryptfs-reverse" } ;
+
+	s.names = QStringList{ "gocryptfs","gocryptfs.reverse" } ;
+
+	s.notFoundCode = engines::engine::status::gocryptfsNotFound ;
+
+	return s ;
 }
 
-const QStringList& gocryptfs::names() const
+gocryptfs::gocryptfs() : engines::engine( this->setOptions() )
 {
-	return m_names ;
-}
-
-const QStringList& gocryptfs::fuseNames() const
-{
-	return m_fuseNames ;
-}
-
-engines::engine::status gocryptfs::notFoundCode() const
-{
-	return engines::engine::status::gocryptfsNotFound ;
 }
 
 QString gocryptfs::command( const engines::engine::cmdArgsList& args ) const
@@ -47,7 +56,7 @@ QString gocryptfs::command( const engines::engine::cmdArgsList& args ) const
 
 		QString e = "%1 %2 %3" ;
 
-		commandOptions m( args,m_names.first() ) ;
+		commandOptions m( args,this->name() ) ;
 
 		auto exeOptions = m.exeOptions() ;
 
@@ -113,46 +122,12 @@ engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const
 	}
 }
 
-bool gocryptfs::setsCipherPath() const
-{
-	return true ;
-}
-
-QString gocryptfs::configFileArgument() const
-{
-	return "--config" ;
-}
-
-QStringList gocryptfs::configFileNames() const
-{
-	return { "gocryptfs.conf",
-		".gocryptfs.conf",
-		 ".gocryptfs.reverse.conf",
-		 "gocryptfs.reverse.conf" } ;
-}
-
-bool gocryptfs::autoMountsOnCreate() const
-{
-	return false ;
-}
-
 QString gocryptfs::setPassword( const QString& e ) const
 {
 	return e ;
 }
 
-bool gocryptfs::hasGUICreateOptions() const
-{
-	return true ;
-}
-
-QString gocryptfs::defaultCreateOptions() const
-{
-	return QString() ;
-}
-
-void gocryptfs::GUICreateOptionsinstance( QWidget * parent,
-					  std::function< void( const engines::engine::Options& ) > function ) const
+void gocryptfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
 {
 	gocryptfscreateoptions::instance( parent,std::move( function ) ) ;
 }

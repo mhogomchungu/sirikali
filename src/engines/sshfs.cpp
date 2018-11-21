@@ -20,28 +20,33 @@
 #include "sshfs.h"
 #include "commandOptions.h"
 
-sshfs::sshfs() : engines::engine( "sshfs" )
+engines::engine::BaseOptions sshfs::setOptions()
 {
+	BaseOptions s ;
+
+	s.autoMountsOnCreate  = true ;
+	s.hasGUICreateOptions = false ;
+	s.setsCipherPath      = true ;
+
+	s.configFileArgument  = QString() ;
+
+	s.configFileNames = QStringList{} ;
+
+	s.fuseNames = QStringList{ "fuse.sshfs" } ;
+	s.names     = QStringList{ "sshfs" } ;
+
+	s.notFoundCode = engines::engine::status::sshfsNotFound ;
+
+	return s ;
 }
 
-const QStringList& sshfs::names() const
+sshfs::sshfs() : engines::engine( this->setOptions() )
 {
-	return m_names ;
-}
-
-const QStringList& sshfs::fuseNames() const
-{
-	return m_fuseNames ;
-}
-
-engines::engine::status sshfs::notFoundCode() const
-{
-	return engines::engine::status::sshfsNotFound ;
 }
 
 QString sshfs::command( const engines::engine::cmdArgsList& args ) const
 {
-	commandOptions m( args,m_names.first(),m_names.first() ) ;
+	commandOptions m( args,this->name(),this->name() ) ;
 
 	auto fuseOptions = m.fuseOpts() ;
 
@@ -87,26 +92,6 @@ engines::engine::status sshfs::errorCode( const QString& e,int s ) const
 	}
 }
 
-bool sshfs::setsCipherPath() const
-{
-	return true ;
-}
-
-QString sshfs::configFileArgument() const
-{
-	return QString() ;
-}
-
-QStringList sshfs::configFileNames() const
-{
-	return {} ;
-}
-
-bool sshfs::autoMountsOnCreate() const
-{
-	return true ;
-}
-
 QString sshfs::setPassword( const QString& e ) const
 {
 	auto m = e ;
@@ -124,18 +109,7 @@ QString sshfs::setPassword( const QString& e ) const
 	return m ;
 }
 
-bool sshfs::hasGUICreateOptions() const
-{
-	return false ;
-}
-
-QString sshfs::defaultCreateOptions() const
-{
-	return QString() ;
-}
-
-void sshfs::GUICreateOptionsinstance( QWidget * parent,
-				      std::function< void( const engines::engine::Options& ) > function ) const
+void sshfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
 {
 	Q_UNUSED( parent ) ;
 	Q_UNUSED( function ) ;

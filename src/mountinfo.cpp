@@ -275,28 +275,26 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 
 			const auto& engine = engines::instance().getByFuseName( fs ) ;
 
-			if( engine.unknown() ){
+			if( engine.known() ){
 
-				continue ;
+				if( _starts_with( engine,cf ) ){
+
+					info.volumePath = _decode( cf,true ) ;
+
+				}else if( engine.setsCipherPath() ){
+
+					info.volumePath = _decode( cf,false ) ;
+				}else{
+					info.volumePath = _hash( m ) ;
+				}
+
+				info.mountPoint   = _decode( m,false ) ;
+				info.fileSystem   = _fs( fs ) ;
+				info.mode         = _ro( k ) ;
+				info.mountOptions = k.last() ;
+
+				e.emplace_back( info ) ;
 			}
-
-			if( _starts_with( engine,cf ) ){
-
-				info.volumePath = _decode( cf,true ) ;
-
-			}else if( engine.setsCipherPath() ){
-
-				info.volumePath = _decode( cf,false ) ;
-			}else{
-				info.volumePath = _hash( m ) ;
-			}
-
-			info.mountPoint   = _decode( m,false ) ;
-			info.fileSystem   = _fs( fs ) ;
-			info.mode         = _ro( k ) ;
-			info.mountOptions = k.last() ;
-
-			e.emplace_back( info ) ;
 		}
 
 		return e ;

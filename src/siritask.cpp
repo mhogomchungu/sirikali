@@ -282,13 +282,13 @@ static utility::result< QString > _build_config_file_path( const engines::engine
 
 		return QString() ;
 	}else{
-		auto s = engine.configFileArgument() ;
+		auto s = engine.setConfigFilePath( _makePath( configFilePath ) ) ;
 
 		if( s.isEmpty() ){
 
 			return {} ;
 		}else{
-			return s + " " + _makePath( configFilePath ) ;
+			return s ;
 		}
 	}
 }
@@ -318,7 +318,7 @@ static engines::engine::cmdStatus _cmd( const engines::engine& engine,
 
 				auto cmd = engine.command( { exe,opts,m.value(),cc,mm,create } ) ;
 
-				auto s = _run_task( cmd,password,opts,create,_ecryptfs( engine.names().first() ) ) ;
+				auto s = _run_task( cmd,password,opts,create,_ecryptfs( engine.name() ) ) ;
 
 				if( s.success() ){
 
@@ -391,7 +391,7 @@ static engines::engine::cmdStatus _mount( bool reUseMountPoint,
 {
 	auto opt = copt ;
 
-	opt.type = engine.names().first() ;
+	opt.type = engine.name() ;
 
 	if( _ecryptfs_illegal_path( opt ) ){
 
@@ -454,7 +454,7 @@ static engines::engine::cmdStatus _encrypted_folder_mount( const engines::engine
 
 		if( m.engine.known() ){
 
-			if( m.path == ".gocryptfs.reverse.conf" ){
+			if( m.path.endsWith( "gocryptfs.reverse.conf" ) ){
 
 				if( opt.reverseMode ){
 
@@ -464,6 +464,10 @@ static engines::engine::cmdStatus _encrypted_folder_mount( const engines::engine
 					opts.reverseMode = true ;
 					return _mount( reUseMP,m.engine,opts,QString() ) ;
 				}
+
+			}else if( m.engine.name() == "ecryptfs" ){
+
+				return _mount( reUseMP,m.engine,opt,opt.cipherFolder + "/" + m.path ) ;
 			}else{
 				return _mount( reUseMP,m.engine,opt,QString() ) ;
 			}
@@ -504,33 +508,26 @@ static engines::engine::cmdStatus _encrypted_folder_mount( const engines::engine
 	return engines::engine::status::unknown ;
 }
 
-static engines::engine::cmdStatus _encrypted_folder_create( const engines::engine::options& opts )
+static engines::engine::cmdStatus _encrypted_folder_create( const engines::engine::options& opt )
 {
-	if( _ecryptfs_illegal_path( opts ) ){
+	if( _ecryptfs_illegal_path( opt ) ){
 
 		return engines::engine::status::ecryptfsIllegalPath ;
 	}
 
-	if( _create_folder( opts.cipherFolder ) ){
+	if( _create_folder( opt.cipherFolder ) ){
 
-		if( _create_folder( opts.plainFolder ) ){
+		if( _create_folder( opt.plainFolder ) ){
 
-			auto& m = engines::instance().getByName( opts ) ;
-
-			auto opt = opts ;
-
-			if( opt.createOptions.isEmpty() ){
-
-				opt.createOptions = m.defaultCreateOptions() ;
-			}
+			auto& m = engines::instance().getByName( opt ) ;
 
 			auto e = _cmd( m,true,opt,m.setPassword( opt.key ),[ & ](){
 
 				auto e = _configFilePath( opt ) ;
 
-				if( e.isEmpty() && m.names().first() == "ecryptfs" ){
+				if( e.isEmpty() && m.name() == "ecryptfs" ){
 
-					return opt.cipherFolder + "/" + m.configFileNames().first() ;
+					return opt.cipherFolder + "/" + m.configFileName() ;
 				}else{
 					return e ;
 				}
@@ -553,7 +550,7 @@ static engines::engine::cmdStatus _encrypted_folder_create( const engines::engin
 
 			return e ;
 		}else{
-			_deleteFolders( opts.cipherFolder ) ;
+			_deleteFolders( opt.cipherFolder ) ;
 
 			return engines::engine::status::failedToCreateMountPoint ;
 		}

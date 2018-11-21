@@ -24,24 +24,12 @@ class gocryptfs : public engines::engine
 public:
 	gocryptfs() ;
 
-	const QStringList& names() const override ;
-	const QStringList& fuseNames() const override ;
-	QStringList configFileNames() const override ;
-
-	engines::engine::status notFoundCode() const override ;
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 
 	QString command( const engines::engine::cmdArgsList& args ) const override ;
-	QString configFileArgument() const override ;
 	QString setPassword( const QString& ) const override ;
-	QString defaultCreateOptions() const override ;
 
-	bool setsCipherPath() const override ;
-	bool autoMountsOnCreate() const override ;
-	bool hasGUICreateOptions() const override ;
-
-	void GUICreateOptionsinstance( QWidget * parent,std::function< void( const Options& ) > ) const override ;
+	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
 private:
-	QStringList m_names{ "gocryptfs","gocryptfs.reverse" } ;
-	QStringList m_fuseNames{ "fuse.gocryptfs","fuse.gocryptfs-reverse" } ;
+	BaseOptions setOptions() ;
 };

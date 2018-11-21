@@ -21,23 +21,28 @@
 #include "commandOptions.h"
 #include "cryfscreateoptions.h"
 
-cryfs::cryfs() : engines::engine( "cryfs" )
+engines::engine::BaseOptions cryfs::setOptions()
 {
+	BaseOptions s ;
+
+	s.autoMountsOnCreate  = true ;
+	s.hasGUICreateOptions = true ;
+	s.setsCipherPath      = true ;
+
+	s.configFileArgument  = "--config" ;
+
+	s.configFileNames = QStringList{ "cryfs.config",".cryfs.config" } ;
+
+	s.fuseNames = QStringList{ "fuse.cryfs" } ;
+	s.names     = QStringList{ "cryfs" } ;
+
+	s.notFoundCode = engines::engine::status::cryfsNotFound ;
+
+	return s ;
 }
 
-const QStringList& cryfs::names() const
+cryfs::cryfs() : engines::engine( this->setOptions() )
 {
-	return m_names ;
-}
-
-const QStringList& cryfs::fuseNames() const
-{
-	return m_fuseNames ;
-}
-
-engines::engine::status cryfs::notFoundCode() const
-{
-	return engines::engine::status::cryfsNotFound ;
 }
 
 QString cryfs::command( const engines::engine::cmdArgsList& args ) const
@@ -60,7 +65,7 @@ QString cryfs::command( const engines::engine::cmdArgsList& args ) const
 
 	auto e = QString( "%1 %2 %3 %4 %5 %6" ) ;
 
-	commandOptions m( args,m_names.first(),m_names.first() ) ;
+	commandOptions m( args,this->name(),this->name() ) ;
 
 	auto exeOptions = m.exeOptions() ;
 
@@ -121,43 +126,13 @@ engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 	}
 }
 
-bool cryfs::setsCipherPath() const
-{
-	return true ;
-}
-
-QString cryfs::configFileArgument() const
-{
-	return "--config" ;
-}
-
-QStringList cryfs::configFileNames() const
-{
-	return { "cryfs.config",".cryfs.config" } ;
-}
-
-bool cryfs::autoMountsOnCreate() const
-{
-	return true ;
-}
-
 QString cryfs::setPassword( const QString& e ) const
 {
 	return e ;
 }
 
-bool cryfs::hasGUICreateOptions() const
-{
-	return true ;
-}
-
-QString cryfs::defaultCreateOptions() const
-{
-	return QString() ;
-}
-
-void cryfs::GUICreateOptionsinstance( QWidget * parent,
-				      std::function< void( const engines::engine::Options& ) > function ) const
+void cryfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
 {
 	cryfscreateoptions::instance( parent,std::move( function ) ) ;
 }
+

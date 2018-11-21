@@ -20,23 +20,28 @@
 #include "unknown.h"
 #include "commandOptions.h"
 
-unknown::unknown() : engines::engine( QString() )
+engines::engine::BaseOptions unknown::setOptions()
 {
+	BaseOptions s ;
+
+	s.autoMountsOnCreate  = false ;
+	s.hasGUICreateOptions = true ;
+	s.setsCipherPath      = false ;
+
+	s.configFileArgument   = QString() ;
+
+	s.configFileNames = QStringList{} ;
+
+	s.fuseNames = QStringList{} ;
+	s.names     = QStringList{} ;
+
+	s.notFoundCode = engines::engine::status::unknown ;
+
+	return s ;
 }
 
-const QStringList& unknown::names() const
+unknown::unknown() : engines::engine( this->setOptions() )
 {
-	return m_names ;
-}
-
-const QStringList& unknown::fuseNames() const
-{
-	return m_fuseNames ;
-}
-
-engines::engine::status unknown::notFoundCode() const
-{
-	return engines::engine::status::unknown ;
 }
 
 QString unknown::command( const engines::engine::cmdArgsList& args ) const
@@ -52,44 +57,13 @@ engines::engine::status unknown::errorCode( const QString& e,int s ) const
 	return engines::engine::status::backendFail ;
 }
 
-bool unknown::setsCipherPath() const
-{
-	return false ;
-}
-
-QString unknown::configFileArgument() const
-{
-	return QString() ;
-}
-
-QStringList unknown::configFileNames() const
-{
-	return {} ;
-}
-
-bool unknown::autoMountsOnCreate() const
-{
-	return true ;
-}
-
 QString unknown::setPassword( const QString& e ) const
 {
 	Q_UNUSED( e ) ;
 	return QString() ;
 }
 
-bool unknown::hasGUICreateOptions() const
-{
-	return false ;
-}
-
-QString unknown::defaultCreateOptions() const
-{
-	return QString() ;
-}
-
-void unknown::GUICreateOptionsinstance( QWidget * parent,
-					std::function< void( const engines::engine::Options& ) > function ) const
+void unknown::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
 {
 	Q_UNUSED( parent ) ;
 	Q_UNUSED( function ) ;

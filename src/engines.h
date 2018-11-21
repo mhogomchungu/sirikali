@@ -139,29 +139,52 @@ public:
 			bool success ;
 		} ;
 
-		engine( const QString& name ) ;
 		QString executableFullPath() const ;
+
 		bool isInstalled() const ;
 		bool isNotInstalled() const ;
 		bool unknown() const ;
 		bool known() const ;
+		bool setsCipherPath() const ;
+		bool autoMountsOnCreate() const ;
+		bool hasGUICreateOptions() const ;
+
+		engines::engine::status notFoundCode() const ;
+
+		const QStringList& names() const ;
+		const QStringList& fuseNames() const ;
+		const QStringList& configFileNames() const ;
+
+		const QString& name() const ;
+		const QString& configFileName() const ;
+
+		QString setConfigFilePath( const QString& ) const;
+
 		virtual ~engine() ;
-		virtual QString defaultCreateOptions() const = 0 ;
-		virtual QString configFileArgument() const = 0 ;
+
 		virtual QString setPassword( const QString& ) const = 0 ;
 		virtual QString command( const engines::engine::cmdArgsList& args ) const = 0 ;
 		virtual engines::engine::status errorCode( const QString& e,int s ) const = 0 ;
-		virtual engines::engine::status notFoundCode() const = 0 ;
-		virtual const QStringList& names() const = 0 ;
-		virtual const QStringList& fuseNames() const = 0 ;
-		virtual QStringList configFileNames() const = 0 ;
-		virtual bool setsCipherPath() const = 0 ;
-		virtual bool autoMountsOnCreate() const = 0 ;
-		virtual bool hasGUICreateOptions() const = 0 ;
-		virtual void GUICreateOptionsinstance( QWidget * parent,
-						       std::function< void( const Options& ) > )  const = 0 ;
+
+		using function = std::function< void( const Options& ) > ;
+		virtual void GUICreateOptionsinstance( QWidget * parent,function )  const = 0 ;
+	protected:
+		struct BaseOptions
+		{
+			bool setsCipherPath ;
+			bool autoMountsOnCreate ;
+			bool hasGUICreateOptions ;
+			QString configFileArgument ;
+			QStringList names ;
+			QStringList fuseNames ;
+			QStringList configFileNames ;
+
+			engines::engine::status notFoundCode ;
+		} ;
+
+		engine( BaseOptions ) ;
 	private:
-		QString m_name ;
+		BaseOptions m_Options ;
 	} ;
 
 	engines() ;

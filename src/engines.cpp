@@ -33,13 +33,14 @@ engines::engine::~engine()
 {
 }
 
-engines::engine::engine( const QString& e ) : m_name( e.toLower() )
+engines::engine::engine( engines::engine::BaseOptions o ) :
+	m_Options( std::move( o ) )
 {
 }
 
 QString engines::engine::executableFullPath() const
 {
-	return utility::executableFullPath( m_name ) ;
+	return utility::executableFullPath( this->name() ) ;
 }
 
 bool engines::engine::isInstalled() const
@@ -54,12 +55,79 @@ bool engines::engine::isNotInstalled() const
 
 bool engines::engine::unknown() const
 {
-	return m_name.isEmpty() ;
+	return this->name().isEmpty() ;
 }
 
 bool engines::engine::known() const
 {
 	return !this->unknown() ;
+}
+
+bool engines::engine::setsCipherPath() const
+{
+	return m_Options.setsCipherPath ;
+}
+
+bool engines::engine::autoMountsOnCreate() const
+{
+	return m_Options.autoMountsOnCreate ;
+}
+
+bool engines::engine::hasGUICreateOptions() const
+{
+	return m_Options.hasGUICreateOptions ;
+}
+
+const QStringList& engines::engine::names() const
+{
+	return m_Options.names ;
+}
+
+const QStringList& engines::engine::fuseNames() const
+{
+	return m_Options.fuseNames ;
+}
+
+const QStringList& engines::engine::configFileNames() const
+{
+	return m_Options.configFileNames ;
+}
+
+const QString& engines::engine::name() const
+{
+	if( m_Options.names.isEmpty() ){
+
+		static QString s ;
+		return  s ;
+	}else{
+		return m_Options.names.first() ;
+	}
+}
+
+const QString& engines::engine::configFileName() const
+{
+	if( m_Options.configFileNames.isEmpty() ){
+
+		static QString s ;
+		return  s ;
+	}else{
+		return m_Options.configFileNames.first() ;
+	}
+}
+
+QString engines::engine::setConfigFilePath( const QString& e ) const
+{
+	if( m_Options.configFileArgument.isEmpty() ){
+
+		return QString() ;
+	}else{
+		return m_Options.configFileArgument + " " + e ;
+	}
+}
+
+engines::engine::status engines::engine::notFoundCode() const
+{
+	return m_Options.notFoundCode ;
 }
 
 const engines& engines::instance()

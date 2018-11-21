@@ -57,7 +57,7 @@ void ecryptfscreateoptions::pbSelectConfigPath()
 
 void ecryptfscreateoptions::pbOK()
 {
-	QString e = "-o " + ecryptfscreateoptions::defaultMiniCreateOptions() ;
+	QString e = ecryptfscreateoptions::defaultMiniCreateOptions() ;
 
 	if( m_ui->rbDoNotEnablePlainText->isChecked() ){
 
