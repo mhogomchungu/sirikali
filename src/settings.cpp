@@ -708,6 +708,16 @@ int settings::checkForUpdateInterval()
 	}
 }
 
+bool settings::ecryptfsAllowNotEncryptingFileNames()
+{
+	if( !m_settings.contains( "EcryptfsAllowNotEncryptingFileNames" ) ){
+
+		m_settings.setValue( "EcryptfsAllowNotEncryptingFileNames",false ) ;
+	}
+
+	return m_settings.value( "EcryptfsAllowNotEncryptingFileNames" ).toBool() ;
+}
+
 void settings::addToFavorite( const QStringList& e )
 {
 	if( !e.isEmpty() ){

@@ -23,6 +23,8 @@
 #include "../utility.h"
 #include "task.hpp"
 
+#include "../settings.h"
+
 ecryptfscreateoptions::ecryptfscreateoptions( QWidget * parent,
 					std::function< void( const engines::engine::Options& ) > function ) :
 	QDialog( parent ),
@@ -41,6 +43,8 @@ ecryptfscreateoptions::ecryptfscreateoptions( QWidget * parent,
 
 	m_ui->rbEncryptFileNames->setChecked( true ) ;
 	m_ui->rbDoNotEnablePlainText->setChecked( true ) ;
+
+	m_ui->groupBox->setEnabled( settings::instance().ecryptfsAllowNotEncryptingFileNames() ) ;
 
 	this->show() ;
 }

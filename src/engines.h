@@ -158,7 +158,7 @@ public:
 		const QString& name() const ;
 		const QString& configFileName() const ;
 
-		QString setConfigFilePath( const QString& ) const;
+		QString setConfigFilePath( const QString& ) const ;
 
 		virtual ~engine() ;
 
