@@ -740,12 +740,12 @@ p, li { white-space: pre-wrap; }
         <translation>Режим &quot;reverse&quot;</translation>
     </message>
     <message>
-        <location filename="../src/engines/encfscreateoptions.ui" line="58"/>
+        <location filename="../src/engines/encfscreateoptions.ui" line="39"/>
         <source>&amp;Cancel</source>
         <translation>&amp;Отмена</translation>
     </message>
     <message>
-        <location filename="../src/engines/encfscreateoptions.ui" line="71"/>
+        <location filename="../src/engines/encfscreateoptions.ui" line="52"/>
         <source>&amp;OK</source>
         <translation>&amp;OK</translation>
     </message>
@@ -1511,7 +1511,7 @@ p, li { white-space: pre-wrap; }
         <translation>Укажите тип формата</translation>
     </message>
     <message>
-        <location filename="../src/engines/securefscreateoptions.ui" line="29"/>
+        <location filename="../src/engines/securefscreateoptions.cpp" line="43"/>
         <source>The &quot;lite format&quot; simply encrypts filenames and file contents separately, similar to how encfs operates, although with more security.
 
 The &quot;full format&quot; maps files, directories and symlinks in the virtual filesystem all to regular files in the underlying filesystem. The directory structure is flattened and recorded as B-trees in files.
@@ -1524,27 +1524,27 @@ The lite format has become the default on Unix-like operating systems as it is m
 Упрощенное форматирование стало стандартным для Unix-подобных операционных систем, так как он намного быстрее и обеспечивает более легкое разрешение конфликтов, особенно при использовании с DropBox, Google Диском и т. д. Однако в полном форматировании доступно меньше информации о иерархии файловой системы, выполняется относительно независимо от особенностей базовой файловой системы и в целом более безопасно.</translation>
     </message>
     <message>
-        <location filename="../src/engines/securefscreateoptions.ui" line="50"/>
+        <location filename="../src/engines/securefscreateoptions.ui" line="27"/>
         <source>Lite Format</source>
         <translation>Упрощенное форматирование</translation>
     </message>
     <message>
-        <location filename="../src/engines/securefscreateoptions.ui" line="55"/>
+        <location filename="../src/engines/securefscreateoptions.ui" line="32"/>
         <source>Full Format</source>
         <translation>Полное форматирование</translation>
     </message>
     <message>
-        <location filename="../src/engines/securefscreateoptions.ui" line="69"/>
+        <location filename="../src/engines/securefscreateoptions.ui" line="46"/>
         <source>&amp;OK</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/engines/securefscreateoptions.ui" line="82"/>
+        <location filename="../src/engines/securefscreateoptions.ui" line="59"/>
         <source>&amp;Cancel</source>
         <translation>&amp;Отмена</translation>
     </message>
     <message>
-        <location filename="../src/engines/securefscreateoptions.ui" line="95"/>
+        <location filename="../src/engines/securefscreateoptions.ui" line="72"/>
         <source>Select A Folder To Create Config File In(Optional).</source>
         <translation>Укажите путь для файла конфигурации (необязательно).</translation>
     </message>

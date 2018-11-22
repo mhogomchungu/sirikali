@@ -683,12 +683,12 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines/encfscreateoptions.ui" line="58"/>
+        <location filename="../src/engines/encfscreateoptions.ui" line="39"/>
         <source>&amp;Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines/encfscreateoptions.ui" line="71"/>
+        <location filename="../src/engines/encfscreateoptions.ui" line="52"/>
         <source>&amp;OK</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1413,7 +1413,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines/securefscreateoptions.ui" line="29"/>
+        <location filename="../src/engines/securefscreateoptions.cpp" line="43"/>
         <source>The &quot;lite format&quot; simply encrypts filenames and file contents separately, similar to how encfs operates, although with more security.
 
 The &quot;full format&quot; maps files, directories and symlinks in the virtual filesystem all to regular files in the underlying filesystem. The directory structure is flattened and recorded as B-trees in files.
@@ -1422,27 +1422,27 @@ The lite format has become the default on Unix-like operating systems as it is m
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines/securefscreateoptions.ui" line="50"/>
+        <location filename="../src/engines/securefscreateoptions.ui" line="27"/>
         <source>Lite Format</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines/securefscreateoptions.ui" line="55"/>
+        <location filename="../src/engines/securefscreateoptions.ui" line="32"/>
         <source>Full Format</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines/securefscreateoptions.ui" line="69"/>
+        <location filename="../src/engines/securefscreateoptions.ui" line="46"/>
         <source>&amp;OK</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines/securefscreateoptions.ui" line="82"/>
+        <location filename="../src/engines/securefscreateoptions.ui" line="59"/>
         <source>&amp;Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines/securefscreateoptions.ui" line="95"/>
+        <location filename="../src/engines/securefscreateoptions.ui" line="72"/>
         <source>Select A Folder To Create Config File In(Optional).</source>
         <translation type="unfinished"></translation>
     </message>

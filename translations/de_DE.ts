@@ -740,12 +740,12 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines/encfscreateoptions.ui" line="58"/>
+        <location filename="../src/engines/encfscreateoptions.ui" line="39"/>
         <source>&amp;Cancel</source>
         <translation type="unfinished">Abbre&amp;chen</translation>
     </message>
     <message>
-        <location filename="../src/engines/encfscreateoptions.ui" line="71"/>
+        <location filename="../src/engines/encfscreateoptions.ui" line="52"/>
         <source>&amp;OK</source>
         <translation type="unfinished">&amp;OK</translation>
     </message>
@@ -1509,7 +1509,7 @@ p, li { white-space: pre-wrap; }
         <translation>Wähle Formattyp aus</translation>
     </message>
     <message>
-        <location filename="../src/engines/securefscreateoptions.ui" line="29"/>
+        <location filename="../src/engines/securefscreateoptions.cpp" line="43"/>
         <source>The &quot;lite format&quot; simply encrypts filenames and file contents separately, similar to how encfs operates, although with more security.
 
 The &quot;full format&quot; maps files, directories and symlinks in the virtual filesystem all to regular files in the underlying filesystem. The directory structure is flattened and recorded as B-trees in files.
@@ -1522,27 +1522,27 @@ Der &quot;Full&quot;-Formattyp bildet Dateien, Verzeichnisse und symbolische Ver
 Der &quot;Lite&quot;-Formattyp ist auf unix-ähnlichen Betriebssystemen Standard geworden, da es viel schneller ist und es sich durch einfachere Konfliktlösung kennzeichnet, speziell bei Nutzung in Verbindung mit Dropbox, Google Drive, etc. Der &quot;Full&quot;-Formattyp hingegen, lässt weniger Informationen der Dateisystemhierarchie durchsickern, funktioniert relativ unabhängig von den Besonderheiten des darunter liegenden Dateisystems, und ist allgemein noch sicherer.</translation>
     </message>
     <message>
-        <location filename="../src/engines/securefscreateoptions.ui" line="50"/>
+        <location filename="../src/engines/securefscreateoptions.ui" line="27"/>
         <source>Lite Format</source>
         <translation>&quot;Lite&quot;-Format</translation>
     </message>
     <message>
-        <location filename="../src/engines/securefscreateoptions.ui" line="55"/>
+        <location filename="../src/engines/securefscreateoptions.ui" line="32"/>
         <source>Full Format</source>
         <translation>&quot;Full&quot;-Format</translation>
     </message>
     <message>
-        <location filename="../src/engines/securefscreateoptions.ui" line="69"/>
+        <location filename="../src/engines/securefscreateoptions.ui" line="46"/>
         <source>&amp;OK</source>
         <translation>&amp;OK</translation>
     </message>
     <message>
-        <location filename="../src/engines/securefscreateoptions.ui" line="82"/>
+        <location filename="../src/engines/securefscreateoptions.ui" line="59"/>
         <source>&amp;Cancel</source>
         <translation>Abbre&amp;chen</translation>
     </message>
     <message>
-        <location filename="../src/engines/securefscreateoptions.ui" line="95"/>
+        <location filename="../src/engines/securefscreateoptions.ui" line="72"/>
         <source>Select A Folder To Create Config File In(Optional).</source>
         <translation>Wähle Ordner um darin eine Konfiguratonsdatei zu erzeugen (Optional).</translation>
     </message>
