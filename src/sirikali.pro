@@ -22,18 +22,19 @@ SOURCES += \
     readonlywarning.cpp \
     walletconfiginput.cpp \
     dialogmsg.cpp \
-    gocryptfscreateoptions.cpp \
+    engines/gocryptfscreateoptions.cpp \
     monitor_mountinfo.cpp \
     tablewidget.cpp \
     options.cpp \
-    securefscreateoptions.cpp \
-    cryfscreateoptions.cpp \
+    engines/securefscreateoptions.cpp \
+    engines/cryfscreateoptions.cpp \
     configfileoption.cpp \
     help.cpp \
     configoptions.cpp \
-    ecryptfscreateoptions.cpp \
-    encfscreateoptions.cpp \
-    settings.cpp
+    engines/ecryptfscreateoptions.cpp \
+    engines/encfscreateoptions.cpp \
+    settings.cpp \
+    engines.cpp
 
 HEADERS += \
     engines/securefscreateoptions.h \

@@ -22,32 +22,41 @@
 
 #include "gocryptfscreateoptions.h"
 
-gocryptfs::gocryptfs() : engines::engine( "gocryptfs" )
+engines::engine::BaseOptions gocryptfs::setOptions()
+{
+	BaseOptions s ;
+
+	s.autoMountsOnCreate  = false ;
+	s.hasGUICreateOptions = true ;
+	s.setsCipherPath      = true ;
+
+	s.configFileArgument  = "--config" ;
+
+	s.configFileNames = QStringList{ "gocryptfs.conf",
+					 ".gocryptfs.conf",
+					 ".gocryptfs.reverse.conf",
+					 "gocryptfs.reverse.conf" } ;
+
+	s.fuseNames = QStringList{ "fuse.gocryptfs","fuse.gocryptfs-reverse" } ;
+
+	s.names = QStringList{ "gocryptfs","gocryptfs.reverse" } ;
+
+	s.notFoundCode = engines::engine::status::gocryptfsNotFound ;
+
+	return s ;
+}
+
+gocryptfs::gocryptfs() : engines::engine( this->setOptions() )
 {
 }
 
-const QStringList& gocryptfs::names() const
-{
-	return m_names ;
-}
-
-const QStringList& gocryptfs::fuseNames() const
-{
-	return m_fuseNames ;
-}
-
-siritask::status gocryptfs::notFoundCode() const
-{
-	return siritask::status::gocryptfsNotFound ;
-}
-
-QString gocryptfs::command( const engines::cmdArgsList& args ) const
+QString gocryptfs::command( const engines::engine::cmdArgsList& args ) const
 {
 	if( args.create ){
 
 		QString e = "%1 %2 %3" ;
 
-		commandOptions m( args,m_names.first() ) ;
+		commandOptions m( args,this->name() ) ;
 
 		auto exeOptions = m.exeOptions() ;
 
@@ -96,44 +105,21 @@ QString gocryptfs::command( const engines::cmdArgsList& args ) const
 	}
 }
 
-siritask::status gocryptfs::errorCode( const QString& e,int s ) const
+engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const
 {
 	/*
 	 * This error code was added in gocryptfs 1.2.1
 	 */
 	if( s == 12 ){
 
-		return siritask::status::gocryptfsBadPassword ;
+		return engines::engine::status::gocryptfsBadPassword ;
 
 	}else if( e.contains( "password" ) ){
 
-		return siritask::status::gocryptfsBadPassword ;
+		return engines::engine::status::gocryptfsBadPassword ;
 	}else{
-		return siritask::status::backendFail ;
+		return engines::engine::status::backendFail ;
 	}
-}
-
-bool gocryptfs::setsCipherPath() const
-{
-	return true ;
-}
-
-QString gocryptfs::configFileArgument() const
-{
-	return "--config" ;
-}
-
-QStringList gocryptfs::configFileNames() const
-{
-	return { "gocryptfs.conf",
-		".gocryptfs.conf",
-		 ".gocryptfs.reverse.conf",
-		 "gocryptfs.reverse.conf" } ;
-}
-
-bool gocryptfs::autoMountsOnCreate() const
-{
-	return false ;
 }
 
 QString gocryptfs::setPassword( const QString& e ) const
@@ -141,18 +127,7 @@ QString gocryptfs::setPassword( const QString& e ) const
 	return e ;
 }
 
-bool gocryptfs::hasGUICreateOptions() const
-{
-	return true ;
-}
-
-QString gocryptfs::defaultCreateOptions() const
-{
-	return QString() ;
-}
-
-void gocryptfs::GUICreateOptionsinstance( QWidget * parent,
-					  std::function< void( const engines::engine::Options& ) > function ) const
+void gocryptfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
 {
 	gocryptfscreateoptions::instance( parent,std::move( function ) ) ;
 }

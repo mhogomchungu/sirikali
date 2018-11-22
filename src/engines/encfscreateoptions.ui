@@ -26,25 +26,6 @@
     <string>Reverse Mode</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>20</y>
-     <width>461</width>
-     <height>201</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
-   <property name="wordWrap">
-    <bool>true</bool>
-   </property>
-  </widget>
   <widget class="QPushButton" name="pbCancel">
    <property name="geometry">
     <rect>
@@ -69,6 +50,16 @@
    </property>
    <property name="text">
     <string>&amp;OK</string>
+   </property>
+  </widget>
+  <widget class="QPlainTextEdit" name="plainTextEdit">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>481</width>
+     <height>221</height>
+    </rect>
    </property>
   </widget>
  </widget>

@@ -21,88 +21,86 @@
 #include "commandOptions.h"
 #include "ecryptfscreateoptions.h"
 
-ecryptfs::ecryptfs() : engines::engine( "ecryptfs" )
+engines::engine::BaseOptions ecryptfs::setOptions()
+{
+	BaseOptions s ;
+
+	s.autoMountsOnCreate  = true ;
+	s.hasGUICreateOptions = true ;
+	s.setsCipherPath      = true ;
+
+	s.configFileArgument   = "--config" ;
+
+	s.configFileNames = QStringList{ ".ecryptfs.config","ecryptfs.config" } ;
+
+	s.fuseNames = QStringList{ "ecryptfs" } ;
+	s.names     = QStringList{ "ecryptfs" } ;
+
+	s.notFoundCode = engines::engine::status::ecryptfs_simpleNotFound ;
+
+	return s ;
+}
+
+ecryptfs::ecryptfs() : engines::engine( this->setOptions() )
 {
 }
 
-const QStringList& ecryptfs::names() const
+QString ecryptfs::command( const engines::engine::cmdArgsList& args ) const
 {
-	return m_names ;
-}
+	auto e = QString( "%1 %2 -a %3 %4 %5" ) ;
 
-const QStringList& ecryptfs::fuseNames() const
-{
-	return m_fuseNames ;
-}
+	auto exeOptions = commandOptions( args,QString() ).exeOptions() ;
 
-siritask::status ecryptfs::notFoundCode() const
-{
-	return siritask::status::ecryptfs_simpleNotFound ;
-}
+	if( args.opt.ro ){
 
-QString ecryptfs::command( const engines::cmdArgsList& args ) const
-{
-	auto e = QString( "%1 %2 %3 -a %4 %5 %6" ) ;
+		exeOptions.add( "--readonly" ) ;
+	}
+
+	if( args.create ){
+
+		if( args.opt.createOptions.isEmpty() ){
+
+			exeOptions.add( ecryptfscreateoptions::defaultCreateOptions() ) ;
+		}else{
+			exeOptions.add( args.opt.createOptions ) ;
+		}
+	}else{
+		exeOptions.add( "-o","key=passphrase" ) ;
+	}
+
+	if( !args.opt.mountOptions.isEmpty() ){
+
+		exeOptions.add( "-o",args.opt.mountOptions ) ;
+	}
 
 	auto s = e.arg( args.exe,
-			args.create ? args.opt.createOptions : "-o key=passphrase",
-			args.opt.ro ? "--readonly" : "",
+			exeOptions.get(),
 			args.configFilePath,
 			args.cipherFolder,
 			args.mountPoint ) ;
 
-	if( args.opt.mountOptions.isEmpty() ){
+	if( utility::useSiriPolkit() ){
 
-		if( utility::useSiriPolkit() ){
-
-			return utility::wrap_su( s ) ;
-		}else{
-			return s ;
-		}
+		return utility::wrap_su( s ) ;
 	}else{
-		if( utility::useSiriPolkit() ){
-
-			return utility::wrap_su( s + " -o " + args.opt.mountOptions ) ;
-		}else{
-			return s + " -o " + args.opt.mountOptions ;
-		}
+		return s ;
 	}
 }
 
-siritask::status ecryptfs::errorCode( const QString& e,int s ) const
+engines::engine::status ecryptfs::errorCode( const QString& e,int s ) const
 {
 	Q_UNUSED( s ) ;
 
 	if( e.contains( "operation not permitted" ) ){
 
-		return siritask::status::ecrypfsBadExePermissions ;
+		return engines::engine::status::ecrypfsBadExePermissions ;
 
 	}else if( e.contains( "error: mount failed" ) ){
 
-		return siritask::status::ecryptfsBadPassword ;
+		return engines::engine::status::ecryptfsBadPassword ;
 	}else{
-		return siritask::status::backendFail ;
+		return engines::engine::status::backendFail ;
 	}
-}
-
-bool ecryptfs::setsCipherPath() const
-{
-	return true ;
-}
-
-QString ecryptfs::configFileArgument() const
-{
-	return "--config" ;
-}
-
-QStringList ecryptfs::configFileNames() const
-{
-	return { ".ecryptfs.config","ecryptfs.config" } ;
-}
-
-bool ecryptfs::autoMountsOnCreate() const
-{
-	return true ;
 }
 
 QString ecryptfs::setPassword( const QString& e ) const
@@ -110,18 +108,7 @@ QString ecryptfs::setPassword( const QString& e ) const
 	return e ;
 }
 
-bool ecryptfs::hasGUICreateOptions() const
-{
-	return true ;
-}
-
-QString ecryptfs::defaultCreateOptions() const
-{
-	return "-o " + ecryptfscreateoptions::defaultCreateOptions() ;
-}
-
-void ecryptfs::GUICreateOptionsinstance( QWidget * parent,
-					 std::function< void( const engines::engine::Options& ) > function ) const
+void ecryptfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
 {
 	ecryptfscreateoptions::instance( parent,std::move( function ) ) ;
 }

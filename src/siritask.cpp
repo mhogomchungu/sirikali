@@ -22,14 +22,11 @@
 #include "mountinfo.h"
 #include "winfsp.h"
 #include "settings.h"
-#include "engines.h"
 
 #include <QDir>
 #include <QString>
 #include <QDebug>
 #include <QFile>
-
-using cs = siritask::status ;
 
 static bool _create_folder( const QString& m )
 {
@@ -57,7 +54,7 @@ static bool _ecryptfs( const T& e )
 	return utility::equalsAtleastOne( e,"ecryptfs","ecryptfs-simple" ) ;
 }
 
-static bool _ecryptfs_illegal_path( const siritask::options& opts )
+static bool _ecryptfs_illegal_path( const engines::engine::options& opts )
 {
 	if( _ecryptfs( opts.type ) && utility::useSiriPolkit() ){
 
@@ -82,7 +79,7 @@ static bool _deleteFolders( const T& ... m )
 	return s ;
 }
 
-static void _run_command_on_mount( const siritask::options& opt,const QString& app )
+static void _run_command_on_mount( const engines::engine::options& opt,const QString& app )
 {
 	auto exe = settings::instance().runCommandOnMount() ;
 
@@ -260,7 +257,7 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 
 static utility::Task _run_task( const QString& cmd,
 				const QString& password,
-				const siritask::options& opts,
+				const engines::engine::options& opts,
 				bool create,
 				bool ecryptfs )
 {
@@ -285,22 +282,22 @@ static utility::result< QString > _build_config_file_path( const engines::engine
 
 		return QString() ;
 	}else{
-		auto s = engine.configFileArgument() ;
+		auto s = engine.setConfigFilePath( _makePath( configFilePath ) ) ;
 
 		if( s.isEmpty() ){
 
 			return {} ;
 		}else{
-			return s + " " + _makePath( configFilePath ) ;
+			return s ;
 		}
 	}
 }
 
-static siritask::cmdStatus _cmd( const engines::engine& engine,
-				 bool create,
-				 const siritask::options& opts,
-				 const QString& password,
-				 const QString& configFilePath )
+static engines::engine::cmdStatus _cmd( const engines::engine& engine,
+					bool create,
+					const engines::engine::options& opts,
+					const QString& password,
+					const QString& configFilePath )
 {
 	auto exe = engine.executableFullPath() ;
 
@@ -310,7 +307,7 @@ static siritask::cmdStatus _cmd( const engines::engine& engine,
 	}else{
 		exe = utility::Task::makePath( exe ) ;
 
-		auto _run = [ & ]()->siritask::cmdStatus{
+		auto _run = [ & ]()->engines::engine::cmdStatus{
 
 			auto m = _build_config_file_path( engine,configFilePath ) ;
 
@@ -321,11 +318,11 @@ static siritask::cmdStatus _cmd( const engines::engine& engine,
 
 				auto cmd = engine.command( { exe,opts,m.value(),cc,mm,create } ) ;
 
-				auto s = _run_task( cmd,password,opts,create,_ecryptfs( engine.names().first() ) ) ;
+				auto s = _run_task( cmd,password,opts,create,_ecryptfs( engine.name() ) ) ;
 
 				if( s.success() ){
 
-					return { siritask::status::success,s.exitCode() } ;
+					return { engines::engine::status::success,s.exitCode() } ;
 				}else{
 					auto m = s.stdError().isEmpty() ? s.stdOut() : s.stdError() ;
 
@@ -334,13 +331,13 @@ static siritask::cmdStatus _cmd( const engines::engine& engine,
 					return { n,s.exitCode(),m } ;
 				}
 			}else{
-				return cs::backEndDoesNotSupportCustomConfigPath ;
+				return engines::engine::status::backEndDoesNotSupportCustomConfigPath ;
 			}
 		} ;
 
 		auto s = _run() ;
 
-		if( s == siritask::status::ecrypfsBadExePermissions ){
+		if( s == engines::engine::status::ecrypfsBadExePermissions ){
 
 			if( utility::enablePolkit( utility::background_thread::True ) ){
 
@@ -352,7 +349,7 @@ static siritask::cmdStatus _cmd( const engines::engine& engine,
 	}
 }
 
-static QString _configFilePath( const siritask::options& opt )
+static QString _configFilePath( const engines::engine::options& opt )
 {
 	if( opt.configFilePath.isEmpty() ){
 
@@ -362,59 +359,34 @@ static QString _configFilePath( const siritask::options& opt )
 	}
 }
 
-struct engine
-{
-	const engines::engine& engine ;
-	QString path ;
-};
-
-template< typename Function >
-static engine _get_engine( const engines& engines,Function function )
-{
-	for( const auto& it : engines::supported() ){
-
-		const auto& s = engines.getByName( it ) ;
-
-		for( const auto& xt : s.configFileNames() ){
-
-			if( function( xt ) ){
-
-				return { s,xt } ;
-			}
-		}
-	}
-
-	return { engines.getByName( QString() ),QString() } ;
-}
-
-static siritask::cmdStatus _mount( bool reUseMountPoint,
+static engines::engine::cmdStatus _mount( bool reUseMountPoint,
 				   const engines::engine& engine,
-				   const siritask::options& copt,
+				   const engines::engine::options& copt,
 				   const QString& configFilePath )
 {
 	auto opt = copt ;
 
-	opt.type = engine.names().first() ;
+	opt.type = engine.name() ;
 
 	if( _ecryptfs_illegal_path( opt ) ){
 
-		return cs::ecryptfsIllegalPath ;
+		return engines::engine::status::ecryptfsIllegalPath ;
 	}
 
 	if( _create_folder( opt.plainFolder ) || reUseMountPoint ){
 
 		auto e = _cmd( engine,false,opt,opt.key,configFilePath ) ;
 
-		if( e == cs::success ){
+		if( e == engines::engine::status::success ){
 
-			_run_command_on_mount( opt,opt.type.name() ) ;
+			_run_command_on_mount( opt,opt.type ) ;
 		}else{
 			siritask::deleteMountFolder( opt.plainFolder ) ;
 		}
 
 		return e ;
 	}else{
-		return cs::failedToCreateMountPoint ;
+		return engines::engine::status::failedToCreateMountPoint ;
 	}
 }
 
@@ -430,7 +402,7 @@ static utility::result< QString > _path_exist( QString e,const QString& m )
 	}
 }
 
-static siritask::cmdStatus _encrypted_folder_mount( const siritask::options& opt,bool reUseMP )
+static engines::engine::cmdStatus _encrypted_folder_mount( const engines::engine::options& opt,bool reUseMP )
 {
 	const auto& engines = engines::instance() ;
 
@@ -450,43 +422,51 @@ static siritask::cmdStatus _encrypted_folder_mount( const siritask::options& opt
 
 	}else if( opt.configFilePath.isEmpty() ){
 
-		auto m = _get_engine( engines,[ & ]( const QString& e ){
+		auto m = engines.getByConfigFileNames( [ & ]( const QString& e ){
 
 			return utility::pathExists( opt.cipherFolder + "/" + e ) ;
 		} ) ;
 
-		if( !m.engine.unknown() ){
+		const auto& engine = m.first ;
 
-			if( m.path == ".gocryptfs.reverse.conf" ){
+		if( engine.known() ){
+
+			if( m.second.endsWith( "gocryptfs.reverse.conf" ) ){
 
 				if( opt.reverseMode ){
 
-					return _mount( reUseMP,m.engine,opt,QString() ) ;
+					return _mount( reUseMP,engine,opt,QString() ) ;
 				}else{
 					auto opts = opt ;
 					opts.reverseMode = true ;
-					return _mount( reUseMP,m.engine,opts,QString() ) ;
+					return _mount( reUseMP,engine,opts,QString() ) ;
 				}
+
+			}else if( engine.name() == "ecryptfs" ){
+
+				return _mount( reUseMP,engine,opt,opt.cipherFolder + "/" + m.second ) ;
 			}else{
-				return _mount( reUseMP,m.engine,opt,QString() ) ;
+				return _mount( reUseMP,engine,opt,QString() ) ;
 			}
 		}
 
 	}else if( utility::pathExists( opt.configFilePath ) ){
 
-		auto m = _get_engine( engines,[ & ]( const QString& e ){
+		auto m = engines.getByConfigFileNames( [ & ]( const QString& e ){
 
 			return opt.configFilePath.endsWith( e ) ;
 		} ) ;
 
-		if( !m.engine.unknown() ){
+		const auto& engine = m.first ;
 
-			return _mount( reUseMP,m.engine,opt,opt.configFilePath ) ;
+		if( engine.known() ){
+
+			return _mount( reUseMP,engine,opt,opt.configFilePath ) ;
 		}
 	}else{
 		auto e = opt.configFilePath ;
 
-		for( const auto& it : engines::supported() ){
+		for( const auto& it : engines::instance().supported() ){
 
 			auto n = it.toLower() ;
 
@@ -504,48 +484,41 @@ static siritask::cmdStatus _encrypted_folder_mount( const siritask::options& opt
 		}
 	}
 
-	return cs::unknown ;
+	return engines::engine::status::unknown ;
 }
 
-static siritask::cmdStatus _encrypted_folder_create( const siritask::options& opts )
+static engines::engine::cmdStatus _encrypted_folder_create( const engines::engine::options& opt )
 {
-	if( _ecryptfs_illegal_path( opts ) ){
+	if( _ecryptfs_illegal_path( opt ) ){
 
-		return cs::ecryptfsIllegalPath ;
+		return engines::engine::status::ecryptfsIllegalPath ;
 	}
 
-	if( _create_folder( opts.cipherFolder ) ){
+	if( _create_folder( opt.cipherFolder ) ){
 
-		if( _create_folder( opts.plainFolder ) ){
+		if( _create_folder( opt.plainFolder ) ){
 
-			auto& m = engines::instance().getByName( opts ) ;
-
-			auto opt = opts ;
-
-			if( opt.createOptions.isEmpty() ){
-
-				opt.createOptions = m.defaultCreateOptions() ;
-			}
+			auto& m = engines::instance().getByName( opt ) ;
 
 			auto e = _cmd( m,true,opt,m.setPassword( opt.key ),[ & ](){
 
 				auto e = _configFilePath( opt ) ;
 
-				if( e.isEmpty() && m.names().first() == "ecryptfs" ){
+				if( e.isEmpty() && m.name() == "ecryptfs" ){
 
-					return opt.cipherFolder + "/" + m.configFileNames().first() ;
+					return opt.cipherFolder + "/" + m.configFileName() ;
 				}else{
 					return e ;
 				}
 			}() ) ;
 
-			if( e == cs::success ){
+			if( e == engines::engine::status::success ){
 
 				if( !m.autoMountsOnCreate() ){
 
 					auto e = siritask::encryptedFolderMount( opt,true ).get() ;
 
-					if( e != cs::success ){
+					if( e != engines::engine::status::success ){
 
 						_deleteFolders( opt.cipherFolder,opt.plainFolder ) ;
 					}
@@ -556,22 +529,22 @@ static siritask::cmdStatus _encrypted_folder_create( const siritask::options& op
 
 			return e ;
 		}else{
-			_deleteFolders( opts.cipherFolder ) ;
+			_deleteFolders( opt.cipherFolder ) ;
 
-			return cs::failedToCreateMountPoint ;
+			return engines::engine::status::failedToCreateMountPoint ;
 		}
 	}else{
-		return cs::failedToCreateMountPoint ;
+		return engines::engine::status::failedToCreateMountPoint ;
 	}
 }
 
-Task::future< siritask::cmdStatus >& siritask::encryptedFolderCreate( const siritask::options& opt )
+Task::future< engines::engine::cmdStatus >& siritask::encryptedFolderCreate( const engines::engine::options& opt )
 {
 	return Task::run( _encrypted_folder_create,opt ) ;
 }
 
-Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const siritask::options& opt,
-								     bool reUseMountPoint )
+Task::future< engines::engine::cmdStatus >& siritask::encryptedFolderMount( const engines::engine::options& opt,
+									    bool reUseMountPoint )
 {
 	return Task::run( _encrypted_folder_mount,opt,reUseMountPoint ) ;
 }

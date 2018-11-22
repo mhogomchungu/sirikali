@@ -40,6 +40,10 @@ securefscreateoptions::securefscreateoptions( QWidget * parent,
 
 	m_ui->comboBox->setFocus() ;
 
+	auto s = tr( "The \"lite format\" simply encrypts filenames and file contents separately, similar to how encfs operates, although with more security.\n\nThe \"full format\" maps files, directories and symlinks in the virtual filesystem all to regular files in the underlying filesystem. The directory structure is flattened and recorded as B-trees in files.\n\nThe lite format has become the default on Unix-like operating systems as it is much faster and features easier conflict resolution, especially when used with DropBox, Google Drive, etc. The full format, however, leaks fewer information about the filesystem hierarchy, runs relatively independent of the features of the underlying filesystem, and is in general more secure." ) ;
+
+	m_ui->plainTextEdit->appendPlainText( s ) ;
+
 	this->show() ;
 }
 

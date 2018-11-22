@@ -46,11 +46,11 @@ Task::process::result FspLaunchStart( const QString& className,
 
 Task::process::result FspLaunchStart( const QString& exe,
 				      const QByteArray& password,
-				      const siritask::options& ) ;
+				      const engines::engine::options& ) ;
 
 Task::process::result FspLaunchRun( const QString& exe,
 				    const QByteArray& password,
-				    const siritask::options& ) ;
+				    const engines::engine::options& ) ;
 
 Task::process::result FspLaunchStop( const QString& mountPath ) ;
 

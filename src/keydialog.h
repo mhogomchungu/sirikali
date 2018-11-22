@@ -37,6 +37,7 @@ class QTableWidget ;
 #include "siritask.h"
 #include "can_build_pwquality.h"
 #include "secrets.h"
+#include "engines.h"
 
 #include "favorites.h"
 
@@ -172,9 +173,9 @@ private :
 	void ShowUI( void ) ;
 	void HideUI( void ) ;
 
-	void showErrorMessage( const siritask::cmdStatus& ) ;
+	void showErrorMessage( const engines::engine::cmdStatus& ) ;
 	void showErrorMessage( const QString& ) ;
-	void reportErrorMessage( const siritask::cmdStatus& ) ;
+	void reportErrorMessage( const engines::engine::cmdStatus& ) ;
 	void openMountPoint( const QString& ) ;
 
 	void setUIVisible( bool ) ;
@@ -187,7 +188,7 @@ private :
 
 	bool upgradingFileSystem( void ) ;
 	bool mountedAll() ;
-	bool completed( const siritask::cmdStatus&,const QString& m ) ;
+	bool completed( const engines::engine::cmdStatus&,const QString& m ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 
 	Ui::keyDialog * m_ui ;

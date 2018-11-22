@@ -150,6 +150,7 @@ public:
 	int networkTimeOut() ;
 	bool showMountDialogWhenAutoMounting() ;
 	int checkForUpdateInterval() ;
+	bool ecryptfsAllowNotEncryptingFileNames() ;
 	QString homePath() ;
 	void clearFavorites() ;
 	void showMountDialogWhenAutoMounting( bool ) ;
