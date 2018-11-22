@@ -466,7 +466,7 @@ static engines::engine::cmdStatus _encrypted_folder_mount( const engines::engine
 	}else{
 		auto e = opt.configFilePath ;
 
-		for( const auto& it : engines::supported() ){
+		for( const auto& it : engines::instance().supported() ){
 
 			auto n = it.toLower() ;
 

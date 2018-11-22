@@ -34,9 +34,6 @@
 class engines
 {
 public:
-	static const engines& instance() ;
-	static QStringList supported() ;
-
 	class engine
 	{
 	public:
@@ -189,6 +186,8 @@ public:
 	} ;
 
 	engines() ;
+	static const engines& instance() ;
+	const QStringList& supported() const ;
 	const engine& getByName( const engines::engine::options& e ) const ;
 	const engine& getByName( const QString& e ) const ;
 	const engine& getByFuseName( const QString& e ) const ;
@@ -196,6 +195,7 @@ public:
 	getByConfigFileNames( std::function< bool( const QString& ) > function ) const ;
 private:
 	std::vector< std::unique_ptr< engines::engine > > m_backends ;
+	QStringList m_supported ;
 };
 
 #endif

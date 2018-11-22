@@ -225,7 +225,7 @@ void sirikali::setUpApp( const QString& volume )
 		connect( m,SIGNAL( triggered( QAction * ) ),
 			 this,SLOT( createVolume( QAction * ) ) ) ;
 
-		for( const auto& it : engines::supported() ){
+		for( const auto& it : engines::instance().supported() ){
 
 			auto ac = m->addAction( it ) ;
 

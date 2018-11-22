@@ -136,29 +136,41 @@ const engines& engines::instance()
 	return v ;
 }
 
-QStringList engines::supported()
+const QStringList& engines::supported() const
 {
-	if( utility::platformIsWindows() ){
-
-		return { "Securefs","Encfs","Sshfs" } ;
-
-	}else if( utility::platformIsOSX() ){
-
-		return { "Cryfs","Gocryptfs","Securefs","Encfs" } ;
-	}else{
-		return { "Cryfs","Gocryptfs","Securefs","Encfs","Ecryptfs","Sshfs" } ;
-	}
+	return m_supported ;
 }
 
 engines::engines()
 {
 	m_backends.emplace_back( std::make_unique< unknown >() ) ;
-	m_backends.emplace_back( std::make_unique< securefs >() ) ;
-	m_backends.emplace_back( std::make_unique< gocryptfs >() ) ;
-	m_backends.emplace_back( std::make_unique< cryfs >() ) ;
-	m_backends.emplace_back( std::make_unique< encfs >() ) ;
-	m_backends.emplace_back( std::make_unique< ecryptfs >() ) ;
-	m_backends.emplace_back( std::make_unique< sshfs >() ) ;
+
+	if( utility::platformIsWindows() ){
+
+		m_supported = QStringList{ "Securefs","Encfs","Sshfs" } ;
+
+		m_backends.emplace_back( std::make_unique< securefs >() ) ;
+		m_backends.emplace_back( std::make_unique< encfs >() ) ;
+		m_backends.emplace_back( std::make_unique< sshfs >() ) ;
+
+	}else if( utility::platformIsOSX() ){
+
+		m_supported = QStringList{ "Securefs","Cryfs","Gocryptfs","Encfs" } ;
+
+		m_backends.emplace_back( std::make_unique< securefs >() ) ;
+		m_backends.emplace_back( std::make_unique< cryfs >() ) ;
+		m_backends.emplace_back( std::make_unique< gocryptfs >() ) ;
+		m_backends.emplace_back( std::make_unique< encfs >() ) ;
+	}else{
+		m_supported = QStringList{ "Securefs","Cryfs","Gocryptfs","Encfs","Ecryptfs","Sshfs" } ;
+
+		m_backends.emplace_back( std::make_unique< securefs >() ) ;
+		m_backends.emplace_back( std::make_unique< cryfs >() ) ;
+		m_backends.emplace_back( std::make_unique< gocryptfs >() ) ;
+		m_backends.emplace_back( std::make_unique< encfs >() ) ;
+		m_backends.emplace_back( std::make_unique< ecryptfs >() ) ;
+		m_backends.emplace_back( std::make_unique< sshfs >() ) ;
+	}
 }
 
 const engines::engine& engines::getByName( const engines::engine::options& e ) const
@@ -173,20 +185,17 @@ static std::pair< const engines::engine&,QString > _get_engine( const Engines& e
 {
 	const auto data = engines.data() ;
 
-	const auto supported = engines::supported() ;
+	const auto supported = engines::instance().supported() ;
 
 	for( size_t i = 1 ; i < engines.size() ; i++ ){
 
 		const auto& s = **( data + i ) ;
 
-		if( supported.contains( s.name(),Qt::CaseInsensitive ) ){
+		for( const auto& xt : listSourceFunction( s ) ){
 
-			for( const auto& xt : listSourceFunction( s ) ){
+			if( compareFunction( xt ) ){
 
-				if( compareFunction( xt ) ){
-
-					return { s,xt } ;
-				}
+				return { s,xt } ;
 			}
 		}
 	}

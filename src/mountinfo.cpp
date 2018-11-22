@@ -256,6 +256,8 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 
 		volumeInfo::mountinfo info ;
 
+		const auto& engines = engines::instance() ;
+
 		for( const auto& it : _unlocked_volumes( background_thread::True ) ){
 
 			const auto& k = utility::split( it,' ' ) ;
@@ -273,7 +275,7 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 
 			const auto& fs = k.at( s - 3 ) ;
 
-			const auto& engine = engines::instance().getByFuseName( fs ) ;
+			const auto& engine = engines.getByFuseName( fs ) ;
 
 			if( engine.known() ){
 
