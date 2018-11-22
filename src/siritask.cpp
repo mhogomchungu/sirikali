@@ -359,12 +359,6 @@ static QString _configFilePath( const engines::engine::options& opt )
 	}
 }
 
-struct engine
-{
-	const engines::engine& engine ;
-	QString path ;
-};
-
 static engines::engine::cmdStatus _mount( bool reUseMountPoint,
 				   const engines::engine& engine,
 				   const engines::engine::options& copt,
