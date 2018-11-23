@@ -185,8 +185,6 @@ static std::pair< const engines::engine&,QString > _get_engine( const Engines& e
 {
 	const auto data = engines.data() ;
 
-	const auto supported = engines::instance().supported() ;
-
 	for( size_t i = 1 ; i < engines.size() ; i++ ){
 
 		const auto& s = **( data + i ) ;
