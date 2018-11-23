@@ -360,9 +360,9 @@ static QString _configFilePath( const engines::engine::options& opt )
 }
 
 static engines::engine::cmdStatus _mount( bool reUseMountPoint,
-				   const engines::engine& engine,
-				   const engines::engine::options& copt,
-				   const QString& configFilePath )
+					  const engines::engine& engine,
+					  const engines::engine::options& copt,
+					  const QString& configFilePath )
 {
 	auto opt = copt ;
 

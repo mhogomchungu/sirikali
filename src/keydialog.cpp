@@ -312,7 +312,6 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 	if( m_favoriteReadOnly ){
 
 		m_ui->checkBoxOpenReadOnly->setChecked( m_favoriteReadOnly.onlyRead() ) ;
-		m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
 	}else{
 		if( utility::platformIsWindows() ){
 
@@ -548,11 +547,15 @@ void keyDialog::cbMountReadOnlyStateChanged( int state )
 		return ;
 	}
 
+	if( m_favoriteReadOnly ){
+
+		m_ui->checkBoxOpenReadOnly->setChecked( state == Qt::Checked ) ;
+		return ;
+	}
+
 	auto e = settings::instance().setOpenVolumeReadOnly( this,state == Qt::Checked ) ;
 
-	m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
 	m_ui->checkBoxOpenReadOnly->setChecked( e ) ;
-	m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
 
 	if( m_ui->lineEditKey->text().isEmpty() ){
 
