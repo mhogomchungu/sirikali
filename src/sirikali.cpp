@@ -473,7 +473,12 @@ void sirikali::favoriteClicked( QAction * ac )
 
 					if( it.first.volumeNeedNoPassword && it.first.volumePath.startsWith( "sshfs " ) ){
 
+						this->disableAll() ;
+
 						_connect_to_ssh_server( this,it.first ) ;
+
+						this->enableAll() ;
+
 					}else{
 						this->mountMultipleVolumes( this->autoUnlockVolumes( { std::move( it ) },true ) ) ;
 					}
