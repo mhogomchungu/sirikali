@@ -52,50 +52,36 @@ gocryptfs::gocryptfs() : engines::engine( this->setOptions() )
 
 QString gocryptfs::command( const engines::engine::cmdArgsList& args ) const
 {
+	commandOptions m( args,this->name() ) ;
+
+	auto exeOptions = m.exeOptions() ;
+
+	exeOptions.add( "-q" ) ;
+
+	if( args.opt.reverseMode ){
+
+		exeOptions.add( "-reverse" ) ;
+	}
+
+	if( !args.opt.idleTimeout.isEmpty() ){
+
+		exeOptions.addPair( "-idle",args.opt.idleTimeout ) ;
+	}
+
+	if( !args.configFilePath.isEmpty() ){
+
+		exeOptions.add( args.configFilePath ) ;
+	}
+
 	if( args.create ){
+
+		exeOptions.add( "--init",args.opt.createOptions ) ;
 
 		QString e = "%1 %2 %3" ;
 
-		commandOptions m( args,this->name() ) ;
-
-		auto exeOptions = m.exeOptions() ;
-
-		exeOptions.add( "--init","-q",args.opt.createOptions ) ;
-
-		if( !args.configFilePath.isEmpty() ){
-
-			exeOptions.add( args.configFilePath ) ;
-		}
-
-		if( args.opt.reverseMode ){
-
-			exeOptions.add( "-reverse" ) ;
-		}
-
 		return e.arg( args.exe,exeOptions.get(),args.cipherFolder ) ;
 	}else{
-		commandOptions m( args,"gocryptfs" ) ;
-
 		QString e = "%1 %2 %3 %4 %5" ;
-
-		auto exeOptions = m.exeOptions() ;
-
-		exeOptions.add( "-q" ) ;
-
-		if( args.opt.reverseMode ){
-
-			exeOptions.add( "-reverse" ) ;
-		}
-
-		if( !args.opt.idleTimeout.isEmpty() ){
-
-			exeOptions.addPair( "-idle",args.opt.idleTimeout ) ;
-		}
-
-		if( !args.configFilePath.isEmpty() ){
-
-			exeOptions.add( args.configFilePath ) ;
-		}
 
 		return e.arg( args.exe,
 			      exeOptions.get(),
