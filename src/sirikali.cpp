@@ -225,13 +225,15 @@ void sirikali::setUpApp( const QString& volume )
 		connect( m,SIGNAL( triggered( QAction * ) ),
 			 this,SLOT( createVolume( QAction * ) ) ) ;
 
-		for( const auto& it : engines::instance().supported() ){
+		const auto& engines = engines::instance() ;
+
+		for( const auto& it : engines.supported() ){
 
 			auto ac = m->addAction( it ) ;
 
 			ac->setObjectName( it ) ;
 
-			if( engines::instance().getByName( it ).isNotInstalled() ){
+			if( engines.getByName( it ).isNotInstalled() ){
 
 				ac->setEnabled( false ) ;
 
