@@ -22,9 +22,9 @@
 
 #include "securefscreateoptions.h"
 
-engines::engine::BaseOptions securefs::setOptions()
+static engines::engine::BaseOptions _setOptions()
 {
-	BaseOptions s ;
+	engines::engine::BaseOptions s ;
 
 	s.autoMountsOnCreate  = false ;
 	s.hasGUICreateOptions = true ;
@@ -42,7 +42,7 @@ engines::engine::BaseOptions securefs::setOptions()
 	return s ;
 }
 
-securefs::securefs() : engines::engine( this->setOptions() )
+securefs::securefs() : engines::engine( _setOptions() )
 {
 }
 

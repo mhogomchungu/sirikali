@@ -21,9 +21,9 @@
 #include "commandOptions.h"
 #include "cryfscreateoptions.h"
 
-engines::engine::BaseOptions cryfs::setOptions()
+static engines::engine::BaseOptions _setOptions()
 {
-	BaseOptions s ;
+	engines::engine::BaseOptions s ;
 
 	s.autoMountsOnCreate  = true ;
 	s.hasGUICreateOptions = true ;
@@ -41,7 +41,7 @@ engines::engine::BaseOptions cryfs::setOptions()
 	return s ;
 }
 
-cryfs::cryfs() : engines::engine( this->setOptions() )
+cryfs::cryfs() : engines::engine( _setOptions() )
 {
 }
 

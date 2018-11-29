@@ -19,9 +19,8 @@
 
 #include "../engines.h"
 
-class sshfs : public engines::engine
+struct sshfs : public engines::engine
 {
-public:
 	sshfs() ;
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
@@ -30,6 +29,4 @@ public:
 	QString setPassword( const QString& ) const override ;
 
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
-private:
-	BaseOptions setOptions() ;
-};
+} ;

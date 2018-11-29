@@ -20,9 +20,9 @@
 #include "sshfs.h"
 #include "commandOptions.h"
 
-engines::engine::BaseOptions sshfs::setOptions()
+static engines::engine::BaseOptions _setOptions()
 {
-	BaseOptions s ;
+	engines::engine::BaseOptions s ;
 
 	s.autoMountsOnCreate  = true ;
 	s.hasGUICreateOptions = false ;
@@ -40,7 +40,7 @@ engines::engine::BaseOptions sshfs::setOptions()
 	return s ;
 }
 
-sshfs::sshfs() : engines::engine( this->setOptions() )
+sshfs::sshfs() : engines::engine( _setOptions() )
 {
 }
 

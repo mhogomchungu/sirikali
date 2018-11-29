@@ -22,9 +22,9 @@
 
 #include "encfscreateoptions.h"
 
-engines::engine::BaseOptions encfs::setOptions()
+static engines::engine::BaseOptions _setOptions()
 {
-	BaseOptions s ;
+	engines::engine::BaseOptions s ;
 
 	s.autoMountsOnCreate  = true ;
 	s.hasGUICreateOptions = true ;
@@ -42,7 +42,7 @@ engines::engine::BaseOptions encfs::setOptions()
 	return s ;
 }
 
-encfs::encfs() : engines::engine( this->setOptions() )
+encfs::encfs() : engines::engine( _setOptions() )
 {
 }
 

@@ -22,9 +22,9 @@
 
 #include "gocryptfscreateoptions.h"
 
-engines::engine::BaseOptions gocryptfs::setOptions()
+static engines::engine::BaseOptions _setOptions()
 {
-	BaseOptions s ;
+	engines::engine::BaseOptions s ;
 
 	s.autoMountsOnCreate  = false ;
 	s.hasGUICreateOptions = true ;
@@ -46,7 +46,7 @@ engines::engine::BaseOptions gocryptfs::setOptions()
 	return s ;
 }
 
-gocryptfs::gocryptfs() : engines::engine( this->setOptions() )
+gocryptfs::gocryptfs() : engines::engine( _setOptions() )
 {
 }
 

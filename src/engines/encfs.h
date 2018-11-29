@@ -18,9 +18,8 @@
 
 #include "../engines.h"
 
-class encfs : public engines::engine
+struct encfs : public engines::engine
 {
-public:
 	encfs() ;
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
@@ -29,6 +28,4 @@ public:
 	QString setPassword( const QString& ) const override ;
 
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
-private:
-	BaseOptions setOptions() ;
-};
+} ;

@@ -137,6 +137,19 @@ public:
 			bool success ;
 		} ;
 
+		struct BaseOptions
+		{
+			bool setsCipherPath ;
+			bool autoMountsOnCreate ;
+			bool hasGUICreateOptions ;
+			QString configFileArgument ;
+			QStringList names ;
+			QStringList fuseNames ;
+			QStringList configFileNames ;
+
+			engines::engine::status notFoundCode ;
+		} ;
+
 		QString executableFullPath() const ;
 
 		bool isInstalled() const ;
@@ -167,19 +180,6 @@ public:
 		using function = std::function< void( const Options& ) > ;
 		virtual void GUICreateOptionsinstance( QWidget * parent,function )  const = 0 ;
 	protected:
-		struct BaseOptions
-		{
-			bool setsCipherPath ;
-			bool autoMountsOnCreate ;
-			bool hasGUICreateOptions ;
-			QString configFileArgument ;
-			QStringList names ;
-			QStringList fuseNames ;
-			QStringList configFileNames ;
-
-			engines::engine::status notFoundCode ;
-		} ;
-
 		engine( BaseOptions ) ;
 	private:
 		BaseOptions m_Options ;

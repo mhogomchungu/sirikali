@@ -19,9 +19,8 @@
 
 #include "../engines.h"
 
-class cryfs : public engines::engine
+struct cryfs : public engines::engine
 {
-public:
 	cryfs() ;
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
@@ -30,6 +29,4 @@ public:
 	QString setPassword( const QString& ) const override ;
 
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
-private:
-	BaseOptions setOptions() ;
-};
+} ;

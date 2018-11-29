@@ -20,9 +20,9 @@
 #include "unknown.h"
 #include "commandOptions.h"
 
-engines::engine::BaseOptions unknown::setOptions()
+static engines::engine::BaseOptions _setOptions()
 {
-	BaseOptions s ;
+	engines::engine::BaseOptions s ;
 
 	s.autoMountsOnCreate  = false ;
 	s.hasGUICreateOptions = true ;
@@ -40,7 +40,7 @@ engines::engine::BaseOptions unknown::setOptions()
 	return s ;
 }
 
-unknown::unknown() : engines::engine( this->setOptions() )
+unknown::unknown() : engines::engine( _setOptions() )
 {
 }
 

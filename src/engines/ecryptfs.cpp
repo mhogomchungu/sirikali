@@ -21,9 +21,9 @@
 #include "commandOptions.h"
 #include "ecryptfscreateoptions.h"
 
-engines::engine::BaseOptions ecryptfs::setOptions()
+static engines::engine::BaseOptions _setOptions()
 {
-	BaseOptions s ;
+	engines::engine::BaseOptions s ;
 
 	s.autoMountsOnCreate  = true ;
 	s.hasGUICreateOptions = true ;
@@ -41,7 +41,7 @@ engines::engine::BaseOptions ecryptfs::setOptions()
 	return s ;
 }
 
-ecryptfs::ecryptfs() : engines::engine( this->setOptions() )
+ecryptfs::ecryptfs() : engines::engine( _setOptions() )
 {
 }
 
