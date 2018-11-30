@@ -418,7 +418,10 @@ static engines::engine::cmdStatus _encrypted_folder_mount( const engines::engine
 			opts.key = engine.setPassword( opts.key ) ;
 		}
 
-		return _mount( reUseMP,engine,opts,QString() ) ;
+		if( engine.known() ){
+
+			return _mount( reUseMP,engine,opts,QString() ) ;
+		}
 
 	}else if( opt.configFilePath.isEmpty() ){
 
@@ -466,7 +469,7 @@ static engines::engine::cmdStatus _encrypted_folder_mount( const engines::engine
 	}else{
 		auto e = opt.configFilePath ;
 
-		for( const auto& it : engines::instance().supported() ){
+		for( const auto& it : engines.supported() ){
 
 			auto n = it.toLower() ;
 
