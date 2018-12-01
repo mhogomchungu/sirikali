@@ -63,6 +63,11 @@ QString unknown::setPassword( const QString& e ) const
 	return QString() ;
 }
 
+QString unknown::installedVersionString() const
+{
+	return {} ;
+}
+
 void unknown::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
 {
 	Q_UNUSED( parent ) ;

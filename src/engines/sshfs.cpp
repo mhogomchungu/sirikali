@@ -109,6 +109,11 @@ QString sshfs::setPassword( const QString& e ) const
 	return m ;
 }
 
+QString sshfs::installedVersionString() const
+{
+	return this->baseInstalledVersionString( "--version",true,2,0 ) ;
+}
+
 void sshfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
 {
 	Q_UNUSED( parent ) ;

@@ -132,6 +132,11 @@ QString cryfs::setPassword( const QString& e ) const
 	return e ;
 }
 
+QString cryfs::installedVersionString() const
+{
+	return this->baseInstalledVersionString( "--version",true,2,0 ) ;
+}
+
 void cryfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
 {
 	cryfscreateoptions::instance( parent,std::move( function ) ) ;

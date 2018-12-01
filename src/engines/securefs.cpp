@@ -101,6 +101,11 @@ QString securefs::setPassword( const QString& e ) const
 	return e + "\n" + e ;
 }
 
+QString securefs::installedVersionString() const
+{
+	return this->baseInstalledVersionString( "version",true,1,0 ) ;
+}
+
 void securefs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
 {
 	securefscreateoptions::instance( parent,std::move( function ) ) ;

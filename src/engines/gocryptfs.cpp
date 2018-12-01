@@ -113,6 +113,11 @@ QString gocryptfs::setPassword( const QString& e ) const
 	return e ;
 }
 
+QString gocryptfs::installedVersionString() const
+{
+	return this->baseInstalledVersionString( "--version",true,1,0 ) ;
+}
+
 void gocryptfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
 {
 	gocryptfscreateoptions::instance( parent,std::move( function ) ) ;

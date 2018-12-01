@@ -108,6 +108,11 @@ QString ecryptfs::setPassword( const QString& e ) const
 	return e ;
 }
 
+QString ecryptfs::installedVersionString() const
+{
+	return this->baseInstalledVersionString( "--version",true,1,0 ) ;
+}
+
 void ecryptfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
 {
 	ecryptfscreateoptions::instance( parent,std::move( function ) ) ;

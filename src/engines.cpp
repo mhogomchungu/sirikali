@@ -33,6 +33,55 @@ engines::engine::~engine()
 {
 }
 
+QString engines::engine::sanitizeVersionString( const QString& s ) const
+{
+	auto e = s ;
+
+	e.replace( "v","" ).replace( ";","" ) ;
+
+	QString m ;
+
+	for( int s = 0 ; s < e.size() ; s++ ){
+
+		auto n = e.at( s ) ;
+
+		if( n == '.' || ( n >= '0' && n <= '9' ) ){
+
+			m += n ;
+		}else{
+			break ;
+		}
+	}
+
+	return m ;
+}
+
+QString engines::engine::baseInstalledVersionString( const QString& versionArgument,
+						     bool readFromStdOut,
+						     int argumentNumber,
+						     int argumentLine ) const
+{
+	const auto s = utility::systemEnvironment() ;
+
+	const auto cmd = this->executableFullPath() + " " + versionArgument ;
+
+	const auto r = ::Task::process::run( cmd,{},-1,{},s ).get() ;
+
+	const auto m = utility::split( readFromStdOut ? r.std_out() : r.std_error(),'\n' ) ;
+
+	if( m.size() > argumentLine ){
+
+		const auto e = utility::split( m.at( argumentLine ),' ' ) ;
+
+		if( e.size() > argumentNumber ){
+
+			return this->sanitizeVersionString( e.at( argumentNumber ) ) ;
+		}
+	}
+
+	return {} ;
+}
+
 engines::engine::engine( engines::engine::BaseOptions o ) :
 	m_Options( std::move( o ) )
 {

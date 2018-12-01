@@ -165,7 +165,15 @@ void checkUpdates::checkForUpdate( backends_t::size_type position )
 
 		auto exe = e.first ;
 
-		auto f = this->InstalledVersion( exe ) ;
+		auto f = [ & ](){
+
+			if( QString( exe ) == "ecryptfs-simple" ){
+
+				return this->InstalledVersion( "ecryptfs" ) ;
+			}else{
+				return this->InstalledVersion( exe ) ;
+			}
+		}() ;
 
 		if( f == "N/A" ){
 

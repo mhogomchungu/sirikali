@@ -109,6 +109,11 @@ QString encfs::setPassword( const QString& e ) const
 	return e + "\n" + e ;
 }
 
+QString encfs::installedVersionString() const
+{
+	return this->baseInstalledVersionString( "--version",false,2,0 ) ;
+}
+
 void encfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
 {
 	encfscreateoptions::instance( parent,std::move( function ) ) ;
