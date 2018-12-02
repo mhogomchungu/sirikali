@@ -19,8 +19,9 @@
 
 #include "../engines.h"
 
-struct cryfs : public engines::engine
+class cryfs : public engines::engine
 {
+public:
 	cryfs() ;
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
@@ -30,4 +31,6 @@ struct cryfs : public engines::engine
 	QString installedVersionString() const override ;
 
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
+private:
+	mutable QString m_version ;
 } ;

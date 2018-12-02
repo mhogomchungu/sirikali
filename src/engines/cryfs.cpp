@@ -49,7 +49,7 @@ QString cryfs::command( const engines::engine::cmdArgsList& args ) const
 {
 	auto separator = [](){
 
-		static auto m = utility::backendIsLessThan( "cryfs","0.10" ).get() ;
+		auto m = utility::backendIsLessThan( "cryfs","0.10" ).get() ;
 
 		if( m && m.value() ){
 
@@ -90,7 +90,7 @@ QString cryfs::command( const engines::engine::cmdArgsList& args ) const
 
 engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 {
-	static auto m = utility::backendIsGreaterOrEqualTo( "cryfs","0.9.9" ).get() ;
+	auto m = utility::backendIsGreaterOrEqualTo( "cryfs","0.9.9" ).get() ;
 
 	if( m && m.value() ){
 
@@ -134,7 +134,12 @@ QString cryfs::setPassword( const QString& e ) const
 
 QString cryfs::installedVersionString() const
 {
-	return this->baseInstalledVersionString( "--version",true,2,0 ) ;
+	if( m_version.isEmpty() ){
+
+		m_version = this->baseInstalledVersionString( "--version",true,2,0 ) ;
+	}
+
+	return m_version ;
 }
 
 void cryfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
