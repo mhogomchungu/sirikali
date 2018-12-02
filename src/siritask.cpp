@@ -410,15 +410,15 @@ static engines::engine::cmdStatus _encrypted_folder_mount( const engines::engine
 
 		const auto& engine = engines.getByName( "sshfs" ) ;
 
-		auto opts = opt ;
-		opts.cipherFolder = opts.cipherFolder.remove( 0,6 ) ; // 6 is the size of "sshfs "
-
-		if( !opts.key.isEmpty() ){
-
-			opts.key = engine.setPassword( opts.key ) ;
-		}
-
 		if( engine.known() ){
+
+			auto opts = opt ;
+			opts.cipherFolder = opts.cipherFolder.remove( 0,6 ) ; // 6 is the size of "sshfs "
+
+			if( !opts.key.isEmpty() ){
+
+				opts.key = engine.setPassword( opts.key ) ;
+			}
 
 			return _mount( reUseMP,engine,opts,QString() ) ;
 		}

@@ -222,11 +222,6 @@ engines::engines()
 	}
 }
 
-const engines::engine& engines::getByName( const engines::engine::options& e ) const
-{
-	return this->getByName( e.type ) ;
-}
-
 template< typename Engines,typename Compare,typename listSource >
 static std::pair< const engines::engine&,QString > _get_engine( const Engines& engines,
 								Compare compareFunction,
@@ -272,6 +267,11 @@ const engines::engine& engines::getByName( const QString& e ) const
 			      [ & ]( const QString& s ){ return !e.compare( s,Qt::CaseInsensitive ) ; },
 			      []( const engines::engine& s ){ return s.names() ; } ) ;
 	return m.first ;
+}
+
+const engines::engine& engines::getByName( const engines::engine::options& e ) const
+{
+	return this->getByName( e.type ) ;
 }
 
 engines::engine::cmdStatus::cmdStatus()
