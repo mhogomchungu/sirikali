@@ -177,6 +177,8 @@ void favorites::shortcutPressed()
 
 void favorites::ShowUI( favorites::type type )
 {
+	m_type = type ;
+
 	m_ui->tableWidget->setColumnWidth( 0,285 ) ;
 	m_ui->tableWidget->setColumnWidth( 1,285 ) ;
 
@@ -204,13 +206,13 @@ void favorites::ShowUI( favorites::type type )
 		m_ui->lineEditMountPath->clear() ;
 	}
 
-	if( type == favorites::type::sshfs ){
+	if( m_type == favorites::type::sshfs ){
 
-		m_ui->lineEditIdleTimeOut->setEnabled( false ) ;
 		m_ui->lineEditMountOptions->setText( "idmap=user,StrictHostKeyChecking=no" ) ;
 		m_ui->lineEditEncryptedFolderPath->setText( "sshfs " ) ;
 		m_ui->labelName ->setText( tr( "Remote Ssh Server Address\n(Example: sshfs woof@bar.foo:/remote/path)" ) ) ;
 		m_ui->labelCofigFilePath->setText( tr( "SSH_AUTH_SOCK Socket Path (Optional)" ) ) ;
+		m_ui->labelIdleTimeOut->setText( tr( "IdentityFile Path (Optional)" ) ) ;
 	}
 
 	m_ui->tableWidget->setFocus() ;
@@ -454,11 +456,40 @@ void favorites::add()
 		}
 	}() ;
 
+	auto configPath = m_ui->lineEditConfigFilePath->text() ;
+	auto idleTimeOUt = m_ui->lineEditIdleTimeOut->text() ;
+
+	if( m_type == favorites::type::sshfs ){
+
+		if( !configPath.isEmpty() ){
+
+			if( mOpts.isEmpty() ){
+
+				mOpts = "IdentityAgent=" + configPath ;
+			}else{
+				mOpts += ",IdentityAgent=" + configPath ;
+			}
+		}
+
+		if( !idleTimeOUt.isEmpty() ){
+
+			if( mOpts.isEmpty() ){
+
+				mOpts = "IdentityFile=" + idleTimeOUt ;
+			}else{
+				mOpts += ",IdentityFile=" + idleTimeOUt ;
+			}
+		}
+
+		configPath.clear() ;
+		idleTimeOUt.clear() ;
+	}
+
 	QStringList e = { dev,
 			  path,
 			  autoMount,
-			  _option( m_ui->lineEditConfigFilePath->text() ),
-			  _option( m_ui->lineEditIdleTimeOut->text() ),
+			  _option( configPath ),
+			  _option( idleTimeOUt ),
 			  _option( mOpts ) } ;
 
 	if( m_ui->pbAdd->objectName() == "Edit" ){

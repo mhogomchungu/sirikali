@@ -401,16 +401,7 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 {
 	auto exe = utility2::unique_qptr< QProcess >() ;
 
-	auto env = _update_environment( opts.type ) ;
-
-	auto ssh_auth = opts.configFilePath ;
-
-	if( !ssh_auth.isEmpty() ){
-
-		env.insert( "SSH_AUTH_SOCK",ssh_auth ) ;
-	}
-
-	exe->setProcessEnvironment( env ) ;
+	exe->setProcessEnvironment( _update_environment( opts.type ) ) ;
 	exe->setProcessChannelMode( QProcess::MergedChannels ) ;
 	exe->start( args ) ;
 	exe->waitForStarted() ;

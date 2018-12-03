@@ -29,7 +29,7 @@ public:
 
 	class Options{
 	public:
-		Options( QString m,QString s ) :
+		Options( QString m,char s ) :
 			m_options( std::move( m ) ),m_separator( s )
 		{
 		}
@@ -70,15 +70,34 @@ public:
 		{
 			return m_options ;
 		}
+		QString extractStartsWith( const QString& e )
+		{
+			auto tmp = m_options ;
+			m_options.clear() ;
+
+			QString m ;
+
+			for( const auto& it : utility::split( tmp,m_separator ) ){
+
+				if( it.startsWith( e ) ){
+
+					m = it ;
+				}else{
+					this->add( it ) ;
+				}
+			}
+
+			return m ;
+		}
 	private:
 		QString m_options ;
-		QString m_separator ;
+		char m_separator ;
 	};
 
 	class fuseOptions : public Options
 	{
 	public:
-		fuseOptions( QString m ) : Options( std::move( m ),"," )
+		fuseOptions( QString m ) : Options( std::move( m ),',' )
 		{
 		}
 		void addPair( const QString& key,const QString& value,
@@ -91,7 +110,7 @@ public:
 	class exeOptions : public Options
 	{
 	public:
-		exeOptions( QString m ) : Options( std::move( m )," " )
+		exeOptions( QString m ) : Options( std::move( m ),' ' )
 		{
 		}
 		void addPair( const QString& key,const QString& value,

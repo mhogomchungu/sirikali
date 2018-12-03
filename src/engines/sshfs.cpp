@@ -67,6 +67,13 @@ QString sshfs::command( const engines::engine::cmdArgsList& args ) const
 		exeOptions.add( "-f" ) ;
 	}
 
+	auto n = fuseOptions.extractStartsWith( "IdentityAgent=" ).replace( "IdentityAgent=","" ) ;
+
+	if( !n.isEmpty() ){
+
+		qputenv( "SSH_AUTH_SOCK",n.toLatin1() ) ;
+	}
+
 	QString s = "%1 %2 %3 %4 %5" ;
 
 	return s.arg( args.exe,

@@ -43,6 +43,8 @@ static engines::engine::BaseOptions _setOptions()
 
 cryfs::cryfs() : engines::engine( _setOptions() )
 {
+	qputenv( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
+	qputenv( "CRYFS_FRONTEND","noninteractive" ) ;
 }
 
 QString cryfs::command( const engines::engine::cmdArgsList& args ) const
