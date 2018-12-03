@@ -34,43 +34,50 @@
 QStringList engines::executableSearchPaths()
 {
 	const auto a = QDir::homePath().toLatin1() ;
-	const auto b = a + "/bin/" ;
-	const auto c = a + "/.bin/" ;
 
-#ifdef Q_OS_WIN
-	QStringList s ;
-	auto m = settings::instance().windowsExecutableSearchPath() ;
-	s.append( b ) ;
-	s.append( c ) ;
-	s.append( m + "\\bin\\" ) ;
-	s.append( m ) ;
-	return s + SiriKali::Winfsp::engineInstalledDirs() ;
-#else
-	return { "/usr/local/bin/",
-		"/usr/local/sbin/",
-		"/usr/bin/",
-		"/usr/sbin/",
-		"/bin/",
-		"/sbin/",
-		"/opt/local/bin/",
-		"/opt/local/sbin/",
-		"/opt/bin/",
-		"/opt/sbin/",
-		 b.constData(),
-		 c.constData() } ;
-#endif
+	if( utility::platformIsWindows() ){
+
+		QStringList s = { a + "\\bin\\",
+				  a + "\\.bin\\",
+				  settings::instance().windowsExecutableSearchPath() + "\\" } ;
+
+		for( const auto& it : SiriKali::Winfsp::engineInstalledDirs() ){
+
+			if( !it.isEmpty() ){
+
+				s.append( it + "\\bin\\" ) ;
+			}
+		}
+
+		return s ;
+	}else{
+		const auto b = a + "/bin/" ;
+		const auto c = a + "/.bin/" ;
+
+		return { "/usr/local/bin/",
+			"/usr/local/sbin/",
+			"/usr/bin/",
+			"/usr/sbin/",
+			"/bin/",
+			"/sbin/",
+			"/opt/local/bin/",
+			"/opt/local/sbin/",
+			"/opt/bin/",
+			"/opt/sbin/",
+			 b.constData(),
+			 c.constData() } ;
+	}
 }
 
 QString engines::executableFullPath( const QString& f )
 {
 	QString e = f ;
 
-#ifdef Q_OS_WIN
-	if( !e.endsWith( ".exe" ) ){
+	if( utility::platformIsWindows() && !e.endsWith( ".exe" ) ){
 
 		e += ".exe" ;
 	}
-#endif
+
 	QString exe ;
 
 	for( const auto& it : engines::executableSearchPaths() ){
