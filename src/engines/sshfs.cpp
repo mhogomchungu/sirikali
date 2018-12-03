@@ -67,11 +67,16 @@ QString sshfs::command( const engines::engine::cmdArgsList& args ) const
 		exeOptions.add( "-f" ) ;
 	}
 
-	auto n = fuseOptions.extractStartsWith( "IdentityAgent=" ).replace( "IdentityAgent=","" ) ;
+	if( fuseOptions.contains( "IdentityAgent" ) ){
 
-	if( !n.isEmpty() ){
+		auto m = "IdentityAgent=" ;
 
-		qputenv( "SSH_AUTH_SOCK",n.toLatin1() ) ;
+		auto n = fuseOptions.extractStartsWith( m ).replace( m,"" ) ;
+
+		if( !n.isEmpty() ){
+
+			qputenv( "SSH_AUTH_SOCK",n.toLatin1() ) ;
+		}
 	}
 
 	QString s = "%1 %2 %3 %4 %5" ;
