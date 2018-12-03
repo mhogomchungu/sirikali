@@ -58,9 +58,8 @@ QString volumeProperties( const QString& mountPath ) ;
 
 int terminateProcess( unsigned long pid ) ;
 
-QString sshfsInstallDir() ;
-QString encfsInstallDir() ;
-QString securefsInstallDir() ;
+QString engineInstalledDir( const QString& ) ;
+QStringList engineInstalledDirs() ;
 
 std::vector< QStringList > commands() ;
 

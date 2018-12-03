@@ -34,6 +34,9 @@
 class engines
 {
 public:
+	static QString executableFullPath( const QString& ) ;
+	static QStringList executableSearchPaths() ;
+
 	class engine
 	{
 	public:

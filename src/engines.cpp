@@ -28,6 +28,66 @@
 #include "engines/securefs.h"
 
 #include "utility.h"
+#include "settings.h"
+#include "winfsp.h"
+
+QStringList engines::executableSearchPaths()
+{
+	const auto a = QDir::homePath().toLatin1() ;
+	const auto b = a + "/bin/" ;
+	const auto c = a + "/.bin/" ;
+
+#ifdef Q_OS_WIN
+	QStringList s ;
+	auto m = settings::instance().windowsExecutableSearchPath() ;
+	s.append( b ) ;
+	s.append( c ) ;
+	s.append( m + "\\bin\\" ) ;
+	s.append( m ) ;
+	return s + SiriKali::Winfsp::engineInstalledDirs() ;
+#else
+	return { "/usr/local/bin/",
+		"/usr/local/sbin/",
+		"/usr/bin/",
+		"/usr/sbin/",
+		"/bin/",
+		"/sbin/",
+		"/opt/local/bin/",
+		"/opt/local/sbin/",
+		"/opt/bin/",
+		"/opt/sbin/",
+		 b.constData(),
+		 c.constData() } ;
+#endif
+}
+
+QString engines::executableFullPath( const QString& f )
+{
+	QString e = f ;
+
+#ifdef Q_OS_WIN
+	if( !e.endsWith( ".exe" ) ){
+
+		e += ".exe" ;
+	}
+#endif
+	QString exe ;
+
+	for( const auto& it : engines::executableSearchPaths() ){
+
+		if( !it.isEmpty() ){
+
+			exe = it + e ;
+
+			if( QFile::exists( exe ) ){
+
+				return exe ;
+			}
+		}
+	}
+
+	return QString() ;
+}
 
 engines::engine::~engine()
 {
@@ -89,7 +149,14 @@ engines::engine::engine( engines::engine::BaseOptions o ) :
 
 QString engines::engine::executableFullPath() const
 {
-	return utility::executableFullPath( this->name() ) ;
+	auto m = this->name() ;
+
+	if( m == "ecryptfs" ){
+
+		return engines::executableFullPath( "ecryptfs-simple" ) ;
+	}else{
+		return engines::executableFullPath( m ) ;
+	}
 }
 
 bool engines::engine::isInstalled() const

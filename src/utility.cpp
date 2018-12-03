@@ -685,7 +685,7 @@ bool utility::eventFilter( QObject * gui,QObject * watched,QEvent * event,std::f
 
 QStringList utility::executableSearchPaths()
 {
-	return utility2::executableSearchPaths() ;
+	return engines::executableSearchPaths() ;
 }
 
 QString utility::executableSearchPaths( const QString& e )
@@ -708,58 +708,9 @@ QString utility::executableSearchPaths( const QString& e )
 	}
 }
 
-template< typename Function >
-QString _exe_path( const QString& exe,Function function )
+QString utility::executableFullPath( const QString& e )
 {
-	auto m = function() ;
-	auto e = m + "\\bin\\" + exe + ".exe" ;
-
-	if( !m.isEmpty() && utility::pathExists( e ) ){
-
-		return e ;
-	}else{
-		auto s = settings::instance().windowsExecutableSearchPath() ;
-
-		auto m = s + "\\bin\\" + exe + ".exe" ;
-
-		if( utility::pathExists( m ) ){
-
-			return m ;
-		}else{
-			auto m = s + "\\" + exe + ".exe" ;
-
-			if( utility::pathExists( m ) ){
-
-				return m ;
-			}else{
-				return {} ;
-			}
-		}
-	}
-}
-
-QString utility::executableFullPath( const QString& f )
-{
-	return utility2::executableFullPath( f,[]( const QString& e ){
-
-		if( utility::platformIsWindows() ){
-
-			if( utility::equalsAtleastOne( e,"encfs","encfsctl" ) ){
-
-				return _exe_path( e,SiriKali::Winfsp::encfsInstallDir ) ;
-
-			}else if( e == "sshfs" ){
-
-				return _exe_path( e,SiriKali::Winfsp::sshfsInstallDir ) ;
-
-			}else if( e == "securefs" ){
-
-				return _exe_path( e,SiriKali::Winfsp::securefsInstallDir ) ;
-			}
-		}
-
-		return QString() ;
-	} ) ;
+	return engines::executableFullPath( e ) ;
 }
 
 QString utility::cmdArgumentValue( const QStringList& l,const QString& arg,const QString& defaulT )
