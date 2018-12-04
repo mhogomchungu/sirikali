@@ -470,7 +470,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configfileoption.ui" line="78"/>
         <source>Select A Folder To Create Config File In(Optional).</source>
-        <translation>Укажите путь для файла конфигурации (необязательно).</translation>
+        <translation>Укажите путь для файла конфигурации (опционально).</translation>
     </message>
 </context>
 <context>
@@ -658,7 +658,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/engines/cryfscreateoptions.ui" line="110"/>
         <source>Select A Folder To Create Config File In(Optional).</source>
-        <translation>Укажите путь для файла конфигурации (необязательно).</translation>
+        <translation>Укажите путь для файла конфигурации (опционально).</translation>
     </message>
 </context>
 <context>
@@ -704,7 +704,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/engines/ecryptfscreateoptions.ui" line="52"/>
         <source>Select A Folder To Create Config File In(Optional).</source>
-        <translation>Укажите путь для файла конфигурации (необязательно).</translation>
+        <translation>Укажите путь для файла конфигурации (опционально).</translation>
     </message>
     <message>
         <location filename="../src/engines/ecryptfscreateoptions.ui" line="138"/>
@@ -765,7 +765,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites.ui" line="168"/>
         <source>Config File Path (Optional)</source>
-        <translation>Путь к файлу конфигурации (необязательно)</translation>
+        <translation>Путь к файлу конфигурации (опционально)</translation>
     </message>
     <message>
         <location filename="../src/favorites.ui" line="207"/>
@@ -862,12 +862,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites.cpp" line="214"/>
         <source>SSH_AUTH_SOCK Socket Path (Optional)</source>
-        <translation>Путь сокета SSH_AUTH_SOCK (Опционально)</translation>
+        <translation>Путь сокета SSH_AUTH_SOCK (опционально)</translation>
     </message>
     <message>
         <location filename="../src/favorites.cpp" line="215"/>
         <source>IdentityFile Path (Optional)</source>
-        <translation type="unfinished">IdentityFile Path (Опционально)</translation>
+        <translation>IdentityFile путь (опционально)</translation>
     </message>
     <message>
         <location filename="../src/favorites.cpp" line="254"/>
@@ -986,7 +986,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/engines/gocryptfscreateoptions.ui" line="81"/>
         <source>Select A Folder To Create Config File In(Optional).</source>
-        <translation>Укажите путь для файла конфигурации (необязательно).</translation>
+        <translation>Укажите путь для файла конфигурации (опционально).</translation>
     </message>
     <message>
         <location filename="../src/engines/gocryptfscreateoptions.ui" line="167"/>
@@ -1555,7 +1555,7 @@ The lite format has become the default on Unix-like operating systems as it is m
     <message>
         <location filename="../src/engines/securefscreateoptions.ui" line="72"/>
         <source>Select A Folder To Create Config File In(Optional).</source>
-        <translation>Укажите путь для файла конфигурации (необязательно).</translation>
+        <translation>Укажите путь для файла конфигурации (опционально).</translation>
     </message>
 </context>
 <context>
