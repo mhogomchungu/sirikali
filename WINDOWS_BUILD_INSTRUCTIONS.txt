@@ -16,12 +16,11 @@
    SiriKali source folder and put them in the same folder as
    "sirikali" binary.
 
-Below commands assumes Qt is installed at "C:\Qt" and SiriKali was build in release mode using version 5.9.5.
+7. Open the terminal and browse to a folder where you have added "sirikali"
+   binary and run the following commands:
 
-7. Open the terminal and browse to a folder where you have added "sirikali" binary and run the following commands:
+8 Copy the contents of a file named "sirikali_windows_installer_commands"
+  found in the build folder and paste them on the terminal. Those commands will
+  copy all necessary libraries to the folder.
 
-7.1 set QtDir=C:\Qt\5.9.5\mingw53_32\bin
-7.2 set PATH=C:\Qt\Tools\mingw530_32\bin;%QtDir%;%PATH%
-7.3 %QtDir%\windeployqt --release sirikali.exe
-
-8. Double click "sirikali.exe" file and SiriKali should start.
+9. Double click "sirikali.exe" file and SiriKali should start.
