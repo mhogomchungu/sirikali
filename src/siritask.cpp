@@ -360,9 +360,9 @@ static QString _configFilePath( const engines::engine::options& opt )
 }
 
 static engines::engine::cmdStatus _mount( bool reUseMountPoint,
-				   const engines::engine& engine,
-				   const engines::engine::options& copt,
-				   const QString& configFilePath )
+					  const engines::engine& engine,
+					  const engines::engine::options& copt,
+					  const QString& configFilePath )
 {
 	auto opt = copt ;
 
@@ -410,15 +410,18 @@ static engines::engine::cmdStatus _encrypted_folder_mount( const engines::engine
 
 		const auto& engine = engines.getByName( "sshfs" ) ;
 
-		auto opts = opt ;
-		opts.cipherFolder = opts.cipherFolder.remove( 0,6 ) ; // 6 is the size of "sshfs "
+		if( engine.known() ){
 
-		if( !opts.key.isEmpty() ){
+			auto opts = opt ;
+			opts.cipherFolder = opts.cipherFolder.remove( 0,6 ) ; // 6 is the size of "sshfs "
 
-			opts.key = engine.setPassword( opts.key ) ;
+			if( !opts.key.isEmpty() ){
+
+				opts.key = engine.setPassword( opts.key ) ;
+			}
+
+			return _mount( reUseMP,engine,opts,QString() ) ;
 		}
-
-		return _mount( reUseMP,engine,opts,QString() ) ;
 
 	}else if( opt.configFilePath.isEmpty() ){
 
@@ -466,7 +469,7 @@ static engines::engine::cmdStatus _encrypted_folder_mount( const engines::engine
 	}else{
 		auto e = opt.configFilePath ;
 
-		for( const auto& it : engines::instance().supported() ){
+		for( const auto& it : engines.supported() ){
 
 			auto n = it.toLower() ;
 

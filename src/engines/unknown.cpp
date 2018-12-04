@@ -20,9 +20,9 @@
 #include "unknown.h"
 #include "commandOptions.h"
 
-engines::engine::BaseOptions unknown::setOptions()
+static engines::engine::BaseOptions _setOptions()
 {
-	BaseOptions s ;
+	engines::engine::BaseOptions s ;
 
 	s.autoMountsOnCreate  = false ;
 	s.hasGUICreateOptions = true ;
@@ -40,7 +40,7 @@ engines::engine::BaseOptions unknown::setOptions()
 	return s ;
 }
 
-unknown::unknown() : engines::engine( this->setOptions() )
+unknown::unknown() : engines::engine( _setOptions() )
 {
 }
 
@@ -61,6 +61,11 @@ QString unknown::setPassword( const QString& e ) const
 {
 	Q_UNUSED( e ) ;
 	return QString() ;
+}
+
+QString unknown::installedVersionString() const
+{
+	return {} ;
 }
 
 void unknown::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

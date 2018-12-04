@@ -227,11 +227,9 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 
 		auto _starts_with = []( const engines::engine& e,const QString& s ){
 
-			auto m = e.names() ;
+			for( const auto& it : e.names() ){
 
-			for( int i = 0 ; i < m.size() ; i++ ){
-
-				if( s.startsWith( m.at( i ) + "@" ) ){
+				if( s.startsWith( it + "@" ) ){
 
 					return true ;
 				}

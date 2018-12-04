@@ -21,9 +21,9 @@
 #include "commandOptions.h"
 #include "ecryptfscreateoptions.h"
 
-engines::engine::BaseOptions ecryptfs::setOptions()
+static engines::engine::BaseOptions _setOptions()
 {
-	BaseOptions s ;
+	engines::engine::BaseOptions s ;
 
 	s.autoMountsOnCreate  = true ;
 	s.hasGUICreateOptions = true ;
@@ -41,7 +41,7 @@ engines::engine::BaseOptions ecryptfs::setOptions()
 	return s ;
 }
 
-ecryptfs::ecryptfs() : engines::engine( this->setOptions() )
+ecryptfs::ecryptfs() : engines::engine( _setOptions() )
 {
 }
 
@@ -106,6 +106,11 @@ engines::engine::status ecryptfs::errorCode( const QString& e,int s ) const
 QString ecryptfs::setPassword( const QString& e ) const
 {
 	return e ;
+}
+
+QString ecryptfs::installedVersionString() const
+{
+	return this->baseInstalledVersionString( "--version",true,1,0 ) ;
 }
 
 void ecryptfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

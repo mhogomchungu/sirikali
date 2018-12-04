@@ -118,6 +118,7 @@ private:
 	void addEntries( const QStringList& ) ;
 	Ui::favorites * m_ui ;
 	QWidget * m_parentWidget ;
+	favorites::type m_type ;
 	int m_editRow ;
 	bool m_reverseMode = false ;
 	bool m_volumeNeedNoPassword = false ;

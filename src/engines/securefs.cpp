@@ -22,9 +22,9 @@
 
 #include "securefscreateoptions.h"
 
-engines::engine::BaseOptions securefs::setOptions()
+static engines::engine::BaseOptions _setOptions()
 {
-	BaseOptions s ;
+	engines::engine::BaseOptions s ;
 
 	s.autoMountsOnCreate  = false ;
 	s.hasGUICreateOptions = true ;
@@ -42,7 +42,7 @@ engines::engine::BaseOptions securefs::setOptions()
 	return s ;
 }
 
-securefs::securefs() : engines::engine( this->setOptions() )
+securefs::securefs() : engines::engine( _setOptions() )
 {
 }
 
@@ -99,6 +99,11 @@ engines::engine::status securefs::errorCode( const QString& e,int s ) const
 QString securefs::setPassword( const QString& e ) const
 {
 	return e + "\n" + e ;
+}
+
+QString securefs::installedVersionString() const
+{
+	return this->baseInstalledVersionString( "version",true,1,0 ) ;
 }
 
 void securefs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

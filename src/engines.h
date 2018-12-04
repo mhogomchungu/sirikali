@@ -34,6 +34,9 @@
 class engines
 {
 public:
+	static QString executableFullPath( const QString& ) ;
+	static QStringList executableSearchPaths() ;
+
 	class engine
 	{
 	public:
@@ -137,6 +140,19 @@ public:
 			bool success ;
 		} ;
 
+		struct BaseOptions
+		{
+			bool setsCipherPath ;
+			bool autoMountsOnCreate ;
+			bool hasGUICreateOptions ;
+			QString configFileArgument ;
+			QStringList names ;
+			QStringList fuseNames ;
+			QStringList configFileNames ;
+
+			engines::engine::status notFoundCode ;
+		} ;
+
 		QString executableFullPath() const ;
 
 		bool isInstalled() const ;
@@ -160,26 +176,19 @@ public:
 
 		virtual ~engine() ;
 
+		virtual QString installedVersionString() const = 0 ;
 		virtual QString setPassword( const QString& ) const = 0 ;
 		virtual QString command( const engines::engine::cmdArgsList& args ) const = 0 ;
 		virtual engines::engine::status errorCode( const QString& e,int s ) const = 0 ;
 
 		using function = std::function< void( const Options& ) > ;
-		virtual void GUICreateOptionsinstance( QWidget * parent,function )  const = 0 ;
+		virtual void GUICreateOptionsinstance( QWidget * parent,function ) const = 0 ;
 	protected:
-		struct BaseOptions
-		{
-			bool setsCipherPath ;
-			bool autoMountsOnCreate ;
-			bool hasGUICreateOptions ;
-			QString configFileArgument ;
-			QStringList names ;
-			QStringList fuseNames ;
-			QStringList configFileNames ;
-
-			engines::engine::status notFoundCode ;
-		} ;
-
+		virtual QString sanitizeVersionString( const QString& ) const ;
+		QString baseInstalledVersionString( const QString& versionArgument,
+						    bool readFromStdOut,
+                                                    int argumentNumber,
+                                                    int argumentLine ) const ;
 		engine( BaseOptions ) ;
 	private:
 		BaseOptions m_Options ;

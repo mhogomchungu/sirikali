@@ -27,6 +27,7 @@
 #include <termios.h>
 #include <memory>
 #include <iostream>
+#include <vector>
 
 #include <QCoreApplication>
 #include <QFile>
@@ -34,6 +35,37 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+static std::vector< const char * > executableSearchPaths()
+{
+	return { "/usr/local/bin/",
+		"/usr/local/sbin/",
+		"/usr/bin/",
+		"/usr/sbin/",
+		"/bin/",
+		"/sbin/",
+		"/opt/local/bin/",
+		"/opt/local/sbin/",
+		"/opt/bin/",
+		"/opt/sbin/" } ;
+}
+
+static inline QString executableFullPath( const QString& e )
+{
+	QString exe ;
+
+	for( const auto& it : executableSearchPaths() ){
+
+		exe = it + e ;
+
+		if( QFile::exists( exe ) ){
+
+			return exe ;
+		}
+	}
+
+	return QString() ;
+}
 
 static bool _terminalEchoOff( struct termios * old,struct termios * current )
 {
@@ -165,10 +197,10 @@ void zuluPolkit::gotConnection()
 		auto cookie   = QString::fromStdString( json[ "cookie" ].get< std::string >() ) ;
 		auto command  = QString::fromStdString( json[ "command" ].get< std::string >() ) ;
 
-		auto su = utility2::executableFullPath( "su" ) ;
+		auto su = executableFullPath( "su" ) ;
 
-		auto e = su + " - -c \"'" + utility2::executableFullPath( "ecryptfs-simple" ) ;
-		auto f = su + " - -c \"" + utility2::executableFullPath( "ecryptfs-simple" ) ;
+		auto e = su + " - -c \"'" + executableFullPath( "ecryptfs-simple" ) ;
+		auto f = su + " - -c \"" + executableFullPath( "ecryptfs-simple" ) ;
 
 		if( cookie == m_cookie ){
 

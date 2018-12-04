@@ -21,9 +21,9 @@
 #include "commandOptions.h"
 #include "cryfscreateoptions.h"
 
-engines::engine::BaseOptions cryfs::setOptions()
+static engines::engine::BaseOptions _setOptions()
 {
-	BaseOptions s ;
+	engines::engine::BaseOptions s ;
 
 	s.autoMountsOnCreate  = true ;
 	s.hasGUICreateOptions = true ;
@@ -41,19 +41,17 @@ engines::engine::BaseOptions cryfs::setOptions()
 	return s ;
 }
 
-cryfs::cryfs() : engines::engine( this->setOptions() )
+cryfs::cryfs() : engines::engine( _setOptions() )
 {
+	qputenv( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
+	qputenv( "CRYFS_FRONTEND","noninteractive" ) ;
 }
 
 QString cryfs::command( const engines::engine::cmdArgsList& args ) const
 {
 	auto separator = [](){
 
-		/*
-			 * declaring this variable as static to force this function to be called only
-			 * once.
-			 */
-		static auto m = utility::backendIsLessThan( "cryfs","0.10" ).get() ;
+		auto m = utility::backendIsLessThan( "cryfs","0.10" ).get() ;
 
 		if( m && m.value() ){
 
@@ -94,23 +92,28 @@ QString cryfs::command( const engines::engine::cmdArgsList& args ) const
 
 engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 {
-	/*
+	auto m = utility::backendIsGreaterOrEqualTo( "cryfs","0.9.9" ).get() ;
+
+	if( m && m.value() ){
+
+		/*
 		 * Error codes are here: https://github.com/cryfs/cryfs/blob/develop/src/cryfs/ErrorCodes.h
 		 *
 		 * Valid for cryfs > 0.9.8
 		 */
 
-	if( s == 11 ){
+		if( s == 11 ){
 
-		return engines::engine::status::cryfsBadPassword ;
+			return engines::engine::status::cryfsBadPassword ;
 
-	}else if( s == 14 ){
+		}else if( s == 14 ){
 
-		return engines::engine::status::cryfsMigrateFileSystem ;
+			return engines::engine::status::cryfsMigrateFileSystem ;
+		}
 	}else{
 		/*
-			 * Falling back to parsing strings
-			 */
+		 * Falling back to parsing strings
+		 */
 
 		if( e.contains( "password" ) ){
 
@@ -120,15 +123,25 @@ engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 			  e.contains( "it has to be migrated" ) ){
 
 			return engines::engine::status::cryfsMigrateFileSystem ;
-		}else{
-			return engines::engine::status::backendFail ;
 		}
 	}
+
+	return engines::engine::status::backendFail ;
 }
 
 QString cryfs::setPassword( const QString& e ) const
 {
 	return e ;
+}
+
+QString cryfs::installedVersionString() const
+{
+	if( m_version.isEmpty() ){
+
+		m_version = this->baseInstalledVersionString( "--version",true,2,0 ) ;
+	}
+
+	return m_version ;
 }
 
 void cryfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

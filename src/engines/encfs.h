@@ -18,17 +18,15 @@
 
 #include "../engines.h"
 
-class encfs : public engines::engine
+struct encfs : public engines::engine
 {
-public:
 	encfs() ;
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 
 	QString command( const engines::engine::cmdArgsList& args ) const override ;
 	QString setPassword( const QString& ) const override ;
+	QString installedVersionString() const override ;
 
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
-private:
-	BaseOptions setOptions() ;
-};
+} ;

@@ -85,90 +85,90 @@ Latest Version Is : %4.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/checkforupdates.cpp" line="193"/>
+        <location filename="../src/checkforupdates.cpp" line="201"/>
         <source>Network Request Failed To Respond Within %1 Seconds.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/checkforupdates.cpp" line="195"/>
-        <location filename="../src/sirikali.cpp" line="445"/>
-        <location filename="../src/sirikali.cpp" line="453"/>
-        <location filename="../src/sirikali.cpp" line="1197"/>
-        <location filename="../src/sirikali.cpp" line="1213"/>
+        <location filename="../src/checkforupdates.cpp" line="203"/>
+        <location filename="../src/sirikali.cpp" line="447"/>
+        <location filename="../src/sirikali.cpp" line="455"/>
+        <location filename="../src/sirikali.cpp" line="1204"/>
+        <location filename="../src/sirikali.cpp" line="1220"/>
         <source>ERROR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="277"/>
+        <location filename="../src/engines.cpp" line="407"/>
         <source>Volume Created Successfully.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="281"/>
+        <location filename="../src/engines.cpp" line="411"/>
         <source>Failed To Unlock A Cryfs Volume.
 Wrong Password Entered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="285"/>
+        <location filename="../src/engines.cpp" line="415"/>
         <source>Failed To Connect To The Remote Computer.
 Wrong Password Entered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="289"/>
+        <location filename="../src/engines.cpp" line="419"/>
         <source>Failed To Unlock An Encfs Volume.
 Wrong Password Entered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="293"/>
+        <location filename="../src/engines.cpp" line="423"/>
         <source>Failed To Unlock A Gocryptfs Volume.
 Wrong Password Entered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="297"/>
+        <location filename="../src/engines.cpp" line="427"/>
         <source>Failed To Unlock An Ecryptfs Volume.
 Wrong Password Entered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="301"/>
+        <location filename="../src/engines.cpp" line="431"/>
         <source>A Space Character Is Not Allowed In Paths When Using Ecryptfs Backend And Polkit.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="305"/>
+        <location filename="../src/engines.cpp" line="435"/>
         <source>This Backend Requires Root&apos;s Privileges And An attempt To Acquire Them Has Failed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="309"/>
+        <location filename="../src/engines.cpp" line="439"/>
         <source>Failed To Unlock A Securefs Volume.
 Wrong Password Entered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="313"/>
-        <location filename="../src/sirikali.cpp" line="443"/>
+        <location filename="../src/engines.cpp" line="443"/>
+        <location filename="../src/sirikali.cpp" line="445"/>
         <source>Failed To Complete The Request.
 Sshfs Executable Could Not Be Found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="317"/>
+        <location filename="../src/engines.cpp" line="447"/>
         <source>Backend Does Not Support Custom Configuration File Path.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="321"/>
+        <location filename="../src/engines.cpp" line="451"/>
         <source>Failed To Complete The Request.
 Cryfs Executable Could Not Be Found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="325"/>
+        <location filename="../src/engines.cpp" line="455"/>
         <source>This Volume Of Cryfs Needs To Be Upgraded To Work With The Version Of Cryfs You Are Using.
 
 The Upgrade is IRREVERSIBLE And The Volume Will No Longer Work With Older Versions of Cryfs.
@@ -177,69 +177,69 @@ To Do The Upgrade, Check The &quot;Upgrade File System&quot; Option And Unlock T
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="329"/>
+        <location filename="../src/engines.cpp" line="459"/>
         <source>Failed To Complete The Request.
 Encfs Executable Could Not Be Found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="333"/>
+        <location filename="../src/engines.cpp" line="463"/>
         <source>Failed To Complete The Request.
 Ecryptfs-simple Executable Could Not Be Found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="337"/>
+        <location filename="../src/engines.cpp" line="467"/>
         <source>Failed To Complete The Request.
 Gocryptfs Executable Could Not Be Found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="341"/>
+        <location filename="../src/engines.cpp" line="471"/>
         <source>Failed To Complete The Request.
 Securefs Executable Could Not Be Found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="345"/>
+        <location filename="../src/engines.cpp" line="475"/>
         <source>Failed To Create Mount Point.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="349"/>
+        <location filename="../src/engines.cpp" line="479"/>
         <source>Backend Could Not Load WinFsp. Please Make Sure You Have WinFsp Properly Installed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="353"/>
+        <location filename="../src/engines.cpp" line="483"/>
         <source>Failed To Unlock The Volume.
 Not Supported Volume Encountered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="360"/>
+        <location filename="../src/engines.cpp" line="490"/>
         <source>Failed To Complete The Task And Below Log was Generated By The Backend.
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="449"/>
+        <location filename="../src/sirikali.cpp" line="451"/>
         <source>Failed To Connect To &quot;%1&quot; And Below Log was Generated By The Backend.
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1198"/>
+        <location filename="../src/sirikali.cpp" line="1205"/>
         <source>Failed To Find %1 Executable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1211"/>
+        <location filename="../src/sirikali.cpp" line="1218"/>
         <source>INFORMATION</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1214"/>
+        <location filename="../src/sirikali.cpp" line="1221"/>
         <source>Failed To Get Volume Properties</source>
         <translation type="unfinished"></translation>
     </message>
@@ -264,14 +264,14 @@ Not Supported Volume Encountered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1251"/>
+        <location filename="../src/keydialog.cpp" line="1254"/>
         <source>Not Supported KeyFile Encountered Since It Contains AtLeast One Illegal Character(&apos;\n&apos;,&apos;\0&apos;,&apos;\r&apos;).
 
 Please Use a Hash Of The KeyFile Through &quot;HMAC+KeyFile&quot; Option.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1302"/>
+        <location filename="../src/keydialog.cpp" line="1305"/>
         <source>Effective Key Is Generated With Below Formula:
 
 key = hmac_sha256(password,keyfile contents)</source>
@@ -307,12 +307,12 @@ options:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="832"/>
+        <location filename="../src/utility.cpp" line="783"/>
         <source>about SiriKali</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1306"/>
+        <location filename="../src/keydialog.cpp" line="1309"/>
         <source>This plugin delegates key generation to an external application</source>
         <translation type="unfinished"></translation>
     </message>
@@ -796,70 +796,75 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="212"/>
+        <location filename="../src/favorites.cpp" line="213"/>
         <source>Remote Ssh Server Address
 (Example: sshfs woof@bar.foo:/remote/path)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="213"/>
+        <location filename="../src/favorites.cpp" line="214"/>
         <source>SSH_AUTH_SOCK Socket Path (Optional)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="252"/>
-        <location filename="../src/favorites.cpp" line="300"/>
+        <location filename="../src/favorites.cpp" line="215"/>
+        <source>IdentityFile Path (Optional)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/favorites.cpp" line="254"/>
+        <location filename="../src/favorites.cpp" line="302"/>
         <source>Edit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="295"/>
+        <location filename="../src/favorites.cpp" line="297"/>
         <source>Toggle AutoMount</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="305"/>
+        <location filename="../src/favorites.cpp" line="307"/>
         <source>Remove Selected Entry</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="310"/>
+        <location filename="../src/favorites.cpp" line="312"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="428"/>
-        <location filename="../src/favorites.cpp" line="432"/>
+        <location filename="../src/favorites.cpp" line="430"/>
+        <location filename="../src/favorites.cpp" line="434"/>
         <source>ERROR!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="428"/>
+        <location filename="../src/favorites.cpp" line="430"/>
         <source>Encrypted Folder Address Field Is Empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="432"/>
+        <location filename="../src/favorites.cpp" line="434"/>
         <source>Mount Point Path Field Is Empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="466"/>
+        <location filename="../src/favorites.cpp" line="497"/>
         <source>Add</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="503"/>
+        <location filename="../src/favorites.cpp" line="534"/>
         <source>Path To A Config File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="532"/>
+        <location filename="../src/favorites.cpp" line="563"/>
         <source>Path To An Encrypted Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="542"/>
+        <location filename="../src/favorites.cpp" line="573"/>
         <source>Path To Mount Folder</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1019,8 +1024,8 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.ui" line="58"/>
         <location filename="../src/keydialog.cpp" line="232"/>
-        <location filename="../src/keydialog.cpp" line="1282"/>
-        <location filename="../src/keydialog.cpp" line="1422"/>
+        <location filename="../src/keydialog.cpp" line="1285"/>
+        <location filename="../src/keydialog.cpp" line="1425"/>
         <source>Key</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1077,7 +1082,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="211"/>
-        <location filename="../src/keydialog.cpp" line="426"/>
+        <location filename="../src/keydialog.cpp" line="425"/>
         <source>Unlocking &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1089,29 +1094,29 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.ui" line="339"/>
         <location filename="../src/keydialog.cpp" line="233"/>
-        <location filename="../src/keydialog.cpp" line="988"/>
-        <location filename="../src/keydialog.cpp" line="1288"/>
-        <location filename="../src/keydialog.cpp" line="1387"/>
+        <location filename="../src/keydialog.cpp" line="991"/>
+        <location filename="../src/keydialog.cpp" line="1291"/>
+        <location filename="../src/keydialog.cpp" line="1390"/>
         <source>KeyFile</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="235"/>
-        <location filename="../src/keydialog.cpp" line="1323"/>
+        <location filename="../src/keydialog.cpp" line="1326"/>
         <source>HMAC+KeyFile</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="234"/>
-        <location filename="../src/keydialog.cpp" line="1296"/>
-        <location filename="../src/keydialog.cpp" line="1300"/>
-        <location filename="../src/keydialog.cpp" line="1401"/>
+        <location filename="../src/keydialog.cpp" line="1299"/>
+        <location filename="../src/keydialog.cpp" line="1303"/>
+        <location filename="../src/keydialog.cpp" line="1404"/>
         <source>Key+KeyFile</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="236"/>
-        <location filename="../src/keydialog.cpp" line="1296"/>
+        <location filename="../src/keydialog.cpp" line="1299"/>
         <source>ExternalExecutable</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1126,101 +1131,101 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="450"/>
+        <location filename="../src/keydialog.cpp" line="449"/>
         <source>Create A New &quot;%1&quot; Volume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="526"/>
+        <location filename="../src/keydialog.cpp" line="525"/>
         <source>Passphrase Quality: 0%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="528"/>
+        <location filename="../src/keydialog.cpp" line="527"/>
         <source>Passphrase Quality: %1%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="533"/>
-        <location filename="../src/keydialog.cpp" line="1350"/>
+        <location filename="../src/keydialog.cpp" line="532"/>
+        <location filename="../src/keydialog.cpp" line="1353"/>
         <source>Passphrase Quality: 100%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="589"/>
-        <location filename="../src/keydialog.cpp" line="602"/>
+        <location filename="../src/keydialog.cpp" line="592"/>
+        <location filename="../src/keydialog.cpp" line="605"/>
         <source>Select A Folder To Create A Mount Point In.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="702"/>
-        <location filename="../src/keydialog.cpp" line="716"/>
+        <location filename="../src/keydialog.cpp" line="705"/>
+        <location filename="../src/keydialog.cpp" line="719"/>
         <source>Select A File To Be Used As A Keyfile.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="742"/>
+        <location filename="../src/keydialog.cpp" line="745"/>
         <source>Volume Name Field Is Empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="751"/>
+        <location filename="../src/keydialog.cpp" line="754"/>
         <source>Key Field Is Empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="804"/>
+        <location filename="../src/keydialog.cpp" line="807"/>
         <source>Internal Wallet Is Not Configured.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="844"/>
-        <location filename="../src/keydialog.cpp" line="1184"/>
+        <location filename="../src/keydialog.cpp" line="847"/>
+        <location filename="../src/keydialog.cpp" line="1187"/>
         <source>Upgrade File System</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1029"/>
+        <location filename="../src/keydialog.cpp" line="1032"/>
         <source>Failed To Generate Key.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1327"/>
+        <location filename="../src/keydialog.cpp" line="1330"/>
         <source>Select A KeyFile</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="908"/>
+        <location filename="../src/keydialog.cpp" line="911"/>
         <source>Encrypted Folder Path Is Already Taken.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="919"/>
-        <location filename="../src/keydialog.cpp" line="928"/>
-        <location filename="../src/keydialog.cpp" line="1106"/>
+        <location filename="../src/keydialog.cpp" line="922"/>
+        <location filename="../src/keydialog.cpp" line="931"/>
+        <location filename="../src/keydialog.cpp" line="1109"/>
         <source>Mount Point Path Already Taken.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="936"/>
-        <location filename="../src/keydialog.cpp" line="1095"/>
-        <location filename="../src/keydialog.cpp" line="1125"/>
+        <location filename="../src/keydialog.cpp" line="939"/>
+        <location filename="../src/keydialog.cpp" line="1098"/>
+        <location filename="../src/keydialog.cpp" line="1128"/>
         <source>Atleast One Required Field Is Empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1115"/>
+        <location filename="../src/keydialog.cpp" line="1118"/>
         <source>Encrypted Folder Appear To Not Be Present.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1399"/>
-        <location filename="../src/keydialog.cpp" line="1411"/>
+        <location filename="../src/keydialog.cpp" line="1402"/>
+        <location filename="../src/keydialog.cpp" line="1414"/>
         <source>Plugin name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1436"/>
+        <location filename="../src/keydialog.cpp" line="1439"/>
         <source>Keyfile path</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1495,71 +1500,71 @@ The lite format has become the default on Unix-like operating systems as it is m
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="378"/>
+        <location filename="../src/sirikali.cpp" line="380"/>
         <source>Unmount All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/sirikali.ui" line="122"/>
-        <location filename="../src/sirikali.cpp" line="384"/>
+        <location filename="../src/sirikali.cpp" line="386"/>
         <source>Favorites</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="375"/>
+        <location filename="../src/sirikali.cpp" line="377"/>
         <source>Check For Updates</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="391"/>
+        <location filename="../src/sirikali.cpp" line="393"/>
         <source>About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="398"/>
+        <location filename="../src/sirikali.cpp" line="400"/>
         <source>Quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="395"/>
+        <location filename="../src/sirikali.cpp" line="397"/>
         <source>Show/Hide</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="688"/>
+        <location filename="../src/sirikali.cpp" line="695"/>
         <source>ERROR: Volume Path Not Given.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="789"/>
+        <location filename="../src/sirikali.cpp" line="796"/>
         <source>ERROR: Key Not Found In The Backend.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="794"/>
+        <location filename="../src/sirikali.cpp" line="801"/>
         <source>ERROR: Failed To Unlock Requested Backend.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="552"/>
-        <location filename="../src/sirikali.cpp" line="594"/>
-        <location filename="../src/sirikali.cpp" line="1007"/>
-        <location filename="../src/sirikali.cpp" line="1256"/>
-        <location filename="../src/sirikali.cpp" line="1550"/>
-        <location filename="../src/sirikali.cpp" line="1656"/>
+        <location filename="../src/sirikali.cpp" line="559"/>
+        <location filename="../src/sirikali.cpp" line="601"/>
+        <location filename="../src/sirikali.cpp" line="1014"/>
+        <location filename="../src/sirikali.cpp" line="1263"/>
+        <location filename="../src/sirikali.cpp" line="1557"/>
+        <location filename="../src/sirikali.cpp" line="1663"/>
         <source>ERROR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1007"/>
-        <location filename="../src/sirikali.cpp" line="1256"/>
+        <location filename="../src/sirikali.cpp" line="1014"/>
+        <location filename="../src/sirikali.cpp" line="1263"/>
         <source>Failed To Read Volume Properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="966"/>
-        <location filename="../src/sirikali.cpp" line="1012"/>
-        <location filename="../src/sirikali.cpp" line="1258"/>
+        <location filename="../src/sirikali.cpp" line="973"/>
+        <location filename="../src/sirikali.cpp" line="1019"/>
+        <location filename="../src/sirikali.cpp" line="1265"/>
         <source>INFORMATION</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1569,127 +1574,127 @@ The lite format has become the default on Unix-like operating systems as it is m
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="240"/>
         <location filename="../src/sirikali.cpp" line="242"/>
+        <location filename="../src/sirikali.cpp" line="244"/>
         <source>%1 Is Not Installed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="381"/>
+        <location filename="../src/sirikali.cpp" line="383"/>
         <source>Unmount All And Quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="393"/>
+        <location filename="../src/sirikali.cpp" line="395"/>
         <source>FAQ</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="552"/>
+        <location filename="../src/sirikali.cpp" line="559"/>
         <source>SiriKali Failed To Connect To siriPolkit.
 Please Report This Serious Bug.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="594"/>
+        <location filename="../src/sirikali.cpp" line="601"/>
         <source>&quot;%1&quot; Folder Must Be Writable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1051"/>
+        <location filename="../src/sirikali.cpp" line="1058"/>
         <source>Block Size: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1052"/>
+        <location filename="../src/sirikali.cpp" line="1059"/>
         <source>Used Blocks: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1053"/>
+        <location filename="../src/sirikali.cpp" line="1060"/>
         <source>Free Blocks: %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1054"/>
+        <location filename="../src/sirikali.cpp" line="1061"/>
         <source>Total Blocks %4</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1055"/>
+        <location filename="../src/sirikali.cpp" line="1062"/>
         <source>Used Space: %5</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1056"/>
+        <location filename="../src/sirikali.cpp" line="1063"/>
         <source>Free Space: %6</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1057"/>
+        <location filename="../src/sirikali.cpp" line="1064"/>
         <source>Total Space: %7</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1058"/>
+        <location filename="../src/sirikali.cpp" line="1065"/>
         <source>Used %: %8</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1286"/>
+        <location filename="../src/sirikali.cpp" line="1293"/>
         <source>Unmount</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1284"/>
+        <location filename="../src/sirikali.cpp" line="1291"/>
         <source>Open Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="388"/>
+        <location filename="../src/sirikali.cpp" line="390"/>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1288"/>
+        <location filename="../src/sirikali.cpp" line="1295"/>
         <source>Properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1332"/>
+        <location filename="../src/sirikali.cpp" line="1339"/>
         <source>Close Menu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="134"/>
-        <location filename="../src/sirikali.cpp" line="1384"/>
+        <location filename="../src/sirikali.cpp" line="1391"/>
         <source>WARNING</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1385"/>
+        <location filename="../src/sirikali.cpp" line="1392"/>
         <source>Could Not Open Mount Point Because &quot;%1&quot; Tool Does Not Appear To Be Working Correctly.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1432"/>
+        <location filename="../src/sirikali.cpp" line="1439"/>
         <source>&amp;Quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1551"/>
+        <location filename="../src/sirikali.cpp" line="1558"/>
         <source>Permission To Access The Volume Was Denied
 Or
 The Volume Is Not Supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1571"/>
+        <location filename="../src/sirikali.cpp" line="1578"/>
         <source>Select An Encrypted Volume Directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1656"/>
+        <location filename="../src/sirikali.cpp" line="1663"/>
         <source>Failed To Unmount %1 Volume</source>
         <translation type="unfinished"></translation>
     </message>

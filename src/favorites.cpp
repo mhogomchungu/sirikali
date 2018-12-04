@@ -64,6 +64,16 @@ favorites::favorites( QWidget * parent,favorites::type type ) : QDialog( parent 
 		m_mountReadOnly = e ;
 	} ) ;
 
+	connect( m_ui->pbIdentityFile,&QPushButton::clicked,[ this ](){
+
+		auto e = this->getExistingFile( tr( "Path To A Config File" ) ) ;
+
+		if( !e.isEmpty() ){
+
+			m_ui->lineEditIdleTimeOut->setText( e ) ;
+		}
+	} ) ;
+
 	m_ui->cbReadOnlyMode->setEnabled( !utility::platformIsWindows() ) ;
 
 	m_ui->pbAdd->setObjectName( "Add" ) ;
@@ -81,6 +91,7 @@ favorites::favorites( QWidget * parent,favorites::type type ) : QDialog( parent 
 
 	m_ui->pbFolderPath->setIcon( QIcon( ":/sirikali.png" ) ) ;
 	m_ui->pbConfigFilePath->setIcon( QIcon( ":/file.png" ) ) ;
+	m_ui->pbIdentityFile->setIcon( QIcon( ":/file.png" ) ) ;
 
 	m_ui->cbAutoMount->setChecked( false ) ;
 
@@ -177,6 +188,8 @@ void favorites::shortcutPressed()
 
 void favorites::ShowUI( favorites::type type )
 {
+	m_type = type ;
+
 	m_ui->tableWidget->setColumnWidth( 0,285 ) ;
 	m_ui->tableWidget->setColumnWidth( 1,285 ) ;
 
@@ -204,13 +217,15 @@ void favorites::ShowUI( favorites::type type )
 		m_ui->lineEditMountPath->clear() ;
 	}
 
-	if( type == favorites::type::sshfs ){
+	if( m_type == favorites::type::sshfs ){
 
-		m_ui->lineEditIdleTimeOut->setEnabled( false ) ;
 		m_ui->lineEditMountOptions->setText( "idmap=user,StrictHostKeyChecking=no" ) ;
 		m_ui->lineEditEncryptedFolderPath->setText( "sshfs " ) ;
 		m_ui->labelName ->setText( tr( "Remote Ssh Server Address\n(Example: sshfs woof@bar.foo:/remote/path)" ) ) ;
 		m_ui->labelCofigFilePath->setText( tr( "SSH_AUTH_SOCK Socket Path (Optional)" ) ) ;
+		m_ui->labelIdleTimeOut->setText( tr( "IdentityFile Path (Optional)" ) ) ;
+	}else{
+		m_ui->pbIdentityFile->setVisible( false ) ;
 	}
 
 	m_ui->tableWidget->setFocus() ;
@@ -454,11 +469,40 @@ void favorites::add()
 		}
 	}() ;
 
+	auto configPath = m_ui->lineEditConfigFilePath->text() ;
+	auto idleTimeOUt = m_ui->lineEditIdleTimeOut->text() ;
+
+	if( m_type == favorites::type::sshfs ){
+
+		if( !configPath.isEmpty() ){
+
+			if( mOpts.isEmpty() ){
+
+				mOpts = "IdentityAgent=" + configPath ;
+			}else{
+				mOpts += ",IdentityAgent=" + configPath ;
+			}
+		}
+
+		if( !idleTimeOUt.isEmpty() ){
+
+			if( mOpts.isEmpty() ){
+
+				mOpts = "IdentityFile=" + idleTimeOUt ;
+			}else{
+				mOpts += ",IdentityFile=" + idleTimeOUt ;
+			}
+		}
+
+		configPath.clear() ;
+		idleTimeOUt.clear() ;
+	}
+
 	QStringList e = { dev,
 			  path,
 			  autoMount,
-			  _option( m_ui->lineEditConfigFilePath->text() ),
-			  _option( m_ui->lineEditIdleTimeOut->text() ),
+			  _option( configPath ),
+			  _option( idleTimeOUt ),
 			  _option( mOpts ) } ;
 
 	if( m_ui->pbAdd->objectName() == "Edit" ){
@@ -502,7 +546,10 @@ void favorites::configPath()
 {
 	auto e = this->getExistingFile( tr( "Path To A Config File" ) ) ;
 
-	m_ui->lineEditConfigFilePath->setText( e ) ;
+	if( !e.isEmpty() ){
+
+		m_ui->lineEditConfigFilePath->setText( e ) ;
+	}
 }
 
 QString favorites::getExistingFile( const QString& r )

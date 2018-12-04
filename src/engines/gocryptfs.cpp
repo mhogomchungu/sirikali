@@ -22,9 +22,9 @@
 
 #include "gocryptfscreateoptions.h"
 
-engines::engine::BaseOptions gocryptfs::setOptions()
+static engines::engine::BaseOptions _setOptions()
 {
-	BaseOptions s ;
+	engines::engine::BaseOptions s ;
 
 	s.autoMountsOnCreate  = false ;
 	s.hasGUICreateOptions = true ;
@@ -46,56 +46,42 @@ engines::engine::BaseOptions gocryptfs::setOptions()
 	return s ;
 }
 
-gocryptfs::gocryptfs() : engines::engine( this->setOptions() )
+gocryptfs::gocryptfs() : engines::engine( _setOptions() )
 {
 }
 
 QString gocryptfs::command( const engines::engine::cmdArgsList& args ) const
 {
+	commandOptions m( args,this->name() ) ;
+
+	auto exeOptions = m.exeOptions() ;
+
+	exeOptions.add( "-q" ) ;
+
+	if( args.opt.reverseMode ){
+
+		exeOptions.add( "-reverse" ) ;
+	}
+
+	if( !args.opt.idleTimeout.isEmpty() ){
+
+		exeOptions.addPair( "-idle",args.opt.idleTimeout ) ;
+	}
+
+	if( !args.configFilePath.isEmpty() ){
+
+		exeOptions.add( args.configFilePath ) ;
+	}
+
 	if( args.create ){
+
+		exeOptions.add( "--init",args.opt.createOptions ) ;
 
 		QString e = "%1 %2 %3" ;
 
-		commandOptions m( args,this->name() ) ;
-
-		auto exeOptions = m.exeOptions() ;
-
-		exeOptions.add( "--init","-q",args.opt.createOptions ) ;
-
-		if( !args.configFilePath.isEmpty() ){
-
-			exeOptions.add( args.configFilePath ) ;
-		}
-
-		if( args.opt.reverseMode ){
-
-			exeOptions.add( "-reverse" ) ;
-		}
-
 		return e.arg( args.exe,exeOptions.get(),args.cipherFolder ) ;
 	}else{
-		commandOptions m( args,"gocryptfs" ) ;
-
 		QString e = "%1 %2 %3 %4 %5" ;
-
-		auto exeOptions = m.exeOptions() ;
-
-		exeOptions.add( "-q" ) ;
-
-		if( args.opt.reverseMode ){
-
-			exeOptions.add( "-reverse" ) ;
-		}
-
-		if( !args.opt.idleTimeout.isEmpty() ){
-
-			exeOptions.addPair( "-idle",args.opt.idleTimeout ) ;
-		}
-
-		if( !args.configFilePath.isEmpty() ){
-
-			exeOptions.add( args.configFilePath ) ;
-		}
 
 		return e.arg( args.exe,
 			      exeOptions.get(),
@@ -125,6 +111,11 @@ engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const
 QString gocryptfs::setPassword( const QString& e ) const
 {
 	return e ;
+}
+
+QString gocryptfs::installedVersionString() const
+{
+	return this->baseInstalledVersionString( "--version",true,1,0 ) ;
 }
 
 void gocryptfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

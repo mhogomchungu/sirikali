@@ -685,7 +685,7 @@ bool utility::eventFilter( QObject * gui,QObject * watched,QEvent * event,std::f
 
 QStringList utility::executableSearchPaths()
 {
-	return utility2::executableSearchPaths() ;
+	return engines::executableSearchPaths() ;
 }
 
 QString utility::executableSearchPaths( const QString& e )
@@ -708,58 +708,9 @@ QString utility::executableSearchPaths( const QString& e )
 	}
 }
 
-template< typename Function >
-QString _exe_path( const QString& exe,Function function )
+QString utility::executableFullPath( const QString& e )
 {
-	auto m = function() ;
-	auto e = m + "\\bin\\" + exe + ".exe" ;
-
-	if( !m.isEmpty() && utility::pathExists( e ) ){
-
-		return e ;
-	}else{
-		auto s = settings::instance().windowsExecutableSearchPath() ;
-
-		auto m = s + "\\bin\\" + exe + ".exe" ;
-
-		if( utility::pathExists( m ) ){
-
-			return m ;
-		}else{
-			auto m = s + "\\" + exe + ".exe" ;
-
-			if( utility::pathExists( m ) ){
-
-				return m ;
-			}else{
-				return {} ;
-			}
-		}
-	}
-}
-
-QString utility::executableFullPath( const QString& f )
-{
-	return utility2::executableFullPath( f,[]( const QString& e ){
-
-		if( utility::platformIsWindows() ){
-
-			if( utility::equalsAtleastOne( e,"encfs","encfsctl" ) ){
-
-				return _exe_path( e,SiriKali::Winfsp::encfsInstallDir ) ;
-
-			}else if( e == "sshfs" ){
-
-				return _exe_path( e,SiriKali::Winfsp::sshfsInstallDir ) ;
-
-			}else if( e == "securefs" ){
-
-				return _exe_path( e,SiriKali::Winfsp::securefsInstallDir ) ;
-			}
-		}
-
-		return QString() ;
-	} ) ;
+	return engines::executableFullPath( e ) ;
 }
 
 QString utility::cmdArgumentValue( const QStringList& l,const QString& arg,const QString& defaulT )
@@ -1071,9 +1022,6 @@ QProcessEnvironment utility::systemEnvironment()
 {
 	auto e = QProcessEnvironment::systemEnvironment() ;
 
-	e.insert( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
-	e.insert( "CRYFS_FRONTEND","noninteractive" ) ;
-
 	e.insert( "LANG","C" ) ;
 
 	e.insert( "PATH",utility::executableSearchPaths( e.value( "PATH" ) ) ) ;
@@ -1254,86 +1202,12 @@ static utility::result< int > _convert_string_to_version( const QString& e )
 	return {} ;
 }
 
-static utility::result< QString > _installed_version( const QString& backend )
-{
-	auto _remove_junk = []( QString e ){
-
-		e.replace( "v","" ).replace( ";","" ) ;
-
-		QString m ;
-
-		for( int s = 0 ; s < e.size() ; s++ ){
-
-			auto n = e.at( s ) ;
-
-			if( n == '.' || ( n >= '0' && n <= '9' ) ){
-
-				m += n ;
-			}else{
-				break ;
-			}
-		}
-
-		return m ;
-	} ;
-
-	auto exe = utility::executableFullPath( backend ) ;
-
-	if( exe.isEmpty() ){
-
-		return {} ;
-	}
-
-	auto cmd = [ & ](){
-
-		if( backend == "securefs" ){
-
-			return backend + " version" ;
-		}else{
-			return backend + " --version" ;
-		}
-	}() ;
-
-	auto s = utility::systemEnvironment() ;
-
-	auto r = [ & ](){
-
-		if( backend == "encfs" ){
-
-			return QString( ::Task::process::run( cmd,{},-1,{},s ).get().std_error() ) ;
-		}else{
-			return QString( ::Task::process::run( cmd,{},-1,{},s ).get().std_out() ) ;
-		}
-	}() ;
-
-	if( r.isEmpty() ){
-
-		return {} ;
-	}
-
-	auto m = utility::split( utility::split( r,'\n' ).first(),' ' ) ;
-
-	if( utility::equalsAtleastOne( backend,"cryfs","encfs","sshfs" ) ){
-
-		if( m.size() >= 3 ){
-
-			return _remove_junk( m.at( 2 ) ) ;
-		}
-
-	}else if( utility::equalsAtleastOne( backend,"gocryptfs","securefs","ecryptfs-simple" ) ){
-
-		if( m.size() >= 2 ){
-
-			return _remove_junk( m.at( 1 ) ) ;
-		}
-	}
-
-	return {} ;
-}
-
 ::Task::future< utility::result< QString > >& utility::backEndInstalledVersion( const QString& backend )
 {
-	return ::Task::run( _installed_version,backend ) ;
+	return ::Task::run( [ = ]()->utility::result< QString >{
+
+		return engines::instance().getByName( backend ).installedVersionString() ;
+	} ) ;
 }
 
 static utility::result< int > _installedVersion( const QString& backend )

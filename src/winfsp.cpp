@@ -228,19 +228,29 @@ static QString _readRegistry( const char * subKey,const char * key )
 
 #endif
 
-QString SiriKali::Winfsp::securefsInstallDir()
+QString SiriKali::Winfsp::engineInstalledDir( const QString& e )
 {
-	return _readRegistry( "SOFTWARE\\SECUREFS","InstallDir" ) ;
+	if( utility::equalsAtleastOne( e,"encfs","encfsctl" ) ){
+
+		return _readRegistry( "SOFTWARE\\ENCFS","InstallDir" ) ;
+
+	}else if( e == "sshfs" ){
+
+		return _readRegistry( "SOFTWARE\\SSHFS-Win","InstallDir" ) ;
+
+	}else if( e == "securefs" ){
+
+		return _readRegistry( "SOFTWARE\\SECUREFS","InstallDir" ) ;
+	}else{
+		return QString() ;
+	}
 }
 
-QString SiriKali::Winfsp::sshfsInstallDir()
+QStringList SiriKali::Winfsp::engineInstalledDirs()
 {
-	return _readRegistry( "SOFTWARE\\SSHFS-Win","InstallDir" ) ;
-}
-
-QString SiriKali::Winfsp::encfsInstallDir()
-{
-	return _readRegistry( "SOFTWARE\\ENCFS","InstallDir" ) ;
+	return { _readRegistry( "SOFTWARE\\ENCFS","InstallDir" ),
+		 _readRegistry( "SOFTWARE\\SSHFS-Win","InstallDir" ),
+		 _readRegistry( "SOFTWARE\\SECUREFS","InstallDir" ) } ;
 }
 
 SiriKali::Winfsp::ActiveInstances::ActiveInstances() :
@@ -341,11 +351,11 @@ static QProcessEnvironment _update_environment( const QString& type )
 
 		if( type == "sshfs" ){
 
-			return SiriKali::Winfsp::sshfsInstallDir() + "\\bin;" + m ;
+			return SiriKali::Winfsp::engineInstalledDir( "sshfs" ) + "\\bin;" + m ;
 
 		}else if( type == "encfs" ){
 
-			return SiriKali::Winfsp::encfsInstallDir() + "\\bin;" + m ;
+			return SiriKali::Winfsp::engineInstalledDir( "encfs" ) + "\\bin;" + m ;
 		}else{
 			return m ;
 		}
@@ -391,16 +401,7 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 {
 	auto exe = utility2::unique_qptr< QProcess >() ;
 
-	auto env = _update_environment( opts.type ) ;
-
-	auto ssh_auth = opts.configFilePath ;
-
-	if( !ssh_auth.isEmpty() ){
-
-		env.insert( "SSH_AUTH_SOCK",ssh_auth ) ;
-	}
-
-	exe->setProcessEnvironment( env ) ;
+	exe->setProcessEnvironment( _update_environment( opts.type ) ) ;
 	exe->setProcessChannelMode( QProcess::MergedChannels ) ;
 	exe->start( args ) ;
 	exe->waitForStarted() ;

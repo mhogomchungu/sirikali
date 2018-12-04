@@ -22,9 +22,9 @@
 
 #include "encfscreateoptions.h"
 
-engines::engine::BaseOptions encfs::setOptions()
+static engines::engine::BaseOptions _setOptions()
 {
-	BaseOptions s ;
+	engines::engine::BaseOptions s ;
 
 	s.autoMountsOnCreate  = true ;
 	s.hasGUICreateOptions = true ;
@@ -42,7 +42,7 @@ engines::engine::BaseOptions encfs::setOptions()
 	return s ;
 }
 
-encfs::encfs() : engines::engine( this->setOptions() )
+encfs::encfs() : engines::engine( _setOptions() )
 {
 }
 
@@ -107,6 +107,11 @@ engines::engine::status encfs::errorCode( const QString& e,int s ) const
 QString encfs::setPassword( const QString& e ) const
 {
 	return e + "\n" + e ;
+}
+
+QString encfs::installedVersionString() const
+{
+	return this->baseInstalledVersionString( "--version",false,2,0 ) ;
 }
 
 void encfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

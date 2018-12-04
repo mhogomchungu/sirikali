@@ -20,9 +20,9 @@
 #include "sshfs.h"
 #include "commandOptions.h"
 
-engines::engine::BaseOptions sshfs::setOptions()
+static engines::engine::BaseOptions _setOptions()
 {
-	BaseOptions s ;
+	engines::engine::BaseOptions s ;
 
 	s.autoMountsOnCreate  = true ;
 	s.hasGUICreateOptions = false ;
@@ -40,7 +40,7 @@ engines::engine::BaseOptions sshfs::setOptions()
 	return s ;
 }
 
-sshfs::sshfs() : engines::engine( this->setOptions() )
+sshfs::sshfs() : engines::engine( _setOptions() )
 {
 }
 
@@ -65,6 +65,18 @@ QString sshfs::command( const engines::engine::cmdArgsList& args ) const
 	if( utility::platformIsWindows() ){
 
 		exeOptions.add( "-f" ) ;
+	}
+
+	if( fuseOptions.contains( "IdentityAgent" ) ){
+
+		auto m = "IdentityAgent=" ;
+
+		auto n = fuseOptions.extractStartsWith( m ).replace( m,"" ) ;
+
+		if( !n.isEmpty() ){
+
+			qputenv( "SSH_AUTH_SOCK",n.toLatin1() ) ;
+		}
 	}
 
 	QString s = "%1 %2 %3 %4 %5" ;
@@ -107,6 +119,11 @@ QString sshfs::setPassword( const QString& e ) const
 	}
 
 	return m ;
+}
+
+QString sshfs::installedVersionString() const
+{
+	return this->baseInstalledVersionString( "--version",true,2,0 ) ;
 }
 
 void sshfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

@@ -28,9 +28,125 @@
 #include "engines/securefs.h"
 
 #include "utility.h"
+#include "settings.h"
+#include "winfsp.h"
+
+QStringList engines::executableSearchPaths()
+{
+	const auto a = QDir::homePath().toLatin1() ;
+
+	if( utility::platformIsWindows() ){
+
+		QStringList s = { a + "\\bin\\",
+				  a + "\\.bin\\",
+				  settings::instance().windowsExecutableSearchPath() + "\\" } ;
+
+		for( const auto& it : SiriKali::Winfsp::engineInstalledDirs() ){
+
+			if( !it.isEmpty() ){
+
+				s.append( it + "\\bin\\" ) ;
+			}
+		}
+
+		return s ;
+	}else{
+		const auto b = a + "/bin/" ;
+		const auto c = a + "/.bin/" ;
+
+		return { "/usr/local/bin/",
+			"/usr/local/sbin/",
+			"/usr/bin/",
+			"/usr/sbin/",
+			"/bin/",
+			"/sbin/",
+			"/opt/local/bin/",
+			"/opt/local/sbin/",
+			"/opt/bin/",
+			"/opt/sbin/",
+			 b.constData(),
+			 c.constData() } ;
+	}
+}
+
+QString engines::executableFullPath( const QString& f )
+{
+	QString e = f ;
+
+	if( utility::platformIsWindows() && !e.endsWith( ".exe" ) ){
+
+		e += ".exe" ;
+	}
+
+	QString exe ;
+
+	for( const auto& it : engines::executableSearchPaths() ){
+
+		if( !it.isEmpty() ){
+
+			exe = it + e ;
+
+			if( QFile::exists( exe ) ){
+
+				return exe ;
+			}
+		}
+	}
+
+	return QString() ;
+}
 
 engines::engine::~engine()
 {
+}
+
+QString engines::engine::sanitizeVersionString( const QString& s ) const
+{
+	auto e = s ;
+
+	e.replace( "v","" ).replace( ";","" ) ;
+
+	QString m ;
+
+	for( int s = 0 ; s < e.size() ; s++ ){
+
+		auto n = e.at( s ) ;
+
+		if( n == '.' || ( n >= '0' && n <= '9' ) ){
+
+			m += n ;
+		}else{
+			break ;
+		}
+	}
+
+	return m ;
+}
+
+QString engines::engine::baseInstalledVersionString( const QString& versionArgument,
+						     bool readFromStdOut,
+						     int argumentNumber,
+						     int argumentLine ) const
+{
+	const auto s = utility::systemEnvironment() ;
+
+	const auto cmd = this->executableFullPath() + " " + versionArgument ;
+
+	const auto r = ::Task::process::run( cmd,{},-1,{},s ).get() ;
+
+	const auto m = utility::split( readFromStdOut ? r.std_out() : r.std_error(),'\n' ) ;
+
+	if( m.size() > argumentLine ){
+
+		const auto e = utility::split( m.at( argumentLine ),' ' ) ;
+
+		if( e.size() > argumentNumber ){
+
+			return this->sanitizeVersionString( e.at( argumentNumber ) ) ;
+		}
+	}
+
+	return {} ;
 }
 
 engines::engine::engine( engines::engine::BaseOptions o ) :
@@ -40,7 +156,14 @@ engines::engine::engine( engines::engine::BaseOptions o ) :
 
 QString engines::engine::executableFullPath() const
 {
-	return utility::executableFullPath( this->name() ) ;
+	auto m = this->name() ;
+
+	if( m == "ecryptfs" ){
+
+		return engines::executableFullPath( "ecryptfs-simple" ) ;
+	}else{
+		return engines::executableFullPath( m ) ;
+	}
 }
 
 bool engines::engine::isInstalled() const
@@ -173,19 +296,12 @@ engines::engines()
 	}
 }
 
-const engines::engine& engines::getByName( const engines::engine::options& e ) const
-{
-	return this->getByName( e.type ) ;
-}
-
 template< typename Engines,typename Compare,typename listSource >
 static std::pair< const engines::engine&,QString > _get_engine( const Engines& engines,
 								Compare compareFunction,
 								listSource listSourceFunction )
 {
 	const auto data = engines.data() ;
-
-	const auto supported = engines::instance().supported() ;
 
 	for( size_t i = 1 ; i < engines.size() ; i++ ){
 
@@ -225,6 +341,11 @@ const engines::engine& engines::getByName( const QString& e ) const
 			      [ & ]( const QString& s ){ return !e.compare( s,Qt::CaseInsensitive ) ; },
 			      []( const engines::engine& s ){ return s.names() ; } ) ;
 	return m.first ;
+}
+
+const engines::engine& engines::getByName( const engines::engine::options& e ) const
+{
+	return this->getByName( e.type ) ;
 }
 
 engines::engine::cmdStatus::cmdStatus()
