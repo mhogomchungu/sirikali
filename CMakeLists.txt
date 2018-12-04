@@ -518,9 +518,9 @@ file( WRITE ${PROJECT_BINARY_DIR}/sirikali_windows_installer.iss
 #define MyAppPublisher \"Francis Banyikwa\"
 #define MyAppURL \"https://mhogomchungu.github.io/sirikali\"
 #define MyAppExeName \"sirikali.exe\"
-#define MyLibrariesLocation \"C:\\projects\\SiriKali.libraries.Qt-5.9.5\\\"
+#define MyLibrariesLocation \"C:\\projects\\SiriKali.libraries.Qt-${Qt5Core_VERSION}\\\"
 #define MyEXELocation \"${PROJECT_BINARY_DIR}\\sirikali.exe\"
-#define MyOutPutPath  \"C:\\projects\\SiriKali-${PGR_VERSION}.installer\"
+#define MyOutPutPath  \"C:\\projects\\SiriKali.installer\\Qt-${Qt5Core_VERSION}\"
 #define MyGcryptLibraryPath \"C:\\projects\\sirikali\\libs\\lib\\\"
 #define MySourcesPath \"C:\\projects\\sirikali\\\"
 
@@ -540,7 +540,7 @@ SetupIconFile={#MySourcesPath}\\icons\\256x256\\sirikali.ico
 Compression=lzma
 SolidCompression=yes
 DisableProgramGroupPage=yes
-OutputBaseFilename=SiriKali-setup
+OutputBaseFilename=SiriKali-${PGR_VERSION}.setup
 
 [Tasks]
 Name: \"desktopicon\"; Description: \"{cm:CreateDesktopIcon}\"; GroupDescription: \"{cm:AdditionalIcons}\"; Flags: unchecked

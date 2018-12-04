@@ -29,8 +29,8 @@ public:
 
 	class Options{
 	public:
-		Options( QString m,char s ) :
-			m_options( std::move( m ) ),m_separator( s )
+		Options( QString m,QString s ) :
+			m_options( std::move( m ) ),m_separator( std::move( s ) )
 		{
 		}
 		bool doesNotContain( const QString& key ) const
@@ -77,7 +77,9 @@ public:
 
 			QString m ;
 
-			for( const auto& it : utility::split( tmp,m_separator ) ){
+			auto s = m_separator[ 0 ].toLatin1() ;
+
+			for( const auto& it : utility::split( tmp,s ) ){
 
 				if( it.startsWith( e ) ){
 
@@ -91,13 +93,13 @@ public:
 		}
 	private:
 		QString m_options ;
-		char m_separator ;
+		QString m_separator ;
 	};
 
 	class fuseOptions : public Options
 	{
 	public:
-		fuseOptions( QString m ) : Options( std::move( m ),',' )
+		fuseOptions( QString m ) : Options( std::move( m ),"," )
 		{
 		}
 		void addPair( const QString& key,const QString& value,
@@ -110,7 +112,7 @@ public:
 	class exeOptions : public Options
 	{
 	public:
-		exeOptions( QString m ) : Options( std::move( m ),' ' )
+		exeOptions( QString m ) : Options( std::move( m )," " )
 		{
 		}
 		void addPair( const QString& key,const QString& value,
