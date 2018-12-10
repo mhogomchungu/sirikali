@@ -100,64 +100,64 @@ Latest Version Is : %4.</source>
         <translation>ОШИБКА</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="407"/>
+        <location filename="../src/engines.cpp" line="412"/>
         <source>Volume Created Successfully.</source>
         <translation>Том успешно создан.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="411"/>
+        <location filename="../src/engines.cpp" line="416"/>
         <source>Failed To Unlock A Cryfs Volume.
 Wrong Password Entered.</source>
         <translation>Не удалось разблокировать том Cryfs.
 Введен неверный пароль.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="415"/>
+        <location filename="../src/engines.cpp" line="420"/>
         <source>Failed To Connect To The Remote Computer.
 Wrong Password Entered.</source>
         <translation>Не удалось подключиться к удаленному компьютеру.
 Введен неверный пароль.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="419"/>
+        <location filename="../src/engines.cpp" line="424"/>
         <source>Failed To Unlock An Encfs Volume.
 Wrong Password Entered.</source>
         <translation>Не удалось разблокировать том Encfs.
 Введен неверный пароль.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="423"/>
+        <location filename="../src/engines.cpp" line="428"/>
         <source>Failed To Unlock A Gocryptfs Volume.
 Wrong Password Entered.</source>
         <translation>Не удалось разблокировать том Gocryptfs.
 Введен неверный пароль.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="427"/>
+        <location filename="../src/engines.cpp" line="432"/>
         <source>Failed To Unlock An Ecryptfs Volume.
 Wrong Password Entered.</source>
         <translation>Не удалось разблокировать том Ecryptfs.
 Введен неверный пароль.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="431"/>
+        <location filename="../src/engines.cpp" line="436"/>
         <source>A Space Character Is Not Allowed In Paths When Using Ecryptfs Backend And Polkit.</source>
         <translation>Символ пробела не разрешается в пути при использовании Ecryptfs и Polkit.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="435"/>
+        <location filename="../src/engines.cpp" line="440"/>
         <source>This Backend Requires Root&apos;s Privileges And An attempt To Acquire Them Has Failed.</source>
         <translation>Этот бэкэнд требует привилегий Root, и попытка получить их не удалась.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="439"/>
+        <location filename="../src/engines.cpp" line="444"/>
         <source>Failed To Unlock A Securefs Volume.
 Wrong Password Entered.</source>
         <translation>Не удалось разблокировать том Securefs.
 Введен неверный пароль.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="443"/>
+        <location filename="../src/engines.cpp" line="448"/>
         <location filename="../src/sirikali.cpp" line="445"/>
         <source>Failed To Complete The Request.
 Sshfs Executable Could Not Be Found.</source>
@@ -165,19 +165,19 @@ Sshfs Executable Could Not Be Found.</source>
  Исполняемый файл sshfs не найден.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="447"/>
+        <location filename="../src/engines.cpp" line="452"/>
         <source>Backend Does Not Support Custom Configuration File Path.</source>
         <translation>Бэкэнд не поддерживает изменение пути к файлу.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="451"/>
+        <location filename="../src/engines.cpp" line="456"/>
         <source>Failed To Complete The Request.
 Cryfs Executable Could Not Be Found.</source>
         <translation>Не удалось выполнить запрос.
 Исполняемый файл Cryfs не может быть найден.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="455"/>
+        <location filename="../src/engines.cpp" line="460"/>
         <source>This Volume Of Cryfs Needs To Be Upgraded To Work With The Version Of Cryfs You Are Using.
 
 The Upgrade is IRREVERSIBLE And The Volume Will No Longer Work With Older Versions of Cryfs.
@@ -190,52 +190,65 @@ To Do The Upgrade, Check The &quot;Upgrade File System&quot; Option And Unlock T
 Чтобы выполнить обновление, установите флажок «Обновить файловую систему» ​​и снова разблокируйте том.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="459"/>
+        <location filename="../src/engines.cpp" line="464"/>
         <source>Failed To Complete The Request.
 Encfs Executable Could Not Be Found.</source>
         <translation>Не удалось выполнить запрос.
 Исполняемый файл Encfs не может быть найден.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="463"/>
+        <location filename="../src/engines.cpp" line="468"/>
         <source>Failed To Complete The Request.
 Ecryptfs-simple Executable Could Not Be Found.</source>
         <translation>Не удалось выполнить запрос.
 Исполняемый файл Ecryptfs-simple не может быть найден.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="467"/>
+        <location filename="../src/engines.cpp" line="472"/>
         <source>Failed To Complete The Request.
 Gocryptfs Executable Could Not Be Found.</source>
         <translation>Не удалось выполнить запрос.
 Исполняемый файл Gocryptfs не может быть найден.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="471"/>
+        <location filename="../src/engines.cpp" line="476"/>
         <source>Failed To Complete The Request.
 Securefs Executable Could Not Be Found.</source>
         <translation>Не удалось выполнить запрос.
 Исполняемый файл Securefs не может быть найден.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="475"/>
+        <location filename="../src/engines.cpp" line="480"/>
         <source>Failed To Create Mount Point.</source>
         <translation>Не удалось создать точку монтирования.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="479"/>
+        <location filename="../src/engines.cpp" line="484"/>
         <source>Backend Could Not Load WinFsp. Please Make Sure You Have WinFsp Properly Installed</source>
         <translation>Бэкэнд не смог загрузить WinFsp. Пожалуйста, убедитесь, что WinFsp установлен правильно</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="483"/>
+        <location filename="../src/engines.cpp" line="488"/>
         <source>Failed To Unlock The Volume.
 Not Supported Volume Encountered.</source>
         <translation>Не удалось разблокировать том.
 Не поддерживается формат тома.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="490"/>
+        <location filename="../src/engines.cpp" line="496"/>
+        <source>Invalid Config File Name.
+Its Name Must End With &quot;%1&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/engines.cpp" line="499"/>
+        <source>Invalid Config File Name.
+It Must End With One Of The Following:
+&quot;%1&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/engines.cpp" line="508"/>
         <source>Failed To Complete The Task And Below Log was Generated By The Backend.
 </source>
         <translation>Не удалось завершить задачу, журнал событий был создан на бэкенде.
@@ -284,7 +297,7 @@ Not Supported Volume Encountered.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1254"/>
+        <location filename="../src/keydialog.cpp" line="1250"/>
         <source>Not Supported KeyFile Encountered Since It Contains AtLeast One Illegal Character(&apos;\n&apos;,&apos;\0&apos;,&apos;\r&apos;).
 
 Please Use a Hash Of The KeyFile Through &quot;HMAC+KeyFile&quot; Option.</source>
@@ -293,7 +306,7 @@ Please Use a Hash Of The KeyFile Through &quot;HMAC+KeyFile&quot; Option.</sourc
 Пожалуйста, используйте хэш Файлового ключа с помощью опции «HMAC + Файл ключа».</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1305"/>
+        <location filename="../src/keydialog.cpp" line="1301"/>
         <source>Effective Key Is Generated With Below Formula:
 
 key = hmac_sha256(password,keyfile contents)</source>
@@ -360,7 +373,7 @@ options:
         <translation>О SiriKali</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1309"/>
+        <location filename="../src/keydialog.cpp" line="1305"/>
         <source>This plugin delegates key generation to an external application</source>
         <translation>Этот плагин делегирует генерацию ключей во внешнее приложение</translation>
     </message>
@@ -853,76 +866,77 @@ p, li { white-space: pre-wrap; }
         <translation>&amp;Готово</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="213"/>
+        <location filename="../src/favorites.cpp" line="224"/>
         <source>Remote Ssh Server Address
 (Example: sshfs woof@bar.foo:/remote/path)</source>
         <translation>Удаленный адрес  Ssh сервера
 (Например: sshfs woof@bar.foo:/remote/path)</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="214"/>
+        <location filename="../src/favorites.cpp" line="225"/>
         <source>SSH_AUTH_SOCK Socket Path (Optional)</source>
         <translation>Путь сокета SSH_AUTH_SOCK (опционально)</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="215"/>
+        <location filename="../src/favorites.cpp" line="226"/>
         <source>IdentityFile Path (Optional)</source>
         <translation>IdentityFile путь (опционально)</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="254"/>
-        <location filename="../src/favorites.cpp" line="302"/>
+        <location filename="../src/favorites.cpp" line="267"/>
+        <location filename="../src/favorites.cpp" line="315"/>
         <source>Edit</source>
         <translation>Редактировать</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="297"/>
+        <location filename="../src/favorites.cpp" line="310"/>
         <source>Toggle AutoMount</source>
         <translation>Изменить значение автомонтирования</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="307"/>
+        <location filename="../src/favorites.cpp" line="320"/>
         <source>Remove Selected Entry</source>
         <translation>Удалить выбранную запись</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="312"/>
+        <location filename="../src/favorites.cpp" line="325"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="430"/>
-        <location filename="../src/favorites.cpp" line="434"/>
+        <location filename="../src/favorites.cpp" line="443"/>
+        <location filename="../src/favorites.cpp" line="447"/>
         <source>ERROR!</source>
         <translation>ОШИБКА!</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="430"/>
+        <location filename="../src/favorites.cpp" line="443"/>
         <source>Encrypted Folder Address Field Is Empty</source>
         <translation>Поле &quot;Путь к зашифрованной папке&quot; пустое</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="434"/>
+        <location filename="../src/favorites.cpp" line="447"/>
         <source>Mount Point Path Field Is Empty</source>
         <translation>Поле &quot;Путь к точке монтирования&quot; пустое</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="497"/>
+        <location filename="../src/favorites.cpp" line="510"/>
         <source>Add</source>
         <translation>Добавить</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="534"/>
+        <location filename="../src/favorites.cpp" line="69"/>
+        <location filename="../src/favorites.cpp" line="547"/>
         <source>Path To A Config File</source>
         <translation>Путь к файлу конфигурации</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="563"/>
+        <location filename="../src/favorites.cpp" line="579"/>
         <source>Path To An Encrypted Folder</source>
         <translation>Путь к зашифрованной папке</translation>
     </message>
     <message>
-        <location filename="../src/favorites.cpp" line="573"/>
+        <location filename="../src/favorites.cpp" line="589"/>
         <source>Path To Mount Folder</source>
         <translation>Путь к точке монтирования</translation>
     </message>
@@ -1118,8 +1132,8 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.ui" line="58"/>
         <location filename="../src/keydialog.cpp" line="232"/>
-        <location filename="../src/keydialog.cpp" line="1285"/>
-        <location filename="../src/keydialog.cpp" line="1425"/>
+        <location filename="../src/keydialog.cpp" line="1281"/>
+        <location filename="../src/keydialog.cpp" line="1421"/>
         <source>Key</source>
         <translation>Пароль</translation>
     </message>
@@ -1189,28 +1203,28 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/keydialog.ui" line="339"/>
         <location filename="../src/keydialog.cpp" line="233"/>
         <location filename="../src/keydialog.cpp" line="991"/>
-        <location filename="../src/keydialog.cpp" line="1291"/>
-        <location filename="../src/keydialog.cpp" line="1390"/>
+        <location filename="../src/keydialog.cpp" line="1287"/>
+        <location filename="../src/keydialog.cpp" line="1386"/>
         <source>KeyFile</source>
         <translation>Файловый ключ</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="235"/>
-        <location filename="../src/keydialog.cpp" line="1326"/>
+        <location filename="../src/keydialog.cpp" line="1322"/>
         <source>HMAC+KeyFile</source>
         <translation>HMAC+Файловый ключ</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="234"/>
+        <location filename="../src/keydialog.cpp" line="1295"/>
         <location filename="../src/keydialog.cpp" line="1299"/>
-        <location filename="../src/keydialog.cpp" line="1303"/>
-        <location filename="../src/keydialog.cpp" line="1404"/>
+        <location filename="../src/keydialog.cpp" line="1400"/>
         <source>Key+KeyFile</source>
         <translation>Пароль+Файловый ключ</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="236"/>
-        <location filename="../src/keydialog.cpp" line="1299"/>
+        <location filename="../src/keydialog.cpp" line="1295"/>
         <source>ExternalExecutable</source>
         <translation>Внешнее приложение</translation>
     </message>
@@ -1241,7 +1255,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="532"/>
-        <location filename="../src/keydialog.cpp" line="1353"/>
+        <location filename="../src/keydialog.cpp" line="1349"/>
         <source>Passphrase Quality: 100%</source>
         <translation>Сложность пароля: 100%</translation>
     </message>
@@ -1274,17 +1288,17 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="847"/>
-        <location filename="../src/keydialog.cpp" line="1187"/>
+        <location filename="../src/keydialog.cpp" line="1183"/>
         <source>Upgrade File System</source>
         <translation>Обновление файловой системы</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1032"/>
+        <location filename="../src/keydialog.cpp" line="1028"/>
         <source>Failed To Generate Key.</source>
         <translation>Не удалось создать ключ.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1330"/>
+        <location filename="../src/keydialog.cpp" line="1326"/>
         <source>Select A KeyFile</source>
         <translation>Выберите Файловый ключ</translation>
     </message>
@@ -1296,30 +1310,30 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.cpp" line="922"/>
         <location filename="../src/keydialog.cpp" line="931"/>
-        <location filename="../src/keydialog.cpp" line="1109"/>
+        <location filename="../src/keydialog.cpp" line="1105"/>
         <source>Mount Point Path Already Taken.</source>
         <translation>Путь точки монтирования уже указан.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="939"/>
-        <location filename="../src/keydialog.cpp" line="1098"/>
-        <location filename="../src/keydialog.cpp" line="1128"/>
+        <location filename="../src/keydialog.cpp" line="1094"/>
+        <location filename="../src/keydialog.cpp" line="1124"/>
         <source>Atleast One Required Field Is Empty.</source>
         <translation>По крайней мере одно обязательное поле пустое.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1118"/>
+        <location filename="../src/keydialog.cpp" line="1114"/>
         <source>Encrypted Folder Appear To Not Be Present.</source>
         <translation>Зашифрованная папка может быть не указанна.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1402"/>
-        <location filename="../src/keydialog.cpp" line="1414"/>
+        <location filename="../src/keydialog.cpp" line="1398"/>
+        <location filename="../src/keydialog.cpp" line="1410"/>
         <source>Plugin name</source>
         <translation>Имя плагина</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1439"/>
+        <location filename="../src/keydialog.cpp" line="1435"/>
         <source>Keyfile path</source>
         <translation>Путь к Файловому ключу</translation>
     </message>
