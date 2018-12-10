@@ -1013,11 +1013,7 @@ void keyDialog::pbSetKey()
 			}else{
 				exe = exe + " " + utility::Task::makePath( keyFile ) ;
 
-				auto env = utility::systemEnvironment() ;
-
-				env.insert( "LANG","C" ) ;
-
-				env.insert( "PATH",utility::executableSearchPaths( env.value( "PATH" ) ) ) ;
+				const auto& env = utility::systemEnvironment() ;
 
 				return utility::Task( exe,20000,env,passphrase.toLatin1() ).stdOut() ;
 			}

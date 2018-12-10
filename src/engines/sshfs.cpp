@@ -67,15 +67,23 @@ QString sshfs::command( const engines::engine::cmdArgsList& args ) const
 		exeOptions.add( "-f" ) ;
 	}
 
+	auto& env = utility::globalEnvironment::instance() ;
+
 	if( fuseOptions.contains( "IdentityAgent" ) ){
 
 		auto m = "IdentityAgent=" ;
 
 		auto n = fuseOptions.extractStartsWith( m ).replace( m,"" ) ;
 
-		if( !n.isEmpty() ){
+		env.insert( "SSH_AUTH_SOCK",n ) ;
+	}else{
+		auto m = qgetenv( "SSH_AUTH_SOCK" ) ;
 
-			qputenv( "SSH_AUTH_SOCK",n.toLatin1() ) ;
+		if( m.isEmpty() ){
+
+			env.remove( "SSH_AUTH_SOCK" ) ;
+		}else{
+			env.insert( "SSH_AUTH_SOCK",m ) ;
 		}
 	}
 

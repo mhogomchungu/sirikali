@@ -120,6 +120,18 @@ namespace utility
 		bool m_valid = false ;
 		T m_value ;
 	} ;
+
+	class globalEnvironment
+	{
+	public:
+		static globalEnvironment& instance() ;
+		const QProcessEnvironment& get() const ;
+		void insert( const QString&,const QString& ) ;
+		void remove( const QString& ) ;
+		globalEnvironment() ;
+	private:
+		QProcessEnvironment m_environment ;
+	} ;
 }
 
 namespace utility
@@ -205,7 +217,7 @@ namespace utility
 	enum class background_thread{ True,False } ;
 	bool enablePolkit( utility::background_thread ) ;
 
-	QProcessEnvironment systemEnvironment() ;
+	const QProcessEnvironment& systemEnvironment() ;
 
 	QString userName() ;
 

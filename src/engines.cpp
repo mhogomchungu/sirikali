@@ -128,7 +128,7 @@ QString engines::engine::baseInstalledVersionString( const QString& versionArgum
 						     int argumentNumber,
 						     int argumentLine ) const
 {
-	const auto s = utility::systemEnvironment() ;
+	const auto& s = utility::systemEnvironment() ;
 
 	const auto cmd = this->executableFullPath() + " " + versionArgument ;
 
