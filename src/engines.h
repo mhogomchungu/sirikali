@@ -68,6 +68,7 @@ public:
 
 			backEndDoesNotSupportCustomConfigPath,
 			failedToCreateMountPoint,
+			invalidConfigFileName,
 			backendFail,
 			unknown
 		} ;
@@ -115,6 +116,7 @@ public:
 			cmdStatus() ;
 			cmdStatus( engines::engine::status s,int c,const QString& e = QString() ) ;
 			cmdStatus( engines::engine::status s,const QString& e = QString() ) ;
+			cmdStatus( engines::engine::status s,const QStringList& ) ;
 			cmdStatus( int s,const QString& e = QString() ) ;
 			engines::engine::status status() const ;
 			bool operator==( engines::engine::status s ) const ;
@@ -127,6 +129,7 @@ public:
 			int m_exitCode = -1 ;
 			engines::engine::status m_status = engines::engine::status::backendFail ;
 			QString m_message ;
+			QStringList m_backendExtensionNames ;
 		} ;
 
 		struct Options

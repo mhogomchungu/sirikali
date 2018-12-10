@@ -364,6 +364,11 @@ engines::engine::cmdStatus::cmdStatus( engines::engine::status s,const QString& 
 	this->message( e ) ;
 }
 
+engines::engine::cmdStatus::cmdStatus( engines::engine::status s,const QStringList& e ) :
+	m_status( s ),m_backendExtensionNames( e )
+{
+}
+
 engines::engine::cmdStatus::cmdStatus( int s,const QString& e ) :
 	m_exitCode( s )
 {
@@ -481,6 +486,19 @@ QString engines::engine::cmdStatus::toString() const
 	case engines::engine::status::unknown :
 
 		return QObject::tr( "Failed To Unlock The Volume.\nNot Supported Volume Encountered." ) ;
+
+	case engines::engine::status::invalidConfigFileName :
+
+	{
+		if( m_backendExtensionNames.size() == 1 ){
+
+			auto s = m_backendExtensionNames.first() ;
+			return QObject::tr( "Invalid Config File Name.\nIts Name Must End With \"%1\"" ).arg( s ) ;
+		}else{
+			auto s = m_backendExtensionNames.join( ", " ) ;
+			return QObject::tr( "Invalid Config File Name.\nIt Must End With One Of The Following:\n\"%1\"" ).arg( s ) ;
+		}
+	}
 
 	case engines::engine::status::backendFail :
 
