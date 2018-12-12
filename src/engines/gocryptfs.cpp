@@ -83,11 +83,18 @@ QString gocryptfs::command( const engines::engine::cmdArgsList& args ) const
 	}else{
 		QString e = "%1 %2 %3 %4 %5" ;
 
+		auto fuseOptions = m.fuseOpts() ;
+
+		if( !utility::platformIsLinux() ){
+
+			fuseOptions.extractStartsWith( "volname=" ) ;
+		}
+
 		return e.arg( args.exe,
 			      exeOptions.get(),
 			      args.cipherFolder,
 			      args.mountPoint,
-			      m.fuseOpts().get() ) ;
+			      fuseOptions.get() ) ;
 	}
 }
 

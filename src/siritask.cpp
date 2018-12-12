@@ -454,6 +454,18 @@ static engines::engine::cmdStatus _encrypted_folder_mount( const engines::engine
 
 		if( engine.known() ){
 
+			if( utility::endsWithAtLeastOne( opt.configFilePath,
+							 "gocryptfs.reverse.conf",
+							 ".gocryptfs.reverse.conf" ) ){
+
+				if( !opt.reverseMode ){
+
+					auto opts = opt ;
+					opts.reverseMode = true ;
+					return _mount( reUseMP,engine,opts,opt.configFilePath ) ;
+				}
+			}
+
 			return _mount( reUseMP,engine,opt,opt.configFilePath ) ;
 		}
 	}else{
@@ -461,17 +473,30 @@ static engines::engine::cmdStatus _encrypted_folder_mount( const engines::engine
 
 		for( const auto& it : engines.supported() ){
 
-			auto n = it.toLower() ;
+			const auto& engine = engines.getByName( it.toLower() ) ;
 
-			auto s = "[[[" + n + "]]]" ;
+			for( const auto& xt: engine.names() ){
 
-			if( e.startsWith( s ) ){
+				auto s = "[[[" + xt + "]]]" ;
 
-				auto m = _path_exist( e,s ) ;
+				if( e.startsWith( s ) ){
 
-				if( m ){
+					auto m = _path_exist( e,s ) ;
 
-					return _mount( reUseMP,engines.getByName( n ),opt,m.value() ) ;
+					if( m ){
+
+						if( xt == "gocryptfs.reverse" ){
+
+							if( !opt.reverseMode ){
+
+								auto opts = opt ;
+								opts.reverseMode = true ;
+								return _mount( reUseMP,engine,opts,m.value() ) ;
+							}
+						}
+
+						return _mount( reUseMP,engine,opt,m.value() ) ;
+					}
 				}
 			}
 		}
