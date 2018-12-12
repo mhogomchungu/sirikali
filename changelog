@@ -149,3 +149,5 @@ version 1.3.7(unreleased)
    with a private key that does not need a password.
 -- Add a config option to auto unmount volumes on logout(specifically, when SiriKali receive sighup or sigterm).
 -- Add Russian translations.
+-- Fix a bug that prevented mounting gocryptfs volumes on on MACOS.
+-- translations now works on MACOS.

@@ -381,7 +381,7 @@ void settings::setLocalizationLanguage( bool translate,QMenu * m,settings::trans
 
 		for( auto& it : e ){
 
-			if( !it.startsWith( "qt_" ) ){
+			if( !it.startsWith( "qt_" ) && it.endsWith( ".qm" ) ){
 
 				m->addAction( it.remove( ".qm" ) )->setCheckable( true ) ;
 			}
