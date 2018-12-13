@@ -365,37 +365,47 @@ static void _selectOption( QMenu * m,const T& opt )
 {
 	for( const auto& it : m->actions() ){
 
-		it->setChecked( it->text().remove( "&" ) == opt ) ;
+		it->setChecked( it->objectName() == opt ) ;
 	}
 }
 
-void settings::setLocalizationLanguage( bool translate,QMenu * m,settings::translator& e )
+void settings::setLocalizationLanguage( bool translate,QMenu * m,settings::translator& translator )
 {
 	auto r = settings::instance().localizationLanguage().toLatin1() ;
 
 	if( translate ){
 
-		e.setLanguage( r ) ;
+		translator.setLanguage( r ) ;
 	}else{
-		auto e = utility::directoryList( settings::instance().localizationLanguagePath() ) ;
+		const auto e = utility::directoryList( settings::instance().localizationLanguagePath() ) ;
 
-		for( auto& it : e ){
+		for( const auto& it : e ){
 
 			if( !it.startsWith( "qt_" ) && it.endsWith( ".qm" ) ){
 
-				m->addAction( it.remove( ".qm" ) )->setCheckable( true ) ;
+				auto name = it ;
+
+				name = translator.UIName( name.remove( ".qm" ) ) ;
+
+				if( !name.isEmpty() ){
+
+					auto ac = m->addAction( name ) ;
+
+					ac->setCheckable( true ) ;
+					ac->setObjectName( name ) ;
+				}
 			}
 		}
 
-		_selectOption( m,r ) ;
+		_selectOption( m,translator.UIName( r ) ) ;
 	}
 }
 
 void settings::languageMenu( QMenu * m,QAction * ac,settings::translator& s )
 {
-	auto e = ac->text().remove( '&' ) ;
+	auto e = ac->objectName() ;
 
-	this->setLocalizationLanguage( e ) ;
+	this->setLocalizationLanguage( s.name( e ) ) ;
 
 	this->setLocalizationLanguage( true,m,s ) ;
 
@@ -410,6 +420,11 @@ QString settings::localizationLanguagePath()
 	}else{
 		return TRANSLATION_PATH ;
 	}
+}
+
+void settings::setLocalizationLanguage( const QString& language )
+{
+	m_settings.setValue( "Language",language ) ;
 }
 
 bool settings::startMinimized()
@@ -787,11 +802,6 @@ QString settings::localizationLanguage()
 	}
 }
 
-void settings::setLocalizationLanguage( const QString& language )
-{
-	m_settings.setValue( "Language",language ) ;
-}
-
 QString settings::walletName( LXQt::Wallet::BackEnd s )
 {
 	if( s == LXQt::Wallet::BackEnd::kwallet ){
@@ -915,6 +925,17 @@ void settings::setWindowDimensions( const settings::windowDimensions& e )
 	settings::instance().backend().setValue( "Dimensions",e.dimensions() ) ;
 }
 
+settings::translator::translator()
+{
+	m_languages.emplace_back( std::make_pair( QObject::tr( "Russian (RU)" ), "ru_RU" ) ) ;
+	m_languages.emplace_back( std::make_pair( QObject::tr( "French (FR)" ),  "fr_FR" ) ) ;
+	m_languages.emplace_back( std::make_pair( QObject::tr( "German (DE)" ),  "de_DE" ) ) ;
+	m_languages.emplace_back( std::make_pair( QObject::tr( "English (US)" ), "en_US" ) ) ;
+	m_languages.emplace_back( std::make_pair( QObject::tr( "Swedish (SE)" ), "sv_SE" ) ) ;
+	m_languages.emplace_back( std::make_pair( QObject::tr( "Arabic (SA)" ),  "ar_SA" ) ) ;
+	m_languages.emplace_back( std::make_pair( QObject::tr( "Spanish (MX)" ), "es_MX" ) ) ;
+}
+
 void settings::translator::setLanguage( const QByteArray& e )
 {
 	QCoreApplication::installTranslator( [ & ](){
@@ -932,6 +953,46 @@ void settings::translator::setLanguage( const QByteArray& e )
 settings::translator::~translator()
 {
 	this->clear() ;
+}
+
+const QString& settings::translator::UIName( const QString& fileName )
+{
+	for( const auto& it : m_languages ){
+
+		if( it.second == fileName ){
+
+			return it.first ;
+		}
+	}
+
+	static QString s ;
+	return s ;
+}
+
+const QString& settings::translator::name( const QString& UIName )
+{
+	for( const auto& it : m_languages ){
+
+		if( it.first == UIName ){
+
+			return it.second ;
+		}
+	}
+
+	static QString s ;
+	return s ;
+}
+
+QStringList settings::translator::supportedLanguages()
+{
+	QStringList m ;
+
+	for( const auto& it : m_languages ){
+
+		m.append( it.first ) ;
+	}
+
+	return m ;
 }
 
 void settings::translator::clear()

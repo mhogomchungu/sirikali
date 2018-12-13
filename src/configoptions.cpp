@@ -66,9 +66,11 @@ configOptions::configOptions( QWidget * parent,
 		settings::instance().autoCheck( e ) ;
 	} ) ;
 
-#ifdef Q_OS_WIN
-	m_ui->cbAutoCheckForUpdates->setEnabled( false ) ;
-#endif
+	if( utility::platformIsWindows() ){
+
+		m_ui->cbAutoCheckForUpdates->setEnabled( false ) ;
+	}
+
 	m_ui->cbStartMinimized->setChecked( settings::instance().startMinimized() ) ;
 
 	connect( m_ui->cbStartMinimized,&QCheckBox::toggled,[]( bool e ){

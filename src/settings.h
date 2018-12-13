@@ -97,11 +97,15 @@ public:
 	class translator
 	{
 	public:
+		translator() ;
 		void setLanguage( const QByteArray& e ) ;
 		~translator() ;
+		const QString& UIName( const QString& name ) ;
+		const QString& name( const QString& UIName ) ;
 	private:
 		void clear( void ) ;
 		QTranslator * m_translator = nullptr ;
+		std::vector< std::pair< QString,QString > > m_languages ;
 	} ;
 
 	static settings& instance()
