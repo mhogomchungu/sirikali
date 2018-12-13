@@ -1,0 +1,3 @@
+
+A file will be listed in SiriKali as a source of translations only
+after it is added at $src/settings.cpp#settings::translator::translator()
