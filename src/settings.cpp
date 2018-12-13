@@ -369,7 +369,9 @@ static void _selectOption( QMenu * m,const T& opt )
 	}
 }
 
-void settings::setLocalizationLanguage( bool translate,QMenu * m,settings::translator& translator )
+void settings::setLocalizationLanguage( bool translate,
+					QMenu * m,
+					settings::translator& translator )
 {
 	auto r = settings::instance().localizationLanguage().toLatin1() ;
 
@@ -384,20 +386,22 @@ void settings::setLocalizationLanguage( bool translate,QMenu * m,settings::trans
 			if( !it.startsWith( "qt_" ) && it.endsWith( ".qm" ) ){
 
 				auto name = it ;
+				name.remove( ".qm" ) ;
 
-				name = translator.UIName( name.remove( ".qm" ) ) ;
+				auto uiName = translator.UIName( name ) ;
 
-				if( !name.isEmpty() ){
+				if( !uiName.isEmpty() ){
 
-					auto ac = m->addAction( name ) ;
+					auto ac = m->addAction( uiName ) ;
 
 					ac->setCheckable( true ) ;
 					ac->setObjectName( name ) ;
+					ac->setText( translator.translate( name ) ) ;
 				}
 			}
 		}
 
-		_selectOption( m,translator.UIName( r ) ) ;
+		_selectOption( m,r ) ;
 	}
 }
 
@@ -405,7 +409,7 @@ void settings::languageMenu( QMenu * m,QAction * ac,settings::translator& s )
 {
 	auto e = ac->objectName() ;
 
-	this->setLocalizationLanguage( s.name( e ) ) ;
+	this->setLocalizationLanguage( e ) ;
 
 	this->setLocalizationLanguage( true,m,s ) ;
 
@@ -927,13 +931,13 @@ void settings::setWindowDimensions( const settings::windowDimensions& e )
 
 settings::translator::translator()
 {
-	m_languages.emplace_back( std::make_pair( QObject::tr( "Russian (RU)" ), "ru_RU" ) ) ;
-	m_languages.emplace_back( std::make_pair( QObject::tr( "French (FR)" ),  "fr_FR" ) ) ;
-	m_languages.emplace_back( std::make_pair( QObject::tr( "German (DE)" ),  "de_DE" ) ) ;
-	m_languages.emplace_back( std::make_pair( QObject::tr( "English (US)" ), "en_US" ) ) ;
-	m_languages.emplace_back( std::make_pair( QObject::tr( "Swedish (SE)" ), "sv_SE" ) ) ;
-	m_languages.emplace_back( std::make_pair( QObject::tr( "Arabic (SA)" ),  "ar_SA" ) ) ;
-	m_languages.emplace_back( std::make_pair( QObject::tr( "Spanish (MX)" ), "es_MX" ) ) ;
+	m_languages.emplace_back( QObject::tr( "Russian (RU)" ),"Russian (RU)","ru_RU" ) ;
+	m_languages.emplace_back( QObject::tr( "French (FR)" ),"French (FR)","fr_FR" ) ;
+	m_languages.emplace_back( QObject::tr( "German (DE)" ),"German (DE)","de_DE" ) ;
+	m_languages.emplace_back( QObject::tr( "English (US)" ),"English (US)","en_US" ) ;
+	m_languages.emplace_back( QObject::tr( "Swedish (SE)" ),"Swedish (SE)","sv_SE" ) ;
+	m_languages.emplace_back( QObject::tr( "Arabic (SA)" ) ,"Arabic (SA)","ar_SA" ) ;
+	m_languages.emplace_back( QObject::tr( "Spanish (MX)" ),"Spanish (MX)","es_MX" ) ;
 }
 
 void settings::translator::setLanguage( const QByteArray& e )
@@ -955,13 +959,13 @@ settings::translator::~translator()
 	this->clear() ;
 }
 
-const QString& settings::translator::UIName( const QString& fileName )
+const QString& settings::translator::UIName( const QString& internalName )
 {
 	for( const auto& it : m_languages ){
 
-		if( it.second == fileName ){
+		if( it.internalName == internalName ){
 
-			return it.first ;
+			return it.UINameTranslated ;
 		}
 	}
 
@@ -973,9 +977,9 @@ const QString& settings::translator::name( const QString& UIName )
 {
 	for( const auto& it : m_languages ){
 
-		if( it.first == UIName ){
+		if( it.UINameTranslated == UIName ){
 
-			return it.second ;
+			return it.internalName ;
 		}
 	}
 
@@ -983,16 +987,22 @@ const QString& settings::translator::name( const QString& UIName )
 	return s ;
 }
 
-QStringList settings::translator::supportedLanguages()
+QString settings::translator::translate( const QString& internalName )
 {
-	QStringList m ;
+	return QObject::tr( this->UINameUnTranslated( internalName ) ) ;
+}
 
+const char * settings::translator::UINameUnTranslated( const QString& internalName )
+{
 	for( const auto& it : m_languages ){
 
-		m.append( it.first ) ;
+		if( it.internalName == internalName ){
+
+			return it.UINameUnTranslated ;
+		}
 	}
 
-	return m ;
+	return "" ;
 }
 
 void settings::translator::clear()
@@ -1002,4 +1012,9 @@ void settings::translator::clear()
 		QCoreApplication::removeTranslator( m_translator ) ;
 		delete m_translator ;
 	}
+}
+
+settings::translator::entry::entry( const QString& a,const char * b,const QString& c ) :
+	UINameTranslated( a ),UINameUnTranslated( b ),internalName( c )
+{
 }

@@ -102,10 +102,18 @@ public:
 		~translator() ;
 		const QString& UIName( const QString& name ) ;
 		const QString& name( const QString& UIName ) ;
+		QString translate( const QString& internalName ) ;
+		const char * UINameUnTranslated( const QString& name ) ;
 	private:
+		struct entry{
+			entry( const QString&,const char *,const QString& ) ;
+			QString UINameTranslated ;
+			const char * UINameUnTranslated ;
+			QString internalName ;
+		} ;
 		void clear( void ) ;
 		QTranslator * m_translator = nullptr ;
-		std::vector< std::pair< QString,QString > > m_languages ;
+		std::vector< entry > m_languages ;
 	} ;
 
 	static settings& instance()

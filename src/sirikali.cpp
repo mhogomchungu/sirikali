@@ -119,6 +119,11 @@ configOptions::functions sirikali::configOption()
 
 			it.first->setTitle( tr( it.second ) ) ;
 		}
+
+		for( auto& it : m_language_menu.actions() ){
+
+			it->setText( m_translator.translate( it->objectName() ) ) ;
+		}
 	} ;
 
 	return { std::move( a ),std::move( b ) } ;
