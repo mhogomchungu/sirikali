@@ -54,7 +54,7 @@ public:
 	void updateVolumeList( std::function< void() > ) ;
 	std::vector< SiriKali::Winfsp::mountOptions > mountOptions() ;
 private:
-	std::tuple< bool,QByteArray,QByteArray > getProcessOutput( QProcess&,bool ) ;
+	std::tuple< bool,QByteArray,QByteArray > getProcessOutput( QProcess&,const QString& ) ;
 	std::vector< Process > m_instances ;
 	std::function< void() > m_updateVolumeList = [](){
 
@@ -323,38 +323,69 @@ void SiriKali::Winfsp::instances::updateVolumeList( std::function< void() > func
 	m_updateVolumeList = std::move( function ) ;
 }
 
-std::tuple< bool,QByteArray,QByteArray >
-SiriKali::Winfsp::instances::getProcessOutput( QProcess& exe,bool encfs )
+template< typename Function >
+static QByteArray _read_data( QProcess& exe,size_t max,Function function )
 {
 	size_t counter = 0 ;
 
 	QByteArray m ;
+	QByteArray s ;
+
 	/*
 	 * Read a full line before processing it
 	 */
 	while( true ){
 
-		m += exe.readAllStandardOutput() ;
+		s = exe.readAllStandardOutput() ;
 
-		if( m.contains( "\n" ) ){
+		if( !s.isEmpty() ){
+
+			m += s ;
+			utility::debug() << m ;
+		}
+
+		if( function( m ) ){
 
 			break ;
 
-		}else if( counter < 10 ){
+		}else if( counter < max ){
 
 			counter++ ;
+
 			utility::Task::suspendForOneSecond() ;
 		}else{
 			break ;
 		}
 	}
 
-	if( !m.startsWith( "cygfuse: initialization failed:" ) &&
-			utility::containsAtleastOne( m,"init","has been started","Mounting filesystem" ) ){
+	return m ;
+}
+
+std::tuple< bool,QByteArray,QByteArray >
+SiriKali::Winfsp::instances::getProcessOutput( QProcess& exe,const QString& type )
+{
+	QByteArray m ;
+
+	if( type == "cryfs" ){
+
+		m = _read_data( exe,100,[]( const QString& e ){
+
+			return e.contains( "Error: " ) || e.contains( "Mounting filesystem." ) ;
+		} ) ;
+	}else{
+		m = _read_data( exe,10,[]( const QString& e ){
+
+			return e.contains( "\n" ) ;
+		} ) ;
+	}
+
+	auto a = utility::containsAtleastOne( m,"init","has been started","Mounting filesystem" ) ;
+
+	if( !m.startsWith( "cygfuse: initialization failed:" ) && a ){
 
 		return std::make_tuple( true,QByteArray(),QByteArray() ) ;
 	}else{
-		if( encfs ){
+		if( type == "encfs" ){
 
 			return std::make_tuple( false,m,QByteArray() ) ;
 		}else{
@@ -471,7 +502,7 @@ Task::process::result SiriKali::Winfsp::instances::add( const engines::engine::a
 	exe->write( password + "\n" ) ;
 	exe->closeWriteChannel() ;
 
-	auto m = this->getProcessOutput( *exe,opts.type == "encfs" ) ;
+	auto m = this->getProcessOutput( *exe,opts.type ) ;
 
 	auto s = [ & ](){
 
@@ -496,6 +527,28 @@ Task::process::result SiriKali::Winfsp::instances::add( const engines::engine::a
 
 	return s ;
 }
+
+enum class encode{ True,False } ;
+static QString _make_path( QString e,encode s )
+{
+	if( e.startsWith( "\"" ) ){
+
+		e.remove( 0,1 ) ;
+	}
+
+	if( e.endsWith( "\"" ) ){
+
+		e.truncate( e.size() -1 ) ;
+	}
+
+	if( s == encode::True ){
+
+		return mountinfo::encodeMountPath( e ) ;
+	}else{
+		return e ;
+	}
+}
+
 
 Task::process::result SiriKali::Winfsp::instances::remove( const QString& mountPoint )
 {
@@ -534,7 +587,7 @@ Task::process::result SiriKali::Winfsp::instances::remove( const QString& mountP
 
 			auto m = Task::process::run( exe,{},-1,"",env ).get() ;
 
-			auto s = [ & ](){
+			auto r = [ & ](){
 
 				if( m.success() ) {
 
@@ -542,15 +595,22 @@ Task::process::result SiriKali::Winfsp::instances::remove( const QString& mountP
 
 					m_updateVolumeList() ;
 
+					if( cmd.endsWith( "cryfs.exe" ) ){
+
+						auto a = _make_path( s.args.mountPath,encode::False ) ;
+
+						utility::removeFolder( a ) ;
+					}
+
 					return Task::process::result( 0 ) ;
 				}else{
 					return Task::process::result( "","Failed To Terminate A Process",1,0,true ) ;
 				}
 			}() ;
 
-			utility::logCommandOutPut( s,exe ) ;
+			utility::logCommandOutPut( r,exe ) ;
 
-			return s ;
+			return r ;
 		}
 	}
 
@@ -612,21 +672,6 @@ Task::process::result SiriKali::Winfsp::FspLaunchStop( const QString& className,
 	return Task::process::result() ;
 }
 
-static QString _make_path( QString e )
-{
-	if( e.startsWith( "\"" ) ){
-
-		e.remove( 0,1 ) ;
-	}
-
-	if( e.endsWith( "\"" ) ){
-
-		e.truncate( e.size() -1 ) ;
-	}
-
-	return mountinfo::encodeMountPath( e ) ;
-}
-
 std::vector< SiriKali::Winfsp::mountOptions > SiriKali::Winfsp::instances::mountOptions()
 {
 	std::vector< SiriKali::Winfsp::mountOptions > mOpts ;
@@ -635,8 +680,8 @@ std::vector< SiriKali::Winfsp::mountOptions > SiriKali::Winfsp::instances::mount
 
 		const auto& m = it.args ;
 
-		auto a = _make_path( m.cipherPath ) ;
-		auto b = _make_path( m.mountPath ) ;
+		auto a = _make_path( m.cipherPath,encode::True ) ;
+		auto b = _make_path( m.mountPath,encode::True ) ;
 
 		mOpts.emplace_back( m.mode,m.subtype,a,b,m.fuseOptions ) ;
 	}
