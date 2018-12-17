@@ -270,9 +270,10 @@ engines::engines()
 
 	if( utility::platformIsWindows() ){
 
-		m_supported = QStringList{ "Securefs","Encfs","Sshfs" } ;
+		m_supported = QStringList{ "Securefs","Cryfs","Encfs","Sshfs" } ;
 
 		m_backends.emplace_back( std::make_unique< securefs >() ) ;
+		m_backends.emplace_back( std::make_unique< cryfs >() ) ;
 		m_backends.emplace_back( std::make_unique< encfs >() ) ;
 		m_backends.emplace_back( std::make_unique< sshfs >() ) ;
 
@@ -577,4 +578,91 @@ engines::engine::options::options( const QString& cipher_folder,
 	mountOptions( favorites::entry::sanitizedMountOptions( mount_options ) ),
 	createOptions( create_options )
 {
+}
+
+engines::engine::args::args( const engines::engine::cmdArgsList& m,
+			     const engines::engine::commandOptions& s,
+			     const QString& c ) :
+	cmd( c ),
+	cipherPath( m.cipherFolder ),
+	mountPath( m.mountPoint ),
+	fuseOptions( s.constFuseOpts() ),
+	exeOptions( s.constExeOptions() ),
+	mode( s.mode() ),
+	subtype( s.subType() )
+{
+}
+
+engines::engine::args::args()
+{
+}
+
+engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsList& e,
+						 const QString& f,
+						 const QString& subtype )
+{
+	for( const auto& it : utility::split( e.opt.mountOptions,',' ) ) {
+
+		if( it.startsWith( '-' ) ){
+
+			m_exeOptions += it + " " ;
+		}else{
+			m_fuseOptions += it + "," ;
+		}
+	}
+
+	if( m_exeOptions.endsWith( " " ) ){
+
+		m_exeOptions.remove( m_exeOptions.size() - 1,1 ) ;
+	}
+
+	if( m_fuseOptions.endsWith( "," ) ){
+
+		m_fuseOptions.remove( m_fuseOptions.size() - 1,1 ) ;
+	}
+
+	if( !utility::platformIsLinux() && !m_fuseOptions.contains( "volname=" ) ){
+
+		QString s ;
+
+		if( utility::platformIsOSX() ){
+
+			s = utility::split( e.opt.plainFolder,'/' ).last() ;
+		}else{
+			s = utility::split( e.opt.cipherFolder,'/' ).last() ;
+		}
+
+		if( !s.isEmpty() ){
+
+			if( m_fuseOptions.isEmpty() ){
+
+				m_fuseOptions = "volname=" + utility::Task::makePath( s ) ;
+			}else{
+				m_fuseOptions += ",volname=" + utility::Task::makePath( s ) ;
+			}
+		}
+	}
+
+	QString s = [ & ](){
+
+		if( e.opt.ro ){
+
+			return " -o ro,fsname=%1@%2%3" ;
+		}else{
+			return " -o rw,fsname=%1@%2%3" ;
+		}
+	}() ;
+
+	m_mode = e.opt.ro ? "ro" : "rw" ;
+
+	m_subtype = subtype ;
+
+	QString stype = subtype.isEmpty() ? "" : ",subtype=" + subtype ;
+
+	if( m_fuseOptions.isEmpty() ){
+
+		m_fuseOptions = s.arg( f,e.cipherFolder,stype ) ;
+	}else{
+		m_fuseOptions = s.arg( f,e.cipherFolder,stype ) + "," + m_fuseOptions ;
+	}
 }

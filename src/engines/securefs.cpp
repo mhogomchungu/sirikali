@@ -18,7 +18,6 @@
  */
 
 #include "securefs.h"
-#include "commandOptions.h"
 
 #include "securefscreateoptions.h"
 
@@ -46,18 +45,21 @@ securefs::securefs() : engines::engine( _setOptions() )
 {
 }
 
-QString securefs::command( const engines::engine::cmdArgsList& args ) const
+engines::engine::args securefs::command( const engines::engine::cmdArgsList& args ) const
 {
+	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
+
 	if( args.create ){
 
 		QString e = "%1 create %2 %3 %4" ;
-		return e.arg( args.exe,
-			      args.opt.createOptions,
-			      args.configFilePath,
-			      args.cipherFolder ) ;
-	}else{
-		commandOptions m( args,this->name(),this->name() ) ;
 
+		auto cmd = e.arg( args.exe,
+				  args.opt.createOptions,
+				  args.configFilePath,
+				  args.cipherFolder ) ;
+
+		return { args,m,cmd } ;
+	}else{
 		QString exe = "%1 mount %2 %3 %4 %5" ;
 
 		auto exeOptions = m.exeOptions() ;
@@ -72,11 +74,13 @@ QString securefs::command( const engines::engine::cmdArgsList& args ) const
 			exeOptions.add( args.configFilePath ) ;
 		}
 
-		return exe.arg( args.exe,
-				exeOptions.get(),
-				args.cipherFolder,
-				args.mountPoint,
-				m.fuseOpts().get() ) ;
+		auto cmd = exe.arg( args.exe,
+				    exeOptions.get(),
+				    args.cipherFolder,
+				    args.mountPoint,
+				    m.fuseOpts().get() ) ;
+
+		return { args,m,cmd } ;
 	}
 }
 

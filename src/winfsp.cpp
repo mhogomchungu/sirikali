@@ -28,29 +28,44 @@
 namespace SiriKali{
 namespace Winfsp{
 
-class manageInstances
+struct Process
+{
+	Process( const engines::engine::args& args,QProcess * p ) :
+		args( args ),instance( p )
+	{
+	}
+	~Process()
+	{
+		instance->deleteLater() ;
+	}
+	engines::engine::args args ;
+	QProcess * instance ;
+} ;
+
+class instances
 {
 public:
-	Task::process::result addInstance( const QString& args,
+	Task::process::result add( const engines::engine::args& args,
 					   const QByteArray& password,
 					   const engines::engine::options& opts ) ;
-	Task::process::result removeInstance( const QString& mountPoint ) ;
+	Task::process::result remove( const QString& mountPoint ) ;
 	std::vector< QStringList > commands() const ;
 	QString volumeProperties( const QString& mountPath ) ;
 	void updateVolumeList( std::function< void() > ) ;
+	std::vector< SiriKali::Winfsp::mountOptions > mountOptions() ;
 private:
 	std::tuple< bool,QByteArray,QByteArray > getProcessOutput( QProcess&,bool ) ;
-	std::vector< QProcess * > m_instances ;
+	std::vector< Process > m_instances ;
 	std::function< void() > m_updateVolumeList = [](){
 
 		utility::debug() << "booooooo!!!" ;
 	} ;
 } ;
 
-static SiriKali::Winfsp::manageInstances& _winfspInstances()
+static SiriKali::Winfsp::instances& _instances()
 {
-	static SiriKali::Winfsp::manageInstances _winfsInstances ;
-	return _winfsInstances ;
+	static SiriKali::Winfsp::instances s ;
+	return s ;
 }
 
 bool babySittingBackends()
@@ -60,7 +75,7 @@ bool babySittingBackends()
 
 void updateVolumeList( std::function< void() > function )
 {
-	_winfspInstances().updateVolumeList( std::move( function ) ) ;
+	_instances().updateVolumeList( std::move( function ) ) ;
 }
 
 }
@@ -241,6 +256,10 @@ QString SiriKali::Winfsp::engineInstalledDir( const QString& e )
 	}else if( e == "securefs" ){
 
 		return _readRegistry( "SOFTWARE\\SECUREFS","InstallDir" ) ;
+
+	}else if( e == "cryfs" ){
+
+		return _readRegistry( "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{26116061-4F99-4C44-A178-2153FA396308}","InstallLocation" ) ;
 	}else{
 		return QString() ;
 	}
@@ -248,9 +267,12 @@ QString SiriKali::Winfsp::engineInstalledDir( const QString& e )
 
 QStringList SiriKali::Winfsp::engineInstalledDirs()
 {
+	auto m = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{26116061-4F99-4C44-A178-2153FA396308}" ;
+
 	return { _readRegistry( "SOFTWARE\\ENCFS","InstallDir" ),
 		 _readRegistry( "SOFTWARE\\SSHFS-Win","InstallDir" ),
-		 _readRegistry( "SOFTWARE\\SECUREFS","InstallDir" ) } ;
+		 _readRegistry( "SOFTWARE\\SECUREFS","InstallDir" ),
+		 _readRegistry( m,"InstallLocation" )} ;
 }
 
 SiriKali::Winfsp::ActiveInstances::ActiveInstances() :
@@ -277,13 +299,13 @@ std::vector< QStringList > SiriKali::Winfsp::ActiveInstances::commands() const
 	return m_handle->commands() ;
 }
 
-std::vector< QStringList > SiriKali::Winfsp::manageInstances::commands() const
+std::vector< QStringList > SiriKali::Winfsp::instances::commands() const
 {
 	std::vector< QStringList > s ;
 
 	for( const auto& it : m_instances ){
 
-		auto e = it->arguments() ;
+		auto e = it.instance->arguments() ;
 
 		for( auto& m : e ){
 
@@ -296,13 +318,13 @@ std::vector< QStringList > SiriKali::Winfsp::manageInstances::commands() const
 	return s ;
 }
 
-void SiriKali::Winfsp::manageInstances::updateVolumeList( std::function< void() > function )
+void SiriKali::Winfsp::instances::updateVolumeList( std::function< void() > function )
 {
 	m_updateVolumeList = std::move( function ) ;
 }
 
 std::tuple< bool,QByteArray,QByteArray >
-SiriKali::Winfsp::manageInstances::getProcessOutput( QProcess& exe,bool encfs )
+SiriKali::Winfsp::instances::getProcessOutput( QProcess& exe,bool encfs )
 {
 	size_t counter = 0 ;
 
@@ -328,7 +350,7 @@ SiriKali::Winfsp::manageInstances::getProcessOutput( QProcess& exe,bool encfs )
 	}
 
 	if( !m.startsWith( "cygfuse: initialization failed:" ) &&
-			utility::containsAtleastOne( m,"init","has been started" ) ){
+			utility::containsAtleastOne( m,"init","has been started","Mounting filesystem" ) ){
 
 		return std::make_tuple( true,QByteArray(),QByteArray() ) ;
 	}else{
@@ -356,6 +378,10 @@ static QProcessEnvironment _update_environment( const QString& type )
 		}else if( type == "encfs" ){
 
 			return SiriKali::Winfsp::engineInstalledDir( "encfs" ) + "\\bin;" + m ;
+
+		}else if( type == "cryfs" ){
+
+			return SiriKali::Winfsp::engineInstalledDir( "cryfs" ) + "\\bin;" + m ;
 		}else{
 			return m ;
 		}
@@ -366,44 +392,81 @@ static QProcessEnvironment _update_environment( const QString& type )
 	return env ;
 }
 
-Task::process::result SiriKali::Winfsp::FspLaunchRun( const QString& exe,
+Task::process::result SiriKali::Winfsp::FspLaunchRun( const engines::engine::args& args,
 						      const QByteArray& password,
 						      const engines::engine::options& opts )
 {
-	if( opts.type == "encfs" ){
+	if( utility::equalsAtleastOne( opts.type,"encfs","cryfs" ) ){
 
-		if( utility::createFolder( opts.cipherFolder ) ){
+		if( opts.type == "encfs" ){
 
-			/*
-			 * We are intentionally not logging here because the called function
-			 * below will do the logging.
-			 */
-			return SiriKali::Winfsp::FspLaunchStart( exe,password,opts ) ;
+			if( utility::createFolder( opts.cipherFolder ) ){
+
+				/*
+				 * We are intentionally not logging here because the called function
+				 * below will do the logging.
+				 */
+				return SiriKali::Winfsp::FspLaunchStart( args,password,opts ) ;
+			}else{
+				auto s = Task::process::result( "","Failed To Create Cipher Folder",1,0,true ) ;
+
+				utility::logCommandOutPut( s,args.cmd ) ;
+
+				return s ;
+			}
+
+		}else if( opts.type == "cryfs" ){
+
+			if( utility::createFolder( opts.cipherFolder ) ){
+
+				if( utility::createFolder( opts.plainFolder ) ){
+
+					/*
+					 * We are intentionally not logging here because the called function
+					 * below will do the logging.
+					 */
+					return SiriKali::Winfsp::FspLaunchStart( args,password,opts ) ;
+				}else{
+					utility::removeFolder( args.cipherPath ) ;
+					auto s = Task::process::result( "","Failed To Create Plain Folder",1,0,true ) ;
+
+					utility::logCommandOutPut( s,args.cmd ) ;
+
+					return s ;
+				}
+			}else{
+				auto s = Task::process::result( "","Failed To Create Cipher Folder",1,0,true ) ;
+
+				utility::logCommandOutPut( s,args.cmd ) ;
+
+				return s ;
+			}
 		}else{
-			auto s = Task::process::result( "","Failed To Create Cipher Folder",1,0,true ) ;
+			auto s = Task::process::result( "","Unknown Engine Encountered",1,0,true ) ;
 
-			utility::logCommandOutPut( s,exe ) ;
+			utility::logCommandOutPut( s,args.cmd ) ;
 
 			return s ;
 		}
-	}else{
-		auto s = Task::process::run( exe,password ).get() ;
 
-		utility::logCommandOutPut( s,exe ) ;
+	}else{
+		auto s = Task::process::run( args.cmd,password ).get() ;
+
+		utility::logCommandOutPut( s,args.cmd ) ;
 
 		return s ;
 	}
 }
 
-Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QString& args,
-								      const QByteArray& password,
-								      const engines::engine::options& opts )
+Task::process::result SiriKali::Winfsp::instances::add( const engines::engine::args& args,
+							const QByteArray& password,
+							const engines::engine::options& opts )
 {
 	auto exe = utility2::unique_qptr< QProcess >() ;
 
 	exe->setProcessEnvironment( _update_environment( opts.type ) ) ;
 	exe->setProcessChannelMode( QProcess::MergedChannels ) ;
-	exe->start( args ) ;
+	exe->start( args.cmd ) ;
 	exe->waitForStarted() ;
 	exe->write( password + "\n" ) ;
 	exe->closeWriteChannel() ;
@@ -417,7 +480,7 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 			exe->closeReadChannel( QProcess::StandardError ) ;
 			exe->closeReadChannel( QProcess::StandardOutput ) ;
 
-			m_instances.emplace_back( exe.release() ) ;
+			m_instances.emplace_back( args,exe.release() ) ;
 
 			m_updateVolumeList() ;
 
@@ -429,73 +492,22 @@ Task::process::result SiriKali::Winfsp::manageInstances::addInstance( const QStr
 		}
 	}() ;
 
-	utility::logCommandOutPut( s,args ) ;
+	utility::logCommandOutPut( s,args.cmd ) ;
 
 	return s ;
 }
 
-static QString _clean_path( QString e )
+Task::process::result SiriKali::Winfsp::instances::remove( const QString& mountPoint )
 {
-	if( e.startsWith( '\"' ) ){
-
-		e.remove( 0,1 ) ;
-	}
-
-	if( e.endsWith( '\"' ) ){
-
-		e.truncate( e.size() - 1 ) ;
-	}
-
-	return e ;
-}
-
-SiriKali::Winfsp::mountOptions SiriKali::Winfsp::mountOption( const QStringList& e )
-{
-	SiriKali::Winfsp::mountOptions mOpt ;
-
-	for( int i = 0 ; i < e.size() ; i++ ){
-
-		const auto& m = e.at( i ) ;
-
-		if( m == "-o" && i + 1 < e.size() ){
-
-			mOpt.fuseOptions = e.at( i + 1 ) ;
-
-			mOpt.mode = mOpt.fuseOptions.mid( 0,2 ) ;
-
-			for( const auto& it : utility::split( mOpt.fuseOptions,',' ) ){
-
-				if( it.startsWith( "subtype=" ) ){
-
-					mOpt.subtype = it.mid( 8 ) ;
-				}
-			}
-
-		}else if( m.endsWith( ":" ) && m.size() == 2 ){
-
-			mOpt.cipherFolder   = _clean_path( e.at( i - 1 ) ) ;
-			mOpt.mountPointPath = _clean_path( e.at( i ) ) ;
-		}
-	}
-
-	return mOpt ;
-}
-
-Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const QString& e )
-{
-	auto mountPoint = e ;
-
-	mountPoint.replace( "\"","" ) ;
-
 	for( size_t i = 0 ; i < m_instances.size() ; i++ ){
 
-		auto e = m_instances[ i ] ;
+		const auto& s = m_instances[ i ] ;
 
-		auto cmd = e->program() ;
+		if( s.args.mountPath == mountPoint ){
 
-		auto m = SiriKali::Winfsp::mountOption( e->arguments() ).mountPointPath ;
+			const auto& e = s.instance ;
 
-		if( m == mountPoint ){
+			auto cmd = e->program() ;
 
 			QString exe ;
 
@@ -511,7 +523,7 @@ Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const Q
 
 			if( cmd.endsWith( "encfs.exe" ) ){
 
-				exe = "\"" + cmd + "\" -u " + m ;
+				exe = "\"" + cmd + "\" -u " + s.args.mountPath ;
 
 			}else if( cmd.endsWith( "securefs.exe" ) ){
 
@@ -525,8 +537,6 @@ Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const Q
 			auto s = [ & ](){
 
 				if( m.success() ) {
-
-					e->deleteLater() ;
 
 					m_instances.erase( m_instances.begin() + i ) ;
 
@@ -547,17 +557,17 @@ Task::process::result SiriKali::Winfsp::manageInstances::removeInstance( const Q
 	return Task::process::result() ;
 }
 
-QString SiriKali::Winfsp::manageInstances::volumeProperties( const QString& mountPath )
+QString SiriKali::Winfsp::instances::volumeProperties( const QString& mountPath )
 {
 	for( size_t i = 0 ; i < m_instances.size() ; i++ ){
 
-		auto args = m_instances[ i ]->arguments() ;
+		const auto& e = m_instances[ i ] ;
 
-		if( mountPath == args.at( 2 ) ){
+		if( mountPath == e.args.mountPath ){
 
 			auto m = QObject::tr( "Mount Options:\n\n" ) ;
 
-			for( const auto& it : args ){
+			for( const auto& it : e.instance->arguments() ){
 
 				if( it != "-o" ){
 
@@ -574,7 +584,7 @@ QString SiriKali::Winfsp::manageInstances::volumeProperties( const QString& moun
 
 QString SiriKali::Winfsp::volumeProperties( const QString& mountPath )
 {
-	return _winfspInstances().volumeProperties( mountPath ) ;
+	return _instances().volumeProperties( mountPath ) ;
 }
 
 Task::process::result SiriKali::Winfsp::FspLaunchStart( const QString& className,
@@ -602,33 +612,53 @@ Task::process::result SiriKali::Winfsp::FspLaunchStop( const QString& className,
 	return Task::process::result() ;
 }
 
-std::vector< QStringList > SiriKali::Winfsp::commands()
+static QString _make_path( QString e )
 {
-	if( SiriKali::Winfsp::babySittingBackends() ){
+	if( e.startsWith( "\"" ) ){
 
-		return _winfspInstances().commands() ;
-	}else{
-		return SiriKali::Winfsp::ActiveInstances().commands() ;
+		e.remove( 0,1 ) ;
 	}
+
+	if( e.endsWith( "\"" ) ){
+
+		e.truncate( e.size() -1 ) ;
+	}
+
+	return mountinfo::encodeMountPath( e ) ;
+}
+
+std::vector< SiriKali::Winfsp::mountOptions > SiriKali::Winfsp::instances::mountOptions()
+{
+	std::vector< SiriKali::Winfsp::mountOptions > mOpts ;
+
+	for( const auto& it : m_instances ){
+
+		const auto& m = it.args ;
+
+		auto a = _make_path( m.cipherPath ) ;
+		auto b = _make_path( m.mountPath ) ;
+
+		mOpts.emplace_back( m.mode,m.subtype,a,b,m.fuseOptions ) ;
+	}
+
+	return mOpts ;
 }
 
 std::vector< SiriKali::Winfsp::mountOptions > SiriKali::Winfsp::getMountOptions()
 {
-	std::vector< SiriKali::Winfsp::mountOptions > mOpts ;
+	if( SiriKali::Winfsp::babySittingBackends() ){
 
-	for( const auto& it : SiriKali::Winfsp::commands() ){
-
-		mOpts.emplace_back( SiriKali::Winfsp::mountOption( it ) ) ;
+		return _instances().mountOptions() ;
+	}else{
+		return {} ;
 	}
-
-	return mOpts ;
 }
 
 Task::process::result SiriKali::Winfsp::FspLaunchStop( const QString& m )
 {
 	if( SiriKali::Winfsp::babySittingBackends() ){
 
-		return _winfspInstances().removeInstance( m ) ;
+		return _instances().remove( m ) ;
 	}else{
 		QString x ;
 		QStringList y( m ) ;
@@ -637,16 +667,38 @@ Task::process::result SiriKali::Winfsp::FspLaunchStop( const QString& m )
 	}
 }
 
-Task::process::result SiriKali::Winfsp::FspLaunchStart( const QString& exe,
+Task::process::result SiriKali::Winfsp::FspLaunchStart( const engines::engine::args& args,
 							const QByteArray& password,
 							const engines::engine::options& opts )
 {
 	if( SiriKali::Winfsp::babySittingBackends() ){
 
-		return _winfspInstances().addInstance( exe,password,opts ) ;
+		if( opts.type == "cryfs" ){
+
+			if( utility::createFolder( opts.plainFolder ) ){
+
+				auto s = _instances().add( args,password,opts ) ;
+
+				if( !s.success() ){
+
+					utility::removeFolder( opts.plainFolder ) ;
+				}
+
+				return s ;
+			}else{
+				auto s = Task::process::result( "","Failed To Create Mount Folder",1,0,true ) ;
+
+				utility::logCommandOutPut( s,args.cmd ) ;
+
+				return s ;
+			}
+		}else{
+			return _instances().add( args,password,opts ) ;
+		}
+
 	}else{
 		QStringList e ;
-		e.append( exe ) ;
+		e.append( args.cmd ) ;
 
 		return SiriKali::Winfsp::FspLaunchStart( QString(),QString(),e,password ) ;
 	}

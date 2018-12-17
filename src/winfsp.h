@@ -44,11 +44,11 @@ Task::process::result FspLaunchStart( const QString& className,
 				      const QStringList& opts,
 				      const QByteArray& password ) ;
 
-Task::process::result FspLaunchStart( const QString& exe,
+Task::process::result FspLaunchStart( const engines::engine::args&,
 				      const QByteArray& password,
 				      const engines::engine::options& ) ;
 
-Task::process::result FspLaunchRun( const QString& exe,
+Task::process::result FspLaunchRun( const engines::engine::args& args,
 				    const QByteArray& password,
 				    const engines::engine::options& ) ;
 
@@ -61,18 +61,19 @@ int terminateProcess( unsigned long pid ) ;
 QString engineInstalledDir( const QString& ) ;
 QStringList engineInstalledDirs() ;
 
-std::vector< QStringList > commands() ;
-
 struct mountOptions
 {
+	mountOptions( const QString& a,const QString& b,const QString& c,
+		      const QString& d,const QString& e ) :
+		mode( a ),subtype( b ),cipherFolder( c ),mountPointPath( d ),fuseOptions( e )
+	{
+	}
 	QString mode ;
 	QString subtype ;
 	QString cipherFolder ;
 	QString mountPointPath ;
 	QString fuseOptions ;
 };
-
-mountOptions mountOption( const QStringList& e ) ;
 
 std::vector< mountOptions > getMountOptions() ;
 

@@ -18,7 +18,6 @@
  */
 
 #include "cryfs.h"
-#include "commandOptions.h"
 #include "cryfscreateoptions.h"
 
 static engines::engine::BaseOptions _setOptions()
@@ -47,7 +46,7 @@ cryfs::cryfs() : engines::engine( _setOptions() )
 	qputenv( "CRYFS_FRONTEND","noninteractive" ) ;
 }
 
-QString cryfs::command( const engines::engine::cmdArgsList& args ) const
+engines::engine::args cryfs::command( const engines::engine::cmdArgsList& args ) const
 {
 	auto separator = [](){
 
@@ -63,9 +62,14 @@ QString cryfs::command( const engines::engine::cmdArgsList& args ) const
 
 	auto e = QString( "%1 %2 %3 %4 %5 %6" ) ;
 
-	commandOptions m( args,this->name(),this->name() ) ;
+	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
 
 	auto exeOptions = m.exeOptions() ;
+
+	if( utility::platformIsWindows() ){
+
+		exeOptions.add( "-f" ) ;
+	}
 
 	if( !args.opt.idleTimeout.isEmpty() ){
 
@@ -82,12 +86,14 @@ QString cryfs::command( const engines::engine::cmdArgsList& args ) const
 		exeOptions.add( args.configFilePath ) ;
 	}
 
-	return e.arg( args.exe,
-		      exeOptions.get(),
-		      args.cipherFolder,
-		      args.mountPoint,
-		      separator,
-		      m.fuseOpts().get() ) ;
+	auto cmd = e.arg( args.exe,
+			  exeOptions.get(),
+			  args.cipherFolder,
+			  args.mountPoint,
+			  separator,
+			  m.fuseOpts().get() ) ;
+
+	return { args,m,cmd } ;
 }
 
 engines::engine::status cryfs::errorCode( const QString& e,int s ) const

@@ -18,7 +18,6 @@
  */
 
 #include "encfs.h"
-#include "commandOptions.h"
 
 #include "encfscreateoptions.h"
 
@@ -46,11 +45,11 @@ encfs::encfs() : engines::engine( _setOptions() )
 {
 }
 
-QString encfs::command( const engines::engine::cmdArgsList& args ) const
+engines::engine::args encfs::command( const engines::engine::cmdArgsList& args ) const
 {
 	QString e = "%1 %2 %3 %4 %5" ;
 
-	commandOptions m( args,this->name(),this->name() ) ;
+	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
 
 	auto exeOptions = m.exeOptions() ;
 
@@ -81,11 +80,13 @@ QString encfs::command( const engines::engine::cmdArgsList& args ) const
 		exeOptions.addPair( "-i",args.opt.idleTimeout ) ;
 	}
 
-	return e.arg( args.exe,
-		      exeOptions.get(),
-		      args.cipherFolder,
-		      args.mountPoint,
-		      m.fuseOpts().get() ) ;
+	auto cmd = e.arg( args.exe,
+			  exeOptions.get(),
+			  args.cipherFolder,
+			  args.mountPoint,
+			  m.fuseOpts().get() ) ;
+
+	return { args,m,cmd } ;
 }
 
 engines::engine::status encfs::errorCode( const QString& e,int s ) const

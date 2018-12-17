@@ -313,7 +313,6 @@ set( SRC 	src/dialogok.cpp
 		src/engines/sshfs.cpp
 		src/engines/encfs.cpp
 		src/engines/unknown.cpp
-		src/engines/commandOptions.cpp
 		src/engines/gocryptfscreateoptions.cpp
 		src/engines/ecryptfscreateoptions.cpp
 		src/engines/securefscreateoptions.cpp

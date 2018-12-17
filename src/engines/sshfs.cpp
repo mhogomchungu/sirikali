@@ -18,7 +18,6 @@
  */
 
 #include "sshfs.h"
-#include "commandOptions.h"
 
 static engines::engine::BaseOptions _setOptions()
 {
@@ -44,11 +43,12 @@ sshfs::sshfs() : engines::engine( _setOptions() )
 {
 }
 
-QString sshfs::command( const engines::engine::cmdArgsList& args ) const
+engines::engine::args sshfs::command( const engines::engine::cmdArgsList& args ) const
 {
-	commandOptions m( args,this->name(),this->name() ) ;
+	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
 
 	auto fuseOptions = m.fuseOpts() ;
+	auto exeOptions  = m.exeOptions() ;
 
 	if( !args.opt.key.isEmpty() ){
 
@@ -59,8 +59,6 @@ QString sshfs::command( const engines::engine::cmdArgsList& args ) const
 
 		fuseOptions.addPair( "StrictHostKeyChecking","no" ) ;
 	}
-
-	auto exeOptions = m.exeOptions() ;
 
 	if( utility::platformIsWindows() ){
 
@@ -89,11 +87,13 @@ QString sshfs::command( const engines::engine::cmdArgsList& args ) const
 
 	QString s = "%1 %2 %3 %4 %5" ;
 
-	return s.arg( args.exe,
-		      exeOptions.get(),
-		      args.cipherFolder,
-		      args.mountPoint,
-		      fuseOptions.get() ) ;
+	auto cmd = s.arg( args.exe,
+			  exeOptions.get(),
+			  args.cipherFolder,
+			  args.mountPoint,
+			  fuseOptions.get() ) ;
+
+	return { args,m,cmd } ;
 }
 
 engines::engine::status sshfs::errorCode( const QString& e,int s ) const

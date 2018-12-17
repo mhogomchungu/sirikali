@@ -255,7 +255,7 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 	} ) ;
 }
 
-static utility::Task _run_task( const QString& cmd,
+static utility::Task _run_task( const engines::engine::args& args,
 				const QString& password,
 				const engines::engine::options& opts,
 				bool create,
@@ -265,12 +265,12 @@ static utility::Task _run_task( const QString& cmd,
 
 		if( create ){
 
-			return SiriKali::Winfsp::FspLaunchRun( cmd,password.toLatin1(),opts ) ;
+			return SiriKali::Winfsp::FspLaunchRun( args,password.toLatin1(),opts ) ;
 		}else{
-			return SiriKali::Winfsp::FspLaunchStart( cmd,password.toLatin1(),opts ) ;
+			return SiriKali::Winfsp::FspLaunchStart( args,password.toLatin1(),opts ) ;
 		}
 	}else{
-		return utility::Task( cmd,20000,utility::systemEnvironment(),
+		return utility::Task( args.cmd,20000,utility::systemEnvironment(),
 				      password.toLatin1(),[](){},ecryptfs ) ;
 	}
 }

@@ -18,7 +18,6 @@
  */
 
 #include "ecryptfs.h"
-#include "commandOptions.h"
 #include "ecryptfscreateoptions.h"
 
 static engines::engine::BaseOptions _setOptions()
@@ -45,11 +44,13 @@ ecryptfs::ecryptfs() : engines::engine( _setOptions() )
 {
 }
 
-QString ecryptfs::command( const engines::engine::cmdArgsList& args ) const
+engines::engine::args ecryptfs::command( const engines::engine::cmdArgsList& args ) const
 {
 	auto e = QString( "%1 %2 -a %3 %4 %5" ) ;
 
-	auto exeOptions = commandOptions( args,QString() ).exeOptions() ;
+	engines::engine::commandOptions m( args,QString() ) ;
+
+	auto exeOptions = m.exeOptions() ;
 
 	if( args.opt.ro ){
 
@@ -81,9 +82,9 @@ QString ecryptfs::command( const engines::engine::cmdArgsList& args ) const
 
 	if( utility::useSiriPolkit() ){
 
-		return utility::wrap_su( s ) ;
+		return { args,m,utility::wrap_su( s ) } ;
 	}else{
-		return s ;
+		return { args,m,s } ;
 	}
 }
 

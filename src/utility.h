@@ -194,6 +194,7 @@ namespace utility
 	QString getExistingDirectory( QWidget *,const QString& caption,const QString& dir ) ;
 
 	bool createFolder( const QString& ) ;
+	bool removeFolder( const QString& ) ;
 
 	void scaleGUI( void ) ;
 

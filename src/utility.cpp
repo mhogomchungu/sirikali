@@ -927,6 +927,11 @@ bool utility::createFolder( const QString& m )
 	return QDir().mkpath( m ) ;
 }
 
+bool utility::removeFolder( const QString& e )
+{
+	return QDir().rmdir( e ) ;
+}
+
 #ifdef Q_OS_WIN
 
 QString utility::readPassword( bool addNewLine )
