@@ -331,9 +331,6 @@ static QByteArray _read_data( QProcess& exe,size_t max,Function function )
 	QByteArray m ;
 	QByteArray s ;
 
-	/*
-	 * Read a full line before processing it
-	 */
 	while( true ){
 
 		s = exe.readAllStandardOutput() ;
@@ -341,7 +338,6 @@ static QByteArray _read_data( QProcess& exe,size_t max,Function function )
 		if( !s.isEmpty() ){
 
 			m += s ;
-			utility::debug() << m ;
 		}
 
 		if( function( m ) ){
