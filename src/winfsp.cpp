@@ -46,8 +46,8 @@ class instances
 {
 public:
 	Task::process::result add( const engines::engine::args& args,
-					   const QByteArray& password,
-					   const engines::engine::options& opts ) ;
+				   const QByteArray& password,
+				   const engines::engine::options& opts ) ;
 	Task::process::result remove( const QString& mountPoint ) ;
 	std::vector< QStringList > commands() const ;
 	QString volumeProperties( const QString& mountPath ) ;
