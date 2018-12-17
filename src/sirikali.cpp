@@ -1387,6 +1387,11 @@ void sirikali::slotOpenFolder()
 		auto item = table->currentItem() ;
 		auto path = table->item( item->row(),1 )->text() ;
 
+		if( utility::platformIsWindows() ){
+
+			path = path.replace( "/","\\" ) ;
+		}
+
 		this->openMountPoint( path ) ;
 	}
 }
