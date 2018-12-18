@@ -193,8 +193,14 @@ namespace utility
 
 	QString getExistingDirectory( QWidget *,const QString& caption,const QString& dir ) ;
 
+	enum class background_thread{ True,False } ;
+
+	bool enablePolkit( utility::background_thread ) ;
+
 	bool createFolder( const QString& ) ;
-	bool removeFolder( const QString&,int attempts = 1 ) ;
+	bool removeFolder( const QString&,
+			   int attempts = 1,
+			   utility::background_thread = utility::background_thread::False ) ;
 
 	void scaleGUI( void ) ;
 
@@ -214,9 +220,6 @@ namespace utility
 
 	void enableFullDebug( bool ) ;
 	bool debugFullEnabled( void ) ;
-
-	enum class background_thread{ True,False } ;
-	bool enablePolkit( utility::background_thread ) ;
 
 	const QProcessEnvironment& systemEnvironment() ;
 
@@ -284,6 +287,7 @@ namespace utility
 	}
 
 	bool pathExists( const QString& ) ;
+	bool pathNotExists( const QString& ) ;
 
 	template< typename ... F >
 	bool atLeastOnePathExists( const F& ... f ){

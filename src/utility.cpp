@@ -841,6 +841,11 @@ bool utility::pathExists( const QString& path )
 	return QFile::exists( path ) ;
 }
 
+bool utility::pathNotExists( const QString& path )
+{
+	return !utility::pathExists( path ) ;
+}
+
 QStringList utility::split( const QString& e,char token )
 {
 	if( e.isEmpty() ){
@@ -927,21 +932,37 @@ bool utility::createFolder( const QString& m )
 	return QDir().mkpath( m ) ;
 }
 
-bool utility::removeFolder( const QString& e,int attempts )
+bool utility::removeFolder( const QString& e,
+			    int attempts,
+			    utility::background_thread s )
 {
 	QDir dir ;
 
-	for( int i = 0 ; i < attempts ; i++ ){
+	dir.rmdir( e ) ;
 
-		if( dir.rmdir( e ) ){
+	if( utility::pathNotExists( e ) ){
 
-			return true ;
-		}else{
-			utility::Task::suspendForOneSecond() ;
+		return true ;
+	}else{
+		for( int i = 1 ; i < attempts ; i++ ){
+
+			if( s == utility::background_thread::True ){
+
+				utility::Task::waitForOneSecond() ;
+			}else{
+				utility::Task::suspendForOneSecond() ;
+			}
+
+			dir.rmdir( e ) ;
+
+			if( pathNotExists( e ) ){
+
+				return true ;
+			}
 		}
-	}
 
-	return false ;
+		return false ;
+	}
 }
 
 #ifdef Q_OS_WIN
