@@ -171,6 +171,8 @@ systemSignalHandler::systemSignalHandler( QObject * parent,std::function< void( 
 
 void systemSignalHandler::listen()
 {
+	return ;
+
 	if( settings::instance().unMountVolumesOnLogout() ){
 
 		auto m = new eventFilter( m_parent,std::move( m_function ) ) ;

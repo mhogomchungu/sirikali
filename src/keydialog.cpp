@@ -915,14 +915,35 @@ void keyDialog::encryptedFolderCreate()
 
 	if( utility::platformIsWindows() ){
 
-		m = utility::freeWindowsDriveLetter() ;
+		if( m_exe == "Cryfs" ){
 
-		if( utility::pathExists( m ) ){
+			/*
+			 * We are creating a cipher folder and then delete it to prevent
+			 * path collition when create plain folder in variable "m".
+			 */
+			utility::createFolder( path ) ;
 
-			this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
+			m = settings::instance().mountPath( utility::mountPathPostFix( m ) ) ;
 
-			return this->enableAll() ;
+			utility::removeFolder( path ) ;
+
+			if( utility::pathExists( m ) ){
+
+				this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
+
+				return this->enableAll() ;
+			}
+		}else{
+			m = utility::freeWindowsDriveLetter() ;
+
+			if( utility::pathExists( m ) ){
+
+				this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
+
+				return this->enableAll() ;
+			}
 		}
+
 	}else{
 		m = settings::instance().mountPath( utility::mountPathPostFix( m ) ) ;
 

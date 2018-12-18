@@ -265,9 +265,21 @@ QString settings::fileManager()
 
 static void _set_mount_default( settings& s )
 {
-	if( !s.backend().contains( "MountPrefix" ) ){
+	QSettings& m = s.backend() ;
 
-		s.backend().setValue( "MountPrefix",s.homePath() + "/.SiriKali" ) ;
+	if( m.contains( "MountPrefix" ) ){
+
+		if( !m.value( "MountPrefix" ).toString().isEmpty() ){
+
+			return ;
+		}
+	}
+
+	if( utility::platformIsWindows() ){
+
+		m.setValue( "MountPrefix",s.homePath() + "/Desktop" ) ;
+	}else{
+		m.setValue( "MountPrefix",s.homePath() + "/.SiriKali" ) ;
 	}
 }
 

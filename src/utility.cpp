@@ -927,9 +927,21 @@ bool utility::createFolder( const QString& m )
 	return QDir().mkpath( m ) ;
 }
 
-bool utility::removeFolder( const QString& e )
+bool utility::removeFolder( const QString& e,int attempts )
 {
-	return QDir().rmdir( e ) ;
+	QDir dir ;
+
+	for( int i = 0 ; i < attempts ; i++ ){
+
+		if( dir.rmdir( e ) ){
+
+			return true ;
+		}else{
+			utility::Task::suspendForOneSecond() ;
+		}
+	}
+
+	return false ;
 }
 
 #ifdef Q_OS_WIN

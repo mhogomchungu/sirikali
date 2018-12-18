@@ -455,6 +455,7 @@ Task::process::result SiriKali::Winfsp::FspLaunchRun( const engines::engine::arg
 					return SiriKali::Winfsp::FspLaunchStart( args,password,opts ) ;
 				}else{
 					utility::removeFolder( args.cipherPath ) ;
+
 					auto s = Task::process::result( "","Failed To Create Plain Folder",1,0,true ) ;
 
 					utility::logCommandOutPut( s,args.cmd ) ;
@@ -595,7 +596,7 @@ Task::process::result SiriKali::Winfsp::instances::remove( const QString& mountP
 
 						auto a = _make_path( s.args.mountPath,encode::False ) ;
 
-						utility::removeFolder( a ) ;
+						utility::removeFolder( a,5 ) ;
 					}
 
 					return Task::process::result( 0 ) ;
