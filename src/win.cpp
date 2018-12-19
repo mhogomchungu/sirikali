@@ -27,18 +27,21 @@
 namespace SiriKali{
 namespace Windows{
 
+static void _deleteLater( QObject * e )
+{
+	e->deleteLater() ;
+}
+
 struct Process
 {
 	Process( const engines::engine::args& args,QProcess * p ) :
-		args( args ),instance( p )
+		args( args ),instance( p,_deleteLater )
 	{
 	}
-	~Process()
-	{
-		instance->deleteLater() ;
-	}
+	Process( Process&& other ) = default ;
+	Process& operator=( Process&& other ) = default ;
 	engines::engine::args args ;
-	QProcess * instance ;
+	std::unique_ptr< QProcess,void(*)( QObject * ) > instance ;
 } ;
 
 class instances
@@ -219,7 +222,7 @@ int SiriKali::Windows::terminateProcess( unsigned long pid )
 
 #else
 
-int SiriKali::Winfsp::terminateProcess( unsigned long pid )
+int SiriKali::Windows::terminateProcess( unsigned long pid )
 {
 	Q_UNUSED( pid ) ;
 	return 1 ;
@@ -526,7 +529,7 @@ Task::process::result SiriKali::Windows::instances::remove( const QString& mount
 
 		if( s.args.mountPath == mountPoint ){
 
-			const auto e = s.instance ;
+			const auto& e = s.instance ;
 
 			auto cmd = e->program() ;
 
@@ -559,7 +562,7 @@ Task::process::result SiriKali::Windows::instances::remove( const QString& mount
 
 				if( m.success() ) {
 
-					m_instances.erase( m_instances.begin() + i ) ;
+					m_instances.erase( m_instances.begin() + static_cast< int >( i ) ) ;
 
 					m_updateVolumeList() ;
 
