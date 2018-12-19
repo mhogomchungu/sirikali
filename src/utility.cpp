@@ -62,7 +62,7 @@
 #include "plugins.h"
 #include "crypto.h"
 #include "json.h"
-#include "winfsp.h"
+#include "win.h"
 #include "readonlywarning.h"
 
 #include <gcrypt.h>

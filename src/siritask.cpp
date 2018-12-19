@@ -20,7 +20,7 @@
 #include "plugins.h"
 #include "siritask.h"
 #include "mountinfo.h"
-#include "winfsp.h"
+#include "win.h"
 #include "settings.h"
 
 #include <QDir>
@@ -205,7 +205,7 @@ static bool _unmount_rest( const QString& mountPoint,int maxCount )
 {
 	if( utility::platformIsWindows() ){
 
-		return SiriKali::Winfsp::FspLaunchStop( mountPoint ).success() ;
+		return SiriKali::Windows::unmount( mountPoint ).success() ;
 	}
 
 	auto cmd = [ & ](){
@@ -265,9 +265,9 @@ static utility::Task _run_task( const engines::engine::args& args,
 
 		if( create ){
 
-			return SiriKali::Winfsp::FspLaunchRun( args,password.toLatin1(),opts ) ;
+			return SiriKali::Windows::run( args,password.toLatin1(),opts ) ;
 		}else{
-			return SiriKali::Winfsp::FspLaunchStart( args,password.toLatin1(),opts ) ;
+			return SiriKali::Windows::mount( args,password.toLatin1(),opts ) ;
 		}
 	}else{
 		return utility::Task( args.cmd,20000,utility::systemEnvironment(),

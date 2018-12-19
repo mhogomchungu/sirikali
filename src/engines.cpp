@@ -29,7 +29,7 @@
 
 #include "utility.h"
 #include "settings.h"
-#include "winfsp.h"
+#include "win.h"
 
 QStringList engines::executableSearchPaths()
 {
@@ -41,7 +41,7 @@ QStringList engines::executableSearchPaths()
 				  a + "\\.bin\\",
 				  settings::instance().windowsExecutableSearchPath() + "\\" } ;
 
-		for( const auto& it : SiriKali::Winfsp::engineInstalledDirs() ){
+		for( const auto& it : SiriKali::Windows::engineInstalledDirs() ){
 
 			if( !it.isEmpty() ){
 

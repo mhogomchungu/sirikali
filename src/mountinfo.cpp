@@ -21,7 +21,7 @@
 #include "utility.h"
 #include "siritask.h"
 #include "task.hpp"
-#include "winfsp.h"
+#include "win.h"
 #include "settings.h"
 #include "engines.h"
 
@@ -108,13 +108,13 @@ static QStringList _macox_volumes()
 	return s ;
 }
 
-static std::vector< SiriKali::Winfsp::mountOptions > _win_volumes( background_thread thread )
+static std::vector< SiriKali::Windows::mountOptions > _win_volumes( background_thread thread )
 {
 	if( thread == background_thread::True ){
 
-		return SiriKali::Winfsp::getMountOptions() ;
+		return SiriKali::Windows::getMountOptions() ;
 	}else{
-		return Task::await( SiriKali::Winfsp::getMountOptions ) ;
+		return Task::await( SiriKali::Windows::getMountOptions ) ;
 	}
 }
 
@@ -461,5 +461,5 @@ void mountinfo::osxMonitor()
 
 void mountinfo::windowsMonitor()
 {
-	SiriKali::Winfsp::updateVolumeList( [ this ]{ this->updateVolume() ; } ) ;
+	SiriKali::Windows::updateVolumeList( [ this ]{ this->updateVolume() ; } ) ;
 }

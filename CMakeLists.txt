@@ -304,7 +304,7 @@ set( SRC 	src/dialogok.cpp
 		src/secrets.cpp
 		src/filemanager.cpp
 		src/utility2.cpp
-		src/winfsp.cpp
+                src/win.cpp
 		src/settings.cpp
 		src/engines/cryfs.cpp
 		src/engines/ecryptfs.cpp

@@ -33,26 +33,17 @@
 #include "siritask.h"
 
 namespace SiriKali{
-namespace Winfsp{
+namespace Windows{
 
-Task::process::result FspLaunchStop( const QString& className,
-				     const QString& instanceName,
-				     const QStringList& opts ) ;
+Task::process::result mount( const engines::engine::args&,
+			     const QByteArray& password,
+			     const engines::engine::options& ) ;
 
-Task::process::result FspLaunchStart( const QString& className,
-				      const QString& instanceName,
-				      const QStringList& opts,
-				      const QByteArray& password ) ;
+Task::process::result run( const engines::engine::args& args,
+			   const QByteArray& password,
+			   const engines::engine::options& ) ;
 
-Task::process::result FspLaunchStart( const engines::engine::args&,
-				      const QByteArray& password,
-				      const engines::engine::options& ) ;
-
-Task::process::result FspLaunchRun( const engines::engine::args& args,
-				    const QByteArray& password,
-				    const engines::engine::options& ) ;
-
-Task::process::result FspLaunchStop( const QString& mountPath ) ;
+Task::process::result unmount( const QString& mountPath ) ;
 
 QString volumeProperties( const QString& mountPath ) ;
 
@@ -76,8 +67,6 @@ struct mountOptions
 };
 
 std::vector< mountOptions > getMountOptions() ;
-
-bool babySittingBackends() ;
 
 void updateVolumeList( std::function< void() > ) ;
 
