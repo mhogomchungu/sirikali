@@ -366,7 +366,7 @@ SiriKali::Winfsp::instances::getProcessOutput( QProcess& exe,const QString& type
 
 		m = _read_data( exe,100,[]( const QString& e ){
 
-			return e.contains( "Error: " ) || e.contains( "Mounting filesystem." ) ;
+			return e.contains( "Error" ) || e.contains( "Mounting filesystem." ) ;
 		} ) ;
 	}else{
 		m = _read_data( exe,10,[]( const QString& e ){
@@ -516,7 +516,11 @@ Task::process::result SiriKali::Winfsp::instances::add( const engines::engine::a
 		}else{
 			exe->waitForFinished() ;
 
-			return Task::process::result( std::get< 1 >( m ),std::get< 2 >( m ),1,0,true ) ;
+			return Task::process::result( std::get< 1 >( m ),
+						      std::get< 2 >( m ),
+						      exe->exitCode(),
+						      exe->exitStatus(),
+						      true ) ;
 		}
 	}() ;
 

@@ -98,10 +98,27 @@ engines::engine::args cryfs::command( const engines::engine::cmdArgsList& args )
 
 engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 {
-	if( utility::platformIsWindows() ){
+	auto m = utility::backendIsGreaterOrEqualTo( "cryfs","0.9.9" ).get() ;
+
+	if( m && m.value() ){
 
 		/*
-		 * We have to parse strings on windows
+		 * Error codes are here: https://github.com/cryfs/cryfs/blob/develop/src/cryfs/ErrorCodes.h
+		 *
+		 * Valid for cryfs > 0.9.8
+		 */
+
+		if( s == 11 ){
+
+			return engines::engine::status::cryfsBadPassword ;
+
+		}else if( s == 14 ){
+
+			return engines::engine::status::cryfsMigrateFileSystem ;
+		}
+	}else{
+		/*
+		 * Falling back to parsing strings
 		 */
 
 		if( e.contains( "password" ) ){
@@ -112,40 +129,6 @@ engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 			  e.contains( "it has to be migrated" ) ){
 
 			return engines::engine::status::cryfsMigrateFileSystem ;
-		}
-	}else{
-		auto m = utility::backendIsGreaterOrEqualTo( "cryfs","0.9.9" ).get() ;
-
-		if( m && m.value() ){
-
-			/*
-			 * Error codes are here: https://github.com/cryfs/cryfs/blob/develop/src/cryfs/ErrorCodes.h
-			 *
-			 * Valid for cryfs > 0.9.8
-			 */
-
-			if( s == 11 ){
-
-				return engines::engine::status::cryfsBadPassword ;
-
-			}else if( s == 14 ){
-
-				return engines::engine::status::cryfsMigrateFileSystem ;
-			}
-		}else{
-			/*
-			 * Falling back to parsing strings
-			 */
-
-			if( e.contains( "password" ) ){
-
-				return engines::engine::status::cryfsBadPassword ;
-
-			}else if( e.contains( "this filesystem is for cryfs" ) &&
-				  e.contains( "it has to be migrated" ) ){
-
-				return engines::engine::status::cryfsMigrateFileSystem ;
-			}
 		}
 	}
 
