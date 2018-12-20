@@ -389,64 +389,13 @@ static QProcessEnvironment _update_environment( const QString& type )
 	return env ;
 }
 
-Task::process::result SiriKali::Windows::run( const engines::engine::args& args,
-					      const QByteArray& password,
-					      const engines::engine::options& opts )
+Task::process::result SiriKali::Windows::create( const engines::engine::args& args,
+						 const QByteArray& password,
+						 const engines::engine::options& opts )
 {
 	if( utility::equalsAtleastOne( opts.type,"encfs","cryfs" ) ){
 
-		if( opts.type == "encfs" ){
-
-			if( utility::createFolder( opts.cipherFolder ) ){
-
-				/*
-				 * We are intentionally not logging here because the called function
-				 * below will do the logging.
-				 */
-				return SiriKali::Windows::mount( args,password,opts ) ;
-			}else{
-				auto s = Task::process::result( "","Failed To Create Cipher Folder",1,0,true ) ;
-
-				utility::logCommandOutPut( s,args.cmd ) ;
-
-				return s ;
-			}
-
-		}else if( opts.type == "cryfs" ){
-
-			if( utility::createFolder( opts.cipherFolder ) ){
-
-				if( utility::createFolder( opts.plainFolder ) ){
-
-					/*
-					 * We are intentionally not logging here because the called function
-					 * below will do the logging.
-					 */
-					return SiriKali::Windows::mount( args,password,opts ) ;
-				}else{
-					utility::removeFolder( args.cipherPath ) ;
-
-					auto s = Task::process::result( "","Failed To Create Plain Folder",1,0,true ) ;
-
-					utility::logCommandOutPut( s,args.cmd ) ;
-
-					return s ;
-				}
-			}else{
-				auto s = Task::process::result( "","Failed To Create Cipher Folder",1,0,true ) ;
-
-				utility::logCommandOutPut( s,args.cmd ) ;
-
-				return s ;
-			}
-		}else{
-			auto s = Task::process::result( "","Unknown Engine Encountered",1,0,true ) ;
-
-			utility::logCommandOutPut( s,args.cmd ) ;
-
-			return s ;
-		}
-
+		return SiriKali::Windows::mount( args,password,opts ) ;
 	}else{
 		auto s = Task::process::run( args.cmd,password ).get() ;
 
@@ -520,7 +469,6 @@ static QString _make_path( QString e,encode s )
 	}
 }
 
-
 Task::process::result SiriKali::Windows::instances::remove( const QString& mountPoint )
 {
 	for( size_t i = 0 ; i < m_instances.size() ; i++ ){
@@ -565,13 +513,6 @@ Task::process::result SiriKali::Windows::instances::remove( const QString& mount
 					m_instances.erase( m_instances.begin() + static_cast< int >( i ) ) ;
 
 					m_updateVolumeList() ;
-
-					if( cmd.endsWith( "cryfs.exe" ) ){
-
-						auto a = _make_path( s.args.mountPath,encode::False ) ;
-
-						utility::removeFolder( a,5 ) ;
-					}
 
 					return Task::process::result( 0 ) ;
 				}else{
@@ -649,26 +590,5 @@ Task::process::result SiriKali::Windows::mount( const engines::engine::args& arg
 						const QByteArray& password,
 						const engines::engine::options& opts )
 {
-	if( opts.type == "cryfs" ){
-
-		if( utility::createFolder( opts.plainFolder ) ){
-
-			auto s = _instances().add( args,password,opts ) ;
-
-			if( !s.success() ){
-
-				utility::removeFolder( opts.plainFolder ) ;
-			}
-
-			return s ;
-		}else{
-			auto s = Task::process::result( "","Failed To Create Mount Folder",1,0,true ) ;
-
-			utility::logCommandOutPut( s,args.cmd ) ;
-
-			return s ;
-		}
-	}else{
-		return _instances().add( args,password,opts ) ;
-	}
+	return _instances().add( args,password,opts ) ;
 }

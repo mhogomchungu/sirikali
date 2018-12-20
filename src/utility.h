@@ -186,6 +186,7 @@ namespace utility
 	QString executableFullPath( const QString& ) ;
 
 	QString freeWindowsDriveLetter() ;
+	bool isDriveLetter( const QString& ) ;
 
 	void setWindowsMountPointOptions( QWidget *,QLineEdit *,QPushButton * ) ;
 

@@ -30,16 +30,11 @@
 
 static bool _create_folder( const QString& m )
 {
-	if( utility::platformIsWindows() ){
+	if( utility::pathExists( m ) ){
 
-		return true ;
+		return settings::instance().reUseMountPoint() ;
 	}else{
-		if( utility::pathExists( m ) ){
-
-			return settings::instance().reUseMountPoint() ;
-		}else{
-			return utility::createFolder( m ) ;
-		}
+		return utility::createFolder( m ) ;
 	}
 }
 
@@ -65,18 +60,14 @@ static bool _ecryptfs_illegal_path( const engines::engine::options& opts )
 }
 
 template< typename ... T >
-static bool _deleteFolders( const T& ... m )
+static void _deleteFolders( const T& ... m )
 {
-	bool s = false ;
-
 	QDir e ;
 
 	for( const auto& it : { m ... } ){
 
-		s = e.rmdir( it ) ;
+		utility::removeFolder( it,1 ) ;
 	}
-
-	return s ;
 }
 
 static void _run_command_on_mount( const engines::engine::options& opt,const QString& app )
@@ -104,12 +95,7 @@ bool siritask::deleteMountFolder( const QString& m )
 
 		return false ;
 	}else{
-		if( utility::platformIsWindows() ){
-
-			return true ;
-		}else{
-			return _deleteFolders( m ) ;
-		}
+		return utility::removeFolder( m ) ;
 	}
 }
 
@@ -265,7 +251,7 @@ static utility::Task _run_task( const engines::engine::args& args,
 
 		if( create ){
 
-			return SiriKali::Windows::run( args,password.toLatin1(),opts ) ;
+			return SiriKali::Windows::create( args,password.toLatin1(),opts ) ;
 		}else{
 			return SiriKali::Windows::mount( args,password.toLatin1(),opts ) ;
 		}

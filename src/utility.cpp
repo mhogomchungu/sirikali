@@ -929,13 +929,23 @@ void utility::setWindowOptions( QDialog * w )
 
 bool utility::createFolder( const QString& m )
 {
-	return QDir().mkpath( m ) ;
+	if( utility::isDriveLetter( m ) ){
+
+		return true ;
+	}else{
+		return QDir().mkpath( m ) ;
+	}
 }
 
 bool utility::removeFolder( const QString& e,
 			    int attempts,
 			    utility::background_thread s )
 {
+	if( utility::isDriveLetter( e ) ){
+
+		return true ;
+	}
+
 	QDir dir ;
 
 	dir.rmdir( e ) ;
@@ -1147,6 +1157,16 @@ QString utility::freeWindowsDriveLetter()
 	}
 
 	return "Z:" ;
+}
+
+bool utility::isDriveLetter( const QString& path )
+{
+	if( utility::platformIsWindows() ){
+
+		return path.size() == 2 && path.at( 1 ) == ':' ;
+	}else{
+		return false ;
+	}
 }
 
 void utility::setWindowsMountPointOptions( QWidget * obj,QLineEdit * e,QPushButton * s )

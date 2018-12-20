@@ -27,7 +27,6 @@
 #include <QList>
 #include <vector>
 #include <memory>
-#include <QProcess>
 
 #include "task.hpp"
 #include "siritask.h"
@@ -39,9 +38,9 @@ Task::process::result mount( const engines::engine::args&,
 			     const QByteArray& password,
 			     const engines::engine::options& ) ;
 
-Task::process::result run( const engines::engine::args& args,
-			   const QByteArray& password,
-			   const engines::engine::options& ) ;
+Task::process::result create( const engines::engine::args& args,
+			      const QByteArray& password,
+			      const engines::engine::options& ) ;
 
 Task::process::result unmount( const QString& mountPath ) ;
 
@@ -51,6 +50,8 @@ int terminateProcess( unsigned long pid ) ;
 
 QString engineInstalledDir( const QString& ) ;
 QStringList engineInstalledDirs() ;
+
+void updateVolumeList( std::function< void() > ) ;
 
 struct mountOptions
 {
@@ -67,8 +68,6 @@ struct mountOptions
 };
 
 std::vector< mountOptions > getMountOptions() ;
-
-void updateVolumeList( std::function< void() > ) ;
 
 }
 }
