@@ -1163,7 +1163,7 @@ bool utility::isDriveLetter( const QString& path )
 {
 	if( utility::platformIsWindows() ){
 
-		return path.size() == 2 && path.at( 1 ) == ':' ;
+		return ( path.size() == 2 && path.at( 1 ) == ':' ) || ( path.size() == 3 && path.at( 1 ) == ':' && path.at( 2 ) == '\\' ) ;
 	}else{
 		return false ;
 	}
