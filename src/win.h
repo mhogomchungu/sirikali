@@ -40,7 +40,8 @@ Task::process::result mount( const engines::engine::args&,
 
 Task::process::result create( const engines::engine::args& args,
 			      const QByteArray& password,
-			      const engines::engine::options& ) ;
+			      const engines::engine::options&,
+			      bool autoMountsOnSuccess ) ;
 
 Task::process::result unmount( const QString& mountPath ) ;
 

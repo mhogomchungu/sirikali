@@ -242,6 +242,7 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 }
 
 static utility::Task _run_task( const engines::engine::args& args,
+				const engines::engine& engine,
 				const QString& password,
 				const engines::engine::options& opts,
 				bool create,
@@ -251,7 +252,8 @@ static utility::Task _run_task( const engines::engine::args& args,
 
 		if( create ){
 
-			return SiriKali::Windows::create( args,password.toLatin1(),opts ) ;
+			auto m = engine.autoMountsOnCreate() ;
+			return SiriKali::Windows::create( args,password.toLatin1(),opts,m ) ;
 		}else{
 			return SiriKali::Windows::mount( args,password.toLatin1(),opts ) ;
 		}
@@ -304,7 +306,7 @@ static engines::engine::cmdStatus _cmd( const engines::engine& engine,
 
 				auto cmd = engine.command( { exe,opts,m.value(),cc,mm,create } ) ;
 
-				auto s = _run_task( cmd,password,opts,create,_ecryptfs( engine.name() ) ) ;
+				auto s = _run_task( cmd,engine,password,opts,create,_ecryptfs( engine.name() ) ) ;
 
 				if( s.success() ){
 

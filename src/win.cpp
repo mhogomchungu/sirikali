@@ -391,9 +391,10 @@ static QProcessEnvironment _update_environment( const QString& type )
 
 Task::process::result SiriKali::Windows::create( const engines::engine::args& args,
 						 const QByteArray& password,
-						 const engines::engine::options& opts )
+						 const engines::engine::options& opts,
+						 bool autoMountsOnSuccess )
 {
-	if( utility::equalsAtleastOne( opts.type,"encfs","cryfs" ) ){
+	if( autoMountsOnSuccess ){
 
 		return SiriKali::Windows::mount( args,password,opts ) ;
 	}else{
