@@ -530,8 +530,10 @@ Task::process::result SiriKali::Windows::instances::remove( const QString& mount
 	return Task::process::result() ;
 }
 
-QString SiriKali::Windows::instances::volumeProperties( const QString& mountPath )
+QString SiriKali::Windows::instances::volumeProperties( const QString& mm )
 {
+	auto mountPath = "\"" + mm + "\"" ;
+
 	for( size_t i = 0 ; i < m_instances.size() ; i++ ){
 
 		const auto& e = m_instances[ i ] ;
@@ -555,11 +557,6 @@ QString SiriKali::Windows::instances::volumeProperties( const QString& mountPath
 	return QString() ;
 }
 
-QString SiriKali::Windows::volumeProperties( const QString& mountPath )
-{
-	return _instances().volumeProperties( mountPath ) ;
-}
-
 std::vector< SiriKali::Windows::mountOptions > SiriKali::Windows::instances::mountOptions()
 {
 	std::vector< SiriKali::Windows::mountOptions > mOpts ;
@@ -575,6 +572,11 @@ std::vector< SiriKali::Windows::mountOptions > SiriKali::Windows::instances::mou
 	}
 
 	return mOpts ;
+}
+
+QString SiriKali::Windows::volumeProperties( const QString& mountPath )
+{
+	return _instances().volumeProperties( mountPath ) ;
 }
 
 std::vector< SiriKali::Windows::mountOptions > SiriKali::Windows::getMountOptions()
