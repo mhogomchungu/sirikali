@@ -109,7 +109,7 @@ engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const
 
 		return engines::engine::status::gocryptfsBadPassword ;
 
-	}else if( e.contains( "password" ) ){
+	}else if( e.contains( "password incorrect." ) ){
 
 		return engines::engine::status::gocryptfsBadPassword ;
 	}else{

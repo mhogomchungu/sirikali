@@ -105,7 +105,7 @@ engines::engine::status encfs::errorCode( const QString& e,int s ) const
 {
 	Q_UNUSED( s ) ;
 
-	if( e.contains( "password" ) ){
+	if( e.contains( "error decoding volume key, password incorrect" ) ){
 
 		return engines::engine::status::encfsBadPassword ;
 

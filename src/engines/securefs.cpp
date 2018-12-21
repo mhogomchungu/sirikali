@@ -88,7 +88,7 @@ engines::engine::status securefs::errorCode( const QString& e,int s ) const
 {
 	Q_UNUSED( s ) ;
 
-	if( e.contains( "password" ) ){
+	if( e.contains( "invalid password" ) ){
 
 		return engines::engine::status::securefsBadPassword ;
 
