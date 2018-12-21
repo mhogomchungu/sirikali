@@ -1161,9 +1161,15 @@ void keyDialog::encryptedFolderMount()
 
 	if( utility::pathExists( m ) && !m_reUseMountPoint ){
 
-		this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
+		if( utility::platformIsWindows() ){
 
-		return this->enableAll() ;
+			settings::instance().reUseMountPoint( true ) ;
+			m_reUseMountPoint = true ;
+		}else{
+			this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
+
+			return this->enableAll() ;
+		}
 	}
 
 	if( !m_path.startsWith( "sshfs " ) ){
