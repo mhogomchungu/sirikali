@@ -207,6 +207,19 @@
     <string/>
    </property>
   </widget>
+  <widget class="QPushButton" name="pbMountPoint_1">
+   <property name="geometry">
+    <rect>
+     <x>460</x>
+     <y>20</y>
+     <width>31</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
   <widget class="QPushButton" name="pbOK">
    <property name="geometry">
     <rect>

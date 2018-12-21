@@ -183,7 +183,25 @@ void keyDialog::setUpInitUI()
 	connect( m_ui->pbSetKeyCancel,SIGNAL( clicked() ),
 		 this,SLOT( pbSetKeyCancel() ) ) ;
 
+	connect( m_ui->pbMountPoint_1,&QPushButton::clicked,[ this ](){
+
+		auto msg = tr( "Select A Folder To Create A Mount Point In." ) ;
+		auto e = utility::getExistingDirectory( this,msg,settings::instance().homePath() ) ;
+
+		if( !e.isEmpty() ){
+
+			while( e.endsWith( "/" ) ){
+
+				e.truncate( e.length() - 1 ) ;
+			}
+
+			m_ui->lineEditMountPoint->setText( e ) ;
+		}
+	} ) ;
+
 	if( m_create ){
+
+		m_ui->pbMountPoint_1->setVisible( false ) ;
 
 		connect( m_ui->lineEditMountPoint,SIGNAL( textChanged( QString ) ),
 			 this,SLOT( textChanged( QString ) ) ) ;
@@ -213,6 +231,8 @@ void keyDialog::setUpInitUI()
 		m_ui->label_2->setText( tr( "Mount Path" ) ) ;
 
 		m_ui->pbMountPoint->setIcon( QIcon( ":/folder.png" ) ) ;
+
+		m_ui->pbMountPoint_1->setIcon( QIcon( ":/folder.png" ) ) ;
 
 		m_ui->lineEditKey->setFocus() ;
 	}
@@ -418,6 +438,8 @@ void keyDialog::setDefaultUI()
 
 		m_ui->pbMountPoint->setVisible( false ) ;
 
+		m_ui->pbMountPoint_1->setVisible( false ) ;
+
 		m_ui->lineEditFolderPath->setEnabled( false ) ;
 
 		m_ui->pbkeyOption->setVisible( false ) ;
@@ -616,6 +638,7 @@ void keyDialog::pbFolderPath()
 void keyDialog::enableAll()
 {
 	m_ui->pbMountPoint->setEnabled( true ) ;
+	m_ui->pbMountPoint_1->setEnabled( true ) ;
         m_ui->pbOptions->setEnabled( true ) ;
 	m_ui->label_2->setEnabled( true ) ;
 	m_ui->pbOpenFolderPath->setEnabled( true ) ;
@@ -651,6 +674,7 @@ void keyDialog::disableAll()
 {
 	m_ui->checkBoxVisibleKey->setEnabled( false ) ;
 	m_ui->pbMountPoint->setEnabled( false ) ;
+	m_ui->pbMountPoint_1->setEnabled( false ) ;
 	m_ui->cbKeyType->setEnabled( false ) ;
 	m_ui->pbOptions->setEnabled( false ) ;
 	m_ui->pbkeyOption->setEnabled( false ) ;
@@ -685,12 +709,14 @@ void keyDialog::setUIVisible( bool e )
 	if( e ){
 
 		m_ui->pbMountPoint->setVisible( !m_create ) ;
+		m_ui->pbMountPoint_1->setVisible( !m_create ) ;
 		m_ui->label_3->setVisible( m_create ) ;
 		m_ui->checkBoxOpenReadOnly->setVisible( !m_create ) ;
 		m_ui->lineEditFolderPath->setVisible( m_create ) ;
 		m_ui->pbOpenFolderPath->setVisible( m_create ) ;
 	}else{
 		m_ui->pbMountPoint->setVisible( e ) ;
+		m_ui->pbMountPoint_1->setVisible( e ) ;
 		m_ui->label_3->setVisible( e ) ;
 		m_ui->checkBoxOpenReadOnly->setVisible( e ) ;
 		m_ui->lineEditFolderPath->setVisible( e ) ;

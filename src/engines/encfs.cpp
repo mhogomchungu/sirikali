@@ -68,6 +68,18 @@ engines::engine::args encfs::command( const engines::engine::cmdArgsList& args )
 	if( utility::platformIsWindows() ){
 
 		exeOptions.add( "-f" ) ;
+
+		auto m = args.mountPoint.mid( 1,args.mountPoint.size() - 2 ) ;
+
+		if( !utility::isDriveLetter( m ) ){
+
+			/*
+			 * A user is trying to use a folder as a mount path and encfs
+			 * requires the mount path to not exist and we are deleting
+			 * it because SiriKali created it previously.
+			 */
+			utility::removeFolder( m ) ;
+		}
 	}
 
 	if( !args.configFilePath.isEmpty() ){
