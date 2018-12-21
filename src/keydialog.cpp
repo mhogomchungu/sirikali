@@ -228,6 +228,8 @@ void keyDialog::setUpInitUI()
 	}else{
 		this->windowSetTitle( tr( "Unlocking \"%1\"" ).arg( m_path ) ) ;
 
+		m_ui->pbMountPoint_1->setVisible( utility::platformIsWindows() ) ;
+
 		m_ui->label_2->setText( tr( "Mount Path" ) ) ;
 
 		m_ui->pbMountPoint->setIcon( QIcon( ":/folder.png" ) ) ;
@@ -709,14 +711,24 @@ void keyDialog::setUIVisible( bool e )
 	if( e ){
 
 		m_ui->pbMountPoint->setVisible( !m_create ) ;
-		m_ui->pbMountPoint_1->setVisible( !m_create ) ;
+
+		if( utility::platformIsWindows() ){
+
+			m_ui->pbMountPoint_1->setVisible( !m_create ) ;
+		}
+
 		m_ui->label_3->setVisible( m_create ) ;
 		m_ui->checkBoxOpenReadOnly->setVisible( !m_create ) ;
 		m_ui->lineEditFolderPath->setVisible( m_create ) ;
 		m_ui->pbOpenFolderPath->setVisible( m_create ) ;
 	}else{
 		m_ui->pbMountPoint->setVisible( e ) ;
-		m_ui->pbMountPoint_1->setVisible( e ) ;
+
+		if( utility::platformIsWindows() ){
+
+			m_ui->pbMountPoint_1->setVisible( e ) ;
+		}
+
 		m_ui->label_3->setVisible( e ) ;
 		m_ui->checkBoxOpenReadOnly->setVisible( e ) ;
 		m_ui->lineEditFolderPath->setVisible( e ) ;
