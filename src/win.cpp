@@ -38,8 +38,8 @@ struct Process
 		args( args ),instance( p,_deleteLater )
 	{
 	}
-	Process( Process&& other ) = default ;
-	Process& operator=( Process&& other ) = default ;
+	Process( Process&& ) = default ;
+	Process& operator=( Process&& ) = default ;
 	engines::engine::args args ;
 	std::unique_ptr< QProcess,void(*)( QObject * ) > instance ;
 } ;
@@ -294,10 +294,8 @@ void SiriKali::Windows::instances::updateVolumeList( std::function< void() > fun
 }
 
 template< typename Function >
-static QByteArray _read_data( QProcess& exe,size_t max,Function function )
+static QByteArray _read( QProcess& exe,Function function )
 {
-	size_t counter = 0 ;
-
 	QByteArray m ;
 	QByteArray s ;
 
@@ -313,14 +311,8 @@ static QByteArray _read_data( QProcess& exe,size_t max,Function function )
 		if( function( m ) ){
 
 			break ;
-
-		}else if( counter < max ){
-
-			counter++ ;
-
-			utility::Task::suspendForOneSecond() ;
 		}else{
-			break ;
+			utility::Task::suspendForOneSecond() ;
 		}
 	}
 
@@ -334,12 +326,12 @@ SiriKali::Windows::instances::getProcessOutput( QProcess& exe,const QString& typ
 
 	if( type == "cryfs" ){
 
-		m = _read_data( exe,100,[]( const QString& e ){
+		m = _read( exe,[]( const QString& e ){
 
 			return e.contains( "Error" ) || e.contains( "Mounting filesystem." ) ;
 		} ) ;
 	}else{
-		m = _read_data( exe,10,[]( const QString& e ){
+		m = _read( exe,[]( const QString& e ){
 
 			return e.contains( "\n" ) ;
 		} ) ;
