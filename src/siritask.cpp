@@ -95,7 +95,7 @@ bool siritask::deleteMountFolder( const QString& m )
 
 		return false ;
 	}else{
-		return utility::removeFolder( m ) ;
+		return utility::removeFolder( m,5 ) ;
 	}
 }
 
@@ -133,7 +133,7 @@ static bool _unmount_ecryptfs_( Function cmd,const QString& mountPoint,bool& not
 
 			not_set = false ;
 
-			if( utility::enablePolkit( utility::background_thread::True ) ){
+			if( utility::enablePolkit() ){
 
 				auto s = _unmount_volume( cmd(),mountPoint,true ) ;
 				return s && s.value().success() ;
@@ -327,7 +327,7 @@ static engines::engine::cmdStatus _cmd( const engines::engine& engine,
 
 		if( s == engines::engine::status::ecrypfsBadExePermissions ){
 
-			if( utility::enablePolkit( utility::background_thread::True ) ){
+			if( utility::enablePolkit() ){
 
 				s = _run() ;
 			}

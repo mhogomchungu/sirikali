@@ -194,16 +194,22 @@ namespace utility
 
 	QString getExistingDirectory( QWidget *,const QString& caption,const QString& dir ) ;
 
-	enum class background_thread{ True,False } ;
-
-	bool enablePolkit( utility::background_thread ) ;
+	bool enablePolkit( void ) ;
 
 	bool createFolder( const QString& ) ;
-	bool removeFolder( const QString&,
-			   int attempts = 1,
-			   utility::background_thread = utility::background_thread::False ) ;
+	bool removeFolder( const QString&,int attempts = 1 ) ;
 
 	void scaleGUI( void ) ;
+
+	void setGUIThread( void ) ;
+
+	bool runningOnGUIThread( void ) ;
+
+	bool runningOnBackGroundThread( void ) ;
+
+	void waitForOneSecond( void ) ;
+
+	void wait( int ) ;
 
 	void setDefaultMountPointPrefix( const QString& path ) ;
 

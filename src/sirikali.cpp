@@ -156,7 +156,7 @@ void sirikali::closeApplication( int s,const QString& e )
 
 		if( !m_emergencyShuttingDown ){
 
-			utility::Task::suspendForOneSecond() ;
+			utility::waitForOneSecond() ;
 		}
 	}
 
@@ -313,7 +313,7 @@ void sirikali::showTrayIcon()
 
 			return _show_tray() ;
 		}else{
-			utility::Task::suspendForOneSecond() ;
+			utility::waitForOneSecond();
 		}
 	}
 
@@ -1664,7 +1664,7 @@ void sirikali::pbUmount()
 		auto b = table->item( row,1 )->text() ;
 		auto c = table->item( row,2 )->text() ;
 
-		utility::Task::suspendForOneSecond() ;
+		utility::waitForOneSecond() ;
 
 		if( siritask::encryptedFolderUnMount( a,b,c ).await() ){
 
@@ -1720,7 +1720,7 @@ void sirikali::unMountAll()
 	const auto mountPoints   = tablewidget::columnEntries( table,1 ) ;
 	const auto fileSystems   = tablewidget::columnEntries( table,2 ) ;
 
-	utility::Task::suspendForOneSecond() ;
+	utility::waitForOneSecond() ;
 
 	for( auto r = cipherFolders.size() - 1 ; r >= 0 ; r-- ){
 
@@ -1734,7 +1734,7 @@ void sirikali::unMountAll()
 
 			siritask::deleteMountFolder( b ) ;
 
-			utility::Task::suspendForOneSecond() ;
+			utility::waitForOneSecond() ;
 		}
 	}
 

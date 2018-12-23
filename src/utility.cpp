@@ -150,6 +150,8 @@ static bool _enable_debug = false ;
 
 static bool _enable_full_debug = false ;
 
+static QThread * _main_gui_thread ;
+
 void utility::enableDebug( bool e )
 {
 	_enable_debug = e ;
@@ -177,6 +179,7 @@ void utility::setDebugWindow( debugWindow * w )
 
 static void _set_debug_window_text( const QString& e )
 {
+	std::cout << e.toLatin1().constData() << std::endl ;
 	_debugWindow->UpdateOutPut( e,utility::debugFullEnabled() ) ;
 }
 
@@ -247,7 +250,7 @@ void utility::Task::execute( const QString& exe,int waitTime,
 			}else{
 				utility::debug() << s.errorString() ;
 
-				utility::Task::suspendForOneSecond() ;
+				utility::waitForOneSecond() ;
 			}
 		}
 
@@ -396,7 +399,7 @@ static ::Task::future< utility::Task >& _start_siripolkit( const QString& e )
 	} ) ;
 }
 
-bool utility::enablePolkit( utility::background_thread thread )
+bool utility::enablePolkit()
 {
 	if( _use_polkit ){
 
@@ -409,7 +412,7 @@ bool utility::enablePolkit( utility::background_thread thread )
 
 		auto socketPath = utility::helperSocketPath() ;
 
-		if( thread == utility::background_thread::True ){
+		if( utility::runningOnBackGroundThread() ){
 
 			if( _start_siripolkit( exe ).get().success() ){
 
@@ -438,6 +441,7 @@ bool utility::enablePolkit( utility::background_thread thread )
 
 void utility::initGlobals()
 {
+	utility::setGUIThread() ;
 #ifdef Q_OS_LINUX
 	auto uid = getuid() ;
 
@@ -937,9 +941,7 @@ bool utility::createFolder( const QString& m )
 	}
 }
 
-bool utility::removeFolder( const QString& e,
-			    int attempts,
-			    utility::background_thread s )
+bool utility::removeFolder( const QString& e,int attempts )
 {
 	if( utility::isDriveLetter( e ) ){
 
@@ -956,12 +958,7 @@ bool utility::removeFolder( const QString& e,
 	}else{
 		for( int i = 1 ; i < attempts ; i++ ){
 
-			if( s == utility::background_thread::True ){
-
-				utility::Task::waitForOneSecond() ;
-			}else{
-				utility::Task::suspendForOneSecond() ;
-			}
+			utility::waitForOneSecond() ;
 
 			dir.rmdir( e ) ;
 
@@ -1346,4 +1343,34 @@ utility::globalEnvironment::globalEnvironment() :
 	m_environment.insert( "PATH",m ) ;
 
 	m_environment.insert( "LANG","C" ) ;
+}
+
+void utility::setGUIThread()
+{
+	_main_gui_thread = QThread::currentThread() ;
+}
+
+bool utility::runningOnGUIThread()
+{
+	return QThread::currentThread() == _main_gui_thread ;
+}
+
+bool utility::runningOnBackGroundThread()
+{
+	return QThread::currentThread() != _main_gui_thread ;
+}
+
+void utility::waitForOneSecond()
+{
+	utility::wait( 1 ) ;
+}
+
+void utility::wait( int time )
+{
+	if( utility::runningOnBackGroundThread() ){
+
+		utility::Task::wait( time ) ;
+	}else{
+		utility::Task::suspend( time ) ;
+	}
 }
