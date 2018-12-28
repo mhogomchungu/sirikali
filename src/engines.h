@@ -62,6 +62,7 @@ public:
 			gocryptfsNotFound,
 			ecryptfs_simpleNotFound,
 
+			sshfsTooOld,
 			cryfsMigrateFileSystem,
 
 			failedToLoadWinfsp,

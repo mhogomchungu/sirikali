@@ -130,7 +130,7 @@ QString engines::engine::baseInstalledVersionString( const QString& versionArgum
 {
 	const auto& s = utility::systemEnvironment() ;
 
-	const auto cmd = this->executableFullPath() + " " + versionArgument ;
+	const auto cmd = utility::Task::makePath( this->executableFullPath() ) + " " + versionArgument ;
 
 	const auto r = ::Task::process::run( cmd,{},-1,{},s ).get() ;
 
@@ -487,6 +487,10 @@ QString engines::engine::cmdStatus::toString() const
 	case engines::engine::status::unknown :
 
 		return QObject::tr( "Failed To Unlock The Volume.\nNot Supported Volume Encountered." ) ;
+
+	case engines::engine::status::sshfsTooOld :
+
+		return QObject::tr( "Installed Sshfs Version Is Too Old.\n Please Update To Atleast Version 3.2.0." ) ;
 
 	case engines::engine::status::invalidConfigFileName :
 

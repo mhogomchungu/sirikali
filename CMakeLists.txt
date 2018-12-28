@@ -515,7 +515,7 @@ if( WIN32 )
 
     find_path( gcc_PATH gcc.exe )
 
-    find_path( windeployqt_PATH windeployqt.exe )
+    find_path( windeployqt_PATH windeployqt.exe PATHS "${CMAKE_PREFIX_PATH}/bin" )
 
 file( WRITE ${PROJECT_BINARY_DIR}/sirikali_windows_installer_commands.txt
 "

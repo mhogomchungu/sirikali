@@ -390,6 +390,16 @@ static engines::engine::cmdStatus _encrypted_folder_mount( const engines::engine
 
 		if( engine.known() ){
 
+			if( utility::platformIsWindows() ){
+
+				auto m = utility::backendIsLessThan( "sshfs","3.2.0" ).get() ;
+
+				if( m && m.value() ){
+
+					return engines::engine::status::sshfsTooOld ;
+				}
+			}
+
 			auto opts = opt ;
 			opts.cipherFolder = opts.cipherFolder.remove( 0,6 ) ; // 6 is the size of "sshfs "
 

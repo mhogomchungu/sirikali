@@ -131,7 +131,12 @@ QString sshfs::setPassword( const QString& e ) const
 
 QString sshfs::installedVersionString() const
 {
-	return this->baseInstalledVersionString( "--version",true,2,0 ) ;
+	if( m_version.isEmpty() ){
+
+		m_version = this->baseInstalledVersionString( "--version",true,2,0 ) ;
+	}
+
+	return m_version ;
 }
 
 void sshfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
