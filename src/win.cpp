@@ -390,7 +390,7 @@ Task::process::result SiriKali::Windows::create( const engines::engine::args& ar
 
 		return SiriKali::Windows::mount( args,password,opts ) ;
 	}else{
-		auto s = Task::process::run( args.cmd,password ).get() ;
+		auto s = utility::unwrap( Task::process::run( args.cmd,password ) ) ;
 
 		utility::logCommandOutPut( s,args.cmd ) ;
 
@@ -497,7 +497,7 @@ Task::process::result SiriKali::Windows::instances::remove( const QString& mount
 				exe = "taskkill /F /PID " + QString::number( e->processId() ) ;
 			}
 
-			auto m = Task::process::run( exe,{},-1,"",env ).get() ;
+			auto m = utility::unwrap( Task::process::run( exe,{},-1,"",env ) ) ;
 
 			auto r = [ & ](){
 

@@ -289,7 +289,9 @@ void utility::Task::execute( const QString& exe,int waitTime,
 			_report_error( "SiriKali: Failed To Parse Polkit Backend Output" ) ;
 		}
 	}else{
-		auto s = ::Task::process::run( exe,{},waitTime,password,env,std::move( function ) ).get() ;
+		auto& ss = ::Task::process::run( exe,{},waitTime,password,env,std::move( function ) ) ;
+
+		auto s = utility::unwrap( ss ) ;
 
 		m_finished   = s.finished() ;
 		m_exitCode   = s.exit_code() ;
@@ -416,26 +418,13 @@ bool utility::enablePolkit()
 
 		auto socketPath = utility::helperSocketPath() ;
 
-		if( utility::runningOnBackGroundThread() ){
+		if( utility::unwrap( _start_siripolkit( exe ) ).success() ){
 
-			if( _start_siripolkit( exe ).get().success() ){
+			_use_polkit = true ;
 
-				_use_polkit = true ;
+			while( !utility::pathExists( socketPath ) ){
 
-				while( !utility::pathExists( socketPath ) ){
-
-					utility::Task::waitForOneSecond() ;
-				}
-			}
-		}else{
-			if( _start_siripolkit( exe ).await().success() ){
-
-				_use_polkit = true ;
-
-				while( !utility::pathExists( socketPath ) ){
-
-					utility::Task::suspendForOneSecond() ;
-				}
+				utility::waitForOneSecond() ;
 			}
 		}
 	}

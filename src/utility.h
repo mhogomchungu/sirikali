@@ -211,6 +211,17 @@ namespace utility
 
 	void wait( int ) ;
 
+	template< typename Future >
+	static inline auto unwrap( Future& x )
+	{
+		if( utility::runningOnGUIThread() ){
+
+			return x.await() ;
+		}else{
+			return x.get() ;
+		}
+	}
+
 	void setDefaultMountPointPrefix( const QString& path ) ;
 
 	QString mountPathPostFix( const QString& path ) ;

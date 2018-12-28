@@ -109,11 +109,13 @@ static utility::result< utility::Task > _unmount_volume( const QString& exe,
 
 	if( e.isEmpty() ){
 
-		return utility::Task::run( exe,timeOut,usePolkit ).get() ;
+		return utility::unwrap( utility::Task::run( exe,timeOut,usePolkit ) ) ;
 	}else{
-		if( utility::Task::run( e + " " + mountPoint,timeOut,false ).get().success() ){
+		auto m = utility::unwrap( utility::Task::run( e + " " + mountPoint,timeOut,false ) ) ;
 
-			return utility::Task::run( exe,timeOut,usePolkit ).get() ;
+		if( m.success() ){
+
+			return utility::unwrap( utility::Task::run( exe,timeOut,usePolkit ) ) ;
 		}else{
 			return {} ;
 		}
@@ -392,7 +394,7 @@ static engines::engine::cmdStatus _encrypted_folder_mount( const engines::engine
 
 			if( utility::platformIsWindows() ){
 
-				auto m = utility::backendIsLessThan( "sshfs","3.2.0" ).get() ;
+				auto m = utility::unwrap( utility::backendIsLessThan( "sshfs","3.2.0" ) ) ;
 
 				if( m && m.value() ){
 

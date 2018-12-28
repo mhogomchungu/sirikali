@@ -132,7 +132,7 @@ QString engines::engine::baseInstalledVersionString( const QString& versionArgum
 
 	const auto cmd = utility::Task::makePath( this->executableFullPath() ) + " " + versionArgument ;
 
-	const auto r = ::Task::process::run( cmd,{},-1,{},s ).get() ;
+	const auto r = utility::unwrap( ::Task::process::run( cmd,{},-1,{},s ) ) ;
 
 	const auto m = utility::split( readFromStdOut ? r.std_out() : r.std_error(),'\n' ) ;
 

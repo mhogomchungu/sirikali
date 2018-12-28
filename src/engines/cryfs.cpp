@@ -50,7 +50,7 @@ engines::engine::args cryfs::command( const engines::engine::cmdArgsList& args )
 {
 	auto separator = [](){
 
-		auto m = utility::backendIsLessThan( "cryfs","0.10" ).get() ;
+		auto m = utility::unwrap( utility::backendIsLessThan( "cryfs","0.10" ) ) ;
 
 		if( m && m.value() ){
 
@@ -98,7 +98,7 @@ engines::engine::args cryfs::command( const engines::engine::cmdArgsList& args )
 
 engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 {
-	auto m = utility::backendIsGreaterOrEqualTo( "cryfs","0.9.9" ).get() ;
+	auto m = utility::unwrap( utility::backendIsGreaterOrEqualTo( "cryfs","0.9.9" ) ) ;
 
 	if( m && m.value() ){
 
