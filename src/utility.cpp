@@ -179,7 +179,11 @@ void utility::setDebugWindow( debugWindow * w )
 
 static void _set_debug_window_text( const QString& e )
 {
-	std::cout << e.toLatin1().constData() << std::endl ;
+	if( utility::debugFullEnabled() ){
+
+		std::cout << e.toLatin1().constData() << std::endl ;
+	}
+
 	_debugWindow->UpdateOutPut( e,utility::debugFullEnabled() ) ;
 }
 
