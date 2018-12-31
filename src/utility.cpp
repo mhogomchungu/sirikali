@@ -924,6 +924,16 @@ void utility::setWindowOptions( QDialog * w )
 	}
 }
 
+bool utility::folderIsEmpty( const QString& m )
+{
+	return QDir( m ).entryList( QDir::AllEntries | QDir::NoDotAndDotDot | QDir::System ).count() == 0 ;
+}
+
+bool utility::folderNotEmpty( const QString& m )
+{
+	return !utility::folderIsEmpty( m ) ;
+}
+
 bool utility::createFolder( const QString& m )
 {
 	if( utility::isDriveLetter( m ) ){

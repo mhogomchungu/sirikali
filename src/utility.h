@@ -198,6 +198,8 @@ namespace utility
 
 	bool createFolder( const QString& ) ;
 	bool removeFolder( const QString&,int attempts = 1 ) ;
+	bool folderIsEmpty( const QString& ) ;
+	bool folderNotEmpty( const QString& ) ;
 
 	void scaleGUI( void ) ;
 

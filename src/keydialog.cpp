@@ -1172,6 +1172,16 @@ void keyDialog::encryptedFolderMount()
 		}
 	}
 
+	if( utility::platformIsWindows() && !utility::isDriveLetter( m ) ){
+
+		if( utility::folderNotEmpty( m ) ){
+
+			this->showErrorMessage( tr( "Mount Point Path Is Not Empty." ) ) ;
+
+			return this->enableAll() ;
+		}
+	}
+
 	if( !m_path.startsWith( "sshfs " ) ){
 
 		if( !utility::pathExists( m_path ) ){
