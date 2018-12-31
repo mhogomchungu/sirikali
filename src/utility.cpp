@@ -955,7 +955,7 @@ bool utility::removeFolder( const QString& e,int attempts )
 
 			dir.rmdir( e ) ;
 
-			if( pathNotExists( e ) ){
+			if( utility::pathNotExists( e ) ){
 
 				return true ;
 			}

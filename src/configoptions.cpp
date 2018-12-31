@@ -45,21 +45,15 @@ configOptions::configOptions( QWidget * parent,
 
 	connect( m_ui->pushButton,&QPushButton::clicked,[ this ](){ this->HideUI() ; } ) ;
 
-	m_ui->cbAutoOpenMountPoint->setChecked( settings::instance().autoOpenFolderOnMount() ) ;
-
 	connect( m_ui->cbAutoOpenMountPoint,&QCheckBox::toggled,[]( bool e ){
 
 		settings::instance().autoOpenFolderOnMount( e ) ;
 	} ) ;
 
-	m_ui->cbReUseMountPoint->setChecked( settings::instance().reUseMountPoint() ) ;
-
 	connect( m_ui->cbReUseMountPoint,&QCheckBox::toggled,[]( bool e ){
 
 		settings::instance().reUseMountPoint( e ) ;
 	} ) ;
-
-	m_ui->cbAutoCheckForUpdates->setChecked( settings::instance().autoCheck() ) ;
 
 	connect( m_ui->cbAutoCheckForUpdates,&QCheckBox::toggled,[]( bool e ){
 
@@ -70,8 +64,6 @@ configOptions::configOptions( QWidget * parent,
 
 		m_ui->cbAutoCheckForUpdates->setEnabled( false ) ;
 	}
-
-	m_ui->cbStartMinimized->setChecked( settings::instance().startMinimized() ) ;
 
 	connect( m_ui->cbStartMinimized,&QCheckBox::toggled,[]( bool e ){
 
@@ -106,8 +98,6 @@ configOptions::configOptions( QWidget * parent,
 		}
 	} ) ;
 
-	m_ui->cbAutoMountAtStartUp->setChecked( settings::instance().autoMountFavoritesOnStartUp() ) ;
-
 	connect( m_ui->cbAutoMountAtStartUp,&QCheckBox::toggled,[]( bool e ){
 
 		settings::instance().autoMountFavoritesOnStartUp( e ) ;
@@ -119,8 +109,6 @@ configOptions::configOptions( QWidget * parent,
 
 		settings::instance().autoMountFavoritesOnAvailable( e ) ;
 	} ) ;
-
-	m_ui->cbShowMountDialogWhenAutoMounting->setChecked( settings::instance().showMountDialogWhenAutoMounting() ) ;
 
 	connect( m_ui->cbShowMountDialogWhenAutoMounting,&QCheckBox::toggled,[]( bool e ){
 
@@ -275,7 +263,19 @@ void configOptions::ShowUI()
 {
 	settings& s = settings::instance() ;
 
-	m_ui->lineEditFileManager->setText( settings::instance().fileManager() ) ;
+	m_ui->cbAutoOpenMountPoint->setChecked( s.autoOpenFolderOnMount() ) ;
+
+	m_ui->cbReUseMountPoint->setChecked( s.reUseMountPoint() ) ;
+
+	m_ui->cbAutoCheckForUpdates->setChecked( s.autoCheck() ) ;
+
+	m_ui->cbStartMinimized->setChecked( s.startMinimized() ) ;
+
+	m_ui->cbAutoMountAtStartUp->setChecked( s.autoMountFavoritesOnStartUp() ) ;
+
+	m_ui->cbShowMountDialogWhenAutoMounting->setChecked( s.showMountDialogWhenAutoMounting() ) ;
+
+	m_ui->lineEditFileManager->setText( s.fileManager() ) ;
 
 	m_ui->lineEditExecutableKeySource->setText( s.externalPluginExecutable() ) ;
 

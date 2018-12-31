@@ -78,7 +78,7 @@ engines::engine::args encfs::command( const engines::engine::cmdArgsList& args )
 			 * requires the mount path to not exist and we are deleting
 			 * it because SiriKali created it previously.
 			 */
-			utility::removeFolder( m ) ;
+			utility::removeFolder( m,5 ) ;
 		}
 	}
 

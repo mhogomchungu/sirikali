@@ -93,6 +93,12 @@ bool siritask::deleteMountFolder( const QString& m )
 {
 	if( settings::instance().reUseMountPoint() ){
 
+		if( utility::platformIsWindows() ){
+
+			utility::removeFolder( m,5 ) ;
+			utility::createFolder( m ) ;
+		}
+
 		return false ;
 	}else{
 		return utility::removeFolder( m,5 ) ;
