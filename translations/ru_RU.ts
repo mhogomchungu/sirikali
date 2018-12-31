@@ -303,7 +303,7 @@ It Must End With One Of The Following:
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1315"/>
+        <location filename="../src/keydialog.cpp" line="1325"/>
         <source>Not Supported KeyFile Encountered Since It Contains AtLeast One Illegal Character(&apos;\n&apos;,&apos;\0&apos;,&apos;\r&apos;).
 
 Please Use a Hash Of The KeyFile Through &quot;HMAC+KeyFile&quot; Option.</source>
@@ -312,7 +312,7 @@ Please Use a Hash Of The KeyFile Through &quot;HMAC+KeyFile&quot; Option.</sourc
 Пожалуйста, используйте хэш Файлового ключа с помощью опции «HMAC + Файл ключа».</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1366"/>
+        <location filename="../src/keydialog.cpp" line="1376"/>
         <source>Effective Key Is Generated With Below Formula:
 
 key = hmac_sha256(password,keyfile contents)</source>
@@ -379,7 +379,7 @@ options:
         <translation>О SiriKali</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1370"/>
+        <location filename="../src/keydialog.cpp" line="1380"/>
         <source>This plugin delegates key generation to an external application</source>
         <translation>Этот плагин делегирует генерацию ключей во внешнее приложение</translation>
     </message>
@@ -621,7 +621,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="281"/>
-        <location filename="../src/configoptions.cpp" line="179"/>
+        <location filename="../src/configoptions.cpp" line="167"/>
         <source>Internal Wallet</source>
         <translation>Внутренее хранилище</translation>
     </message>
@@ -631,7 +631,7 @@ p, li { white-space: pre-wrap; }
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/configoptions.cpp" line="181"/>
+        <location filename="../src/configoptions.cpp" line="169"/>
         <source>KWallet</source>
         <translation></translation>
     </message>
@@ -666,18 +666,18 @@ p, li { white-space: pre-wrap; }
         <translation>&amp;Закрыть</translation>
     </message>
     <message>
-        <location filename="../src/configoptions.cpp" line="83"/>
-        <location filename="../src/configoptions.cpp" line="270"/>
+        <location filename="../src/configoptions.cpp" line="75"/>
+        <location filename="../src/configoptions.cpp" line="258"/>
         <source>Set Executables Search Path</source>
         <translation>Задать путь поиска исполняемых файлов</translation>
     </message>
     <message>
-        <location filename="../src/configoptions.cpp" line="180"/>
+        <location filename="../src/configoptions.cpp" line="168"/>
         <source>Libsecret</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/configoptions.cpp" line="182"/>
+        <location filename="../src/configoptions.cpp" line="170"/>
         <source>MACOS Keychain</source>
         <translation></translation>
     </message>
@@ -1173,8 +1173,8 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.ui" line="58"/>
         <location filename="../src/keydialog.cpp" line="254"/>
-        <location filename="../src/keydialog.cpp" line="1346"/>
-        <location filename="../src/keydialog.cpp" line="1486"/>
+        <location filename="../src/keydialog.cpp" line="1356"/>
+        <location filename="../src/keydialog.cpp" line="1496"/>
         <source>Key</source>
         <translation>Пароль</translation>
     </message>
@@ -1244,28 +1244,28 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/keydialog.ui" line="352"/>
         <location filename="../src/keydialog.cpp" line="255"/>
         <location filename="../src/keydialog.cpp" line="1050"/>
-        <location filename="../src/keydialog.cpp" line="1352"/>
-        <location filename="../src/keydialog.cpp" line="1451"/>
+        <location filename="../src/keydialog.cpp" line="1362"/>
+        <location filename="../src/keydialog.cpp" line="1461"/>
         <source>KeyFile</source>
         <translation>Файловый ключ</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="257"/>
-        <location filename="../src/keydialog.cpp" line="1387"/>
+        <location filename="../src/keydialog.cpp" line="1397"/>
         <source>HMAC+KeyFile</source>
         <translation>HMAC+Файловый ключ</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="256"/>
-        <location filename="../src/keydialog.cpp" line="1360"/>
-        <location filename="../src/keydialog.cpp" line="1364"/>
-        <location filename="../src/keydialog.cpp" line="1465"/>
+        <location filename="../src/keydialog.cpp" line="1370"/>
+        <location filename="../src/keydialog.cpp" line="1374"/>
+        <location filename="../src/keydialog.cpp" line="1475"/>
         <source>Key+KeyFile</source>
         <translation>Пароль+Файловый ключ</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="258"/>
-        <location filename="../src/keydialog.cpp" line="1360"/>
+        <location filename="../src/keydialog.cpp" line="1370"/>
         <source>ExternalExecutable</source>
         <translation>Внешнее приложение</translation>
     </message>
@@ -1296,7 +1296,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="556"/>
-        <location filename="../src/keydialog.cpp" line="1414"/>
+        <location filename="../src/keydialog.cpp" line="1424"/>
         <source>Passphrase Quality: 100%</source>
         <translation>Сложность пароля: 100%</translation>
     </message>
@@ -1330,7 +1330,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="885"/>
-        <location filename="../src/keydialog.cpp" line="1248"/>
+        <location filename="../src/keydialog.cpp" line="1258"/>
         <source>Upgrade File System</source>
         <translation>Обновление файловой системы</translation>
     </message>
@@ -1340,7 +1340,12 @@ p, li { white-space: pre-wrap; }
         <translation>Не удалось создать ключ.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1391"/>
+        <location filename="../src/keydialog.cpp" line="1179"/>
+        <source>Mount Point Path Is Not Empty.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/keydialog.cpp" line="1401"/>
         <source>Select A KeyFile</source>
         <translation>Выберите Файловый ключ</translation>
     </message>
@@ -1360,23 +1365,23 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.cpp" line="998"/>
         <location filename="../src/keydialog.cpp" line="1153"/>
-        <location filename="../src/keydialog.cpp" line="1189"/>
+        <location filename="../src/keydialog.cpp" line="1199"/>
         <source>Atleast One Required Field Is Empty.</source>
         <translation>По крайней мере одно обязательное поле пустое.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1179"/>
+        <location filename="../src/keydialog.cpp" line="1189"/>
         <source>Encrypted Folder Appear To Not Be Present.</source>
         <translation>Зашифрованная папка может быть не указанна.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1463"/>
-        <location filename="../src/keydialog.cpp" line="1475"/>
+        <location filename="../src/keydialog.cpp" line="1473"/>
+        <location filename="../src/keydialog.cpp" line="1485"/>
         <source>Plugin name</source>
         <translation>Имя плагина</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1500"/>
+        <location filename="../src/keydialog.cpp" line="1510"/>
         <source>Keyfile path</source>
         <translation>Путь к Файловому ключу</translation>
     </message>
