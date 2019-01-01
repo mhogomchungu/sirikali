@@ -218,7 +218,7 @@ static SiriKali::Windows::mini_result _read( QProcess& exe,Function function )
 
 			return _log_and_return( { std::move( m ) } ) ;
 		}else{
-			utility::waitForOneSecond() ;
+			utility::Task::suspendForOneSecond() ;
 			counter++ ;
 		}
 	}
