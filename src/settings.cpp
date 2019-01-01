@@ -65,6 +65,16 @@ int settings::pollForUpdatesInterval()
 	return m_settings.value( "WinFSPpollingInterval" ).toInt() ;
 }
 
+int settings::encfsBackendTimeout()
+{
+	if( !m_settings.contains( "EncfsBackendTimeout" ) ){
+
+		m_settings.setValue( "EncfsBackendTimeout",10 ) ;
+	}
+
+	return m_settings.value( "EncfsBackendTimeout" ).toInt() ;
+}
+
 void settings::replaceFavorite( const favorites::entry& e,const favorites::entry& f )
 {
 	QStringList l ;

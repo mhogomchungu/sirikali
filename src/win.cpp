@@ -20,13 +20,15 @@
 #include "win.h"
 #include "utility.h"
 #include "mountinfo.h"
+#include "settings.h"
+
+#include "win.hpp"
 
 #include <utility>
 #include <tuple>
 
 namespace SiriKali{
 namespace Windows{
-
 static const char * _backEndTimedOut = "SiriKali::Windows::BackendTimedOut" ;
 
 static void _deleteLater( QObject * e )
@@ -63,6 +65,25 @@ struct result
 	bool timeOut ;
 	QByteArray stdOut ;
 	QByteArray stdError ;
+} ;
+
+struct mini_result
+{
+	mini_result() : timeOut( true ),finished( false )
+	{
+	}
+	mini_result( bool e ) : timeOut( false ),finished( e )
+	{
+	}
+	mini_result( bool e,bool f ) : timeOut( e ),finished( f )
+	{
+	}
+	mini_result( QByteArray m ) : timeOut( false ),finished( true ),outPut( std::move( m ) )
+	{
+	}
+	bool timeOut ;
+	bool finished ;
+	QByteArray outPut ;
 } ;
 
 class instances
@@ -102,166 +123,10 @@ bool backEndTimedOut( const QString& e )
 
 }
 
-#ifdef Q_OS_WIN
-
-#include <windows.h>
-
-int poll( struct pollfd * a,int b,int c )
-{
-	Q_UNUSED( a ) ;
-	Q_UNUSED( b ) ;
-	Q_UNUSED( c ) ;
-
-	return 0 ;
-}
-
-class regOpenKey{
-public:
-	regOpenKey( const char * subKey,HKEY hkey = HKEY_LOCAL_MACHINE )
-	{
-		HKEY m ;
-		REGSAM wow64 = KEY_QUERY_VALUE | KEY_WOW64_64KEY ;
-		REGSAM wow32 = KEY_QUERY_VALUE | KEY_WOW64_32KEY ;
-
-		if( this->success( RegOpenKeyExA,hkey,subKey,0,wow64,&m ) ){
-
-			m_hkey = m ;
-
-		}else if( this->success( RegOpenKeyExA,hkey,subKey,0,wow32,&m ) ){
-
-			m_hkey = m ;
-		}else{
-			m_hkey = nullptr ;
-		}
-	}
-	regOpenKey( const regOpenKey& ) = delete ;
-	regOpenKey& operator=( const regOpenKey& ) = delete ;
-	regOpenKey( regOpenKey&& other )
-	{
-		this->closeKey() ;
-		m_hkey = other.m_hkey ;
-		other.m_hkey = nullptr ;
-	}
-	regOpenKey& operator=( regOpenKey&& other )
-	{
-		this->closeKey() ;
-		m_hkey = other.m_hkey ;
-		other.m_hkey = nullptr ;
-		return *this ;
-	}
-	operator bool()
-	{
-		return m_hkey != nullptr ;
-	}
-	QByteArray getValue( const char * key )
-	{
-		if( m_hkey != nullptr ){
-
-			DWORD dwType = REG_SZ ;
-
-			std::array< char,4096 > buffer ;
-
-			std::fill( buffer.begin(),buffer.end(),'\0' ) ;
-
-			auto e = reinterpret_cast< BYTE * >( buffer.data() ) ;
-			auto m = static_cast< DWORD >( buffer.size() ) ;
-
-			if( this->success( RegQueryValueEx,m_hkey,key,nullptr,&dwType,e,&m ) ){
-
-				return { buffer.data(),static_cast< int >( m ) } ;
-			}
-		}
-
-		return {} ;
-	}
-	HKEY handle()
-	{
-		return m_hkey ;
-	}
-	~regOpenKey()
-	{
-		this->closeKey() ;
-	}
-private:
-	template< typename Function,typename ... Args >
-	bool success( Function&& function,Args&& ... args )
-	{
-		return function( std::forward< Args >( args ) ... ) == ERROR_SUCCESS ;
-	}
-	void closeKey()
-	{
-		RegCloseKey( m_hkey ) ;
-	}
-	HKEY m_hkey ;
-};
-
-static QString _readRegistry( const char * subKey,const char * key )
-{
-	return regOpenKey( subKey ).getValue( key ) ;
-}
-
-// SiriKali took below code from "https://stackoverflow.com/questions/813086/can-i-send-a-ctrl-c-sigint-to-an-application-on-windows"
-
-// Inspired from http://stackoverflow.com/a/15281070/1529139
-// and http://stackoverflow.com/q/40059902/1529139
-static bool signalCtrl(DWORD dwProcessId, DWORD dwCtrlEvent)
-{
-    bool success = false;
-    DWORD thisConsoleId = GetCurrentProcessId();
-    // Leave current console if it exists
-    // (otherwise AttachConsole will return ERROR_ACCESS_DENIED)
-    bool consoleDetached = (FreeConsole() != FALSE);
-
-    if (AttachConsole(dwProcessId) != FALSE)
-    {
-	// Add a fake Ctrl-C handler for avoid instant kill is this console
-	// WARNING: do not revert it or current program will be also killed
-	SetConsoleCtrlHandler(nullptr, true);
-	success = (GenerateConsoleCtrlEvent(dwCtrlEvent, 0) != FALSE);
-	FreeConsole();
-    }
-
-    if (consoleDetached)
-    {
-	// Create a new console if previous was deleted by OS
-	if (AttachConsole(thisConsoleId) == FALSE)
-	{
-	    int errorCode = GetLastError();
-	    if (errorCode == 31) // 31=ERROR_GEN_FAILURE
-	    {
-		AllocConsole();
-	    }
-	}
-    }
-    return success;
-}
-
 int SiriKali::Windows::terminateProcess( unsigned long pid )
 {
-	if( signalCtrl( pid,CTRL_C_EVENT ) ){
-
-		return 0 ;
-	}else{
-		return 1 ;
-	}
+	return _terminateProcess( pid ) ;
 }
-
-#else
-
-int SiriKali::Windows::terminateProcess( unsigned long pid )
-{
-	Q_UNUSED( pid ) ;
-	return 1 ;
-}
-
-static QString _readRegistry( const char * subKey,const char * key )
-{
-	Q_UNUSED( subKey ) ;
-	Q_UNUSED( key ) ;
-	return QString() ;
-}
-
-#endif
 
 QString SiriKali::Windows::engineInstalledDir( const QString& e )
 {
@@ -320,14 +185,14 @@ void SiriKali::Windows::instances::updateVolumeList( std::function< void() > fun
 }
 
 template< typename Function >
-static std::pair< bool,QByteArray > _read( QProcess& exe,Function function )
+static SiriKali::Windows::mini_result _read( QProcess& exe,Function function )
 {
 	QByteArray m ;
 	QByteArray s ;
 
 	int counter = 1 ;
 
-	auto _log_and_return = [ & ]( std::pair< bool,QByteArray > x ){
+	auto _log_and_return = [ & ]( SiriKali::Windows::mini_result x ){
 
 		utility::debug() << "Backend took " + QString::number( counter ) + " seconds to finish" ;
 
@@ -345,71 +210,63 @@ static std::pair< bool,QByteArray > _read( QProcess& exe,Function function )
 
 		auto r = function( m ) ;
 
-		if( r.first ){
+		if( r.timeOut ){
 
-			return _log_and_return( { true,QByteArray() } ) ;
+			return _log_and_return( {} ) ;
 
-		}else if( r.second ){
+		}else if( r.finished ){
 
-			return _log_and_return( { false,m } ) ;
+			return _log_and_return( { std::move( m ) } ) ;
 		}else{
-			utility::Task::suspendForOneSecond() ;
+			utility::waitForOneSecond() ;
 			counter++ ;
 		}
 	}
 
 	// Should not get here
-	return { true,QByteArray() } ;
+	return {} ;
 }
 
-std::pair< bool,QByteArray > _get_output( QProcess& exe,const QString& type )
+static SiriKali::Windows::mini_result _get_output( QProcess& exe,const QString& type )
 {
 	if( type == "cryfs" ){
 
-		return _read( exe,[]( const QString& e )->std::pair< bool,bool >{
+		return _read( exe,[]( const QString& e )->SiriKali::Windows::mini_result{
 
-			return { false,e.contains( "Error" ) || e.contains( "Mounting filesystem." ) } ;
+			return { e.contains( "Error" ) || e.contains( "Mounting filesystem." ) } ;
 		} ) ;
 
 	}else if( type == "encfs" ){
 
-		int timeout = 20 ;
+		int timeout = settings::instance().encfsBackendTimeout() ;
 		int counter = 0 ;
 
-		return _read( exe,[ & ]( const QString& e )->std::pair< bool,bool >{
+		return _read( exe,[ & ]( const QString& e )->SiriKali::Windows::mini_result{
 
-			bool Continue = counter < timeout ;
+			bool timeOut = counter >= timeout ;
 
 			counter++ ;
 
-			if( Continue ){
-
-				return { false,e.contains( "\n" ) } ;
-			}else{
-				return { true,false } ;
-			}
+			return { timeOut,e.contains( "\n" ) } ;
 		} ) ;
 	}else{
-		return _read( exe,[]( const QString& e )->std::pair< bool,bool >{
+		return _read( exe,[]( const QString& e )->SiriKali::Windows::mini_result{
 
-			return { false,e.contains( "\n" ) } ;
+			return { e.contains( "\n" ) } ;
 		} ) ;
 	}
 }
 
 SiriKali::Windows::result SiriKali::Windows::instances::getProcessOutput( QProcess& exe,const QString& type )
 {
-	std::pair< bool,QByteArray > m = _get_output( exe,type ) ;
+	auto m = _get_output( exe,type ) ;
 
-	if( m.first ){
+	if( m.timeOut ){
 
-		/*
-		 * Time out has occured
-		 */
 		return {} ;
 	}
 
-	const auto& mm = m.second ;
+	const auto& mm = m.outPut ;
 
 	auto a = utility::containsAtleastOne( mm,"init","has been started","Mounting filesystem" ) ;
 
