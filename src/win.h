@@ -54,6 +54,8 @@ QStringList engineInstalledDirs() ;
 
 void updateVolumeList( std::function< void() > ) ;
 
+bool backEndTimedOut( const QString& ) ;
+
 struct mountOptions
 {
 	mountOptions( const QString& a,const QString& b,const QString& c,

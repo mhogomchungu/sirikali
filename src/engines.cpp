@@ -456,6 +456,10 @@ QString engines::engine::cmdStatus::toString() const
 
 		return QObject::tr( "Failed To Complete The Request.\nCryfs Executable Could Not Be Found." ) ;
 
+	case engines::engine::status::backendTimedOut :
+
+		return QObject::tr( "Something Is Wrong With The Backend And It Took Too Long To Respond." ) ;
+
 	case engines::engine::status::cryfsMigrateFileSystem :
 
 		return QObject::tr( "This Volume Of Cryfs Needs To Be Upgraded To Work With The Version Of Cryfs You Are Using.\n\nThe Upgrade is IRREVERSIBLE And The Volume Will No Longer Work With Older Versions of Cryfs.\n\nTo Do The Upgrade, Check The \"Upgrade File System\" Option And Unlock The Volume Again." ) ;

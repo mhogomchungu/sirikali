@@ -74,6 +74,7 @@ public:
 			failedToCreateMountPoint,
 			invalidConfigFileName,
 			backendFail,
+			backendTimedOut,
 			unknown
 		} ;
 

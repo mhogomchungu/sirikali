@@ -319,7 +319,12 @@ static engines::engine::cmdStatus _cmd( const engines::engine& engine,
 				if( s.success() ){
 
 					return { engines::engine::status::success,s.exitCode() } ;
-				}else{
+				}else{				
+					if( SiriKali::Windows::backEndTimedOut( s.stdOut() ) ){
+
+						return engines::engine::status::backendTimedOut ;
+					}
+
 					auto m = s.stdError().isEmpty() ? s.stdOut() : s.stdError() ;
 
 					auto n = engine.errorCode( m.toLower(),s.exitCode() ) ;

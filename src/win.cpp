@@ -27,6 +27,8 @@
 namespace SiriKali{
 namespace Windows{
 
+static const char * _backEndTimedOut = "SiriKali::Windows::BackendTimedOut" ;
+
 static void _deleteLater( QObject * e )
 {
 	e->deleteLater() ;
@@ -44,6 +46,25 @@ struct Process
 	std::unique_ptr< QProcess,void(*)( QObject * ) > instance ;
 } ;
 
+struct result
+{
+	result() : success( false ),timeOut( true )
+	{
+	}
+	result( bool s ) : success( s ),timeOut( false )
+	{
+	}
+	result( QByteArray o,QByteArray e ) :
+		success( false ),timeOut( false ),
+		stdOut( std::move( o ) ),stdError( std::move( e ) )
+	{
+	}
+	bool success ;
+	bool timeOut ;
+	QByteArray stdOut ;
+	QByteArray stdError ;
+} ;
+
 class instances
 {
 public:
@@ -56,7 +77,7 @@ public:
 	void updateVolumeList( std::function< void() > ) ;
 	std::vector< SiriKali::Windows::mountOptions > mountOptions() ;
 private:
-	std::tuple< bool,QByteArray,QByteArray > getProcessOutput( QProcess&,const QString& ) ;
+	result getProcessOutput( QProcess&,const QString& ) ;
 	std::vector< Process > m_instances ;
 	std::function< void() > m_updateVolumeList ;
 } ;
@@ -70,6 +91,11 @@ static SiriKali::Windows::instances& _instances()
 void updateVolumeList( std::function< void() > function )
 {
 	_instances().updateVolumeList( std::move( function ) ) ;
+}
+
+bool backEndTimedOut( const QString& e )
+{
+	return e == SiriKali::Windows::_backEndTimedOut ;
 }
 
 }
@@ -294,10 +320,19 @@ void SiriKali::Windows::instances::updateVolumeList( std::function< void() > fun
 }
 
 template< typename Function >
-static QByteArray _read( QProcess& exe,Function function )
+static std::pair< bool,QByteArray > _read( QProcess& exe,Function function )
 {
 	QByteArray m ;
 	QByteArray s ;
+
+	int counter = 1 ;
+
+	auto _log_and_return = [ & ]( std::pair< bool,QByteArray > x ){
+
+		utility::debug() << "Backend took " + QString::number( counter ) + " seconds to finish" ;
+
+		return x ;
+	} ;
 
 	while( true ){
 
@@ -308,46 +343,85 @@ static QByteArray _read( QProcess& exe,Function function )
 			m += s ;
 		}
 
-		if( function( m ) ){
+		auto r = function( m ) ;
 
-			break ;
+		if( r.first ){
+
+			return _log_and_return( { true,QByteArray() } ) ;
+
+		}else if( r.second ){
+
+			return _log_and_return( { false,m } ) ;
 		}else{
 			utility::Task::suspendForOneSecond() ;
+			counter++ ;
 		}
 	}
 
-	return m ;
+	// Should not get here
+	return { true,QByteArray() } ;
 }
 
-std::tuple< bool,QByteArray,QByteArray >
-SiriKali::Windows::instances::getProcessOutput( QProcess& exe,const QString& type )
+std::pair< bool,QByteArray > _get_output( QProcess& exe,const QString& type )
 {
-	QByteArray m ;
-
 	if( type == "cryfs" ){
 
-		m = _read( exe,[]( const QString& e ){
+		return _read( exe,[]( const QString& e )->std::pair< bool,bool >{
 
-			return e.contains( "Error" ) || e.contains( "Mounting filesystem." ) ;
+			return { false,e.contains( "Error" ) || e.contains( "Mounting filesystem." ) } ;
+		} ) ;
+
+	}else if( type == "encfs" ){
+
+		int timeout = 20 ;
+		int counter = 0 ;
+
+		return _read( exe,[ & ]( const QString& e )->std::pair< bool,bool >{
+
+			bool Continue = counter < timeout ;
+
+			counter++ ;
+
+			if( Continue ){
+
+				return { false,e.contains( "\n" ) } ;
+			}else{
+				return { true,false } ;
+			}
 		} ) ;
 	}else{
-		m = _read( exe,[]( const QString& e ){
+		return _read( exe,[]( const QString& e )->std::pair< bool,bool >{
 
-			return e.contains( "\n" ) ;
+			return { false,e.contains( "\n" ) } ;
 		} ) ;
 	}
+}
 
-	auto a = utility::containsAtleastOne( m,"init","has been started","Mounting filesystem" ) ;
+SiriKali::Windows::result SiriKali::Windows::instances::getProcessOutput( QProcess& exe,const QString& type )
+{
+	std::pair< bool,QByteArray > m = _get_output( exe,type ) ;
 
-	if( !m.startsWith( "cygfuse: initialization failed:" ) && a ){
+	if( m.first ){
 
-		return std::make_tuple( true,QByteArray(),QByteArray() ) ;
+		/*
+		 * Time out has occured
+		 */
+		return {} ;
+	}
+
+	const auto& mm = m.second ;
+
+	auto a = utility::containsAtleastOne( mm,"init","has been started","Mounting filesystem" ) ;
+
+	if( !mm.startsWith( "cygfuse: initialization failed:" ) && a ){
+
+		return { true } ;
 	}else{
 		if( type == "encfs" ){
 
-			return std::make_tuple( false,m,QByteArray() ) ;
+			return { QByteArray(),mm } ;
 		}else{
-			return std::make_tuple( false,QByteArray(),m ) ;
+			return { mm,QByteArray() } ;
 		}
 	}
 }
@@ -398,6 +472,37 @@ Task::process::result SiriKali::Windows::create( const engines::engine::args& ar
 	}
 }
 
+static std::pair< Task::process::result,QString > _terminate_process( QProcess& e )
+{
+	auto cmd = e.program() ;
+
+	QString exe ;
+
+	auto env = [ & ](){
+
+		if( cmd.endsWith( "encfs.exe" ) ){
+
+			return _update_environment( "encfs" ) ;
+		}else{
+			return utility::systemEnvironment() ;
+		}
+	}() ;
+
+	//if( cmd.endsWith( "encfs.exe" ) ){
+
+	//	exe = "\"" + cmd + "\" -u " + s.args.mountPath ;
+
+	//}
+	if( cmd.endsWith( "securefs.exe" ) ){
+
+		exe = "sirikali.exe terminateProcess-" + QString::number( e.processId() ) ;
+	}else{
+		exe = "taskkill /F /PID " + QString::number( e.processId() ) ;
+	}
+
+	return { utility::unwrap( Task::process::run( exe,{},-1,"",env ) ),exe } ;
+}
+
 Task::process::result SiriKali::Windows::instances::add( const engines::engine::args& args,
 							 const QByteArray& password,
 							 const engines::engine::options& opts )
@@ -415,7 +520,18 @@ Task::process::result SiriKali::Windows::instances::add( const engines::engine::
 
 	auto s = [ & ](){
 
-		if( std::get< 0 >( m ) ){
+		if( m.timeOut ){
+
+			_terminate_process( *exe ) ;
+
+			exe->waitForFinished() ;
+
+			return Task::process::result( SiriKali::Windows::_backEndTimedOut,
+						      QByteArray(),
+						      -1,
+						      0,
+						      false ) ;
+		}else if( m.success ){
 
 			exe->closeReadChannel( QProcess::StandardError ) ;
 			exe->closeReadChannel( QProcess::StandardOutput ) ;
@@ -428,11 +544,11 @@ Task::process::result SiriKali::Windows::instances::add( const engines::engine::
 		}else{
 			exe->waitForFinished() ;
 
-			return Task::process::result( std::get< 1 >( m ),
-						      std::get< 2 >( m ),
+			return Task::process::result( m.stdOut,
+						      m.stdError,
 						      exe->exitCode(),
 						      exe->exitStatus(),
-						      true ) ;
+						      m.success ) ;
 		}
 	}() ;
 
@@ -470,38 +586,11 @@ Task::process::result SiriKali::Windows::instances::remove( const QString& mount
 
 		if( s.args.mountPath == mountPoint ){
 
-			const auto& e = s.instance ;
-
-			auto cmd = e->program() ;
-
-			QString exe ;
-
-			auto env = [ & ](){
-
-				if( cmd.endsWith( "encfs.exe" ) ){
-
-					return _update_environment( "encfs" ) ;
-				}else{
-					return utility::systemEnvironment() ;
-				}
-			}() ;
-
-			if( cmd.endsWith( "encfs.exe" ) ){
-
-				exe = "\"" + cmd + "\" -u " + s.args.mountPath ;
-
-			}else if( cmd.endsWith( "securefs.exe" ) ){
-
-				exe = "sirikali.exe terminateProcess-" + QString::number( e->processId() ) ;
-			}else{
-				exe = "taskkill /F /PID " + QString::number( e->processId() ) ;
-			}
-
-			auto m = utility::unwrap( Task::process::run( exe,{},-1,"",env ) ) ;
+			auto m = _terminate_process( *s.instance ) ;
 
 			auto r = [ & ](){
 
-				if( m.success() ) {
+				if( m.first.success() ) {
 
 					m_instances.erase( m_instances.begin() + static_cast< int >( i ) ) ;
 
@@ -513,7 +602,7 @@ Task::process::result SiriKali::Windows::instances::remove( const QString& mount
 				}
 			}() ;
 
-			utility::logCommandOutPut( r,exe ) ;
+			utility::logCommandOutPut( r,m.second ) ;
 
 			return r ;
 		}
