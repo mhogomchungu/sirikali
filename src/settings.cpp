@@ -65,14 +65,14 @@ int settings::pollForUpdatesInterval()
 	return m_settings.value( "WinFSPpollingInterval" ).toInt() ;
 }
 
-int settings::encfsBackendTimeout()
+int settings::sshfsBackendTimeout()
 {
-	if( !m_settings.contains( "EncfsBackendTimeout" ) ){
+	if( !m_settings.contains( "sshfsBackendTimeout" ) ){
 
-		m_settings.setValue( "EncfsBackendTimeout",10 ) ;
+		m_settings.setValue( "sshfsBackendTimeout",30 ) ;
 	}
 
-	return m_settings.value( "EncfsBackendTimeout" ).toInt() ;
+	return m_settings.value( "sshfsBackendTimeout" ).toInt() ;
 }
 
 void settings::replaceFavorite( const favorites::entry& e,const favorites::entry& f )

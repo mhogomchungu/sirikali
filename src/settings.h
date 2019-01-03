@@ -126,7 +126,7 @@ public:
 	void setWindowDimensions( const settings::windowDimensions& ) ;
 	settings() ;
 	int pollForUpdatesInterval() ;
-	int encfsBackendTimeout() ;
+	int sshfsBackendTimeout() ;
 	void setWindowsExecutableSearchPath( const QString& ) ;
 	QString windowsExecutableSearchPath() ;
 	QString externalPluginExecutable() ;
