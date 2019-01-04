@@ -191,10 +191,6 @@ static SiriKali::Windows::result _read( QProcess& exe,Function function )
 
 				utility::Task::suspendForOneSecond() ;
 				counter++ ;
-
-			}else if( r.type == SiriKali::Windows::result::Type::Timeout ){
-
-				break ;
 			}else{
 				r.outPut = std::move( m ) ;
 
