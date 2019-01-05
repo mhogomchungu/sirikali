@@ -43,6 +43,8 @@ public:
 	protected:
 		class commandOptions ;
 	public:
+		enum class error{ Success,Failed,Timeout,Continue } ;
+
 		enum class status
 		{
 			success,
@@ -202,7 +204,7 @@ public:
 		virtual QString setPassword( const QString& ) const = 0 ;
 		virtual args command( const engines::engine::cmdArgsList& args ) const = 0 ;
 		virtual engines::engine::status errorCode( const QString& e,int s ) const = 0 ;
-
+		virtual engine::engine::error errorCode( const QString& ) const = 0 ;
 		using function = std::function< void( const Options& ) > ;
 		virtual void GUICreateOptionsinstance( QWidget * parent,function ) const = 0 ;
 	protected:

@@ -101,6 +101,20 @@ engines::engine::args encfs::command( const engines::engine::cmdArgsList& args )
 	return { args,m,cmd } ;
 }
 
+engines::engine::error encfs::errorCode( const QString& e ) const
+{
+	if( utility::containsAtleastOne( e,"has been started" ) ){
+
+		return engines::engine::error::Success ;
+
+	}else if( e.contains( "Error" ) ){
+
+		return engines::engine::error::Failed ;
+	}else{
+		return engines::engine::error::Continue ;
+	}
+}
+
 engines::engine::status encfs::errorCode( const QString& e,int s ) const
 {
 	Q_UNUSED( s ) ;

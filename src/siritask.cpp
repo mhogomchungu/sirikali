@@ -260,10 +260,9 @@ static utility::Task _run_task( const engines::engine::args& args,
 
 		if( create ){
 
-			auto m = engine.autoMountsOnCreate() ;
-			return SiriKali::Windows::create( args,password.toLatin1(),opts,m ) ;
+			return SiriKali::Windows::create( { args,opts,engine,password } ) ;
 		}else{
-			return SiriKali::Windows::mount( args,password.toLatin1(),opts ) ;
+			return SiriKali::Windows::mount( { args,opts,engine,password } ) ;
 		}
 	}else{
 		return utility::Task( args.cmd,20000,utility::systemEnvironment(),

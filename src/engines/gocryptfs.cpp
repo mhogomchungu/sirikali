@@ -100,6 +100,13 @@ engines::engine::args gocryptfs::command( const engines::engine::cmdArgsList& ar
 	return { args,m,cmd } ;
 }
 
+engines::engine::error gocryptfs::errorCode( const QString& e ) const
+{
+	Q_UNUSED( e ) ;
+
+	return engines::engine::error::Failed ;
+}
+
 engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const
 {
 	/*

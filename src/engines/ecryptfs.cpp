@@ -88,6 +88,13 @@ engines::engine::args ecryptfs::command( const engines::engine::cmdArgsList& arg
 	}
 }
 
+engines::engine::error ecryptfs::errorCode( const QString& e ) const
+{
+	Q_UNUSED( e ) ;
+
+	return engines::engine::error::Failed ;
+}
+
 engines::engine::status ecryptfs::errorCode( const QString& e,int s ) const
 {
 	Q_UNUSED( s ) ;

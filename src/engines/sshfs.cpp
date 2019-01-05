@@ -108,6 +108,20 @@ engines::engine::args sshfs::command( const engines::engine::cmdArgsList& args )
 	return { args,m,cmd } ;
 }
 
+engines::engine::error sshfs::errorCode( const QString& e ) const
+{
+	if( e.contains( "has been started" ) ){
+
+		return engines::engine::error::Success ;
+
+	}else if( utility::containsAtleastOne( e,"ssh:","read:","Cannot create WinFsp-FUSE file system" ) ){
+
+		return engines::engine::error::Failed ;
+	}else{
+		return engines::engine::error::Continue ;
+	}
+}
+
 engines::engine::status sshfs::errorCode( const QString& e,int s ) const
 {
 	Q_UNUSED( s ) ;

@@ -84,6 +84,20 @@ engines::engine::args securefs::command( const engines::engine::cmdArgsList& arg
 	}
 }
 
+engines::engine::error securefs::errorCode( const QString& e ) const
+{
+	if( utility::containsAtleastOne( e,"has been started","init" ) ){
+
+		return engines::engine::error::Success ;
+
+	}else if( e.contains( "Error" ) ){
+
+		return engines::engine::error::Failed ;
+	}else{
+		return engines::engine::error::Continue ;
+	}
+}
+
 engines::engine::status securefs::errorCode( const QString& e,int s ) const
 {
 	Q_UNUSED( s ) ;

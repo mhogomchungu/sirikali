@@ -150,6 +150,20 @@ QString cryfs::installedVersionString() const
 	return m_version ;
 }
 
+engines::engine::error cryfs::errorCode( const QString& e ) const
+{
+	if( e.contains( "Mounting filesystem." ) ){
+
+		return engines::engine::error::Success ;
+
+	}else if( e.contains( "Error" ) ){
+
+		return engines::engine::error::Failed ;
+	}else{
+		return engines::engine::error::Continue ;
+	}
+}
+
 void cryfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
 {
 	cryfscreateoptions::instance( parent,std::move( function ) ) ;

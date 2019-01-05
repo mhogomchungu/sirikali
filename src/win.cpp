@@ -21,7 +21,6 @@
 #include "utility.h"
 #include "mountinfo.h"
 #include "settings.h"
-
 #include "win.hpp"
 
 #include <utility>
@@ -50,24 +49,14 @@ struct Process
 
 struct result
 {
-	enum class Type{ Success,Failed,Timeout,Continue } ;
-
-	result( Type t ) : type( t )
-	{
-	}
-	result() : type( Type::Failed )
-	{
-	}
-	Type type ;
+	engines::engine::error type ;
 	QByteArray outPut ;
 } ;
 
 class instances
 {
 public:
-	Task::process::result add( const engines::engine::args& args,
-				   const QByteArray& password,
-				   const engines::engine::options& opts ) ;
+	Task::process::result add( const SiriKali::Windows::opts& ) ;
 	Task::process::result remove( const QString& mountPoint ) ;
 	std::vector< QStringList > commands() const ;
 	QString volumeProperties( const QString& mountPath ) ;
@@ -167,7 +156,7 @@ static SiriKali::Windows::result _read( QProcess& exe,Function function )
 
 	int counter = 1 ;
 
-	SiriKali::Windows::result r ;
+	engines::engine::error r ;
 
 	while( true ){
 
@@ -180,20 +169,17 @@ static SiriKali::Windows::result _read( QProcess& exe,Function function )
 
 		if( m.contains( "cygfuse: initialization failed:" ) ){
 
-			r.type = SiriKali::Windows::result::Type::Failed ;
-			r.outPut = std::move( m ) ;
+			r = engines::engine::error::Failed ;
 
 			break ;
 		}else{
 			r = function( m ) ;
 
-			if( r.type == SiriKali::Windows::result::Type::Continue ){
+			if( r == engines::engine::error::Continue ){
 
 				utility::Task::suspendForOneSecond() ;
 				counter++ ;
 			}else{
-				r.outPut = std::move( m ) ;
-
 				break ;
 			}
 		}
@@ -203,74 +189,33 @@ static SiriKali::Windows::result _read( QProcess& exe,Function function )
 
 	auto b = "Backend took " + a + " seconds to finish\nGenerated backend out:\n" ;
 
-	utility::debug() << b + r.outPut ;
+	utility::debug() << b + m ;
 
-	return r ;
+	return { r,std::move( m ) } ;
 }
 
-static SiriKali::Windows::result _getProcessOutput( QProcess& exe,const QString& type )
+static SiriKali::Windows::result _getProcessOutput( QProcess& exe,const engines::engine& engine )
 {
-	if( type == "cryfs" ){
-
-		return _read( exe,[]( const QString& e )->SiriKali::Windows::result{
-
-			if( e.contains( "Mounting filesystem." ) ){
-
-				return SiriKali::Windows::result::Type::Success ;
-
-			}else if( e.contains( "Error" ) ){
-
-				return SiriKali::Windows::result::Type::Failed ;
-			}else{
-				return SiriKali::Windows::result::Type::Continue ;
-			}
-		} ) ;
-
-	}else if( utility::equalsAtleastOne( type,"encfs","securefs" ) ){
-
-		return _read( exe,[]( const QString& e )->SiriKali::Windows::result{
-
-			if( utility::containsAtleastOne( e,"has been started","init" ) ){
-
-				return SiriKali::Windows::result::Type::Success ;
-
-			}else if( e.contains( "Error" ) ){
-
-				return SiriKali::Windows::result::Type::Failed ;
-			}else{
-				return SiriKali::Windows::result::Type::Continue ;
-			}
-		} ) ;
-
-	}else if( type == "sshfs" ){
+	if( engine.name() == "sshfs" ){
 
 		int counter = 0 ;
 		int max = settings::instance().sshfsBackendTimeout() ;
 
-		return _read( exe,[ & ]( const QString& e )->SiriKali::Windows::result{
+		return _read( exe,[ & ]( const QString& e ){
 
-			if( e.contains( "has been started" ) ){
+			if( counter < max ){
 
-				return SiriKali::Windows::result::Type::Success ;
-
-			}else if( utility::containsAtleastOne( e,"ssh:","read:","Cannot create WinFsp-FUSE file system" ) ){
-
-				return SiriKali::Windows::result::Type::Failed ;
+				counter++ ;
+				return engine.errorCode( e ) ;
 			}else{
-				if( counter < max ){
-
-					counter++ ;
-					return SiriKali::Windows::result::Type::Continue ;
-				}else{
-					return SiriKali::Windows::result::Type::Timeout ;
-				}
+				return engines::engine::error::Timeout ;
 			}
 		} ) ;
 	}else{
-		/*
-		 * Shouldnt get here
-		 */
-		return {} ;
+		return _read( exe,[ & ]( const QString& e ){
+
+			return engine.errorCode( e ) ;
+		} ) ;
 	}
 }
 
@@ -303,18 +248,15 @@ static QProcessEnvironment _update_environment( const QString& type )
 	return env ;
 }
 
-Task::process::result SiriKali::Windows::create( const engines::engine::args& args,
-						 const QByteArray& password,
-						 const engines::engine::options& opts,
-						 bool autoMountsOnSuccess )
+Task::process::result SiriKali::Windows::create( const SiriKali::Windows::opts& opts )
 {
-	if( autoMountsOnSuccess ){
+	if( opts.engine.autoMountsOnCreate() ){
 
-		return SiriKali::Windows::mount( args,password,opts ) ;
+		return SiriKali::Windows::mount( opts ) ;
 	}else{
-		auto s = utility::unwrap( Task::process::run( args.cmd,password ) ) ;
+		auto s = utility::unwrap( Task::process::run( opts.args.cmd,opts.password.toLatin1() ) ) ;
 
-		utility::logCommandOutPut( s,args.cmd ) ;
+		utility::logCommandOutPut( s,opts.args.cmd ) ;
 
 		return s ;
 	}
@@ -336,11 +278,6 @@ static std::pair< Task::process::result,QString > _terminate_process( QProcess& 
 		}
 	}() ;
 
-	//if( cmd.endsWith( "encfs.exe" ) ){
-
-	//	exe = "\"" + cmd + "\" -u " + s.args.mountPath ;
-
-	//}
 	if( cmd.endsWith( "securefs.exe" ) ){
 
 		exe = "sirikali.exe terminateProcess-" + QString::number( e.processId() ) ;
@@ -355,24 +292,22 @@ static std::pair< Task::process::result,QString > _terminate_process( QProcess& 
 	return { std::move( m ),exe } ;
 }
 
-Task::process::result SiriKali::Windows::instances::add( const engines::engine::args& args,
-							 const QByteArray& password,
-							 const engines::engine::options& opts )
+Task::process::result SiriKali::Windows::instances::add( const SiriKali::Windows::opts& opts )
 {
 	auto exe = utility2::unique_qptr< QProcess >() ;
 
-	exe->setProcessEnvironment( _update_environment( opts.type ) ) ;
+	exe->setProcessEnvironment( _update_environment( opts.options.type ) ) ;
 	exe->setProcessChannelMode( QProcess::MergedChannels ) ;
-	exe->start( args.cmd ) ;
+	exe->start( opts.args.cmd ) ;
 	exe->waitForStarted() ;
-	exe->write( password + "\n" ) ;
+	exe->write( opts.password.toLatin1() + "\n" ) ;
 	exe->closeWriteChannel() ;
 
-	auto m = _getProcessOutput( *exe,opts.type ) ;
+	auto m = _getProcessOutput( *exe,opts.engine ) ;
 
 	auto s = [ & ](){
 
-		if( m.type == SiriKali::Windows::result::Type::Timeout ){
+		if( m.type == engines::engine::error::Timeout ){
 
 			_terminate_process( *exe ) ;
 
@@ -382,12 +317,12 @@ Task::process::result SiriKali::Windows::instances::add( const engines::engine::
 						      0,
 						      true ) ;
 
-		}else if( m.type == SiriKali::Windows::result::Type::Success ){
+		}else if( m.type == engines::engine::error::Success ){
 
 			exe->closeReadChannel( QProcess::StandardError ) ;
 			exe->closeReadChannel( QProcess::StandardOutput ) ;
 
-			m_instances.emplace_back( args,exe.release() ) ;
+			m_instances.emplace_back( opts.args,exe.release() ) ;
 
 			m_updateVolumeList() ;
 
@@ -398,7 +333,7 @@ Task::process::result SiriKali::Windows::instances::add( const engines::engine::
 			QByteArray stdOut ;
 			QByteArray stdError ;
 
-			if( opts.type == "encfs" ){
+			if( opts.options.type == "encfs" ){
 
 				stdOut = m.outPut ;
 			}else{
@@ -413,7 +348,7 @@ Task::process::result SiriKali::Windows::instances::add( const engines::engine::
 		}
 	}() ;
 
-	utility::logCommandOutPut( s,args.cmd ) ;
+	utility::logCommandOutPut( s,opts.args.cmd ) ;
 
 	return s ;
 }
@@ -531,9 +466,7 @@ Task::process::result SiriKali::Windows::unmount( const QString& m )
 	return _instances().remove( m ) ;
 }
 
-Task::process::result SiriKali::Windows::mount( const engines::engine::args& args,
-						const QByteArray& password,
-						const engines::engine::options& opts )
+Task::process::result SiriKali::Windows::mount( const SiriKali::Windows::opts& opts )
 {
-	return _instances().add( args,password,opts ) ;
+	return _instances().add( opts ) ;
 }

@@ -30,18 +30,22 @@
 
 #include "task.hpp"
 #include "siritask.h"
+#include "engines.h"
 
 namespace SiriKali{
 namespace Windows{
 
-Task::process::result mount( const engines::engine::args&,
-			     const QByteArray& password,
-			     const engines::engine::options& ) ;
+struct opts{
 
-Task::process::result create( const engines::engine::args& args,
-			      const QByteArray& password,
-			      const engines::engine::options&,
-			      bool autoMountsOnSuccess ) ;
+	const engines::engine::args& args ;
+	const engines::engine::options& options ;
+	const engines::engine& engine ;
+	const QString& password ;
+} ;
+
+Task::process::result mount( const SiriKali::Windows::opts& ) ;
+
+Task::process::result create( const SiriKali::Windows::opts& ) ;
 
 Task::process::result unmount( const QString& mountPath ) ;
 
