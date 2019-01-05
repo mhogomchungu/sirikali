@@ -92,7 +92,7 @@ engines::engine::status securefs::errorCode( const QString& e,int s ) const
 
 		return engines::engine::status::securefsBadPassword ;
 
-	}else if( e.contains( "winfsp" ) ){
+	}else if( e.contains( "securefs cannot load winfsp. please make sure you have winfsp properly installed." ) ){
 
 		return engines::engine::status::failedToLoadWinfsp ;
 	}else{

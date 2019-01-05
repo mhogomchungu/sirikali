@@ -285,7 +285,7 @@ Nicht unterstützter Datenträger gefunden.</translation>
     <message>
         <location filename="../src/engines.cpp" line="497"/>
         <source>Installed Sshfs Version Is Too Old.
- Please Update To Atleast Version 3.2.0.</source>
+ Please Update To Atleast Version 3.4.0.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -388,47 +388,47 @@ options:
         <translation>über SiriKali</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="357"/>
+        <location filename="../src/settings.cpp" line="367"/>
         <source>Manage Favorites</source>
         <translation>Favoriten verwalten</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="358"/>
+        <location filename="../src/settings.cpp" line="368"/>
         <source>Mount All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="946"/>
+        <location filename="../src/settings.cpp" line="956"/>
         <source>Russian (RU)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="947"/>
+        <location filename="../src/settings.cpp" line="957"/>
         <source>French (FR)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="948"/>
+        <location filename="../src/settings.cpp" line="958"/>
         <source>German (DE)</source>
         <translation>Deutsche</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="949"/>
+        <location filename="../src/settings.cpp" line="959"/>
         <source>English (US)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="950"/>
+        <location filename="../src/settings.cpp" line="960"/>
         <source>Swedish (SE)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="951"/>
+        <location filename="../src/settings.cpp" line="961"/>
         <source>Arabic (SA)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="952"/>
+        <location filename="../src/settings.cpp" line="962"/>
         <source>Spanish (MX)</source>
         <translation type="unfinished"></translation>
     </message>
