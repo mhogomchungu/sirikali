@@ -152,3 +152,4 @@ version 1.3.7(unreleased)
 -- Fix a bug that prevented mounting gocryptfs volumes on MACOS.
 -- Translations now works on MACOS.
 -- Add support for Cryfs backend on windows.
+-- Add support for using a mount folder on windows(sshfs, encfs and cryfs supports both mount folders and drive letters)
