@@ -405,7 +405,7 @@ static engines::engine::cmdStatus _encrypted_folder_mount( const engines::engine
 
 			if( utility::platformIsWindows() ){
 
-				auto m = utility::unwrap( utility::backendIsLessThan( "sshfs","3.2.0" ) ) ;
+				auto m = utility::unwrap( utility::backendIsLessThan( "sshfs","3.4.0" ) ) ;
 
 				if( m && m.value() ){
 

@@ -253,7 +253,7 @@ static SiriKali::Windows::result _getProcessOutput( QProcess& exe,const QString&
 
 				return SiriKali::Windows::result::Type::Success ;
 
-			}else if( utility::containsAtleastOne( e,"ssh:","read:" ) ){
+			}else if( utility::containsAtleastOne( e,"ssh:","read:","Cannot create WinFsp-FUSE file system" ) ){
 
 				return SiriKali::Windows::result::Type::Failed ;
 			}else{
