@@ -99,7 +99,7 @@ engines::engine::status ecryptfs::errorCode( const QString& e,int s ) const
 {
 	Q_UNUSED( s ) ;
 
-	if( e.contains( "operation not permitted" ) ){
+	if( e.contains( "Operation not permitted" ) ){
 
 		return engines::engine::status::ecrypfsBadExePermissions ;
 

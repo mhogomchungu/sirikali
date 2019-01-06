@@ -126,15 +126,7 @@ engines::engine::status sshfs::errorCode( const QString& e,int s ) const
 {
 	Q_UNUSED( s ) ;
 
-	if( e.contains( "password" ) ){
-
-		return engines::engine::status::sshfsBadPassword ;
-
-	}else if( e.contains( "cannot create winfsp-fuse file system: mount point in use" ) ){
-
-		return engines::engine::status::backendFail ;
-
-	}else if( e.contains( "winfsp" ) ){
+	if( e.contains( "cygfuse: initialization failed: winfsp" ) ){
 
 		return engines::engine::status::failedToLoadWinfsp ;
 	}else{

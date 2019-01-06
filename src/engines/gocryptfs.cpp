@@ -112,11 +112,7 @@ engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const
 	/*
 	 * This error code was added in gocryptfs 1.2.1
 	 */
-	if( s == 12 ){
-
-		return engines::engine::status::gocryptfsBadPassword ;
-
-	}else if( e.contains( "password incorrect." ) ){
+	if( s == 12 || e.contains( "Password incorrect." ) ){
 
 		return engines::engine::status::gocryptfsBadPassword ;
 	}else{

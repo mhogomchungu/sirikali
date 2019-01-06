@@ -121,12 +121,12 @@ engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 		 * Falling back to parsing strings
 		 */
 
-		if( e.contains( "could not load config file. did you enter the correct password?" ) ){
+		if( e.contains( "Could not load config file. Did you enter the correct password?" ) ){
 
 			return engines::engine::status::cryfsBadPassword ;
 
-		}else if( e.contains( "this filesystem is for cryfs" ) &&
-			  e.contains( "it has to be migrated" ) ){
+		}else if( e.contains( "This filesystem is for CryFS" ) &&
+			  e.contains( "It has to be migrated" ) ){
 
 			return engines::engine::status::cryfsMigrateFileSystem ;
 		}

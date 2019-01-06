@@ -119,11 +119,11 @@ engines::engine::status encfs::errorCode( const QString& e,int s ) const
 {
 	Q_UNUSED( s ) ;
 
-	if( e.contains( "error decoding volume key, password incorrect" ) ){
+	if( e.contains( "Error decoding volume key, password incorrect" ) ){
 
 		return engines::engine::status::encfsBadPassword ;
 
-	}else if( e.contains( "winfsp" ) ){
+	}else if( e.contains( "cygfuse: initialization failed: winfsp" ) ){
 
 		return engines::engine::status::failedToLoadWinfsp ;
 	}else{

@@ -326,7 +326,7 @@ static engines::engine::cmdStatus _cmd( const engines::engine& engine,
 
 					auto m = s.stdError().isEmpty() ? s.stdOut() : s.stdError() ;
 
-					auto n = engine.errorCode( m.toLower(),s.exitCode() ) ;
+					auto n = engine.errorCode( m,s.exitCode() ) ;
 
 					return { n,s.exitCode(),m } ;
 				}

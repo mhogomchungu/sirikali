@@ -167,7 +167,7 @@ static SiriKali::Windows::result _read( QProcess& exe,Function function )
 			m += s ;
 		}
 
-		if( m.contains( "cygfuse: initialization failed:" ) ){
+		if( m.contains( "cygfuse: " ) ){
 
 			r = engines::engine::error::Failed ;
 
