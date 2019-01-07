@@ -443,6 +443,10 @@ QString settings::localizationLanguagePath()
 	if( utility::platformIsWindows() ){
 
 		return QDir().currentPath() + "/translations" ;
+
+	}else if( utility::platformIsOSX() ){
+
+		return QCoreApplication::applicationDirPath() + "/Contents/Resources" ;
 	}else{
 		return TRANSLATION_PATH ;
 	}
