@@ -390,7 +390,7 @@ SET( APPS "\${CMAKE_INSTALL_PREFIX}/sirikali.app" )
 
 set_target_properties( sirikali PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/MacOSXBundleInfo.plist.in" )
 
-install( TARGETS sirikali BUNDLE DESTINATION . COMPONENT Runtime RUNTIME DESTINATION bin COMPONENT Runtime )
+install( TARGETS sirikali BUNDLE DESTINATION . COMPONENT Runtime )
 
 file( COPY icons/256x256/sirikali.icns DESTINATION "sirikali.app/Contents/Resources/" )
 file( COPY translations/fr_FR.qm DESTINATION "sirikali.app/Contents/Resources/" )

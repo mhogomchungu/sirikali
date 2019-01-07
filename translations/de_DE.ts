@@ -284,8 +284,8 @@ Nicht unterstützter Datenträger gefunden.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="497"/>
-        <source>Installed Sshfs Version Is Too Old.
- Please Update To Atleast Version 3.4.0.</source>
+        <source>Installed &quot;%1&quot; Version Is Too Old.
+ Please Update To Atleast Version %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
