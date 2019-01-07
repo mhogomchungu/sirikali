@@ -494,7 +494,7 @@ QString engines::engine::cmdStatus::toString() const
 
 	case engines::engine::status::sshfsTooOld :
 
-		return QObject::tr( "Installed Sshfs Version Is Too Old.\n Please Update To Atleast Version 3.4.0." ) ;
+		return QObject::tr( "Installed \"%1\" Version Is Too Old.\n Please Update To Atleast Version %2." ).arg( "Sshfs","3.4.0" ) ;
 
 	case engines::engine::status::invalidConfigFileName :
 
