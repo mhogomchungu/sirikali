@@ -167,7 +167,7 @@ static SiriKali::Windows::result _read( QProcess& exe,Function function )
 			m += s ;
 		}
 
-		if( m.contains( "cygfuse: " ) ){
+		if( m.contains( "cygfuse: " ) || m.contains( "Cannot create WinFsp-FUSE file system:" ) ){
 
 			r = engines::engine::error::Failed ;
 
