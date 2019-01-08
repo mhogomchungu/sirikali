@@ -1137,14 +1137,7 @@ void keyDialog::SetUISetKey( bool e )
 
 void keyDialog::encryptedFolderMount()
 {
-	bool ro ;
-
-	if( m_favoriteReadOnly ){
-
-		ro = true ;
-	}else{
-		ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
-	}
+	auto ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
 
 	auto m = m_ui->lineEditMountPoint->text() ;
 
