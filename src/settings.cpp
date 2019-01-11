@@ -65,6 +65,16 @@ int settings::pollForUpdatesInterval()
 	return m_settings.value( "WinFSPpollingInterval" ).toInt() ;
 }
 
+int settings::sshfsBackendTimeout()
+{
+	if( !m_settings.contains( "sshfsBackendTimeout" ) ){
+
+		m_settings.setValue( "sshfsBackendTimeout",30 ) ;
+	}
+
+	return m_settings.value( "sshfsBackendTimeout" ).toInt() ;
+}
+
 void settings::replaceFavorite( const favorites::entry& e,const favorites::entry& f )
 {
 	QStringList l ;
@@ -265,9 +275,21 @@ QString settings::fileManager()
 
 static void _set_mount_default( settings& s )
 {
-	if( !s.backend().contains( "MountPrefix" ) ){
+	QSettings& m = s.backend() ;
 
-		s.backend().setValue( "MountPrefix",s.homePath() + "/.SiriKali" ) ;
+	if( m.contains( "MountPrefix" ) ){
+
+		if( !m.value( "MountPrefix" ).toString().isEmpty() ){
+
+			return ;
+		}
+	}
+
+	if( utility::platformIsWindows() ){
+
+		m.setValue( "MountPrefix",s.homePath() + "/Desktop" ) ;
+	}else{
+		m.setValue( "MountPrefix",s.homePath() + "/.SiriKali" ) ;
 	}
 }
 
@@ -365,25 +387,39 @@ static void _selectOption( QMenu * m,const T& opt )
 {
 	for( const auto& it : m->actions() ){
 
-		it->setChecked( it->text().remove( "&" ) == opt ) ;
+		it->setChecked( it->objectName() == opt ) ;
 	}
 }
 
-void settings::setLocalizationLanguage( bool translate,QMenu * m,settings::translator& e )
+void settings::setLocalizationLanguage( bool translate,
+					QMenu * m,
+					settings::translator& translator )
 {
 	auto r = settings::instance().localizationLanguage().toLatin1() ;
 
 	if( translate ){
 
-		e.setLanguage( r ) ;
+		translator.setLanguage( r ) ;
 	}else{
-		auto e = utility::directoryList( settings::instance().localizationLanguagePath() ) ;
+		const auto e = utility::directoryList( settings::instance().localizationLanguagePath() ) ;
 
-		for( auto& it : e ){
+		for( const auto& it : e ){
 
-			if( !it.startsWith( "qt_" ) ){
+			if( !it.startsWith( "qt_" ) && it.endsWith( ".qm" ) ){
 
-				m->addAction( it.remove( ".qm" ) )->setCheckable( true ) ;
+				auto name = it ;
+				name.remove( ".qm" ) ;
+
+				auto uiName = translator.UIName( name ) ;
+
+				if( !uiName.isEmpty() ){
+
+					auto ac = m->addAction( uiName ) ;
+
+					ac->setCheckable( true ) ;
+					ac->setObjectName( name ) ;
+					ac->setText( translator.translate( name ) ) ;
+				}
 			}
 		}
 
@@ -393,7 +429,7 @@ void settings::setLocalizationLanguage( bool translate,QMenu * m,settings::trans
 
 void settings::languageMenu( QMenu * m,QAction * ac,settings::translator& s )
 {
-	auto e = ac->text().remove( '&' ) ;
+	auto e = ac->objectName() ;
 
 	this->setLocalizationLanguage( e ) ;
 
@@ -407,9 +443,18 @@ QString settings::localizationLanguagePath()
 	if( utility::platformIsWindows() ){
 
 		return QDir().currentPath() + "/translations" ;
+
+	}else if( utility::platformIsOSX() ){
+
+		return QCoreApplication::applicationDirPath() + "/Contents/Resources" ;
 	}else{
 		return TRANSLATION_PATH ;
 	}
+}
+
+void settings::setLocalizationLanguage( const QString& language )
+{
+	m_settings.setValue( "Language",language ) ;
 }
 
 bool settings::startMinimized()
@@ -787,11 +832,6 @@ QString settings::localizationLanguage()
 	}
 }
 
-void settings::setLocalizationLanguage( const QString& language )
-{
-	m_settings.setValue( "Language",language ) ;
-}
-
 QString settings::walletName( LXQt::Wallet::BackEnd s )
 {
 	if( s == LXQt::Wallet::BackEnd::kwallet ){
@@ -915,6 +955,17 @@ void settings::setWindowDimensions( const settings::windowDimensions& e )
 	settings::instance().backend().setValue( "Dimensions",e.dimensions() ) ;
 }
 
+settings::translator::translator()
+{
+	m_languages.emplace_back( QObject::tr( "Russian (RU)" ),"Russian (RU)","ru_RU" ) ;
+	m_languages.emplace_back( QObject::tr( "French (FR)" ),"French (FR)","fr_FR" ) ;
+	m_languages.emplace_back( QObject::tr( "German (DE)" ),"German (DE)","de_DE" ) ;
+	m_languages.emplace_back( QObject::tr( "English (US)" ),"English (US)","en_US" ) ;
+	m_languages.emplace_back( QObject::tr( "Swedish (SE)" ),"Swedish (SE)","sv_SE" ) ;
+	m_languages.emplace_back( QObject::tr( "Arabic (SA)" ) ,"Arabic (SA)","ar_SA" ) ;
+	m_languages.emplace_back( QObject::tr( "Spanish (MX)" ),"Spanish (MX)","es_MX" ) ;
+}
+
 void settings::translator::setLanguage( const QByteArray& e )
 {
 	QCoreApplication::installTranslator( [ & ](){
@@ -934,6 +985,52 @@ settings::translator::~translator()
 	this->clear() ;
 }
 
+const QString& settings::translator::UIName( const QString& internalName )
+{
+	for( const auto& it : m_languages ){
+
+		if( it.internalName == internalName ){
+
+			return it.UINameTranslated ;
+		}
+	}
+
+	static QString s ;
+	return s ;
+}
+
+const QString& settings::translator::name( const QString& UIName )
+{
+	for( const auto& it : m_languages ){
+
+		if( it.UINameTranslated == UIName ){
+
+			return it.internalName ;
+		}
+	}
+
+	static QString s ;
+	return s ;
+}
+
+QString settings::translator::translate( const QString& internalName )
+{
+	return QObject::tr( this->UINameUnTranslated( internalName ) ) ;
+}
+
+const char * settings::translator::UINameUnTranslated( const QString& internalName )
+{
+	for( const auto& it : m_languages ){
+
+		if( it.internalName == internalName ){
+
+			return it.UINameUnTranslated ;
+		}
+	}
+
+	return "" ;
+}
+
 void settings::translator::clear()
 {
 	if( m_translator ){
@@ -941,4 +1038,9 @@ void settings::translator::clear()
 		QCoreApplication::removeTranslator( m_translator ) ;
 		delete m_translator ;
 	}
+}
+
+settings::translator::entry::entry( const QString& a,const char * b,const QString& c ) :
+	UINameTranslated( a ),UINameUnTranslated( b ),internalName( c )
+{
 }

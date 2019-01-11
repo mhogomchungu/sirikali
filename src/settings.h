@@ -97,11 +97,23 @@ public:
 	class translator
 	{
 	public:
+		translator() ;
 		void setLanguage( const QByteArray& e ) ;
 		~translator() ;
+		const QString& UIName( const QString& name ) ;
+		const QString& name( const QString& UIName ) ;
+		QString translate( const QString& internalName ) ;
+		const char * UINameUnTranslated( const QString& name ) ;
 	private:
+		struct entry{
+			entry( const QString&,const char *,const QString& ) ;
+			QString UINameTranslated ;
+			const char * UINameUnTranslated ;
+			QString internalName ;
+		} ;
 		void clear( void ) ;
 		QTranslator * m_translator = nullptr ;
+		std::vector< entry > m_languages ;
 	} ;
 
 	static settings& instance()
@@ -114,6 +126,7 @@ public:
 	void setWindowDimensions( const settings::windowDimensions& ) ;
 	settings() ;
 	int pollForUpdatesInterval() ;
+	int sshfsBackendTimeout() ;
 	void setWindowsExecutableSearchPath( const QString& ) ;
 	QString windowsExecutableSearchPath() ;
 	QString externalPluginExecutable() ;

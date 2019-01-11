@@ -21,7 +21,7 @@
 #include "utility.h"
 #include "siritask.h"
 #include "task.hpp"
-#include "winfsp.h"
+#include "win.h"
 #include "settings.h"
 #include "engines.h"
 
@@ -32,8 +32,6 @@
 
 #include <vector>
 #include <utility>
-
-enum class background_thread{ True,False } ;
 
 QString mountinfo::encodeMountPath( const QString& e )
 {
@@ -108,23 +106,23 @@ static QStringList _macox_volumes()
 	return s ;
 }
 
-static std::vector< SiriKali::Winfsp::mountOptions > _win_volumes( background_thread thread )
+static std::vector< SiriKali::Windows::mountOptions > _win_volumes()
 {
-	if( thread == background_thread::True ){
+	if( utility::runningOnBackGroundThread() ){
 
-		return SiriKali::Winfsp::getMountOptions() ;
+		return SiriKali::Windows::getMountOptions() ;
 	}else{
-		return Task::await( SiriKali::Winfsp::getMountOptions ) ;
+		return Task::await( SiriKali::Windows::getMountOptions ) ;
 	}
 }
 
-static QStringList _windows_volumes( background_thread thread )
+static QStringList _windows_volumes()
 {
 	QStringList s ;
 
 	const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
 
-	for( const auto& e : _win_volumes( thread ) ){
+	for( const auto& e : _win_volumes() ){
 
 		auto fs = "fuse." + e.subtype ;
 
@@ -136,7 +134,7 @@ static QStringList _windows_volumes( background_thread thread )
 	return s ;
 }
 
-static QStringList _unlocked_volumes( background_thread thread )
+static QStringList _unlocked_volumes()
 {
 	if( utility::platformIsLinux() ){
 
@@ -146,7 +144,7 @@ static QStringList _unlocked_volumes( background_thread thread )
 
 		return _macox_volumes() ;
 	}else{
-		return _windows_volumes( thread ) ;
+		return _windows_volumes() ;
 	}
 }
 
@@ -154,7 +152,7 @@ mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& quit ) :
 	m_parent( parent ),
 	m_quit( std::move( quit ) ),
 	m_announceEvents( e ),
-	m_oldMountList( _unlocked_volumes( background_thread::False ) )
+	m_oldMountList( _unlocked_volumes() )
 {
 	if( utility::platformIsLinux() ){
 
@@ -256,7 +254,7 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 
 		const auto& engines = engines::instance() ;
 
-		for( const auto& it : _unlocked_volumes( background_thread::True ) ){
+		for( const auto& it : _unlocked_volumes() ){
 
 			const auto& k = utility::split( it,' ' ) ;
 
@@ -313,7 +311,7 @@ void mountinfo::stop()
 
 void mountinfo::volumeUpdate()
 {
-	m_newMountList = _unlocked_volumes( background_thread::False ) ;
+	m_newMountList = _unlocked_volumes() ;
 
 	auto _volumeWasMounted = [ & ](){
 
@@ -461,5 +459,5 @@ void mountinfo::osxMonitor()
 
 void mountinfo::windowsMonitor()
 {
-	SiriKali::Winfsp::updateVolumeList( [ this ]{ this->updateVolume() ; } ) ;
+	SiriKali::Windows::updateVolumeList( [ this ]{ this->updateVolume() ; } ) ;
 }

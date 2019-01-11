@@ -183,7 +183,25 @@ void keyDialog::setUpInitUI()
 	connect( m_ui->pbSetKeyCancel,SIGNAL( clicked() ),
 		 this,SLOT( pbSetKeyCancel() ) ) ;
 
+	connect( m_ui->pbMountPoint_1,&QPushButton::clicked,[ this ](){
+
+		auto msg = tr( "Select A Folder To Create A Mount Point In." ) ;
+		auto e = utility::getExistingDirectory( this,msg,settings::instance().homePath() ) ;
+
+		if( !e.isEmpty() ){
+
+			while( e.endsWith( "/" ) ){
+
+				e.truncate( e.length() - 1 ) ;
+			}
+
+			m_ui->lineEditMountPoint->setText( e ) ;
+		}
+	} ) ;
+
 	if( m_create ){
+
+		m_ui->pbMountPoint_1->setVisible( false ) ;
 
 		connect( m_ui->lineEditMountPoint,SIGNAL( textChanged( QString ) ),
 			 this,SLOT( textChanged( QString ) ) ) ;
@@ -210,9 +228,13 @@ void keyDialog::setUpInitUI()
 	}else{
 		this->windowSetTitle( tr( "Unlocking \"%1\"" ).arg( m_path ) ) ;
 
+		m_ui->pbMountPoint_1->setVisible( utility::platformIsWindows() ) ;
+
 		m_ui->label_2->setText( tr( "Mount Path" ) ) ;
 
 		m_ui->pbMountPoint->setIcon( QIcon( ":/folder.png" ) ) ;
+
+		m_ui->pbMountPoint_1->setIcon( QIcon( ":/folder.png" ) ) ;
 
 		m_ui->lineEditKey->setFocus() ;
 	}
@@ -418,6 +440,8 @@ void keyDialog::setDefaultUI()
 
 		m_ui->pbMountPoint->setVisible( false ) ;
 
+		m_ui->pbMountPoint_1->setVisible( false ) ;
+
 		m_ui->lineEditFolderPath->setEnabled( false ) ;
 
 		m_ui->pbkeyOption->setVisible( false ) ;
@@ -616,6 +640,7 @@ void keyDialog::pbFolderPath()
 void keyDialog::enableAll()
 {
 	m_ui->pbMountPoint->setEnabled( true ) ;
+	m_ui->pbMountPoint_1->setEnabled( true ) ;
         m_ui->pbOptions->setEnabled( true ) ;
 	m_ui->label_2->setEnabled( true ) ;
 	m_ui->pbOpenFolderPath->setEnabled( true ) ;
@@ -637,7 +662,7 @@ void keyDialog::enableAll()
 		m_ui->checkBoxVisibleKey->setEnabled( index == keyDialog::Key ) ;
 	}
 
-	if( !utility::platformIsWindows() && !m_favoriteReadOnly ){
+	if( !utility::platformIsWindows() ){
 
 		m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
 	}
@@ -651,6 +676,7 @@ void keyDialog::disableAll()
 {
 	m_ui->checkBoxVisibleKey->setEnabled( false ) ;
 	m_ui->pbMountPoint->setEnabled( false ) ;
+	m_ui->pbMountPoint_1->setEnabled( false ) ;
 	m_ui->cbKeyType->setEnabled( false ) ;
 	m_ui->pbOptions->setEnabled( false ) ;
 	m_ui->pbkeyOption->setEnabled( false ) ;
@@ -685,12 +711,24 @@ void keyDialog::setUIVisible( bool e )
 	if( e ){
 
 		m_ui->pbMountPoint->setVisible( !m_create ) ;
+
+		if( utility::platformIsWindows() ){
+
+			m_ui->pbMountPoint_1->setVisible( !m_create ) ;
+		}
+
 		m_ui->label_3->setVisible( m_create ) ;
 		m_ui->checkBoxOpenReadOnly->setVisible( !m_create ) ;
 		m_ui->lineEditFolderPath->setVisible( m_create ) ;
 		m_ui->pbOpenFolderPath->setVisible( m_create ) ;
 	}else{
 		m_ui->pbMountPoint->setVisible( e ) ;
+
+		if( utility::platformIsWindows() ){
+
+			m_ui->pbMountPoint_1->setVisible( e ) ;
+		}
+
 		m_ui->label_3->setVisible( e ) ;
 		m_ui->checkBoxOpenReadOnly->setVisible( e ) ;
 		m_ui->lineEditFolderPath->setVisible( e ) ;
@@ -915,14 +953,35 @@ void keyDialog::encryptedFolderCreate()
 
 	if( utility::platformIsWindows() ){
 
-		m = utility::freeWindowsDriveLetter() ;
+		if( m_exe == "Cryfs" ){
 
-		if( utility::pathExists( m ) ){
+			/*
+			 * We are creating a cipher folder and then delete it to prevent
+			 * path collition when create plain folder in variable "m".
+			 */
+			utility::createFolder( path ) ;
 
-			this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
+			m = settings::instance().mountPath( utility::mountPathPostFix( m ) ) ;
 
-			return this->enableAll() ;
+			utility::removeFolder( path ) ;
+
+			if( utility::pathExists( m ) ){
+
+				this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
+
+				return this->enableAll() ;
+			}
+		}else{
+			m = utility::freeWindowsDriveLetter() ;
+
+			if( utility::pathExists( m ) ){
+
+				this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
+
+				return this->enableAll() ;
+			}
 		}
+
 	}else{
 		m = settings::instance().mountPath( utility::mountPathPostFix( m ) ) ;
 
@@ -1013,11 +1072,7 @@ void keyDialog::pbSetKey()
 			}else{
 				exe = exe + " " + utility::Task::makePath( keyFile ) ;
 
-				auto env = utility::systemEnvironment() ;
-
-				env.insert( "LANG","C" ) ;
-
-				env.insert( "PATH",utility::executableSearchPaths( env.value( "PATH" ) ) ) ;
+				const auto& env = utility::systemEnvironment() ;
 
 				return utility::Task( exe,20000,env,passphrase.toLatin1() ).stdOut() ;
 			}
@@ -1082,14 +1137,7 @@ void keyDialog::SetUISetKey( bool e )
 
 void keyDialog::encryptedFolderMount()
 {
-	bool ro ;
-
-	if( m_favoriteReadOnly ){
-
-		ro = true ;
-	}else{
-		ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
-	}
+	auto ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
 
 	auto m = m_ui->lineEditMountPoint->text() ;
 
@@ -1106,9 +1154,25 @@ void keyDialog::encryptedFolderMount()
 
 	if( utility::pathExists( m ) && !m_reUseMountPoint ){
 
-		this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
+		if( utility::platformIsWindows() ){
 
-		return this->enableAll() ;
+			settings::instance().reUseMountPoint( true ) ;
+			m_reUseMountPoint = true ;
+		}else{
+			this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
+
+			return this->enableAll() ;
+		}
+	}
+
+	if( utility::platformIsWindows() && !utility::isDriveLetter( m ) ){
+
+		if( utility::folderNotEmpty( m ) ){
+
+			this->showErrorMessage( tr( "Mount Point Path Is Not Empty." ) ) ;
+
+			return this->enableAll() ;
+		}
 	}
 
 	if( !m_path.startsWith( "sshfs " ) ){

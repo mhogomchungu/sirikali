@@ -62,7 +62,7 @@
 #include "plugins.h"
 #include "crypto.h"
 #include "json.h"
-#include "winfsp.h"
+#include "win.h"
 #include "readonlywarning.h"
 
 #include <gcrypt.h>
@@ -150,6 +150,8 @@ static bool _enable_debug = false ;
 
 static bool _enable_full_debug = false ;
 
+static QThread * _main_gui_thread ;
+
 void utility::enableDebug( bool e )
 {
 	_enable_debug = e ;
@@ -177,6 +179,11 @@ void utility::setDebugWindow( debugWindow * w )
 
 static void _set_debug_window_text( const QString& e )
 {
+	if( utility::debugFullEnabled() ){
+
+		std::cout << e.toLatin1().constData() << std::endl ;
+	}
+
 	_debugWindow->UpdateOutPut( e,utility::debugFullEnabled() ) ;
 }
 
@@ -205,7 +212,7 @@ void utility::polkitFailedWarning( std::function< void() > e )
 {
 	return ::Task::run( [ = ](){
 
-		auto env = utility::systemEnvironment() ;
+		const auto& env = utility::systemEnvironment() ;
 
 		return utility::Task( exe,s,env,QByteArray(),[](){},e ) ;
 	} ) ;
@@ -247,7 +254,7 @@ void utility::Task::execute( const QString& exe,int waitTime,
 			}else{
 				utility::debug() << s.errorString() ;
 
-				utility::Task::suspendForOneSecond() ;
+				utility::waitForOneSecond() ;
 			}
 		}
 
@@ -282,7 +289,9 @@ void utility::Task::execute( const QString& exe,int waitTime,
 			_report_error( "SiriKali: Failed To Parse Polkit Backend Output" ) ;
 		}
 	}else{
-		auto s = ::Task::process::run( exe,{},waitTime,password,env,std::move( function ) ).get() ;
+		auto& ss = ::Task::process::run( exe,{},waitTime,password,env,std::move( function ) ) ;
+
+		auto s = utility::unwrap( ss ) ;
 
 		m_finished   = s.finished() ;
 		m_exitCode   = s.exit_code() ;
@@ -396,7 +405,7 @@ static ::Task::future< utility::Task >& _start_siripolkit( const QString& e )
 	} ) ;
 }
 
-bool utility::enablePolkit( utility::background_thread thread )
+bool utility::enablePolkit()
 {
 	if( _use_polkit ){
 
@@ -409,26 +418,13 @@ bool utility::enablePolkit( utility::background_thread thread )
 
 		auto socketPath = utility::helperSocketPath() ;
 
-		if( thread == utility::background_thread::True ){
+		if( utility::unwrap( _start_siripolkit( exe ) ).success() ){
 
-			if( _start_siripolkit( exe ).get().success() ){
+			_use_polkit = true ;
 
-				_use_polkit = true ;
+			while( !utility::pathExists( socketPath ) ){
 
-				while( !utility::pathExists( socketPath ) ){
-
-					utility::Task::waitForOneSecond() ;
-				}
-			}
-		}else{
-			if( _start_siripolkit( exe ).await().success() ){
-
-				_use_polkit = true ;
-
-				while( !utility::pathExists( socketPath ) ){
-
-					utility::Task::suspendForOneSecond() ;
-				}
+				utility::waitForOneSecond() ;
 			}
 		}
 	}
@@ -438,6 +434,7 @@ bool utility::enablePolkit( utility::background_thread thread )
 
 void utility::initGlobals()
 {
+	utility::setGUIThread() ;
 #ifdef Q_OS_LINUX
 	auto uid = getuid() ;
 
@@ -841,6 +838,11 @@ bool utility::pathExists( const QString& path )
 	return QFile::exists( path ) ;
 }
 
+bool utility::pathNotExists( const QString& path )
+{
+	return !utility::pathExists( path ) ;
+}
+
 QStringList utility::split( const QString& e,char token )
 {
 	if( e.isEmpty() ){
@@ -922,9 +924,55 @@ void utility::setWindowOptions( QDialog * w )
 	}
 }
 
+bool utility::folderIsEmpty( const QString& m )
+{
+	return QDir( m ).entryList( QDir::AllEntries | QDir::NoDotAndDotDot | QDir::System ).count() == 0 ;
+}
+
+bool utility::folderNotEmpty( const QString& m )
+{
+	return !utility::folderIsEmpty( m ) ;
+}
+
 bool utility::createFolder( const QString& m )
 {
-	return QDir().mkpath( m ) ;
+	if( utility::isDriveLetter( m ) ){
+
+		return true ;
+	}else{
+		return QDir().mkpath( m ) ;
+	}
+}
+
+bool utility::removeFolder( const QString& e,int attempts )
+{
+	if( utility::isDriveLetter( e ) ){
+
+		return true ;
+	}
+
+	QDir dir ;
+
+	dir.rmdir( e ) ;
+
+	if( utility::pathNotExists( e ) ){
+
+		return true ;
+	}else{
+		for( int i = 1 ; i < attempts ; i++ ){
+
+			utility::waitForOneSecond() ;
+
+			dir.rmdir( e ) ;
+
+			if( utility::pathNotExists( e ) ){
+
+				return true ;
+			}
+		}
+
+		return false ;
+	}
 }
 
 #ifdef Q_OS_WIN
@@ -1018,15 +1066,9 @@ QString utility::readPassword( bool addNewLine )
 
 #endif
 
-QProcessEnvironment utility::systemEnvironment()
+const QProcessEnvironment& utility::systemEnvironment()
 {
-	auto e = QProcessEnvironment::systemEnvironment() ;
-
-	e.insert( "LANG","C" ) ;
-
-	e.insert( "PATH",utility::executableSearchPaths( e.value( "PATH" ) ) ) ;
-
-	return e ;
+	return utility::globalEnvironment().instance().get() ;
 }
 
 QString utility::configFilePath( QWidget * s,const QString& e )
@@ -1115,6 +1157,16 @@ QString utility::freeWindowsDriveLetter()
 	}
 
 	return "Z:" ;
+}
+
+bool utility::isDriveLetter( const QString& path )
+{
+	if( utility::platformIsWindows() ){
+
+		return ( path.size() == 2 && path.at( 1 ) == ':' ) || ( path.size() == 3 && path.at( 1 ) == ':' && path.at( 2 ) == '\\' ) ;
+	}else{
+		return false ;
+	}
 }
 
 void utility::setWindowsMountPointOptions( QWidget * obj,QLineEdit * e,QPushButton * s )
@@ -1262,5 +1314,66 @@ QString utility::wrap_su( const QString& s )
 		return s ;
 	}else{
 		return QString( "%1 - -c \"%2\"" ).arg( su,QString( s ).replace( "\"","'" ) ) ;
+	}
+}
+
+utility::globalEnvironment& utility::globalEnvironment::instance()
+{
+	static utility::globalEnvironment m ;
+	return m ;
+}
+
+const QProcessEnvironment& utility::globalEnvironment::get() const
+{
+	return m_environment ;
+}
+
+void utility::globalEnvironment::remove( const QString& e )
+{
+	m_environment.remove( e ) ;
+}
+
+void utility::globalEnvironment::insert( const QString& key,const QString& value )
+{
+	m_environment.insert( key,value ) ;
+}
+
+utility::globalEnvironment::globalEnvironment() :
+	m_environment( QProcessEnvironment::systemEnvironment() )
+{
+	auto m = utility::executableSearchPaths( m_environment.value( "PATH" ) ) ;
+
+	m_environment.insert( "PATH",m ) ;
+
+	m_environment.insert( "LANG","C" ) ;
+}
+
+void utility::setGUIThread()
+{
+	_main_gui_thread = QThread::currentThread() ;
+}
+
+bool utility::runningOnGUIThread()
+{
+	return QThread::currentThread() == _main_gui_thread ;
+}
+
+bool utility::runningOnBackGroundThread()
+{
+	return QThread::currentThread() != _main_gui_thread ;
+}
+
+void utility::waitForOneSecond()
+{
+	utility::wait( 1 ) ;
+}
+
+void utility::wait( int time )
+{
+	if( utility::runningOnBackGroundThread() ){
+
+		utility::Task::wait( time ) ;
+	}else{
+		utility::Task::suspend( time ) ;
 	}
 }

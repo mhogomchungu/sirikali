@@ -18,7 +18,6 @@
  */
 
 #include "cryfs.h"
-#include "commandOptions.h"
 #include "cryfscreateoptions.h"
 
 static engines::engine::BaseOptions _setOptions()
@@ -47,11 +46,11 @@ cryfs::cryfs() : engines::engine( _setOptions() )
 	qputenv( "CRYFS_FRONTEND","noninteractive" ) ;
 }
 
-QString cryfs::command( const engines::engine::cmdArgsList& args ) const
+engines::engine::args cryfs::command( const engines::engine::cmdArgsList& args ) const
 {
 	auto separator = [](){
 
-		auto m = utility::backendIsLessThan( "cryfs","0.10" ).get() ;
+		auto m = utility::unwrap( utility::backendIsLessThan( "cryfs","0.10" ) ) ;
 
 		if( m && m.value() ){
 
@@ -63,9 +62,14 @@ QString cryfs::command( const engines::engine::cmdArgsList& args ) const
 
 	auto e = QString( "%1 %2 %3 %4 %5 %6" ) ;
 
-	commandOptions m( args,this->name(),this->name() ) ;
+	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
 
 	auto exeOptions = m.exeOptions() ;
+
+	if( utility::platformIsWindows() ){
+
+		exeOptions.add( "-f" ) ;
+	}
 
 	if( !args.opt.idleTimeout.isEmpty() ){
 
@@ -82,17 +86,19 @@ QString cryfs::command( const engines::engine::cmdArgsList& args ) const
 		exeOptions.add( args.configFilePath ) ;
 	}
 
-	return e.arg( args.exe,
-		      exeOptions.get(),
-		      args.cipherFolder,
-		      args.mountPoint,
-		      separator,
-		      m.fuseOpts().get() ) ;
+	auto cmd = e.arg( args.exe,
+			  exeOptions.get(),
+			  args.cipherFolder,
+			  args.mountPoint,
+			  separator,
+			  m.fuseOpts().get() ) ;
+
+	return { args,m,cmd } ;
 }
 
 engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 {
-	auto m = utility::backendIsGreaterOrEqualTo( "cryfs","0.9.9" ).get() ;
+	auto m = utility::unwrap( utility::backendIsGreaterOrEqualTo( "cryfs","0.9.9" ) ) ;
 
 	if( m && m.value() ){
 
@@ -115,12 +121,12 @@ engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 		 * Falling back to parsing strings
 		 */
 
-		if( e.contains( "password" ) ){
+		if( e.contains( "Could not load config file. Did you enter the correct password?" ) ){
 
 			return engines::engine::status::cryfsBadPassword ;
 
-		}else if( e.contains( "this filesystem is for cryfs" ) &&
-			  e.contains( "it has to be migrated" ) ){
+		}else if( e.contains( "This filesystem is for CryFS" ) &&
+			  e.contains( "It has to be migrated" ) ){
 
 			return engines::engine::status::cryfsMigrateFileSystem ;
 		}
@@ -142,6 +148,20 @@ QString cryfs::installedVersionString() const
 	}
 
 	return m_version ;
+}
+
+engines::engine::error cryfs::errorCode( const QString& e ) const
+{
+	if( e.contains( "Mounting filesystem." ) ){
+
+		return engines::engine::error::Success ;
+
+	}else if( e.contains( "Error" ) ){
+
+		return engines::engine::error::Failed ;
+	}else{
+		return engines::engine::error::Continue ;
+	}
 }
 
 void cryfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

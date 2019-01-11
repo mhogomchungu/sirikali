@@ -30,6 +30,7 @@
 #include <QWidget>
 
 #include "favorites.h"
+#include "utility.h"
 
 class engines
 {
@@ -39,7 +40,11 @@ public:
 
 	class engine
 	{
+	protected:
+		class commandOptions ;
 	public:
+		enum class error{ Success,Failed,Timeout,Continue } ;
+
 		enum class status
 		{
 			success,
@@ -59,6 +64,7 @@ public:
 			gocryptfsNotFound,
 			ecryptfs_simpleNotFound,
 
+			sshfsTooOld,
 			cryfsMigrateFileSystem,
 
 			failedToLoadWinfsp,
@@ -68,7 +74,9 @@ public:
 
 			backEndDoesNotSupportCustomConfigPath,
 			failedToCreateMountPoint,
+			invalidConfigFileName,
 			backendFail,
+			backendTimedOut,
 			unknown
 		} ;
 
@@ -115,6 +123,7 @@ public:
 			cmdStatus() ;
 			cmdStatus( engines::engine::status s,int c,const QString& e = QString() ) ;
 			cmdStatus( engines::engine::status s,const QString& e = QString() ) ;
+			cmdStatus( engines::engine::status s,const QStringList& ) ;
 			cmdStatus( int s,const QString& e = QString() ) ;
 			engines::engine::status status() const ;
 			bool operator==( engines::engine::status s ) const ;
@@ -127,6 +136,7 @@ public:
 			int m_exitCode = -1 ;
 			engines::engine::status m_status = engines::engine::status::backendFail ;
 			QString m_message ;
+			QStringList m_backendExtensionNames ;
 		} ;
 
 		struct Options
@@ -151,6 +161,20 @@ public:
 			QStringList configFileNames ;
 
 			engines::engine::status notFoundCode ;
+		} ;
+
+		struct args
+		{
+			args() ;
+			args( const cmdArgsList&,const engines::engine::commandOptions&,
+			      const QString& cmd = QString() ) ;
+			QString cmd ;
+			QString cipherPath ;
+			QString mountPath ;
+			QString fuseOptions ;
+			QString exeOptions ;
+			QString mode ;
+			QString subtype ;
 		} ;
 
 		QString executableFullPath() const ;
@@ -178,9 +202,9 @@ public:
 
 		virtual QString installedVersionString() const = 0 ;
 		virtual QString setPassword( const QString& ) const = 0 ;
-		virtual QString command( const engines::engine::cmdArgsList& args ) const = 0 ;
+		virtual args command( const engines::engine::cmdArgsList& args ) const = 0 ;
 		virtual engines::engine::status errorCode( const QString& e,int s ) const = 0 ;
-
+		virtual engine::engine::error errorCode( const QString& ) const = 0 ;
 		using function = std::function< void( const Options& ) > ;
 		virtual void GUICreateOptionsinstance( QWidget * parent,function ) const = 0 ;
 	protected:
@@ -189,6 +213,140 @@ public:
 						    bool readFromStdOut,
                                                     int argumentNumber,
                                                     int argumentLine ) const ;
+		class commandOptions{
+		public:
+			enum class separator{ space,equal_sign } ;
+
+			class Options{
+			public:
+				Options( QString& m,QString s ) :
+					m_options( m ),m_separator( std::move( s ) )
+				{
+				}
+				bool doesNotContain( const QString& key ) const
+				{
+					return !this->contains( key ) ;
+				}
+				bool contains( const QString& key ) const
+				{
+					return m_options.contains( key ) ;
+				}
+				void addPair( const QString& key,const QString& value,separator s )
+				{
+					if( s == separator::space ){
+
+						this->add( key + " " + value ) ;
+					}else{
+						this->add( key + "=" + value ) ;
+					}
+				}
+				template< typename E >
+				void add( E&& e )
+				{
+					if( m_options.isEmpty() ){
+
+						m_options = std::forward< E >( e ) ;
+					}else{
+						m_options += m_separator + std::forward< E >( e ) ;
+					}
+				}
+				template< typename E,typename ... T >
+				void add( E&& e,T&& ... m )
+				{
+					this->add( std::forward< E >( e ) ) ;
+					this->add( std::forward< T >( m ) ... ) ;
+				}
+				const QString& get() const
+				{
+					return m_options ;
+				}
+				QString extractStartsWith( const QString& e )
+				{
+					auto tmp = m_options ;
+					m_options.clear() ;
+
+					QString m ;
+
+					auto s = m_separator[ 0 ].toLatin1() ;
+
+					for( const auto& it : utility::split( tmp,s ) ){
+
+						if( it.startsWith( e ) ){
+
+							m = it ;
+						}else{
+							this->add( it ) ;
+						}
+					}
+
+					return m ;
+				}
+			private:
+				QString& m_options ;
+				QString m_separator ;
+			};
+
+			class fuseOptions : public Options
+			{
+			public:
+				fuseOptions( QString& m ) : Options( m,"," )
+				{
+				}
+				void addPair( const QString& key,const QString& value,
+					      separator s = separator::equal_sign )
+				{
+					Options::addPair( key,value,s ) ;
+				}
+			} ;
+
+			class exeOptions : public Options
+			{
+			public:
+				exeOptions( QString& m ) : Options( m," " )
+				{
+				}
+				void addPair( const QString& key,const QString& value,
+					      separator s = separator::space )
+				{
+					Options::addPair( key,value,s ) ;
+				}
+			} ;
+
+			commandOptions( const engines::engine::cmdArgsList& e,
+					const QString& f,
+					const QString& g = QString() ) ;
+
+			const QString& constExeOptions() const
+			{
+				return m_exeOptions ;
+			}
+			const QString& constFuseOpts() const
+			{
+				return m_fuseOptions ;
+			}
+			const QString& subType() const
+			{
+				return m_subtype ;
+			}
+			const QString& mode() const
+			{
+				return m_mode ;
+			}
+			exeOptions exeOptions()
+			{
+				return m_exeOptions ;
+			}
+			fuseOptions fuseOpts()
+			{
+				return m_fuseOptions ;
+			}
+		private:
+			QString m_exeOptions ;
+			QString m_fuseOptions ;
+			QString m_subtype ;
+			QString m_mode ;
+		};
+
 		engine( BaseOptions ) ;
 	private:
 		BaseOptions m_Options ;
@@ -202,6 +360,7 @@ public:
 	const engine& getByFuseName( const QString& e ) const ;
 	std::pair< const engines::engine&,QString >
 	getByConfigFileNames( std::function< bool( const QString& ) > function ) const ;
+
 private:
 	std::vector< std::unique_ptr< engines::engine > > m_backends ;
 	QStringList m_supported ;

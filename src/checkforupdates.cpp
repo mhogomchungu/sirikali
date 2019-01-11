@@ -101,7 +101,7 @@ QString checkUpdates::InstalledVersion( const QString& e )
 
 		return THIS_VERSION ;
 	}else{
-		auto s = utility::backEndInstalledVersion( e ).await() ;
+		auto s = utility::unwrap( utility::backEndInstalledVersion( e ) ) ;
 
 		if( s ){
 

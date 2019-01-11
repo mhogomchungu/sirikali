@@ -18,7 +18,6 @@
  */
 
 #include "encfs.h"
-#include "commandOptions.h"
 
 #include "encfscreateoptions.h"
 
@@ -46,11 +45,11 @@ encfs::encfs() : engines::engine( _setOptions() )
 {
 }
 
-QString encfs::command( const engines::engine::cmdArgsList& args ) const
+engines::engine::args encfs::command( const engines::engine::cmdArgsList& args ) const
 {
 	QString e = "%1 %2 %3 %4 %5" ;
 
-	commandOptions m( args,this->name(),this->name() ) ;
+	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
 
 	auto exeOptions = m.exeOptions() ;
 
@@ -69,6 +68,18 @@ QString encfs::command( const engines::engine::cmdArgsList& args ) const
 	if( utility::platformIsWindows() ){
 
 		exeOptions.add( "-f" ) ;
+
+		auto m = args.mountPoint.mid( 1,args.mountPoint.size() - 2 ) ;
+
+		if( !utility::isDriveLetter( m ) ){
+
+			/*
+			 * A user is trying to use a folder as a mount path and encfs
+			 * requires the mount path to not exist and we are deleting
+			 * it because SiriKali created it previously.
+			 */
+			utility::removeFolder( m,5 ) ;
+		}
 	}
 
 	if( !args.configFilePath.isEmpty() ){
@@ -81,22 +92,38 @@ QString encfs::command( const engines::engine::cmdArgsList& args ) const
 		exeOptions.addPair( "-i",args.opt.idleTimeout ) ;
 	}
 
-	return e.arg( args.exe,
-		      exeOptions.get(),
-		      args.cipherFolder,
-		      args.mountPoint,
-		      m.fuseOpts().get() ) ;
+	auto cmd = e.arg( args.exe,
+			  exeOptions.get(),
+			  args.cipherFolder,
+			  args.mountPoint,
+			  m.fuseOpts().get() ) ;
+
+	return { args,m,cmd } ;
+}
+
+engines::engine::error encfs::errorCode( const QString& e ) const
+{
+	if( utility::containsAtleastOne( e,"has been started" ) ){
+
+		return engines::engine::error::Success ;
+
+	}else if( e.contains( "Error" ) ){
+
+		return engines::engine::error::Failed ;
+	}else{
+		return engines::engine::error::Continue ;
+	}
 }
 
 engines::engine::status encfs::errorCode( const QString& e,int s ) const
 {
 	Q_UNUSED( s ) ;
 
-	if( e.contains( "password" ) ){
+	if( e.contains( "Error decoding volume key, password incorrect" ) ){
 
 		return engines::engine::status::encfsBadPassword ;
 
-	}else if( e.contains( "winfsp" ) ){
+	}else if( e.contains( "cygfuse: initialization failed: winfsp" ) ){
 
 		return engines::engine::status::failedToLoadWinfsp ;
 	}else{

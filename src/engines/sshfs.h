@@ -19,15 +19,21 @@
 
 #include "../engines.h"
 
-struct sshfs : public engines::engine
+class sshfs : public engines::engine
 {
+public:
 	sshfs() ;
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 
-	QString command( const engines::engine::cmdArgsList& args ) const override ;
+	engines::engine::args command( const engines::engine::cmdArgsList& args ) const override ;
+
+	engines::engine::error errorCode( const QString& ) const override ;
+
 	QString setPassword( const QString& ) const override ;
 	QString installedVersionString() const override ;
 
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
+private:
+	mutable QString m_version ;
 } ;

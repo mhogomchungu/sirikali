@@ -18,7 +18,6 @@
  */
 
 #include "sshfs.h"
-#include "commandOptions.h"
 
 static engines::engine::BaseOptions _setOptions()
 {
@@ -44,11 +43,12 @@ sshfs::sshfs() : engines::engine( _setOptions() )
 {
 }
 
-QString sshfs::command( const engines::engine::cmdArgsList& args ) const
+engines::engine::args sshfs::command( const engines::engine::cmdArgsList& args ) const
 {
-	commandOptions m( args,this->name(),this->name() ) ;
+	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
 
 	auto fuseOptions = m.fuseOpts() ;
+	auto exeOptions  = m.exeOptions() ;
 
 	if( !args.opt.key.isEmpty() ){
 
@@ -60,12 +60,24 @@ QString sshfs::command( const engines::engine::cmdArgsList& args ) const
 		fuseOptions.addPair( "StrictHostKeyChecking","no" ) ;
 	}
 
-	auto exeOptions = m.exeOptions() ;
-
 	if( utility::platformIsWindows() ){
 
 		exeOptions.add( "-f" ) ;
+
+		auto m = args.mountPoint.mid( 1,args.mountPoint.size() - 2 ) ;
+
+		if( !utility::isDriveLetter( m ) ){
+
+			/*
+			 * A user is trying to use a folder as a mount path and encfs
+			 * requires the mount path to not exist and we are deleting
+			 * it because SiriKali created it previously.
+			 */
+			utility::removeFolder( m,5 ) ;
+		}
 	}
+
+	auto& env = utility::globalEnvironment::instance() ;
 
 	if( fuseOptions.contains( "IdentityAgent" ) ){
 
@@ -73,30 +85,48 @@ QString sshfs::command( const engines::engine::cmdArgsList& args ) const
 
 		auto n = fuseOptions.extractStartsWith( m ).replace( m,"" ) ;
 
-		if( !n.isEmpty() ){
+		env.insert( "SSH_AUTH_SOCK",n ) ;
+	}else{
+		auto m = qgetenv( "SSH_AUTH_SOCK" ) ;
 
-			qputenv( "SSH_AUTH_SOCK",n.toLatin1() ) ;
+		if( m.isEmpty() ){
+
+			env.remove( "SSH_AUTH_SOCK" ) ;
+		}else{
+			env.insert( "SSH_AUTH_SOCK",m ) ;
 		}
 	}
 
 	QString s = "%1 %2 %3 %4 %5" ;
 
-	return s.arg( args.exe,
-		      exeOptions.get(),
-		      args.cipherFolder,
-		      args.mountPoint,
-		      fuseOptions.get() ) ;
+	auto cmd = s.arg( args.exe,
+			  exeOptions.get(),
+			  args.cipherFolder,
+			  args.mountPoint,
+			  fuseOptions.get() ) ;
+
+	return { args,m,cmd } ;
+}
+
+engines::engine::error sshfs::errorCode( const QString& e ) const
+{
+	if( e.contains( "has been started" ) ){
+
+		return engines::engine::error::Success ;
+
+	}else if( utility::containsAtleastOne( e,"ssh:","read:","Cannot create WinFsp-FUSE file system" ) ){
+
+		return engines::engine::error::Failed ;
+	}else{
+		return engines::engine::error::Continue ;
+	}
 }
 
 engines::engine::status sshfs::errorCode( const QString& e,int s ) const
 {
 	Q_UNUSED( s ) ;
 
-	if( e.contains( "password" ) ){
-
-		return engines::engine::status::sshfsBadPassword ;
-
-	}else if( e.contains( "winfsp" ) ){
+	if( e.contains( "cygfuse: initialization failed: winfsp" ) ){
 
 		return engines::engine::status::failedToLoadWinfsp ;
 	}else{
@@ -123,7 +153,12 @@ QString sshfs::setPassword( const QString& e ) const
 
 QString sshfs::installedVersionString() const
 {
-	return this->baseInstalledVersionString( "--version",true,2,0 ) ;
+	if( m_version.isEmpty() ){
+
+		m_version = this->baseInstalledVersionString( "--version",true,2,0 ) ;
+	}
+
+	return m_version ;
 }
 
 void sshfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

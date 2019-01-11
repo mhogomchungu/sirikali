@@ -18,7 +18,6 @@
  */
 
 #include "unknown.h"
-#include "commandOptions.h"
 
 static engines::engine::BaseOptions _setOptions()
 {
@@ -44,10 +43,17 @@ unknown::unknown() : engines::engine( _setOptions() )
 {
 }
 
-QString unknown::command( const engines::engine::cmdArgsList& args ) const
+engines::engine::args unknown::command( const engines::engine::cmdArgsList& args ) const
 {
 	Q_UNUSED( args ) ;
-	return QString() ;
+	return {} ;
+}
+
+engines::engine::error unknown::errorCode( const QString& e ) const
+{
+	Q_UNUSED( e ) ;
+
+	return engines::engine::error::Failed ;
 }
 
 engines::engine::status unknown::errorCode( const QString& e,int s ) const

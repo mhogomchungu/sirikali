@@ -29,7 +29,7 @@
 
 #include "utility.h"
 #include "settings.h"
-#include "winfsp.h"
+#include "win.h"
 
 QStringList engines::executableSearchPaths()
 {
@@ -41,7 +41,7 @@ QStringList engines::executableSearchPaths()
 				  a + "\\.bin\\",
 				  settings::instance().windowsExecutableSearchPath() + "\\" } ;
 
-		for( const auto& it : SiriKali::Winfsp::engineInstalledDirs() ){
+		for( const auto& it : SiriKali::Windows::engineInstalledDirs() ){
 
 			if( !it.isEmpty() ){
 
@@ -128,11 +128,11 @@ QString engines::engine::baseInstalledVersionString( const QString& versionArgum
 						     int argumentNumber,
 						     int argumentLine ) const
 {
-	const auto s = utility::systemEnvironment() ;
+	const auto& s = utility::systemEnvironment() ;
 
-	const auto cmd = this->executableFullPath() + " " + versionArgument ;
+	const auto cmd = utility::Task::makePath( this->executableFullPath() ) + " " + versionArgument ;
 
-	const auto r = ::Task::process::run( cmd,{},-1,{},s ).get() ;
+	const auto r = utility::unwrap( ::Task::process::run( cmd,{},-1,{},s ) ) ;
 
 	const auto m = utility::split( readFromStdOut ? r.std_out() : r.std_error(),'\n' ) ;
 
@@ -270,9 +270,10 @@ engines::engines()
 
 	if( utility::platformIsWindows() ){
 
-		m_supported = QStringList{ "Securefs","Encfs","Sshfs" } ;
+		m_supported = QStringList{ "Securefs","Cryfs","Encfs","Sshfs" } ;
 
 		m_backends.emplace_back( std::make_unique< securefs >() ) ;
+		m_backends.emplace_back( std::make_unique< cryfs >() ) ;
 		m_backends.emplace_back( std::make_unique< encfs >() ) ;
 		m_backends.emplace_back( std::make_unique< sshfs >() ) ;
 
@@ -364,6 +365,11 @@ engines::engine::cmdStatus::cmdStatus( engines::engine::status s,const QString& 
 	this->message( e ) ;
 }
 
+engines::engine::cmdStatus::cmdStatus( engines::engine::status s,const QStringList& e ) :
+	m_status( s ),m_backendExtensionNames( e )
+{
+}
+
 engines::engine::cmdStatus::cmdStatus( int s,const QString& e ) :
 	m_exitCode( s )
 {
@@ -450,6 +456,10 @@ QString engines::engine::cmdStatus::toString() const
 
 		return QObject::tr( "Failed To Complete The Request.\nCryfs Executable Could Not Be Found." ) ;
 
+	case engines::engine::status::backendTimedOut :
+
+		return QObject::tr( "Something Is Wrong With The Backend And It Took Too Long To Respond." ) ;
+
 	case engines::engine::status::cryfsMigrateFileSystem :
 
 		return QObject::tr( "This Volume Of Cryfs Needs To Be Upgraded To Work With The Version Of Cryfs You Are Using.\n\nThe Upgrade is IRREVERSIBLE And The Volume Will No Longer Work With Older Versions of Cryfs.\n\nTo Do The Upgrade, Check The \"Upgrade File System\" Option And Unlock The Volume Again." ) ;
@@ -481,6 +491,23 @@ QString engines::engine::cmdStatus::toString() const
 	case engines::engine::status::unknown :
 
 		return QObject::tr( "Failed To Unlock The Volume.\nNot Supported Volume Encountered." ) ;
+
+	case engines::engine::status::sshfsTooOld :
+
+		return QObject::tr( "Installed \"%1\" Version Is Too Old.\n Please Update To Atleast Version %2." ).arg( "Sshfs","3.4.0" ) ;
+
+	case engines::engine::status::invalidConfigFileName :
+
+	{
+		if( m_backendExtensionNames.size() == 1 ){
+
+			auto s = m_backendExtensionNames.first() ;
+			return QObject::tr( "Invalid Config File Name.\nIts Name Must End With \"%1\"" ).arg( s ) ;
+		}else{
+			auto s = m_backendExtensionNames.join( ", " ) ;
+			return QObject::tr( "Invalid Config File Name.\nIt Must End With One Of The Following:\n\"%1\"" ).arg( s ) ;
+		}
+	}
 
 	case engines::engine::status::backendFail :
 
@@ -559,4 +586,91 @@ engines::engine::options::options( const QString& cipher_folder,
 	mountOptions( favorites::entry::sanitizedMountOptions( mount_options ) ),
 	createOptions( create_options )
 {
+}
+
+engines::engine::args::args( const engines::engine::cmdArgsList& m,
+			     const engines::engine::commandOptions& s,
+			     const QString& c ) :
+	cmd( c ),
+	cipherPath( m.cipherFolder ),
+	mountPath( m.mountPoint ),
+	fuseOptions( s.constFuseOpts() ),
+	exeOptions( s.constExeOptions() ),
+	mode( s.mode() ),
+	subtype( s.subType() )
+{
+}
+
+engines::engine::args::args()
+{
+}
+
+engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsList& e,
+						 const QString& f,
+						 const QString& subtype )
+{
+	for( const auto& it : utility::split( e.opt.mountOptions,',' ) ) {
+
+		if( it.startsWith( '-' ) ){
+
+			m_exeOptions += it + " " ;
+		}else{
+			m_fuseOptions += it + "," ;
+		}
+	}
+
+	if( m_exeOptions.endsWith( " " ) ){
+
+		m_exeOptions.remove( m_exeOptions.size() - 1,1 ) ;
+	}
+
+	if( m_fuseOptions.endsWith( "," ) ){
+
+		m_fuseOptions.remove( m_fuseOptions.size() - 1,1 ) ;
+	}
+
+	if( !utility::platformIsLinux() && !m_fuseOptions.contains( "volname=" ) ){
+
+		QString s ;
+
+		if( utility::platformIsOSX() ){
+
+			s = utility::split( e.opt.plainFolder,'/' ).last() ;
+		}else{
+			s = utility::split( e.opt.cipherFolder,'/' ).last() ;
+		}
+
+		if( !s.isEmpty() ){
+
+			if( m_fuseOptions.isEmpty() ){
+
+				m_fuseOptions = "volname=" + utility::Task::makePath( s ) ;
+			}else{
+				m_fuseOptions += ",volname=" + utility::Task::makePath( s ) ;
+			}
+		}
+	}
+
+	QString s = [ & ](){
+
+		if( e.opt.ro ){
+
+			return " -o ro,fsname=%1@%2%3" ;
+		}else{
+			return " -o rw,fsname=%1@%2%3" ;
+		}
+	}() ;
+
+	m_mode = e.opt.ro ? "ro" : "rw" ;
+
+	m_subtype = subtype ;
+
+	QString stype = subtype.isEmpty() ? "" : ",subtype=" + subtype ;
+
+	if( m_fuseOptions.isEmpty() ){
+
+		m_fuseOptions = s.arg( f,e.cipherFolder,stype ) ;
+	}else{
+		m_fuseOptions = s.arg( f,e.cipherFolder,stype ) + "," + m_fuseOptions ;
+	}
 }

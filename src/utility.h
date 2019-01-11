@@ -120,6 +120,18 @@ namespace utility
 		bool m_valid = false ;
 		T m_value ;
 	} ;
+
+	class globalEnvironment
+	{
+	public:
+		static globalEnvironment& instance() ;
+		const QProcessEnvironment& get() const ;
+		void insert( const QString&,const QString& ) ;
+		void remove( const QString& ) ;
+		globalEnvironment() ;
+	private:
+		QProcessEnvironment m_environment ;
+	} ;
 }
 
 namespace utility
@@ -174,6 +186,7 @@ namespace utility
 	QString executableFullPath( const QString& ) ;
 
 	QString freeWindowsDriveLetter() ;
+	bool isDriveLetter( const QString& ) ;
 
 	void setWindowsMountPointOptions( QWidget *,QLineEdit *,QPushButton * ) ;
 
@@ -181,9 +194,35 @@ namespace utility
 
 	QString getExistingDirectory( QWidget *,const QString& caption,const QString& dir ) ;
 
+	bool enablePolkit( void ) ;
+
 	bool createFolder( const QString& ) ;
+	bool removeFolder( const QString&,int attempts = 1 ) ;
+	bool folderIsEmpty( const QString& ) ;
+	bool folderNotEmpty( const QString& ) ;
 
 	void scaleGUI( void ) ;
+
+	void setGUIThread( void ) ;
+
+	bool runningOnGUIThread( void ) ;
+
+	bool runningOnBackGroundThread( void ) ;
+
+	void waitForOneSecond( void ) ;
+
+	void wait( int ) ;
+
+	template< typename Future >
+	static inline auto unwrap( Future& x )
+	{
+		if( utility::runningOnGUIThread() ){
+
+			return x.await() ;
+		}else{
+			return x.get() ;
+		}
+	}
 
 	void setDefaultMountPointPrefix( const QString& path ) ;
 
@@ -202,10 +241,7 @@ namespace utility
 	void enableFullDebug( bool ) ;
 	bool debugFullEnabled( void ) ;
 
-	enum class background_thread{ True,False } ;
-	bool enablePolkit( utility::background_thread ) ;
-
-	QProcessEnvironment systemEnvironment() ;
+	const QProcessEnvironment& systemEnvironment() ;
 
 	QString userName() ;
 
@@ -271,6 +307,7 @@ namespace utility
 	}
 
 	bool pathExists( const QString& ) ;
+	bool pathNotExists( const QString& ) ;
 
 	template< typename ... F >
 	bool atLeastOnePathExists( const F& ... f ){

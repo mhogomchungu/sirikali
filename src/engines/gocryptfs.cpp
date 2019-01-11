@@ -18,7 +18,6 @@
  */
 
 #include "gocryptfs.h"
-#include "commandOptions.h"
 
 #include "gocryptfscreateoptions.h"
 
@@ -50,11 +49,12 @@ gocryptfs::gocryptfs() : engines::engine( _setOptions() )
 {
 }
 
-QString gocryptfs::command( const engines::engine::cmdArgsList& args ) const
+engines::engine::args gocryptfs::command( const engines::engine::cmdArgsList& args ) const
 {
-	commandOptions m( args,this->name() ) ;
+	engines::engine::commandOptions m( args,this->name() ) ;
 
-	auto exeOptions = m.exeOptions() ;
+	auto exeOptions  = m.exeOptions() ;
+	auto fuseOptions = m.fuseOpts() ;
 
 	exeOptions.add( "-q" ) ;
 
@@ -73,22 +73,38 @@ QString gocryptfs::command( const engines::engine::cmdArgsList& args ) const
 		exeOptions.add( args.configFilePath ) ;
 	}
 
+	QString cmd ;
+
 	if( args.create ){
 
 		exeOptions.add( "--init",args.opt.createOptions ) ;
 
 		QString e = "%1 %2 %3" ;
 
-		return e.arg( args.exe,exeOptions.get(),args.cipherFolder ) ;
+		cmd = e.arg( args.exe,exeOptions.get(),args.cipherFolder ) ;
 	}else{
 		QString e = "%1 %2 %3 %4 %5" ;
 
-		return e.arg( args.exe,
-			      exeOptions.get(),
-			      args.cipherFolder,
-			      args.mountPoint,
-			      m.fuseOpts().get() ) ;
+		if( !utility::platformIsLinux() ){
+
+			fuseOptions.extractStartsWith( "volname=" ) ;
+		}
+
+		cmd = e.arg( args.exe,
+			     exeOptions.get(),
+			     args.cipherFolder,
+			     args.mountPoint,
+			     fuseOptions.get() ) ;
 	}
+
+	return { args,m,cmd } ;
+}
+
+engines::engine::error gocryptfs::errorCode( const QString& e ) const
+{
+	Q_UNUSED( e ) ;
+
+	return engines::engine::error::Failed ;
 }
 
 engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const
@@ -96,11 +112,7 @@ engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const
 	/*
 	 * This error code was added in gocryptfs 1.2.1
 	 */
-	if( s == 12 ){
-
-		return engines::engine::status::gocryptfsBadPassword ;
-
-	}else if( e.contains( "password" ) ){
+	if( s == 12 || e.contains( "Password incorrect." ) ){
 
 		return engines::engine::status::gocryptfsBadPassword ;
 	}else{
