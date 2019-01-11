@@ -33,13 +33,14 @@
 namespace siritask
 {
 	bool deleteMountFolder( const QString& ) ;
-	Task::future< bool >& encryptedFolderUnMount( const QString& cipherFolder,
-						      const QString& mountPoint,
-						      const QString& fileSystem,
-						      int numberOfAttempts = 5 ) ;
 
-	Task::future< engines::engine::cmdStatus >& encryptedFolderMount( const engines::engine::options&,bool = false ) ;
-	Task::future< engines::engine::cmdStatus >& encryptedFolderCreate( const engines::engine::options& ) ;
+	bool encryptedFolderUnMount( const QString& cipherFolder,
+				     const QString& mountPoint,
+				     const QString& fileSystem,
+				     int numberOfAttempts = 5 ) ;
+
+	engines::engine::cmdStatus encryptedFolderMount( const engines::engine::options&,bool = false ) ;
+	engines::engine::cmdStatus encryptedFolderCreate( const engines::engine::options& ) ;
 }
 
 #endif // SIRITASK_H

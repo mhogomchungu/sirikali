@@ -197,11 +197,6 @@ static bool _unmount_rest_( const QString& cmd,const QString& mountPoint )
 
 static bool _unmount_rest( const QString& mountPoint,int maxCount )
 {
-	if( utility::platformIsWindows() ){
-
-		return SiriKali::Windows::unmount( mountPoint ).success() ;
-	}
-
 	auto cmd = [ & ](){
 
 		if( utility::platformIsOSX() ){
@@ -230,23 +225,34 @@ static bool _unmount_rest( const QString& mountPoint,int maxCount )
 	}
 }
 
-Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFolder,
-							const QString& mountPoint,
-							const QString& fileSystem,
-							int numberOfAttempts )
+bool siritask::encryptedFolderUnMount( const QString& cipherFolder,
+				       const QString& mountPoint,
+				       const QString& fileSystem,
+				       int numberOfAttempts )
 {
-	return Task::run( [ = ](){
+	if( utility::platformIsWindows() ){
 
-		if( _ecryptfs( fileSystem ) ){
+		/*
+		 * We should first make sure we are on a GUI thread before continuing
+		 */
+		return SiriKali::Windows::unmount( _makePath( mountPoint ) ).success() ;
+	}else{
+		auto& e = Task::run( [ = ](){
 
-			auto a = _makePath( cipherFolder ) ;
-			auto b = _makePath( mountPoint ) ;
+			if( _ecryptfs( fileSystem ) ){
 
-			return _unmount_ecryptfs( a,b,numberOfAttempts ) ;
-		}else{
-			return _unmount_rest( _makePath( mountPoint ),numberOfAttempts ) ;
-		}
-	} ) ;
+				auto a = _makePath( cipherFolder ) ;
+				auto b = _makePath( mountPoint ) ;
+
+				return _unmount_ecryptfs( a,b,numberOfAttempts ) ;
+			}else{
+				return _unmount_rest( _makePath( mountPoint ),numberOfAttempts ) ;
+			}
+
+		} ) ;
+
+		return utility::unwrap( e ) ;
+	}
 }
 
 static utility::Task _run_task( const engines::engine::args& args,
@@ -580,7 +586,7 @@ static engines::engine::cmdStatus _encrypted_folder_create( const engines::engin
 
 		if( !engine.autoMountsOnCreate() ){
 
-			auto e = siritask::encryptedFolderMount( opt,true ).get() ;
+			auto e = siritask::encryptedFolderMount( opt,true ) ;
 
 			if( e != engines::engine::status::success ){
 
@@ -594,13 +600,29 @@ static engines::engine::cmdStatus _encrypted_folder_create( const engines::engin
 	return e ;
 }
 
-Task::future< engines::engine::cmdStatus >& siritask::encryptedFolderCreate( const engines::engine::options& opt )
+engines::engine::cmdStatus siritask::encryptedFolderCreate( const engines::engine::options& opt )
 {
-	return Task::run( _encrypted_folder_create,opt ) ;
+	if( utility::platformIsWindows() ){
+
+		/*
+		 * We should first make sure we are on a GUI thread before continuing
+		 */
+		return _encrypted_folder_create( opt ) ;
+	}else{
+		return Task::run( _encrypted_folder_create,opt ).await() ;
+	}
 }
 
-Task::future< engines::engine::cmdStatus >& siritask::encryptedFolderMount( const engines::engine::options& opt,
-									    bool reUseMountPoint )
+engines::engine::cmdStatus siritask::encryptedFolderMount( const engines::engine::options& opt,
+							   bool reUseMountPoint )
 {
-	return Task::run( _encrypted_folder_mount,opt,reUseMountPoint ) ;
+	if( utility::platformIsWindows() ){
+
+		/*
+		 * We should first make sure we are on a GUI thread before continuing
+		 */
+		return  _encrypted_folder_mount( opt,reUseMountPoint ) ;
+	}else{
+		return utility::unwrap( Task::run( _encrypted_folder_mount,opt,reUseMountPoint ) ) ;
+	}
 }

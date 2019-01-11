@@ -106,23 +106,13 @@ static QStringList _macox_volumes()
 	return s ;
 }
 
-static std::vector< SiriKali::Windows::mountOptions > _win_volumes()
-{
-	if( utility::runningOnBackGroundThread() ){
-
-		return SiriKali::Windows::getMountOptions() ;
-	}else{
-		return Task::await( SiriKali::Windows::getMountOptions ) ;
-	}
-}
-
 static QStringList _windows_volumes()
 {
 	QStringList s ;
 
 	const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
 
-	for( const auto& e : _win_volumes() ){
+	for( const auto& e : SiriKali::Windows::getMountOptions() ){
 
 		auto fs = "fuse." + e.subtype ;
 

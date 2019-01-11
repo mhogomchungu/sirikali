@@ -289,7 +289,7 @@ static std::pair< Task::process::result,QString > _terminate_process( QProcess& 
 
 	e.waitForFinished() ;
 
-	return { std::move( m ),exe } ;
+	return { std::move( m ),std::move( exe ) } ;
 }
 
 Task::process::result SiriKali::Windows::instances::add( const SiriKali::Windows::opts& opts )

@@ -443,7 +443,7 @@ void sirikali::autoUpdateCheck()
 
 static void _connect_to_ssh_server( QWidget * parent,const favorites::entry& entry )
 {
-	auto s = siritask::encryptedFolderMount( entry ).await() ;
+	auto s = siritask::encryptedFolderMount( entry ) ;
 
 	if( s == engines::engine::status::sshfsNotFound ){
 
@@ -650,7 +650,7 @@ void sirikali::cliCommand( const QStringList& l )
 
 			if( a == volume || b == volume ){
 
-				if( siritask::encryptedFolderUnMount( a,b,c ).await() ){
+				if( siritask::encryptedFolderUnMount( a,b,c ) ){
 
 					siritask::deleteMountFolder( b ) ;
 
@@ -715,9 +715,9 @@ void sirikali::unlockVolume( const QStringList& l )
 
 			engines::engine::options s( volume,m,key,idleTime,cPath,QString(),mode,reverse,mOpt,QString() ) ;
 
-			auto& e = siritask::encryptedFolderMount( s ) ;
+			auto e = siritask::encryptedFolderMount( s ) ;
 
-			if( e.await() == engines::engine::status::success ){
+			if( e == engines::engine::status::success ){
 
 				//this->openMountPointPath( m ) ;
 
@@ -904,15 +904,12 @@ utility::volumeList sirikali::autoUnlockVolumes( utility::volumeList l,bool auto
 
 				q.emplace_back( e.first,key ) ;
 			}else{
-				auto& s = siritask::encryptedFolderMount( { e.first,key } ) ;
+				auto s = siritask::encryptedFolderMount( { e.first,key } ) ;
 
-				s.then( [ this,autoOpenFolderOnMount,e = e.first.mountPointPath ]( engines::engine::cmdStatus s ){
+				if( s == engines::engine::status::success && autoOpenFolderOnMount ){
 
-					if( s == engines::engine::status::success && autoOpenFolderOnMount ){
-
-						this->openMountPointPath( e ) ;
-					}
-				} ) ;
+					this->openMountPointPath( e.first.mountPointPath ) ;
+				}
 			}
 		} ;
 
@@ -1664,7 +1661,7 @@ void sirikali::pbUmount()
 
 		utility::waitForOneSecond() ;
 
-		if( siritask::encryptedFolderUnMount( a,b,c ).await() ){
+		if( siritask::encryptedFolderUnMount( a,b,c ) ){
 
 			siritask::deleteMountFolder( b ) ;
 		}else{
@@ -1695,7 +1692,7 @@ void sirikali::emergencyShutDown()
 		const auto& b = mountPoints.at( r ) ;
 		const auto& c = fileSystems.at( r ) ;
 
-		if( siritask::encryptedFolderUnMount( a,b,c,1 ).await() ){
+		if( siritask::encryptedFolderUnMount( a,b,c,1 ) ){
 
 			tablewidget::deleteRow( table,b,1 ) ;
 
@@ -1726,7 +1723,7 @@ void sirikali::unMountAll()
 		const auto& b = mountPoints.at( r ) ;
 		const auto& c = fileSystems.at( r ) ;
 
-		if( siritask::encryptedFolderUnMount( a,b,c ).await() ){
+		if( siritask::encryptedFolderUnMount( a,b,c ) ){
 
 			tablewidget::deleteRow( table,b,1 ) ;
 
@@ -1755,7 +1752,12 @@ void sirikali::pbUpdate()
 {
 	this->disableAll() ;
 
-	this->updateVolumeList( mountinfo::unlockedVolumes().await() ) ;
+	if( utility::platformIsWindows() ){
+
+		this->updateVolumeList( mountinfo::unlockedVolumes().get() ) ;
+	}else{
+		this->updateVolumeList( mountinfo::unlockedVolumes().await() ) ;
+	}
 }
 
 void sirikali::updateVolumeList( const std::vector< volumeInfo >& r )

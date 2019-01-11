@@ -1017,7 +1017,7 @@ void keyDialog::encryptedFolderCreate()
 				    m_mountOptions,
 				    m_createOptions ) ;
 
-	auto e = siritask::encryptedFolderCreate( s ).await() ;
+	auto e = siritask::encryptedFolderCreate( s ) ;
 
 	m_working = false ;
 
@@ -1225,7 +1225,7 @@ void keyDialog::encryptedFolderMount()
 				    m_mountOptions,
 				    QString() } ;
 
-	auto e = siritask::encryptedFolderMount( s ).await() ;
+	auto e = siritask::encryptedFolderMount( s ) ;
 
 	m_working = false ;
 
