@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="ru_UA">
+<TS version="2.0" language="ru_UA">
 <context>
     <name>DialogMsg</name>
     <message>
@@ -179,7 +179,7 @@ Cryfs Executable Could Not Be Found.</source>
     <message>
         <location filename="../src/engines.cpp" line="461"/>
         <source>Something Is Wrong With The Backend And It Took Too Long To Respond.</source>
-        <translation type="unfinished"></translation>
+        <translation>Что-то не так с бэкэндом и потребовалось слишком много времени, чтобы ответить.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="465"/>
@@ -243,20 +243,24 @@ Not Supported Volume Encountered.</source>
         <location filename="../src/engines.cpp" line="497"/>
         <source>Installed &quot;%1&quot; Version Is Too Old.
  Please Update To Atleast Version %2.</source>
-        <translation type="unfinished"></translation>
+        <translation>Установленная версия &quot;%1&quot; устарела.
+ Пожалуйста, обновите до последней версии%2.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="505"/>
         <source>Invalid Config File Name.
 Its Name Must End With &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Неверное имя файла конфигурации.
+Его имя должно заканчиваться на &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="508"/>
         <source>Invalid Config File Name.
 It Must End With One Of The Following:
 &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Неверное имя файла конфигурации.
+Его имя должно заканчиваться одним из следующих значений:
+&quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="517"/>
@@ -406,32 +410,32 @@ options:
     <message>
         <location filename="../src/settings.cpp" line="957"/>
         <source>French (FR)</source>
-        <translation type="unfinished"></translation>
+        <translation>Français (FR)</translation>
     </message>
     <message>
         <location filename="../src/settings.cpp" line="958"/>
         <source>German (DE)</source>
-        <translation type="unfinished"></translation>
+        <translation>Deutsch (DE)</translation>
     </message>
     <message>
         <location filename="../src/settings.cpp" line="959"/>
         <source>English (US)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/settings.cpp" line="960"/>
         <source>Swedish (SE)</source>
-        <translation type="unfinished"></translation>
+        <translation>Svenska (SE)</translation>
     </message>
     <message>
         <location filename="../src/settings.cpp" line="961"/>
         <source>Arabic (SA)</source>
-        <translation type="unfinished"></translation>
+        <translation>(SA) العربية</translation>
     </message>
     <message>
         <location filename="../src/settings.cpp" line="962"/>
         <source>Spanish (MX)</source>
-        <translation type="unfinished"></translation>
+        <translation>Español (MX)</translation>
     </message>
 </context>
 <context>
@@ -1347,7 +1351,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.cpp" line="1179"/>
         <source>Mount Point Path Is Not Empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>Путь точки монтирования не пустой.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1401"/>
