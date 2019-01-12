@@ -8,11 +8,6 @@ set( PGR_VERSION "1.3.6" )
 
 add_definitions( -Wextra -Wall -pedantic )
 
-if( WIN32 )
-    include_directories( "C:\\Program Files (x86)\\WinFsp\\inc" )
-    link_directories( "C:\\Program Files (x86)\\WinFsp\\lib" )
-endif()
-
 set( CMAKE_CXX_STANDARD 14 )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
 set( CMAKE_CXX_EXTENSIONS OFF)
@@ -75,17 +70,6 @@ endif()
 
 file( WRITE  ${PROJECT_BINARY_DIR}/install_prefix.h "\n#define INSTALL_PREFIX \"${CMAKE_INSTALL_PREFIX}/\"\n" )
 
-file( WRITE ${PROJECT_BINARY_DIR}/version.h "
-#ifndef THIS_VERSION
-#define THIS_VERSION \"${PGR_VERSION}\"
-#endif
-\n
-#ifndef SIRIKALI_VERSION
-#define SIRIKALI_VERSION
-#define VERSION_STRING \"Version  : ${PGR_VERSION}\\nCopyright: 2016-2018 Francis Banyikwa,mhogomchungu@gmail.com\\nLicense  : GPLv2+\"
-#endif
-\n" )
-
 if( NOT DEFINED INTERNAL_LXQT_WALLET )
 	set( INTERNAL_LXQT_WALLET "false" )
 endif()
@@ -146,6 +130,17 @@ find_package( Qt5Network REQUIRED )
 message( STATUS "Found Qt5Widgets, version  ${Qt5Widgets_VERSION}" )
 message( STATUS "Found Qt5Core, version  ${Qt5Core_VERSION}" )
 message( STATUS "Found Qt5Network, version  ${Qt5Network_VERSION}" )
+
+file( WRITE ${PROJECT_BINARY_DIR}/version.h "
+#ifndef THIS_VERSION
+#define THIS_VERSION \"${PGR_VERSION}\"
+#endif
+\n
+#ifndef SIRIKALI_VERSION
+#define SIRIKALI_VERSION
+#define VERSION_STRING \"Version  : ${PGR_VERSION} (Compiled with Qt ${Qt5Core_VERSION})\\nCopyright: 2016-2019 Francis Banyikwa,mhogomchungu@gmail.com\\nLicense  : GPLv2+\"
+#endif
+\n" )
 
 pkg_check_modules( MCHUNGU_NETWORK mhogomchungu_network )
 pkg_check_modules( MCHUNGU_TASK mhogomchungu_task )
