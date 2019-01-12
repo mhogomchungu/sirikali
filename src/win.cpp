@@ -187,7 +187,7 @@ static SiriKali::Windows::result _read( QProcess& exe,Function function )
 
 	auto a = QString::number( counter ) ;
 
-	auto b = "Backend took " + a + " seconds to finish\nGenerated backend out:\n" ;
+	auto b = "Backend took " + a + " seconds to finish\nGenerated backend output:\n" ;
 
 	utility::debug() << b + m ;
 
