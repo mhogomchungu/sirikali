@@ -398,95 +398,32 @@ static utility::result< QString > _path_exist( QString e,const QString& m )
 	}
 }
 
-static engines::engine::cmdStatus _encrypted_folder_mount( const engines::engine::options& opt,bool reUseMP )
+siritask::Engine siritask::mountEngine( const QString& cipherFolder,
+					const QString& configFilePath )
 {
 	const auto& engines = engines::instance() ;
 
-	if( opt.cipherFolder.startsWith( "sshfs " ) ){
+	if( cipherFolder.startsWith( "sshfs " ) ){
 
-		const auto& engine = engines.getByName( "sshfs" ) ;
+		return engines.getByName( "sshfs" ) ;
 
-		if( engine.known() ){
+	}else if( configFilePath.isEmpty() ){
 
-			if( utility::platformIsWindows() ){
+		return engines.getByConfigFileNames( [ & ]( const QString& e ){
 
-				auto m = utility::unwrap( utility::backendIsLessThan( "sshfs","3.4.0" ) ) ;
+			return utility::pathExists( cipherFolder + "/" + e ) ;
+		} ) ;
 
-				if( m && m.value() ){
-
-					return engines::engine::status::sshfsTooOld ;
-				}
-			}
-
-			auto opts = opt ;
-			opts.cipherFolder = opts.cipherFolder.remove( 0,6 ) ; // 6 is the size of "sshfs "
-
-			if( !opts.key.isEmpty() ){
-
-				opts.key = engine.setPassword( opts.key ) ;
-			}
-
-			return _mount( reUseMP,engine,opts,QString() ) ;
-		}
-
-	}else if( opt.configFilePath.isEmpty() ){
+	}else if( utility::pathExists( configFilePath ) ){
 
 		auto m = engines.getByConfigFileNames( [ & ]( const QString& e ){
 
-			return utility::pathExists( opt.cipherFolder + "/" + e ) ;
+			return configFilePath.endsWith( e ) ;
 		} ) ;
 
-		const auto& engine = m.first ;
+		return { std::move( m ),configFilePath } ;
 
-		if( engine.known() ){
-
-			if( m.second.endsWith( "gocryptfs.reverse.conf" ) ){
-
-				if( opt.reverseMode ){
-
-					return _mount( reUseMP,engine,opt,QString() ) ;
-				}else{
-					auto opts = opt ;
-					opts.reverseMode = true ;
-					return _mount( reUseMP,engine,opts,QString() ) ;
-				}
-
-			}else if( engine.name() == "ecryptfs" ){
-
-				return _mount( reUseMP,engine,opt,opt.cipherFolder + "/" + m.second ) ;
-			}else{
-				return _mount( reUseMP,engine,opt,QString() ) ;
-			}
-		}
-
-	}else if( utility::pathExists( opt.configFilePath ) ){
-
-		auto m = engines.getByConfigFileNames( [ & ]( const QString& e ){
-
-			return opt.configFilePath.endsWith( e ) ;
-		} ) ;
-
-		const auto& engine = m.first ;
-
-		if( engine.known() ){
-
-			if( utility::endsWithAtLeastOne( opt.configFilePath,
-							 "gocryptfs.reverse.conf",
-							 ".gocryptfs.reverse.conf" ) ){
-
-				if( !opt.reverseMode ){
-
-					auto opts = opt ;
-					opts.reverseMode = true ;
-					return _mount( reUseMP,engine,opts,opt.configFilePath ) ;
-				}
-			}
-
-			return _mount( reUseMP,engine,opt,opt.configFilePath ) ;
-		}
 	}else{
-		auto e = opt.configFilePath ;
-
 		for( const auto& it : engines.supported() ){
 
 			const auto& engine = engines.getByName( it.toLower() ) ;
@@ -495,30 +432,80 @@ static engines::engine::cmdStatus _encrypted_folder_mount( const engines::engine
 
 				auto s = "[[[" + xt + "]]]" ;
 
-				if( e.startsWith( s ) ){
+				if( configFilePath.startsWith( s ) ){
 
-					auto m = _path_exist( e,s ) ;
+					auto m = _path_exist( configFilePath,s ) ;
 
 					if( m ){
 
-						if( xt == "gocryptfs.reverse" ){
-
-							if( !opt.reverseMode ){
-
-								auto opts = opt ;
-								opts.reverseMode = true ;
-								return _mount( reUseMP,engine,opts,m.value() ) ;
-							}
-						}
-
-						return _mount( reUseMP,engine,opt,m.value() ) ;
+						return { engine,xt,m.value() } ;
 					}
 				}
 			}
 		}
+
+		return {} ;
+	}
+}
+
+static engines::engine::cmdStatus _encrypted_folder_mount( const engines::engine::options& opt,bool reUseMP )
+{
+	auto Engine = siritask::mountEngine( opt.cipherFolder,opt.configFilePath ) ;
+
+	const auto& engine         = Engine.engine ;
+	const auto& configFilePath = Engine.configFilePath ;
+	const auto& configFileName = Engine.configFileName ;
+
+	if( engine.unknown() ){
+
+		return engines::engine::status::unknown ;
 	}
 
-	return engines::engine::status::unknown ;
+	if( engine.name() == "sshfs" ){
+
+		if( utility::platformIsWindows() ){
+
+			auto m = utility::unwrap( utility::backendIsLessThan( "sshfs","3.4.0" ) ) ;
+
+			if( m && m.value() ){
+
+				return engines::engine::status::sshfsTooOld ;
+			}
+		}
+
+		auto opts = opt ;
+		opts.cipherFolder = opts.cipherFolder.remove( 0,6 ) ; // 6 is the size of "sshfs "
+
+		if( !opts.key.isEmpty() ){
+
+			opts.key = engine.setPassword( opts.key ) ;
+		}
+
+		return _mount( reUseMP,engine,opts,configFilePath ) ;
+	}
+
+	if( engine.name() == "ecryptfs" ){
+
+		if( configFilePath.isEmpty() ){
+
+			return _mount( reUseMP,engine,opt,opt.cipherFolder + "/" + configFileName ) ;
+		}else{
+			return _mount( reUseMP,engine,opt,configFilePath ) ;
+		}
+	}
+
+	if( utility::endsWithAtLeastOne( configFileName,"gocryptfs.reverse.conf",
+					 ".gocryptfs.reverse.conf","gocryptfs.reverse" ) ){
+
+		if( !opt.reverseMode ){
+
+			auto opts = opt ;
+			opts.reverseMode = true ;
+			return _mount( reUseMP,engine,opts,configFilePath ) ;
+		}
+	}
+
+	return _mount( reUseMP,engine,opt,configFilePath ) ;
 }
 
 static utility::result< QString > _configFilePath( const engines::engine& engine,

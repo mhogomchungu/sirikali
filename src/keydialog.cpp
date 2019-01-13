@@ -376,7 +376,18 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 			if( m.isEmpty() ){
 
-				return utility::freeWindowsDriveLetter() ;
+				const auto& e = siritask::mountEngine( m_path,m_configFile ).engine ;
+
+				if( e.name() == "cryfs" ){
+
+					auto mm = utility::homeConfigPath() ;
+
+					utility::createFolder( mm ) ;
+
+					return mm + utility::split( m_path ).last() ;
+				}else{
+					return utility::freeWindowsDriveLetter() ;
+				}
 			}else{
 				return m ;
 			}

@@ -32,6 +32,37 @@
 
 namespace siritask
 {
+	struct Engine
+	{
+		Engine( std::pair< const engines::engine&,QString > m,
+			const QString& configFilePath = QString() ) :
+			engine( m.first ),configFileName( std::move( m.second ) ),
+			configFilePath( configFilePath )
+		{
+		}
+		Engine( const engines::engine& engine ) :
+			engine( engine )
+		{
+		}
+		Engine( const engines::engine& engine,
+			const QString& configFileName,
+			const QString& configFilePath ) :
+			engine( engine ),configFileName( configFileName ),
+			configFilePath( configFilePath )
+		{
+		}
+		Engine() : engine( engines::instance().getByName( "" ) )
+		{
+		}
+
+		const engines::engine& engine ;
+		QString configFileName ;
+		QString configFilePath ;
+	} ;
+
+	siritask::Engine mountEngine( const QString& cipherFolder,
+				      const QString& configFilePath ) ;
+
 	bool deleteMountFolder( const QString& ) ;
 
 	bool encryptedFolderUnMount( const QString& cipherFolder,
