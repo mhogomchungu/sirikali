@@ -46,13 +46,37 @@
 
 #include <QCoreApplication>
 
+settings::settings() : m_settings( "SiriKali","SiriKali" )
+{
+}
+
 QString settings::homePath()
 {
 	return QDir::homePath() ;
 }
 
-settings::settings() : m_settings( "SiriKali","SiriKali" )
+QString settings::windowsMountPointPath()
 {
+	if( !m_settings.contains( "WindowsMountPointPath" ) ){
+
+		auto m = settings::homePath() ;
+
+		while( m.endsWith( "/" ) ){
+
+			m.truncate( m.size() - 1 ) ;
+		}
+
+		m_settings.setValue( "WindowsMountPointPath",m + "/.SiriKali" ) ;
+	}
+
+	auto m = m_settings.value( "WindowsMountPointPath" ).toString() ;
+
+	while( m.endsWith( "/" ) ){
+
+		m.truncate( m.size() - 1 ) ;
+	}
+
+	return m + "/" ;
 }
 
 int settings::pollForUpdatesInterval()

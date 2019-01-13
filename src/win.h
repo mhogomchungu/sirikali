@@ -56,6 +56,8 @@ int terminateProcess( unsigned long pid ) ;
 QString engineInstalledDir( const QString& ) ;
 QStringList engineInstalledDirs() ;
 
+bool mountPointTaken( const QString& ) ;
+
 void updateVolumeList( std::function< void() > ) ;
 
 bool backEndTimedOut( const QString& ) ;

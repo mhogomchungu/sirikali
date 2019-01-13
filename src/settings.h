@@ -165,6 +165,7 @@ public:
 	int checkForUpdateInterval() ;
 	bool ecryptfsAllowNotEncryptingFileNames() ;
 	QString homePath() ;
+	QString windowsMountPointPath() ;
 	void clearFavorites() ;
 	void showMountDialogWhenAutoMounting( bool ) ;
 	void initGlobals() ;

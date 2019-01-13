@@ -62,6 +62,7 @@ public:
 	QString volumeProperties( const QString& mountPath ) ;
 	void updateVolumeList( std::function< void() > ) ;
 	std::vector< SiriKali::Windows::mountOptions > mountOptions() ;
+	bool mountPointTaken( const QString& e ) ;
 private:
 	std::vector< Process > m_instances ;
 	std::function< void() > m_updateVolumeList ;
@@ -71,11 +72,6 @@ static SiriKali::Windows::instances& _instances()
 {
 	static SiriKali::Windows::instances s ;
 	return s ;
-}
-
-void updateVolumeList( std::function< void() > function )
-{
-	_instances().updateVolumeList( std::move( function ) ) ;
 }
 
 bool backEndTimedOut( const QString& e )
@@ -451,6 +447,21 @@ std::vector< SiriKali::Windows::mountOptions > SiriKali::Windows::instances::mou
 	return mOpts ;
 }
 
+bool SiriKali::Windows::instances::mountPointTaken( const QString& ee )
+{
+	auto e = "\"" + QDir::toNativeSeparators( ee ) + "\"" ;
+
+	for( const auto& it : m_instances ){
+
+		if( QDir::toNativeSeparators( it.args.mountPath ) == e ){
+
+			return true ;
+		}
+	}
+
+	return false ;
+}
+
 QString SiriKali::Windows::volumeProperties( const QString& mountPath )
 {
 	return _instances().volumeProperties( mountPath ) ;
@@ -469,4 +480,14 @@ Task::process::result SiriKali::Windows::unmount( const QString& m )
 Task::process::result SiriKali::Windows::mount( const SiriKali::Windows::opts& opts )
 {
 	return _instances().add( opts ) ;
+}
+
+void SiriKali::Windows::updateVolumeList( std::function< void() > function )
+{
+	_instances().updateVolumeList( std::move( function ) ) ;
+}
+
+bool SiriKali::Windows::mountPointTaken( const QString& e )
+{
+	return _instances().mountPointTaken( e ) ;
 }

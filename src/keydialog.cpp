@@ -27,6 +27,7 @@
 #include <QDebug>
 #include <QFile>
 
+#include "win.h"
 #include "options.h"
 #include "dialogmsg.h"
 #include "task.hpp"
@@ -380,11 +381,11 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 				if( e.name() == "cryfs" ){
 
-					auto mm = utility::homeConfigPath() ;
+					auto mm = settings::instance().windowsMountPointPath() ;
 
 					utility::createFolder( mm ) ;
 
-					return mm + utility::split( m_path ).last() ;
+					return mm + utility::split( m_path,'/' ).last() ;
 				}else{
 					return utility::freeWindowsDriveLetter() ;
 				}
@@ -953,7 +954,7 @@ void keyDialog::encryptedFolderCreate()
 {
 	auto path = m_ui->lineEditFolderPath->text() ;
 
-	auto m = path.split( '/' ).last() ;
+	auto m = utility::split( path,'/' ).last() ;
 
 	if( utility::pathExists( path ) ){
 
@@ -966,17 +967,16 @@ void keyDialog::encryptedFolderCreate()
 
 		if( m_exe == "Cryfs" ){
 
-			/*
-			 * We are creating a cipher folder and then delete it to prevent
-			 * path collition when create plain folder in variable "m".
-			 */
-			utility::createFolder( path ) ;
+			m = settings::instance().windowsMountPointPath() + m ;
 
-			m = settings::instance().mountPath( utility::mountPathPostFix( m ) ) ;
+			if( SiriKali::Windows::mountPointTaken( m ) ){
 
-			utility::removeFolder( path ) ;
+				this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
 
-			if( utility::pathExists( m ) ){
+				return this->enableAll() ;
+			}
+
+			if( utility::pathExists( m ) && utility::folderNotEmpty( m ) ){
 
 				this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
 
@@ -1167,6 +1167,13 @@ void keyDialog::encryptedFolderMount()
 
 		if( utility::platformIsWindows() ){
 
+			if( SiriKali::Windows::mountPointTaken( m ) ){
+
+				this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
+
+				return this->enableAll() ;
+			}
+
 			settings::instance().reUseMountPoint( true ) ;
 			m_reUseMountPoint = true ;
 		}else{
@@ -1176,9 +1183,16 @@ void keyDialog::encryptedFolderMount()
 		}
 	}
 
-	if( utility::platformIsWindows() && !utility::isDriveLetter( m ) ){
+	if( utility::platformIsWindows() ){
 
-		if( utility::folderNotEmpty( m ) ){
+		if( SiriKali::Windows::mountPointTaken( m ) ){
+
+			this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
+
+			return this->enableAll() ;
+		}
+
+		if( !utility::isDriveLetter( m ) && utility::folderNotEmpty( m ) ){
 
 			this->showErrorMessage( tr( "Mount Point Path Is Not Empty." ) ) ;
 
