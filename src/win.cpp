@@ -443,6 +443,23 @@ std::vector< SiriKali::Windows::mountOptions > SiriKali::Windows::instances::mou
 {
 	std::vector< SiriKali::Windows::mountOptions > mOpts ;
 
+	auto _remove_inactive = [ & ]{
+
+		for( size_t i = 0 ; i < m_instances.size() ; i++ ){
+
+			if( m_instances[ i ].instance->state() != QProcess::Running ){
+
+				m_instances.erase( m_instances.begin() + static_cast< int >( i ) ) ;
+
+				return true ;
+			}
+		}
+
+		return false ;
+	} ;
+
+	while( _remove_inactive() ){}
+
 	for( const auto& it : m_instances ){
 
 		const auto& m = it.args ;
