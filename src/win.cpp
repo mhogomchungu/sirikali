@@ -156,6 +156,15 @@ static SiriKali::Windows::result _read( QProcess& exe,Function function )
 
 	while( true ){
 
+		if( exe.state() == QProcess::NotRunning ){
+
+			m = "SiriKali::Error Backend Disappeared For Some Reason (It Probably Crashed)." ;
+
+			r = engines::engine::error::Failed ;
+
+			break ;
+		}
+
 		s = exe.readAllStandardOutput() ;
 
 		if( !s.isEmpty() ){
