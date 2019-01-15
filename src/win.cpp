@@ -151,6 +151,8 @@ static SiriKali::Windows::result _read( QProcess& exe,Function function )
 	QByteArray s ;
 
 	int counter = 1 ;
+	int notRunningCounter = 0 ;
+	int maxNotRunningCounter = 5 ;
 
 	engines::engine::error r ;
 
@@ -158,11 +160,18 @@ static SiriKali::Windows::result _read( QProcess& exe,Function function )
 
 		if( exe.state() == QProcess::NotRunning ){
 
-			m = "SiriKali::Error Backend Disappeared For Some Reason (It Probably Crashed)." ;
+			utility::debug() << "warning, a process is no longer running" ;
 
-			r = engines::engine::error::Failed ;
+			if( notRunningCounter < maxNotRunningCounter ){
 
-			break ;
+				notRunningCounter++ ;
+			}else{
+				m = m + "\n-------------\n\nSiriKali::Error Backend Disappeared For Some Reason (It Probably Crashed)." ;
+
+				r = engines::engine::error::Failed ;
+
+				break ;
+			}
 		}
 
 		s = exe.readAllStandardOutput() ;
