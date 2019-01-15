@@ -381,9 +381,9 @@ static QString _make_path( QString e,encode s )
 
 Task::process::result SiriKali::Windows::instances::remove( const QString& mountPoint )
 {
-	for( size_t i = 0 ; i < m_instances.size() ; i++ ){
+	for( auto it = m_instances.begin() ; it != m_instances.end() ; it++ ){
 
-		const auto& s = m_instances[ i ] ;
+		const auto& s = *it ;
 
 		if( s.args.mountPath == mountPoint ){
 
@@ -393,7 +393,7 @@ Task::process::result SiriKali::Windows::instances::remove( const QString& mount
 
 				if( m.first.success() ) {
 
-					m_instances.erase( m_instances.begin() + static_cast< int >( i ) ) ;
+					m_instances.erase( it ) ;
 
 					m_updateVolumeList() ;
 
@@ -445,11 +445,11 @@ std::vector< SiriKali::Windows::mountOptions > SiriKali::Windows::instances::mou
 
 	auto _remove_inactive = [ & ]{
 
-		for( size_t i = 0 ; i < m_instances.size() ; i++ ){
+		for( auto it = m_instances.begin() ; it != m_instances.end() ; it++ ){
 
-			if( m_instances[ i ].instance->state() != QProcess::Running ){
+			if( ( *it ).instance->state() == QProcess::NotRunning ){
 
-				m_instances.erase( m_instances.begin() + static_cast< int >( i ) ) ;
+				m_instances.erase( it ) ;
 
 				return true ;
 			}

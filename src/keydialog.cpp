@@ -1167,13 +1167,6 @@ void keyDialog::encryptedFolderMount()
 
 		if( utility::platformIsWindows() ){
 
-			if( SiriKali::Windows::mountPointTaken( m ) ){
-
-				this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
-
-				return this->enableAll() ;
-			}
-
 			settings::instance().reUseMountPoint( true ) ;
 			m_reUseMountPoint = true ;
 		}else{
