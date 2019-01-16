@@ -155,6 +155,7 @@ public:
 			bool setsCipherPath ;
 			bool autoMountsOnCreate ;
 			bool hasGUICreateOptions ;
+			bool supportsMountPathsOnWindows ;
 			QString configFileArgument ;
 			QStringList names ;
 			QStringList fuseNames ;
@@ -186,6 +187,7 @@ public:
 		bool setsCipherPath() const ;
 		bool autoMountsOnCreate() const ;
 		bool hasGUICreateOptions() const ;
+		bool supportsMountPathsOnWindows() const ;
 
 		engines::engine::status notFoundCode() const ;
 

@@ -28,6 +28,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate  = false ;
 	s.hasGUICreateOptions = true ;
 	s.setsCipherPath      = true ;
+	s.supportsMountPathsOnWindows = false ;
 
 	s.configFileArgument  = "--config" ;
 

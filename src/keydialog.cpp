@@ -379,7 +379,7 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 				const auto& e = siritask::mountEngine( m_path,m_configFile ).engine ;
 
-				if( e.name() == "cryfs" ){
+				if( settings::instance().windowsUseMountPointPath( e.name() ) ){
 
 					auto mm = settings::instance().windowsMountPointPath() ;
 
@@ -965,7 +965,7 @@ void keyDialog::encryptedFolderCreate()
 
 	if( utility::platformIsWindows() ){
 
-		if( m_exe == "Cryfs" ){
+		if( settings::instance().windowsUseMountPointPath( m_exe.toLower() ) ){
 
 			m = settings::instance().windowsMountPointPath() + m ;
 

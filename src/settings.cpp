@@ -22,6 +22,7 @@
 #include <QWidget>
 #include <QDialog>
 
+#include "engines.h"
 #include "settings.h"
 #include "utility.h"
 #include "readonlywarning.h"
@@ -77,6 +78,21 @@ QString settings::windowsMountPointPath()
 	}
 
 	return m + "/" ;
+}
+
+bool settings::windowsUseMountPointPath( const QString& e )
+{
+	if( engines::instance().getByName( e ).supportsMountPathsOnWindows() ){
+
+		if( !m_settings.contains( "WindowsUseMountPointPath" ) ){
+
+			m_settings.setValue( "WindowsUseMountPointPath",false ) ;
+		}
+
+		return m_settings.value( "WindowsUseMountPointPath" ).toBool() ;
+	}else{
+		return false ;
+	}
 }
 
 int settings::pollForUpdatesInterval()

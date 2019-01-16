@@ -201,6 +201,11 @@ bool engines::engine::hasGUICreateOptions() const
 	return m_Options.hasGUICreateOptions ;
 }
 
+bool engines::engine::supportsMountPathsOnWindows() const
+{
+	return m_Options.supportsMountPathsOnWindows ;
+}
+
 const QStringList& engines::engine::names() const
 {
 	return m_Options.names ;

@@ -152,7 +152,7 @@ static SiriKali::Windows::result _read( QProcess& exe,Function function )
 
 	int counter = 1 ;
 	int notRunningCounter = 0 ;
-	int maxNotRunningCounter = 5 ;
+	int maxNotRunningCounter = 2 ;
 
 	engines::engine::error r ;
 

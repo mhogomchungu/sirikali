@@ -166,6 +166,7 @@ public:
 	bool ecryptfsAllowNotEncryptingFileNames() ;
 	QString homePath() ;
 	QString windowsMountPointPath() ;
+	bool windowsUseMountPointPath( const QString& ) ;
 	void clearFavorites() ;
 	void showMountDialogWhenAutoMounting( bool ) ;
 	void initGlobals() ;
