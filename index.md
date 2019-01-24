@@ -1,4 +1,4 @@
-## SiriKali works on Linux, MACOS and Microsoft Windows Operating Systems
+## SiriKali works on Linux, macOS and Microsoft Windows Operating Systems
 
 SiriKali is a Qt/C++ GUI application that manages ecryptfs,cryfs,encfs,gocryptfs and securefs based encrypted folders. These projects are compared <a href="https://nuetzlich.net/gocryptfs/comparison/">here.</a> SiriKali can also connect to ssh servers using sshfs.
 
@@ -12,7 +12,7 @@ SiriKali is a Qt/C++ GUI application that manages ecryptfs,cryfs,encfs,gocryptfs
 
 Users of Securefs should inform SiriKali of where Securefs binary is located on the system by setting the path at: ```Menu->Settings->Editable Options->Set Executables Search Path.```
 
-#### Supported Backends on MACOS:
+#### Supported Backends on macOS:
 <a href="https://github.com/netheril96/securefs">Securefs, </a><a href="https://www.cryfs.org/">Cryfs, </a><a href="https://github.com/vgough/encfs">Encfs</a> and <a href="https://nuetzlich.net/gocryptfs">Gocryptfs.</a>
 
 Steps to setup SiriKali to connect to an ssh server are documented <a href="https://github.com/mhogomchungu/sirikali/wiki/Frequently-Asked-Questions#90-how-do-i-add-options-to-connect-to-an-ssh-server">here.</a>
