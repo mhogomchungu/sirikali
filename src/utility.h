@@ -213,6 +213,8 @@ namespace utility
 
 	void wait( int ) ;
 
+	void waitForFinished( QProcess& ) ;
+
 	template< typename Future >
 	static inline auto unwrap( Future& x )
 	{

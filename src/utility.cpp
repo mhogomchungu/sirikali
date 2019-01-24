@@ -1377,3 +1377,16 @@ void utility::wait( int time )
 		utility::Task::suspend( time ) ;
 	}
 }
+
+void utility::waitForFinished( QProcess& e )
+{
+	if( utility::runningOnGUIThread() ){
+
+		while( e.state() == QProcess::Running ){
+
+			utility::waitForOneSecond() ;
+		}
+	}
+
+	e.waitForFinished() ;
+}
