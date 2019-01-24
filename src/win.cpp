@@ -276,7 +276,7 @@ Task::process::result SiriKali::Windows::create( const SiriKali::Windows::opts& 
 	}
 }
 
-static std::pair< Task::process::result,QString > _terminate_process( QProcess& e )
+static std::pair< Task::process::result,QString > _terminate_process( QProcess& e,const QString& p = QString() )
 {
 	auto cmd = e.program() ;
 
@@ -295,6 +295,19 @@ static std::pair< Task::process::result,QString > _terminate_process( QProcess& 
 	if( cmd.endsWith( "securefs.exe" ) ){
 
 		exe = "sirikali.exe terminateProcess-" + QString::number( e.processId() ) ;
+
+	}else if( cmd.endsWith( "cryfs.exe" ) && !p.isEmpty() ){
+
+		auto a = SiriKali::Windows::engineInstalledDir( "cryfs" ) ;
+
+		auto b = a + "\\bin\\cryfs-unmount.exe" ;
+
+		if( a.isEmpty() || utility::pathNotExists( b ) ){
+
+			exe = "taskkill /F /PID " + QString::number( e.processId() ) ;
+		}else{
+			exe = utility::Task::makePath( b ) + " " + p ;
+		}
 	}else{
 		exe = "taskkill /F /PID " + QString::number( e.processId() ) ;
 	}
@@ -396,7 +409,7 @@ Task::process::result SiriKali::Windows::instances::remove( const QString& mount
 
 		if( s.args.mountPath == mountPoint ){
 
-			auto m = _terminate_process( *s.instance ) ;
+			auto m = _terminate_process( *s.instance,s.args.mountPath ) ;
 
 			auto r = [ & ](){
 
