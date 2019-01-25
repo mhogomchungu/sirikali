@@ -314,7 +314,10 @@ static std::pair< Task::process::result,QString > _terminate_process( QProcess& 
 
 	auto m = utility::unwrap( Task::process::run( exe,{},-1,"",env ) ) ;
 
-	utility::waitForFinished( e ) ;
+	if( m.success() ){
+
+		utility::waitForFinished( e ) ;
+	}
 
 	return { std::move( m ),std::move( exe ) } ;
 }
