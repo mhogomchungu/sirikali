@@ -358,7 +358,7 @@ Task::process::result SiriKali::Windows::instances::add( const SiriKali::Windows
 
 			return Task::process::result( 0 ) ;
 		}else{
-			exe->waitForFinished() ;
+			utility::waitForFinished( *exe ) ;
 
 			QByteArray stdOut ;
 			QByteArray stdError ;
