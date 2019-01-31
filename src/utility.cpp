@@ -1085,28 +1085,8 @@ QString utility::configFilePath( QWidget * s,const QString& e )
 
 		dialog.selectFile( [ = ](){
 
-			if( e == "cryfs" ){
+			return engines::instance().getByName( e ).configFileName() ;
 
-				return "cryfs.config" ;
-
-			}else if( e == "encfs" ){
-
-				return "encfs6.xml" ;
-
-			}else if( e == "gocryptfs" ){
-
-				return "gocryptfs.conf" ;
-
-			}else if( e == "securefs" ){
-
-				return "securefs.json" ;
-
-			}else if( e == "ecryptfs" ){
-
-				return "ecryptfs.config" ;
-			}else{
-				return "" ;
-			}
 		}() ) ;
 
 		if( dialog.exec() ){
