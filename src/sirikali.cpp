@@ -1647,7 +1647,7 @@ void sirikali::updateList( const volumeInfo& entry )
 
 		auto table = m_ui->tableWidget ;
 
-		auto row = tablewidget::columnHasEntry( table,entry.volumePath() ) ;
+		auto row = tablewidget::columnHasEntry( table,entry.mountPoint(),1 ) ;
 
 		if( row == -1 ){
 
