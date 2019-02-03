@@ -51,6 +51,16 @@ settings::settings() : m_settings( "SiriKali","SiriKali" )
 {
 }
 
+bool settings::showCipherFolderAndMountPathInFavoritesList()
+{
+	if( !m_settings.contains( "ShowCipherFolderAndMountPathInFavoritesList" ) ){
+
+		m_settings.setValue( "ShowCipherFolderAndMountPathInFavoritesList",false ) ;
+	}
+
+	return m_settings.value( "ShowCipherFolderAndMountPathInFavoritesList" ).toBool() ;
+}
+
 QString settings::homePath()
 {
 	return QDir::homePath() ;
@@ -409,11 +419,48 @@ void settings::readFavorites( QMenu * m )
 
 	m->addSeparator() ;
 
-	for( const auto& it : this->readFavorites() ){
+	const auto favorites = this->readFavorites() ;
 
-		const auto& e = it.volumePath ;
+	bool cipherPathRepeatsInFavoritesList = false ;
 
-		m->addAction( _add_action( e,e ) ) ;
+	for( auto it = favorites.begin() ; it != favorites.end() ; it++ ){
+
+		for( auto xt = it + 1 ; xt != favorites.end() ; xt++ ){
+
+			if( ( *it ).volumePath == ( *xt ).volumePath ){
+
+				cipherPathRepeatsInFavoritesList = true ;
+				break ;
+			}
+		}
+	}
+
+	auto _showCipherPathAndMountPath = [ & ](){
+
+		if( cipherPathRepeatsInFavoritesList ){
+
+			return true ;
+		}else{
+			return settings().instance().showCipherFolderAndMountPathInFavoritesList() ;
+		}
+	}() ;
+
+	if( _showCipherPathAndMountPath ){
+
+		for( const auto& it : favorites ){
+
+			const auto& e = it.volumePath + "\n" + it.mountPointPath ;
+
+			m->addAction( _add_action( e,e ) ) ;
+			m->addSeparator() ;
+		}
+	}else{
+		for( const auto& it : favorites ){
+
+			const auto& e = it.volumePath ;
+
+			m->addAction( _add_action( e,e ) ) ;
+		}
 	}
 }
 

@@ -473,9 +473,26 @@ void sirikali::favoriteClicked( QAction * ac )
 
 			this->mountMultipleVolumes( _readFavorites() ) ;
 		}else{
+			QString volumePath ;
+			QString mountPointPath ;
+
+			utility2::stringListToStrings( utility::split( e ),volumePath,mountPointPath ) ;
+
+			auto _found = [ & ]( const std::pair< favorites::entry,QByteArray >& e ){
+
+				const auto& s = e.first ;
+
+				if( mountPointPath.isEmpty() ){
+
+					return s.volumePath == volumePath ;
+				}else{
+					return s.volumePath == volumePath && s.mountPointPath == mountPointPath ;
+				}
+			} ;
+
 			for( auto&& it : _readFavorites() ){
 
-				if( it.first.volumePath == e ){
+				if( _found( it ) ){
 
 					if( it.first.volumeNeedNoPassword && it.first.volumePath.startsWith( "sshfs " ) ){
 
