@@ -219,7 +219,7 @@ void favorites2::updateVolumeList( const std::vector<favorites::entry>& e,const 
 {
 	_updateList( m_ui->tableWidget,this->font(),e,volPath ) ;
 
-	auto _update = [ & ](){
+	auto _update = [ & ]()->const favorites::entry&{
 
 		for( const auto& it : e ){
 
