@@ -64,6 +64,8 @@
 #include "settings.h"
 #include "engines.h"
 
+#include "favorites2.h"
+
 static utility::volumeList _readFavorites()
 {
 	utility::volumeList e ;
@@ -467,7 +469,8 @@ void sirikali::favoriteClicked( QAction * ac )
 
 	if( e == "Manage Favorites" ){
 
-		favorites::instance( this ) ;
+		favorites2::instance( this ) ;
+		//favorites::instance( this ) ;
 	}else{
 		if( e == "Mount All" ){
 
@@ -1553,7 +1556,8 @@ void sirikali::createVolume( QAction * ac )
 
 		if( s == "Sshfs" ){
 
-			favorites::instance( this,favorites::type::sshfs ) ;
+			favorites2::instance( this,favorites::type::sshfs ) ;
+			//favorites::instance( this,favorites::type::sshfs ) ;
 		}else{
 			this->mount( volumeInfo(),s ) ;
 		}

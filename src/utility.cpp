@@ -1149,7 +1149,8 @@ bool utility::isDriveLetter( const QString& path )
 	}
 }
 
-void utility::setWindowsMountPointOptions( QWidget * obj,QLineEdit * e,QPushButton * s )
+template< typename E >
+static void _setWindowsMountMountOptions( QWidget * obj,E e,QPushButton * s )
 {
 	auto menu = new QMenu( obj ) ;
 
@@ -1174,6 +1175,16 @@ void utility::setWindowsMountPointOptions( QWidget * obj,QLineEdit * e,QPushButt
 
 	s->setMenu( menu ) ;
 	s->setIcon( QIcon( ":/harddrive.png" ) ) ;
+}
+
+void utility::setWindowsMountPointOptions( QWidget * obj,QTextEdit * e,QPushButton * s )
+{
+	_setWindowsMountMountOptions( obj,e,s ) ;
+}
+
+void utility::setWindowsMountPointOptions( QWidget * obj,QLineEdit * e,QPushButton * s )
+{
+	_setWindowsMountMountOptions( obj,e,s ) ;
 }
 
 static utility::result< int > _convert_string_to_version( const QString& e )

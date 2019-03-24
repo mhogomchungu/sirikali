@@ -42,7 +42,7 @@
 #include <QIcon>
 #include <QSettings>
 #include <QRect>
-
+#include <QTextEdit>
 #include <functional>
 #include <memory>
 #include <array>
@@ -138,6 +138,70 @@ namespace utility
 {
 	struct debug
 	{
+		struct cout{
+
+			template< typename T >
+			cout operator<<( T x ){
+
+				std::cout << x << std::endl ;
+
+				return cout() ;
+			}
+			cout operator<<( const QString& x ){
+
+				std::cout << x.toStdString() << std::endl ;
+
+				return cout() ;
+			}
+			cout operator<<( const QByteArray& x ){
+
+				std::cout << x.constData() << std::endl ;
+
+				return cout() ;
+			}
+			cout operator<<( const QStringList& x ){
+
+				for( const auto& it : x ){
+
+					std::cout << it.toStdString() << std::endl ;
+				}
+
+				return cout() ;
+			}
+		};
+
+		struct cerr{
+
+			template< typename T >
+			cerr operator<<( T x ){
+
+				std::cerr << x << std::endl ;
+
+				return cerr() ;
+			}
+			cerr operator<<( const QString& x ){
+
+				std::cerr << x.toStdString() << std::endl ;
+
+				return cerr() ;
+			}
+			cerr operator<<( const QByteArray& x ){
+
+				std::cerr << x.constData() << std::endl ;
+
+				return cerr() ;
+			}
+			cerr operator<<( const QStringList& x ){
+
+				for( const auto& it : x ){
+
+					std::cerr << it.toStdString() << std::endl ;
+				}
+
+				return cerr() ;
+			}
+		};
+
 		utility::debug operator<<( int ) ;
 		utility::debug operator<<( const char * ) ;
 		utility::debug operator<<( const QByteArray& ) ;
@@ -188,6 +252,8 @@ namespace utility
 	QString freeWindowsDriveLetter() ;
 	bool isDriveLetter( const QString& ) ;
 
+	void setWindowsMountPointOptions( QWidget *,QTextEdit *,QPushButton * ) ;
+
 	void setWindowsMountPointOptions( QWidget *,QLineEdit *,QPushButton * ) ;
 
 	QString homeConfigPath( const QString& = QString() ) ;
@@ -225,6 +291,27 @@ namespace utility
 			return x.get() ;
 		}
 	}
+
+	class hideQWidget{
+	public:
+		hideQWidget( QWidget * w ) : m_widget( w )
+		{
+		}
+		void hide()
+		{
+			m_widget->hide() ;
+		}
+		void show()
+		{
+			m_widget->show() ;
+		}
+		~hideQWidget()
+		{
+			this->show() ;
+		}
+	private:
+		QWidget * m_widget ;
+	};
 
 	void setDefaultMountPointPrefix( const QString& path ) ;
 

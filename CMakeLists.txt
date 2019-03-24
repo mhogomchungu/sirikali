@@ -229,6 +229,7 @@ set( UI_FILES 	src/sirikali.ui
 		src/dialogmsg.ui
 		src/plugin.ui
 		src/favorites.ui
+		src/favorites2.ui
 		src/readonlywarning.ui
 		src/walletconfig.ui
 		src/walletconfiginput.ui
@@ -258,6 +259,7 @@ set( MOC_FILES
 		src/dialogmsg.h
 		src/plugin.h
 		src/favorites.h
+		src/favorites2.h
 		src/readonlywarning.h
 		src/walletconfig.h
 		src/walletconfiginput.h
@@ -289,6 +291,7 @@ set( SRC 	src/dialogok.cpp
 		src/utility.cpp
 		src/dialogmsg.cpp
 		src/favorites.cpp
+		src/favorites2.cpp
 		src/checkforupdates.cpp
 		src/plugin.cpp
 		src/tablewidget.cpp

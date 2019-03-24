@@ -10,6 +10,7 @@ SOURCES += \
     dialogok.cpp \
     checkforupdates.cpp \
     favorites.cpp \
+    favorites2.cpp \
     oneinstance.cpp \
     utility.cpp  \
     sirikali.cpp  \
@@ -46,6 +47,7 @@ HEADERS += \
     configfileoption.h \
     checkforupdates.h \
     favorites.h \
+    favorites2.h \
     filemanager.h \
     oneinstance.h \
     utility.h  \
@@ -81,6 +83,7 @@ FORMS += \
     configoptions.ui \
     configfileoption.ui \
     favorites.ui \
+    favorites2.ui \
     filemanager.ui \
     plugin.ui \
     help.ui \
