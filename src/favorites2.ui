@@ -75,7 +75,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Mount Point:</string>
+       <string>Mount Point</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -107,7 +107,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Auto Mount:</string>
+       <string>Auto Mount</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -139,7 +139,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Config File Path:</string>
+       <string>Config File Path</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -171,7 +171,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Idle TimeOut:</string>
+       <string>Idle Time Out</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -190,7 +190,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Mount Options:</string>
+       <string>Mount Options</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
