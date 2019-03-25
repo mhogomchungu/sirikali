@@ -156,8 +156,6 @@ void tablewidget::updateRow( QTableWidget * table,const QStringList& list,int ro
 {
 	_for_each_column( table,row,[ & ]( count_t row,count_t col ){
 
-		utility::debug::cout() << row ;
-
 		auto item = table->item( row,col ) ;
 
 		if( item == nullptr ){

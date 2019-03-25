@@ -278,6 +278,8 @@ void favorites2::setOptionMenu( QMenu& m,bool addCancel )
 		this->removeEntryFromFavoriteList() ;
 	} ) ;
 
+	m.addSeparator() ;
+
 	if( addCancel ){
 
 		m.addSeparator() ;
