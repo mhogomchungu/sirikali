@@ -271,7 +271,7 @@ static utility::Task _run_task( const engines::engine::args& args,
 			return SiriKali::Windows::mount( { args,opts,engine,password } ) ;
 		}
 	}else{
-		return utility::Task( args.cmd,20000,utility::systemEnvironment(),
+		return utility::Task( args.cmd,-1,utility::systemEnvironment(),
 				      password.toLatin1(),[](){},ecryptfs ) ;
 	}
 }
