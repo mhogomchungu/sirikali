@@ -48,6 +48,7 @@ class QTableWidget ;
 
 class cryfsWarning : public QObject
 {
+	Q_OBJECT
 public:
 	cryfsWarning()
 	{

@@ -312,7 +312,7 @@ It Must End With One Of The Following:
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1336"/>
+        <location filename="../src/keydialog.cpp" line="1344"/>
         <source>Not Supported KeyFile Encountered Since It Contains AtLeast One Illegal Character(&apos;\n&apos;,&apos;\0&apos;,&apos;\r&apos;).
 
 Please Use a Hash Of The KeyFile Through &quot;HMAC+KeyFile&quot; Option.</source>
@@ -321,7 +321,7 @@ Please Use a Hash Of The KeyFile Through &quot;HMAC+KeyFile&quot; Option.</sourc
 Пожалуйста, используйте хэш Файлового ключа с помощью опции «HMAC + Файл ключа».</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1387"/>
+        <location filename="../src/keydialog.cpp" line="1395"/>
         <source>Effective Key Is Generated With Below Formula:
 
 key = hmac_sha256(password,keyfile contents)</source>
@@ -388,7 +388,7 @@ options:
         <translation>О SiriKali</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1391"/>
+        <location filename="../src/keydialog.cpp" line="1399"/>
         <source>This plugin delegates key generation to an external application</source>
         <translation>Этот плагин делегирует генерацию ключей во внешнее приложение</translation>
     </message>
@@ -689,6 +689,38 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/configoptions.cpp" line="170"/>
         <source>MACOS Keychain</source>
         <translation></translation>
+    </message>
+</context>
+<context>
+    <name>cryfsWarning</name>
+    <message>
+        <location filename="../src/keydialog.h" line="67"/>
+        <source>Please be patient because creating a CryFS volume may take a very long time.
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/keydialog.h" line="72"/>
+        <source>Please be patient because unlocking a CryFS volume may take a very long time.
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/keydialog.h" line="80"/>
+        <source>Elapsed time: 0 seconds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/keydialog.h" line="102"/>
+        <source>Elapsed time: %0 minutes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/keydialog.h" line="104"/>
+        <source>Elapsed time: %0 seconds</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1112,7 +1144,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="86"/>
-        <location filename="../src/favorites2.cpp" line="370"/>
+        <location filename="../src/favorites2.cpp" line="372"/>
         <source>Path To A Config File</source>
         <translation>Путь к файлу конфигурации</translation>
     </message>
@@ -1132,50 +1164,50 @@ p, li { white-space: pre-wrap; }
         <translation>Удалить выбранную запись</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="285"/>
+        <location filename="../src/favorites2.cpp" line="287"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="437"/>
-        <location filename="../src/favorites2.cpp" line="442"/>
+        <location filename="../src/favorites2.cpp" line="439"/>
+        <location filename="../src/favorites2.cpp" line="444"/>
         <source>ERROR!</source>
         <translation>ОШИБКА!</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="437"/>
+        <location filename="../src/favorites2.cpp" line="439"/>
         <source>Encrypted Folder Address Field Is Empty</source>
         <translation>Поле &quot;Путь к зашифрованной папке&quot; пустое</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="442"/>
+        <location filename="../src/favorites2.cpp" line="444"/>
         <source>Mount Point Path Field Is Empty</source>
         <translation>Поле &quot;Путь к точке монтирования&quot; пустое</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="549"/>
+        <location filename="../src/favorites2.cpp" line="551"/>
         <source>Path To An Encrypted Folder</source>
         <translation>Путь к зашифрованной папке</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="559"/>
+        <location filename="../src/favorites2.cpp" line="561"/>
         <source>Path To Mount Folder</source>
         <translation>Путь к точке монтирования</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="731"/>
+        <location filename="../src/favorites2.cpp" line="733"/>
         <source>Remote Ssh Server Address
 (Example: sshfs woof@bar.foo:/remote/path)</source>
         <translation>Удаленный адрес  Ssh сервера
 (Например: sshfs woof@bar.foo:/remote/path)</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="732"/>
+        <location filename="../src/favorites2.cpp" line="734"/>
         <source>SSH_AUTH_SOCK Socket Path (Optional)</source>
         <translation>Путь сокета SSH_AUTH_SOCK (опционально)</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="733"/>
+        <location filename="../src/favorites2.cpp" line="735"/>
         <source>IdentityFile Path (Optional)</source>
         <translation>IdentityFile путь (опционально)</translation>
     </message>
@@ -1371,8 +1403,8 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.ui" line="58"/>
         <location filename="../src/keydialog.cpp" line="255"/>
-        <location filename="../src/keydialog.cpp" line="1367"/>
-        <location filename="../src/keydialog.cpp" line="1507"/>
+        <location filename="../src/keydialog.cpp" line="1375"/>
+        <location filename="../src/keydialog.cpp" line="1515"/>
         <source>Key</source>
         <translation>Пароль</translation>
     </message>
@@ -1409,6 +1441,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/keydialog.ui" line="400"/>
+        <location filename="../src/keydialog.ui" line="425"/>
         <source>TextLabel</source>
         <translation></translation>
     </message>
@@ -1441,29 +1474,29 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.ui" line="352"/>
         <location filename="../src/keydialog.cpp" line="256"/>
-        <location filename="../src/keydialog.cpp" line="1061"/>
-        <location filename="../src/keydialog.cpp" line="1373"/>
-        <location filename="../src/keydialog.cpp" line="1472"/>
+        <location filename="../src/keydialog.cpp" line="1065"/>
+        <location filename="../src/keydialog.cpp" line="1381"/>
+        <location filename="../src/keydialog.cpp" line="1480"/>
         <source>KeyFile</source>
         <translation>Файловый ключ</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="258"/>
-        <location filename="../src/keydialog.cpp" line="1408"/>
+        <location filename="../src/keydialog.cpp" line="1416"/>
         <source>HMAC+KeyFile</source>
         <translation>HMAC+Файловый ключ</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="257"/>
-        <location filename="../src/keydialog.cpp" line="1381"/>
-        <location filename="../src/keydialog.cpp" line="1385"/>
-        <location filename="../src/keydialog.cpp" line="1486"/>
+        <location filename="../src/keydialog.cpp" line="1389"/>
+        <location filename="../src/keydialog.cpp" line="1393"/>
+        <location filename="../src/keydialog.cpp" line="1494"/>
         <source>Key+KeyFile</source>
         <translation>Пароль+Файловый ключ</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="259"/>
-        <location filename="../src/keydialog.cpp" line="1381"/>
+        <location filename="../src/keydialog.cpp" line="1389"/>
         <source>ExternalExecutable</source>
         <translation>Внешнее приложение</translation>
     </message>
@@ -1494,7 +1527,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="568"/>
-        <location filename="../src/keydialog.cpp" line="1435"/>
+        <location filename="../src/keydialog.cpp" line="1443"/>
         <source>Passphrase Quality: 100%</source>
         <translation>Сложность пароля: 100%</translation>
     </message>
@@ -1528,22 +1561,22 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="897"/>
-        <location filename="../src/keydialog.cpp" line="1269"/>
+        <location filename="../src/keydialog.cpp" line="1277"/>
         <source>Upgrade File System</source>
         <translation>Обновление файловой системы</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1098"/>
+        <location filename="../src/keydialog.cpp" line="1102"/>
         <source>Failed To Generate Key.</source>
         <translation>Не удалось создать ключ.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1190"/>
+        <location filename="../src/keydialog.cpp" line="1194"/>
         <source>Mount Point Path Is Not Empty.</source>
         <translation>Путь точки монтирования не пустой.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1412"/>
+        <location filename="../src/keydialog.cpp" line="1420"/>
         <source>Select A KeyFile</source>
         <translation>Выберите Файловый ключ</translation>
     </message>
@@ -1557,31 +1590,31 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/keydialog.cpp" line="981"/>
         <location filename="../src/keydialog.cpp" line="990"/>
         <location filename="../src/keydialog.cpp" line="1001"/>
-        <location filename="../src/keydialog.cpp" line="1173"/>
-        <location filename="../src/keydialog.cpp" line="1183"/>
+        <location filename="../src/keydialog.cpp" line="1177"/>
+        <location filename="../src/keydialog.cpp" line="1187"/>
         <source>Mount Point Path Already Taken.</source>
         <translation>Путь точки монтирования уже указан.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1009"/>
-        <location filename="../src/keydialog.cpp" line="1157"/>
-        <location filename="../src/keydialog.cpp" line="1210"/>
+        <location filename="../src/keydialog.cpp" line="1161"/>
+        <location filename="../src/keydialog.cpp" line="1214"/>
         <source>Atleast One Required Field Is Empty.</source>
         <translation>По крайней мере одно обязательное поле пустое.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1200"/>
+        <location filename="../src/keydialog.cpp" line="1204"/>
         <source>Encrypted Folder Appear To Not Be Present.</source>
         <translation>Зашифрованная папка может быть не указанна.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1484"/>
-        <location filename="../src/keydialog.cpp" line="1496"/>
+        <location filename="../src/keydialog.cpp" line="1492"/>
+        <location filename="../src/keydialog.cpp" line="1504"/>
         <source>Plugin name</source>
         <translation>Имя плагина</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1521"/>
+        <location filename="../src/keydialog.cpp" line="1529"/>
         <source>Keyfile path</source>
         <translation>Путь к Файловому ключу</translation>
     </message>

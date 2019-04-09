@@ -112,7 +112,7 @@ Aktuelle Version : %4.</translation>
         <translation>OSX-Schlüsselring</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1336"/>
+        <location filename="../src/keydialog.cpp" line="1344"/>
         <source>Not Supported KeyFile Encountered Since It Contains AtLeast One Illegal Character(&apos;\n&apos;,&apos;\0&apos;,&apos;\r&apos;).
 
 Please Use a Hash Of The KeyFile Through &quot;HMAC+KeyFile&quot; Option.</source>
@@ -121,7 +121,7 @@ Please Use a Hash Of The KeyFile Through &quot;HMAC+KeyFile&quot; Option.</sourc
 Bitte nutzen Sie einen Hash durch die &quot;HMAC+KeyFile&quot; Option.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1387"/>
+        <location filename="../src/keydialog.cpp" line="1395"/>
         <source>Effective Key Is Generated With Below Formula:
 
 key = hmac_sha256(password,keyfile contents)</source>
@@ -131,7 +131,7 @@ key = hmac_sha256(password,keyfile contents)</source>
 key = hmac_sha256(password,keyfile contents)</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1391"/>
+        <location filename="../src/keydialog.cpp" line="1399"/>
         <source>This plugin delegates key generation to an external application</source>
         <translation>Diese Erweiterung überträgt die Generierung des Schlüssels an ein externes Programm</translation>
     </message>
@@ -688,6 +688,38 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>cryfsWarning</name>
+    <message>
+        <location filename="../src/keydialog.h" line="67"/>
+        <source>Please be patient because creating a CryFS volume may take a very long time.
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/keydialog.h" line="72"/>
+        <source>Please be patient because unlocking a CryFS volume may take a very long time.
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/keydialog.h" line="80"/>
+        <source>Elapsed time: 0 seconds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/keydialog.h" line="102"/>
+        <source>Elapsed time: %0 minutes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/keydialog.h" line="104"/>
+        <source>Elapsed time: %0 seconds</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>cryfscreateoptions</name>
     <message>
         <location filename="../src/engines/cryfscreateoptions.ui" line="14"/>
@@ -1107,7 +1139,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="86"/>
-        <location filename="../src/favorites2.cpp" line="370"/>
+        <location filename="../src/favorites2.cpp" line="372"/>
         <source>Path To A Config File</source>
         <translation>Pfad einer Konfigurationsdatei</translation>
     </message>
@@ -1127,49 +1159,49 @@ p, li { white-space: pre-wrap; }
         <translation>Ausgewählten Eintrag entfernen</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="285"/>
+        <location filename="../src/favorites2.cpp" line="287"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="437"/>
-        <location filename="../src/favorites2.cpp" line="442"/>
+        <location filename="../src/favorites2.cpp" line="439"/>
+        <location filename="../src/favorites2.cpp" line="444"/>
         <source>ERROR!</source>
         <translation>FEHLER !</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="437"/>
+        <location filename="../src/favorites2.cpp" line="439"/>
         <source>Encrypted Folder Address Field Is Empty</source>
         <translation>Feld mit Pfad des verschlüsselten Ordners steht leer</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="442"/>
+        <location filename="../src/favorites2.cpp" line="444"/>
         <source>Mount Point Path Field Is Empty</source>
         <translation>Feld mit Pfad des Einhängepunkts steht leer</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="549"/>
+        <location filename="../src/favorites2.cpp" line="551"/>
         <source>Path To An Encrypted Folder</source>
         <translation>Pfad eines verschlüsselten Ordners</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="559"/>
+        <location filename="../src/favorites2.cpp" line="561"/>
         <source>Path To Mount Folder</source>
         <translation>Pfad des Einhängeordners</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="731"/>
+        <location filename="../src/favorites2.cpp" line="733"/>
         <source>Remote Ssh Server Address
 (Example: sshfs woof@bar.foo:/remote/path)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="732"/>
+        <location filename="../src/favorites2.cpp" line="734"/>
         <source>SSH_AUTH_SOCK Socket Path (Optional)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="733"/>
+        <location filename="../src/favorites2.cpp" line="735"/>
         <source>IdentityFile Path (Optional)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1360,8 +1392,8 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.ui" line="58"/>
         <location filename="../src/keydialog.cpp" line="255"/>
-        <location filename="../src/keydialog.cpp" line="1367"/>
-        <location filename="../src/keydialog.cpp" line="1507"/>
+        <location filename="../src/keydialog.cpp" line="1375"/>
+        <location filename="../src/keydialog.cpp" line="1515"/>
         <source>Key</source>
         <translation>Schlüssel</translation>
     </message>
@@ -1404,9 +1436,9 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.ui" line="352"/>
         <location filename="../src/keydialog.cpp" line="256"/>
-        <location filename="../src/keydialog.cpp" line="1061"/>
-        <location filename="../src/keydialog.cpp" line="1373"/>
-        <location filename="../src/keydialog.cpp" line="1472"/>
+        <location filename="../src/keydialog.cpp" line="1065"/>
+        <location filename="../src/keydialog.cpp" line="1381"/>
+        <location filename="../src/keydialog.cpp" line="1480"/>
         <source>KeyFile</source>
         <translation>Schlüsseldatei</translation>
     </message>
@@ -1417,6 +1449,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/keydialog.ui" line="400"/>
+        <location filename="../src/keydialog.ui" line="425"/>
         <source>TextLabel</source>
         <translation>Textmarkierung</translation>
     </message>
@@ -1438,21 +1471,21 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="257"/>
-        <location filename="../src/keydialog.cpp" line="1381"/>
-        <location filename="../src/keydialog.cpp" line="1385"/>
-        <location filename="../src/keydialog.cpp" line="1486"/>
+        <location filename="../src/keydialog.cpp" line="1389"/>
+        <location filename="../src/keydialog.cpp" line="1393"/>
+        <location filename="../src/keydialog.cpp" line="1494"/>
         <source>Key+KeyFile</source>
         <translation>Schlüssel+Schlüsseldatei</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="258"/>
-        <location filename="../src/keydialog.cpp" line="1408"/>
+        <location filename="../src/keydialog.cpp" line="1416"/>
         <source>HMAC+KeyFile</source>
         <translation>HMAC+Schlüsseldatei</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="259"/>
-        <location filename="../src/keydialog.cpp" line="1381"/>
+        <location filename="../src/keydialog.cpp" line="1389"/>
         <source>ExternalExecutable</source>
         <translation>Extern-Ausführbare Datei</translation>
     </message>
@@ -1483,7 +1516,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="568"/>
-        <location filename="../src/keydialog.cpp" line="1435"/>
+        <location filename="../src/keydialog.cpp" line="1443"/>
         <source>Passphrase Quality: 100%</source>
         <translation>Passphrasenqualität: 100%</translation>
     </message>
@@ -1517,7 +1550,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="897"/>
-        <location filename="../src/keydialog.cpp" line="1269"/>
+        <location filename="../src/keydialog.cpp" line="1277"/>
         <source>Upgrade File System</source>
         <translation>Dateisystem nachrüsten</translation>
     </message>
@@ -1531,46 +1564,46 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/keydialog.cpp" line="981"/>
         <location filename="../src/keydialog.cpp" line="990"/>
         <location filename="../src/keydialog.cpp" line="1001"/>
-        <location filename="../src/keydialog.cpp" line="1173"/>
-        <location filename="../src/keydialog.cpp" line="1183"/>
+        <location filename="../src/keydialog.cpp" line="1177"/>
+        <location filename="../src/keydialog.cpp" line="1187"/>
         <source>Mount Point Path Already Taken.</source>
         <translation>Pfad des Einhängepunkts ist bereits besetzt.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1009"/>
-        <location filename="../src/keydialog.cpp" line="1157"/>
-        <location filename="../src/keydialog.cpp" line="1210"/>
+        <location filename="../src/keydialog.cpp" line="1161"/>
+        <location filename="../src/keydialog.cpp" line="1214"/>
         <source>Atleast One Required Field Is Empty.</source>
         <translation>Mindestens ein benötigtes Feld steht leer.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1098"/>
+        <location filename="../src/keydialog.cpp" line="1102"/>
         <source>Failed To Generate Key.</source>
         <translation>Generierung des Schlüssels fehlgeschlagen.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1190"/>
+        <location filename="../src/keydialog.cpp" line="1194"/>
         <source>Mount Point Path Is Not Empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1200"/>
+        <location filename="../src/keydialog.cpp" line="1204"/>
         <source>Encrypted Folder Appear To Not Be Present.</source>
         <translation>Verschlüsselter Ordner scheint Nicht vorhanden zu sein.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1412"/>
+        <location filename="../src/keydialog.cpp" line="1420"/>
         <source>Select A KeyFile</source>
         <translation>Wählen Sie eine Schlüsseldatei aus</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1484"/>
-        <location filename="../src/keydialog.cpp" line="1496"/>
+        <location filename="../src/keydialog.cpp" line="1492"/>
+        <location filename="../src/keydialog.cpp" line="1504"/>
         <source>Plugin name</source>
         <translation>Name des Plugins</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1521"/>
+        <location filename="../src/keydialog.cpp" line="1529"/>
         <source>Keyfile path</source>
         <translation>Pfad der Schlüsseldatei</translation>
     </message>
