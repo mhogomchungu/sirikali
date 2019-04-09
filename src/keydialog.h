@@ -23,8 +23,9 @@
 #include <QDialog>
 #include <QString>
 #include <QStringList>
-
+#include <QTimer>
 #include <QMenu>
+#include <QLabel>
 
 class QCloseEvent ;
 class QAction ;
@@ -44,6 +45,74 @@ class QTableWidget ;
 #include <functional>
 #include <memory>
 #include <vector>
+
+class cryfsWarning : public QObject
+{
+public:
+	cryfsWarning()
+	{
+		connect( &m_timer,&QTimer::timeout,[ this ](){
+
+			this->update() ;
+		} ) ;
+	}
+	void setWarningLabel( QLabel * l )
+	{
+		m_label = l ;
+		m_label->setVisible( false ) ;
+	}
+	void showCreate( const QString& engine )
+	{
+		m_warning = tr( "Please be patient because creating a CryFS volume may take a very long time.\n\n" ) ;
+		this->show( engine ) ;
+	}
+	void showUnlock( const QString& engine )
+	{
+		m_warning = tr( "Please be patient because unlocking a CryFS volume may take a very long time.\n\n" ) ;
+		this->show( engine ) ;
+	}
+	void hide()
+	{
+		m_timer.stop() ;
+		m_time = 0 ;
+		m_label->setVisible( false ) ;
+		m_label->setText( m_warning + tr( "Elapsed time: 0 seconds" ) ) ;
+	}
+private:
+	void show( const QString& engine )
+	{
+		if( engine == "cryfs" ){
+
+			static bool displayWarning = utility::backendIsGreaterOrEqualTo( engine,"0.10.0" ).await().value() ;
+
+			if( displayWarning ){
+
+				m_label->setVisible( true ) ;
+				m_timer.start( 1000 * 1 ) ;
+				this->update() ;
+			}
+		}
+	}
+	void update()
+	{
+		QString e ;
+		if( m_time >= 60 ){
+
+			e = tr( "Elapsed time: %0 minutes" ).arg( QString::number( m_time / 60,'f',2 ) ) ;
+		}else{
+			e = tr( "Elapsed time: %0 seconds" ).arg( QString::number( m_time ) ) ;
+		}
+
+		m_time++ ;
+
+		m_label->setText( m_warning + e ) ;
+	}
+private:
+	QLabel * m_label ;
+	QTimer m_timer ;
+	double m_time = 0 ;
+	QString m_warning ;
+};
 
 #if BUILD_PWQUALITY
 class keystrength
@@ -230,6 +299,8 @@ private :
 	std::function< void() > m_done = [](){} ;
 
 	utility::volumeList m_volumes ;
+
+	cryfsWarning m_cryfsWarning ;
 
 	decltype( m_volumes.size() ) m_counter = 0 ;
 };

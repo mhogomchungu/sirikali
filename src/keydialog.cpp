@@ -1028,7 +1028,11 @@ void keyDialog::encryptedFolderCreate()
 				    m_mountOptions,
 				    m_createOptions ) ;
 
+	m_cryfsWarning.showCreate( m_exe.toLower() ) ;
+
 	auto e = siritask::encryptedFolderCreate( s ) ;
+
+	m_cryfsWarning.hide() ;
 
 	m_working = false ;
 
@@ -1243,7 +1247,11 @@ void keyDialog::encryptedFolderMount()
 				    m_mountOptions,
 				    QString() } ;
 
+	m_cryfsWarning.showUnlock( siritask::mountEngine( m_path,m_configFile ).engine.name() ) ;
+
 	auto e = siritask::encryptedFolderMount( s ) ;
+
+	m_cryfsWarning.hide() ;
 
 	m_working = false ;
 
@@ -1538,6 +1546,7 @@ void keyDialog::pbCancel()
 
 void keyDialog::ShowUI()
 {
+	m_cryfsWarning.setWarningLabel( m_ui->cryfsWarning ) ;
 	this->show() ;
 	this->raise() ;
 	this->activateWindow() ;

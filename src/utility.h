@@ -116,6 +116,11 @@ namespace utility
 		{
 			return m_value ;
 		}
+		void set( T value )
+		{
+			m_value = std::move( value ) ;
+			m_valid = true ;
+		}
 	private:
 		bool m_valid = false ;
 		T m_value ;
