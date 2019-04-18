@@ -330,7 +330,7 @@ It Must End With One Of The Following:
         <translation>Auslesen der Eigenschaften des Datenträgers fehlgeschlagen</translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="557"/>
+        <location filename="../src/utility.cpp" line="555"/>
         <source>
 options:
 	-d   Path to where a volume to be auto unlocked/mounted is located.
@@ -383,7 +383,7 @@ options:
 	-s   Option zum Auslösen der Generierung des Passphrasen-Hashes.</translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="780"/>
+        <location filename="../src/utility.cpp" line="778"/>
         <source>about SiriKali</source>
         <translation>über SiriKali</translation>
     </message>

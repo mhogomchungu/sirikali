@@ -330,7 +330,7 @@ key = hmac_sha256(password,keyfile contents)</source>
 key = hmac_sha256 (пароль, содержимое Файлового ключа)</translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="557"/>
+        <location filename="../src/utility.cpp" line="555"/>
         <source>
 options:
 	-d   Path to where a volume to be auto unlocked/mounted is located.
@@ -383,7 +383,7 @@ options:
 	-s     Возможность запуска генерации хэша паролей.</translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="780"/>
+        <location filename="../src/utility.cpp" line="778"/>
         <source>about SiriKali</source>
         <translation>О SiriKali</translation>
     </message>
