@@ -65,8 +65,6 @@
 #include "win.h"
 #include "readonlywarning.h"
 
-#include <gcrypt.h>
-
 #include "lxqt_wallet.h"
 
 #include "dialogmsg.h"

@@ -90,13 +90,7 @@ file( WRITE ${PROJECT_BINARY_DIR}/json.h "\n#include \"${JSON_HEADER_PATH}\"" )
 MESSAGE( STATUS "found json.hpp header file at: ${JSON_HEADER_PATH}" )
 
 if( WIN32 )
-
-    set( GCRYPT_INCLUDE_FILE "${PROJECT_SOURCE_DIR}/libs/include/gcrypt.h" )
-    set( GCRYPT_INCLUDE_PATH "${PROJECT_SOURCE_DIR}/libs/include" )
-
-    MESSAGE( STATUS "${GCRYPT_INCLUDE_FILE}" )
-    set( GCRYPT_LIBRARY "${PROJECT_SOURCE_DIR}/libs/lib/libgcrypt.dll.a" )
-
+    set( INTERNAL_LXQT_WALLET "true" )
 else()
 
     find_file( GCRYPT_INCLUDE_FILE gcrypt.h )
@@ -105,22 +99,22 @@ else()
     add_definitions( -I${GCRYPT_INCLUDE_PATH} )
 
     find_library( GCRYPT_LIBRARY gcrypt )
-endif()
 
-if( NOT GCRYPT_INCLUDE_FILE )
-	MESSAGE( FATAL_ERROR "could not find gcrypt header file" )
-else()
-	MESSAGE( STATUS "found gcrypt header file at: ${GCRYPT_INCLUDE_FILE}" )
-endif()
+    if( NOT GCRYPT_INCLUDE_FILE )
+            MESSAGE( FATAL_ERROR "could not find gcrypt header file" )
+    else()
+            MESSAGE( STATUS "found gcrypt header file at: ${GCRYPT_INCLUDE_FILE}" )
+    endif()
 
-if( NOT GCRYPT_LIBRARY )
-	MESSAGE( FATAL_ERROR "could not find gcrypt library" )
-else()
-	get_filename_component( GCRYPT_LIBRARY_PATH ${GCRYPT_LIBRARY} DIRECTORY )
+    if( NOT GCRYPT_LIBRARY )
+            MESSAGE( FATAL_ERROR "could not find gcrypt library" )
+    else()
+            get_filename_component( GCRYPT_LIBRARY_PATH ${GCRYPT_LIBRARY} DIRECTORY )
 
-	MESSAGE( STATUS "found gcrypt library at: ${GCRYPT_LIBRARY}" )
-	MESSAGE( STATUS "adding library search path of: ${GCRYPT_LIBRARY_PATH}" )
+            MESSAGE( STATUS "found gcrypt library at: ${GCRYPT_LIBRARY}" )
+            MESSAGE( STATUS "adding library search path of: ${GCRYPT_LIBRARY_PATH}" )
 
+    endif()
 endif()
 
 find_package( Qt5Widgets REQUIRED )
@@ -147,9 +141,15 @@ pkg_check_modules( MCHUNGU_TASK mhogomchungu_task )
 
 if( INTERNAL_LXQT_WALLET )
 
-	message( STATUS "---------------------------------------------------------------------------" )
-	message( STATUS "lxqt wallet support will be provided by an internal library" )
-	message( STATUS "---------------------------------------------------------------------------" )
+        if( WIN32 )
+                message( STATUS "---------------------------------------------------------------------------" )
+                message( STATUS "lxqt wallet support is disabled on Windows" )
+                message( STATUS "---------------------------------------------------------------------------" )
+        else()
+                message( STATUS "---------------------------------------------------------------------------" )
+                message( STATUS "lxqt wallet support will be provided by an internal library" )
+                message( STATUS "---------------------------------------------------------------------------" )
+        endif()
 
 	ADD_SUBDIRECTORY( src/3rdParty/lxqt_wallet )
 	include_directories( ${PROJECT_SOURCE_DIR}/src/3rdParty/lxqt_wallet/frontend )
@@ -362,7 +362,7 @@ link_directories( ${GCRYPT_LIBRARY_PATH} )
 
 if( WIN32 )
     #TARGET_LINK_LIBRARIES( sirikali winfsp-x86 ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task mhogomchungu_network -L${GCRYPT_LIBRARY_PATH})
-    TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task mhogomchungu_network -L${GCRYPT_LIBRARY_PATH})
+    TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} lxqt-wallet mhogomchungu_task mhogomchungu_network)
 
 else()
     TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task mhogomchungu_network -L${GCRYPT_LIBRARY_PATH})
