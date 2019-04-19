@@ -27,6 +27,7 @@
 #include <QDebug>
 #include <QFile>
 
+#include "win.h"
 #include "options.h"
 #include "dialogmsg.h"
 #include "task.hpp"
@@ -376,7 +377,18 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 			if( m.isEmpty() ){
 
-				return utility::freeWindowsDriveLetter() ;
+				const auto& e = siritask::mountEngine( m_path,m_configFile ).engine ;
+
+				if( settings::instance().windowsUseMountPointPath( e.name() ) ){
+
+					auto mm = settings::instance().windowsMountPointPath() ;
+
+					utility::createFolder( mm ) ;
+
+					return mm + utility::split( m_path,'/' ).last() ;
+				}else{
+					return utility::freeWindowsDriveLetter() ;
+				}
 			}else{
 				return m ;
 			}
@@ -942,7 +954,7 @@ void keyDialog::encryptedFolderCreate()
 {
 	auto path = m_ui->lineEditFolderPath->text() ;
 
-	auto m = path.split( '/' ).last() ;
+	auto m = utility::split( path,'/' ).last() ;
 
 	if( utility::pathExists( path ) ){
 
@@ -953,19 +965,18 @@ void keyDialog::encryptedFolderCreate()
 
 	if( utility::platformIsWindows() ){
 
-		if( m_exe == "Cryfs" ){
+		if( settings::instance().windowsUseMountPointPath( m_exe.toLower() ) ){
 
-			/*
-			 * We are creating a cipher folder and then delete it to prevent
-			 * path collition when create plain folder in variable "m".
-			 */
-			utility::createFolder( path ) ;
+			m = settings::instance().windowsMountPointPath() + m ;
 
-			m = settings::instance().mountPath( utility::mountPathPostFix( m ) ) ;
+			if( SiriKali::Windows::mountPointTaken( m ) ){
 
-			utility::removeFolder( path ) ;
+				this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
 
-			if( utility::pathExists( m ) ){
+				return this->enableAll() ;
+			}
+
+			if( utility::pathExists( m ) && utility::folderNotEmpty( m ) ){
 
 				this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
 
@@ -1017,7 +1028,11 @@ void keyDialog::encryptedFolderCreate()
 				    m_mountOptions,
 				    m_createOptions ) ;
 
-	auto e = siritask::encryptedFolderCreate( s ).await() ;
+	m_cryfsWarning.showCreate( m_exe.toLower() ) ;
+
+	auto e = siritask::encryptedFolderCreate( s ) ;
+
+	m_cryfsWarning.hide() ;
 
 	m_working = false ;
 
@@ -1165,9 +1180,16 @@ void keyDialog::encryptedFolderMount()
 		}
 	}
 
-	if( utility::platformIsWindows() && !utility::isDriveLetter( m ) ){
+	if( utility::platformIsWindows() ){
 
-		if( utility::folderNotEmpty( m ) ){
+		if( SiriKali::Windows::mountPointTaken( m ) ){
+
+			this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
+
+			return this->enableAll() ;
+		}
+
+		if( !utility::isDriveLetter( m ) && utility::folderNotEmpty( m ) ){
 
 			this->showErrorMessage( tr( "Mount Point Path Is Not Empty." ) ) ;
 
@@ -1225,7 +1247,11 @@ void keyDialog::encryptedFolderMount()
 				    m_mountOptions,
 				    QString() } ;
 
-	auto e = siritask::encryptedFolderMount( s ).await() ;
+	m_cryfsWarning.showUnlock( siritask::mountEngine( m_path,m_configFile ).engine.name() ) ;
+
+	auto e = siritask::encryptedFolderMount( s ) ;
+
+	m_cryfsWarning.hide() ;
 
 	m_working = false ;
 
@@ -1520,6 +1546,7 @@ void keyDialog::pbCancel()
 
 void keyDialog::ShowUI()
 {
+	m_cryfsWarning.setWarningLabel( m_ui->cryfsWarning ) ;
 	this->show() ;
 	this->raise() ;
 	this->activateWindow() ;

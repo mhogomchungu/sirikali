@@ -18,14 +18,13 @@
  */
 
 #include "tablewidget.h"
-#include <QDebug>
+#include "utility.h"
 
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QStringList>
 
 #include <functional>
-#include <iostream>
 
 using count_t = decltype( QTableWidget().rowCount() ) ;
 
@@ -89,6 +88,7 @@ static QTableWidgetItem * _set_item( QTableWidgetItem * item,
 	item->setText( text ) ;
 	item->setTextAlignment( Qt::AlignCenter ) ;
 	item->setFont( font ) ;
+
 	return item ;
 }
 
@@ -156,7 +156,16 @@ void tablewidget::updateRow( QTableWidget * table,const QStringList& list,int ro
 {
 	_for_each_column( table,row,[ & ]( count_t row,count_t col ){
 
-		_set_item( table->item( row,col ),list.at( col ),font ) ;
+		auto item = table->item( row,col ) ;
+
+		if( item == nullptr ){
+
+			item = new QTableWidgetItem() ;
+
+			table->setItem( row,col,item ) ;
+		}
+
+		_set_item( item,list.at( col ),font ) ;
 	} ) ;
 }
 

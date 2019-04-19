@@ -65,8 +65,6 @@
 #include "win.h"
 #include "readonlywarning.h"
 
-#include <gcrypt.h>
-
 #include "lxqt_wallet.h"
 
 #include "dialogmsg.h"
@@ -1085,28 +1083,8 @@ QString utility::configFilePath( QWidget * s,const QString& e )
 
 		dialog.selectFile( [ = ](){
 
-			if( e == "cryfs" ){
+			return engines::instance().getByName( e ).configFileName() ;
 
-				return "cryfs.config" ;
-
-			}else if( e == "encfs" ){
-
-				return "encfs6.xml" ;
-
-			}else if( e == "gocryptfs" ){
-
-				return "gocryptfs.conf" ;
-
-			}else if( e == "securefs" ){
-
-				return "securefs.json" ;
-
-			}else if( e == "ecryptfs" ){
-
-				return "ecryptfs.config" ;
-			}else{
-				return "" ;
-			}
 		}() ) ;
 
 		if( dialog.exec() ){
@@ -1169,7 +1147,8 @@ bool utility::isDriveLetter( const QString& path )
 	}
 }
 
-void utility::setWindowsMountPointOptions( QWidget * obj,QLineEdit * e,QPushButton * s )
+template< typename E >
+static void _setWindowsMountMountOptions( QWidget * obj,E e,QPushButton * s )
 {
 	auto menu = new QMenu( obj ) ;
 
@@ -1194,6 +1173,16 @@ void utility::setWindowsMountPointOptions( QWidget * obj,QLineEdit * e,QPushButt
 
 	s->setMenu( menu ) ;
 	s->setIcon( QIcon( ":/harddrive.png" ) ) ;
+}
+
+void utility::setWindowsMountPointOptions( QWidget * obj,QTextEdit * e,QPushButton * s )
+{
+	_setWindowsMountMountOptions( obj,e,s ) ;
+}
+
+void utility::setWindowsMountPointOptions( QWidget * obj,QLineEdit * e,QPushButton * s )
+{
+	_setWindowsMountMountOptions( obj,e,s ) ;
 }
 
 static utility::result< int > _convert_string_to_version( const QString& e )
@@ -1376,4 +1365,17 @@ void utility::wait( int time )
 	}else{
 		utility::Task::suspend( time ) ;
 	}
+}
+
+void utility::waitForFinished( QProcess& e )
+{
+	if( utility::runningOnGUIThread() ){
+
+		while( e.state() == QProcess::Running ){
+
+			utility::waitForOneSecond() ;
+		}
+	}
+
+	e.waitForFinished() ;
 }

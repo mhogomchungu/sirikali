@@ -32,14 +32,46 @@
 
 namespace siritask
 {
-	bool deleteMountFolder( const QString& ) ;
-	Task::future< bool >& encryptedFolderUnMount( const QString& cipherFolder,
-						      const QString& mountPoint,
-						      const QString& fileSystem,
-						      int numberOfAttempts = 5 ) ;
+	struct Engine
+	{
+		Engine( std::pair< const engines::engine&,QString > m,
+			const QString& configFilePath = QString() ) :
+			engine( m.first ),configFileName( std::move( m.second ) ),
+			configFilePath( configFilePath )
+		{
+		}
+		Engine( const engines::engine& engine ) :
+			engine( engine )
+		{
+		}
+		Engine( const engines::engine& engine,
+			const QString& configFileName,
+			const QString& configFilePath ) :
+			engine( engine ),configFileName( configFileName ),
+			configFilePath( configFilePath )
+		{
+		}
+		Engine() : engine( engines::instance().getByName( "" ) )
+		{
+		}
 
-	Task::future< engines::engine::cmdStatus >& encryptedFolderMount( const engines::engine::options&,bool = false ) ;
-	Task::future< engines::engine::cmdStatus >& encryptedFolderCreate( const engines::engine::options& ) ;
+		const engines::engine& engine ;
+		QString configFileName ;
+		QString configFilePath ;
+	} ;
+
+	siritask::Engine mountEngine( const QString& cipherFolder,
+				      const QString& configFilePath ) ;
+
+	bool deleteMountFolder( const QString& ) ;
+
+	bool encryptedFolderUnMount( const QString& cipherFolder,
+				     const QString& mountPoint,
+				     const QString& fileSystem,
+				     int numberOfAttempts = 5 ) ;
+
+	engines::engine::cmdStatus encryptedFolderMount( const engines::engine::options&,bool = false ) ;
+	engines::engine::cmdStatus encryptedFolderCreate( const engines::engine::options& ) ;
 }
 
 #endif // SIRITASK_H

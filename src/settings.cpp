@@ -22,6 +22,7 @@
 #include <QWidget>
 #include <QDialog>
 
+#include "engines.h"
 #include "settings.h"
 #include "utility.h"
 #include "readonlywarning.h"
@@ -46,13 +47,62 @@
 
 #include <QCoreApplication>
 
+settings::settings() : m_settings( "SiriKali","SiriKali" )
+{
+}
+
+bool settings::showCipherFolderAndMountPathInFavoritesList()
+{
+	if( !m_settings.contains( "ShowCipherFolderAndMountPathInFavoritesList" ) ){
+
+		m_settings.setValue( "ShowCipherFolderAndMountPathInFavoritesList",false ) ;
+	}
+
+	return m_settings.value( "ShowCipherFolderAndMountPathInFavoritesList" ).toBool() ;
+}
+
 QString settings::homePath()
 {
 	return QDir::homePath() ;
 }
 
-settings::settings() : m_settings( "SiriKali","SiriKali" )
+QString settings::windowsMountPointPath()
 {
+	if( !m_settings.contains( "WindowsMountPointPath" ) ){
+
+		auto m = settings::homePath() ;
+
+		while( m.endsWith( "/" ) ){
+
+			m.truncate( m.size() - 1 ) ;
+		}
+
+		m_settings.setValue( "WindowsMountPointPath",m + "/.SiriKali" ) ;
+	}
+
+	auto m = m_settings.value( "WindowsMountPointPath" ).toString() ;
+
+	while( m.endsWith( "/" ) ){
+
+		m.truncate( m.size() - 1 ) ;
+	}
+
+	return m + "/" ;
+}
+
+bool settings::windowsUseMountPointPath( const QString& e )
+{
+	if( engines::instance().getByName( e ).supportsMountPathsOnWindows() ){
+
+		if( !m_settings.contains( "WindowsUseMountPointPath" ) ){
+
+			m_settings.setValue( "WindowsUseMountPointPath",false ) ;
+		}
+
+		return m_settings.value( "WindowsUseMountPointPath" ).toBool() ;
+	}else{
+		return false ;
+	}
 }
 
 int settings::pollForUpdatesInterval()
@@ -369,11 +419,48 @@ void settings::readFavorites( QMenu * m )
 
 	m->addSeparator() ;
 
-	for( const auto& it : this->readFavorites() ){
+	const auto favorites = this->readFavorites() ;
 
-		const auto& e = it.volumePath ;
+	bool cipherPathRepeatsInFavoritesList = false ;
 
-		m->addAction( _add_action( e,e ) ) ;
+	for( auto it = favorites.begin() ; it != favorites.end() ; it++ ){
+
+		for( auto xt = it + 1 ; xt != favorites.end() ; xt++ ){
+
+			if( ( *it ).volumePath == ( *xt ).volumePath ){
+
+				cipherPathRepeatsInFavoritesList = true ;
+				break ;
+			}
+		}
+	}
+
+	auto _showCipherPathAndMountPath = [ & ](){
+
+		if( cipherPathRepeatsInFavoritesList ){
+
+			return true ;
+		}else{
+			return settings().instance().showCipherFolderAndMountPathInFavoritesList() ;
+		}
+	}() ;
+
+	if( _showCipherPathAndMountPath ){
+
+		for( const auto& it : favorites ){
+
+			const auto& e = it.volumePath + "\n" + it.mountPointPath ;
+
+			m->addAction( _add_action( e,e ) ) ;
+			m->addSeparator() ;
+		}
+	}else{
+		for( const auto& it : favorites ){
+
+			const auto& e = it.volumePath ;
+
+			m->addAction( _add_action( e,e ) ) ;
+		}
 	}
 }
 
