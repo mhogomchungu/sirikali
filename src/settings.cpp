@@ -527,16 +527,21 @@ void settings::languageMenu( QMenu * m,QAction * ac,settings::translator& s )
 
 QString settings::localizationLanguagePath()
 {
-	if( utility::platformIsWindows() ){
+	if( !m_settings.contains( "TranslationsPath" ) ){
 
-		return QDir().currentPath() + "/translations" ;
+		if( utility::platformIsWindows() ){
 
-	}else if( utility::platformIsOSX() ){
+			m_settings.setValue( "TranslationsPath",QDir().currentPath() + "/translations" ) ;
 
-		return QCoreApplication::applicationDirPath() + "/Contents/Resources" ;
-	}else{
-		return TRANSLATION_PATH ;
+		}else if( utility::platformIsOSX() ){
+
+			m_settings.setValue( "TranslationsPath",TRANSLATION_PATH ) ;
+		}else{
+			m_settings.setValue( "TranslationsPath",TRANSLATION_PATH ) ;
+		}
 	}
+
+	return m_settings.value( "TranslationsPath" ).toString() ;
 }
 
 void settings::setLocalizationLanguage( const QString& language )
