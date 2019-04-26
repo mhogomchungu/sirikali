@@ -698,29 +698,33 @@ p, li { white-space: pre-wrap; }
         <source>Please be patient because creating a CryFS volume may take a very long time.
 
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Merci de bien vouloir patienter, la création d&apos;un volume CryFS prend un temps assez long.
+
+</translation>
     </message>
     <message>
         <location filename="../src/keydialog.h" line="72"/>
         <source>Please be patient because unlocking a CryFS volume may take a very long time.
 
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Merci de bien vouloir patienter, le déchiffrement d&apos;un volume CryFS prend un temps assez long.
+
+</translation>
     </message>
     <message>
         <location filename="../src/keydialog.h" line="80"/>
         <source>Elapsed time: 0 seconds</source>
-        <translation type="unfinished"></translation>
+        <translation>Temps écoulé: 0 secondes</translation>
     </message>
     <message>
         <location filename="../src/keydialog.h" line="102"/>
         <source>Elapsed time: %0 minutes</source>
-        <translation type="unfinished"></translation>
+        <translation>Temps écoulé: %0 minutes</translation>
     </message>
     <message>
         <location filename="../src/keydialog.h" line="104"/>
         <source>Elapsed time: %0 seconds</source>
-        <translation type="unfinished"></translation>
+        <translation>Temps écoulé: %0 secondes</translation>
     </message>
 </context>
 <context>
@@ -1035,7 +1039,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.ui" line="30"/>
         <source>Favorite List</source>
-        <translation type="unfinished"></translation>
+        <translation>Liste des favoris</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="46"/>
@@ -1070,17 +1074,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.ui" line="238"/>
         <source>Volume Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriétés du volume</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="255"/>
         <source>Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Options</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="261"/>
         <source>Add/Edit Favorite Entry</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajout/Édition d&apos;une entrée de favori</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="301"/>
@@ -1132,7 +1136,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/favorites2.ui" line="582"/>
         <location filename="../src/favorites2.cpp" line="106"/>
         <source>Mount Point Prefix</source>
-        <translation type="unfinished"></translation>
+        <translation>Préfixe du point de montage</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="601"/>
@@ -1153,7 +1157,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.cpp" line="102"/>
         <source>Mount Point Path</source>
-        <translation type="unfinished"></translation>
+        <translation>Chemin du point de montage</translation>
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="262"/>
