@@ -48,14 +48,14 @@ Send me an email through mhogomchungu at Gmail Dot coM for transfer details.
 
 ## Download links
 
-Latest released version is 1.3.7 and its source code can be downloaded by clicking below link.
+Latest released version is 1.3.8 and its source code can be downloaded by clicking below link.
 
-<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.7/SiriKali-1.3.7.tar.xz">SiriKali-1.3.7.tar.xz</a>
+<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.8/SiriKali-1.3.8.tar.xz">SiriKali-1.3.8.tar.xz</a>
 
 Users of Microsoft Windows Operating System should download SiriKali installer by clicking below link. The installer is not
 signed and expect to get a warning from windows saying the installer is from an unknown publisher.
 
-<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.7/SiriKali-1.3.7.setup.exe">SiriKali-1.3.7.setup.exe</a>
+<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.8/SiriKali-1.3.8.setup.exe">SiriKali-1.3.8.setup.exe</a>
 
 
 
@@ -141,5 +141,4 @@ cv9jY9bZAbVaMUjF7dw/bsqgJ2HCJ33cf16GybRtozOE36YDB2omg58ngIrlmlea
 -----END PGP PUBLIC KEY BLOCK-----
 ```
 
-last update: Wed Aug  1 22:33:52 EAT 2018
-
+last update: Wed 01 May 2019 09:32:12 AM EAT
