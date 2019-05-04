@@ -565,7 +565,6 @@ Name: \"quicklaunchicon\"; Description: \"{cm:CreateQuickLaunchIcon}\"; GroupDes
 Source: {#MyEXELocation}; DestDir: {app}; Flags: ignoreversion
 
 Source: {#MyLibrariesLocation}\\*.dll; DestDir: {app} ; Flags: ignoreversion
-Source: {#MyGcryptLibraryPath}\\*.dll; DestDir: {app} ; Flags: ignoreversion
 
 Source: {#MySourcesPath}\\LICENSE.txt; DestDir: {app}; Flags: ignoreversion
 
