@@ -81,11 +81,14 @@ static void _run_command_on_mount( const engines::engine::options& opt,const QSt
 
 		exe = QString( "%1 %2 %3 %4" ).arg( exe,a,b,app ) ;
 
-		QProcess e ;
+		Task::exec( [ exe ](){
 
-		e.setProcessEnvironment( utility::systemEnvironment() ) ;
+			const auto& e = utility::systemEnvironment() ;
 
-		e.startDetached( exe ) ;
+			auto r = Task::process::run( exe,{},-1,{},e ).get() ;
+
+			utility::logCommandOutPut( r,exe ) ;
+		} ) ;
 	}
 }
 
@@ -118,6 +121,10 @@ static utility::result< utility::Task > _unmount_volume( const QString& exe,
 		return utility::unwrap( utility::Task::run( exe,timeOut,usePolkit ) ) ;
 	}else{
 		auto m = utility::unwrap( utility::Task::run( e + " " + mountPoint,timeOut,false ) ) ;
+
+		Task::process::result r( m.stdOut(),m.stdError(),m.exitCode(),m.exitStatus(),m.finished() ) ;
+
+		utility::logCommandOutPut( r,e + " " + mountPoint ) ;
 
 		if( m.success() ){
 
