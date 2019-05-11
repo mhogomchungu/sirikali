@@ -295,6 +295,25 @@ void sirikali::setUpApp( const QString& volume )
 
 		this->showDebugWindow() ;
 	}
+
+	auto e = settings::instance().runCommandOnInterval() ;
+	auto p = settings::instance().runCommandOnIntervalTime() ;
+
+	if( !e.isEmpty() ){
+
+		e = utility::Task::makePath( e ) ;
+
+		auto s = new QTimer( this ) ;
+
+		connect( s,&QTimer::timeout,[ this,e ](){
+
+			this->runIntervalCustomCommand( e ) ;
+		} ) ;
+
+		s->start( p * 60 * 1000 ) ;
+
+		this->runIntervalCustomCommand( e ) ;
+	}
 }
 
 void sirikali::showTrayIconWhenReady()
@@ -1620,6 +1639,26 @@ QFont sirikali::getSystemVolumeFont()
 	return f ;
 }
 
+void sirikali::runIntervalCustomCommand( const QString& cmd )
+{
+	this->processMountedVolumes( [ cmd ]( const sirikali::mountedEntry& s ){
+
+		auto a = utility::Task::makePath( s.cipherPath ) ;
+		auto b = utility::Task::makePath( s.mountPoint ) ;
+
+		Task::exec( [ = ](){
+
+			const auto& e = utility::systemEnvironment() ;
+
+			auto m = QString( "%1 %2 %3 %4" ).arg( cmd,a,b,s.volumeType ) ;
+
+			auto r = Task::process::run( m,{},-1,{},e ).get() ;
+
+			utility::logCommandOutPut( r,m ) ;
+		} ) ;
+	} ) ;
+}
+
 void sirikali::addEntryToTable( const QStringList& l )
 {
 	tablewidget::addRow( m_ui->tableWidget,l ) ;
@@ -1664,6 +1703,18 @@ void sirikali::updateList( const volumeInfo& entry )
 	}
 }
 
+bool sirikali::unMountVolume( const sirikali::mountedEntry& e )
+{
+	if( siritask::encryptedFolderUnMount( e.cipherPath,e.mountPoint,e.volumeType ) ){
+
+		siritask::deleteMountFolder( e.mountPoint ) ;
+
+		return true ;
+	}else{
+		return false ;
+	}
+}
+
 void sirikali::pbUmount()
 {
 	auto table = m_ui->tableWidget ;
@@ -1682,14 +1733,30 @@ void sirikali::pbUmount()
 
 		utility::waitForOneSecond() ;
 
-		if( siritask::encryptedFolderUnMount( a,b,c ) ){
+		if( !this->unMountVolume( { a,b,c } ) ){
 
-			siritask::deleteMountFolder( b ) ;
-		}else{
 			DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Unmount %1 Volume" ).arg( type ) ) ;
 
 			this->enableAll() ;
 		}
+	}
+}
+
+void sirikali::processMountedVolumes( std::function< void( const sirikali::mountedEntry& ) > function )
+{
+	auto table = m_ui->tableWidget ;
+
+	const auto cipherFolders = tablewidget::columnEntries( table,0 ) ;
+	const auto mountPoints   = tablewidget::columnEntries( table,1 ) ;
+	const auto fileSystems   = tablewidget::columnEntries( table,2 ) ;
+
+	for( auto r = cipherFolders.size() - 1 ; r >= 0 ; r-- ){
+
+		const auto& a = cipherFolders.at( r ) ;
+		const auto& b = mountPoints.at( r ) ;
+		const auto& c = fileSystems.at( r ) ;
+
+		function( { a,b,c } ) ;
 	}
 }
 
@@ -1701,25 +1768,10 @@ void sirikali::emergencyShutDown()
 
 	m_mountInfo.announceEvents( false ) ;
 
-	auto table = m_ui->tableWidget ;
+	this->processMountedVolumes( [ this ]( const sirikali::mountedEntry& e ){
 
-	const auto cipherFolders = tablewidget::columnEntries( table,0 ) ;
-	const auto mountPoints   = tablewidget::columnEntries( table,1 ) ;
-	const auto fileSystems   = tablewidget::columnEntries( table,2 ) ;
-
-	for( auto r = cipherFolders.size() - 1 ; r >= 0 ; r-- ){
-
-		const auto& a = cipherFolders.at( r ) ;
-		const auto& b = mountPoints.at( r ) ;
-		const auto& c = fileSystems.at( r ) ;
-
-		if( siritask::encryptedFolderUnMount( a,b,c,1 ) ){
-
-			tablewidget::deleteRow( table,b,1 ) ;
-
-			siritask::deleteMountFolder( b ) ;
-		}
-	}
+		this->unMountVolume( e ) ;
+	} ) ;
 
 	this->closeApplication( 0,"Emergency shut down" ) ;
 }
@@ -1730,29 +1782,17 @@ void sirikali::unMountAll()
 
 	this->disableAll() ;
 
-	auto table = m_ui->tableWidget ;
-
-	const auto cipherFolders = tablewidget::columnEntries( table,0 ) ;
-	const auto mountPoints   = tablewidget::columnEntries( table,1 ) ;
-	const auto fileSystems   = tablewidget::columnEntries( table,2 ) ;
-
 	utility::waitForOneSecond() ;
 
-	for( auto r = cipherFolders.size() - 1 ; r >= 0 ; r-- ){
+	this->processMountedVolumes( [ this ]( const mountedEntry& e ){
 
-		const auto& a = cipherFolders.at( r ) ;
-		const auto& b = mountPoints.at( r ) ;
-		const auto& c = fileSystems.at( r ) ;
+		if( this->unMountVolume( e ) ){
 
-		if( siritask::encryptedFolderUnMount( a,b,c ) ){
-
-			tablewidget::deleteRow( table,b,1 ) ;
-
-			siritask::deleteMountFolder( b ) ;
+			tablewidget::deleteRow( m_ui->tableWidget,e.mountPoint,1 ) ;
 
 			utility::waitForOneSecond() ;
 		}
-	}
+	} ) ;
 
 	this->enableAll() ;
 

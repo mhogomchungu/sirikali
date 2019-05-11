@@ -147,6 +147,10 @@ public:
 	void preUnMountCommand( const QString& ) ;
 	void runCommandOnMount( const QString& ) ;
 	QString runCommandOnMount() ;
+	QString runCommandOnInterval() ;
+	void runCommandOnInterval( const QString& ) ;
+	int runCommandOnIntervalTime() ;
+	void runCommandOnIntervalTime( int ) ;
 	bool reUseMountPoint() ;
 	void reUseMountPoint( bool ) ;
 	bool autoOpenFolderOnMount() ;

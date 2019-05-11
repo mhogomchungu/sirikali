@@ -599,6 +599,10 @@ namespace utility
 		{
 			return m_finished ;
 		}
+		::Task::process::result toProcessResult()
+		{
+			return { m_stdOut,m_stdError,m_exitCode,m_exitStatus,m_finished } ;
+		}
 	private:
 		void execute( const QString& exe,int waitTime,const QProcessEnvironment& env,
 			      const QByteArray& password,std::function< void() > f,bool e ) ;

@@ -126,10 +126,6 @@ static utility::result< utility::Task > _unmount_volume( const QString& exe,
 
 		auto m = utility::unwrap( utility::Task::run( e + " " + mountPoint,timeOut,false ) ) ;
 
-		Task::process::result r( m.stdOut(),m.stdError(),m.exitCode(),m.exitStatus(),m.finished() ) ;
-
-		utility::logCommandOutPut( r,e + " " + mountPoint ) ;
-
 		if( m.success() ){
 
 			return utility::unwrap( utility::Task::run( exe,timeOut,usePolkit ) ) ;

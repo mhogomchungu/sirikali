@@ -118,6 +118,7 @@ private:
 
 	QFont getSystemVolumeFont( void ) ;
 
+	void runIntervalCustomCommand( const QString& ) ;
 	void cliCommand( const QStringList& ) ;
 	void updateVolumeList( const std::vector< volumeInfo >& ) ;
 	void openMountPoint( const QString& ) ;
@@ -132,9 +133,18 @@ private:
 	void setUpFont( void ) ;
 	void setUpShortCuts( void ) ;
 	void raiseWindow( const QString& = QString() ) ;
-	void autoUnlockVolumes( const std::vector< volumeInfo >& ) ;
-
+	void autoUnlockVolumes( const std::vector< volumeInfo >& ) ;	
 	utility::volumeList autoUnlockVolumes( utility::volumeList,bool = false ) ;
+
+	struct mountedEntry{
+		const QString& cipherPath ;
+		const QString& mountPoint ;
+		const QString& volumeType ;
+	};
+
+	void processMountedVolumes( std::function< void( const sirikali::mountedEntry& ) > function ) ;
+
+	bool unMountVolume( const sirikali::mountedEntry& ) ;
 
 	Ui::sirikali * m_ui = nullptr ;
 

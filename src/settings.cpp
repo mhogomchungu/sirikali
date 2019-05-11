@@ -611,6 +611,36 @@ QString settings::runCommandOnMount()
 	}
 }
 
+QString settings::runCommandOnInterval()
+{
+	if( !m_settings.contains( "runCommandOnInterval" ) ){
+
+		m_settings.setValue( "runCommandOnInterval",QString() ) ;
+	}
+
+	return m_settings.value( "runCommandOnInterval" ).toString() ;
+}
+
+void settings::runCommandOnInterval( const QString& e )
+{
+	m_settings.setValue( "runCommandOnInterval",e ) ;
+}
+
+int settings::runCommandOnIntervalTime()
+{
+	if( !m_settings.contains( "runCommandOnIntervalTime" ) ){
+
+		m_settings.setValue( "runCommandOnIntervalTime",10 ) ;
+	}
+
+	return m_settings.value( "runCommandOnIntervalTime" ).toInt() ;
+}
+
+void settings::runCommandOnIntervalTime( int e )
+{
+	m_settings.setValue( "runCommandOnIntervalTime",e ) ;
+}
+
 bool settings::reUseMountPoint()
 {
 	if( m_settings.contains( "ReUseMountPoint" ) ){
