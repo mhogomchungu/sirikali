@@ -79,6 +79,8 @@ static void _run_command_on_mount( const engines::engine::options& opt,const QSt
 		auto a = _makePath( opt.cipherFolder ) ;
 		auto b = _makePath( opt.plainFolder ) ;
 
+		exe = utility::Task::makePath( exe ) ;
+
 		exe = QString( "%1 %2 %3 %4" ).arg( exe,a,b,app ) ;
 
 		Task::exec( [ exe ](){
@@ -120,6 +122,8 @@ static utility::result< utility::Task > _unmount_volume( const QString& exe,
 
 		return utility::unwrap( utility::Task::run( exe,timeOut,usePolkit ) ) ;
 	}else{
+		e = utility::Task::makePath( e ) ;
+
 		auto m = utility::unwrap( utility::Task::run( e + " " + mountPoint,timeOut,false ) ) ;
 
 		Task::process::result r( m.stdOut(),m.stdError(),m.exitCode(),m.exitStatus(),m.finished() ) ;
