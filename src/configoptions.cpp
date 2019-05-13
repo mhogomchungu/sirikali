@@ -73,6 +73,16 @@ configOptions::configOptions( QWidget * parent,
 	if( utility::platformIsWindows() ){
 
 		m_ui->cbAutoCheckForUpdates->setEnabled( false ) ;
+		m_ui->pbChangeWalletPassword->setEnabled( false ) ;
+		m_ui->pbKeyStorage->setEnabled( false ) ;
+	}else{
+		m_ui->pbChangeWalletPassword->setEnabled( [ this ](){
+
+			auto a = m_settings.walletName() ;
+			auto b = m_settings.applicationName() ;
+
+			return LXQt::Wallet::walletExists( LXQt::Wallet::BackEnd::internal,a,b ) ;
+		}() ) ;
 	}
 
 	connect( m_ui->cbStartMinimized,&QCheckBox::toggled,[ this ]( bool e ){
@@ -124,14 +134,6 @@ configOptions::configOptions( QWidget * parent,
 
 		m_settings.showMountDialogWhenAutoMounting( e ) ;
 	} ) ;
-
-	m_ui->pbChangeWalletPassword->setEnabled( [ this ](){
-
-		auto a = m_settings.walletName() ;
-		auto b = m_settings.applicationName() ;
-
-		return LXQt::Wallet::walletExists( LXQt::Wallet::BackEnd::internal,a,b ) ;
-	}() ) ;
 
 	connect( m_ui->pbChangeWalletPassword,&QPushButton::clicked,[ this ](){
 

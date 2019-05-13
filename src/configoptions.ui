@@ -606,7 +606,7 @@
       <rect>
        <x>70</x>
        <y>360</y>
-       <width>261</width>
+       <width>251</width>
        <height>31</height>
       </rect>
      </property>
@@ -614,7 +614,7 @@
       <string>Interval In Minutes Periodic Command Will Run</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignCenter</set>
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
