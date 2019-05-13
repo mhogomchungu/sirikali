@@ -57,6 +57,8 @@ class sirikali : public QWidget
 {
 	Q_OBJECT
 public:
+	static QByteArray getVolumeKey( const QString& cipherPath ) ;
+	static void runInUiThread( std::function< void() > ) ;
 	explicit sirikali() ;
 	int start( QApplication& ) ;
 	~sirikali() ;

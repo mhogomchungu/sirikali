@@ -139,6 +139,9 @@ public:
 	QString readPassword( bool addNewLine ) ;
 	QString mountPath() ;
 	QString mountPath( const QString& ) ;
+	QString environmentalVariableVolumeKey() ;
+	void allowExternalToolsToReadPasswords( bool ) ;
+	bool allowExternalToolsToReadPasswords() ;
 	void setDefaultMountPointPrefix( const QString& ) ;
 	bool startMinimized() ;
 	void setStartMinimized( bool ) ;

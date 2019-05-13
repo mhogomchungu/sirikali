@@ -125,6 +125,12 @@ configOptions::configOptions( QWidget * parent,
 
 	m_ui->cbAutoMountWhenAvailable->setChecked( settings::instance().autoMountFavoritesOnAvailable() ) ;
 
+
+	connect( m_ui->cbAllowExternalToolsToReadPasswords,&QCheckBox::toggled,[ this ]( bool e ){
+
+		m_settings.allowExternalToolsToReadPasswords( e ) ;
+	} ) ;
+
 	connect( m_ui->cbAutoMountWhenAvailable,&QCheckBox::toggled,[ this ]( bool e ){
 
 		m_settings.autoMountFavoritesOnAvailable( e ) ;
@@ -357,6 +363,8 @@ void configOptions::translateUI()
 
 void configOptions::ShowUI()
 {
+	m_ui->cbAllowExternalToolsToReadPasswords->setChecked( m_settings.allowExternalToolsToReadPasswords() ) ;
+
 	m_ui->cbAutoOpenMountPoint->setChecked( m_settings.autoOpenFolderOnMount() ) ;
 
 	m_ui->cbReUseMountPoint->setChecked( m_settings.reUseMountPoint() ) ;

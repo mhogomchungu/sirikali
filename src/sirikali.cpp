@@ -66,6 +66,9 @@
 
 #include "favorites2.h"
 
+static secrets * _secrets ;
+static QWidget * _mainWidget ;
+
 static utility::volumeList _readFavorites()
 {
 	utility::volumeList e ;
@@ -78,6 +81,46 @@ static utility::volumeList _readFavorites()
 	return e ;
 }
 
+QByteArray sirikali::getVolumeKey( const QString& cipherPath )
+{
+	if( utility::runningOnBackGroundThread() ){
+
+		utility::debug::cout() << "sirikali::getVolumeKey() should not be run from a background thread"	;
+		return QByteArray() ;
+	}
+
+	auto& settings = settings::instance() ;
+
+	if( !settings.allowExternalToolsToReadPasswords() ){
+
+		return QByteArray() ;
+	}
+
+	auto wallet = _secrets->walletBk( settings::instance().autoMountBackEnd().bk() ) ;
+
+	if( wallet->opened() ){
+
+		return wallet->readValue( cipherPath ) ;
+	}else{
+		wallet->setImage( QIcon( ":/sirikali" ) ) ;
+
+		auto a = settings.walletName( wallet->backEnd() ) ;
+		auto b = settings.applicationName() ;
+
+		if( wallet->open( a,b,_mainWidget ) ){
+
+			return wallet->readValue( cipherPath ) ;
+		}else{
+			return QByteArray() ;
+		}
+	}
+}
+
+void sirikali::runInUiThread( std::function< void() > function )
+{
+	Q_UNUSED( function ) ;
+}
+
 sirikali::sirikali() :
 	m_secrets( this ),
 	m_mountInfo( this,true,[ & ](){ QCoreApplication::exit( m_exitStatus ) ; } ),
@@ -86,6 +129,8 @@ sirikali::sirikali() :
 	m_debugWindow(),
 	m_signalHandler( this,this->getEmergencyShutDown() )
 {
+	_secrets = &m_secrets ;
+	_mainWidget = this ;
 }
 
 std::function< void( systemSignalHandler::signal ) > sirikali::getEmergencyShutDown()
@@ -1646,13 +1691,27 @@ void sirikali::runIntervalCustomCommand( const QString& cmd )
 		auto a = utility::Task::makePath( s.cipherPath ) ;
 		auto b = utility::Task::makePath( s.mountPoint ) ;
 
+		auto key = sirikali::getVolumeKey( s.cipherPath ) ;
+
 		Task::exec( [ = ](){
 
 			const auto& e = utility::systemEnvironment() ;
 
 			auto m = QString( "%1 %2 %3 %4" ).arg( cmd,a,b,s.volumeType ) ;
 
-			auto r = Task::process::run( m,{},-1,{},e ).get() ;
+			auto r = [ & ](){
+
+				if( key.isEmpty() ){
+
+					return Task::process::run( m,{},-1,{},e ).get() ;
+				}else{
+					auto s = e ;
+
+					s.insert( settings::instance().environmentalVariableVolumeKey(),key ) ;
+
+					return Task::process::run( m,{},-1,{},s ).get() ;
+				}
+			}() ;
 
 			utility::logCommandOutPut( r,m ) ;
 		} ) ;

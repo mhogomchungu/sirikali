@@ -357,6 +357,16 @@ QString settings::mountPath( const QString& path )
 	return m_settings.value( "MountPrefix" ).toString() + "/" + path ;
 }
 
+QString settings::environmentalVariableVolumeKey()
+{
+	if( !m_settings.contains( "EnvironmentalVariableVolumeKey" ) ){
+
+		m_settings.setValue( "EnvironmentalVariableVolumeKey","SiriKaliVolumeKey" ) ;
+	}
+
+	return m_settings.value( "EnvironmentalVariableVolumeKey" ).toString() ;
+}
+
 QString settings::walletName()
 {
 	return "SiriKali" ;
@@ -687,6 +697,21 @@ bool settings::autoCheck()
 		settings::autoCheck( s ) ;
 		return s ;
 	}
+}
+
+void settings::allowExternalToolsToReadPasswords( bool e )
+{
+	m_settings.setValue( "allowExternalToolsToReadPasswords",e ) ;
+}
+
+bool settings::allowExternalToolsToReadPasswords()
+{
+	if( !m_settings.contains( "allowExternalToolsToReadPasswords" ) ){
+
+		m_settings.setValue( "allowExternalToolsToReadPasswords",false ) ;
+	}
+
+	return m_settings.value( "allowExternalToolsToReadPasswords" ).toBool() ;
 }
 
 bool settings::getOpenVolumeReadOnlyOption()
