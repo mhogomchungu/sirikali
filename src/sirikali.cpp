@@ -96,7 +96,7 @@ QByteArray sirikali::getVolumeKey( const QString& cipherPath )
 		return QByteArray() ;
 	}
 
-	auto bk = settings::instance().autoMountBackEnd() ;
+	auto bk = settings.autoMountBackEnd() ;
 
 	if( bk.isInvalid() ){
 
