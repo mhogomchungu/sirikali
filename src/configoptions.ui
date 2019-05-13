@@ -274,7 +274,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>All External Tools To Get Passwords From Wallets</string>
+      <string>Allow External Tools To Get Passwords From Wallets</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>

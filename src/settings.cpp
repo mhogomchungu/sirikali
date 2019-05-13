@@ -366,7 +366,6 @@ QString settings::environmentalVariableVolumeKey()
 
 	return m_settings.value( "EnvironmentalVariableVolumeKey" ).toString() ;
 }
-
 QString settings::walletName()
 {
 	return "SiriKali" ;
