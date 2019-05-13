@@ -28,6 +28,7 @@
 #include <utility>
 #include <vector>
 #include "secrets.h"
+#include "settings.h"
 
 namespace Ui {
 class configOptions ;
@@ -53,6 +54,7 @@ private:
 	Ui::configOptions * m_ui ;
 	configOptions::functions m_functions ;
 	secrets& m_secrets ;
+	settings& m_settings ;
 	std::vector< std::pair< QAction *,const char * > > m_actionPair ;
 };
 
