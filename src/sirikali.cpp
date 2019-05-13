@@ -96,7 +96,14 @@ QByteArray sirikali::getVolumeKey( const QString& cipherPath )
 		return QByteArray() ;
 	}
 
-	auto wallet = _secrets->walletBk( settings::instance().autoMountBackEnd().bk() ) ;
+	auto bk = settings::instance().autoMountBackEnd() ;
+
+	if( bk.isInvalid() ){
+
+		return QByteArray() ;
+	}
+
+	auto wallet = _secrets->walletBk( bk.bk() ) ;
 
 	if( wallet->opened() ){
 
