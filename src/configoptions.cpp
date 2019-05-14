@@ -408,7 +408,19 @@ void configOptions::HideUI()
 	m_settings.preUnMountCommand( m_ui->lineEditBeforesUnMount->text() ) ;
 	m_settings.runCommandOnMount( m_ui->lineEditAfterMountCommand->text() ) ;
 	m_settings.runCommandOnInterval( m_ui->lineEditRunPeriodically->text() ) ;
-	m_settings.runCommandOnIntervalTime( m_ui->lineEditRunPeriodicallyInterval->text().toInt() ) ;
+
+	bool ok ;
+
+	auto a = m_ui->lineEditRunPeriodicallyInterval->text() ;
+
+	auto b = a.toInt( &ok ) ;
+
+	if( ok ){
+
+		m_settings.runCommandOnIntervalTime( b ) ;
+	}else{
+		m_settings.runCommandOnIntervalTime( 10 ) ;
+	}
 
 	if( utility::platformIsWindows() ){
 
