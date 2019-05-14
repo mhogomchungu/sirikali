@@ -58,6 +58,7 @@
 #include "lxqt_wallet.h"
 #include "favorites.h"
 #include "plugins.h"
+#include "secrets.h"
 #include "utility2.h"
 #include "debugwindow.h"
 
@@ -241,6 +242,8 @@ namespace utility
 	int startApplication( std::function< int() > ) ;
 
 	bool printVersionOrHelpInfo( const QStringList& ) ;
+
+	QString getKey( const QString& keyID,const secrets& secret ) ;
 
 	wallet getKey( const QString& keyID,LXQt::Wallet::Wallet&,QWidget * = nullptr ) ;
 

@@ -601,6 +601,32 @@ bool utility::printVersionOrHelpInfo( const QStringList& e )
 	}
 }
 
+QString utility::getKey( const QString& cipherPath,const secrets& secret )
+{
+	if( utility::runningOnBackGroundThread() ){
+
+		return QString() ;
+	}
+
+	auto& settings = settings::instance() ;
+
+	if( !settings.allowExternalToolsToReadPasswords() ){
+
+		return QString() ;
+	}
+
+	auto bk = settings.autoMountBackEnd() ;
+
+	if( bk.isInvalid() ){
+
+		return QString() ;
+	}
+
+	auto m = utility::getKey( cipherPath,secret.walletBk( bk.bk() ).bk() ) ;
+
+	return m.key ;
+}
+
 utility::wallet utility::getKey( const QString& keyID,LXQt::Wallet::Wallet& wallet,QWidget * widget )
 {
 	auto _getKey = []( LXQt::Wallet::Wallet& wallet,const QString& volumeID ){
@@ -633,7 +659,6 @@ utility::wallet utility::getKey( const QString& keyID,LXQt::Wallet::Wallet& wall
 					w.opened = wallet.open( walletName,appName ) ;
 
 					widget->show() ;
-
 				}else{
 					w.opened = wallet.open( walletName,appName ) ;
 				}

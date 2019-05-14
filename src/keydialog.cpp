@@ -1030,7 +1030,7 @@ void keyDialog::encryptedFolderCreate()
 
 	m_cryfsWarning.showCreate( m_exe.toLower() ) ;
 
-	auto e = siritask::encryptedFolderCreate( s ) ;
+	auto e = siritask::encryptedFolderCreate( s,m_secrets ) ;
 
 	m_cryfsWarning.hide() ;
 
@@ -1249,7 +1249,7 @@ void keyDialog::encryptedFolderMount()
 
 	m_cryfsWarning.showUnlock( siritask::mountEngine( m_path,m_configFile ).engine.name() ) ;
 
-	auto e = siritask::encryptedFolderMount( s ) ;
+	auto e = siritask::encryptedFolderMount( s,m_secrets ) ;
 
 	m_cryfsWarning.hide() ;
 

@@ -66,9 +66,6 @@
 
 #include "favorites2.h"
 
-static secrets * _secrets ;
-static QWidget * _mainWidget ;
-
 static utility::volumeList _readFavorites()
 {
 	utility::volumeList e ;
@@ -79,48 +76,6 @@ static utility::volumeList _readFavorites()
 	}
 
 	return e ;
-}
-
-QByteArray sirikali::getVolumeKey( const QString& cipherPath )
-{
-	if( utility::runningOnBackGroundThread() ){
-
-		utility::debug::cout() << "sirikali::getVolumeKey() should not be run from a background thread"	;
-		return QByteArray() ;
-	}
-
-	auto& settings = settings::instance() ;
-
-	if( !settings.allowExternalToolsToReadPasswords() ){
-
-		return QByteArray() ;
-	}
-
-	auto bk = settings.autoMountBackEnd() ;
-
-	if( bk.isInvalid() ){
-
-		return QByteArray() ;
-	}
-
-	auto wallet = _secrets->walletBk( bk.bk() ) ;
-
-	if( wallet->opened() ){
-
-		return wallet->readValue( cipherPath ) ;
-	}else{
-		wallet->setImage( QIcon( ":/sirikali" ) ) ;
-
-		auto a = settings.walletName( wallet->backEnd() ) ;
-		auto b = settings.applicationName() ;
-
-		if( wallet->open( a,b,_mainWidget ) ){
-
-			return wallet->readValue( cipherPath ) ;
-		}else{
-			return QByteArray() ;
-		}
-	}
 }
 
 void sirikali::runInUiThread( std::function< void() > function )
@@ -136,8 +91,6 @@ sirikali::sirikali() :
 	m_debugWindow(),
 	m_signalHandler( this,this->getEmergencyShutDown() )
 {
-	_secrets = &m_secrets ;
-	_mainWidget = this ;
 }
 
 std::function< void( systemSignalHandler::signal ) > sirikali::getEmergencyShutDown()
@@ -514,9 +467,9 @@ void sirikali::autoUpdateCheck()
 	m_checkUpdates.run( true ) ;
 }
 
-static void _connect_to_ssh_server( QWidget * parent,const favorites::entry& entry )
+static void _connect_to_ssh_server( QWidget * parent,const favorites::entry& entry,secrets& secret )
 {
-	auto s = siritask::encryptedFolderMount( entry ) ;
+	auto s = siritask::encryptedFolderMount( entry,secret ) ;
 
 	if( s == engines::engine::status::sshfsNotFound ){
 
@@ -572,7 +525,7 @@ void sirikali::favoriteClicked( QAction * ac )
 
 						this->disableAll() ;
 
-						_connect_to_ssh_server( this,it.first ) ;
+						_connect_to_ssh_server( this,it.first,m_secrets ) ;
 
 						this->enableAll() ;
 					}else{
@@ -806,7 +759,7 @@ void sirikali::unlockVolume( const QStringList& l )
 
 			engines::engine::options s( volume,m,key,idleTime,cPath,QString(),mode,reverse,mOpt,QString() ) ;
 
-			auto e = siritask::encryptedFolderMount( s ) ;
+			auto e = siritask::encryptedFolderMount( s,m_secrets ) ;
 
 			if( e == engines::engine::status::success ){
 
@@ -995,7 +948,7 @@ utility::volumeList sirikali::autoUnlockVolumes( utility::volumeList l,bool auto
 
 				q.emplace_back( e.first,key ) ;
 			}else{
-				auto s = siritask::encryptedFolderMount( { e.first,key } ) ;
+				auto s = siritask::encryptedFolderMount( { e.first,key },m_secrets ) ;
 
 				if( s == engines::engine::status::success && autoOpenFolderOnMount ){
 
@@ -1693,12 +1646,12 @@ QFont sirikali::getSystemVolumeFont()
 
 void sirikali::runIntervalCustomCommand( const QString& cmd )
 {
-	this->processMountedVolumes( [ cmd ]( const sirikali::mountedEntry& s ){
+	this->processMountedVolumes( [ = ]( const sirikali::mountedEntry& s ){
 
 		auto a = utility::Task::makePath( s.cipherPath ) ;
 		auto b = utility::Task::makePath( s.mountPoint ) ;
 
-		auto key = sirikali::getVolumeKey( s.cipherPath ) ;
+		auto key = utility::getKey( s.cipherPath,m_secrets ) ;
 
 		Task::exec( [ = ](){
 

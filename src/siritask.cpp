@@ -71,44 +71,6 @@ static void _deleteFolders( const T& ... m )
 	}
 }
 
-static void _run_command_on_mount( const engines::engine::options& opt,const QString& app )
-{
-	auto exe = settings::instance().runCommandOnMount() ;
-
-	if( !exe.isEmpty() ){
-
-		auto a = _makePath( opt.cipherFolder ) ;
-		auto b = _makePath( opt.plainFolder ) ;
-
-		exe = utility::Task::makePath( exe ) ;
-
-		exe = QString( "%1 %2 %3 %4" ).arg( exe,a,b,app ) ;
-
-		QString m = sirikali::getVolumeKey( opt.cipherFolder ) ;
-
-		Task::exec( [ = ](){
-
-			auto r = [ & ](){
-
-				if( !m.isEmpty() ){
-
-					auto e = utility::systemEnvironment() ;
-
-					e.insert( settings::instance().environmentalVariableVolumeKey(),m ) ;
-
-					return Task::process::run( exe,{},-1,{},e ).get() ;
-				}else{
-					const auto& e = utility::systemEnvironment() ;
-
-					return Task::process::run( exe,{},-1,{},e ).get() ;
-				}
-			}() ;
-
-			utility::logCommandOutPut( r,exe ) ;
-		} ) ;
-	}
-}
-
 bool siritask::deleteMountFolder( const QString& m )
 {
 	if( settings::instance().reUseMountPoint() ){
@@ -554,7 +516,8 @@ static utility::result< QString > _configFilePath( const engines::engine& engine
 	}
 }
 
-static engines::engine::cmdStatus _encrypted_folder_create( const engines::engine::options& opt )
+static engines::engine::cmdStatus _encrypted_folder_create( const engines::engine::options& opt,
+							    const secrets& secret )
 {
 	if( _ecryptfs_illegal_path( opt ) ){
 
@@ -593,7 +556,7 @@ static engines::engine::cmdStatus _encrypted_folder_create( const engines::engin
 
 		if( !engine.autoMountsOnCreate() ){
 
-			auto e = siritask::encryptedFolderMount( opt,true ) ;
+			auto e = siritask::encryptedFolderMount( opt,secret,true ) ;
 
 			if( e != engines::engine::status::success ){
 
@@ -607,20 +570,63 @@ static engines::engine::cmdStatus _encrypted_folder_create( const engines::engin
 	return e ;
 }
 
-engines::engine::cmdStatus siritask::encryptedFolderCreate( const engines::engine::options& opt )
+engines::engine::cmdStatus siritask::encryptedFolderCreate( const engines::engine::options& opt,
+							    const secrets& secret )
 {
 	if( utility::platformIsWindows() ){
 
 		/*
 		 * We should first make sure we are on a GUI thread before continuing
 		 */
-		return _encrypted_folder_create( opt ) ;
+		return _encrypted_folder_create( opt,secret ) ;
 	}else{
-		return Task::run( _encrypted_folder_create,opt ).await() ;
+		return Task::await( [ & ](){
+
+			return _encrypted_folder_create( opt,secret ) ;
+		} ) ;
+	}
+}
+
+static void _run_command_on_mount( const engines::engine::options& opt,const secrets& secret )
+{
+	auto exe = settings::instance().runCommandOnMount() ;
+
+	if( !exe.isEmpty() ){
+
+		auto a = _makePath( opt.cipherFolder ) ;
+		auto b = _makePath( opt.plainFolder ) ;
+
+		exe = utility::Task::makePath( exe ) ;
+
+		exe = QString( "%1 %2 %3 %4" ).arg( exe,a,b,opt.type ) ;
+
+		auto m = utility::getKey( opt.cipherFolder,secret ) ;
+
+		Task::exec( [ = ](){
+
+			auto r = [ & ](){
+
+				if( m.isEmpty() ){
+
+					const auto& e = utility::systemEnvironment() ;
+
+					return Task::process::run( exe,{},-1,{},e ).get() ;
+				}else{
+					auto e = utility::systemEnvironment() ;
+
+					e.insert( settings::instance().environmentalVariableVolumeKey(),m ) ;
+
+					return Task::process::run( exe,{},-1,{},e ).get() ;
+				}
+			}() ;
+
+			utility::logCommandOutPut( r,exe ) ;
+		} ) ;
 	}
 }
 
 engines::engine::cmdStatus siritask::encryptedFolderMount( const engines::engine::options& opt,
+							   const secrets& secret,
 							   bool reUseMountPoint )
 {
 	auto s = [ & ](){
@@ -638,7 +644,7 @@ engines::engine::cmdStatus siritask::encryptedFolderMount( const engines::engine
 
 	if( s == engines::engine::status::success ){
 
-		_run_command_on_mount( opt,opt.type ) ;
+		_run_command_on_mount( opt,secret ) ;
 	}
 
 	return s ;
