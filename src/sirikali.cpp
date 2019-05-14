@@ -1650,6 +1650,7 @@ void sirikali::runIntervalCustomCommand( const QString& cmd )
 
 		auto a = utility::Task::makePath( s.cipherPath ) ;
 		auto b = utility::Task::makePath( s.mountPoint ) ;
+		auto c = s.volumeType ;
 
 		auto key = utility::getKey( s.cipherPath,m_secrets ) ;
 
@@ -1657,7 +1658,7 @@ void sirikali::runIntervalCustomCommand( const QString& cmd )
 
 			const auto& e = utility::systemEnvironment() ;
 
-			auto m = QString( "%1 %2 %3 %4" ).arg( cmd,a,b,s.volumeType ) ;
+			auto m = QString( "%1 %2 %3 %4" ).arg( cmd,a,b,c ) ;
 
 			auto r = [ & ](){
 
