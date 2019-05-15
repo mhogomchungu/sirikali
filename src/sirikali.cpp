@@ -78,11 +78,6 @@ static utility::volumeList _readFavorites()
 	return e ;
 }
 
-void sirikali::runInUiThread( std::function< void() > function )
-{
-	Q_UNUSED( function ) ;
-}
-
 sirikali::sirikali() :
 	m_secrets( this ),
 	m_mountInfo( this,true,[ & ](){ QCoreApplication::exit( m_exitStatus ) ; } ),
@@ -91,6 +86,7 @@ sirikali::sirikali() :
 	m_debugWindow(),
 	m_signalHandler( this,this->getEmergencyShutDown() )
 {
+	utility::setMainQWidget( this ) ;
 }
 
 std::function< void( systemSignalHandler::signal ) > sirikali::getEmergencyShutDown()

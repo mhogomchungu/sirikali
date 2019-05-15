@@ -72,6 +72,7 @@
 #include "siriPolkit.h"
 #include "settings.h"
 #include "version.h"
+#include "runinthread.h"
 
 #ifdef Q_OS_LINUX
 
@@ -149,6 +150,18 @@ static bool _enable_debug = false ;
 static bool _enable_full_debug = false ;
 
 static QThread * _main_gui_thread ;
+
+static QWidget * _mainQWidget ;
+
+void utility::setMainQWidget( QWidget * m )
+{
+	_mainQWidget = m ;
+}
+
+QWidget * utility::mainQWidget()
+{
+	return _mainQWidget ;
+}
 
 void utility::enableDebug( bool e )
 {
@@ -1375,6 +1388,11 @@ bool utility::runningOnGUIThread()
 bool utility::runningOnBackGroundThread()
 {
 	return QThread::currentThread() != _main_gui_thread ;
+}
+
+void utility::runInUiThread( std::function< void() > function )
+{
+	runInThread::instance( _main_gui_thread,std::move( function ) ) ;
 }
 
 void utility::waitForOneSecond()

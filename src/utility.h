@@ -283,11 +283,16 @@ namespace utility
 
 	bool runningOnBackGroundThread( void ) ;
 
+	void runInUiThread( std::function< void() > function ) ;
+
 	void waitForOneSecond( void ) ;
 
 	void wait( int ) ;
 
 	void waitForFinished( QProcess& ) ;
+
+	void setMainQWidget( QWidget * ) ;
+	QWidget * mainQWidget() ;
 
 	template< typename Future >
 	static inline auto unwrap( Future& x )

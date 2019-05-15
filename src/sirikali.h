@@ -57,7 +57,6 @@ class sirikali : public QWidget
 {
 	Q_OBJECT
 public:
-	static void runInUiThread( std::function< void() > ) ;
 	explicit sirikali() ;
 	int start( QApplication& ) ;
 	~sirikali() ;

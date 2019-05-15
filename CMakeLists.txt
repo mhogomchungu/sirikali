@@ -267,6 +267,7 @@ set( MOC_FILES
 		src/filemanager.h
 		src/mountinfo.h
 		src/debugwindow.h
+		src/runinthread.h
 		src/engines/gocryptfscreateoptions.h
 		src/engines/ecryptfscreateoptions.h
 		src/engines/securefscreateoptions.h
@@ -278,6 +279,7 @@ set( SRC 	src/dialogok.cpp
 		src/main.cpp
 		src/systemsignalhandler.cpp
 		src/crypto.cpp
+		src/runinthread.cpp
 		src/debugwindow.cpp
 		src/configoptions.cpp
 		src/configfileoption.cpp
