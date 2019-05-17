@@ -51,13 +51,6 @@ engines::engine::args unknown::command( const engines::engine::cmdArgsList& args
 	return {} ;
 }
 
-engines::engine::error unknown::errorCode( const QString& e ) const
-{
-	Q_UNUSED( e ) ;
-
-	return engines::engine::error::Failed ;
-}
-
 engines::engine::status unknown::errorCode( const QString& e,int s ) const
 {
 	Q_UNUSED( e ) ;

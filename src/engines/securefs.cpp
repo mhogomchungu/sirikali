@@ -26,6 +26,8 @@ static engines::engine::BaseOptions _setOptions()
 	engines::engine::BaseOptions s ;
 
 	s.supportsMountPathsOnWindows = false ;
+	s.customBackend         = false ;
+	s.requiresAPassword     = true ;
 	s.hasConfigFile         = true ;
 	s.autoMountsOnCreate    = false ;
 	s.hasGUICreateOptions   = true ;
@@ -83,20 +85,6 @@ engines::engine::args securefs::command( const engines::engine::cmdArgsList& arg
 				    m.fuseOpts().get() ) ;
 
 		return { args,m,cmd } ;
-	}
-}
-
-engines::engine::error securefs::errorCode( const QString& e ) const
-{
-	if( this->mountSuccessfully( e ) ){
-
-		return engines::engine::error::Success ;
-
-	}else if( this->failedToMountError( e ) ){
-
-		return engines::engine::error::Failed ;
-	}else{
-		return engines::engine::error::Continue ;
 	}
 }
 

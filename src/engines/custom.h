@@ -24,9 +24,8 @@
 #include <vector>
 #include <memory>
 
-class custom : public engines::engine
+struct custom : public engines::engine
 {
-public:
 	static void addEngines( QStringList&,std::vector< std::unique_ptr< engines::engine > >& ) ;
 
 	custom( engines::engine::BaseOptions ) ;
@@ -35,12 +34,8 @@ public:
 
 	engines::engine::args command( const engines::engine::cmdArgsList& args ) const override ;
 
-	engines::engine::error errorCode( const QString& ) const override ;
-
 	QString setPassword( const QString& ) const override ;
 	QString installedVersionString() const override ;
 
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
-private:
-	QString m_passwordErrorCode ;
 } ;

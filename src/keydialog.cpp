@@ -798,15 +798,6 @@ void keyDialog::pbOpen()
 
 			return ;
 		}
-
-		if( m_ui->lineEditKey->text().isEmpty() ){
-
-			this->showErrorMessage( tr( "Key Field Is Empty." ) ) ;
-
-			m_ui->lineEditKey->setFocus() ;
-
-			return ;
-		}
 	}
 
 	this->disableAll() ;
@@ -1004,17 +995,6 @@ void keyDialog::encryptedFolderCreate()
 		}
 	}
 
-	if( m_key.isEmpty() ){
-
-		this->showErrorMessage( tr( "Atleast One Required Field Is Empty." ) ) ;
-
-		this->enableAll() ;
-
-		m_ui->lineEditKey->setFocus() ;
-
-		return ;
-	}
-
 	m_working = true ;
 
 	engines::engine::options s( path,
@@ -1194,30 +1174,6 @@ void keyDialog::encryptedFolderMount()
 			this->showErrorMessage( tr( "Mount Point Path Is Not Empty." ) ) ;
 
 			return this->enableAll() ;
-		}
-	}
-
-	if( !m_path.startsWith( "sshfs " ) ){
-
-		if( !utility::pathExists( m_path ) ){
-
-			this->showErrorMessage( tr( "Encrypted Folder Appear To Not Be Present." ) ) ;
-
-			return this->enableAll() ;
-		}
-	}
-
-	if( !m_path.startsWith( "sshfs " ) ){
-
-		if( m_key.isEmpty() ){
-
-			this->showErrorMessage( tr( "Atleast One Required Field Is Empty." ) ) ;
-
-			this->enableAll() ;
-
-			m_ui->lineEditKey->setFocus() ;
-
-			return ;
 		}
 	}
 

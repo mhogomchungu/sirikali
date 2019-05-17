@@ -29,7 +29,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Plugin Name</string>
+    <string>Plugin Name (Required)</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -58,7 +58,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Executable Name</string>
+    <string>Executable Name (Required)</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -87,7 +87,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Fuse Names (comma separated)</string>
+    <string>Fuse Names (Comma Separated And Required)</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -116,7 +116,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Config File Argument</string>
+    <string>Config File Argument (Optional)</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -148,7 +148,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Sets Cipher Path</string>
+    <string>Require A Password</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -157,7 +157,7 @@
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QCheckBox" name="cbSetsCipherPath">
+  <widget class="QCheckBox" name="cbRequiresAPassword">
    <property name="geometry">
     <rect>
      <x>290</x>
@@ -193,7 +193,7 @@
    <property name="geometry">
     <rect>
      <x>290</x>
-     <y>440</y>
+     <y>430</y>
      <width>21</width>
      <height>31</height>
     </rect>
@@ -212,7 +212,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Wrong Password Text</string>
+    <string>Wrong Password Text (Optional)</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -241,7 +241,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Wrong Password Error Code</string>
+    <string>Wrong Password Error Code (Optional)</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -283,7 +283,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Config File Names (comma separated)</string>
+    <string>Config File Names (Comma Separated And Optional)</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -312,7 +312,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Successfully Mounted Text (Windows Only)</string>
+    <string>Successfully Mounted Text (Windows Only And Required)</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -341,7 +341,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Failed To Mount Text (Windows Only)</string>
+    <string>Failed To Mount Text (Windows Only And Required)</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -383,7 +383,7 @@
    <property name="geometry">
     <rect>
      <x>290</x>
-     <y>470</y>
+     <y>460</y>
      <width>21</width>
      <height>31</height>
     </rect>
@@ -415,7 +415,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Backend Names (comma separated)</string>
+    <string>Backend Names (Comma Separated And Required)</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -446,7 +446,7 @@
   <tabstop>lineEditWrongPasswordErrorCode</tabstop>
   <tabstop>lineEditSuccessfullyMountedText</tabstop>
   <tabstop>lineEditFailedToMountText</tabstop>
-  <tabstop>cbSetsCipherPath</tabstop>
+  <tabstop>cbRequiresAPassword</tabstop>
   <tabstop>cbSupportsMountPointPaths</tabstop>
   <tabstop>cbAutoMountsOnVolumeCreation</tabstop>
   <tabstop>pbCreate</tabstop>

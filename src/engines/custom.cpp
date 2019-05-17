@@ -21,6 +21,8 @@
 #include "json.h"
 #include "install_prefix.h"
 
+#include "customcreateoptions.h"
+
 #include <QDir>
 #include <QStandardPaths>
 
@@ -58,10 +60,13 @@ static utility::result< engines::engine::BaseOptions > _getOptions( const QByteA
 			return json[ s ].get< bool >() ;
 		} ;
 
-		s.hasGUICreateOptions         = false ;
+		s.hasGUICreateOptions         = true ;
+		s.customBackend               = true ;
+		s.requiresAPassword           = _getBool( "requiresAPassword" ) ; ;
 		s.autoMountsOnCreate          = _getBool( "autoMountsOnVolumeCreation" ) ;
 		s.setsCipherPath              = _getBool( "setsCipherPath" ) ;
 		s.supportsMountPathsOnWindows = _getBool( "supportsMountPointPaths" ) ;
+		s.executableName              = _getString( "executableName" ) ;
 		s.incorrectPasswordText       = _getString( "wrongPasswordText" ) ;
 		s.incorrectPassWordCode       = _getString( "wrongPasswordErrorCode" ) ;
 		s.configFileArgument          = _getString( "configFileArgument" ) ;
@@ -69,6 +74,7 @@ static utility::result< engines::engine::BaseOptions > _getOptions( const QByteA
 		s.successfulMountedList       = _getStringList( "successfullyMountedList" ) ;
 		s.configFileNames             = _getStringList( "configFileNames" ) ;
 		s.names                       = _getStringList( "names" ) ;
+		s.fuseNames                   = _getStringList( "fuseNames" ) ;
 		s.hasConfigFile               = s.configFileNames.size() > 0 ;
 		s.notFoundCode                = engines::engine::status::customCommandNotFound ;
 
@@ -139,16 +145,16 @@ engines::engine::args custom::command( const engines::engine::cmdArgsList& args 
 
 	if( args.create ){
 
-		QString e = "%1 create %2 %3 %4" ;
+		QString e = "%1 %2 %3 %4" ;
 
 		auto cmd = e.arg( args.exe,
 				  args.opt.createOptions,
-				  args.configFilePath,
-				  args.cipherFolder ) ;
+				  args.cipherFolder,
+				  args.mountPoint ) ;
 
 		return { args,m,cmd } ;
 	}else{
-		QString exe = "%1 mount %2 %3 %4 %5" ;
+		QString exe = "%1 %2 %3 %4 %5" ;
 
 		auto exeOptions = m.exeOptions() ;
 
@@ -167,20 +173,6 @@ engines::engine::args custom::command( const engines::engine::cmdArgsList& args 
 	}
 }
 
-engines::engine::error custom::errorCode( const QString& e ) const
-{
-	if( this->mountSuccessfully( e ) ){
-
-		return engines::engine::error::Success ;
-
-	}else if( this->failedToMountError( e ) ){
-
-		return engines::engine::error::Failed ;
-	}else{
-		return engines::engine::error::Continue ;
-	}
-}
-
 engines::engine::status custom::errorCode( const QString& e,int s ) const
 {
 	auto m = this->incorrectPasswordCode() ;
@@ -194,18 +186,20 @@ engines::engine::status custom::errorCode( const QString& e,int s ) const
 		if( ok && n == s ){
 
 			return engines::engine::status::customCommandBadPassword ;
+		}else{
+			return engines::engine::status::backendFail ;
 		}
-	}
-
-	if( e.contains( this->incorrectPasswordText() ) ){
-
-		return engines::engine::status::customCommandBadPassword ;
-
-	}else if( e.contains( "cannot load WinFsp" ) ){
-
-		return engines::engine::status::failedToLoadWinfsp ;
 	}else{
-		return engines::engine::status::backendFail ;
+		if( e.contains( this->incorrectPasswordText() ) ){
+
+			return engines::engine::status::customCommandBadPassword ;
+
+		}else if( e.contains( "cannot load WinFsp" ) ){
+
+			return engines::engine::status::failedToLoadWinfsp ;
+		}else{
+			return engines::engine::status::backendFail ;
+		}
 	}
 }
 
@@ -221,6 +215,5 @@ QString custom::installedVersionString() const
 
 void custom::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
 {
-	Q_UNUSED( parent ) ;
-	Q_UNUSED( function ) ;
+	customcreateoptions::instance( parent,std::move( function ) ) ;
 }

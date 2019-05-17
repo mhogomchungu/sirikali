@@ -26,6 +26,8 @@ static engines::engine::BaseOptions _setOptions()
 	engines::engine::BaseOptions s ;
 
 	s.supportsMountPathsOnWindows = true ;
+	s.customBackend         = false ;
+	s.requiresAPassword     = true ;
 	s.hasConfigFile         = true ;
 	s.autoMountsOnCreate    = true ;
 	s.hasGUICreateOptions   = true ;
@@ -101,20 +103,6 @@ engines::engine::args encfs::command( const engines::engine::cmdArgsList& args )
 			  m.fuseOpts().get() ) ;
 
 	return { args,m,cmd } ;
-}
-
-engines::engine::error encfs::errorCode( const QString& e ) const
-{
-	if( this->mountSuccessfully( e ) ){
-
-		return engines::engine::error::Success ;
-
-	}else if( this->failedToMountError( e ) ){
-
-		return engines::engine::error::Failed ;
-	}else{
-		return engines::engine::error::Continue ;
-	}
 }
 
 engines::engine::status encfs::errorCode( const QString& e,int s ) const

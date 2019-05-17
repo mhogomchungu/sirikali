@@ -24,6 +24,8 @@ static engines::engine::BaseOptions _setOptions()
 	engines::engine::BaseOptions s ;
 
 	s.supportsMountPathsOnWindows = true ;
+	s.customBackend         = false ;
+	s.requiresAPassword     = false ;
 	s.hasConfigFile         = false ;
 	s.autoMountsOnCreate    = true ;
 	s.hasGUICreateOptions   = false ;
@@ -105,20 +107,6 @@ engines::engine::args sshfs::command( const engines::engine::cmdArgsList& args )
 			  fuseOptions.get() ) ;
 
 	return { args,m,cmd } ;
-}
-
-engines::engine::error sshfs::errorCode( const QString& e ) const
-{
-	if( this->mountSuccessfully( e ) ){
-
-		return engines::engine::error::Success ;
-
-	}else if( this->failedToMountError( e ) ){
-
-		return engines::engine::error::Failed ;
-	}else{
-		return engines::engine::error::Continue ;
-	}
 }
 
 engines::engine::status sshfs::errorCode( const QString& e,int s ) const

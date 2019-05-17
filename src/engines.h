@@ -50,6 +50,8 @@ public:
 			success,
 			volumeCreatedSuccessfully,
 
+			backendRequiresPassword,
+
 			cryfsBadPassword,
 			encfsBadPassword,
 			sshfsBadPassword,
@@ -160,6 +162,8 @@ public:
 			bool autoMountsOnCreate ;
 			bool hasGUICreateOptions ;
 			bool supportsMountPathsOnWindows ;
+			bool requiresAPassword ;
+			bool customBackend ;
 			QString executableName ;
 			QString incorrectPasswordText ;
                         QString incorrectPassWordCode ;
@@ -198,8 +202,8 @@ public:
 		bool hasGUICreateOptions() const ;
 		bool hasConfigFile() const ;
 		bool supportsMountPathsOnWindows() const ;
-		bool failedToMountError( const QString& ) const ;
-		bool mountSuccessfully( const QString& ) const ;
+		bool requiresAPassword() const ;
+		bool customBackend() const ;
 
 		engines::engine::status notFoundCode() const ;
 
@@ -213,6 +217,8 @@ public:
 		const QString& incorrectPasswordText() const ;
                 const QString& incorrectPasswordCode() const ;
 
+		engine::engine::error errorCode( const QString& ) const ;
+
 		QString setConfigFilePath( const QString& ) const ;
 
 		virtual ~engine() ;
@@ -221,7 +227,6 @@ public:
 		virtual QString setPassword( const QString& ) const = 0 ;
 		virtual args command( const engines::engine::cmdArgsList& args ) const = 0 ;
 		virtual engines::engine::status errorCode( const QString& e,int s ) const = 0 ;
-		virtual engine::engine::error errorCode( const QString& ) const = 0 ;
 		using function = std::function< void( const Options& ) > ;
 		virtual void GUICreateOptionsinstance( QWidget * parent,function ) const = 0 ;
 	protected:

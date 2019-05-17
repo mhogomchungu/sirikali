@@ -223,6 +223,16 @@ bool engines::engine::supportsMountPathsOnWindows() const
 	return m_Options.supportsMountPathsOnWindows ;
 }
 
+bool engines::engine::requiresAPassword() const
+{
+	return m_Options.requiresAPassword ;
+}
+
+bool engines::engine::customBackend() const
+{
+	return m_Options.customBackend ;
+}
+
 const QStringList& engines::engine::names() const
 {
 	return m_Options.names ;
@@ -288,14 +298,18 @@ static bool _contains( const QString& e,const QStringList& m )
 	return false ;
 }
 
-bool engines::engine::mountSuccessfully( const QString& e ) const
+engines::engine::error engines::engine::errorCode( const QString& e ) const
 {
-	return _contains( e,m_Options.successfulMountedList ) ;
-}
+	if( _contains( e,m_Options.successfulMountedList ) ){
 
-bool engines::engine::failedToMountError( const QString& e ) const
-{
-	return _contains( e,m_Options.failedToMountList ) ;
+		return engines::engine::error::Success ;
+
+	}else if( _contains( e,m_Options.failedToMountList ) ){
+
+		return engines::engine::error::Failed ;
+	}else{
+		return engines::engine::error::Continue ;
+	}
 }
 
 QString engines::engine::setConfigFilePath( const QString& e ) const
@@ -473,6 +487,10 @@ QString engines::engine::cmdStatus::toString() const
 	case engines::engine::status::volumeCreatedSuccessfully :
 
 		return QObject::tr( "Volume Created Successfully." ) ;
+
+	case engines::engine::status::backendRequiresPassword :
+
+		return QObject::tr( "Backend Requires A Password." ) ;
 
 	case engines::engine::status::cryfsBadPassword :
 

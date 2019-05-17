@@ -25,6 +25,8 @@ static engines::engine::BaseOptions _setOptions()
 	engines::engine::BaseOptions s ;
 
 	s.supportsMountPathsOnWindows = false ;
+	s.customBackend         = false ;
+	s.requiresAPassword     = true ;
 	s.hasConfigFile         = true ;
 	s.autoMountsOnCreate    = true ;
 	s.hasGUICreateOptions   = true ;
@@ -87,13 +89,6 @@ engines::engine::args ecryptfs::command( const engines::engine::cmdArgsList& arg
 	}else{
 		return { args,m,s } ;
 	}
-}
-
-engines::engine::error ecryptfs::errorCode( const QString& e ) const
-{
-	Q_UNUSED( e ) ;
-
-	return engines::engine::error::Failed ;
 }
 
 engines::engine::status ecryptfs::errorCode( const QString& e,int s ) const

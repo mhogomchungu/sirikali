@@ -393,14 +393,11 @@ siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 
 		if( engine.known() ){
 
-			return engine ;
+			return { engine,m.at( 1 ) } ;
 		}
-	}
-	if( cipherFolder.startsWith( "sshfs " ) ){
+	}	
 
-		return engines.getByName( "sshfs" ) ;
-
-	}else if( configFilePath.isEmpty() ){
+	if( configFilePath.isEmpty() ){
 
 		return engines.getByConfigFileNames( [ & ]( const QString& e ){
 
@@ -454,9 +451,14 @@ static engines::engine::cmdStatus _encrypted_folder_mount( const engines::engine
 		return engines::engine::status::unknown ;
 	}
 
-	if( engine.name() == "sshfs" ){
+	if( opt.key.isEmpty() && engine.requiresAPassword() ){
 
-		if( utility::platformIsWindows() ){
+		return engines::engine::status::backendRequiresPassword ;
+	}
+
+	if( !Engine.cipherFolder.isEmpty() ){
+
+		if( engine.name() == "sshfs" && utility::platformIsWindows() ){
 
 			auto m = utility::unwrap( utility::backendIsLessThan( "sshfs","3.4.0" ) ) ;
 
@@ -467,7 +469,7 @@ static engines::engine::cmdStatus _encrypted_folder_mount( const engines::engine
 		}
 
 		auto opts = opt ;
-		opts.cipherFolder = opts.cipherFolder.remove( 0,6 ) ; // 6 is the size of "sshfs "
+		opts.cipherFolder = Engine.cipherFolder ;
 
 		if( !opts.key.isEmpty() ){
 
@@ -540,6 +542,11 @@ static engines::engine::cmdStatus _encrypted_folder_create( const engines::engin
 	if( engine.unknown() ){
 
 		return engines::engine::status::unknown ;
+	}
+
+	if( opt.key.isEmpty() && engine.requiresAPassword() ){
+
+		return engines::engine::status::backendRequiresPassword ;
 	}
 
 	auto configPath = _configFilePath( engine,opt ) ;

@@ -241,6 +241,7 @@ set( UI_FILES 	src/sirikali.ui
 		src/debugwindow.ui
 		src/configfileoption.ui
 		src/configoptions.ui
+		src/engines/customcreateoptions.ui
 		src/engines/gocryptfscreateoptions.ui
 		src/engines/ecryptfscreateoptions.ui
 		src/engines/securefscreateoptions.ui
@@ -270,6 +271,7 @@ set( MOC_FILES
 		src/mountinfo.h
 		src/debugwindow.h
 		src/runinthread.h
+		src/engines/customcreateoptions.h
 		src/engines/gocryptfscreateoptions.h
 		src/engines/ecryptfscreateoptions.h
 		src/engines/securefscreateoptions.h
@@ -314,6 +316,7 @@ set( SRC 	src/dialogok.cpp
 		src/engines/gocryptfs.cpp
 		src/engines/securefs.cpp
 		src/engines/sshfs.cpp
+		src/engines/customcreateoptions.cpp
 		src/engines/encfs.cpp
 		src/engines/unknown.cpp
 		src/engines/custom.cpp

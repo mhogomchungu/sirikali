@@ -25,6 +25,8 @@ static engines::engine::BaseOptions _setOptions()
 	engines::engine::BaseOptions s ;
 
 	s.supportsMountPathsOnWindows = true ;
+	s.customBackend         = false ;
+	s.requiresAPassword     = true ;
 	s.hasConfigFile         = true ;
 	s.autoMountsOnCreate    = true ;
 	s.hasGUICreateOptions   = true ;
@@ -150,20 +152,6 @@ QString cryfs::installedVersionString() const
 	}
 
 	return m_version ;
-}
-
-engines::engine::error cryfs::errorCode( const QString& e ) const
-{
-	if( this->mountSuccessfully( e ) ){
-
-		return engines::engine::error::Success ;
-
-	}else if( this->failedToMountError( e ) ){
-
-		return engines::engine::error::Failed ;
-	}else{
-		return engines::engine::error::Continue ;
-	}
 }
 
 void cryfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

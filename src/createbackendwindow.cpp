@@ -29,8 +29,8 @@
 
 #include <QFile>
 
-createBackendWIndow::createBackendWIndow(QWidget *parent) :
-	QDialog(parent),
+createBackendWIndow::createBackendWIndow( QWidget * parent ) :
+	QDialog( parent ),
 	m_ui( new Ui::createBackendWIndow )
 {
 	m_ui->setupUi( this ) ;
@@ -157,7 +157,7 @@ void createBackendWIndow::save()
 	config[ "configFileArgument" ]         = m_ui->lineEditConfigFileArgument->text().toStdString() ;
 	config[ "wrongPasswordText" ]          = password.toStdString() ;
 	config[ "wrongPasswordErrorCode" ]     = m_ui->lineEditWrongPasswordErrorCode->text().toStdString() ;
-	config[ "setsCipherPath" ]             = m_ui->cbSetsCipherPath->isChecked() ;
+	config[ "requiresAPassword" ]          = m_ui->cbRequiresAPassword->isChecked() ;
 	config[ "supportsMountPointPaths" ]    = m_ui->cbSupportsMountPointPaths->isChecked() ;
 	config[ "autoMountsOnVolumeCreation" ] = m_ui->cbAutoMountsOnVolumeCreation->isChecked() ;
 

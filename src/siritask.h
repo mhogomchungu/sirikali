@@ -41,8 +41,8 @@ namespace siritask
 			configFilePath( configFilePath )
 		{
 		}
-		Engine( const engines::engine& engine ) :
-			engine( engine )
+		Engine( const engines::engine& engine,const QString& s ) :
+			engine( engine ),cipherFolder( s )
 		{
 		}
 		Engine( const engines::engine& engine,
@@ -59,6 +59,7 @@ namespace siritask
 		const engines::engine& engine ;
 		QString configFileName ;
 		QString configFilePath ;
+		QString cipherFolder ;
 	} ;
 
 	siritask::Engine mountEngine( const QString& cipherFolder,
