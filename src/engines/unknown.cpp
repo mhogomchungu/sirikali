@@ -23,12 +23,13 @@ static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
 
+	s.hasConfigFile       = false ;
 	s.autoMountsOnCreate  = false ;
 	s.hasGUICreateOptions = true ;
 	s.setsCipherPath      = false ;
 	s.supportsMountPathsOnWindows = false ;
 
-	s.configFileArgument   = QString() ;
+	s.configFileArgument = QString() ;
 
 	s.configFileNames = QStringList{} ;
 

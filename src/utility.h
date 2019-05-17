@@ -259,6 +259,7 @@ namespace utility
 
 	QString freeWindowsDriveLetter() ;
 	bool isDriveLetter( const QString& ) ;
+	bool startsWithDriveLetter( const QString& ) ;
 
 	void setWindowsMountPointOptions( QWidget *,QTextEdit *,QPushButton * ) ;
 

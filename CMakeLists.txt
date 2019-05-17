@@ -228,6 +228,7 @@ set( UI_FILES 	src/sirikali.ui
 		src/keydialog.ui
 		src/dialogmsg.ui
 		src/plugin.ui
+		src/createbackendwindow.ui
 		src/favorites.ui
 		src/favorites2.ui
 		src/readonlywarning.ui
@@ -253,6 +254,7 @@ set( MOC_FILES
                 src/checkforupdates.h
                 src/dialogok.h
                 src/help.h
+                src/createbackendwindow.h
 		src/sirikali.h
 		src/keydialog.h
 		src/oneinstance.h
@@ -287,6 +289,7 @@ set( SRC 	src/dialogok.cpp
 		src/keydialog.cpp
 		src/siritask.cpp
 		src/help.cpp
+		src/createbackendwindow.cpp
 		src/engines.cpp
 		src/oneinstance.cpp
 		src/mountinfo.cpp
@@ -313,6 +316,7 @@ set( SRC 	src/dialogok.cpp
 		src/engines/sshfs.cpp
 		src/engines/encfs.cpp
 		src/engines/unknown.cpp
+		src/engines/custom.cpp
 		src/engines/gocryptfscreateoptions.cpp
 		src/engines/ecryptfscreateoptions.cpp
 		src/engines/securefscreateoptions.cpp

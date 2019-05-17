@@ -17,19 +17,31 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "runinthread.h"
+#ifndef CREATEBACKENDWINDOW_H
+#define CREATEBACKENDWINDOW_H
 
-#include <QMetaObject>
+#include <QDialog>
+#include <QCloseEvent>
 
-runInThread::runInThread( QThread * thread,std::function< void() > function ) :
-	m_function( std::move( function ) )
-{
-	this->moveToThread( thread ) ;
-	QMetaObject::invokeMethod( this,"run",Qt::QueuedConnection ) ;
+namespace Ui {
+class createBackendWIndow;
 }
 
-void runInThread::run()
+class createBackendWIndow : public QDialog
 {
-	m_function() ;
-	this->deleteLater() ;
-}
+	Q_OBJECT
+public:
+	static void instance( QWidget * m )
+	{
+		new createBackendWIndow( m ) ;
+	}
+	explicit createBackendWIndow( QWidget * parent ) ;
+	~createBackendWIndow() ;
+private:
+	void save() ;
+	void Hide() ;
+	void closeEvent( QCloseEvent * ) ;
+	Ui::createBackendWIndow * m_ui ;
+};
+
+#endif // CREATEBACKENDWINDOW_H

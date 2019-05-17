@@ -26,6 +26,7 @@
 #include "engines/sshfs.h"
 #include "engines/unknown.h"
 #include "engines/securefs.h"
+#include "engines/custom.h"
 
 #include "utility.h"
 #include "settings.h"
@@ -71,6 +72,24 @@ QStringList engines::executableSearchPaths()
 
 QString engines::executableFullPath( const QString& f )
 {
+	if( utility::platformIsWindows() ){
+
+		if( utility::startsWithDriveLetter( f ) ){
+
+			if( f.endsWith( ".exe" ) ){
+
+				return f ;
+			}else{
+				return f + ".exe " ;
+			}
+		}
+	}else{
+		if( f.startsWith( "/" ) ){
+
+			return f ;
+		}
+	}
+
 	QString e = f ;
 
 	if( utility::platformIsWindows() && !e.endsWith( ".exe" ) ){
@@ -156,14 +175,7 @@ engines::engine::engine( engines::engine::BaseOptions o ) :
 
 QString engines::engine::executableFullPath() const
 {
-	auto m = this->name() ;
-
-	if( m == "ecryptfs" ){
-
-		return engines::executableFullPath( "ecryptfs-simple" ) ;
-	}else{
-		return engines::executableFullPath( m ) ;
-	}
+	return engines::executableFullPath( this->executableName() ) ;
 }
 
 bool engines::engine::isInstalled() const
@@ -201,6 +213,11 @@ bool engines::engine::hasGUICreateOptions() const
 	return m_Options.hasGUICreateOptions ;
 }
 
+bool engines::engine::hasConfigFile() const
+{
+	return m_Options.hasConfigFile ;
+}
+
 bool engines::engine::supportsMountPathsOnWindows() const
 {
 	return m_Options.supportsMountPathsOnWindows ;
@@ -219,6 +236,11 @@ const QStringList& engines::engine::fuseNames() const
 const QStringList& engines::engine::configFileNames() const
 {
 	return m_Options.configFileNames ;
+}
+
+const QString& engines::engine::executableName() const
+{
+	return m_Options.executableName ;
 }
 
 const QString& engines::engine::name() const
@@ -241,6 +263,39 @@ const QString& engines::engine::configFileName() const
 	}else{
 		return m_Options.configFileNames.first() ;
 	}
+}
+
+const QString& engines::engine::incorrectPasswordText() const
+{
+	return m_Options.incorrectPasswordText ;
+}
+
+const QString& engines::engine::incorrectPasswordCode() const
+{
+	return m_Options.incorrectPassWordCode ;
+}
+
+static bool _contains( const QString& e,const QStringList& m )
+{
+	for( const auto& it : m ){
+
+		if( e.contains( it ) ){
+
+			return true ;
+		}
+	}
+
+	return false ;
+}
+
+bool engines::engine::mountSuccessfully( const QString& e ) const
+{
+	return _contains( e,m_Options.successfulMountedList ) ;
+}
+
+bool engines::engine::failedToMountError( const QString& e ) const
+{
+	return _contains( e,m_Options.failedToMountList ) ;
 }
 
 QString engines::engine::setConfigFilePath( const QString& e ) const
@@ -300,6 +355,8 @@ engines::engines()
 		m_backends.emplace_back( std::make_unique< ecryptfs >() ) ;
 		m_backends.emplace_back( std::make_unique< sshfs >() ) ;
 	}
+
+	custom::addEngines( m_supported,m_backends ) ;
 }
 
 template< typename Engines,typename Compare,typename listSource >
@@ -449,6 +506,10 @@ QString engines::engine::cmdStatus::toString() const
 
 		return QObject::tr( "Failed To Unlock A Securefs Volume.\nWrong Password Entered." ) ;
 
+	case engines::engine::status::customCommandBadPassword :
+
+		return QObject::tr( "Failed To Unlock A Custom Volume.\nWrong Password Entered." ) ;
+
 	case engines::engine::status::sshfsNotFound :
 
 		return QObject::tr( "Failed To Complete The Request.\nSshfs Executable Could Not Be Found." ) ;
@@ -491,7 +552,7 @@ QString engines::engine::cmdStatus::toString() const
 
 	case engines::engine::status::failedToLoadWinfsp :
 
-		return QObject::tr( "Backend Could Not Load WinFsp. Please Make Sure You Have WinFsp Properly Installed" ) ;
+		return QObject::tr( "Backend Could Not Load WinFsp. Please Make Sure You Have WinFsp Properly Installed." ) ;
 
 	case engines::engine::status::unknown :
 
@@ -500,6 +561,10 @@ QString engines::engine::cmdStatus::toString() const
 	case engines::engine::status::sshfsTooOld :
 
 		return QObject::tr( "Installed \"%1\" Version Is Too Old.\n Please Update To Atleast Version %2." ).arg( "Sshfs","3.2.0" ) ;
+
+	case engines::engine::status::customCommandNotFound :
+
+		return QObject::tr( "Failed To Complete The Request.\nThe Executable For This Backend Could Not Be Found." ) ;
 
 	case engines::engine::status::invalidConfigFileName :
 

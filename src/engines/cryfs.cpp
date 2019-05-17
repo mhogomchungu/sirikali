@@ -24,19 +24,20 @@ static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
 
-	s.autoMountsOnCreate  = true ;
-	s.hasGUICreateOptions = true ;
-	s.setsCipherPath      = true ;
 	s.supportsMountPathsOnWindows = true ;
-
-	s.configFileArgument  = "--config" ;
-
-	s.configFileNames = QStringList{ "cryfs.config",".cryfs.config" } ;
-
-	s.fuseNames = QStringList{ "fuse.cryfs" } ;
-	s.names     = QStringList{ "cryfs" } ;
-
-	s.notFoundCode = engines::engine::status::cryfsNotFound ;
+	s.hasConfigFile         = true ;
+	s.autoMountsOnCreate    = true ;
+	s.hasGUICreateOptions   = true ;
+	s.setsCipherPath        = true ;
+	s.executableName        = "cryfs" ;
+	s.incorrectPasswordText = "Could not load config file. Did you enter the correct password?" ;
+	s.configFileArgument    = "--config" ;
+	s.successfulMountedList = QStringList{ "Mounting filesystem." } ;
+	s.configFileNames       = QStringList{ "cryfs.config",".cryfs.config" } ;
+	s.fuseNames             = QStringList{ "fuse.cryfs" } ;
+	s.failedToMountList     = QStringList{ "Error" } ;
+	s.names                 = QStringList{ "cryfs" } ;
+	s.notFoundCode          = engines::engine::status::cryfsNotFound ;
 
 	return s ;
 }
@@ -122,7 +123,7 @@ engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 		 * Falling back to parsing strings
 		 */
 
-		if( e.contains( "Could not load config file. Did you enter the correct password?" ) ){
+		if( e.contains( this->incorrectPasswordText() ) ){
 
 			return engines::engine::status::cryfsBadPassword ;
 
@@ -153,11 +154,11 @@ QString cryfs::installedVersionString() const
 
 engines::engine::error cryfs::errorCode( const QString& e ) const
 {
-	if( e.contains( "Mounting filesystem." ) ){
+	if( this->mountSuccessfully( e ) ){
 
 		return engines::engine::error::Success ;
 
-	}else if( e.contains( "Error" ) ){
+	}else if( this->failedToMountError( e ) ){
 
 		return engines::engine::error::Failed ;
 	}else{

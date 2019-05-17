@@ -23,19 +23,17 @@ static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
 
-	s.autoMountsOnCreate  = true ;
-	s.hasGUICreateOptions = false ;
-	s.setsCipherPath      = true ;
 	s.supportsMountPathsOnWindows = true ;
-
-	s.configFileArgument  = QString() ;
-
-	s.configFileNames = QStringList{} ;
-
-	s.fuseNames = QStringList{ "fuse.sshfs" } ;
-	s.names     = QStringList{ "sshfs" } ;
-
-	s.notFoundCode = engines::engine::status::sshfsNotFound ;
+	s.hasConfigFile         = false ;
+	s.autoMountsOnCreate    = true ;
+	s.hasGUICreateOptions   = false ;
+	s.setsCipherPath        = true ;
+	s.executableName        = "sshfs" ;
+	s.failedToMountList     = QStringList{ "ssh:","read:","Cannot create WinFsp-FUSE file system" } ;
+	s.successfulMountedList = QStringList{ "has been started" } ;
+	s.fuseNames             = QStringList{ "fuse.sshfs" } ;
+	s.names                 = QStringList{ "sshfs" } ;
+	s.notFoundCode          = engines::engine::status::sshfsNotFound ;
 
 	return s ;
 }
@@ -111,11 +109,11 @@ engines::engine::args sshfs::command( const engines::engine::cmdArgsList& args )
 
 engines::engine::error sshfs::errorCode( const QString& e ) const
 {
-	if( e.contains( "has been started" ) ){
+	if( this->mountSuccessfully( e ) ){
 
 		return engines::engine::error::Success ;
 
-	}else if( utility::containsAtleastOne( e,"ssh:","read:","Cannot create WinFsp-FUSE file system" ) ){
+	}else if( this->failedToMountError( e ) ){
 
 		return engines::engine::error::Failed ;
 	}else{

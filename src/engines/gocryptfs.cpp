@@ -25,23 +25,22 @@ static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
 
-	s.autoMountsOnCreate  = false ;
-	s.hasGUICreateOptions = true ;
-	s.setsCipherPath      = true ;
 	s.supportsMountPathsOnWindows = false ;
 
-	s.configFileArgument  = "--config" ;
-
-	s.configFileNames = QStringList{ "gocryptfs.conf",
-					 ".gocryptfs.conf",
-					 ".gocryptfs.reverse.conf",
-					 "gocryptfs.reverse.conf" } ;
-
-	s.fuseNames = QStringList{ "fuse.gocryptfs","fuse.gocryptfs-reverse" } ;
-
-	s.names = QStringList{ "gocryptfs","gocryptfs.reverse" } ;
-
-	s.notFoundCode = engines::engine::status::gocryptfsNotFound ;
+	s.hasConfigFile         = true ;
+	s.autoMountsOnCreate    = false ;
+	s.hasGUICreateOptions   = true ;
+	s.setsCipherPath        = true ;
+	s.executableName        = "gocryptfs" ;
+	s.incorrectPasswordText = "Password incorrect." ;
+	s.configFileArgument    = "--config" ;
+	s.configFileNames       = QStringList{ "gocryptfs.conf",
+					       ".gocryptfs.conf",
+					       ".gocryptfs.reverse.conf",
+					       "gocryptfs.reverse.conf" } ;
+	s.fuseNames             = QStringList{ "fuse.gocryptfs","fuse.gocryptfs-reverse" } ;
+	s.names                 = QStringList{ "gocryptfs","gocryptfs.reverse" } ;
+	s.notFoundCode          = engines::engine::status::gocryptfsNotFound ;
 
 	return s ;
 }
@@ -113,7 +112,7 @@ engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const
 	/*
 	 * This error code was added in gocryptfs 1.2.1
 	 */
-	if( s == 12 || e.contains( "Password incorrect." ) ){
+	if( s == 12 || e.contains( this->incorrectPasswordText() ) ){
 
 		return engines::engine::status::gocryptfsBadPassword ;
 	}else{

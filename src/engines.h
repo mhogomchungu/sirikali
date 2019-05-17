@@ -64,6 +64,9 @@ public:
 			gocryptfsNotFound,
 			ecryptfs_simpleNotFound,
 
+			customCommandNotFound,
+                        customCommandBadPassword,
+
 			sshfsTooOld,
 			cryfsMigrateFileSystem,
 
@@ -152,11 +155,17 @@ public:
 
 		struct BaseOptions
 		{
+			bool hasConfigFile ;
 			bool setsCipherPath ;
 			bool autoMountsOnCreate ;
 			bool hasGUICreateOptions ;
 			bool supportsMountPathsOnWindows ;
+			QString executableName ;
+			QString incorrectPasswordText ;
+                        QString incorrectPassWordCode ;
 			QString configFileArgument ;
+			QStringList successfulMountedList ;
+			QStringList failedToMountList ;
 			QStringList names ;
 			QStringList fuseNames ;
 			QStringList configFileNames ;
@@ -187,7 +196,10 @@ public:
 		bool setsCipherPath() const ;
 		bool autoMountsOnCreate() const ;
 		bool hasGUICreateOptions() const ;
+		bool hasConfigFile() const ;
 		bool supportsMountPathsOnWindows() const ;
+		bool failedToMountError( const QString& ) const ;
+		bool mountSuccessfully( const QString& ) const ;
 
 		engines::engine::status notFoundCode() const ;
 
@@ -195,8 +207,11 @@ public:
 		const QStringList& fuseNames() const ;
 		const QStringList& configFileNames() const ;
 
+		const QString& executableName() const ;
 		const QString& name() const ;
 		const QString& configFileName() const ;
+		const QString& incorrectPasswordText() const ;
+                const QString& incorrectPasswordCode() const ;
 
 		QString setConfigFilePath( const QString& ) const ;
 

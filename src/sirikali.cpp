@@ -46,6 +46,7 @@
 
 #include <unistd.h>
 
+#include "createbackendwindow.h"
 #include "filemanager.h"
 #include "dialogmsg.h"
 #include "tablewidget.h"
@@ -556,6 +557,11 @@ void sirikali::startGUI( const std::vector< volumeInfo >& m )
 
 		this->autoUnlockVolumes( m ) ;
 	}
+}
+
+void sirikali::createbackendwindow()
+{
+	createBackendWIndow::instance( this ) ;
 }
 
 void sirikali::raiseWindow( const QString& volume )
@@ -1474,6 +1480,8 @@ void sirikali::setUpShortCuts()
 	this->addAction( _addAction( { Qt::Key_R },SLOT( pbUpdate() ) ) ) ;
 
 	this->addAction( _addAction( { Qt::CTRL + Qt::Key::Key_W },SLOT( hideWindow() ) ) ) ;
+
+	this->addAction( _addAction( { Qt::CTRL + Qt::Key::Key_B },SLOT( createbackendwindow() ) ) ) ;
 
 	this->addAction( [ & ](){
 

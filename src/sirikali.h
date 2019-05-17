@@ -61,6 +61,7 @@ public:
 	int start( QApplication& ) ;
 	~sirikali() ;
 private slots:
+	void createbackendwindow( void ) ;
 	void showDebugWindow( void ) ;
 	void configurationOptions( void ) ;
 	void FAQ( void ) ;

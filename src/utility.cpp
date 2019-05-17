@@ -1175,14 +1175,39 @@ QString utility::freeWindowsDriveLetter()
 	return "Z:" ;
 }
 
+bool utility::startsWithDriveLetter( const QString& path )
+{
+	return utility::isDriveLetter( path.mid( 0,3 ) ) ;
+}
+
 bool utility::isDriveLetter( const QString& path )
 {
+	auto _drivePrefix = [ & ]( const QString& path ){
+
+		if( path.size() == 2 ){
+
+			auto a = path.at( 0 ) ;
+			auto b = path.at( 1 ) ;
+
+			return a >= 'A' && a <= 'Z' && b == ':' ;
+		}else{
+			return false ;
+		}
+	} ;
+
 	if( utility::platformIsWindows() ){
 
-		return ( path.size() == 2 && path.at( 1 ) == ':' ) || ( path.size() == 3 && path.at( 1 ) == ':' && path.at( 2 ) == '\\' ) ;
-	}else{
-		return false ;
+		if( path.size() == 2 ){
+
+			return _drivePrefix( path ) ;
+
+		}else if( path.size() == 3 ){
+
+			return _drivePrefix( path ) && path.at( 2 ) == '\\' ;
+		}
 	}
+
+	return false ;
 }
 
 template< typename E >

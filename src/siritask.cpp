@@ -385,6 +385,17 @@ siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 {
 	const auto& engines = engines::instance() ;
 
+	if( cipherFolder.contains( " " ) ){
+
+		auto m = utility::split( cipherFolder,' ' ) ;
+
+		const auto& engine = engines.getByName( m.first() ) ;
+
+		if( engine.known() ){
+
+			return engine ;
+		}
+	}
 	if( cipherFolder.startsWith( "sshfs " ) ){
 
 		return engines.getByName( "sshfs" ) ;

@@ -25,19 +25,20 @@ static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
 
-	s.autoMountsOnCreate  = true ;
-	s.hasGUICreateOptions = true ;
-	s.setsCipherPath      = false ;
 	s.supportsMountPathsOnWindows = true ;
-
-	s.configFileArgument  = "--config" ;
-
-	s.configFileNames = QStringList{ ".encfs6.xml","encfs6.xml",".encfs5",".encfs4" } ;
-
-	s.fuseNames = QStringList{ "fuse.encfs" } ;
-	s.names     = QStringList{ "encfs" } ;
-
-	s.notFoundCode = engines::engine::status::encfsNotFound ;
+	s.hasConfigFile         = true ;
+	s.autoMountsOnCreate    = true ;
+	s.hasGUICreateOptions   = true ;
+	s.setsCipherPath        = false ;
+	s.executableName        = "encfs" ;
+	s.incorrectPasswordText = "Error decoding volume key, password incorrect" ;
+	s.configFileArgument    = "--config" ;
+	s.configFileNames       = QStringList{ ".encfs6.xml","encfs6.xml",".encfs5",".encfs4" } ;
+	s.fuseNames             = QStringList{ "fuse.encfs" } ;
+	s.names                 = QStringList{ "encfs" } ;
+	s.failedToMountList     = QStringList{ "Error" } ;
+	s.successfulMountedList = QStringList{ "has been started" } ;
+	s.notFoundCode          = engines::engine::status::encfsNotFound ;
 
 	return s ;
 }
@@ -104,11 +105,11 @@ engines::engine::args encfs::command( const engines::engine::cmdArgsList& args )
 
 engines::engine::error encfs::errorCode( const QString& e ) const
 {
-	if( utility::containsAtleastOne( e,"has been started" ) ){
+	if( this->mountSuccessfully( e ) ){
 
 		return engines::engine::error::Success ;
 
-	}else if( e.contains( "Error" ) ){
+	}else if( this->failedToMountError( e ) ){
 
 		return engines::engine::error::Failed ;
 	}else{
@@ -120,7 +121,7 @@ engines::engine::status encfs::errorCode( const QString& e,int s ) const
 {
 	Q_UNUSED( s ) ;
 
-	if( e.contains( "Error decoding volume key, password incorrect" ) ){
+	if( e.contains( this->incorrectPasswordText() ) ){
 
 		return engines::engine::status::encfsBadPassword ;
 

@@ -24,17 +24,17 @@ static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
 
-	s.autoMountsOnCreate  = true ;
-	s.hasGUICreateOptions = true ;
-	s.setsCipherPath      = true ;
 	s.supportsMountPathsOnWindows = false ;
-
-	s.configFileArgument   = "--config" ;
-
-	s.configFileNames = QStringList{ ".ecryptfs.config","ecryptfs.config" } ;
-
-	s.fuseNames = QStringList{ "ecryptfs" } ;
-	s.names     = QStringList{ "ecryptfs" } ;
+	s.hasConfigFile         = true ;
+	s.autoMountsOnCreate    = true ;
+	s.hasGUICreateOptions   = true ;
+	s.setsCipherPath        = true ;
+	s.executableName        = "ecryptfs-simple" ;
+	s.incorrectPasswordText = "error: mount failed" ;
+	s.configFileArgument    = "--config" ;
+	s.configFileNames       = QStringList{ ".ecryptfs.config","ecryptfs.config" } ;
+	s.fuseNames             = QStringList{ "ecryptfs" } ;
+	s.names                 = QStringList{ "ecryptfs" } ;
 
 	s.notFoundCode = engines::engine::status::ecryptfs_simpleNotFound ;
 
@@ -104,7 +104,7 @@ engines::engine::status ecryptfs::errorCode( const QString& e,int s ) const
 
 		return engines::engine::status::ecrypfsBadExePermissions ;
 
-	}else if( e.contains( "error: mount failed" ) ){
+	}else if( e.contains( this->incorrectPasswordText() ) ){
 
 		return engines::engine::status::ecryptfsBadPassword ;
 	}else{
