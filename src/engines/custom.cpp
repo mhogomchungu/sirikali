@@ -109,12 +109,12 @@ static void _add_engines( QStringList& list,
 
 				const auto& m = s.value() ;
 
-				if( m.names.size() > 0 ){
+				if( m.names.size() > 0 && m.fuseNames.size() > 0 ){
 
-					list.append( m.names.first() ) ;
+					list.append( QString( it ).replace( ".json","" ) ) ;
 					engines.emplace_back( std::make_unique< custom >( m ) ) ;
 				}else{
-					utility::debug::cout() << "Name field not set in config file : " + path ;
+					utility::debug::cout() << "Name field/Fuse names not set in config file : " + path ;
 				}
 			}
 

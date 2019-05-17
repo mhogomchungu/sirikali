@@ -116,9 +116,9 @@ void createBackendWIndow::save()
 
 	auto password = m_ui->lineEditWrongPasswordText->text() ;
 
-	if( password.isEmpty() ){
+	if( password.isEmpty() && m_ui->cbRequiresAPassword->isChecked() ){
 
-		return DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Invalid Input Encountered" ) ) ;
+		return DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Wrong Password Field Can Not Be Empty" ) ) ;
 	}
 
 	nlohmann::json config ;
@@ -146,8 +146,6 @@ void createBackendWIndow::save()
 	} ;
 
 	config[ "version" ]                    = 1.0 ;
-	config[ "mountCommand" ]               = "mount" ;
-	config[ "createCommand" ]              = "create" ;
 	config[ "executableName" ]             = executable.toStdString() ;
 	config[ "configFileNames" ]            = _addstring( configFileNames ) ;
 	config[ "fuseNames" ]                  = _addstring( fusenames ) ;
