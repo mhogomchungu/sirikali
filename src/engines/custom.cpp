@@ -26,10 +26,10 @@
 #include <QDir>
 #include <QStandardPaths>
 
-static utility::result< engines::engine::BaseOptions > _getOptions( const QByteArray& e,const QString& s )
+static utility::result< custom::opts > _getOptions( const QByteArray& e,const QString& s )
 {
 	try{
-		engines::engine::BaseOptions s ;
+		custom::opts s ;
 
 		auto json = nlohmann::json::parse( e.constData() ) ;
 
@@ -60,23 +60,26 @@ static utility::result< engines::engine::BaseOptions > _getOptions( const QByteA
 			return json[ s ].get< bool >() ;
 		} ;
 
-		s.hasGUICreateOptions         = true ;
-		s.customBackend               = true ;
-		s.requiresAPassword           = _getBool( "requiresAPassword" ) ; ;
-		s.autoMountsOnCreate          = _getBool( "autoMountsOnVolumeCreation" ) ;
-		s.setsCipherPath              = _getBool( "setsCipherPath" ) ;
-		s.supportsMountPathsOnWindows = _getBool( "supportsMountPointPaths" ) ;
-		s.executableName              = _getString( "executableName" ) ;
-		s.incorrectPasswordText       = _getString( "wrongPasswordText" ) ;
-		s.incorrectPassWordCode       = _getString( "wrongPasswordErrorCode" ) ;
-		s.configFileArgument          = _getString( "configFileArgument" ) ;
-		s.failedToMountList           = _getStringList( "failedToMountTextList" ) ;
-		s.successfulMountedList       = _getStringList( "successfullyMountedList" ) ;
-		s.configFileNames             = _getStringList( "configFileNames" ) ;
-		s.names                       = _getStringList( "names" ) ;
-		s.fuseNames                   = _getStringList( "fuseNames" ) ;
-		s.hasConfigFile               = s.configFileNames.size() > 0 ;
-		s.notFoundCode                = engines::engine::status::customCommandNotFound ;
+		s.requireMountPath                     = _getBool( "requireMountPathWhenCreating" ) ;
+		s.mountSwitch                          = _getString( "mountSwitch" ) ;
+		s.createSwitch                         = _getString( "createSwitch" ) ;
+		s.baseOpts.hasGUICreateOptions         = true ;
+		s.baseOpts.customBackend               = true ;
+		s.baseOpts.requiresAPassword           = _getBool( "requiresAPassword" ) ;
+		s.baseOpts.autoMountsOnCreate          = _getBool( "autoMountsOnVolumeCreation" ) ;
+		s.baseOpts.setsCipherPath              = _getBool( "setsCipherPath" ) ;
+		s.baseOpts.supportsMountPathsOnWindows = _getBool( "supportsMountPointPaths" ) ;
+		s.baseOpts.executableName              = _getString( "executableName" ) ;
+		s.baseOpts.incorrectPasswordText       = _getString( "wrongPasswordText" ) ;
+		s.baseOpts.incorrectPassWordCode       = _getString( "wrongPasswordErrorCode" ) ;
+		s.baseOpts.configFileArgument          = _getString( "configFileArgument" ) ;
+		s.baseOpts.failedToMountList           = _getStringList( "failedToMountTextList" ) ;
+		s.baseOpts.successfulMountedList       = _getStringList( "successfullyMountedList" ) ;
+		s.baseOpts.configFileNames             = _getStringList( "configFileNames" ) ;
+		s.baseOpts.names                       = _getStringList( "names" ) ;
+		s.baseOpts.fuseNames                   = _getStringList( "fuseNames" ) ;
+		s.baseOpts.hasConfigFile               = s.baseOpts.configFileNames.size() > 0 ;
+		s.baseOpts.notFoundCode                = engines::engine::status::customCommandNotFound ;
 
 		return s ;
 
@@ -109,7 +112,7 @@ static void _add_engines( QStringList& list,
 
 				const auto& m = s.value() ;
 
-				if( m.names.size() > 0 && m.fuseNames.size() > 0 ){
+				if( m.baseOpts.names.size() > 0 && m.baseOpts.fuseNames.size() > 0 ){
 
 					list.append( QString( it ).replace( ".json","" ) ) ;
 					engines.emplace_back( std::make_unique< custom >( m ) ) ;
@@ -135,7 +138,11 @@ void custom::addEngines( QStringList& list,std::vector< std::unique_ptr< engines
 	_add_engines( list,INSTALL_PREFIX"/share/SiriKali/backends/",engines ) ;
 }
 
-custom::custom( engines::engine::BaseOptions s ) : engines::engine( std::move( s ) )
+custom::custom( custom::opts s ) :
+	engines::engine( std::move( s.baseOpts ) ),
+	m_mountSwitch( s.mountSwitch ),
+	m_createSwitch( s.createSwitch ),
+	m_requireMountPath( s.requireMountPath )
 {
 }
 
@@ -145,16 +152,29 @@ engines::engine::args custom::command( const engines::engine::cmdArgsList& args 
 
 	if( args.create ){
 
-		QString e = "%1 %2 %3 %4" ;
+		if( m_requireMountPath ){
 
-		auto cmd = e.arg( args.exe,
-				  args.opt.createOptions,
-				  args.cipherFolder,
-				  args.mountPoint ) ;
+			QString e = "%1 %2 %3 %4 %5" ;
 
-		return { args,m,cmd } ;
+			auto cmd = e.arg( args.exe,
+					  m_createSwitch,
+					  args.opt.createOptions,
+					  args.cipherFolder,
+					  args.mountPoint ) ;
+
+			return { args,m,cmd } ;
+		}else{
+			QString e = "%1 %2 %3 %4" ;
+
+			auto cmd = e.arg( args.exe,
+					  m_createSwitch,
+					  args.opt.createOptions,
+					  args.cipherFolder ) ;
+
+			return { args,m,cmd } ;
+		}
 	}else{
-		QString exe = "%1 %2 %3 %4 %5" ;
+		QString exe = "%1 %2 %3 %4 %5 %6" ;
 
 		auto exeOptions = m.exeOptions() ;
 
@@ -164,6 +184,7 @@ engines::engine::args custom::command( const engines::engine::cmdArgsList& args 
 		}
 
 		auto cmd = exe.arg( args.exe,
+				    m_mountSwitch,
 				    exeOptions.get(),
 				    args.cipherFolder,
 				    args.mountPoint,

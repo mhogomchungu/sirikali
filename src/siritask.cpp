@@ -385,17 +385,18 @@ siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 {
 	const auto& engines = engines::instance() ;
 
-	if( cipherFolder.contains( " " ) ){
+	for( const auto& it : engines.supported() ){
 
-		auto m = utility::split( cipherFolder,' ' ) ;
+		if( cipherFolder.startsWith( it + " ",Qt::CaseInsensitive ) ){
 
-		const auto& engine = engines.getByName( m.first() ) ;
+			const auto& engine = engines.getByName( it ) ;
 
-		if( engine.known() ){
+			if( engine.known() ){
 
-			return { engine,m.at( 1 ) } ;
+				return { engine,cipherFolder.mid( it.size() + 1 ) } ;
+			}
 		}
-	}	
+	}
 
 	if( configFilePath.isEmpty() ){
 

@@ -145,19 +145,22 @@ void createBackendWIndow::save()
 		}
 	} ;
 
-	config[ "version" ]                    = 1.0 ;
-	config[ "executableName" ]             = executable.toStdString() ;
-	config[ "configFileNames" ]            = _addstring( configFileNames ) ;
-	config[ "fuseNames" ]                  = _addstring( fusenames ) ;
-	config[ "names" ]                      = _addstring( names ) ;
-	config[ "failedToMountTextList" ]      = _addstring( m_ui->lineEditFailedToMountText->text() ) ;
-	config[ "successfullyMountedList" ]    = _addstring( m_ui->lineEditSuccessfullyMountedText->text() ) ;
-	config[ "configFileArgument" ]         = m_ui->lineEditConfigFileArgument->text().toStdString() ;
-	config[ "wrongPasswordText" ]          = password.toStdString() ;
-	config[ "wrongPasswordErrorCode" ]     = m_ui->lineEditWrongPasswordErrorCode->text().toStdString() ;
-	config[ "requiresAPassword" ]          = m_ui->cbRequiresAPassword->isChecked() ;
-	config[ "supportsMountPointPaths" ]    = m_ui->cbSupportsMountPointPaths->isChecked() ;
-	config[ "autoMountsOnVolumeCreation" ] = m_ui->cbAutoMountsOnVolumeCreation->isChecked() ;
+	config[ "version" ]                     = 1.0 ;
+	config[ "createSwitch"]                 = "" ;
+	config[ "mountSwitch"]                  = "" ;
+	config[ "requireMountPathWhenCreating"] = true ;
+	config[ "executableName" ]              = executable.toStdString() ;
+	config[ "configFileNames" ]             = _addstring( configFileNames ) ;
+	config[ "fuseNames" ]                   = _addstring( fusenames ) ;
+	config[ "names" ]                       = _addstring( names ) ;
+	config[ "failedToMountTextList" ]       = _addstring( m_ui->lineEditFailedToMountText->text() ) ;
+	config[ "successfullyMountedList" ]     = _addstring( m_ui->lineEditSuccessfullyMountedText->text() ) ;
+	config[ "configFileArgument" ]          = m_ui->lineEditConfigFileArgument->text().toStdString() ;
+	config[ "wrongPasswordText" ]           = password.toStdString() ;
+	config[ "wrongPasswordErrorCode" ]      = m_ui->lineEditWrongPasswordErrorCode->text().toStdString() ;
+	config[ "requiresAPassword" ]           = m_ui->cbRequiresAPassword->isChecked() ;
+	config[ "supportsMountPointPaths" ]     = m_ui->cbSupportsMountPointPaths->isChecked() ;
+	config[ "autoMountsOnVolumeCreation" ]  = m_ui->cbAutoMountsOnVolumeCreation->isChecked() ;
 
 	QFile file( path ) ;
 

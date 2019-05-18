@@ -24,11 +24,19 @@
 #include <vector>
 #include <memory>
 
-struct custom : public engines::engine
+class custom : public engines::engine
 {
+public:
 	static void addEngines( QStringList&,std::vector< std::unique_ptr< engines::engine > >& ) ;
 
-	custom( engines::engine::BaseOptions ) ;
+	struct opts{
+		engines::engine::BaseOptions baseOpts ;
+		QString createSwitch ;
+		QString mountSwitch ;
+		bool requireMountPath ;
+	};
+
+	custom( custom::opts ) ;
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 
@@ -38,4 +46,8 @@ struct custom : public engines::engine
 	QString installedVersionString() const override ;
 
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
+private:
+	QString m_mountSwitch ;
+	QString m_createSwitch ;
+	bool m_requireMountPath ;
 } ;
