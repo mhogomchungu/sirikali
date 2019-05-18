@@ -114,8 +114,13 @@ static void _add_engines( QStringList& list,
 
 				if( m.baseOpts.names.size() > 0 && m.baseOpts.fuseNames.size() > 0 ){
 
-					list.append( QString( it ).replace( ".json","" ) ) ;
-					engines.emplace_back( std::make_unique< custom >( m ) ) ;
+					auto n = QString( it ).replace( ".json","" ) ;
+
+					if( n.size() > 0 ){
+
+						list.append( n.replace( 0,1,n.at( 0 ).toUpper() ) ) ;
+						engines.emplace_back( std::make_unique< custom >( m ) ) ;
+					}
 				}else{
 					utility::debug::cout() << "Name field/Fuse names not set in config file : " + path ;
 				}
