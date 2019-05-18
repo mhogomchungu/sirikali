@@ -23,6 +23,7 @@
 #include "tablewidget.h"
 #include "utility.h"
 #include "dialogmsg.h"
+#include "engines.h"
 
 #include <QFileDialog>
 
@@ -43,6 +44,27 @@ favorites2::favorites2( QWidget * parent,favorites::type type ) :
 	auto table = m_ui->tableWidget ;
 
 	table->horizontalHeader()->setStretchLastSection( true ) ;
+
+	m_ui->pbVolumeTypes->setMenu( [ this ](){
+
+		auto m = new QMenu( this ) ;
+
+		for( const auto& it : engines::instance().enginesWithNoConfigFile() ){
+
+			auto ac = m->addAction( it ) ;
+
+			ac->setObjectName( it ) ;
+
+			m->addAction( ac ) ;
+		}
+
+		connect( m,&QMenu::triggered,[ this ]( QAction * ac ){
+
+			m_ui->lineEditVolumeType->setText( ac->objectName() ) ;
+		} ) ;
+
+		return m ;
+	}() ) ;
 
 	connect( m_ui->pbConfigFilePath,&QPushButton::clicked,[ this ](){
 
@@ -339,6 +361,19 @@ void favorites2::edit()
 		const auto& b = entry.idleTimeOut ;
 		const auto& c = entry.mountOptions ;
 
+		for( const auto& it : engines::instance().enginesWithNoConfigFile() ){
+
+			auto s = m_ui->lineEditEncryptedFolderPath->toPlainText() ;
+
+			if( s.startsWith( it + " ",Qt::CaseInsensitive ) ){
+
+				m_ui->lineEditEncryptedFolderPath->setText( s.mid( it.size() + 1 ) ) ;
+				m_ui->lineEditVolumeType->setText( it ) ;
+				break ;
+			}
+
+		}
+
 		if( a != "N/A" ){
 
 			m_ui->lineEditConfigFilePath->setText( a ) ;
@@ -495,7 +530,24 @@ void favorites2::updateFavorite( bool edit )
 		idleTimeOUt.clear() ;
 	}
 
-	QStringList e = { dev,
+	auto dev_path = [ & ](){
+
+		auto a = m_ui->lineEditVolumeType->toPlainText() ;
+
+		if( a.isEmpty() ){
+
+			return dev ;
+		}else{
+			if( dev.startsWith( a + " ",Qt::CaseInsensitive ) ){
+
+				return dev ;
+			}else{
+				return a + " " + dev ;
+			}
+		}
+	}() ;
+
+	QStringList e = { dev_path,
 			  path,
 			  autoMount,
 			  _option( configPath ),
@@ -507,8 +559,6 @@ void favorites2::updateFavorite( bool edit )
 
 		m_settings.replaceFavorite( f,e ) ;
 	}else{
-		dev.replace( "sshfs ","" ) ;
-
 		if( utility::platformIsWindows() ){
 
 			if( !utility::isDriveLetter( path ) ){
@@ -527,7 +577,7 @@ void favorites2::updateFavorite( bool edit )
 	m_ui->lineEditConfigFilePath->clear() ;
 	m_ui->lineEditIdleTimeOut->clear() ;
 	m_ui->lineEditMountOptions->clear() ;
-
+	m_ui->lineEditVolumeType->clear() ;
 	m_ui->cbReverseMode->setChecked( false ) ;
 	m_ui->cbReadOnlyMode->setChecked( false ) ;
 	m_ui->cbVolumeNoPassword->setChecked( false ) ;
@@ -729,10 +779,10 @@ void favorites2::ShowUI( favorites::type type )
 		m_ui->tabWidget->setCurrentIndex( 1 ) ;
 
 		m_ui->lineEditMountOptions->setText( "idmap=user,StrictHostKeyChecking=no" ) ;
-		m_ui->lineEditEncryptedFolderPath->setText( "sshfs " ) ;
-		m_ui->labelName ->setText( tr( "Remote Ssh Server Address\n(Example: sshfs woof@bar.foo:/remote/path)" ) ) ;
+		m_ui->labelName ->setText( tr( "Remote Ssh Server Address\n(Example: woof@example.com:/remote/path)" ) ) ;
 		m_ui->labelCofigFilePath->setText( tr( "SSH_AUTH_SOCK Socket Path (Optional)" ) ) ;
 		m_ui->labelIdleTimeOut->setText( tr( "IdentityFile Path (Optional)" ) ) ;
+		m_ui->lineEditVolumeType->setText( "Sshfs" ) ;
 	}else{
 		m_ui->pbIdentityFile->setVisible( false ) ;
 		m_ui->tabWidget->setCurrentIndex( 0 ) ;

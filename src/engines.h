@@ -376,6 +376,8 @@ public:
 
 	engines() ;
 	static const engines& instance() ;
+	QStringList enginesWithNoConfigFile() const ;
+	QStringList enginesWithConfigFile() const ;
 	const QStringList& supported() const ;
 	const engine& getByName( const engines::engine::options& e ) const ;
 	const engine& getByName( const QString& e ) const ;

@@ -333,6 +333,36 @@ const engines& engines::instance()
 	return v ;
 }
 
+QStringList engines::enginesWithNoConfigFile() const
+{
+	QStringList m ;
+
+	for( const auto& it : this->supported() ){
+
+		if( !this->getByName( it ).hasConfigFile() ){
+
+			m.append( it ) ;
+		}
+	}
+
+	return m ;
+}
+
+QStringList engines::enginesWithConfigFile() const
+{
+	QStringList m ;
+
+	for( const auto& it : this->supported() ){
+
+		if( this->getByName( it ).hasConfigFile() ){
+
+			m.append( it ) ;
+		}
+	}
+
+	return m ;
+}
+
 const QStringList& engines::supported() const
 {
 	return m_supported ;
