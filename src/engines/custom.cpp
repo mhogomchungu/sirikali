@@ -180,7 +180,7 @@ engines::engine::args custom::command( const engines::engine::cmdArgsList& args 
 			exeOptions.add( args.configFilePath ) ;
 		}
 
-		cmd.replace( "exeOptions",exeOptions.get(),Qt::CaseInsensitive ) ;
+		cmd.replace( "mountOptions",exeOptions.get(),Qt::CaseInsensitive ) ;
 		cmd.replace( "cipherFolder",args.cipherFolder,Qt::CaseInsensitive ) ;
 		cmd.replace( "mountPoint",args.mountPoint,Qt::CaseInsensitive ) ;
 		cmd.replace( "fuseOpts",m.fuseOpts().get(),Qt::CaseInsensitive ) ;
