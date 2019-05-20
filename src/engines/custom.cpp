@@ -154,9 +154,18 @@ engines::engine::args custom::command( const engines::engine::cmdArgsList& args 
 
 	if( args.create ){
 
+		auto exeOptions = m.exeOptions() ;
+
+		if( !args.configFilePath.isEmpty() ){
+
+			exeOptions.add( args.configFilePath ) ;
+		}
+
+		exeOptions.add( args.opt.createOptions ) ;
+
 		QString cmd = m_createControlStructure ;
 
-		cmd.replace( "createOptions",args.opt.createOptions,Qt::CaseInsensitive ) ;
+		cmd.replace( "createOptions",exeOptions.get(),Qt::CaseInsensitive ) ;
 		cmd.replace( "cipherFolder",args.cipherFolder,Qt::CaseInsensitive ) ;
 		cmd.replace( "mountPoint",args.mountPoint,Qt::CaseInsensitive ) ;
 
