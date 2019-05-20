@@ -146,9 +146,8 @@ void createBackendWIndow::save()
 	} ;
 
 	config[ "version" ]                     = 1.0 ;
-	config[ "createSwitch"]                 = "" ;
-	config[ "mountSwitch"]                  = "" ;
-	config[ "requireMountPathWhenCreating"] = true ;
+	config[ "createControlStructure" ]      = _addlist( { "createOptions","cipherFolder","mountPoint" } ) ;
+	config[ "mountControlStructure" ]       = _addlist( { "exeOptions","cipherFolder","mountPoint","fuseOpts" } ) ;
 	config[ "executableName" ]              = executable.toStdString() ;
 	config[ "configFileNames" ]             = _addstring( configFileNames ) ;
 	config[ "fuseNames" ]                   = _addstring( fusenames ) ;

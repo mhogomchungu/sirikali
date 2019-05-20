@@ -31,9 +31,8 @@ public:
 
 	struct opts{
 		engines::engine::BaseOptions baseOpts ;
-		QString createSwitch ;
-		QString mountSwitch ;
-		bool requireMountPath ;
+		QString mountControlStructure ;
+		QString createControlStructure ;
 	};
 
 	custom( custom::opts ) ;
@@ -47,7 +46,6 @@ public:
 
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
 private:
-	QString m_mountSwitch ;
-	QString m_createSwitch ;
-	bool m_requireMountPath ;
+	QString m_mountControlStructure ;
+	QString m_createControlStructure ;
 } ;

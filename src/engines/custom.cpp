@@ -60,14 +60,12 @@ static utility::result< custom::opts > _getOptions( const QByteArray& e,const QS
 			return json[ s ].get< bool >() ;
 		} ;
 
-		s.requireMountPath                     = _getBool( "requireMountPathWhenCreating" ) ;
-		s.mountSwitch                          = _getString( "mountSwitch" ) ;
-		s.createSwitch                         = _getString( "createSwitch" ) ;
+		s.mountControlStructure                = _getStringList( "mountControlStructure" ).join( " " ) ;
+		s.createControlStructure               = _getStringList( "createControlStructure" ).join( " " ) ;
 		s.baseOpts.hasGUICreateOptions         = true ;
 		s.baseOpts.customBackend               = true ;
 		s.baseOpts.requiresAPassword           = _getBool( "requiresAPassword" ) ;
 		s.baseOpts.autoMountsOnCreate          = _getBool( "autoMountsOnVolumeCreation" ) ;
-		s.baseOpts.setsCipherPath              = _getBool( "setsCipherPath" ) ;
 		s.baseOpts.supportsMountPathsOnWindows = _getBool( "supportsMountPointPaths" ) ;
 		s.baseOpts.executableName              = _getString( "executableName" ) ;
 		s.baseOpts.incorrectPasswordText       = _getString( "wrongPasswordText" ) ;
@@ -145,9 +143,8 @@ void custom::addEngines( QStringList& list,std::vector< std::unique_ptr< engines
 
 custom::custom( custom::opts s ) :
 	engines::engine( std::move( s.baseOpts ) ),
-	m_mountSwitch( s.mountSwitch ),
-	m_createSwitch( s.createSwitch ),
-	m_requireMountPath( s.requireMountPath )
+	m_mountControlStructure( s.mountControlStructure ),
+	m_createControlStructure( s.createControlStructure )
 {
 }
 
@@ -157,29 +154,15 @@ engines::engine::args custom::command( const engines::engine::cmdArgsList& args 
 
 	if( args.create ){
 
-		if( m_requireMountPath ){
+		QString cmd = m_createControlStructure ;
 
-			QString e = "%1 %2 %3 %4 %5" ;
+		cmd.replace( "createOptions",args.opt.createOptions,Qt::CaseInsensitive ) ;
+		cmd.replace( "cipherFolder",args.cipherFolder,Qt::CaseInsensitive ) ;
+		cmd.replace( "mountPoint",args.mountPoint,Qt::CaseInsensitive ) ;
 
-			auto cmd = e.arg( args.exe,
-					  m_createSwitch,
-					  args.opt.createOptions,
-					  args.cipherFolder,
-					  args.mountPoint ) ;
-
-			return { args,m,cmd } ;
-		}else{
-			QString e = "%1 %2 %3 %4" ;
-
-			auto cmd = e.arg( args.exe,
-					  m_createSwitch,
-					  args.opt.createOptions,
-					  args.cipherFolder ) ;
-
-			return { args,m,cmd } ;
-		}
+		return { args,m,args.exe + " " + cmd } ;
 	}else{
-		QString exe = "%1 %2 %3 %4 %5 %6" ;
+		QString cmd = m_mountControlStructure ;
 
 		auto exeOptions = m.exeOptions() ;
 
@@ -188,14 +171,12 @@ engines::engine::args custom::command( const engines::engine::cmdArgsList& args 
 			exeOptions.add( args.configFilePath ) ;
 		}
 
-		auto cmd = exe.arg( args.exe,
-				    m_mountSwitch,
-				    exeOptions.get(),
-				    args.cipherFolder,
-				    args.mountPoint,
-				    m.fuseOpts().get() ) ;
+		cmd.replace( "exeOptions",exeOptions.get(),Qt::CaseInsensitive ) ;
+		cmd.replace( "cipherFolder",args.cipherFolder,Qt::CaseInsensitive ) ;
+		cmd.replace( "mountPoint",args.mountPoint,Qt::CaseInsensitive ) ;
+		cmd.replace( "fuseOpts",m.fuseOpts().get(),Qt::CaseInsensitive ) ;
 
-		return { args,m,cmd } ;
+		return { args,m,args.exe + " " + cmd } ;
 	}
 }
 
