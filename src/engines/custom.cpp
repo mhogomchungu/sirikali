@@ -50,7 +50,7 @@ static utility::result< custom::opts > _getOptions( const QByteArray& e,const QS
 			return s ;
 		} ;
 
-		auto _getString = [ & ]( const char * s ){
+		auto _getString = [ & ]( const char * s )->QString{
 
 			return json[ s ].get< std::string >().c_str() ;
 		} ;
@@ -60,8 +60,8 @@ static utility::result< custom::opts > _getOptions( const QByteArray& e,const QS
 			return json[ s ].get< bool >() ;
 		} ;
 
-		s.mountControlStructure                = _getStringList( "mountControlStructure" ).join( " " ) ;
-		s.createControlStructure               = _getStringList( "createControlStructure" ).join( " " ) ;
+		s.mountControlStructure                = _getString( "mountControlStructure" ) ;
+		s.createControlStructure               = _getString( "createControlStructure" ) ;
 		s.baseOpts.hasGUICreateOptions         = true ;
 		s.baseOpts.customBackend               = true ;
 		s.baseOpts.requiresAPassword           = _getBool( "requiresAPassword" ) ;
@@ -165,9 +165,9 @@ engines::engine::args custom::command( const engines::engine::cmdArgsList& args 
 
 		QString cmd = m_createControlStructure ;
 
-		cmd.replace( "createOptions",exeOptions.get(),Qt::CaseInsensitive ) ;
-		cmd.replace( "cipherFolder",args.cipherFolder,Qt::CaseInsensitive ) ;
-		cmd.replace( "mountPoint",args.mountPoint,Qt::CaseInsensitive ) ;
+		cmd.replace( "%{mountOptions}",exeOptions.get(),Qt::CaseInsensitive ) ;
+		cmd.replace( "%{cipherFolder}",args.cipherFolder,Qt::CaseInsensitive ) ;
+		cmd.replace( "%{mountPoint}",args.mountPoint,Qt::CaseInsensitive ) ;
 
 		return { args,m,args.exe + " " + cmd } ;
 	}else{
@@ -180,10 +180,10 @@ engines::engine::args custom::command( const engines::engine::cmdArgsList& args 
 			exeOptions.add( args.configFilePath ) ;
 		}
 
-		cmd.replace( "mountOptions",exeOptions.get(),Qt::CaseInsensitive ) ;
-		cmd.replace( "cipherFolder",args.cipherFolder,Qt::CaseInsensitive ) ;
-		cmd.replace( "mountPoint",args.mountPoint,Qt::CaseInsensitive ) ;
-		cmd.replace( "fuseOpts",m.fuseOpts().get(),Qt::CaseInsensitive ) ;
+		cmd.replace( "%{mountOptions}",exeOptions.get(),Qt::CaseInsensitive ) ;
+		cmd.replace( "%{cipherFolder}",args.cipherFolder,Qt::CaseInsensitive ) ;
+		cmd.replace( "%{mountPoint}",args.mountPoint,Qt::CaseInsensitive ) ;
+		cmd.replace( "%{fuseOpts}",m.fuseOpts().get(),Qt::CaseInsensitive ) ;
 
 		return { args,m,args.exe + " " + cmd } ;
 	}
