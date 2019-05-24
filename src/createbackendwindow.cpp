@@ -148,6 +148,8 @@ void createBackendWIndow::save()
 	config[ "version" ]                     = 1.0 ;
 	config[ "createControlStructure" ]      = "%{createOptions} %{cipherFolder} %{mountPoint}" ;
 	config[ "mountControlStructure" ]       = "%{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
+	config[ "idleString" ]                  = "" ;
+	config[ "reverseString"]                = "" ;
 	config[ "executableName" ]              = executable.toStdString() ;
 	config[ "configFileNames" ]             = _addstring( configFileNames ) ;
 	config[ "fuseNames" ]                   = _addstring( fusenames ) ;

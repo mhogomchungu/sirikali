@@ -32,6 +32,8 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = false ;
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = true ;
+	s.reverseString         = "-reverse" ;
+	s.idleString            = "-idle" ;
 	s.executableName        = "gocryptfs" ;
 	s.incorrectPasswordText = "Password incorrect." ;
 	s.configFileArgument    = "--config" ;
@@ -61,12 +63,12 @@ engines::engine::args gocryptfs::command( const engines::engine::cmdArgsList& ar
 
 	if( args.opt.reverseMode ){
 
-		exeOptions.add( "-reverse" ) ;
+		exeOptions.add( this->reverseString() ) ;
 	}
 
 	if( !args.opt.idleTimeout.isEmpty() ){
 
-		exeOptions.addPair( "-idle",args.opt.idleTimeout ) ;
+		exeOptions.addPair( this->idleString(),args.opt.idleTimeout ) ;
 	}
 
 	if( !args.configFilePath.isEmpty() ){

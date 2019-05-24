@@ -32,6 +32,8 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = true ;
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = false ;
+	s.reverseString         = "--reverse" ;
+	s.idleString            = "-i" ;
 	s.executableName        = "encfs" ;
 	s.incorrectPasswordText = "Error decoding volume key, password incorrect" ;
 	s.configFileArgument    = "--config" ;
@@ -66,7 +68,7 @@ engines::engine::args encfs::command( const engines::engine::cmdArgsList& args )
 
 	if( args.opt.reverseMode ){
 
-		exeOptions.add( "--reverse" ) ;
+		exeOptions.add( this->reverseString() ) ;
 	}
 
 	if( utility::platformIsWindows() ){
@@ -93,7 +95,7 @@ engines::engine::args encfs::command( const engines::engine::cmdArgsList& args )
 
 	if( !args.opt.idleTimeout.isEmpty() ){
 
-		exeOptions.addPair( "-i",args.opt.idleTimeout ) ;
+		exeOptions.addPair( this->idleString(),args.opt.idleTimeout ) ;
 	}
 
 	auto cmd = e.arg( args.exe,

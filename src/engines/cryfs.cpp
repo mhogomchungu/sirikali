@@ -31,6 +31,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = true ;
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = true ;
+	s.idleString            = "--unmount-idle" ;
 	s.executableName        = "cryfs" ;
 	s.incorrectPasswordText = "Could not load config file. Did you enter the correct password?" ;
 	s.configFileArgument    = "--config" ;
@@ -77,7 +78,7 @@ engines::engine::args cryfs::command( const engines::engine::cmdArgsList& args )
 
 	if( !args.opt.idleTimeout.isEmpty() ){
 
-		exeOptions.addPair( "--unmount-idle",args.opt.idleTimeout ) ;
+		exeOptions.addPair( this->idleString(),args.opt.idleTimeout ) ;
 	}
 
 	if( args.create ){

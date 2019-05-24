@@ -64,6 +64,8 @@ static utility::result< custom::opts > _getOptions( const QByteArray& e,const QS
 		s.createControlStructure               = _getString( "createControlStructure" ) ;
 		s.baseOpts.hasGUICreateOptions         = true ;
 		s.baseOpts.customBackend               = true ;
+		s.baseOpts.reverseString               = _getString( "reverseString" ) ;
+		s.baseOpts.idleString                  = _getString( "idleString" ) ;
 		s.baseOpts.requiresAPassword           = _getBool( "requiresAPassword" ) ;
 		s.baseOpts.autoMountsOnCreate          = _getBool( "autoMountsOnVolumeCreation" ) ;
 		s.baseOpts.supportsMountPathsOnWindows = _getBool( "supportsMountPointPaths" ) ;
@@ -178,6 +180,16 @@ engines::engine::args custom::command( const engines::engine::cmdArgsList& args 
 		if( !args.configFilePath.isEmpty() ){
 
 			exeOptions.add( args.configFilePath ) ;
+		}
+
+		if( args.opt.reverseMode ){
+
+			exeOptions.add( this->reverseString() ) ;
+		}
+
+		if( !args.opt.idleTimeout.isEmpty() && !this->idleString().isEmpty() ){
+
+			exeOptions.addPair( this->idleString(),args.opt.idleTimeout ) ;
 		}
 
 		cmd.replace( "%{mountOptions}",exeOptions.get(),Qt::CaseInsensitive ) ;

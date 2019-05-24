@@ -248,6 +248,16 @@ const QStringList& engines::engine::configFileNames() const
 	return m_Options.configFileNames ;
 }
 
+const QString& engines::engine::reverseString() const
+{
+	return m_Options.reverseString ;
+}
+
+const QString& engines::engine::idleString() const
+{
+	return m_Options.idleString ;
+}
+
 const QString& engines::engine::executableName() const
 {
 	return m_Options.executableName ;

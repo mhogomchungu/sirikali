@@ -164,9 +164,11 @@ public:
 			bool supportsMountPathsOnWindows ;
 			bool requiresAPassword ;
 			bool customBackend ;
+			QString reverseString ;
+			QString idleString ;
 			QString executableName ;
 			QString incorrectPasswordText ;
-                        QString incorrectPassWordCode ;
+			QString incorrectPassWordCode ;
 			QString configFileArgument ;
 			QStringList successfulMountedList ;
 			QStringList failedToMountList ;
@@ -211,6 +213,8 @@ public:
 		const QStringList& fuseNames() const ;
 		const QStringList& configFileNames() const ;
 
+		const QString& reverseString() const ;
+		const QString& idleString() const ;
 		const QString& executableName() const ;
 		const QString& name() const ;
 		const QString& configFileName() const ;
