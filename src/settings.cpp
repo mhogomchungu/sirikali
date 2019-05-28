@@ -966,6 +966,18 @@ void settings::removeFavoriteEntry( const favorites::entry& e )
 	}() ) ;
 }
 
+QString settings::yubiKeySlot()
+{
+	if( !m_settings.contains( "YubiKeySlot" ) ){
+
+		m_settings.setValue( "YubiKeySlot","2" ) ;
+	}
+
+	auto a = m_settings.value( "YubiKeySlot" ).toString() ;
+
+	return " -" + a + " -i -" ;
+}
+
 QString settings::localizationLanguage()
 {
 	if( m_settings.contains( "Language" ) ){

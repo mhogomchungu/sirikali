@@ -257,6 +257,7 @@ void keyDialog::setUpInitUI()
 	m_ui->cbKeyType->addItem( tr( "Key+KeyFile" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "HMAC+KeyFile" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "ExternalExecutable" ) ) ;
+	m_ui->cbKeyType->addItem( tr( "YubiKey Challenge/Responce" ) ) ;
 
 	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::internal ) ){
 
@@ -563,7 +564,9 @@ void keyDialog::passWordTextChanged( QString e )
 			this->setWindowTitle( tr( "Passphrase Quality: %1%" ).arg( QString::number( r ) ) ) ;
 		}
 
-	}else if( m_keyType == keyDialog::keyKeyFile || m_keyType == keyDialog::hmacKeyFile ){
+	}else if( m_keyType == keyDialog::keyKeyFile ||
+		  m_keyType == keyDialog::hmacKeyFile ||
+		  m_keyType == keyDialog::yubikey ){
 
 		this->setWindowTitle( tr( "Passphrase Quality: 100%" ) ) ;
 	}else{
@@ -574,6 +577,11 @@ void keyDialog::passWordTextChanged( QString e )
 bool keyDialog::eventFilter( QObject * watched,QEvent * event )
 {
 	return utility::eventFilter( this,watched,event,[ this ](){ this->pbCancel() ; } ) ;
+}
+
+bool keyDialog::keySelected( int e )
+{
+	return e == keyDialog::keyType::Key || e == keyDialog::keyType::yubikey ;
 }
 
 void keyDialog::cbMountReadOnlyStateChanged( int state )
@@ -663,7 +671,7 @@ void keyDialog::enableAll()
 
 	auto index = m_ui->cbKeyType->currentIndex() ;
 
-	m_ui->lineEditKey->setEnabled( index == keyDialog::Key ) ;
+	m_ui->lineEditKey->setEnabled( this->keySelected( index ) ) ;
 
 	auto enable = index == keyDialog::keyfile || index == keyDialog::keyKeyFile ;
 
@@ -671,7 +679,7 @@ void keyDialog::enableAll()
 
 	if( settings::instance().enableRevealingPasswords() ){
 
-		m_ui->checkBoxVisibleKey->setEnabled( index == keyDialog::Key ) ;
+		m_ui->checkBoxVisibleKey->setEnabled( this->keySelected( index ) ) ;
 	}
 
 	if( !utility::platformIsWindows() ){
@@ -931,7 +939,7 @@ void keyDialog::pbOK()
 
 	m_ui->textEdit->setVisible( false ) ;
 
-	if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
+	if( this->keySelected( m_ui->cbKeyType->currentIndex() ) ) {
 
 		m_ui->checkBoxVisibleKey->setVisible( true ) ;
 		m_ui->pbkeyOption->setVisible( false ) ;
@@ -1027,7 +1035,7 @@ void keyDialog::encryptedFolderCreate()
 
 			m_closeGUI = true ;
 		}else{
-			if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
+			if( this->keySelected( m_ui->cbKeyType->currentIndex() ) ){
 
 				m_ui->lineEditKey->clear() ;
 			}
@@ -1247,7 +1255,28 @@ void keyDialog::openVolume()
 		}
 	} ;
 
-	if( keyType == keyDialog::Key ){
+	if( keyType == keyDialog::yubikey ){
+
+		auto s = m_ui->lineEditKey->text().toLatin1() ;
+
+		if( s.isEmpty() ){
+
+			s = "\n" ;
+		}
+
+		auto m = utility::yubiKey( s ) ;
+
+		if( m.has_value() ){
+
+			m_key = m.value() ;
+
+			_run() ;
+		}else{
+			this->showErrorMessage( tr( "Failed To Locate Or Run Yubikey's \"ykchalresp\" Program." ) ) ;
+			return this->enableAll() ;
+		}
+
+	}else if( keyType == keyDialog::Key ){
 
 		m_key = m_ui->lineEditKey->text().toLatin1() ;
 
@@ -1302,7 +1331,7 @@ QString keyDialog::keyFileError()
 
 void keyDialog::cbVisibleKeyStateChanged( int s )
 {
-	if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
+	if( this->keySelected( m_ui->cbKeyType->currentIndex() ) ){
 
 		if( s == Qt::Checked ){
 
@@ -1328,7 +1357,7 @@ void keyDialog::cbActicated( QString e )
 		m_ui->pbkeyOption->setVisible( !e ) ;
 	} ;
 
-	if( e == tr( "Key" ).remove( '&' ) ){
+	if( e == tr( "Key" ).remove( '&' ) || e == tr( "YubiKey Challenge/Responce" ).remove( '&')){
 
 		this->key() ;
 

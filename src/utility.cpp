@@ -1447,3 +1447,38 @@ void utility::waitForFinished( QProcess& e )
 
 	e.waitForFinished() ;
 }
+
+static QString _ykchalresp_path()
+{
+	static QString m = utility::executableFullPath( "ykchalresp" ) ;
+	return m ;
+}
+
+utility::result<QByteArray> utility::yubiKey( const QString& challenge )
+{
+	QString exe = _ykchalresp_path() ;
+
+	if( !exe.isEmpty() ){
+
+		exe = exe + settings::instance().yubiKeySlot() ;
+
+		auto s = ::Task::process::run( exe,challenge.toLatin1() ).await() ;
+
+		utility::logCommandOutPut( s,exe ) ;
+
+		if( s.success() ){
+
+			auto m = s.std_out() ;
+
+			m.replace( "\n","" ) ;
+
+			return m ;
+		}else{
+			utility::debug::cout() << "Failed to get a responce from ykchalresp" ;
+			utility::debug::cout() << "StdOUt:" << s.std_out() ;
+			utility::debug::cout() << "StdError:" << s.std_error() ;
+		}
+	}
+
+	return {} ;
+}

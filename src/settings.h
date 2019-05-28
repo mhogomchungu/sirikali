@@ -131,6 +131,7 @@ public:
 	void setWindowsExecutableSearchPath( const QString& ) ;
 	QString windowsExecutableSearchPath() ;
 	QString externalPluginExecutable() ;
+	QString yubiKeySlot() ;
 	void setExternalPluginExecutable( const QString& ) ;
 	bool enableRevealingPasswords() ;
 	void scaleGUI() ;

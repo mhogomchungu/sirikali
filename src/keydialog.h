@@ -261,6 +261,8 @@ private :
 	bool completed( const engines::engine::cmdStatus&,const QString& m ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 
+	bool keySelected( int ) ;
+
 	Ui::keyDialog * m_ui ;
 
 	QByteArray m_key ;
@@ -290,7 +292,7 @@ private :
 
 	keystrength m_keyStrength ;
 
-	typedef enum{ Key = 0,keyfile = 1,hmacKeyFile = 2,keyKeyFile = 3,Plugin = 4 } keyType ;
+	typedef enum{ Key = 0,keyfile = 1,hmacKeyFile = 2,keyKeyFile = 3,Plugin = 4,yubikey = 5 } keyType ;
 
 	keyType m_keyType ;
 
