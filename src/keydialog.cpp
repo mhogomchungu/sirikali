@@ -257,7 +257,7 @@ void keyDialog::setUpInitUI()
 	m_ui->cbKeyType->addItem( tr( "Key+KeyFile" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "HMAC+KeyFile" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "ExternalExecutable" ) ) ;
-	m_ui->cbKeyType->addItem( tr( "YubiKey Challenge/Responce" ) ) ;
+	m_ui->cbKeyType->addItem( tr( "YubiKey Challenge/Response" ) ) ;
 
 	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::internal ) ){
 
