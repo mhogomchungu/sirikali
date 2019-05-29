@@ -1454,15 +1454,15 @@ static QString _ykchalresp_path()
 	return m ;
 }
 
-utility::result<QByteArray> utility::yubiKey( const QString& challenge )
+utility::result< QByteArray > utility::yubiKey( const QString& challenge )
 {
 	QString exe = _ykchalresp_path() ;
 
 	if( !exe.isEmpty() ){
 
-		exe = exe + settings::instance().yubiKeySlot() ;
+		exe = exe + " " + settings::instance().ykchalrespArguments() ;
 
-		auto s = ::Task::process::run( exe,challenge.toLatin1() ).await() ;
+		auto s = utility::unwrap( ::Task::process::run( exe,challenge.toLatin1() ) ) ;
 
 		utility::logCommandOutPut( s,exe ) ;
 

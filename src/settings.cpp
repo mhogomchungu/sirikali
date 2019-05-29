@@ -966,16 +966,14 @@ void settings::removeFavoriteEntry( const favorites::entry& e )
 	}() ) ;
 }
 
-QString settings::yubiKeySlot()
+QString settings::ykchalrespArguments()
 {
-	if( !m_settings.contains( "YubiKeySlot" ) ){
+	if( !m_settings.contains( "YkchalrespArguments" ) ){
 
-		m_settings.setValue( "YubiKeySlot","2" ) ;
+		m_settings.setValue( "YkchalrespArguments","-2 -i -" ) ;
 	}
 
-	auto a = m_settings.value( "YubiKeySlot" ).toString() ;
-
-	return " -" + a + " -i -" ;
+	return m_settings.value( "YkchalrespArguments" ).toString() ;
 }
 
 QString settings::localizationLanguage()
