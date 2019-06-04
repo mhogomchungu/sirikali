@@ -1818,6 +1818,18 @@ void sirikali::unMountAll()
 		}
 	} ) ;
 
+	auto m = m_ui->tableWidget->rowCount() ;
+
+	if( m > 0 ){
+
+		if( m == 1 ){
+
+			DialogMsg( this ).ShowUIOK( tr( "WARNING" ),tr( "Failed To Unmount 1 Volume." ) ) ;
+		}else{
+			DialogMsg( this ).ShowUIOK( tr( "WARNING" ),tr( "Failed To Unmount %1 Volumes." ).arg( m ) ) ;
+		}
+	}
+
 	this->enableAll() ;
 
 	m_mountInfo.announceEvents( true ) ;
