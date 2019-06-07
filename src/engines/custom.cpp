@@ -20,11 +20,11 @@
 #include "custom.h"
 #include "json.h"
 #include "install_prefix.h"
+#include "../settings.h"
 
 #include "customcreateoptions.h"
 
 #include <QDir>
-#include <QStandardPaths>
 
 static utility::result< custom::opts > _getOptions( const QByteArray& e,const QString& s )
 {
@@ -133,11 +133,11 @@ static void _add_engines( QStringList& list,
 
 void custom::addEngines( QStringList& list,std::vector< std::unique_ptr< engines::engine >>& engines )
 {
-	auto m = QStandardPaths::standardLocations( QStandardPaths::ConfigLocation ) ;
+	auto m = settings::instance().ConfigLocation() ;
 
 	if( !m.isEmpty() ){
 
-		_add_engines( list,m.first() + "/SiriKali/backends/",engines ) ;
+		_add_engines( list,m + "/SiriKali/backends/",engines ) ;
 	}
 
 	_add_engines( list,INSTALL_PREFIX"/share/SiriKali/backends/",engines ) ;

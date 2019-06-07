@@ -98,7 +98,7 @@ public:
 			m_mountinfo.mountOptions = e.mountOptions ;
 		}
 	}
-	const favorites::entry::readOnly& mountReadOnly() const
+	const favorites::readOnly& mountReadOnly() const
 	{
 		return m_readOnlyMode ;
 	}
@@ -153,7 +153,7 @@ public:
 private:
 	volumeInfo::mountinfo m_mountinfo ;
 	bool m_reverseMode = false ;
-	favorites::entry::readOnly m_readOnlyMode ;
+	favorites::readOnly m_readOnlyMode ;
 };
 
 #endif // VOLUMEENTRYPROPERTIES_H

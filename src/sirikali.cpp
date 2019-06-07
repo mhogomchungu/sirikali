@@ -66,12 +66,13 @@
 #include "engines.h"
 
 #include "favorites2.h"
+#include "favorites.h"
 
 static utility::volumeList _readFavorites()
 {
 	utility::volumeList e ;
 
-	for( auto&& it : settings::instance().readFavorites() ){
+	for( auto&& it : favorites::readFavorites() ){
 
 		e.emplace_back( std::move( it ),QByteArray() ) ;
 	}
@@ -491,7 +492,6 @@ void sirikali::favoriteClicked( QAction * ac )
 	if( e == "Manage Favorites" ){
 
 		favorites2::instance( this ) ;
-		//favorites::instance( this ) ;
 	}else{
 		if( e == "Mount All" ){
 
@@ -877,7 +877,7 @@ void sirikali::autoMountFavoritesOnAvailable( QString m )
 
 		for( auto&& it : _readFavorites() ){
 
-			if( it.first.volumePath.startsWith( m ) && it.first.autoMount() ){
+			if( it.first.volumePath.startsWith( m ) && it.first.autoMount.automount() ){
 
 				e.emplace_back( std::move( it ) ) ;
 			}
@@ -908,7 +908,7 @@ void sirikali::autoUnlockVolumes( const std::vector< volumeInfo >& s )
 
 		const auto& m = it.first ;
 
-		if( m.autoMount() && !_mounted( m.volumePath )){
+		if( m.autoMount.automount() && !_mounted( m.volumePath )){
 
 			e.emplace_back( std::move( it ) ) ;
 		}
@@ -1177,7 +1177,7 @@ static utility::result< QByteArray > _volume_properties( const QString& cmd,
 
 		return e.stdOut() ;
 	}else{
-		for( const auto& it : settings::instance().readFavorites() ){
+		for( const auto& it : favorites::readFavorites() ){
 
 			if( utility::Task::makePath( it.volumePath ) == path ){
 
@@ -1585,7 +1585,6 @@ void sirikali::createVolume( QAction * ac )
 		if( s == "Sshfs" ){
 
 			favorites2::instance( this,favorites::type::sshfs ) ;
-			//favorites::instance( this,favorites::type::sshfs ) ;
 		}else{
 			this->mount( volumeInfo(),s ) ;
 		}

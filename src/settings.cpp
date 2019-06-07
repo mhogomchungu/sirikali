@@ -46,6 +46,7 @@
 #include <QTranslator>
 
 #include <QCoreApplication>
+#include <QStandardPaths>
 
 settings::settings() : m_settings( "SiriKali","SiriKali" )
 {
@@ -123,26 +124,6 @@ int settings::sshfsBackendTimeout()
 	}
 
 	return m_settings.value( "sshfsBackendTimeout" ).toInt() ;
-}
-
-void settings::replaceFavorite( const favorites::entry& e,const favorites::entry& f )
-{
-	QStringList l ;
-
-	for( const auto& it : this->readFavorites() ){
-
-		if( it == e ){
-
-			l.append( f.configString() ) ;
-		}else{
-			l.append( it.configString() ) ;
-		}
-	}
-
-	if( !l.isEmpty() ){
-
-		m_settings.setValue( "FavoritesVolumes",l ) ;
-	}
 }
 
 int settings::favoritesEntrySize()
@@ -357,6 +338,23 @@ QString settings::mountPath( const QString& path )
 	return m_settings.value( "MountPrefix" ).toString() + "/" + path ;
 }
 
+QString settings::ConfigLocation()
+{
+	if( !m_settings.contains( "ConfigLocation" ) ){
+
+		auto m = QStandardPaths::standardLocations( QStandardPaths::ConfigLocation ) ;
+
+		if( !m.isEmpty() ){
+
+			m_settings.setValue( "ConfigLocation",m.first() + "/SiriKali/" ) ;
+		}else{
+			//TODO: what to do here???
+		}
+	}
+
+	return m_settings.value( "ConfigLocation" ).toString() ;
+}
+
 QString settings::environmentalVariableVolumeKey()
 {
 	if( !m_settings.contains( "EnvironmentalVariableVolumeKey" ) ){
@@ -366,6 +364,12 @@ QString settings::environmentalVariableVolumeKey()
 
 	return m_settings.value( "EnvironmentalVariableVolumeKey" ).toString() ;
 }
+
+void settings::removeKey( const QString& key )
+{
+	m_settings.remove( key ) ;
+}
+
 QString settings::walletName()
 {
 	return "SiriKali" ;
@@ -396,19 +400,6 @@ bool settings::unMountVolumesOnLogout()
 	return m_settings.value( "UnMountVolumesOnLogout" ).toBool() ;
 }
 
-favorites::entry settings::readFavorite( const QString& e )
-{
-	for( const auto& it : this->readFavorites() ){
-
-		if( it.volumePath == e ){
-
-			return it ;
-		}
-	}
-
-	return {} ;
-}
-
 void settings::readFavorites( QMenu * m )
 {
 	m->clear() ;
@@ -428,7 +419,7 @@ void settings::readFavorites( QMenu * m )
 
 	m->addSeparator() ;
 
-	const auto favorites = this->readFavorites() ;
+	const auto favorites = favorites::readFavorites() ;
 
 	bool cipherPathRepeatsInFavoritesList = false ;
 
@@ -907,63 +898,6 @@ bool settings::ecryptfsAllowNotEncryptingFileNames()
 	}
 
 	return m_settings.value( "EcryptfsAllowNotEncryptingFileNames" ).toBool() ;
-}
-
-void settings::addToFavorite( const QStringList& e )
-{
-	if( !e.isEmpty() ){
-
-		m_settings.setValue( "FavoritesVolumes",[ & ](){
-
-			auto q = this->readFavorites() ;
-
-			q.emplace_back( e ) ;
-
-			QStringList l ;
-
-			for( const auto& it : q ){
-
-				l.append( it.configString() ) ;
-			}
-
-			return l ;
-		}() ) ;
-	}
-}
-
-std::vector< favorites::entry > settings::readFavorites()
-{
-	if( m_settings.contains( "FavoritesVolumes" ) ){
-
-		std::vector< favorites::entry > e ;
-
-		for( const auto& it : m_settings.value( "FavoritesVolumes" ).toStringList() ){
-
-			e.emplace_back( it ) ;
-		}
-
-		return e ;
-	}else{
-		return {} ;
-	}
-}
-
-void settings::removeFavoriteEntry( const favorites::entry& e )
-{
-	m_settings.setValue( "FavoritesVolumes",[ & ](){
-
-		QStringList l ;
-
-		for( const auto& it : this->readFavorites() ){
-
-			if( it != e ){
-
-				l.append( it.configString() ) ;
-			}
-		}
-
-		return l ;
-	}() ) ;
 }
 
 QString settings::ykchalrespArguments()

@@ -689,7 +689,7 @@ engines::engine::options::options( const favorites::entry& e,const QString& volu
 	type( QString() ),
 	ro( e.readOnlyMode ? e.readOnlyMode.onlyRead() : false ),
 	reverseMode( e.reverseMode ),
-	mountOptions( e.sanitizedMountOptions() )
+	mountOptions( e.mountOptions )
 {
 }
 
@@ -711,7 +711,7 @@ engines::engine::options::options( const QString& cipher_folder,
 	type( volume_type ),
 	ro( unlock_in_read_only ),
 	reverseMode( unlock_in_reverse_mode ),
-	mountOptions( favorites::entry::sanitizedMountOptions( mount_options ) ),
+	mountOptions( mount_options ),
 	createOptions( create_options )
 {
 }

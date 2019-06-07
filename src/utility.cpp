@@ -445,6 +445,7 @@ bool utility::enablePolkit()
 
 void utility::initGlobals()
 {
+	favorites::updateFavorites() ;
 	utility::setGUIThread() ;
 #ifdef Q_OS_LINUX
 	auto uid = getuid() ;

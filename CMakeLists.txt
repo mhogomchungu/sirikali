@@ -229,7 +229,6 @@ set( UI_FILES 	src/sirikali.ui
 		src/dialogmsg.ui
 		src/plugin.ui
 		src/createbackendwindow.ui
-		src/favorites.ui
 		src/favorites2.ui
 		src/readonlywarning.ui
 		src/walletconfig.ui
@@ -261,7 +260,6 @@ set( MOC_FILES
 		src/oneinstance.h
 		src/dialogmsg.h
 		src/plugin.h
-		src/favorites.h
 		src/favorites2.h
 		src/readonlywarning.h
 		src/walletconfig.h

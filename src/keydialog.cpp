@@ -518,11 +518,11 @@ void keyDialog::pbOptions()
 
 			m_checked = true ;
 
-			auto f = settings::instance().readFavorite( m_path ) ;
+			auto f = favorites::readFavorite( m_path ) ;
 
 			m_idleTimeOut  = f.idleTimeOut ;
 			m_configFile   = f.configFilePath ;
-			m_mountOptions = f.sanitizedMountOptions() ;
+			m_mountOptions = f.mountOptions ;
 			m_reverseMode  = f.reverseMode ;
 		}
 
