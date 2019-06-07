@@ -197,7 +197,7 @@ static void _add_entries( std::vector< favorites::entry >& e,const QString& path
 		m.reverseMode          = _getBool( "reverseMode" ) ;
 		m.volumeNeedNoPassword = _getBool( "volumeNeedNoPassword" ) ;
 
-		auto s = _getString( "MountReadOnly" ) ;
+		auto s = _getString( "mountReadOnly" ) ;
 
 		if( !s.isEmpty() ){
 
@@ -300,12 +300,12 @@ favorites::error favorites::add( const favorites::entry& e )
 
 		if( e.readOnlyMode.onlyRead() ){
 
-			json[ "MountReadOnly" ] = "true" ;
+			json[ "mountReadOnly" ] = "true" ;
 		}else{
-			json[ "MountReadOnly" ] = "false" ;
+			json[ "mountReadOnly" ] = "false" ;
 		}
 	}else{
-		json[ "MountReadOnly" ] = "" ;
+		json[ "mountReadOnly" ] = "" ;
 	}
 
 	if( e.autoMount ){
