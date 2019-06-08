@@ -68,9 +68,9 @@
 #include "favorites2.h"
 #include "favorites.h"
 
-static utility::volumeList _readFavorites()
+static favorites::volumeList _readFavorites()
 {
-	utility::volumeList e ;
+	favorites::volumeList e ;
 
 	for( auto&& it : favorites::instance().readFavorites() ){
 
@@ -852,7 +852,7 @@ void sirikali::unlockVolume( const QStringList& l )
 	}
 }
 
-void sirikali::mountMultipleVolumes( utility::volumeList e )
+void sirikali::mountMultipleVolumes( favorites::volumeList e )
 {
 	if( !e.empty() ){
 
@@ -873,7 +873,7 @@ void sirikali::autoMountFavoritesOnAvailable( QString m )
 {
 	if( settings::instance().autoMountFavoritesOnAvailable() ){
 
-		utility::volumeList e ;
+		favorites::volumeList e ;
 
 		for( auto&& it : _readFavorites() ){
 
@@ -889,7 +889,7 @@ void sirikali::autoMountFavoritesOnAvailable( QString m )
 
 void sirikali::autoUnlockVolumes( const std::vector< volumeInfo >& s )
 {
-	utility::volumeList e ;
+	favorites::volumeList e ;
 
 	auto _mounted = [ & ]( const QString& e ){
 
@@ -917,7 +917,7 @@ void sirikali::autoUnlockVolumes( const std::vector< volumeInfo >& s )
 	this->mountMultipleVolumes( this->autoUnlockVolumes( std::move( e ) ) ) ;
 }
 
-utility::volumeList sirikali::autoUnlockVolumes( utility::volumeList l,bool autoOpenFolderOnMount )
+favorites::volumeList sirikali::autoUnlockVolumes( favorites::volumeList l,bool autoOpenFolderOnMount )
 {
 	if( l.empty() ){
 
@@ -940,9 +940,9 @@ utility::volumeList sirikali::autoUnlockVolumes( utility::volumeList l,bool auto
 
 	auto _mountVolumes = [ & ](){
 
-		utility::volumeList e ;
+		favorites::volumeList e ;
 
-		auto _mount = [ & ]( utility::volumeList& q,
+		auto _mount = [ & ]( favorites::volumeList& q,
 				     const std::pair< favorites::entry,QByteArray >& e,
 				     const QByteArray& key,
 				     bool s ){
@@ -1537,7 +1537,7 @@ void sirikali::dragEnterEvent( QDragEnterEvent * e )
 
 void sirikali::dropEvent( QDropEvent * e )
 {
-	utility::volumeList s ;
+	favorites::volumeList s ;
 
 	for( const auto& it : e->mimeData()->urls() ){
 

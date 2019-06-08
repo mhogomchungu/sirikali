@@ -113,7 +113,7 @@ private:
 
 	void showTrayIcon() ;
 
-	void mountMultipleVolumes( utility::volumeList ) ;
+	void mountMultipleVolumes( favorites::volumeList ) ;
 
 	QString resolveFavoriteMountPoint( const QString& ) ;
 
@@ -135,7 +135,7 @@ private:
 	void setUpShortCuts( void ) ;
 	void raiseWindow( const QString& = QString() ) ;
 	void autoUnlockVolumes( const std::vector< volumeInfo >& ) ;	
-	utility::volumeList autoUnlockVolumes( utility::volumeList,bool = false ) ;
+	favorites::volumeList autoUnlockVolumes( favorites::volumeList,bool = false ) ;
 
 	struct mountedEntry{
 		const QString& cipherPath ;

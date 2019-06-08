@@ -186,7 +186,7 @@ public:
 			      secrets& s,
 			      bool o,
 			      const QString& m,
-			      utility::volumeList e,
+			      favorites::volumeList e,
 			      std::function< void() > function )
 	{
 		new keyDialog( parent,s,o,m,std::move( e ),std::move( function ) ) ;
@@ -195,7 +195,7 @@ public:
 		   secrets&,
 		   bool,
 		   const QString&,
-		   utility::volumeList,
+		   favorites::volumeList,
 		   std::function< void() > ) ;
 	keyDialog( QWidget * parent,
 		   secrets&,
@@ -301,7 +301,7 @@ private :
 	std::function< void() > m_cancel = [](){} ;
 	std::function< void() > m_done = [](){} ;
 
-	utility::volumeList m_volumes ;
+	favorites::volumeList m_volumes ;
 
 	cryfsWarning m_cryfsWarning ;
 

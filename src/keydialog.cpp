@@ -63,7 +63,7 @@ keyDialog::keyDialog( QWidget * parent,
 		      secrets& s,
 		      bool o,
 		      const QString& q,
-		      utility::volumeList z,
+		      favorites::volumeList z,
 		      std::function< void() > f ) :
 	QDialog( parent ),
 	m_ui( new Ui::keyDialog ),
@@ -520,10 +520,14 @@ void keyDialog::pbOptions()
 
 			auto f = favorites::instance().readFavorite( m_path ) ;
 
-			m_idleTimeOut  = f.idleTimeOut ;
-			m_configFile   = f.configFilePath ;
-			m_mountOptions = f.mountOptions ;
-			m_reverseMode  = f.reverseMode ;
+			if( f.has_value() ){
+
+				const auto& e = f.value() ;
+				m_idleTimeOut  = e.idleTimeOut ;
+				m_configFile   = e.configFilePath ;
+				m_mountOptions = e.mountOptions ;
+				m_reverseMode  = e.reverseMode ;
+			}
 		}
 
 		options::Options e{ { m_idleTimeOut,m_configFile,m_mountOptions,m_exe },m_reverseMode } ;

@@ -22,6 +22,7 @@
 
 #include <QString>
 #include <vector>
+#include "utility.h"
 
 class favorites
 {
@@ -59,6 +60,10 @@ public:
 		{
 			return m_state == STATES::TRUE ;
 		}
+		bool False() const
+		{
+			return m_state == STATES::FALSE ;
+		}
 	private:
 		enum class STATES{ UNDEFINED,TRUE,FALSE } m_state ;
 	};
@@ -67,6 +72,7 @@ public:
 	{
 		entry() ;
 		entry( const QString& volumePath ) ;
+
 		QString volumePath ;
 		QString mountPointPath ;
 		QString configFilePath ;
@@ -79,6 +85,7 @@ public:
 
 		bool reverseMode = false ;
 		bool volumeNeedNoPassword = false ;
+
 		favorites::triState readOnlyMode ;
 		favorites::triState autoMount ;
 	};
@@ -89,6 +96,8 @@ public:
 		return m ;
 	}
 
+	using volumeList = std::vector< std::pair< favorites::entry,QByteArray > > ;
+
 	enum class error{ ENTRY_ALREADY_EXISTS,FAILED_TO_CREATE_ENTRY,SUCCESS } ;
 
 	error add( const favorites::entry& ) ;
@@ -98,8 +107,7 @@ public:
 
 	std::vector< favorites::entry > readFavorites() const ;
 
-	favorites::entry readFavorite( const QString& ) const ;
-	favorites::entry readFavorite( const QString&,const QString& ) const ;
+	utility::result< favorites::entry > readFavorite( const QString&,const QString& = QString() ) const ;
 
 	void updateFavorites() ;
 };

@@ -56,7 +56,6 @@
 
 #include "task.hpp"
 #include "lxqt_wallet.h"
-#include "favorites.h"
 #include "plugins.h"
 #include "secrets.h"
 #include "utility2.h"
@@ -73,8 +72,6 @@ class QEvent ;
 
 namespace utility
 {
-	using volumeList = std::vector< std::pair< favorites::entry,QByteArray > > ;
-
 	template< typename T >
 	class result
 	{

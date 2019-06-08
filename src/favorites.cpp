@@ -197,26 +197,24 @@ std::vector<favorites::entry> favorites::readFavorites() const
 	return e ;
 }
 
-favorites::entry favorites::readFavorite( const QString& e ) const
+utility::result< favorites::entry > favorites::readFavorite( const QString& e,const QString& s ) const
 {
-	for( const auto& it : favorites::readFavorites() ){
+	if( s.isEmpty() ){
 
-		if( it.volumePath == e ){
+		for( const auto& it : favorites::readFavorites() ){
 
-			return it ;
+			if( it.volumePath == e ){
+
+				return it ;
+			}
 		}
-	}
+	}else{
+		for( const auto& it : favorites::readFavorites() ){
 
-	return {} ;
-}
+			if( it.volumePath == e && it.mountPointPath == s ){
 
-favorites::entry favorites::readFavorite( const QString& e,const QString& s ) const
-{
-	for( const auto& it : favorites::readFavorites() ){
-
-		if( it.volumePath == e && it.mountPointPath == s ){
-
-			return it ;
+				return it ;
+			}
 		}
 	}
 
