@@ -140,7 +140,7 @@ favorites2::favorites2( QWidget * parent,favorites::type type ) :
 
 	connect( table,&QTableWidget::itemClicked,[ this ]( QTableWidgetItem * item ){
 
-		const auto volumes = favorites::readFavorites() ;
+		const auto volumes = favorites::instance().readFavorites() ;
 
 		this->setVolumeProperties( volumes[ size_t( item->row() ) ] ) ;
 	} ) ;
@@ -160,7 +160,7 @@ favorites2::favorites2( QWidget * parent,favorites::type type ) :
 
 	this->checkFavoritesConsistency() ;
 
-	const auto volumes = favorites::readFavorites() ;
+	const auto volumes = favorites::instance().readFavorites() ;
 
 	this->updateVolumeList( volumes,0 ) ;
 
@@ -272,7 +272,7 @@ void favorites2::updateVolumeList( const std::vector< favorites::entry >& e,int 
 
 void favorites2::showUpdatedEntry( const favorites::entry& e )
 {
-	this->updateVolumeList( favorites::readFavorites(),e.volumePath ) ;
+	this->updateVolumeList( favorites::instance().readFavorites(),e.volumePath ) ;
 
 	m_ui->tabWidget->setCurrentIndex( 0 ) ;
 }
@@ -333,7 +333,7 @@ void favorites2::toggleAutoMount()
 				m_ui->textEditAutoMount->setText( "false" ) ;
 			}
 
-			favorites::replaceFavorite( e,f ) ;
+			favorites::instance().replaceFavorite( e,f ) ;
 		}
 	}
 }
@@ -345,7 +345,7 @@ void favorites2::edit()
 	m_editRow = table->currentRow() ;
 	m_editMode = true ;
 
-	const auto volumes = favorites::readFavorites() ;
+	const auto volumes = favorites::instance().readFavorites() ;
 
 	if( m_editRow >= 0 && m_editRow < int( volumes.size() ) ){
 
@@ -355,7 +355,7 @@ void favorites2::edit()
 
 		m_ui->lineEditEncryptedFolderPath->setText( entry.volumePath ) ;
 		m_ui->lineEditMountPath->setText( entry.mountPointPath ) ;
-		m_ui->cbAutoMount->setChecked( entry.autoMount.automount() ) ;
+		m_ui->cbAutoMount->setChecked( entry.autoMount.True() ) ;
 
 		const auto& a = entry.configFilePath ;
 		const auto& b = entry.idleTimeOut ;
@@ -378,7 +378,7 @@ void favorites2::edit()
 
 		m_ui->cbReverseMode->setChecked( entry.reverseMode ) ;
 		m_ui->cbVolumeNoPassword->setChecked( entry.volumeNeedNoPassword ) ;
-		m_ui->cbReadOnlyMode->setChecked( entry.readOnlyMode ) ;
+		m_ui->cbReadOnlyMode->setChecked( entry.readOnlyMode.True() ) ;
 
 		m_ui->pbAdd->setEnabled( false ) ;
 		m_ui->tabWidget->setCurrentIndex( 1 ) ;
@@ -403,9 +403,9 @@ void favorites2::removeEntryFromFavoriteList()
 
 		auto row = table->currentRow() ;
 
-		favorites::removeFavoriteEntry( this->getEntry( row ) ) ;
+		favorites::instance().removeFavoriteEntry( this->getEntry( row ) ) ;
 
-		const auto volumes = favorites::readFavorites() ;
+		const auto volumes = favorites::instance().readFavorites() ;
 
 		this->updateVolumeList( volumes,int( volumes.size() ) - 1 ) ;
 	}
@@ -483,7 +483,7 @@ void favorites2::updateFavorite( bool edit )
 	favorites::entry e ;
 	e.volumePath = dev_path ;
 	e.mountPointPath = path ;
-	e.autoMount = favorites::autoMount( m_ui->cbAutoMount->isChecked() ) ;
+	e.autoMount = favorites::triState( m_ui->cbAutoMount->isChecked() ) ;
 	e.configFilePath = configPath ;
 	e.idleTimeOut = idleTimeOUt ;
 	e.mountOptions = mOpts ;
@@ -492,7 +492,7 @@ void favorites2::updateFavorite( bool edit )
 
 		auto f = this->getEntry( m_editRow ) ;
 
-		favorites::replaceFavorite( f,e ) ;
+		favorites::instance().replaceFavorite( f,e ) ;
 	}else{
 		if( utility::platformIsWindows() ){
 
@@ -504,7 +504,7 @@ void favorites2::updateFavorite( bool edit )
 			e.mountPointPath = path + "/" + utility::split( dev,'/' ).last() ;
 		}
 
-		favorites::add( e ) ;
+		favorites::instance().add( e ) ;
 	}
 
 	m_ui->lineEditEncryptedFolderPath->clear() ;
@@ -623,7 +623,7 @@ favorites::entry favorites2::getEntry( int row )
 {
 	size_t m = size_t( row ) ;
 
-	const auto volumes = favorites::readFavorites() ;
+	const auto volumes = favorites::instance().readFavorites() ;
 
 	if( m < volumes.size() ){
 
@@ -659,9 +659,9 @@ void favorites2::setVolumeProperties( const favorites::entry& e )
 {
 	m_ui->textEditMountPoint->setText( e.mountPointPath ) ;
 
-	if( e.autoMount ){
+	if( e.autoMount.defined() ){
 
-		m_ui->textEditAutoMount->setText( e.autoMount.automount() ? "true" : "false" ) ;
+		m_ui->textEditAutoMount->setText( e.autoMount.True() ? "true" : "false" ) ;
 	}else{
 		m_ui->textEditAutoMount->setText( QString() ) ;
 	}

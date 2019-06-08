@@ -27,50 +27,6 @@
 #include <QFile>
 #include <QCryptographicHash>
 
-favorites::autoMount::autoMount() : m_autoMountVolume( false ),m_isSet( false )
-{
-}
-
-favorites::autoMount::autoMount( bool e ) : m_autoMountVolume( e ),m_isSet( true )
-{
-}
-
-bool favorites::autoMount::automount() const
-{
-	return m_autoMountVolume ;
-}
-
-void favorites::autoMount::toggle()
-{
-	if( m_isSet ){
-
-		m_autoMountVolume = !m_autoMountVolume ;
-	}
-}
-
-favorites::autoMount::operator bool() const
-{
-	return m_isSet ;
-}
-
-favorites::readOnly::readOnly() : m_isSet( false )
-{
-}
-
-favorites::readOnly::readOnly( bool e ) : m_readOnlyVolume( e ),m_isSet( true )
-{
-}
-
-bool favorites::readOnly::onlyRead() const
-{
-	return m_readOnlyVolume ;
-}
-
-favorites::readOnly::operator bool() const
-{
-	return m_isSet ;
-}
-
 static utility::result< QString > _config_path()
 {
 	QString m = settings::instance().ConfigLocation() + "/favorites/" ;
@@ -107,7 +63,6 @@ static QString _create_path( const favorites::entry& e )
 		auto b = a + e.mountPointPath ;
 		auto c = QCryptographicHash::hash( b.toLatin1(),QCryptographicHash::Sha256 ) ;
 
-
 		return s.value() + a + "-" + c.toHex() + ".json" ;
 	}else{
 		return {} ;
@@ -132,9 +87,9 @@ static void _move_favorites_to_new_system( const QStringList& m )
 
 		if( autoMountVolume == "true" ){
 
-			s.autoMount = favorites::autoMount( true ) ;
+			s.autoMount = favorites::triState( true ) ;
 		}else{
-			s.autoMount = favorites::autoMount( false ) ;
+			s.autoMount = favorites::triState( false ) ;
 		}
 	}
 
@@ -158,14 +113,14 @@ static void _move_favorites_to_new_system( const QStringList& m )
 
 	if( s.mountOptions.contains( "-SiriKaliMountReadOnly" ) ){
 
-		s.readOnlyMode = favorites::readOnly( true ) ;
+		s.readOnlyMode = favorites::triState( true ) ;
 	}
 
 	s.mountOptions.replace( "-SiriKaliMountReadOnly","" ) ;
 	s.mountOptions.replace( "-SiriKaliVolumeNeedNoPassword","" ) ;
 	s.mountOptions.replace( "-SiriKaliReverseMode","" ) ;
 
-	favorites::add( s ) ;
+	favorites::instance().add( s ) ;
 }
 
 static void _add_entries( std::vector< favorites::entry >& e,const QString& path )
@@ -201,14 +156,14 @@ static void _add_entries( std::vector< favorites::entry >& e,const QString& path
 
 		if( !s.isEmpty() ){
 
-			m.readOnlyMode = favorites::readOnly( s == "true" ? true : false ) ;
+			m.readOnlyMode = favorites::triState( s == "true" ? true : false ) ;
 		}
 
 		s = _getString( "autoMountVolume" ) ;
 
 		if( !s.isEmpty() ){
 
-			m.autoMount = favorites::autoMount( s == "true" ? true : false ) ;
+			m.autoMount = favorites::triState( s == "true" ? true : false ) ;
 		}
 
 		e.emplace_back( std::move( m ) ) ;
@@ -219,7 +174,7 @@ static void _add_entries( std::vector< favorites::entry >& e,const QString& path
 	}
 }
 
-std::vector<favorites::entry> favorites::readFavorites()
+std::vector<favorites::entry> favorites::readFavorites() const
 {
 	auto m = _config_path() ;
 
@@ -242,11 +197,24 @@ std::vector<favorites::entry> favorites::readFavorites()
 	return e ;
 }
 
-favorites::entry favorites::readFavorite( const QString& e )
+favorites::entry favorites::readFavorite( const QString& e ) const
 {
 	for( const auto& it : favorites::readFavorites() ){
 
 		if( it.volumePath == e ){
+
+			return it ;
+		}
+	}
+
+	return {} ;
+}
+
+favorites::entry favorites::readFavorite( const QString& e,const QString& s ) const
+{
+	for( const auto& it : favorites::readFavorites() ){
+
+		if( it.volumePath == e && it.mountPointPath == s ){
 
 			return it ;
 		}
@@ -295,10 +263,9 @@ favorites::error favorites::add( const favorites::entry& e )
 	json[ "reverseMode" ]          = e.reverseMode ;
 	json[ "volumeNeedNoPassword" ] = e.volumeNeedNoPassword ;
 
+	if( e.readOnlyMode.defined() ){
 
-	if( e.readOnlyMode ){
-
-		if( e.readOnlyMode.onlyRead() ){
+		if( e.readOnlyMode.True() ){
 
 			json[ "mountReadOnly" ] = "true" ;
 		}else{
@@ -308,9 +275,9 @@ favorites::error favorites::add( const favorites::entry& e )
 		json[ "mountReadOnly" ] = "" ;
 	}
 
-	if( e.autoMount ){
+	if( e.autoMount.defined() ){
 
-		if( e.autoMount.automount() ){
+		if( e.autoMount.True() ){
 
 			json[ "autoMountVolume" ] = "true" ;
 		}else{
@@ -357,7 +324,6 @@ void favorites::removeFavoriteEntry( const favorites::entry& e )
 
 favorites::entry::entry()
 {
-
 }
 
 favorites::entry::entry( const QString& e )

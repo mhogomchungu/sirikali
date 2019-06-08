@@ -287,7 +287,7 @@ private :
 	bool m_closeGUI = false ;
 	bool m_reverseMode = false ;
 
-	favorites::readOnly m_favoriteReadOnly ;
+	favorites::triState m_favoriteReadOnly ;
 	secrets& m_secrets ;
 
 	keystrength m_keyStrength ;

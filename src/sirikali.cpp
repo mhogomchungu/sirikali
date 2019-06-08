@@ -72,7 +72,7 @@ static utility::volumeList _readFavorites()
 {
 	utility::volumeList e ;
 
-	for( auto&& it : favorites::readFavorites() ){
+	for( auto&& it : favorites::instance().readFavorites() ){
 
 		e.emplace_back( std::move( it ),QByteArray() ) ;
 	}
@@ -877,7 +877,7 @@ void sirikali::autoMountFavoritesOnAvailable( QString m )
 
 		for( auto&& it : _readFavorites() ){
 
-			if( it.first.volumePath.startsWith( m ) && it.first.autoMount.automount() ){
+			if( it.first.volumePath.startsWith( m ) && it.first.autoMount.True() ){
 
 				e.emplace_back( std::move( it ) ) ;
 			}
@@ -908,7 +908,7 @@ void sirikali::autoUnlockVolumes( const std::vector< volumeInfo >& s )
 
 		const auto& m = it.first ;
 
-		if( m.autoMount.automount() && !_mounted( m.volumePath )){
+		if( m.autoMount.True() && !_mounted( m.volumePath )){
 
 			e.emplace_back( std::move( it ) ) ;
 		}
@@ -1177,7 +1177,7 @@ static utility::result< QByteArray > _volume_properties( const QString& cmd,
 
 		return e.stdOut() ;
 	}else{
-		for( const auto& it : favorites::readFavorites() ){
+		for( const auto& it : favorites::instance().readFavorites() ){
 
 			if( utility::Task::makePath( it.volumePath ) == path ){
 

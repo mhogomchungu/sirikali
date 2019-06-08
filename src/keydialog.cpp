@@ -333,9 +333,9 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 	m_favoriteReadOnly = e.mountReadOnly() ;
 
-	if( m_favoriteReadOnly ){
+	if( m_favoriteReadOnly.defined() ){
 
-		m_ui->checkBoxOpenReadOnly->setChecked( m_favoriteReadOnly.onlyRead() ) ;
+		m_ui->checkBoxOpenReadOnly->setChecked( m_favoriteReadOnly.True() ) ;
 	}else{
 		if( utility::platformIsWindows() ){
 
@@ -518,7 +518,7 @@ void keyDialog::pbOptions()
 
 			m_checked = true ;
 
-			auto f = favorites::readFavorite( m_path ) ;
+			auto f = favorites::instance().readFavorite( m_path ) ;
 
 			m_idleTimeOut  = f.idleTimeOut ;
 			m_configFile   = f.configFilePath ;
@@ -591,7 +591,7 @@ void keyDialog::cbMountReadOnlyStateChanged( int state )
 		return ;
 	}
 
-	if( m_favoriteReadOnly ){
+	if( m_favoriteReadOnly.defined() ){
 
 		m_ui->checkBoxOpenReadOnly->setChecked( state == Qt::Checked ) ;
 		return ;

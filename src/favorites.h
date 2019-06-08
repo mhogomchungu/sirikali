@@ -21,37 +21,47 @@
 #define FAVORITES_H
 
 #include <QString>
-
 #include <vector>
+
 class favorites
 {
 public:
 	enum class type{ sshfs,others } ;
 
-	class readOnly
-	{
+	class triState{
 	public:
-		readOnly() ;
-		readOnly( bool e ) ;
-		operator bool() const ;
-		bool onlyRead() const ;
-	private:
-		bool m_readOnlyVolume = false ;
-		bool m_isSet = false ;
-	} ;
+		triState() : m_state( triState::STATES::UNDEFINED )
+		{
+		}
+		triState( bool e ) : m_state( e ? STATES::TRUE : STATES::FALSE )
+		{
+		}
+		void toggle()
+		{
+			if( m_state == STATES::TRUE ){
 
-	class autoMount
-	{
-	public:
-		autoMount() ;
-		autoMount( bool e ) ;
-		operator bool() const ;
-		bool automount() const ;
-		void toggle() ;
+				m_state = STATES::FALSE ;
+
+			}else if( m_state == STATES::FALSE ){
+
+				m_state = STATES::TRUE ;
+			}
+		}
+		bool undefined() const
+		{
+			return m_state == STATES::UNDEFINED ;
+		}
+		bool defined() const
+		{
+			return !this->undefined() ;
+		}
+		bool True() const
+		{
+			return m_state == STATES::TRUE ;
+		}
 	private:
-		bool m_autoMountVolume = false ;
-		bool m_isSet = false ;
-	} ;
+		enum class STATES{ UNDEFINED,TRUE,FALSE } m_state ;
+	};
 
 	struct entry
 	{
@@ -69,18 +79,29 @@ public:
 
 		bool reverseMode = false ;
 		bool volumeNeedNoPassword = false ;
-		favorites::readOnly readOnlyMode ;
-		favorites::autoMount autoMount ;
+		favorites::triState readOnlyMode ;
+		favorites::triState autoMount ;
 	};
+
+	static favorites& instance()
+	{
+		static favorites m ;
+		return m ;
+	}
 
 	enum class error{ ENTRY_ALREADY_EXISTS,FAILED_TO_CREATE_ENTRY,SUCCESS } ;
 
-	static error add( const favorites::entry& ) ;
-	static void replaceFavorite( const favorites::entry&, const favorites::entry& ) ;
-	static void removeFavoriteEntry( const favorites::entry& ) ;
-	static std::vector< favorites::entry > readFavorites() ;
-	static favorites::entry readFavorite( const QString& ) ;
-	static void updateFavorites() ;
+	error add( const favorites::entry& ) ;
+
+	void replaceFavorite( const favorites::entry&, const favorites::entry& ) ;
+	void removeFavoriteEntry( const favorites::entry& ) ;
+
+	std::vector< favorites::entry > readFavorites() const ;
+
+	favorites::entry readFavorite( const QString& ) const ;
+	favorites::entry readFavorite( const QString&,const QString& ) const ;
+
+	void updateFavorites() ;
 };
 
 #endif // FAVORITES_H

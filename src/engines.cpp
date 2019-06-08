@@ -687,7 +687,7 @@ engines::engine::options::options( const favorites::entry& e,const QString& volu
 	idleTimeout( e.idleTimeOut ),
 	configFilePath( e.configFilePath ),
 	type( QString() ),
-	ro( e.readOnlyMode ? e.readOnlyMode.onlyRead() : false ),
+	ro( e.readOnlyMode.defined() ? e.readOnlyMode.True() : false ),
 	reverseMode( e.reverseMode ),
 	mountOptions( e.mountOptions )
 {
