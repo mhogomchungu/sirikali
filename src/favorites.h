@@ -62,7 +62,7 @@ public:
 		}
 		bool False() const
 		{
-			return m_state == STATES::FALSE ;
+			return m_state == STATES::FALSE || m_state == STATES::UNDEFINED ;
 		}
 	private:
 		enum class STATES{ UNDEFINED,TRUE,FALSE } m_state ;
