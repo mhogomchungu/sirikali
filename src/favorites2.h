@@ -40,7 +40,6 @@ public:
 	}
 	favorites2( QWidget * parent,favorites::type type = favorites::type::others ) ;
 	~favorites2() ;
-	void Show() ;
 private :
 	void tabChanged( int ) ;
 	void updateVolumeList( const std::vector< favorites::entry >&,const QString& ) ;

@@ -20,7 +20,7 @@
 #include "createbackendwindow.h"
 #include "ui_createbackendwindow.h"
 
-#include "json.h"
+#include "Json.h"
 #include "utility.h"
 #include "dialogmsg.h"
 
@@ -121,27 +121,15 @@ void createBackendWIndow::save()
 		return DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Wrong Password Field Can Not Be Empty" ) ) ;
 	}
 
-	nlohmann::json config ;
+	sirikali::json config ;
 
-	auto _addlist = []( const QStringList& s ){
-
-		std::vector< std::string > m ;
-
-		for( const auto& it : s ){
-
-			m.emplace_back( it.toStdString() ) ;
-		}
-
-		return m ;
-	} ;
-
-	auto _addstring = [ & ]( const QString& e ){
+	auto _addList = [ & ]( const QString& e ){
 
 		if( e.isEmpty() ){
 
-			return std::vector< std::string >() ;
+			return QStringList() ;
 		}else{
-			return _addlist( utility::split( e,',' ) ) ;
+			return utility::split( e,',' ) ;
 		}
 	} ;
 
@@ -150,26 +138,20 @@ void createBackendWIndow::save()
 	config[ "mountControlStructure" ]       = "%{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
 	config[ "idleString" ]                  = "" ;
 	config[ "reverseString"]                = "" ;
-	config[ "executableName" ]              = executable.toStdString() ;
-	config[ "configFileNames" ]             = _addstring( configFileNames ) ;
-	config[ "fuseNames" ]                   = _addstring( fusenames ) ;
-	config[ "names" ]                       = _addstring( names ) ;
-	config[ "failedToMountTextList" ]       = _addstring( m_ui->lineEditFailedToMountText->text() ) ;
-	config[ "successfullyMountedList" ]     = _addstring( m_ui->lineEditSuccessfullyMountedText->text() ) ;
-	config[ "configFileArgument" ]          = m_ui->lineEditConfigFileArgument->text().toStdString() ;
-	config[ "wrongPasswordText" ]           = password.toStdString() ;
-	config[ "wrongPasswordErrorCode" ]      = m_ui->lineEditWrongPasswordErrorCode->text().toStdString() ;
+	config[ "executableName" ]              = executable ;
+	config[ "configFileNames" ]             = _addList( configFileNames ) ;
+	config[ "fuseNames" ]                   = _addList( fusenames ) ;
+	config[ "names" ]                       = _addList( names ) ;
+	config[ "failedToMountTextList" ]       = _addList( m_ui->lineEditFailedToMountText->text() ) ;
+	config[ "successfullyMountedList" ]     = _addList( m_ui->lineEditSuccessfullyMountedText->text() ) ;
+	config[ "configFileArgument" ]          = m_ui->lineEditConfigFileArgument->text() ;
+	config[ "wrongPasswordText" ]           = password ;
+	config[ "wrongPasswordErrorCode" ]      = m_ui->lineEditWrongPasswordErrorCode->text() ;
 	config[ "requiresAPassword" ]           = m_ui->cbRequiresAPassword->isChecked() ;
 	config[ "supportsMountPointPaths" ]     = m_ui->cbSupportsMountPointPaths->isChecked() ;
 	config[ "autoMountsOnVolumeCreation" ]  = m_ui->cbAutoMountsOnVolumeCreation->isChecked() ;
 
-	QFile file( path ) ;
-
-	file.open( QIODevice::WriteOnly ) ;
-
-	auto m = config.dump( 8 ) ;
-
-	file.write( m.data(),static_cast< qint64 >( m.size() ) ) ;
+	config.toFile( path ) ;
 
 	this->Hide() ;
 }

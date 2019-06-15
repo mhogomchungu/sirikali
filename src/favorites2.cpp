@@ -189,11 +189,6 @@ favorites2::~favorites2()
 	delete m_ui ;
 }
 
-void favorites2::Show()
-{
-	this->show() ;
-}
-
 void favorites2::tabChanged( int index )
 {
 	if( index == 0 ){
@@ -592,6 +587,7 @@ void favorites2::devicePathTextChange( QString txt )
 
 void favorites2::clearEditVariables()
 {
+	m_ui->lineEditVolumeType->clear() ;
 	m_ui->lineEditEncryptedFolderPath->clear() ;
 	m_ui->lineEditMountPath->clear() ;
 	m_ui->lineEditConfigFilePath->clear() ;
@@ -695,6 +691,8 @@ void favorites2::ShowUI( favorites::type type )
 		m_ui->labelCofigFilePath->setText( tr( "SSH_AUTH_SOCK Socket Path (Optional)" ) ) ;
 		m_ui->labelIdleTimeOut->setText( tr( "IdentityFile Path (Optional)" ) ) ;
 		m_ui->lineEditVolumeType->setText( "Sshfs" ) ;
+
+		m_ui->pbEdit->setEnabled( false ) ;
 	}else{
 		m_ui->pbIdentityFile->setVisible( false ) ;
 		m_ui->tabWidget->setCurrentIndex( 0 ) ;

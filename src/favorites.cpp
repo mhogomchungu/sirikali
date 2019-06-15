@@ -22,6 +22,7 @@
 #include "utility.h"
 #include "json.h"
 #include "settings.h"
+#include "Json.h"
 
 #include <QDir>
 #include <QFile>
@@ -126,40 +127,30 @@ static void _move_favorites_to_new_system( const QStringList& m )
 static void _add_entries( std::vector< favorites::entry >& e,const QString& path )
 {
 	try {
-		auto json = nlohmann::json::parse( utility::fileContents( path ).toStdString() ) ;
-
-		auto _getString = [ & ]( const char * s )->QString{
-
-			return json[ s ].get< std::string >().c_str() ;
-		} ;
-
-		auto _getBool = [ & ]( const char * s ){
-
-			return json[ s ].get< bool >() ;
-		} ;
+		sirikali::json json( path,sirikali::json::type::PATH ) ;
 
 		favorites::entry m ;
 
-		m.volumePath           = _getString( "volumePath" ) ;
-		m.mountPointPath       = _getString( "mountPointPath" ) ;
-		m.configFilePath       = _getString( "configFilePath" ) ;
-		m.idleTimeOut          = _getString( "idleTimeOut" ) ;
-		m.mountOptions         = _getString( "mountOptions" ) ;
-		m.preMountCommand      = _getString( "preMountCommand" ) ;
-		m.postMountCommand     = _getString( "postMountCommand" ) ;
-		m.preUnmountCommand    = _getString( "preUnmountCommand" ) ;
-		m.postUnmountCommand   = _getString( "postUnmountCommand" ) ;
-		m.reverseMode          = _getBool( "reverseMode" ) ;
-		m.volumeNeedNoPassword = _getBool( "volumeNeedNoPassword" ) ;
+		m.volumePath           = json.getString( "volumePath" ) ;
+		m.mountPointPath       = json.getString( "mountPointPath" ) ;
+		m.configFilePath       = json.getString( "configFilePath" ) ;
+		m.idleTimeOut          = json.getString( "idleTimeOut" ) ;
+		m.mountOptions         = json.getString( "mountOptions" ) ;
+		m.preMountCommand      = json.getString( "preMountCommand" ) ;
+		m.postMountCommand     = json.getString( "postMountCommand" ) ;
+		m.preUnmountCommand    = json.getString( "preUnmountCommand" ) ;
+		m.postUnmountCommand   = json.getString( "postUnmountCommand" ) ;
+		m.reverseMode          = json.getBool( "reverseMode" ) ;
+		m.volumeNeedNoPassword = json.getBool( "volumeNeedNoPassword" ) ;
 
-		auto s = _getString( "mountReadOnly" ) ;
+		auto s = json.getString( "mountReadOnly" ) ;
 
 		if( !s.isEmpty() ){
 
 			m.readOnlyMode = favorites::triState( s == "true" ? true : false ) ;
 		}
 
-		s = _getString( "autoMountVolume" ) ;
+		s = json.getString( "autoMountVolume" ) ;
 
 		if( !s.isEmpty() ){
 
@@ -168,8 +159,9 @@ static void _add_entries( std::vector< favorites::entry >& e,const QString& path
 
 		e.emplace_back( std::move( m ) ) ;
 
-	}catch( ... ){
+	}catch( std::exception& e ){
 
+		utility::debug::cout() << e.what() ;
 		utility::debug::cout() << "Failed to parse file for reading: " + path ;
 	}
 }
@@ -247,17 +239,17 @@ favorites::error favorites::add( const favorites::entry& e )
 		return error::FAILED_TO_CREATE_ENTRY ;
 	}
 
-	nlohmann::json json ;
+	sirikali::json json ;
 
-	json[ "volumePath" ]           = e.volumePath.toStdString() ;
-	json[ "mountPointPath" ]       = e.mountPointPath.toStdString() ;
-	json[ "configFilePath" ]       = e.configFilePath.toStdString() ;
-	json[ "idleTimeOut" ]          = e.idleTimeOut.toStdString() ;
-	json[ "mountOptions" ]         = e.mountOptions.toStdString() ;
-	json[ "preMountCommand" ]      = e.preMountCommand.toStdString() ;
-	json[ "postMountCommand" ]     = e.postMountCommand.toStdString() ;
-	json[ "preUnmountCommand" ]    = e.preUnmountCommand.toStdString() ;
-	json[ "postUnmountCommand" ]   = e.postUnmountCommand.toStdString() ;
+	json[ "volumePath" ]           = e.volumePath ;
+	json[ "mountPointPath" ]       = e.mountPointPath ;
+	json[ "configFilePath" ]       = e.configFilePath ;
+	json[ "idleTimeOut" ]          = e.idleTimeOut ;
+	json[ "mountOptions" ]         = e.mountOptions ;
+	json[ "preMountCommand" ]      = e.preMountCommand ;
+	json[ "postMountCommand" ]     = e.postMountCommand ;
+	json[ "preUnmountCommand" ]    = e.preUnmountCommand ;
+	json[ "postUnmountCommand" ]   = e.postUnmountCommand ;
 	json[ "reverseMode" ]          = e.reverseMode ;
 	json[ "volumeNeedNoPassword" ] = e.volumeNeedNoPassword ;
 
@@ -291,11 +283,7 @@ favorites::error favorites::add( const favorites::entry& e )
 
 		return error::ENTRY_ALREADY_EXISTS ;
 	}else{
-		QFile file( a ) ;
-
-		if( file.open( QIODevice::WriteOnly ) ){
-
-			file.write( json.dump( 8 ).data() ) ;
+		if( json.toFile( a ) ){
 
 			return error::SUCCESS ;
 		}else{

@@ -61,7 +61,7 @@
 #include "locale_path.h"
 #include "plugins.h"
 #include "crypto.h"
-#include "json.h"
+#include "Json.h"
 #include "win.h"
 #include "readonlywarning.h"
 
@@ -271,13 +271,13 @@ void utility::Task::execute( const QString& exe,int waitTime,
 
 		s.write( [ & ]()->QByteArray{
 
-			nlohmann::json json ;
+			sirikali::json json ;
 
-			json[ "cookie" ]   = _cookie.constData() ;
-			json[ "password" ] = password.constData() ;
-			json[ "command" ]  = exe.toLatin1().constData() ;
+			json[ "cookie" ]   = _cookie ;
+			json[ "password" ] = password ;
+			json[ "command" ]  = exe ;
 
-			return json.dump().c_str() ;
+			return json.structure() ;
 		}() ) ;
 
 		s.waitForBytesWritten() ;
@@ -285,13 +285,13 @@ void utility::Task::execute( const QString& exe,int waitTime,
 		s.waitForReadyRead() ;
 
 		try{
-			auto json = nlohmann::json::parse( s.readAll().constData() ) ;
+			sirikali::json json( s.readAll(),sirikali::json::type::CONTENTS ) ;
 
-			m_finished   = json[ "finished" ].get< bool >() ;
-			m_exitCode   = json[ "exitCode" ].get< int >() ;
-			m_exitStatus = json[ "exitStatus" ].get< int >() ;
-			m_stdError   = json[ "stdError" ].get< std::string >().c_str() ;
-			m_stdOut     = json[ "stdOut" ].get< std::string >().c_str() ;
+			m_finished   = json.getBool( "finished" ) ;
+			m_exitCode   = json.getInterger( "exitCode" ) ;
+			m_exitStatus = json.getInterger( "exitStatus" ) ;
+			m_stdError   = json.getByteArray( "stdError" ) ;
+			m_stdOut     = json.getByteArray( "stdOut" ) ;
 
 			utility::logCommandOutPut( { m_stdOut,m_stdError,m_exitCode,m_exitStatus,m_finished },exe ) ;
 
@@ -493,13 +493,13 @@ void utility::quitHelper()
 
 			s.write( [ & ]()->QByteArray{
 
-				nlohmann::json json ;
+				sirikali::json json ;
 
-				json[ "cookie" ]   = _cookie.constData() ;
+				json[ "cookie" ]   = _cookie ;
 				json[ "password" ] = "" ;
 				json[ "command" ]  = "exit" ;
 
-				return json.dump().c_str() ;
+				return json.structure() ;
 			}() ) ;
 
 			s.waitForBytesWritten() ;

@@ -18,7 +18,7 @@
  */
 
 #include "custom.h"
-#include "json.h"
+#include "../Json.h"
 #include "install_prefix.h"
 #include "../settings.h"
 
@@ -31,53 +31,26 @@ static utility::result< custom::opts > _getOptions( const QByteArray& e,const QS
 	try{
 		custom::opts s ;
 
-		auto json = nlohmann::json::parse( e.constData() ) ;
+		sirikali::json json( e,sirikali::json::type::CONTENTS ) ;
 
-		auto _getStringList = [ & ]( const char * m ){
-
-			QStringList s ;
-
-			const auto e = json[ m ].get< std::vector< std::string > >() ;
-
-			for( const auto& it : e ){
-
-				if( !it.empty() ){
-
-					s.append( it.c_str() ) ;
-				}
-			}
-
-			return s ;
-		} ;
-
-		auto _getString = [ & ]( const char * s )->QString{
-
-			return json[ s ].get< std::string >().c_str() ;
-		} ;
-
-		auto _getBool = [ & ]( const char * s ){
-
-			return json[ s ].get< bool >() ;
-		} ;
-
-		s.mountControlStructure                = _getString( "mountControlStructure" ) ;
-		s.createControlStructure               = _getString( "createControlStructure" ) ;
+		s.mountControlStructure                = json.getString( "mountControlStructure" ) ;
+		s.createControlStructure               = json.getString( "createControlStructure" ) ;
 		s.baseOpts.hasGUICreateOptions         = true ;
 		s.baseOpts.customBackend               = true ;
-		s.baseOpts.reverseString               = _getString( "reverseString" ) ;
-		s.baseOpts.idleString                  = _getString( "idleString" ) ;
-		s.baseOpts.requiresAPassword           = _getBool( "requiresAPassword" ) ;
-		s.baseOpts.autoMountsOnCreate          = _getBool( "autoMountsOnVolumeCreation" ) ;
-		s.baseOpts.supportsMountPathsOnWindows = _getBool( "supportsMountPointPaths" ) ;
-		s.baseOpts.executableName              = _getString( "executableName" ) ;
-		s.baseOpts.incorrectPasswordText       = _getString( "wrongPasswordText" ) ;
-		s.baseOpts.incorrectPassWordCode       = _getString( "wrongPasswordErrorCode" ) ;
-		s.baseOpts.configFileArgument          = _getString( "configFileArgument" ) ;
-		s.baseOpts.failedToMountList           = _getStringList( "failedToMountTextList" ) ;
-		s.baseOpts.successfulMountedList       = _getStringList( "successfullyMountedList" ) ;
-		s.baseOpts.configFileNames             = _getStringList( "configFileNames" ) ;
-		s.baseOpts.names                       = _getStringList( "names" ) ;
-		s.baseOpts.fuseNames                   = _getStringList( "fuseNames" ) ;
+		s.baseOpts.reverseString               = json.getString( "reverseString" ) ;
+		s.baseOpts.idleString                  = json.getString( "idleString" ) ;
+		s.baseOpts.requiresAPassword           = json.getBool( "requiresAPassword" ) ;
+		s.baseOpts.autoMountsOnCreate          = json.getBool( "autoMountsOnVolumeCreation" ) ;
+		s.baseOpts.supportsMountPathsOnWindows = json.getBool( "supportsMountPointPaths" ) ;
+		s.baseOpts.executableName              = json.getString( "executableName" ) ;
+		s.baseOpts.incorrectPasswordText       = json.getString( "wrongPasswordText" ) ;
+		s.baseOpts.incorrectPassWordCode       = json.getString( "wrongPasswordErrorCode" ) ;
+		s.baseOpts.configFileArgument          = json.getString( "configFileArgument" ) ;
+		s.baseOpts.failedToMountList           = json.getStringList( "failedToMountTextList" ) ;
+		s.baseOpts.successfulMountedList       = json.getStringList( "successfullyMountedList" ) ;
+		s.baseOpts.configFileNames             = json.getStringList( "configFileNames" ) ;
+		s.baseOpts.names                       = json.getStringList( "names" ) ;
+		s.baseOpts.fuseNames                   = json.getStringList( "fuseNames" ) ;
 		s.baseOpts.hasConfigFile               = s.baseOpts.configFileNames.size() > 0 ;
 		s.baseOpts.notFoundCode                = engines::engine::status::customCommandNotFound ;
 
