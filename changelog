@@ -162,4 +162,5 @@ version 1.3.8(May 1st,2019)
 version 1.3.9(Unreleased)
 -- Add ability to run a custom command on user specified time interval.
 -- Add ability to set premount, postmount, preunmount and postunmount commands to run per favorite entry.
--- Add support for creating and unlocking volumes using yubikey's challenge-responce feature.
+-- Add support for creating and unlocking volumes using yubikey's challenge-response feature.
+-- Add ability to run user created custom backends.

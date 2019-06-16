@@ -289,7 +289,7 @@ favorites::error favorites::add( const favorites::entry& e )
 		}else{
 			return error::FAILED_TO_CREATE_ENTRY ;
 		}
-	}
+	}	
 }
 
 void favorites::replaceFavorite( const favorites::entry& old,const favorites::entry& New )

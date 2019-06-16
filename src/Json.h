@@ -59,7 +59,7 @@ namespace sirikali
 		{
 			QStringList s ;
 
-			const auto e = m_json[ key ].get< std::vector< std::string > >() ;
+			const auto e = this->get< std::vector< std::string > >( key ) ;
 
 			for( const auto& it : e ){
 
@@ -70,23 +70,29 @@ namespace sirikali
 		}
 		QString getString( const char * key ) const
 		{
-			return m_json[ key ].get< std::string >().c_str() ;
+			return this->get< std::string >( key ).c_str() ;
 		}
 		QByteArray getByteArray( const char * key ) const
 		{
-			return this->getString( key ).toLatin1() ;
+			return this->get< std::string >( key ).c_str() ;
 		}
 		bool getBool( const char * key ) const
 		{
-			return m_json[ key ].get< bool >() ;
+			return this->get< bool >( key ) ;
 		}
 		bool getInterger( const char * key ) const
 		{
-			return m_json[ key ].get< int >() ;
+			return this->get< int >( key ) ;
 		}
 		double getDouble( const char * key ) const
 		{
-			return m_json[ key ].get< double >() ;
+			return this->get< double >( key ) ;
+		}
+		template< typename T >
+		void insert( const char * key,const T& value )
+		{
+			m_key = key ;
+			*this = value ;
 		}
 		json& operator[]( const char * key )
 		{
