@@ -33,22 +33,16 @@ namespace sirikali
 	public:
 		enum class type{ PATH,CONTENTS } ;
 
-		json( const QString& e,type s )
-		{
-			if( s == type::PATH ){
-
-				QFile file( e ) ;
-
-				if( file.open( QIODevice::ReadOnly ) ){
-
-					m_json = nlohmann::json::parse( file.readAll().constData() ) ;
-				}
-			}else{
-				m_json = nlohmann::json::parse( e.toStdString() ) ;
-			}
-		}
 		json()
 		{
+		}
+		json( const QByteArray& e,type s )
+		{
+		        this->getData( e,s ) ;
+		}
+		json( const QString& e,type s )
+		{
+		        this->getData( e.toLatin1(),s ) ;
 		}
 		template< typename T >
 		T get( const char * key ) const
@@ -157,6 +151,20 @@ namespace sirikali
 			return s ;
 		}
 	private:
+		void getData( const QByteArray& e,type s )
+		{
+		        if( s == type::PATH ){
+
+			        QFile file( e ) ;
+
+				if( file.open( QIODevice::ReadOnly ) ){
+
+				        m_json = nlohmann::json::parse( file.readAll().constData() ) ;
+				}
+			}else{
+			        m_json = nlohmann::json::parse( e.constData() ) ;
+			}
+		}
 		const char * m_key ;
 		nlohmann::json m_json ;
 	};

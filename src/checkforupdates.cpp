@@ -19,7 +19,7 @@
 
 #include "checkforupdates.h"
 #include "settings.h"
-#include "Json.h"
+#include "json_parser.hpp"
 
 checkUpdates::checkUpdates( QWidget * widget ) : m_widget( widget ),
 	m_timeOut( settings::instance().networkTimeOut() ),m_running( false )

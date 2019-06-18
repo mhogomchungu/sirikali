@@ -22,7 +22,7 @@
 #include "utility.h"
 #include "json.h"
 #include "settings.h"
-#include "Json.h"
+#include "json_parser.hpp"
 
 #include <QDir>
 #include <QFile>

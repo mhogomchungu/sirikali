@@ -279,7 +279,6 @@ set( MOC_FILES
 
 set( SRC 	src/dialogok.cpp
 		src/main.cpp
-		src/Json.cpp
 		src/systemsignalhandler.cpp
 		src/crypto.cpp
 		src/runinthread.cpp

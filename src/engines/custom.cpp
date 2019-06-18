@@ -18,7 +18,7 @@
  */
 
 #include "custom.h"
-#include "../Json.h"
+#include "../json_parser.hpp"
 #include "install_prefix.h"
 #include "../settings.h"
 

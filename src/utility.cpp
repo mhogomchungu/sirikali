@@ -61,7 +61,7 @@
 #include "locale_path.h"
 #include "plugins.h"
 #include "crypto.h"
-#include "Json.h"
+#include "json_parser.hpp"
 #include "win.h"
 #include "readonlywarning.h"
 
