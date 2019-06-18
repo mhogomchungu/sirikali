@@ -180,7 +180,6 @@ public:
 	bool windowsUseMountPointPath( const QString& ) ;
 	void clearFavorites() ;
 	void showMountDialogWhenAutoMounting( bool ) ;
-	void initGlobals() ;
 	int favoritesEntrySize() ;
 	void setLocalizationLanguage( const QString& language ) ;
 	QString localizationLanguage( );

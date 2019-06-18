@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>791</width>
-    <height>506</height>
+    <height>547</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,11 +19,11 @@
      <x>10</x>
      <y>10</y>
      <width>771</width>
-     <height>461</height>
+     <height>501</height>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="FavoritesList">
     <attribute name="title">
@@ -35,7 +35,7 @@
        <x>10</x>
        <y>0</y>
        <width>271</width>
-       <height>391</height>
+       <height>431</height>
       </rect>
      </property>
      <property name="selectionMode">
@@ -56,7 +56,7 @@
        <x>280</x>
        <y>0</y>
        <width>481</width>
-       <height>421</height>
+       <height>461</height>
       </rect>
      </property>
      <property name="frameShape">
@@ -186,7 +186,7 @@
         <x>10</x>
         <y>210</y>
         <width>111</width>
-        <height>51</height>
+        <height>41</height>
        </rect>
       </property>
       <property name="text">
@@ -218,7 +218,7 @@
         <x>130</x>
         <y>210</y>
         <width>341</width>
-        <height>51</height>
+        <height>41</height>
        </rect>
       </property>
       <property name="readOnly">
@@ -241,12 +241,140 @@
        <set>Qt::AlignCenter</set>
       </property>
      </widget>
+     <widget class="QTextEdit" name="textEditPreMount">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>260</y>
+        <width>341</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="textEditPostMount">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>310</y>
+        <width>341</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="textEditPreUnMount">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>360</y>
+        <width>341</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="textEditPostUnmount">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>410</y>
+        <width>341</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_17">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>260</y>
+        <width>111</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>PreMount Command</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_18">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>310</y>
+        <width>111</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>PostMount Command</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_19">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>360</y>
+        <width>111</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>PreUnMount Command</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_20">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>410</y>
+        <width>111</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>PostUnMount Command</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
     </widget>
     <widget class="QPushButton" name="pbOptions">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>390</y>
+       <y>430</y>
        <width>271</width>
        <height>33</height>
       </rect>
@@ -266,7 +394,7 @@
        <x>10</x>
        <y>10</y>
        <width>741</width>
-       <height>411</height>
+       <height>451</height>
       </rect>
      </property>
      <property name="frameShape">
@@ -275,159 +403,11 @@
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <widget class="QCheckBox" name="cbReverseMode">
-      <property name="geometry">
-       <rect>
-        <x>370</x>
-        <y>330</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_15">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>330</y>
-        <width>351</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Reverse Mode (Gocryptfs and Encfs Only)</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="cbReadOnlyMode">
-      <property name="geometry">
-       <rect>
-        <x>370</x>
-        <y>300</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_14">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>300</y>
-        <width>351</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Mount In Read Only Mode</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="cbVolumeNoPassword">
-      <property name="geometry">
-       <rect>
-        <x>370</x>
-        <y>270</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_13">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>270</y>
-        <width>351</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Volume Does Not Use A Password</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="cbAutoMount">
-      <property name="geometry">
-       <rect>
-        <x>370</x>
-        <y>240</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_12">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>240</y>
-        <width>351</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Auto Mount Volume</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="lineEditMountOptions">
-      <property name="geometry">
-       <rect>
-        <x>370</x>
-        <y>210</y>
-        <width>321</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_7">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>210</y>
-        <width>351</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Mount Options (Optional And Comma Separated)</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-     </widget>
      <widget class="QPushButton" name="pbEdit">
       <property name="geometry">
        <rect>
         <x>370</x>
-        <y>370</y>
+        <y>410</y>
         <width>171</width>
         <height>33</height>
        </rect>
@@ -440,7 +420,7 @@
       <property name="geometry">
        <rect>
         <x>200</x>
-        <y>370</y>
+        <y>410</y>
         <width>171</width>
         <height>33</height>
        </rect>
@@ -449,215 +429,557 @@
        <string>Add</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pbIdentityFile">
+     <widget class="QTabWidget" name="tabWidget_2">
       <property name="geometry">
        <rect>
-        <x>690</x>
-        <y>170</y>
-        <width>31</width>
-        <height>33</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pbConfigFilePath">
-      <property name="geometry">
-       <rect>
-        <x>690</x>
-        <y>130</y>
-        <width>31</width>
-        <height>33</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pbMountPointPath">
-      <property name="geometry">
-       <rect>
-        <x>690</x>
-        <y>90</y>
-        <width>31</width>
-        <height>33</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pbFolderPath">
-      <property name="geometry">
-       <rect>
-        <x>690</x>
+        <x>10</x>
         <y>10</y>
-        <width>31</width>
-        <height>33</height>
+        <width>721</width>
+        <height>391</height>
        </rect>
       </property>
-      <property name="text">
-       <string/>
+      <property name="currentIndex">
+       <number>1</number>
       </property>
-     </widget>
-     <widget class="QTextEdit" name="lineEditIdleTimeOut">
-      <property name="geometry">
-       <rect>
-        <x>370</x>
-        <y>170</y>
-        <width>321</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="lineEditConfigFilePath">
-      <property name="geometry">
-       <rect>
-        <x>370</x>
-        <y>130</y>
-        <width>321</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="lineEditMountPath">
-      <property name="geometry">
-       <rect>
-        <x>370</x>
-        <y>90</y>
-        <width>321</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="labelIdleTimeOut">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>170</y>
-        <width>361</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Idle TimeOut (Optional)</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QLabel" name="labelCofigFilePath">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>130</y>
-        <width>361</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Config File Path (Optional)</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QLabel" name="labelDeviceAddress">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>90</y>
-        <width>361</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Mount Point Prefix</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QLabel" name="labelName">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>10</y>
-        <width>361</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Encrypted Folder Path</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="lineEditEncryptedFolderPath">
-      <property name="geometry">
-       <rect>
-        <x>370</x>
-        <y>10</y>
-        <width>321</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_16">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>30</y>
-        <width>361</width>
-        <height>71</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Volume Type (Required For Volumes That Do Not Use A Configuration File Like sshfs)</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="lineEditVolumeType">
-      <property name="geometry">
-       <rect>
-        <x>370</x>
-        <y>50</y>
-        <width>321</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pbVolumeTypes">
-      <property name="geometry">
-       <rect>
-        <x>690</x>
-        <y>50</y>
-        <width>31</width>
-        <height>33</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
+      <widget class="QWidget" name="tabGeneralOptions">
+       <attribute name="title">
+        <string>General Options</string>
+       </attribute>
+       <widget class="QLabel" name="labelName">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>0</y>
+          <width>251</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Encrypted Folder Path</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QTextEdit" name="lineEditEncryptedFolderPath">
+        <property name="geometry">
+         <rect>
+          <x>270</x>
+          <y>0</y>
+          <width>321</width>
+          <height>31</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pbFolderPath">
+        <property name="geometry">
+         <rect>
+          <x>590</x>
+          <y>0</y>
+          <width>31</width>
+          <height>33</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_16">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>20</y>
+          <width>251</width>
+          <height>71</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Volume Type (Required For Volumes That Do Not Use A Configuration File Like sshfs)</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QTextEdit" name="lineEditVolumeType">
+        <property name="geometry">
+         <rect>
+          <x>270</x>
+          <y>40</y>
+          <width>321</width>
+          <height>31</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pbVolumeTypes">
+        <property name="geometry">
+         <rect>
+          <x>590</x>
+          <y>40</y>
+          <width>31</width>
+          <height>33</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QLabel" name="labelDeviceAddress">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>80</y>
+          <width>251</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Mount Point Prefix</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QTextEdit" name="lineEditMountPath">
+        <property name="geometry">
+         <rect>
+          <x>270</x>
+          <y>80</y>
+          <width>321</width>
+          <height>31</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pbMountPointPath">
+        <property name="geometry">
+         <rect>
+          <x>590</x>
+          <y>80</y>
+          <width>31</width>
+          <height>33</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QLabel" name="labelCofigFilePath">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>120</y>
+          <width>251</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Config File Path (Optional)</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QTextEdit" name="lineEditConfigFilePath">
+        <property name="geometry">
+         <rect>
+          <x>270</x>
+          <y>120</y>
+          <width>321</width>
+          <height>31</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pbConfigFilePath">
+        <property name="geometry">
+         <rect>
+          <x>590</x>
+          <y>120</y>
+          <width>31</width>
+          <height>33</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QLabel" name="labelIdleTimeOut">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>160</y>
+          <width>251</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Idle TimeOut (Optional)</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QTextEdit" name="lineEditIdleTimeOut">
+        <property name="geometry">
+         <rect>
+          <x>270</x>
+          <y>160</y>
+          <width>321</width>
+          <height>31</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pbIdentityFile">
+        <property name="geometry">
+         <rect>
+          <x>590</x>
+          <y>160</y>
+          <width>31</width>
+          <height>33</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_7">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>200</y>
+          <width>251</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Mount Options (Optional And Comma Separated)</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QTextEdit" name="lineEditMountOptions">
+        <property name="geometry">
+         <rect>
+          <x>270</x>
+          <y>200</y>
+          <width>321</width>
+          <height>31</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_12">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>230</y>
+          <width>251</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Auto Mount Volume</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="cbAutoMount">
+        <property name="geometry">
+         <rect>
+          <x>270</x>
+          <y>230</y>
+          <width>31</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_13">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>260</y>
+          <width>251</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Volume Does Not Use A Password</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="cbVolumeNoPassword">
+        <property name="geometry">
+         <rect>
+          <x>270</x>
+          <y>260</y>
+          <width>31</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_14">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>290</y>
+          <width>251</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Mount In Read Only Mode</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="cbReadOnlyMode">
+        <property name="geometry">
+         <rect>
+          <x>270</x>
+          <y>290</y>
+          <width>31</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_15">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>320</y>
+          <width>251</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Reverse Mode (Gocryptfs and Encfs Only)</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="cbReverseMode">
+        <property name="geometry">
+         <rect>
+          <x>270</x>
+          <y>320</y>
+          <width>31</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tabCustomCommands">
+       <attribute name="title">
+        <string>Custom Commands</string>
+       </attribute>
+       <widget class="QLabel" name="label_8">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>30</y>
+          <width>201</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>PreMount Command</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_9">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>80</y>
+          <width>201</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>PostMount Command</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_10">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>130</y>
+          <width>201</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>PreUnMount Command</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_11">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>180</y>
+          <width>201</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>PostUnMount Command</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="lineEditPreMount">
+        <property name="geometry">
+         <rect>
+          <x>210</x>
+          <y>30</y>
+          <width>401</width>
+          <height>31</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="lineEditPreUnMount">
+        <property name="geometry">
+         <rect>
+          <x>210</x>
+          <y>130</y>
+          <width>401</width>
+          <height>31</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="lineEditPostMount">
+        <property name="geometry">
+         <rect>
+          <x>210</x>
+          <y>80</y>
+          <width>401</width>
+          <height>31</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="lineEditPostUnmount">
+        <property name="geometry">
+         <rect>
+          <x>210</x>
+          <y>180</y>
+          <width>401</width>
+          <height>31</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pbPreMount">
+        <property name="geometry">
+         <rect>
+          <x>610</x>
+          <y>30</y>
+          <width>31</width>
+          <height>33</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pbPostMount">
+        <property name="geometry">
+         <rect>
+          <x>610</x>
+          <y>80</y>
+          <width>31</width>
+          <height>33</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pbPreUnMount">
+        <property name="geometry">
+         <rect>
+          <x>610</x>
+          <y>130</y>
+          <width>31</width>
+          <height>33</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pbPostUnmount">
+        <property name="geometry">
+         <rect>
+          <x>610</x>
+          <y>180</y>
+          <width>31</width>
+          <height>33</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </widget>
      </widget>
     </widget>
    </widget>
@@ -666,7 +988,7 @@
    <property name="geometry">
     <rect>
      <x>310</x>
-     <y>470</y>
+     <y>510</y>
      <width>171</width>
      <height>33</height>
     </rect>
@@ -676,6 +998,47 @@
    </property>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>pbClose</tabstop>
+  <tabstop>tableWidget</tabstop>
+  <tabstop>pbOptions</tabstop>
+  <tabstop>textEditMountPoint</tabstop>
+  <tabstop>textEditAutoMount</tabstop>
+  <tabstop>textEditConfigFilePath</tabstop>
+  <tabstop>textEditIdleTimeOut</tabstop>
+  <tabstop>textEditMountOptions</tabstop>
+  <tabstop>textEditPreMount</tabstop>
+  <tabstop>textEditPostMount</tabstop>
+  <tabstop>textEditPreUnMount</tabstop>
+  <tabstop>textEditPostUnmount</tabstop>
+  <tabstop>tabWidget_2</tabstop>
+  <tabstop>lineEditEncryptedFolderPath</tabstop>
+  <tabstop>pbFolderPath</tabstop>
+  <tabstop>lineEditVolumeType</tabstop>
+  <tabstop>pbVolumeTypes</tabstop>
+  <tabstop>lineEditMountPath</tabstop>
+  <tabstop>pbMountPointPath</tabstop>
+  <tabstop>lineEditConfigFilePath</tabstop>
+  <tabstop>pbConfigFilePath</tabstop>
+  <tabstop>lineEditIdleTimeOut</tabstop>
+  <tabstop>pbIdentityFile</tabstop>
+  <tabstop>lineEditMountOptions</tabstop>
+  <tabstop>cbAutoMount</tabstop>
+  <tabstop>cbVolumeNoPassword</tabstop>
+  <tabstop>cbReadOnlyMode</tabstop>
+  <tabstop>cbReverseMode</tabstop>
+  <tabstop>lineEditPreMount</tabstop>
+  <tabstop>pbPreMount</tabstop>
+  <tabstop>lineEditPostMount</tabstop>
+  <tabstop>pbPostMount</tabstop>
+  <tabstop>lineEditPreUnMount</tabstop>
+  <tabstop>pbPreUnMount</tabstop>
+  <tabstop>lineEditPostUnmount</tabstop>
+  <tabstop>pbPostUnmount</tabstop>
+  <tabstop>pbAdd</tabstop>
+  <tabstop>pbEdit</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

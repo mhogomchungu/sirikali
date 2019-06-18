@@ -81,6 +81,36 @@ favorites2::favorites2( QWidget * parent,favorites::type type ) :
 		this->folderPath() ;
 	} ) ;
 
+	auto _setCommand = [ this ]( QLineEdit * lineEdit ){
+
+		auto path = this->getExistingFile( tr( "Select A Command Executable" ) ) ;
+
+		if( !path.isEmpty() ){
+
+			lineEdit->setText( path ) ;
+		}
+	} ;
+
+	connect( m_ui->pbPreMount,&QPushButton::clicked,[ = ](){
+
+		_setCommand( m_ui->lineEditPreMount ) ;
+	} ) ;
+
+	connect( m_ui->pbPreUnMount,&QPushButton::clicked,[ = ](){
+
+		_setCommand( m_ui->lineEditPreUnMount ) ;
+	} ) ;
+
+	connect( m_ui->pbPostMount,&QPushButton::clicked,[ = ](){
+
+		_setCommand( m_ui->lineEditPostMount ) ;
+	} ) ;
+
+	connect( m_ui->pbPostUnmount,&QPushButton::clicked,[ = ](){
+
+		_setCommand( m_ui->lineEditPostUnmount ) ;
+	} ) ;
+
 	connect( m_ui->pbEdit,&QPushButton::clicked,[ this ](){
 
 		m_editRow = m_ui->tableWidget->currentRow() ;
@@ -153,6 +183,13 @@ favorites2::favorites2( QWidget * parent,favorites::type type ) :
 	m_ui->pbFolderPath->setIcon( QIcon( ":/sirikali.png" ) ) ;
 	m_ui->pbConfigFilePath->setIcon( QIcon( ":/file.png" ) ) ;
 	m_ui->pbIdentityFile->setIcon( QIcon( ":/file.png" ) ) ;
+
+	QIcon exeIcon( ":/executable.png" ) ;
+
+	m_ui->pbPreMount->setIcon( exeIcon ) ;
+	m_ui->pbPostMount->setIcon( exeIcon ) ;
+	m_ui->pbPreUnMount->setIcon( exeIcon ) ;
+	m_ui->pbPostUnmount->setIcon( exeIcon ) ;
 
 	m_ui->cbAutoMount->setChecked( false ) ;
 
@@ -351,9 +388,10 @@ void favorites2::edit()
 		m_ui->lineEditEncryptedFolderPath->setText( entry.volumePath ) ;
 		m_ui->lineEditMountPath->setText( entry.mountPointPath ) ;
 		m_ui->cbAutoMount->setChecked( entry.autoMount.True() ) ;
-
-		const auto& a = entry.configFilePath ;
-		const auto& b = entry.idleTimeOut ;
+		m_ui->lineEditPreMount->setText( entry.preMountCommand ) ;
+		m_ui->lineEditPreUnMount->setText( entry.preUnmountCommand ) ;
+		m_ui->lineEditPostMount->setText( entry.postMountCommand ) ;
+		m_ui->lineEditPostUnmount->setText( entry.postUnmountCommand ) ;
 
 		for( const auto& it : engines::instance().enginesWithNoConfigFile() ){
 
@@ -365,11 +403,10 @@ void favorites2::edit()
 				m_ui->lineEditVolumeType->setText( it ) ;
 				break ;
 			}
-
 		}
 
-		m_ui->lineEditConfigFilePath->setText( a ) ;
-		m_ui->lineEditIdleTimeOut->setText( b ) ;
+		m_ui->lineEditConfigFilePath->setText( entry.configFilePath ) ;
+		m_ui->lineEditIdleTimeOut->setText( entry.idleTimeOut ) ;
 
 		m_ui->cbReverseMode->setChecked( entry.reverseMode ) ;
 		m_ui->cbVolumeNoPassword->setChecked( entry.volumeNeedNoPassword ) ;
@@ -482,6 +519,10 @@ void favorites2::updateFavorite( bool edit )
 	e.configFilePath = configPath ;
 	e.idleTimeOut = idleTimeOUt ;
 	e.mountOptions = mOpts ;
+	e.preMountCommand = m_ui->lineEditPreMount->text() ;
+	e.preUnmountCommand = m_ui->lineEditPreUnMount->text() ;
+	e.postMountCommand = m_ui->lineEditPostMount->text() ;
+	e.postUnmountCommand = m_ui->lineEditPostUnmount->text() ;
 
 	if( edit ){
 
@@ -502,6 +543,10 @@ void favorites2::updateFavorite( bool edit )
 		favorites::instance().add( e ) ;
 	}
 
+	m_ui->lineEditPreMount->clear() ;
+	m_ui->lineEditPreUnMount->clear() ;
+	m_ui->lineEditPostMount->clear() ;
+	m_ui->lineEditPostUnmount->clear() ;
 	m_ui->lineEditEncryptedFolderPath->clear() ;
 	m_ui->lineEditMountPath->clear() ;
 	m_ui->lineEditConfigFilePath->clear() ;
@@ -667,6 +712,14 @@ void favorites2::setVolumeProperties( const favorites::entry& e )
 	m_ui->textEditIdleTimeOut->setText( e.idleTimeOut ) ;
 
 	m_ui->textEditMountOptions->setText( e.mountOptions ) ;
+
+	m_ui->textEditPreMount->setText( e.preMountCommand ) ;
+
+	m_ui->textEditPostMount->setText( e.postMountCommand ) ;
+
+	m_ui->textEditPreUnMount->setText( e.preUnmountCommand ) ;
+
+	m_ui->textEditPostUnmount->setText( e.postUnmountCommand ) ;
 }
 
 void favorites2::ShowUI( favorites::type type )
@@ -696,6 +749,7 @@ void favorites2::ShowUI( favorites::type type )
 	}else{
 		m_ui->pbIdentityFile->setVisible( false ) ;
 		m_ui->tabWidget->setCurrentIndex( 0 ) ;
+		m_ui->tabWidget_2->setCurrentIndex( 0 ) ;
 	}
 
 	m_ui->tableWidget->setFocus() ;
