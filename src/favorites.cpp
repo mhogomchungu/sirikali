@@ -36,7 +36,7 @@ static utility::result< QString > _config_path()
 
 		return m ;
 	}else{
-		if( QDir().mkdir( m ) ){
+		if( QDir().mkpath( m ) ){
 
 			return m ;
 		}else{
