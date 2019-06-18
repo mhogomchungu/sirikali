@@ -963,147 +963,186 @@ p, li { white-space: pre-wrap; }
         <translation>Propriétés du volume</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="255"/>
+        <location filename="../src/favorites2.ui" line="306"/>
+        <location filename="../src/favorites2.ui" line="824"/>
+        <source>PreMount Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/favorites2.ui" line="325"/>
+        <location filename="../src/favorites2.ui" line="843"/>
+        <source>PostMount Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/favorites2.ui" line="344"/>
+        <location filename="../src/favorites2.ui" line="862"/>
+        <source>PreUnMount Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/favorites2.ui" line="363"/>
+        <location filename="../src/favorites2.ui" line="881"/>
+        <source>PostUnMount Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/favorites2.ui" line="383"/>
         <source>Options</source>
         <translation>Options</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="261"/>
+        <location filename="../src/favorites2.ui" line="389"/>
         <source>Add/Edit Favorite Entry</source>
         <translation>Ajout/Édition d&apos;une entrée de favori</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="301"/>
+        <location filename="../src/favorites2.ui" line="446"/>
+        <source>General Options</source>
+        <translation type="unfinished">Options Générales</translation>
+    </message>
+    <message>
+        <location filename="../src/favorites2.ui" line="787"/>
         <source>Reverse Mode (Gocryptfs and Encfs Only)</source>
         <translation>Mode Inversé (Gocryptfs and Encfs seulement)</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="330"/>
+        <location filename="../src/favorites2.ui" line="758"/>
         <source>Mount In Read Only Mode</source>
         <translation>Monter en Lecture Seule</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="359"/>
+        <location filename="../src/favorites2.ui" line="729"/>
         <source>Volume Does Not Use A Password</source>
         <translation>Le volume n&apos;utilise pas de mot de passe</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="388"/>
+        <location filename="../src/favorites2.ui" line="697"/>
         <source>Auto Mount Volume</source>
         <translation>Montage Auto du Volume</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="417"/>
+        <location filename="../src/favorites2.ui" line="668"/>
         <source>Mount Options (Optional And Comma Separated)</source>
         <translation>Options de montage (facultatif / séparation par virgules)</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="436"/>
-        <location filename="../src/favorites2.cpp" line="286"/>
+        <location filename="../src/favorites2.ui" line="416"/>
+        <location filename="../src/favorites2.cpp" line="323"/>
         <source>Edit</source>
         <translation>Éditer</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="449"/>
+        <location filename="../src/favorites2.ui" line="429"/>
         <source>Add</source>
         <translation>Ajouter</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="544"/>
+        <location filename="../src/favorites2.ui" line="626"/>
         <source>Idle TimeOut (Optional)</source>
         <translation>Délai d&apos;inactivité (optionnel)</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="563"/>
+        <location filename="../src/favorites2.ui" line="584"/>
         <source>Config File Path (Optional)</source>
         <translation>Chemin du fichier de configuration (facultatif)</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="582"/>
-        <location filename="../src/favorites2.cpp" line="128"/>
+        <location filename="../src/favorites2.ui" line="542"/>
+        <location filename="../src/favorites2.cpp" line="158"/>
         <source>Mount Point Prefix</source>
         <translation>Préfixe du point de montage</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="601"/>
+        <location filename="../src/favorites2.ui" line="458"/>
         <source>Encrypted Folder Path</source>
         <translation>Chemin d&apos;accès du répertoire chiffré</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="630"/>
+        <location filename="../src/favorites2.ui" line="500"/>
         <source>Volume Type (Required For Volumes That Do Not Use A Configuration File Like sshfs)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="675"/>
+        <location filename="../src/favorites2.ui" line="812"/>
+        <source>Custom Commands</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/favorites2.ui" line="997"/>
         <source>&amp;Close</source>
         <translation>Fermer &amp;C</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="108"/>
-        <location filename="../src/favorites2.cpp" line="385"/>
+        <location filename="../src/favorites2.cpp" line="86"/>
+        <source>Select A Command Executable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/favorites2.cpp" line="138"/>
+        <location filename="../src/favorites2.cpp" line="422"/>
         <source>Path To A Config File</source>
         <translation>Chemin vers un fichier de configuration</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="124"/>
+        <location filename="../src/favorites2.cpp" line="154"/>
         <source>Mount Point Path</source>
         <translation>Chemin du point de montage</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="279"/>
+        <location filename="../src/favorites2.cpp" line="316"/>
         <source>Toggle AutoMount</source>
         <translation>Basculer Montage Auto</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="293"/>
+        <location filename="../src/favorites2.cpp" line="330"/>
         <source>Remove Selected Entry</source>
         <translation>Enlever l&apos;entrée sélectionnée</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="304"/>
+        <location filename="../src/favorites2.cpp" line="341"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="422"/>
-        <location filename="../src/favorites2.cpp" line="427"/>
+        <location filename="../src/favorites2.cpp" line="459"/>
+        <location filename="../src/favorites2.cpp" line="464"/>
         <source>ERROR!</source>
         <translation>ERREUR!</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="422"/>
+        <location filename="../src/favorites2.cpp" line="459"/>
         <source>Encrypted Folder Address Field Is Empty</source>
         <translation>Le champ d&apos;adresse du répertoire chiffré est vide</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="427"/>
+        <location filename="../src/favorites2.cpp" line="464"/>
         <source>Mount Point Path Field Is Empty</source>
         <translation>Le champ du chemin du point de montage est vide</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="531"/>
+        <location filename="../src/favorites2.cpp" line="576"/>
         <source>Path To An Encrypted Folder</source>
         <translation>Chemin d&apos;accès au répertoire chiffré</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="541"/>
+        <location filename="../src/favorites2.cpp" line="586"/>
         <source>Path To Mount Folder</source>
         <translation>Chemin d&apos;accès au répertoire de montage</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="690"/>
+        <location filename="../src/favorites2.cpp" line="743"/>
         <source>Remote Ssh Server Address
 (Example: woof@example.com:/remote/path)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="691"/>
+        <location filename="../src/favorites2.cpp" line="744"/>
         <source>SSH_AUTH_SOCK Socket Path (Optional)</source>
         <translation>SSH_AUTH_SOCK Chemin du Socket (Optionnel)</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="692"/>
+        <location filename="../src/favorites2.cpp" line="745"/>
         <source>IdentityFile Path (Optional)</source>
         <translation>Chemin d&apos;accès de l&apos;IdentityFile (Optionnel)</translation>
     </message>
