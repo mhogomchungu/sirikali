@@ -518,7 +518,9 @@ void sirikali::favoriteClicked( QAction * ac )
 
 				if( _found( it ) ){
 
-					if( it.first.volumeNeedNoPassword && it.first.volumePath.startsWith( "sshfs " ) ){
+					auto s = siritask::mountEngine( it.first.volumePath,QString() ).engine.name() ;
+
+					if( it.first.volumeNeedNoPassword && s == "sshfs" ){
 
 						this->disableAll() ;
 

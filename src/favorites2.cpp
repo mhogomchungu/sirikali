@@ -411,6 +411,7 @@ void favorites2::edit()
 		m_ui->cbReverseMode->setChecked( entry.reverseMode ) ;
 		m_ui->cbVolumeNoPassword->setChecked( entry.volumeNeedNoPassword ) ;
 		m_ui->cbReadOnlyMode->setChecked( entry.readOnlyMode.True() ) ;
+		m_ui->cbVolumeNoPassword->setChecked( entry.volumeNeedNoPassword ) ;
 
 		m_ui->pbAdd->setEnabled( false ) ;
 		m_ui->tabWidget->setCurrentIndex( 1 ) ;
@@ -519,6 +520,7 @@ void favorites2::updateFavorite( bool edit )
 	e.configFilePath = configPath ;
 	e.idleTimeOut = idleTimeOUt ;
 	e.mountOptions = mOpts ;
+	e.volumeNeedNoPassword = m_ui->cbVolumeNoPassword->isChecked() ;
 	e.preMountCommand = m_ui->lineEditPreMount->text() ;
 	e.preUnmountCommand = m_ui->lineEditPreUnMount->text() ;
 	e.postMountCommand = m_ui->lineEditPostMount->text() ;
