@@ -185,7 +185,7 @@ public:
 	QString localizationLanguage( );
 	QString walletName( LXQt::Wallet::BackEnd ) ;
 	settings::walletBackEnd autoMountBackEnd() ;
-	void autoMountBackEnd( const settings::walletBackEnd&) ;
+	void autoMountBackEnd( const settings::walletBackEnd& ) ;
 	QSettings& backend();
 	bool setOpenVolumeReadOnly( QWidget * parent,bool checked ) ;
 	bool getOpenVolumeReadOnlyOption() ;

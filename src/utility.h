@@ -72,6 +72,27 @@ class QEvent ;
 
 namespace utility
 {
+	class raii
+	{
+	public:
+		raii( std::function< void() > s ) : m_function( std::move( s ) )
+		{
+		}
+		~raii()
+		{
+			if( m_run ){
+
+				m_function() ;
+			}
+		}
+		void cancel()
+		{
+			m_run = false ;
+		}
+	private:
+		bool m_run = true ;
+		std::function< void() > m_function ;
+	};
 	template< typename T >
 	class result
 	{

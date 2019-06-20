@@ -123,8 +123,7 @@ void walletconfig::itemClicked_0( QTableWidgetItem * item )
 
 		Task::run( [ this ](){
 
-			m_wallet->deleteKey( m_volumeID ) ;
-			m_wallet->deleteKey( m_volumeID + COMMENT ) ;
+			walletconfig::deleteKey( m_wallet,m_volumeID ) ;
 
 		} ).then( [ this ](){
 
@@ -153,6 +152,30 @@ void walletconfig::pbClose()
 	this->HideUI() ;
 }
 
+bool walletconfig::addKey( secrets::wallet& wallet,const QString& id,
+			   const QString& key,const QString& comment )
+{
+	if( wallet->addKey( id,key ) ){
+
+		if( wallet->addKey( id + COMMENT,comment ) ){
+
+			return true ;
+		}else{
+			wallet->deleteKey( id ) ;
+
+			return false ;
+		}
+	}else{
+		return false ;
+	}
+}
+
+void walletconfig::deleteKey( secrets::wallet& wallet,const QString& id )
+{
+	wallet->deleteKey( id ) ;
+	wallet->deleteKey( id + COMMENT ) ;
+}
+
 void walletconfig::pbAdd()
 {
 	this->disableAll() ;
@@ -166,26 +189,9 @@ void walletconfig::pbAdd()
 
 		Task::run( [ this ](){
 
-			auto _add = [ this ](){
-
-				if( m_wallet->addKey( m_volumeID,m_key ) ){
-
-					if( m_wallet->addKey( m_volumeID + COMMENT,m_comment ) ){
-
-						return true ;
-					}else{
-						m_wallet->deleteKey( m_volumeID ) ;
-
-						return false ;
-					}
-				}else{
-					return false ;
-				}
-			} ;
-
 			for( int i = 0 ; i < 2 ; i++ ){
 
-				if( _add() ){
+				if( walletconfig::addKey( m_wallet,m_volumeID,m_key,m_comment ) ){
 
 					return true ;
 				}else{

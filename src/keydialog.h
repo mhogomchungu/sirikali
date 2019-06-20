@@ -39,6 +39,7 @@ class QTableWidget ;
 #include "can_build_pwquality.h"
 #include "secrets.h"
 #include "engines.h"
+#include "walletconfig.h"
 
 #include "favorites.h"
 
@@ -242,6 +243,7 @@ private :
 	void SetUISetKey( bool ) ;
 	void ShowUI( void ) ;
 	void HideUI( void ) ;
+	void setKeyInWallet() ;
 
 	void showErrorMessage( const engines::engine::cmdStatus& ) ;
 	void showErrorMessage( const QString& ) ;
@@ -267,6 +269,7 @@ private :
 
 	QByteArray m_key ;
 
+	QString m_walletType ;
 	QString m_checkBoxOriginalText ;
 	QString m_path ;
 	QString m_deviceOffSet ;
@@ -306,6 +309,37 @@ private :
 	cryfsWarning m_cryfsWarning ;
 
 	decltype( m_volumes.size() ) m_counter = 0 ;
+
+	struct walletKey
+	{
+		QString id ;
+		QString walletName ;
+		QString appName ;
+		LXQt::Wallet::BackEnd bk ;
+		bool set = false ;
+
+		void deleteKey( secrets& secrets )
+		{
+			if( set ){
+
+				set = false ;
+
+				auto s = secrets.walletBk( bk ) ;
+
+				s->setImage( QIcon( ":/sirikali" ) ) ;
+
+				if( s->opened() ){
+
+					walletconfig::deleteKey( s,id ) ;
+				}else {
+					if( s->open( walletName,appName ) ){
+
+						walletconfig::deleteKey( s,id ) ;
+					}
+				}
+			}
+		}
+	} m_walletKey ;
 };
 
 #endif // KEYDIALOG_H

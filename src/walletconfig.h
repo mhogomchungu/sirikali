@@ -53,6 +53,9 @@ public:
 	explicit walletconfig( QWidget * parent,secrets::wallet&&,std::function< void() > ) ;
 	~walletconfig() ;
 	void HideUI( void ) ;
+	static bool addKey( secrets::wallet&,const QString& id,
+			    const QString& key,const QString& comment ) ;
+	static void deleteKey( secrets::wallet&,const QString& id ) ;
 private slots:
 	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
 	void itemClicked( QTableWidgetItem * item ) ;
