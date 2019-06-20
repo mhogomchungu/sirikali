@@ -26,6 +26,7 @@
 #include <QTableWidget>
 #include <QDebug>
 #include <QFile>
+#include <QMessageBox>
 
 #include "win.h"
 #include "options.h"
@@ -38,6 +39,7 @@
 #include "crypto.h"
 #include "configfileoption.h"
 #include "settings.h"
+#include "walletconfig.h"
 
 static QString _kwallet()
 {
@@ -825,29 +827,20 @@ void keyDialog::pbOpen()
 		auto internal = wallet == _internalWallet() ;
 		auto osx      = wallet == _OSXKeyChain() ;
 
+		/* Figure out which wallet is used. Defaults to 'internal' */
+		using bk = LXQt::Wallet::BackEnd ;
+		bk bkwallet = LXQt::Wallet::BackEnd::internal ;
+		if( wallet == _kwallet() ){
+			bkwallet = LXQt::Wallet::BackEnd::kwallet ;
+		}else if( wallet == _gnomeWallet() ){
+			bkwallet = LXQt::Wallet::BackEnd::libsecret ;
+		}else if( wallet == _OSXKeyChain() ){
+			bkwallet = LXQt::Wallet::BackEnd::osxkeychain ;
+		}
+
 		if( kde || gnome || osx ){
 
-			w = utility::getKey( m_path,m_secrets.walletBk( [ & ](){
-
-				if( wallet == _kwallet() ){
-
-					return LXQt::Wallet::BackEnd::kwallet ;
-
-				}else if( wallet == _gnomeWallet() ){
-
-					return LXQt::Wallet::BackEnd::libsecret ;
-
-				}else if( wallet == _OSXKeyChain() ){
-
-					return LXQt::Wallet::BackEnd::osxkeychain ;
-				}else{
-					/*
-					 * We should not get here.
-					 */
-					return LXQt::Wallet::BackEnd::internal ;
-				}
-
-			}() ).bk() ) ;
+			w = utility::getKey( m_path,m_secrets.walletBk(bkwallet).bk());
 
 		}else if( internal ){
 
@@ -868,11 +861,15 @@ void keyDialog::pbOpen()
 
 			if( w.key.isEmpty() ){
 
-				this->showErrorMessage( "The Volume Does Not Appear To Have An Entry In The Wallet." ) ;
+				/* If no key exists for the current volume, ask if the user wants to create a new entry */
+				QString message = QString("The Volume Does Not Appear To Have An Entry In The Wallet.\nDo You Want To Create A New One?");
+				QMessageBox::StandardButton reply = QMessageBox::question(this, "No Entry Found", message, QMessageBox::Yes|QMessageBox::No);
+				if (reply == QMessageBox::Yes) {
+					walletconfig::instance( this,m_secrets.walletBk( bkwallet ),[ this ](){ this->enableAll(); this->show(); },m_path ) ;
+				} else {
+					this->enableAll();
+				}
 
-				this->enableAll() ;
-
-				m_ui->lineEditKey->setEnabled( false ) ;
 			}else{
 				m_key = w.key.toLatin1() ;
 				this->openVolume() ;
