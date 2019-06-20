@@ -37,10 +37,11 @@
 
 #define COMMENT "-SiriKali_Comment_ID"
 
-walletconfig::walletconfig( QWidget * parent,secrets::wallet&& wallet,std::function< void() > e ) :
+walletconfig::walletconfig( QWidget * parent,secrets::wallet&& wallet,std::function< void() > e,QString folderPath) :
 	QDialog( parent ),
 	m_ui( new Ui::walletconfig ),
 	m_wallet( std::move( wallet ) ),
+	m_volumeID( folderPath ),
 	m_function( std::move( e ) )
 {
 	m_ui->setupUi( this ) ;
@@ -180,7 +181,7 @@ void walletconfig::pbAdd()
 {
 	this->disableAll() ;
 
-	walletconfiginput::instance( m_parentWidget,this,[ this ]( const QString& volumeID,
+	walletconfiginput::instance( m_parentWidget,this,m_volumeID,[ this ]( const QString& volumeID,
 				     const QString& comment,const QString& key ){
 
 		m_comment  = comment ;
@@ -281,6 +282,12 @@ void walletconfig::accessWallet()
 		this->enableAll() ;
 		m_ui->tableWidget->setFocus() ;
 	} ) ;
+
+	/* If m_volumeID is set go straight to pbAdd() */
+	if(!m_volumeID.isEmpty()) {
+		this->pbAdd();
+	}
+
 }
 
 void walletconfig::enableAll()
