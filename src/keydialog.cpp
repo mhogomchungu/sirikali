@@ -867,10 +867,11 @@ void keyDialog::pbOpen()
 			if( w.key.isEmpty() ){
 
 				/* If no key exists for the current volume, ask if the user wants to create a new entry */
-				QString message = QString("The Volume Does Not Appear To Have An Entry In The Wallet.\nDo You Want To Create A New One?");
-				QMessageBox::StandardButton reply = QMessageBox::question(this, "No Entry Found", message, QMessageBox::Yes|QMessageBox::No);
+				auto message = tr( "The Volume Does Not Appear To Have An Entry In The Wallet.\nDo You Want To Create A New One?" ) ;
+				QMessageBox::StandardButton reply = QMessageBox::question(this, tr( "No Entry Found" ), message, QMessageBox::Yes|QMessageBox::No);
 				if (reply == QMessageBox::Yes) {
-					walletconfig::instance( this,m_secrets.walletBk( bkwallet ),[ this ](){ this->enableAll(); this->show(); },m_path ) ;
+					this->hide() ;
+					walletconfig::instance( this,m_secrets.walletBk( bkwallet ),[ this ](){ this->enableAll(); this->show() ; },m_path ) ;
 				} else {
 					this->enableAll();
 				}
