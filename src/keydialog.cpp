@@ -809,6 +809,11 @@ void keyDialog::pbOpen()
 			m_ui->lineEditMountPoint->setFocus() ;
 
 			return ;
+
+		} else {
+
+			m_path = m_ui->lineEditFolderPath->text();
+
 		}
 	}
 
