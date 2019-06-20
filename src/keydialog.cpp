@@ -811,15 +811,10 @@ void keyDialog::pbOpen()
 			m_ui->lineEditMountPoint->setFocus() ;
 
 			return ;
-
-		} else {
-
-			m_path = m_ui->lineEditFolderPath->text();
-
+		}else{
+			m_path = m_ui->lineEditFolderPath->text() ;
 		}
 	}
-
-	this->disableAll() ;
 
 	if( m_ui->cbKeyType->currentIndex() > keyDialog::keyKeyFile ){
 
@@ -845,7 +840,7 @@ void keyDialog::pbOpen()
 
 		if( kde || gnome || osx ){
 
-			w = utility::getKey( m_path,m_secrets.walletBk(bkwallet).bk());
+			w = utility::getKey( m_path,m_secrets.walletBk( bkwallet ).bk() ) ;
 
 		}else if( internal ){
 
@@ -866,16 +861,11 @@ void keyDialog::pbOpen()
 
 			if( w.key.isEmpty() ){
 
-				/* If no key exists for the current volume, ask if the user wants to create a new entry */
-				auto message = tr( "The Volume Does Not Appear To Have An Entry In The Wallet.\nDo You Want To Create A New One?" ) ;
-				QMessageBox::StandardButton reply = QMessageBox::question(this, tr( "No Entry Found" ), message, QMessageBox::Yes|QMessageBox::No);
-				if (reply == QMessageBox::Yes) {
-					this->hide() ;
-					walletconfig::instance( this,m_secrets.walletBk( bkwallet ),[ this ](){ this->enableAll(); this->show() ; },m_path ) ;
-				} else {
-					this->enableAll();
-				}
+				m_walletType = wallet ;
 
+				auto s = tr( "Volume Not Found in \"%1\".\n\nSet The Volume Key To Add It To The Wallet Before Mounting." ).arg( wallet ) ;
+
+				this->setKeyInWallet( wallet,s ) ;
 			}else{
 				m_key = w.key.toLatin1() ;
 				this->openVolume() ;
@@ -884,6 +874,8 @@ void keyDialog::pbOpen()
 			this->enableAll() ;
 		}
 	}else{
+		this->disableAll() ;
+
 		this->openVolume() ;
 	}
 }
@@ -1109,7 +1101,14 @@ void keyDialog::setKeyInWallet()
 
 	auto _add_key = [ & ]{
 
-		auto id = m_ui->lineEditFolderPath->text() ;
+		QString id ;
+
+		if( m_create ){
+
+			id = m_ui->lineEditFolderPath->text() ;
+		}else{
+			id = m_path ;
+		}
 
 		if( w->readValue( id ).isEmpty() ){
 
@@ -1176,6 +1175,23 @@ void keyDialog::setKeyInWallet()
 	}
 
 	_enable_all() ;
+}
+
+void keyDialog::setKeyInWallet( const QString& volumeType,const QString& title )
+{
+	m_walletType = volumeType ;
+
+	m_ui->labelSetKey->setText( title ) ;
+
+	m_ui->lineEditSetKeyPassword->clear() ;
+	m_ui->lineEditSetKeyKeyFile->clear() ;
+
+	m_ui->labelMsg->clear() ;
+
+	this->setUIVisible( false ) ;
+	this->SetUISetKey( true ) ;
+
+	m_ui->lineEditSetKeyPassword->setFocus() ;
 }
 
 void keyDialog::pbSetKey()
@@ -1582,21 +1598,19 @@ void keyDialog::cbActicated( QString e )
 							 _t( _gnomeWallet() ),
 							 _t( _internalWallet() ),
 							 _t( _OSXKeyChain() ) ) ){
-		m_walletType = e ;
 
-		QString s = tr( "Create A Volume With Specified Key And Then Add The Key In \n\"%1\"." ).arg( e ) ;
+		if( m_ui->lineEditMountPoint->text().isEmpty() ){
 
-		m_ui->labelSetKey->setText( s ) ;
+			this->showErrorMessage( tr( "Volume Name Field Is Empty." ) ) ;
+			m_ui->cbKeyType->setCurrentIndex( 0 ) ;
+			m_ui->lineEditMountPoint->setFocus() ;
+			m_ui->checkBoxVisibleKey->setVisible( false ) ;
+			return ;
+		}
 
-		m_ui->lineEditSetKeyPassword->clear() ;
-		m_ui->lineEditSetKeyKeyFile->clear() ;
+		auto s = tr( "Create A Volume With Specified Key And Then Add The Key In \n\"%1\"." ).arg( e ) ;
 
-		m_ui->labelMsg->clear() ;
-
-		this->setUIVisible( false ) ;
-		this->SetUISetKey( true ) ;
-
-		m_ui->lineEditSetKeyPassword->setFocus() ;
+		this->setKeyInWallet( e,s ) ;
 	}else{
 		this->plugIn() ;
 

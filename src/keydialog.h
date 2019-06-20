@@ -244,7 +244,7 @@ private :
 	void ShowUI( void ) ;
 	void HideUI( void ) ;
 	void setKeyInWallet() ;
-
+	void setKeyInWallet( const QString& volumeType,const QString& title ) ;
 	void showErrorMessage( const engines::engine::cmdStatus& ) ;
 	void showErrorMessage( const QString& ) ;
 	void reportErrorMessage( const engines::engine::cmdStatus& ) ;
