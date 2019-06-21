@@ -232,7 +232,7 @@ static lxqt_wallet_error _exit_create( lxqt_wallet_error r,gcry_cipher_hd_t hand
 }
 
 static lxqt_wallet_error lxqt_wallet_create_1( gcry_cipher_hd_t * h,const char * password,
-                           uint32_t password_length,char * key,char * iv,
+			   uint32_t password_length,char * key,char * iv,
 					       char * salt )
 {
 	gcry_error_t r ;
@@ -472,7 +472,7 @@ static lxqt_wallet_error _exit_open( lxqt_wallet_error st,
 }
 
 static lxqt_wallet_error _lxqt_wallet_open_0( gcry_cipher_hd_t * h,struct lxqt_wallet_struct * w,
-                          const char * password,uint32_t password_length,int fd,char * buffer )
+			  const char * password,uint32_t password_length,int fd,char * buffer )
 {
 	gcry_error_t r ;
 	gcry_cipher_hd_t handle ;
@@ -732,7 +732,7 @@ lxqt_wallet_error lxqt_wallet_open( lxqt_wallet_t * wallet,const char * password
 #ifndef _WIN32
 					mlock( e,len ) ;
 #endif
-				_lxqt_wallet_read( fd,e,len ) ;
+					_lxqt_wallet_read( fd,e,len ) ;
 					r = gcry_cipher_decrypt( handle,e,len,NULL,0 ) ;
 					if( _passed( r ) ){
 						w->wallet_data = e ;
@@ -869,7 +869,7 @@ int lxqt_wallet_has_value( lxqt_wallet_t wallet,const char * value,uint32_t valu
 }
 
 lxqt_wallet_error lxqt_wallet_add_key( lxqt_wallet_t wallet,const char * key,uint32_t key_size,
-                       const char * value,uint32_t key_value_length )
+		       const char * value,uint32_t key_value_length )
 {
 	char * e ;
 	char * f ;
@@ -1111,6 +1111,7 @@ lxqt_wallet_error lxqt_wallet_close( lxqt_wallet_t * w )
 
 	_create_magic_string_header( buffer ) ;
 
+	memcpy( buffer + MAGIC_STRING_BUFFER_SIZE,&wallet->wallet_data_size,sizeof( uint64_t ) ) ;
 	memcpy( buffer + MAGIC_STRING_BUFFER_SIZE + sizeof( uint64_t ),&wallet->wallet_data_entry_count,sizeof( uint64_t ) ) ;
 
 	r = gcry_cipher_encrypt( handle,buffer,MAGIC_STRING_BUFFER_SIZE + BLOCK_SIZE,NULL,0 ) ;
@@ -1310,7 +1311,7 @@ static gcry_error_t _create_temp_key( char * output_key,uint32_t output_key_size
  * based on provided passphrase and then feed the temporary key to gcry_kdf_derive()
  */
 static gcry_error_t _create_key( const char salt[ SALT_SIZE ],
-                 char output_key[ PASSWORD_SIZE ],const char * input_key,uint32_t input_key_length )
+		 char output_key[ PASSWORD_SIZE ],const char * input_key,uint32_t input_key_length )
 {
 	char temp_key[ PASSWORD_SIZE ] ;
 	gcry_error_t r = _create_temp_key( temp_key,PASSWORD_SIZE,input_key,input_key_length ) ;
