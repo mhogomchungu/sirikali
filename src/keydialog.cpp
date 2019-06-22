@@ -816,6 +816,8 @@ void keyDialog::pbOpen()
 		}
 	}
 
+	this->disableAll() ;
+
 	if( m_ui->cbKeyType->currentIndex() > keyDialog::keyKeyFile ){
 
 		utility::wallet w ;
@@ -874,8 +876,6 @@ void keyDialog::pbOpen()
 			this->enableAll() ;
 		}
 	}else{
-		this->disableAll() ;
-
 		this->openVolume() ;
 	}
 }
@@ -1247,6 +1247,7 @@ void keyDialog::pbSetKeyCancel()
 {
 	this->SetUISetKey( false ) ;
 	this->setUIVisible( true ) ;
+	this->enableAll() ;
 	m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
 }
 
