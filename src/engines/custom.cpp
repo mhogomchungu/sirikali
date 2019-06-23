@@ -110,10 +110,13 @@ void custom::addEngines( QStringList& list,std::vector< std::unique_ptr< engines
 
 	if( !m.isEmpty() ){
 
-		_add_engines( list,m + "/SiriKali/backends/",engines ) ;
+		_add_engines( list,m + "/backends/",engines ) ;
 	}
 
-	_add_engines( list,INSTALL_PREFIX"/share/SiriKali/backends/",engines ) ;
+	if( !utility::platformIsWindows() ){
+
+		_add_engines( list,INSTALL_PREFIX"/share/SiriKali/backends/",engines ) ;
+	}
 }
 
 custom::custom( custom::opts s ) :
