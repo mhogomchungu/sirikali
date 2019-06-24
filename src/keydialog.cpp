@@ -74,7 +74,8 @@ keyDialog::keyDialog( QWidget * parent,
 	m_create( false ),
 	m_secrets( s ),
 	m_done( std::move( f ) ),
-	m_volumes( std::move( z ) )
+	m_volumes( std::move( z ) ),
+	m_walletKey( s )
 {
 	m_ui->setupUi( this ) ;
 
@@ -120,7 +121,8 @@ keyDialog::keyDialog( QWidget * parent,
 	m_autoOpenMountPoint( o ),
 	m_create( e.isNotValid() ),
 	m_secrets( s ),
-	m_cancel( std::move( p ) )
+	m_cancel( std::move( p ) ),
+	m_walletKey( s )
 {
 	m_ui->setupUi( this ) ;
 
@@ -950,7 +952,7 @@ void keyDialog::pbOK()
 
 void keyDialog::encryptedFolderCreate()
 {
-	utility::raii deleteKey( [ & ](){ m_walletKey.deleteKey( m_secrets ) ; } ) ;
+	utility::raii deleteKey( [ & ](){ m_walletKey.deleteKey() ; } ) ;
 
 	auto path = m_ui->lineEditFolderPath->text() ;
 

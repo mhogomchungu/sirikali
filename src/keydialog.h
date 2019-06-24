@@ -312,19 +312,23 @@ private :
 
 	struct walletKey
 	{
+		walletKey( secrets& s ) : secret( s )
+		{
+		}
+		secrets& secret ;
 		QString id ;
 		QString walletName ;
 		QString appName ;
 		LXQt::Wallet::BackEnd bk ;
 		bool set = false ;
 
-		void deleteKey( secrets& secrets )
+		void deleteKey()
 		{
 			if( set ){
 
 				set = false ;
 
-				auto s = secrets.walletBk( bk ) ;
+				auto s = secret.walletBk( bk ) ;
 
 				s->setImage( QIcon( ":/sirikali" ) ) ;
 
@@ -339,7 +343,7 @@ private :
 				}
 			}
 		}
-	} m_walletKey ;
+	} m_walletKey;
 };
 
 #endif // KEYDIALOG_H
