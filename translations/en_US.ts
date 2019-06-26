@@ -1334,6 +1334,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="264"/>
+        <location filename="../src/keydialog.cpp" line="1524"/>
         <source>YubiKey Challenge/Response</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1438,11 +1439,6 @@ Set The Volume Key To Add It To The Wallet Before Mounting.</source>
     <message>
         <location filename="../src/keydialog.cpp" line="1430"/>
         <source>Failed To Locate Or Run Yubikey&apos;s &quot;ykchalresp&quot; Program.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/keydialog.cpp" line="1524"/>
-        <source>YubiKey Challenge/Responce</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
