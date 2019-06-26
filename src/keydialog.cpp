@@ -1521,7 +1521,7 @@ void keyDialog::cbActicated( QString e )
 		m_ui->pbkeyOption->setVisible( !e ) ;
 	} ;
 
-	if( e == _t( tr( "Key" ) ) || e == _t( tr( "YubiKey Challenge/Responce" ) ) ){
+	if( e == _t( tr( "Key" ) ) || e == _t( tr( "YubiKey Challenge/Response" ) ) ){
 
 		this->key() ;
 
