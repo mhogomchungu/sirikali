@@ -463,7 +463,7 @@ NoDisplay=false
 StartupNotify=true
 Terminal=false
 Type=Application
-MimeType=inode/directory;
+MimeType=inode/directory:1;
 Categories=Security;Utility;Qt;X-MandrivaLinux-System-FileTools;\n")
 
 install( FILES ${PROJECT_BINARY_DIR}/io.github.mhogomchungu.sirikali.desktop
