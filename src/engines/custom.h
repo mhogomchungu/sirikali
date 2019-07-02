@@ -46,6 +46,6 @@ public:
 
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
 private:
-	QString m_mountControlStructure ;
-	QString m_createControlStructure ;
+	const QString m_mountControlStructure ;
+	const QString m_createControlStructure ;
 } ;
