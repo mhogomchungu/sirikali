@@ -175,6 +175,7 @@ public:
 			QStringList names ;
 			QStringList fuseNames ;
 			QStringList configFileNames ;
+			QStringList fileExtensions ;
 
 			engines::engine::status notFoundCode ;
 		} ;
@@ -212,6 +213,7 @@ public:
 		const QStringList& names() const ;
 		const QStringList& fuseNames() const ;
 		const QStringList& configFileNames() const ;
+		const QStringList& fileExtensions() const ;
 
 		const QString& reverseString() const ;
 		const QString& idleString() const ;
@@ -380,12 +382,14 @@ public:
 
 	engines() ;
 	static const engines& instance() ;
+	bool atLeastOneDealsWithFiles() const ;
 	QStringList enginesWithNoConfigFile() const ;
 	QStringList enginesWithConfigFile() const ;
 	const QStringList& supported() const ;
 	const engine& getByName( const engines::engine::options& e ) const ;
 	const engine& getByName( const QString& e ) const ;
 	const engine& getByFuseName( const QString& e ) const ;
+	const engine& getByFileExtension( const QString& e ) const ;
 	std::pair< const engines::engine&,QString >
 	getByConfigFileNames( std::function< bool( const QString& ) > function ) const ;
 

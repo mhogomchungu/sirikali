@@ -248,6 +248,11 @@ const QStringList& engines::engine::configFileNames() const
 	return m_Options.configFileNames ;
 }
 
+const QStringList& engines::engine::fileExtensions() const
+{
+	return m_Options.fileExtensions ;
+}
+
 const QString& engines::engine::reverseString() const
 {
 	return m_Options.reverseString ;
@@ -341,6 +346,19 @@ const engines& engines::instance()
 {
 	static engines v ;
 	return v ;
+}
+
+bool engines::atLeastOneDealsWithFiles() const
+{
+	for( const auto& it : this->supported() ){
+
+		if( this->getByName( it ).fileExtensions().size() > 0 ){
+
+			return true ;
+		}
+	}
+
+	return false ;
 }
 
 QStringList engines::enginesWithNoConfigFile() const
@@ -449,6 +467,14 @@ const engines::engine& engines::getByFuseName( const QString& e ) const
 	auto m = _get_engine( m_backends,
 			      [ & ]( const QString& s ){ return !e.compare( s,Qt::CaseInsensitive ) ; },
 			      []( const engines::engine& s ){ return s.fuseNames() ; } ) ;
+	return m.first ;
+}
+
+const engines::engine& engines::getByFileExtension( const QString& e ) const
+{
+	auto m = _get_engine( m_backends,
+			      [ & ]( const QString& s ){ return e.endsWith( s,Qt::CaseInsensitive ) ; },
+			      []( const engines::engine& s ){ return s.fileExtensions() ; } ) ;
 	return m.first ;
 }
 

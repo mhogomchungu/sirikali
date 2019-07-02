@@ -285,6 +285,8 @@ namespace utility
 
 	QString homeConfigPath( const QString& = QString() ) ;
 
+	QString getExistingFile( QWidget *,const QString& caption,const QString& dir ) ;
+
 	QString getExistingDirectory( QWidget *,const QString& caption,const QString& dir ) ;
 
 	bool enablePolkit( void ) ;
@@ -352,6 +354,7 @@ namespace utility
 	QString mountPathPostFix( const QString& path ) ;
 	QString mountPathPostFix( const QString& prefix,const QString& path ) ;
 
+	bool pathIsFile( const QString& ) ;
 	bool pathIsReadable( const QString&,bool isFolder = true ) ;
 	bool pathIsWritable( const QString&,bool isFolder = true ) ;
 

@@ -493,6 +493,11 @@ siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 {
 	const auto& engines = engines::instance() ;
 
+	if( utility::pathIsFile( cipherFolder ) ){
+
+		return { engines.getByFileExtension( cipherFolder ),cipherFolder } ;
+	}
+
 	for( const auto& it : engines.supported() ){
 
 		if( cipherFolder.startsWith( it + " ",Qt::CaseInsensitive ) ){

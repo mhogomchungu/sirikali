@@ -225,8 +225,33 @@ void sirikali::setUpApp( const QString& volume )
 	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),
 		 this,SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
 
-	connect( m_ui->pbunlockvolume,SIGNAL( clicked() ),
-		 this,SLOT( unlockVolume() ) ) ;
+	if( engines::instance().atLeastOneDealsWithFiles() ){
+
+		auto m = new QMenu( this ) ;
+
+		auto a = m->addAction( tr( "Mount Folder" ) ) ;
+		auto b = m->addAction( tr( "Mount File" ) ) ;
+
+		connect( a,&QAction::triggered,[ this ](){
+
+			this->unlockVolume( true ) ;
+		} ) ;
+
+		connect( b,&QAction::triggered,[ this ](){
+
+			this->unlockVolume( false ) ;
+		} ) ;
+
+		m->addAction( a ) ;
+		m->addAction( b ) ;
+
+		m_ui->pbunlockvolume->setMenu( m ) ;
+	}else{
+		connect( m_ui->pbunlockvolume,&QPushButton::clicked,[ this ](){
+
+			this->unlockVolume( true ) ;
+		} ) ;
+	}
 
 	m_ui->pbcreate->setMenu( [ this ](){
 
@@ -1626,12 +1651,20 @@ void sirikali::showMoungDialog( const QString& volume,const QString& m_point )
 	}
 }
 
-void sirikali::unlockVolume()
+void sirikali::unlockVolume( bool dir )
 {
 	this->disableAll() ;
 
-	auto e = tr( "Select An Encrypted Volume Directory" ) ;
-	auto path = utility::getExistingDirectory( this,e,settings::instance().homePath() ) ;
+	QString path ;
+
+	if( dir ){
+
+		auto e = tr( "Select An Encrypted Volume Directory" ) ;
+		path = utility::getExistingDirectory( this,e,settings::instance().homePath() ) ;
+	}else{
+		auto e = tr( "Select A File To Be Mounted" ) ;
+		path = utility::getExistingFile( this,e,settings::instance().homePath() ) ;
+	}
 
 	if( path.isEmpty() ){
 

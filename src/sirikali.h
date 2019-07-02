@@ -79,7 +79,7 @@ private slots:
 	void securefsProperties( void ) ;
 	void unlockVolume( const QStringList& ) ;
 	void closeApplication( int = 0,const QString& = QString() ) ;
-	void unlockVolume( void ) ;
+	void unlockVolume( bool ) ;
 	void startGUI( const std::vector< volumeInfo >& ) ;
 	void showMoungDialog( const volumeInfo& ) ;
 	void showMoungDialog( const QString&,const QString& = QString() ) ;

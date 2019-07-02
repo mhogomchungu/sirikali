@@ -870,6 +870,11 @@ bool utility::pathIsWritable( const QString& path,bool isFolder )
 	}
 }
 
+bool utility::pathIsFile( const QString& path )
+{
+	return QFileInfo( path ).isFile() ;
+}
+
 bool utility::pathExists( const QString& path )
 {
 	return QFile::exists( path ) ;
@@ -1110,34 +1115,36 @@ const QProcessEnvironment& utility::systemEnvironment()
 
 QString utility::configFilePath( QWidget * s,const QString& e )
 {
-	return [ = ](){
+	QFileDialog dialog( s ) ;
 
-		QFileDialog dialog( s ) ;
+	dialog.setFileMode( QFileDialog::AnyFile ) ;
 
-		dialog.setFileMode( QFileDialog::AnyFile ) ;
+	dialog.setDirectory( settings::instance().homePath() ) ;
 
-		dialog.setDirectory( settings::instance().homePath() ) ;
+	dialog.setAcceptMode( QFileDialog::AcceptSave ) ;
 
-		dialog.setAcceptMode( QFileDialog::AcceptSave ) ;
+	dialog.selectFile( [ = ](){
 
-		dialog.selectFile( [ = ](){
+		return engines::instance().getByName( e ).configFileName() ;
 
-			return engines::instance().getByName( e ).configFileName() ;
+	}() ) ;
 
-		}() ) ;
+	if( dialog.exec() ){
 
-		if( dialog.exec() ){
+		auto q = dialog.selectedFiles() ;
 
-			auto q = dialog.selectedFiles() ;
+		if( !q.isEmpty() ){
 
-			if( !q.isEmpty() ){
-
-				return q.first() ;
-			}
+			return q.first() ;
 		}
+	}
 
-		return QString() ;
-	}() ;
+	return QString() ;
+}
+
+QString utility::getExistingFile( QWidget * w,const QString& caption,const QString& dir )
+{
+	return QFileDialog::getOpenFileName( w,caption,dir ) ;
 }
 
 QString utility::getExistingDirectory( QWidget * w,const QString& caption,const QString& dir )

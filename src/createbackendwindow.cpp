@@ -142,6 +142,7 @@ void createBackendWIndow::save()
 	config[ "configFileNames" ]             = _addList( configFileNames ) ;
 	config[ "fuseNames" ]                   = _addList( fusenames ) ;
 	config[ "names" ]                       = _addList( names ) ;
+	config[ "fileExtensions" ]              = QStringList() ;
 	config[ "failedToMountTextList" ]       = _addList( m_ui->lineEditFailedToMountText->text() ) ;
 	config[ "successfullyMountedList" ]     = _addList( m_ui->lineEditSuccessfullyMountedText->text() ) ;
 	config[ "configFileArgument" ]          = m_ui->lineEditConfigFileArgument->text() ;
