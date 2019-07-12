@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="ru_UA">
+<TS version="2.0" language="ru_UA">
 <context>
     <name>DialogMsg</name>
     <message>
@@ -107,7 +107,7 @@ Latest Version Is : %4.</source>
     <message>
         <location filename="../src/engines.cpp" line="559"/>
         <source>Backend Requires A Password.</source>
-        <translation type="unfinished"></translation>
+        <translation>Бэкэнд требует пароль.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="563"/>
@@ -165,7 +165,8 @@ Wrong Password Entered.</source>
         <location filename="../src/engines.cpp" line="595"/>
         <source>Failed To Unlock A Custom Volume.
 Wrong Password Entered.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось разблокировать пользовательский том.
+Введен неверный пароль.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="599"/>
@@ -261,7 +262,8 @@ Not Supported Volume Encountered.</source>
         <location filename="../src/engines.cpp" line="651"/>
         <source>Failed To Complete The Request.
 The Executable For This Backend Could Not Be Found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось выполнить запрос.
+Исполняемый файл для этого бэкэнда не найден.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="659"/>
@@ -634,7 +636,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configoptions.ui" line="277"/>
         <source>Allow External Tools To Get Passwords From Wallets</source>
-        <translation type="unfinished"></translation>
+        <translation>Разрешить внешние инструменты для получения паролей из хранилищей ключей</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="286"/>
@@ -680,7 +682,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configoptions.ui" line="395"/>
         <source>External Commands</source>
-        <translation type="unfinished"></translation>
+        <translation>Внешние Команды</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="407"/>
@@ -695,12 +697,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configoptions.ui" line="591"/>
         <source>Set Command To Run Periodically</source>
-        <translation type="unfinished"></translation>
+        <translation>Установить команду для периодического запуска</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="643"/>
         <source>Interval In Minutes Periodic Command Will Run</source>
-        <translation type="unfinished"></translation>
+        <translation>Интервал в минутах через которое будет периодически выполняться команда</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="688"/>
@@ -710,7 +712,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/configoptions.ui" line="752"/>
         <location filename="../src/configoptions.ui" line="768"/>
         <source>Set To Default</source>
-        <translation type="unfinished"></translation>
+        <translation>Установить по умолчанию</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="786"/>
@@ -736,18 +738,18 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configoptions.cpp" line="261"/>
         <source>Set Post Mount Command</source>
-        <translation type="unfinished"></translation>
+        <translation>Укажите команду после монтирования</translation>
     </message>
     <message>
         <location filename="../src/configoptions.cpp" line="271"/>
         <location filename="../src/configoptions.cpp" line="281"/>
         <source>Set Pre UnMount Command</source>
-        <translation type="unfinished"></translation>
+        <translation>Укажите команду перед размонтированием</translation>
     </message>
     <message>
         <location filename="../src/configoptions.cpp" line="291"/>
         <source>Set Command To Open Mount Points</source>
-        <translation type="unfinished"></translation>
+        <translation>Укажите команду после монтирования</translation>
     </message>
 </context>
 <context>
@@ -964,25 +966,25 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/favorites2.ui" line="306"/>
         <location filename="../src/favorites2.ui" line="824"/>
         <source>PreMount Command</source>
-        <translation type="unfinished"></translation>
+        <translation>Команда перед монтированием</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="325"/>
         <location filename="../src/favorites2.ui" line="843"/>
         <source>PostMount Command</source>
-        <translation type="unfinished"></translation>
+        <translation>Команда после монтирования</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="344"/>
         <location filename="../src/favorites2.ui" line="862"/>
         <source>PreUnMount Command</source>
-        <translation type="unfinished"></translation>
+        <translation>Команда перед размонтированием</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="363"/>
         <location filename="../src/favorites2.ui" line="881"/>
         <source>PostUnMount Command</source>
-        <translation type="unfinished"></translation>
+        <translation>Команда после размонтирования</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="383"/>
@@ -997,7 +999,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.ui" line="446"/>
         <source>General Options</source>
-        <translation type="unfinished">Общие параметры</translation>
+        <translation>Общие параметры</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="787"/>
@@ -1059,12 +1061,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.ui" line="500"/>
         <source>Volume Type (Required For Volumes That Do Not Use A Configuration File Like sshfs)</source>
-        <translation type="unfinished"></translation>
+        <translation>Тип тома (требуется для томов, которые не используют файл конфигурации, например sshfs)</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="812"/>
         <source>Custom Commands</source>
-        <translation type="unfinished"></translation>
+        <translation>Пользовательские команды</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="997"/>
@@ -1074,7 +1076,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.cpp" line="86"/>
         <source>Select A Command Executable</source>
-        <translation type="unfinished"></translation>
+        <translation>Выберите команду выполнения</translation>
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="138"/>
@@ -1132,7 +1134,8 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/favorites2.cpp" line="745"/>
         <source>Remote Ssh Server Address
 (Example: woof@example.com:/remote/path)</source>
-        <translation type="unfinished"></translation>
+        <translation>Адрес удаленного SSH-сервера
+(Пример: woof@example.com:/remote/path)</translation>
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="746"/>
@@ -1437,7 +1440,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/keydialog.cpp" line="264"/>
         <location filename="../src/keydialog.cpp" line="1524"/>
         <source>YubiKey Challenge/Response</source>
-        <translation type="unfinished"></translation>
+        <translation>Yubikey Вызов/Ответ</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="307"/>
@@ -1499,7 +1502,10 @@ p, li { white-space: pre-wrap; }
         <source>Volume Not Found in &quot;%1&quot;.
 
 Set The Volume Key To Add It To The Wallet Before Mounting.</source>
-        <translation type="unfinished"></translation>
+        <translation>Том не найден в &quot;%1&quot;.
+
+Укажите ключ тома, чтобы добавить его в хранилище ключей перед монтированием.
+</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="897"/>
@@ -1510,22 +1516,22 @@ Set The Volume Key To Add It To The Wallet Before Mounting.</source>
     <message>
         <location filename="../src/keydialog.cpp" line="1080"/>
         <source>Volume Key Can Not Be Empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ключ тома не может быть пустым.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1136"/>
         <source>Failed To Add A Volume To The A Wallet.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось добавить том в хранилище ключей.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1139"/>
         <source>Volume Already Exists In The Wallet.</source>
-        <translation type="unfinished"></translation>
+        <translation>Том с таким именем уже есть в хранилище ключей.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1175"/>
         <source>Failed To Open Wallet.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось открыть хранилище ключей.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1237"/>
@@ -1540,7 +1546,7 @@ Set The Volume Key To Add It To The Wallet Before Mounting.</source>
     <message>
         <location filename="../src/keydialog.cpp" line="1430"/>
         <source>Failed To Locate Or Run Yubikey&apos;s &quot;ykchalresp&quot; Program.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось найти или запустить программу Yubikey &quot;ykchalresp&quot;.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1569"/>
@@ -1571,7 +1577,8 @@ Set The Volume Key To Add It To The Wallet Before Mounting.</source>
         <location filename="../src/keydialog.cpp" line="1614"/>
         <source>Create A Volume With Specified Key And Then Add The Key In 
 &quot;%1&quot;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Создайте том с указанным ключом, а затем добавьте ключ в
+&quot;%1&quot;.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1660"/>
@@ -1943,12 +1950,12 @@ The lite format has become the default on Unix-like operating systems as it is m
     <message>
         <location filename="../src/sirikali.cpp" line="232"/>
         <source>Mount Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Папка монтирования</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="233"/>
         <source>Mount File</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл монтирования</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="277"/>
@@ -2026,17 +2033,17 @@ Please Report This Serious Bug.</source>
     <message>
         <location filename="../src/sirikali.cpp" line="1665"/>
         <source>Select A File To Be Mounted</source>
-        <translation type="unfinished"></translation>
+        <translation>Выберите файл для монтирования</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="1861"/>
         <source>Failed To Unmount 1 Volume.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось размонтировать 1 том.</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="1863"/>
         <source>Failed To Unmount %1 Volumes.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось размонтировать %1 тома(ов).</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="1364"/>
