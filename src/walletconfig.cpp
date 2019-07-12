@@ -37,10 +37,11 @@
 
 #define COMMENT "-SiriKali_Comment_ID"
 
-walletconfig::walletconfig( QWidget * parent,secrets::wallet&& wallet,std::function< void() > e ) :
+walletconfig::walletconfig( QWidget * parent,secrets::wallet&& wallet,std::function< void() > e,QString folderPath) :
 	QDialog( parent ),
 	m_ui( new Ui::walletconfig ),
 	m_wallet( std::move( wallet ) ),
+	m_volumeID( folderPath ),
 	m_function( std::move( e ) )
 {
 	m_ui->setupUi( this ) ;
@@ -123,8 +124,7 @@ void walletconfig::itemClicked_0( QTableWidgetItem * item )
 
 		Task::run( [ this ](){
 
-			m_wallet->deleteKey( m_volumeID ) ;
-			m_wallet->deleteKey( m_volumeID + COMMENT ) ;
+			walletconfig::deleteKey( m_wallet,m_volumeID ) ;
 
 		} ).then( [ this ](){
 
@@ -153,11 +153,35 @@ void walletconfig::pbClose()
 	this->HideUI() ;
 }
 
+bool walletconfig::addKey( secrets::wallet& wallet,const QString& id,
+			   const QString& key,const QString& comment )
+{
+	if( wallet->addKey( id,key ) ){
+
+		if( wallet->addKey( id + COMMENT,comment ) ){
+
+			return true ;
+		}else{
+			wallet->deleteKey( id ) ;
+
+			return false ;
+		}
+	}else{
+		return false ;
+	}
+}
+
+void walletconfig::deleteKey( secrets::wallet& wallet,const QString& id )
+{
+	wallet->deleteKey( id ) ;
+	wallet->deleteKey( id + COMMENT ) ;
+}
+
 void walletconfig::pbAdd()
 {
 	this->disableAll() ;
 
-	walletconfiginput::instance( m_parentWidget,this,[ this ]( const QString& volumeID,
+	walletconfiginput::instance( m_parentWidget,this,m_volumeID,[ this ]( const QString& volumeID,
 				     const QString& comment,const QString& key ){
 
 		m_comment  = comment ;
@@ -166,26 +190,9 @@ void walletconfig::pbAdd()
 
 		Task::run( [ this ](){
 
-			auto _add = [ this ](){
-
-				if( m_wallet->addKey( m_volumeID,m_key ) ){
-
-					if( m_wallet->addKey( m_volumeID + COMMENT,m_comment ) ){
-
-						return true ;
-					}else{
-						m_wallet->deleteKey( m_volumeID ) ;
-
-						return false ;
-					}
-				}else{
-					return false ;
-				}
-			} ;
-
 			for( int i = 0 ; i < 2 ; i++ ){
 
-				if( _add() ){
+				if( walletconfig::addKey( m_wallet,m_volumeID,m_key,m_comment ) ){
 
 					return true ;
 				}else{
@@ -275,6 +282,12 @@ void walletconfig::accessWallet()
 		this->enableAll() ;
 		m_ui->tableWidget->setFocus() ;
 	} ) ;
+
+	/* If m_volumeID is set go straight to pbAdd() */
+	if(!m_volumeID.isEmpty()) {
+		this->pbAdd();
+	}
+
 }
 
 void walletconfig::enableAll()

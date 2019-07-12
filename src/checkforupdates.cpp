@@ -19,6 +19,7 @@
 
 #include "checkforupdates.h"
 #include "settings.h"
+#include "json_parser.hpp"
 
 checkUpdates::checkUpdates( QWidget * widget ) : m_widget( widget ),
 	m_timeOut( settings::instance().networkTimeOut() ),m_running( false )
@@ -135,18 +136,13 @@ QString checkUpdates::latestVersion( const QByteArray& data )
 		return true ;
 	} ;
 
-	for( const auto& it : nlohmann::json::parse( data.constData() ) ){
+	sirikali::json json( data,sirikali::json::type::CONTENTS ) ;
 
-		auto e = it.find( "tag_name" ) ;
+	for( auto& it : json.getTags( "tag_name" ) ){
 
-		if( e != it.end() ){
+		if( _found_release( it.remove( 'v' ) ) ){
 
-			auto r = QString::fromStdString( e.value() ).remove( 'v' ) ;
-
-			if( _found_release( r ) ){
-
-				return r ;
-			}
+			return it ;
 		}
 	}
 

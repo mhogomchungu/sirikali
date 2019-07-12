@@ -61,7 +61,7 @@
 #include "locale_path.h"
 #include "plugins.h"
 #include "crypto.h"
-#include "json.h"
+#include "json_parser.hpp"
 #include "win.h"
 #include "readonlywarning.h"
 
@@ -72,6 +72,7 @@
 #include "siriPolkit.h"
 #include "settings.h"
 #include "version.h"
+#include "runinthread.h"
 
 #ifdef Q_OS_LINUX
 
@@ -149,6 +150,18 @@ static bool _enable_debug = false ;
 static bool _enable_full_debug = false ;
 
 static QThread * _main_gui_thread ;
+
+static QWidget * _mainQWidget ;
+
+void utility::setMainQWidget( QWidget * m )
+{
+	_mainQWidget = m ;
+}
+
+QWidget * utility::mainQWidget()
+{
+	return _mainQWidget ;
+}
 
 void utility::enableDebug( bool e )
 {
@@ -258,13 +271,13 @@ void utility::Task::execute( const QString& exe,int waitTime,
 
 		s.write( [ & ]()->QByteArray{
 
-			nlohmann::json json ;
+			sirikali::json json ;
 
-			json[ "cookie" ]   = _cookie.constData() ;
-			json[ "password" ] = password.constData() ;
-			json[ "command" ]  = exe.toLatin1().constData() ;
+			json[ "cookie" ]   = _cookie ;
+			json[ "password" ] = password ;
+			json[ "command" ]  = exe ;
 
-			return json.dump().c_str() ;
+			return json.structure() ;
 		}() ) ;
 
 		s.waitForBytesWritten() ;
@@ -272,13 +285,13 @@ void utility::Task::execute( const QString& exe,int waitTime,
 		s.waitForReadyRead() ;
 
 		try{
-			auto json = nlohmann::json::parse( s.readAll().constData() ) ;
+			sirikali::json json( s.readAll(),sirikali::json::type::CONTENTS ) ;
 
-			m_finished   = json[ "finished" ].get< bool >() ;
-			m_exitCode   = json[ "exitCode" ].get< int >() ;
-			m_exitStatus = json[ "exitStatus" ].get< int >() ;
-			m_stdError   = json[ "stdError" ].get< std::string >().c_str() ;
-			m_stdOut     = json[ "stdOut" ].get< std::string >().c_str() ;
+			m_finished   = json.getBool( "finished" ) ;
+			m_exitCode   = json.getInterger( "exitCode" ) ;
+			m_exitStatus = json.getInterger( "exitStatus" ) ;
+			m_stdError   = json.getByteArray( "stdError" ) ;
+			m_stdOut     = json.getByteArray( "stdOut" ) ;
 
 			utility::logCommandOutPut( { m_stdOut,m_stdError,m_exitCode,m_exitStatus,m_finished },exe ) ;
 
@@ -432,6 +445,7 @@ bool utility::enablePolkit()
 
 void utility::initGlobals()
 {
+	favorites::instance().updateFavorites() ;
 	utility::setGUIThread() ;
 #ifdef Q_OS_LINUX
 	auto uid = getuid() ;
@@ -479,13 +493,13 @@ void utility::quitHelper()
 
 			s.write( [ & ]()->QByteArray{
 
-				nlohmann::json json ;
+				sirikali::json json ;
 
-				json[ "cookie" ]   = _cookie.constData() ;
+				json[ "cookie" ]   = _cookie ;
 				json[ "password" ] = "" ;
 				json[ "command" ]  = "exit" ;
 
-				return json.dump().c_str() ;
+				return json.structure() ;
 			}() ) ;
 
 			s.waitForBytesWritten() ;
@@ -601,6 +615,32 @@ bool utility::printVersionOrHelpInfo( const QStringList& e )
 	}
 }
 
+QString utility::getKey( const QString& cipherPath,const secrets& secret )
+{
+	if( utility::runningOnBackGroundThread() ){
+
+		return QString() ;
+	}
+
+	auto& settings = settings::instance() ;
+
+	if( !settings.allowExternalToolsToReadPasswords() ){
+
+		return QString() ;
+	}
+
+	auto bk = settings.autoMountBackEnd() ;
+
+	if( bk.isInvalid() ){
+
+		return QString() ;
+	}
+
+	auto m = utility::getKey( cipherPath,secret.walletBk( bk.bk() ).bk() ) ;
+
+	return m.key ;
+}
+
 utility::wallet utility::getKey( const QString& keyID,LXQt::Wallet::Wallet& wallet,QWidget * widget )
 {
 	auto _getKey = []( LXQt::Wallet::Wallet& wallet,const QString& volumeID ){
@@ -633,7 +673,6 @@ utility::wallet utility::getKey( const QString& keyID,LXQt::Wallet::Wallet& wall
 					w.opened = wallet.open( walletName,appName ) ;
 
 					widget->show() ;
-
 				}else{
 					w.opened = wallet.open( walletName,appName ) ;
 				}
@@ -829,6 +868,11 @@ bool utility::pathIsWritable( const QString& path,bool isFolder )
 	}else{
 		return s.isWritable() && s.isFile() ;
 	}
+}
+
+bool utility::pathIsFile( const QString& path )
+{
+	return QFileInfo( path ).isFile() ;
 }
 
 bool utility::pathExists( const QString& path )
@@ -1071,34 +1115,36 @@ const QProcessEnvironment& utility::systemEnvironment()
 
 QString utility::configFilePath( QWidget * s,const QString& e )
 {
-	return [ = ](){
+	QFileDialog dialog( s ) ;
 
-		QFileDialog dialog( s ) ;
+	dialog.setFileMode( QFileDialog::AnyFile ) ;
 
-		dialog.setFileMode( QFileDialog::AnyFile ) ;
+	dialog.setDirectory( settings::instance().homePath() ) ;
 
-		dialog.setDirectory( settings::instance().homePath() ) ;
+	dialog.setAcceptMode( QFileDialog::AcceptSave ) ;
 
-		dialog.setAcceptMode( QFileDialog::AcceptSave ) ;
+	dialog.selectFile( [ = ](){
 
-		dialog.selectFile( [ = ](){
+		return engines::instance().getByName( e ).configFileName() ;
 
-			return engines::instance().getByName( e ).configFileName() ;
+	}() ) ;
 
-		}() ) ;
+	if( dialog.exec() ){
 
-		if( dialog.exec() ){
+		auto q = dialog.selectedFiles() ;
 
-			auto q = dialog.selectedFiles() ;
+		if( !q.isEmpty() ){
 
-			if( !q.isEmpty() ){
-
-				return q.first() ;
-			}
+			return q.first() ;
 		}
+	}
 
-		return QString() ;
-	}() ;
+	return QString() ;
+}
+
+QString utility::getExistingFile( QWidget * w,const QString& caption,const QString& dir )
+{
+	return QFileDialog::getOpenFileName( w,caption,dir ) ;
 }
 
 QString utility::getExistingDirectory( QWidget * w,const QString& caption,const QString& dir )
@@ -1137,14 +1183,39 @@ QString utility::freeWindowsDriveLetter()
 	return "Z:" ;
 }
 
+bool utility::startsWithDriveLetter( const QString& path )
+{
+	return utility::isDriveLetter( path.mid( 0,3 ) ) ;
+}
+
 bool utility::isDriveLetter( const QString& path )
 {
+	auto _drivePrefix = [ & ]( const QString& path ){
+
+		if( path.size() == 2 ){
+
+			auto a = path.at( 0 ) ;
+			auto b = path.at( 1 ) ;
+
+			return a >= 'A' && a <= 'Z' && b == ':' ;
+		}else{
+			return false ;
+		}
+	} ;
+
 	if( utility::platformIsWindows() ){
 
-		return ( path.size() == 2 && path.at( 1 ) == ':' ) || ( path.size() == 3 && path.at( 1 ) == ':' && path.at( 2 ) == '\\' ) ;
-	}else{
-		return false ;
+		if( path.size() == 2 ){
+
+			return _drivePrefix( path ) ;
+
+		}else if( path.size() == 3 ){
+
+			return _drivePrefix( path ) && path.at( 2 ) == '\\' ;
+		}
 	}
+
+	return false ;
 }
 
 template< typename E >
@@ -1352,6 +1423,11 @@ bool utility::runningOnBackGroundThread()
 	return QThread::currentThread() != _main_gui_thread ;
 }
 
+void utility::runInUiThread( std::function< void() > function )
+{
+	runInThread::instance( _main_gui_thread,std::move( function ) ) ;
+}
+
 void utility::waitForOneSecond()
 {
 	utility::wait( 1 ) ;
@@ -1378,4 +1454,39 @@ void utility::waitForFinished( QProcess& e )
 	}
 
 	e.waitForFinished() ;
+}
+
+static QString _ykchalresp_path()
+{
+	static QString m = utility::executableFullPath( "ykchalresp" ) ;
+	return m ;
+}
+
+utility::result< QByteArray > utility::yubiKey( const QString& challenge )
+{
+	QString exe = _ykchalresp_path() ;
+
+	if( !exe.isEmpty() ){
+
+		exe = exe + " " + settings::instance().ykchalrespArguments() ;
+
+		auto s = utility::unwrap( ::Task::process::run( exe,challenge.toLatin1() ) ) ;
+
+		utility::logCommandOutPut( s,exe ) ;
+
+		if( s.success() ){
+
+			auto m = s.std_out() ;
+
+			m.replace( "\n","" ) ;
+
+			return m ;
+		}else{
+			utility::debug::cout() << "Failed to get a responce from ykchalresp" ;
+			utility::debug::cout() << "StdOUt:" << s.std_out() ;
+			utility::debug::cout() << "StdError:" << s.std_error() ;
+		}
+	}
+
+	return {} ;
 }

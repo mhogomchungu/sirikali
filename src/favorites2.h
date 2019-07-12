@@ -34,13 +34,12 @@ class favorites2 : public QDialog
 {
 	Q_OBJECT
 public:
-	static favorites2& instance( QWidget * parent = 0,favorites::type type = favorites::type::others )
+	static favorites2& instance( QWidget * parent,favorites::type type = favorites::type::others )
 	{
 		return *( new favorites2( parent,type ) ) ;
 	}
-	favorites2( QWidget * parent = 0,favorites::type type = favorites::type::others ) ;
+	favorites2( QWidget * parent,favorites::type type = favorites::type::others ) ;
 	~favorites2() ;
-	void Show() ;
 private :
 	void tabChanged( int ) ;
 	void updateVolumeList( const std::vector< favorites::entry >&,const QString& ) ;

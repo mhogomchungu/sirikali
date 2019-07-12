@@ -50,6 +50,8 @@ public:
 			success,
 			volumeCreatedSuccessfully,
 
+			backendRequiresPassword,
+
 			cryfsBadPassword,
 			encfsBadPassword,
 			sshfsBadPassword,
@@ -63,6 +65,9 @@ public:
 			securefsNotFound,
 			gocryptfsNotFound,
 			ecryptfs_simpleNotFound,
+
+			customCommandNotFound,
+                        customCommandBadPassword,
 
 			sshfsTooOld,
 			cryfsMigrateFileSystem,
@@ -152,14 +157,25 @@ public:
 
 		struct BaseOptions
 		{
+			bool hasConfigFile ;
 			bool setsCipherPath ;
 			bool autoMountsOnCreate ;
 			bool hasGUICreateOptions ;
 			bool supportsMountPathsOnWindows ;
+			bool requiresAPassword ;
+			bool customBackend ;
+			QString reverseString ;
+			QString idleString ;
+			QString executableName ;
+			QString incorrectPasswordText ;
+			QString incorrectPassWordCode ;
 			QString configFileArgument ;
+			QStringList successfulMountedList ;
+			QStringList failedToMountList ;
 			QStringList names ;
 			QStringList fuseNames ;
 			QStringList configFileNames ;
+			QStringList fileExtensions ;
 
 			engines::engine::status notFoundCode ;
 		} ;
@@ -187,16 +203,27 @@ public:
 		bool setsCipherPath() const ;
 		bool autoMountsOnCreate() const ;
 		bool hasGUICreateOptions() const ;
+		bool hasConfigFile() const ;
 		bool supportsMountPathsOnWindows() const ;
+		bool requiresAPassword() const ;
+		bool customBackend() const ;
 
 		engines::engine::status notFoundCode() const ;
 
 		const QStringList& names() const ;
 		const QStringList& fuseNames() const ;
 		const QStringList& configFileNames() const ;
+		const QStringList& fileExtensions() const ;
 
+		const QString& reverseString() const ;
+		const QString& idleString() const ;
+		const QString& executableName() const ;
 		const QString& name() const ;
 		const QString& configFileName() const ;
+		const QString& incorrectPasswordText() const ;
+                const QString& incorrectPasswordCode() const ;
+
+		engine::engine::error errorCode( const QString& ) const ;
 
 		QString setConfigFilePath( const QString& ) const ;
 
@@ -206,7 +233,6 @@ public:
 		virtual QString setPassword( const QString& ) const = 0 ;
 		virtual args command( const engines::engine::cmdArgsList& args ) const = 0 ;
 		virtual engines::engine::status errorCode( const QString& e,int s ) const = 0 ;
-		virtual engine::engine::error errorCode( const QString& ) const = 0 ;
 		using function = std::function< void( const Options& ) > ;
 		virtual void GUICreateOptionsinstance( QWidget * parent,function ) const = 0 ;
 	protected:
@@ -356,10 +382,14 @@ public:
 
 	engines() ;
 	static const engines& instance() ;
+	bool atLeastOneDealsWithFiles() const ;
+	QStringList enginesWithNoConfigFile() const ;
+	QStringList enginesWithConfigFile() const ;
 	const QStringList& supported() const ;
 	const engine& getByName( const engines::engine::options& e ) const ;
 	const engine& getByName( const QString& e ) const ;
 	const engine& getByFuseName( const QString& e ) const ;
+	const engine& getByFileExtension( const QString& e ) const ;
 	std::pair< const engines::engine&,QString >
 	getByConfigFileNames( std::function< bool( const QString& ) > function ) const ;
 

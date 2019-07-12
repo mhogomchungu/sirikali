@@ -29,10 +29,10 @@
 #include <QStringList>
 #include <QDir>
 #include <QtGlobal>
+#include <QTranslator>
 
-#include "favorites.h"
 #include "lxqt_wallet.h"
-
+#include "favorites.h"
 #include <vector>
 #include <array>
 #include <functional>
@@ -131,6 +131,7 @@ public:
 	void setWindowsExecutableSearchPath( const QString& ) ;
 	QString windowsExecutableSearchPath() ;
 	QString externalPluginExecutable() ;
+	QString ykchalrespArguments() ;
 	void setExternalPluginExecutable( const QString& ) ;
 	bool enableRevealingPasswords() ;
 	void scaleGUI() ;
@@ -139,6 +140,11 @@ public:
 	QString readPassword( bool addNewLine ) ;
 	QString mountPath() ;
 	QString mountPath( const QString& ) ;
+	QString ConfigLocation() ;
+	QString environmentalVariableVolumeKey() ;
+	void removeKey( const QString& ) ;
+	void allowExternalToolsToReadPasswords( bool ) ;
+	bool allowExternalToolsToReadPasswords() ;
 	void setDefaultMountPointPrefix( const QString& ) ;
 	bool startMinimized() ;
 	void setStartMinimized( bool ) ;
@@ -147,6 +153,10 @@ public:
 	void preUnMountCommand( const QString& ) ;
 	void runCommandOnMount( const QString& ) ;
 	QString runCommandOnMount() ;
+	QString runCommandOnInterval() ;
+	void runCommandOnInterval( const QString& ) ;
+	int runCommandOnIntervalTime() ;
+	void runCommandOnIntervalTime( int ) ;
 	bool reUseMountPoint() ;
 	void reUseMountPoint( bool ) ;
 	bool autoOpenFolderOnMount() ;
@@ -170,17 +180,12 @@ public:
 	bool windowsUseMountPointPath( const QString& ) ;
 	void clearFavorites() ;
 	void showMountDialogWhenAutoMounting( bool ) ;
-	void initGlobals() ;
 	int favoritesEntrySize() ;
-	void replaceFavorite( const favorites::entry&, const favorites::entry& ) ;
-	void removeFavoriteEntry( const favorites::entry& ) ;
-	std::vector< favorites::entry > readFavorites() ;
 	void setLocalizationLanguage( const QString& language ) ;
 	QString localizationLanguage( );
 	QString walletName( LXQt::Wallet::BackEnd ) ;
 	settings::walletBackEnd autoMountBackEnd() ;
-	void addToFavorite( const QStringList& ) ;
-	void autoMountBackEnd( const settings::walletBackEnd&) ;
+	void autoMountBackEnd( const settings::walletBackEnd& ) ;
 	QSettings& backend();
 	bool setOpenVolumeReadOnly( QWidget * parent,bool checked ) ;
 	bool getOpenVolumeReadOnlyOption() ;
@@ -188,7 +193,6 @@ public:
 	QString localizationLanguagePath() ;
 	void languageMenu( QMenu * m,QAction * ac,settings::translator& ) ;
 	void setLocalizationLanguage( bool translate,QMenu * m,settings::translator& ) ;
-	favorites::entry readFavorite( const QString& ) ;
 	QString walletName( void ) ;
 	QString applicationName( void ) ;
 	int readPasswordMaximumLength() ;

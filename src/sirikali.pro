@@ -34,6 +34,7 @@ SOURCES += \
     configoptions.cpp \
     engines/ecryptfscreateoptions.cpp \
     engines/encfscreateoptions.cpp \
+    engines/customcreateoptions.cpp \
     settings.cpp \
     engines.cpp
 
@@ -41,6 +42,7 @@ HEADERS += \
     engines/securefscreateoptions.h \
     engines/ecryptfscreateoptions.h \
     engines/cryfscreateoptions.h \
+    engines/customcreateoptions,h \
     dialogok.h \
     configoptions.h \
     engines/gocryptfscreateoptions.h \
@@ -77,6 +79,7 @@ FORMS += \
     engines/securefscreateoptions.ui \
     engines/ecryptfscreateoptions.ui \
     engines/cryfscreateoptions.ui \
+    engines/customcreateoptions,ui \
     dialogok.ui \
     sirikali.ui \
     engines/gocryptfscreateoptions.ui \

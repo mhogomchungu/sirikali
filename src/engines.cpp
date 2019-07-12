@@ -26,6 +26,7 @@
 #include "engines/sshfs.h"
 #include "engines/unknown.h"
 #include "engines/securefs.h"
+#include "engines/custom.h"
 
 #include "utility.h"
 #include "settings.h"
@@ -71,6 +72,24 @@ QStringList engines::executableSearchPaths()
 
 QString engines::executableFullPath( const QString& f )
 {
+	if( utility::platformIsWindows() ){
+
+		if( utility::startsWithDriveLetter( f ) ){
+
+			if( f.endsWith( ".exe" ) ){
+
+				return f ;
+			}else{
+				return f + ".exe " ;
+			}
+		}
+	}else{
+		if( f.startsWith( "/" ) ){
+
+			return f ;
+		}
+	}
+
 	QString e = f ;
 
 	if( utility::platformIsWindows() && !e.endsWith( ".exe" ) ){
@@ -156,14 +175,7 @@ engines::engine::engine( engines::engine::BaseOptions o ) :
 
 QString engines::engine::executableFullPath() const
 {
-	auto m = this->name() ;
-
-	if( m == "ecryptfs" ){
-
-		return engines::executableFullPath( "ecryptfs-simple" ) ;
-	}else{
-		return engines::executableFullPath( m ) ;
-	}
+	return engines::executableFullPath( this->executableName() ) ;
 }
 
 bool engines::engine::isInstalled() const
@@ -201,9 +213,24 @@ bool engines::engine::hasGUICreateOptions() const
 	return m_Options.hasGUICreateOptions ;
 }
 
+bool engines::engine::hasConfigFile() const
+{
+	return m_Options.hasConfigFile ;
+}
+
 bool engines::engine::supportsMountPathsOnWindows() const
 {
 	return m_Options.supportsMountPathsOnWindows ;
+}
+
+bool engines::engine::requiresAPassword() const
+{
+	return m_Options.requiresAPassword ;
+}
+
+bool engines::engine::customBackend() const
+{
+	return m_Options.customBackend ;
 }
 
 const QStringList& engines::engine::names() const
@@ -219,6 +246,26 @@ const QStringList& engines::engine::fuseNames() const
 const QStringList& engines::engine::configFileNames() const
 {
 	return m_Options.configFileNames ;
+}
+
+const QStringList& engines::engine::fileExtensions() const
+{
+	return m_Options.fileExtensions ;
+}
+
+const QString& engines::engine::reverseString() const
+{
+	return m_Options.reverseString ;
+}
+
+const QString& engines::engine::idleString() const
+{
+	return m_Options.idleString ;
+}
+
+const QString& engines::engine::executableName() const
+{
+	return m_Options.executableName ;
 }
 
 const QString& engines::engine::name() const
@@ -243,6 +290,43 @@ const QString& engines::engine::configFileName() const
 	}
 }
 
+const QString& engines::engine::incorrectPasswordText() const
+{
+	return m_Options.incorrectPasswordText ;
+}
+
+const QString& engines::engine::incorrectPasswordCode() const
+{
+	return m_Options.incorrectPassWordCode ;
+}
+
+static bool _contains( const QString& e,const QStringList& m )
+{
+	for( const auto& it : m ){
+
+		if( e.contains( it ) ){
+
+			return true ;
+		}
+	}
+
+	return false ;
+}
+
+engines::engine::error engines::engine::errorCode( const QString& e ) const
+{
+	if( _contains( e,m_Options.successfulMountedList ) ){
+
+		return engines::engine::error::Success ;
+
+	}else if( _contains( e,m_Options.failedToMountList ) ){
+
+		return engines::engine::error::Failed ;
+	}else{
+		return engines::engine::error::Continue ;
+	}
+}
+
 QString engines::engine::setConfigFilePath( const QString& e ) const
 {
 	if( m_Options.configFileArgument.isEmpty() ){
@@ -262,6 +346,49 @@ const engines& engines::instance()
 {
 	static engines v ;
 	return v ;
+}
+
+bool engines::atLeastOneDealsWithFiles() const
+{
+	for( const auto& it : this->supported() ){
+
+		if( this->getByName( it ).fileExtensions().size() > 0 ){
+
+			return true ;
+		}
+	}
+
+	return false ;
+}
+
+QStringList engines::enginesWithNoConfigFile() const
+{
+	QStringList m ;
+
+	for( const auto& it : this->supported() ){
+
+		if( !this->getByName( it ).hasConfigFile() ){
+
+			m.append( it ) ;
+		}
+	}
+
+	return m ;
+}
+
+QStringList engines::enginesWithConfigFile() const
+{
+	QStringList m ;
+
+	for( const auto& it : this->supported() ){
+
+		if( this->getByName( it ).hasConfigFile() ){
+
+			m.append( it ) ;
+		}
+	}
+
+	return m ;
 }
 
 const QStringList& engines::supported() const
@@ -300,6 +427,8 @@ engines::engines()
 		m_backends.emplace_back( std::make_unique< ecryptfs >() ) ;
 		m_backends.emplace_back( std::make_unique< sshfs >() ) ;
 	}
+
+	custom::addEngines( m_supported,m_backends ) ;
 }
 
 template< typename Engines,typename Compare,typename listSource >
@@ -338,6 +467,14 @@ const engines::engine& engines::getByFuseName( const QString& e ) const
 	auto m = _get_engine( m_backends,
 			      [ & ]( const QString& s ){ return !e.compare( s,Qt::CaseInsensitive ) ; },
 			      []( const engines::engine& s ){ return s.fuseNames() ; } ) ;
+	return m.first ;
+}
+
+const engines::engine& engines::getByFileExtension( const QString& e ) const
+{
+	auto m = _get_engine( m_backends,
+			      [ & ]( const QString& s ){ return e.endsWith( s,Qt::CaseInsensitive ) ; },
+			      []( const engines::engine& s ){ return s.fileExtensions() ; } ) ;
 	return m.first ;
 }
 
@@ -417,6 +554,10 @@ QString engines::engine::cmdStatus::toString() const
 
 		return QObject::tr( "Volume Created Successfully." ) ;
 
+	case engines::engine::status::backendRequiresPassword :
+
+		return QObject::tr( "Backend Requires A Password." ) ;
+
 	case engines::engine::status::cryfsBadPassword :
 
 		return QObject::tr( "Failed To Unlock A Cryfs Volume.\nWrong Password Entered." ) ;
@@ -448,6 +589,10 @@ QString engines::engine::cmdStatus::toString() const
 	case engines::engine::status::securefsBadPassword :
 
 		return QObject::tr( "Failed To Unlock A Securefs Volume.\nWrong Password Entered." ) ;
+
+	case engines::engine::status::customCommandBadPassword :
+
+		return QObject::tr( "Failed To Unlock A Custom Volume.\nWrong Password Entered." ) ;
 
 	case engines::engine::status::sshfsNotFound :
 
@@ -491,7 +636,7 @@ QString engines::engine::cmdStatus::toString() const
 
 	case engines::engine::status::failedToLoadWinfsp :
 
-		return QObject::tr( "Backend Could Not Load WinFsp. Please Make Sure You Have WinFsp Properly Installed" ) ;
+		return QObject::tr( "Backend Could Not Load WinFsp. Please Make Sure You Have WinFsp Properly Installed." ) ;
 
 	case engines::engine::status::unknown :
 
@@ -500,6 +645,10 @@ QString engines::engine::cmdStatus::toString() const
 	case engines::engine::status::sshfsTooOld :
 
 		return QObject::tr( "Installed \"%1\" Version Is Too Old.\n Please Update To Atleast Version %2." ).arg( "Sshfs","3.2.0" ) ;
+
+	case engines::engine::status::customCommandNotFound :
+
+		return QObject::tr( "Failed To Complete The Request.\nThe Executable For This Backend Could Not Be Found." ) ;
 
 	case engines::engine::status::invalidConfigFileName :
 
@@ -564,9 +713,9 @@ engines::engine::options::options( const favorites::entry& e,const QString& volu
 	idleTimeout( e.idleTimeOut ),
 	configFilePath( e.configFilePath ),
 	type( QString() ),
-	ro( e.readOnlyMode ? e.readOnlyMode.onlyRead() : false ),
+	ro( e.readOnlyMode.defined() ? e.readOnlyMode.True() : false ),
 	reverseMode( e.reverseMode ),
-	mountOptions( e.sanitizedMountOptions() )
+	mountOptions( e.mountOptions )
 {
 }
 
@@ -588,7 +737,7 @@ engines::engine::options::options( const QString& cipher_folder,
 	type( volume_type ),
 	ro( unlock_in_read_only ),
 	reverseMode( unlock_in_reverse_mode ),
-	mountOptions( favorites::entry::sanitizedMountOptions( mount_options ) ),
+	mountOptions( mount_options ),
 	createOptions( create_options )
 {
 }

@@ -29,7 +29,7 @@
 
 #include <QDebug>
 
-walletconfiginput::walletconfiginput( QWidget * parent,QDialog * dialog,
+walletconfiginput::walletconfiginput( QWidget * parent,QDialog * dialog,QString volumeID,
 				      std::function< void( const QString&,const QString&,const QString& ) > p,
 				      std::function< void() > q ) :
 	QDialog( parent ),m_ui( new Ui::walletconfiginput ),m_add( std::move( p ) ),m_cancel( std::move( q ) ),
@@ -47,6 +47,13 @@ walletconfiginput::walletconfiginput( QWidget * parent,QDialog * dialog,
 	m_ui->lineEditVolumeID->setEnabled( true ) ;
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
 	m_ui->lineEditRepeatKey->setEchoMode( QLineEdit::Password ) ;
+
+	/* If volumeID is set, prefill volumeID text field and focus 'Key' field*/
+	if(!volumeID.isEmpty()) {
+		m_ui->lineEditVolumeID->setText(volumeID) ;
+		m_ui->lineEditVolumeID->setDisabled(true);
+		m_ui->lineEditKey->setFocus() ;
+	}
 
 	connect( m_ui->pushButtonAdd,SIGNAL( clicked() ),this,SLOT( pbAdd() ) ) ;
 	connect( m_ui->pushButtonCancel,SIGNAL( clicked() ),this,SLOT( slotCancel() ) ) ;

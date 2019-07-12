@@ -25,23 +25,25 @@ static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
 
-	s.autoMountsOnCreate  = false ;
-	s.hasGUICreateOptions = true ;
-	s.setsCipherPath      = true ;
 	s.supportsMountPathsOnWindows = false ;
-
-	s.configFileArgument  = "--config" ;
-
-	s.configFileNames = QStringList{ "gocryptfs.conf",
-					 ".gocryptfs.conf",
-					 ".gocryptfs.reverse.conf",
-					 "gocryptfs.reverse.conf" } ;
-
-	s.fuseNames = QStringList{ "fuse.gocryptfs","fuse.gocryptfs-reverse" } ;
-
-	s.names = QStringList{ "gocryptfs","gocryptfs.reverse" } ;
-
-	s.notFoundCode = engines::engine::status::gocryptfsNotFound ;
+	s.customBackend         = false ;
+	s.requiresAPassword     = true ;
+	s.hasConfigFile         = true ;
+	s.autoMountsOnCreate    = false ;
+	s.hasGUICreateOptions   = true ;
+	s.setsCipherPath        = true ;
+	s.reverseString         = "-reverse" ;
+	s.idleString            = "-idle" ;
+	s.executableName        = "gocryptfs" ;
+	s.incorrectPasswordText = "Password incorrect." ;
+	s.configFileArgument    = "--config" ;
+	s.configFileNames       = QStringList{ "gocryptfs.conf",
+					       ".gocryptfs.conf",
+					       ".gocryptfs.reverse.conf",
+					       "gocryptfs.reverse.conf" } ;
+	s.fuseNames             = QStringList{ "fuse.gocryptfs","fuse.gocryptfs-reverse" } ;
+	s.names                 = QStringList{ "gocryptfs","gocryptfs.reverse" } ;
+	s.notFoundCode          = engines::engine::status::gocryptfsNotFound ;
 
 	return s ;
 }
@@ -61,12 +63,12 @@ engines::engine::args gocryptfs::command( const engines::engine::cmdArgsList& ar
 
 	if( args.opt.reverseMode ){
 
-		exeOptions.add( "-reverse" ) ;
+		exeOptions.add( this->reverseString() ) ;
 	}
 
 	if( !args.opt.idleTimeout.isEmpty() ){
 
-		exeOptions.addPair( "-idle",args.opt.idleTimeout ) ;
+		exeOptions.addPair( this->idleString(),args.opt.idleTimeout ) ;
 	}
 
 	if( !args.configFilePath.isEmpty() ){
@@ -101,19 +103,12 @@ engines::engine::args gocryptfs::command( const engines::engine::cmdArgsList& ar
 	return { args,m,cmd } ;
 }
 
-engines::engine::error gocryptfs::errorCode( const QString& e ) const
-{
-	Q_UNUSED( e ) ;
-
-	return engines::engine::error::Failed ;
-}
-
 engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const
 {
 	/*
 	 * This error code was added in gocryptfs 1.2.1
 	 */
-	if( s == 12 || e.contains( "Password incorrect." ) ){
+	if( s == 12 || e.contains( this->incorrectPasswordText() ) ){
 
 		return engines::engine::status::gocryptfsBadPassword ;
 	}else{

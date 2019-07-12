@@ -24,17 +24,19 @@ static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
 
-	s.autoMountsOnCreate  = true ;
-	s.hasGUICreateOptions = true ;
-	s.setsCipherPath      = true ;
 	s.supportsMountPathsOnWindows = false ;
-
-	s.configFileArgument   = "--config" ;
-
-	s.configFileNames = QStringList{ ".ecryptfs.config","ecryptfs.config" } ;
-
-	s.fuseNames = QStringList{ "ecryptfs" } ;
-	s.names     = QStringList{ "ecryptfs" } ;
+	s.customBackend         = false ;
+	s.requiresAPassword     = true ;
+	s.hasConfigFile         = true ;
+	s.autoMountsOnCreate    = true ;
+	s.hasGUICreateOptions   = true ;
+	s.setsCipherPath        = true ;
+	s.executableName        = "ecryptfs-simple" ;
+	s.incorrectPasswordText = "error: mount failed" ;
+	s.configFileArgument    = "--config" ;
+	s.configFileNames       = QStringList{ ".ecryptfs.config","ecryptfs.config" } ;
+	s.fuseNames             = QStringList{ "ecryptfs" } ;
+	s.names                 = QStringList{ "ecryptfs" } ;
 
 	s.notFoundCode = engines::engine::status::ecryptfs_simpleNotFound ;
 
@@ -89,13 +91,6 @@ engines::engine::args ecryptfs::command( const engines::engine::cmdArgsList& arg
 	}
 }
 
-engines::engine::error ecryptfs::errorCode( const QString& e ) const
-{
-	Q_UNUSED( e ) ;
-
-	return engines::engine::error::Failed ;
-}
-
 engines::engine::status ecryptfs::errorCode( const QString& e,int s ) const
 {
 	Q_UNUSED( s ) ;
@@ -104,7 +99,7 @@ engines::engine::status ecryptfs::errorCode( const QString& e,int s ) const
 
 		return engines::engine::status::ecrypfsBadExePermissions ;
 
-	}else if( e.contains( "error: mount failed" ) ){
+	}else if( e.contains( this->incorrectPasswordText() ) ){
 
 		return engines::engine::status::ecryptfsBadPassword ;
 	}else{

@@ -48,7 +48,7 @@ secrets::~secrets()
 	delete m_internalWallet ;
 }
 
-LXQt::Wallet::Wallet ** secrets::internalWallet()
+LXQt::Wallet::Wallet ** secrets::internalWallet() const
 {
 	if( m_internalWallet == nullptr ){
 
@@ -62,7 +62,7 @@ LXQt::Wallet::Wallet ** secrets::internalWallet()
 	return &m_internalWallet ;
 }
 
-secrets::wallet secrets::walletBk( LXQt::Wallet::BackEnd e )
+secrets::wallet secrets::walletBk( LXQt::Wallet::BackEnd e ) const
 {
 	if( e == LXQt::Wallet::BackEnd::internal ){
 
@@ -72,7 +72,7 @@ secrets::wallet secrets::walletBk( LXQt::Wallet::BackEnd e )
 	}
 }
 
-QWidget * secrets::parent()
+QWidget * secrets::parent() const
 {
 	return m_parent ;
 }

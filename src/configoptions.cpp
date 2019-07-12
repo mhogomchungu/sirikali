@@ -21,7 +21,6 @@
 #include "ui_configoptions.h"
 
 #include "utility.h"
-#include "settings.h"
 #include "walletconfig.h"
 
 #include <QFileDialog>
@@ -33,7 +32,8 @@ configOptions::configOptions( QWidget * parent,
 	QDialog( parent ),
 	m_ui( new Ui::configOptions ),
 	m_functions( std::move( f ) ),
-	m_secrets( a )
+	m_secrets( a ),
+	m_settings( settings::instance() )
 {
 	m_ui->setupUi( this ) ;
 
@@ -43,31 +43,51 @@ configOptions::configOptions( QWidget * parent,
 
 	m_ui->pbMountPointPrefix->setIcon( QIcon( ":/folder.png" ) ) ;
 
+	m_ui->pbPostMountCommand->setIcon( QIcon( ":/executable.png" ) ) ;
+
+	m_ui->pbPreUnMountCommand->setIcon( QIcon( ":/executable.png" ) ) ;
+
+	m_ui->pbSetExternalCommand->setIcon( QIcon( ":/executable.png" ) ) ;
+
+	m_ui->pbSetFileManager->setIcon( QIcon( ":/executable.png" ) ) ;
+
+	m_ui->pbRunPeriodicallyCommand->setIcon( QIcon( ":/executable.png" ) ) ;
+
 	connect( m_ui->pushButton,&QPushButton::clicked,[ this ](){ this->HideUI() ; } ) ;
 
-	connect( m_ui->cbAutoOpenMountPoint,&QCheckBox::toggled,[]( bool e ){
+	connect( m_ui->cbAutoOpenMountPoint,&QCheckBox::toggled,[ this ]( bool e ){
 
-		settings::instance().autoOpenFolderOnMount( e ) ;
+		m_settings.autoOpenFolderOnMount( e ) ;
 	} ) ;
 
-	connect( m_ui->cbReUseMountPoint,&QCheckBox::toggled,[]( bool e ){
+	connect( m_ui->cbReUseMountPoint,&QCheckBox::toggled,[ this ]( bool e ){
 
-		settings::instance().reUseMountPoint( e ) ;
+		m_settings.reUseMountPoint( e ) ;
 	} ) ;
 
-	connect( m_ui->cbAutoCheckForUpdates,&QCheckBox::toggled,[]( bool e ){
+	connect( m_ui->cbAutoCheckForUpdates,&QCheckBox::toggled,[ this ]( bool e ){
 
-		settings::instance().autoCheck( e ) ;
+		m_settings.autoCheck( e ) ;
 	} ) ;
 
 	if( utility::platformIsWindows() ){
 
 		m_ui->cbAutoCheckForUpdates->setEnabled( false ) ;
+		m_ui->pbChangeWalletPassword->setEnabled( false ) ;
+		m_ui->pbKeyStorage->setEnabled( false ) ;
+	}else{
+		m_ui->pbChangeWalletPassword->setEnabled( [ this ](){
+
+			auto a = m_settings.walletName() ;
+			auto b = m_settings.applicationName() ;
+
+			return LXQt::Wallet::walletExists( LXQt::Wallet::BackEnd::internal,a,b ) ;
+		}() ) ;
 	}
 
-	connect( m_ui->cbStartMinimized,&QCheckBox::toggled,[]( bool e ){
+	connect( m_ui->cbStartMinimized,&QCheckBox::toggled,[ this ]( bool e ){
 
-		settings::instance().setStartMinimized( e ) ;
+		m_settings.setStartMinimized( e ) ;
 	} ) ;
 
 	if( utility::platformIsWindows() ){
@@ -76,9 +96,9 @@ configOptions::configOptions( QWidget * parent,
 		m_ui->lineEditMountPointPrefix->clear() ;
 		m_ui->lineEditMountPointPrefix->setEnabled( true ) ;
 		m_ui->pbMountPointPrefix->setEnabled( true ) ;
-		m_ui->lineEditMountPointPrefix->setText( settings::instance().windowsExecutableSearchPath() ) ;
+		m_ui->lineEditMountPointPrefix->setText( m_settings.windowsExecutableSearchPath() ) ;
 	}else{
-		m_ui->lineEditMountPointPrefix->setText( settings::instance().mountPath() ) ;
+		m_ui->lineEditMountPointPrefix->setText( m_settings.mountPath() ) ;
 	}
 
 	connect( m_ui->pbMountPointPrefix,&QPushButton::clicked,[ this ](){
@@ -91,42 +111,40 @@ configOptions::configOptions( QWidget * parent,
 
 			if( utility::platformIsWindows() ){
 
-				settings::instance().setWindowsExecutableSearchPath( e ) ;
+				m_settings.setWindowsExecutableSearchPath( e ) ;
 			}else{
-				settings::instance().setDefaultMountPointPrefix( e ) ;
+				m_settings.setDefaultMountPointPrefix( e ) ;
 			}
 		}
 	} ) ;
 
-	connect( m_ui->cbAutoMountAtStartUp,&QCheckBox::toggled,[]( bool e ){
+	connect( m_ui->cbAutoMountAtStartUp,&QCheckBox::toggled,[ this ]( bool e ){
 
-		settings::instance().autoMountFavoritesOnStartUp( e ) ;
+		m_settings.autoMountFavoritesOnStartUp( e ) ;
 	} ) ;
 
 	m_ui->cbAutoMountWhenAvailable->setChecked( settings::instance().autoMountFavoritesOnAvailable() ) ;
 
-	connect( m_ui->cbAutoMountWhenAvailable,&QCheckBox::toggled,[]( bool e ){
 
-		settings::instance().autoMountFavoritesOnAvailable( e ) ;
+	connect( m_ui->cbAllowExternalToolsToReadPasswords,&QCheckBox::toggled,[ this ]( bool e ){
+
+		m_settings.allowExternalToolsToReadPasswords( e ) ;
 	} ) ;
 
-	connect( m_ui->cbShowMountDialogWhenAutoMounting,&QCheckBox::toggled,[]( bool e ){
+	connect( m_ui->cbAutoMountWhenAvailable,&QCheckBox::toggled,[ this ]( bool e ){
 
-		settings::instance().showMountDialogWhenAutoMounting( e ) ;
+		m_settings.autoMountFavoritesOnAvailable( e ) ;
 	} ) ;
 
-	m_ui->pbChangeWalletPassword->setEnabled( [](){
+	connect( m_ui->cbShowMountDialogWhenAutoMounting,&QCheckBox::toggled,[ this ]( bool e ){
 
-		auto a = settings::instance().walletName() ;
-		auto b = settings::instance().applicationName() ;
-
-		return LXQt::Wallet::walletExists( LXQt::Wallet::BackEnd::internal,a,b ) ;
-	}() ) ;
+		m_settings.showMountDialogWhenAutoMounting( e ) ;
+	} ) ;
 
 	connect( m_ui->pbChangeWalletPassword,&QPushButton::clicked,[ this ](){
 
-		auto a = settings::instance().walletName() ;
-		auto b = settings::instance().applicationName() ;
+		auto a = m_settings.walletName() ;
+		auto b = m_settings.applicationName() ;
 
 		this->hide() ;
 
@@ -174,7 +192,7 @@ configOptions::configOptions( QWidget * parent,
 
 	using bk = LXQt::Wallet::BackEnd ;
 
-	auto walletBk = settings::instance().autoMountBackEnd() ;
+	auto walletBk = m_settings.autoMountBackEnd() ;
 
 	if( walletBk == bk::internal ){
 
@@ -201,41 +219,125 @@ configOptions::configOptions( QWidget * parent,
 	m_ui->rbMacOSKeyChain->setEnabled( LXQt::Wallet::backEndIsSupported( bk::osxkeychain ) ) ;
 	m_ui->rbNone->setEnabled( true ) ;
 
-	connect( m_ui->rbInternalWallet,&QRadioButton::toggled,[]( bool e ){
+	connect( m_ui->rbInternalWallet,&QRadioButton::toggled,[ this ]( bool e ){
 
 		if( e ){
 
-			settings::instance().autoMountBackEnd( bk::internal ) ;
+			m_settings.autoMountBackEnd( bk::internal ) ;
 		}
 	} ) ;
 
-	connect( m_ui->rbKWallet,&QRadioButton::toggled,[]( bool e ){
+	connect( m_ui->rbKWallet,&QRadioButton::toggled,[ this ]( bool e ){
 
 		if( e ){
 
-			settings::instance().autoMountBackEnd( bk::kwallet ) ;
+			m_settings.autoMountBackEnd( bk::kwallet ) ;
 		}
 	} ) ;
 
-	connect( m_ui->rbLibSecret,&QRadioButton::toggled,[]( bool e ){
+	connect( m_ui->rbLibSecret,&QRadioButton::toggled,[ this ]( bool e ){
 
 		if( e ){
 
-			settings::instance().autoMountBackEnd( bk::libsecret ) ;
+			m_settings.autoMountBackEnd( bk::libsecret ) ;
 		}
 	} ) ;
 
-	connect( m_ui->rbMacOSKeyChain,&QRadioButton::toggled,[]( bool e ){
+	connect( m_ui->rbMacOSKeyChain,&QRadioButton::toggled,[ this ]( bool e ){
 
 		if( e ){
 
-			settings::instance().autoMountBackEnd( bk::osxkeychain ) ;
+			m_settings.autoMountBackEnd( bk::osxkeychain ) ;
 		}
 	} ) ;
 
-	connect( m_ui->rbNone,&QRadioButton::toggled,[](){
+	connect( m_ui->rbNone,&QRadioButton::toggled,[ this ](){
 
-		settings::instance().autoMountBackEnd( settings::walletBackEnd() ) ;
+		m_settings.autoMountBackEnd( settings::walletBackEnd() ) ;
+	} ) ;
+
+	connect( m_ui->pbPostMountCommand,&QPushButton::pressed,[ this ](){
+
+		auto e = QFileDialog::getOpenFileName( this,tr( "Set Post Mount Command" ),QDir::homePath() ) ;
+
+		if( !e.isEmpty() ){
+
+			m_ui->lineEditAfterMountCommand->setText( e ) ;
+		}
+	} ) ;
+
+	connect( m_ui->pbPreUnMountCommand,&QPushButton::pressed,[ this ](){
+
+		auto e = QFileDialog::getOpenFileName( this,tr( "Set Pre UnMount Command" ),QDir::homePath() ) ;
+
+		if( !e.isEmpty() ){
+
+			m_ui->lineEditBeforesUnMount->setText( e ) ;
+		}
+	} ) ;
+
+	connect( m_ui->pbRunPeriodicallyCommand,&QPushButton::pressed,[ this ](){
+
+		auto e = QFileDialog::getOpenFileName( this,tr( "Set Pre UnMount Command" ),QDir::homePath() ) ;
+
+		if( !e.isEmpty() ){
+
+			m_ui->lineEditRunPeriodically->setText( e ) ;
+		}
+	} ) ;
+
+	connect( m_ui->pbSetFileManager,&QPushButton::pressed,[ this ](){
+
+		auto e = QFileDialog::getOpenFileName( this,tr( "Set Command To Open Mount Points" ),QDir::homePath() ) ;
+
+		if( !e.isEmpty() ){
+
+			m_ui->lineEditFileManager->setText( e ) ;
+		}
+	} ) ;
+
+	connect( m_ui->pbSetExternalCommand,&QPushButton::pressed,[ this ](){
+
+		auto e = QFileDialog::getOpenFileName( this,tr( "Set External Plugin Executable" ),QDir::homePath() ) ;
+
+		if( !e.isEmpty() ){
+
+			m_ui->lineEditExecutableKeySource->setText( e ) ;
+		}
+	} ) ;
+
+	connect( m_ui->pbSetFileManagerToDefault,&QPushButton::pressed,[ this ](){
+
+		m_settings.setFileManager( QString() ) ;
+		m_ui->lineEditFileManager->setText( m_settings.fileManager() ) ;
+	} ) ;
+
+	connect( m_ui->pbExternalExecutableDefault,&QPushButton::pressed,[ this ](){
+
+		m_settings.setExternalPluginExecutable( QString() ) ;
+
+		m_ui->lineEditExecutableKeySource->setText( m_settings.externalPluginExecutable() ) ;
+	} ) ;
+
+	connect( m_ui->pbMountPointPrefixDefault,&QPushButton::pressed,[ this ](){
+
+		m_settings.setDefaultMountPointPrefix( QString() ) ;
+		m_ui->lineEditMountPointPrefix->setText( m_settings.mountPath() ) ;
+	} ) ;
+
+	connect( m_ui->pbRunPostMountCommandDefault,&QPushButton::pressed,[ this ](){
+
+		m_ui->lineEditAfterMountCommand->clear() ;
+	} ) ;
+
+	connect( m_ui->pbRunPreUnMountCommandDefault,&QPushButton::pressed,[ this ](){
+
+		m_ui->lineEditBeforesUnMount->clear() ;
+	} ) ;
+
+	connect( m_ui->pbRunCommandPeriodicallyDefault,&QPushButton::pressed,[ this ](){
+
+		m_ui->lineEditRunPeriodically->clear() ;
 	} ) ;
 }
 
@@ -261,33 +363,37 @@ void configOptions::translateUI()
 
 void configOptions::ShowUI()
 {
-	settings& s = settings::instance() ;
+	m_ui->cbAllowExternalToolsToReadPasswords->setChecked( m_settings.allowExternalToolsToReadPasswords() ) ;
 
-	m_ui->cbAutoOpenMountPoint->setChecked( s.autoOpenFolderOnMount() ) ;
+	m_ui->cbAutoOpenMountPoint->setChecked( m_settings.autoOpenFolderOnMount() ) ;
 
-	m_ui->cbReUseMountPoint->setChecked( s.reUseMountPoint() ) ;
+	m_ui->cbReUseMountPoint->setChecked( m_settings.reUseMountPoint() ) ;
 
-	m_ui->cbAutoCheckForUpdates->setChecked( s.autoCheck() ) ;
+	m_ui->cbAutoCheckForUpdates->setChecked( m_settings.autoCheck() ) ;
 
-	m_ui->cbStartMinimized->setChecked( s.startMinimized() ) ;
+	m_ui->cbStartMinimized->setChecked( m_settings.startMinimized() ) ;
 
-	m_ui->cbAutoMountAtStartUp->setChecked( s.autoMountFavoritesOnStartUp() ) ;
+	m_ui->cbAutoMountAtStartUp->setChecked( m_settings.autoMountFavoritesOnStartUp() ) ;
 
-	m_ui->cbShowMountDialogWhenAutoMounting->setChecked( s.showMountDialogWhenAutoMounting() ) ;
+	m_ui->cbShowMountDialogWhenAutoMounting->setChecked( m_settings.showMountDialogWhenAutoMounting() ) ;
 
-	m_ui->lineEditFileManager->setText( s.fileManager() ) ;
+	m_ui->lineEditFileManager->setText( m_settings.fileManager() ) ;
 
-	m_ui->lineEditExecutableKeySource->setText( s.externalPluginExecutable() ) ;
+	m_ui->lineEditExecutableKeySource->setText( m_settings.externalPluginExecutable() ) ;
 
-	m_ui->lineEditAfterMountCommand->setText( s.runCommandOnMount() ) ;
+	m_ui->lineEditAfterMountCommand->setText( m_settings.runCommandOnMount() ) ;
 
-	m_ui->lineEditBeforesUnMount->setText( s.preUnMountCommand() ) ;
+	m_ui->lineEditBeforesUnMount->setText( m_settings.preUnMountCommand() ) ;
+
+	m_ui->lineEditRunPeriodically->setText( m_settings.runCommandOnInterval() ) ;
+
+	m_ui->lineEditRunPeriodicallyInterval->setText( QString::number( m_settings.runCommandOnIntervalTime() ) ) ;
 
 	if( utility::platformIsWindows() ){
 
-		m_ui->lineEditMountPointPrefix->setText( s.windowsExecutableSearchPath() ) ;
+		m_ui->lineEditMountPointPrefix->setText( m_settings.windowsExecutableSearchPath() ) ;
 	}else{
-		m_ui->lineEditMountPointPrefix->setText( s.mountPath() ) ;
+		m_ui->lineEditMountPointPrefix->setText( m_settings.mountPath() ) ;
 	}
 
 	this->show() ;
@@ -297,18 +403,30 @@ void configOptions::HideUI()
 {
 	m_functions.function_1() ;
 
-	settings& s = settings::instance() ;
+	m_settings.setFileManager( m_ui->lineEditFileManager->text() ) ;
+	m_settings.setExternalPluginExecutable( m_ui->lineEditExecutableKeySource->text() ) ;
+	m_settings.preUnMountCommand( m_ui->lineEditBeforesUnMount->text() ) ;
+	m_settings.runCommandOnMount( m_ui->lineEditAfterMountCommand->text() ) ;
+	m_settings.runCommandOnInterval( m_ui->lineEditRunPeriodically->text() ) ;
 
-	s.setFileManager( m_ui->lineEditFileManager->text() ) ;
-	s.setExternalPluginExecutable( m_ui->lineEditExecutableKeySource->text() ) ;
-	s.preUnMountCommand( m_ui->lineEditBeforesUnMount->text() ) ;
-	s.runCommandOnMount( m_ui->lineEditAfterMountCommand->text() ) ;
+	bool ok ;
+
+	auto a = m_ui->lineEditRunPeriodicallyInterval->text() ;
+
+	auto b = a.toInt( &ok ) ;
+
+	if( ok ){
+
+		m_settings.runCommandOnIntervalTime( b ) ;
+	}else{
+		m_settings.runCommandOnIntervalTime( 10 ) ;
+	}
 
 	if( utility::platformIsWindows() ){
 
-		s.setWindowsExecutableSearchPath( m_ui->lineEditMountPointPrefix->text() ) ;
+		m_settings.setWindowsExecutableSearchPath( m_ui->lineEditMountPointPrefix->text() ) ;
 	}else{
-		s.setDefaultMountPointPrefix( m_ui->lineEditMountPointPrefix->text() ) ;
+		m_settings.setDefaultMountPointPrefix( m_ui->lineEditMountPointPrefix->text() ) ;
 	}
 
 	this->hide() ;

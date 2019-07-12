@@ -40,7 +40,7 @@ public:
 
 		wallet( wallet&& ) ;
 
-		LXQt::Wallet::Wallet& bk()
+		LXQt::Wallet::Wallet& bk() const
 		{
 			return *m_wallet ;
 		}
@@ -50,7 +50,7 @@ public:
 			return m_wallet ;
 		}
 
-		operator bool()
+		operator bool() const
 		{
 			return m_wallet ;
 		}
@@ -58,9 +58,9 @@ public:
 		LXQt::Wallet::Wallet * m_wallet = nullptr ;
 	};
 
-	secrets::wallet walletBk( LXQt::Wallet::BackEnd ) ;
+	secrets::wallet walletBk( LXQt::Wallet::BackEnd ) const ;
 
-	QWidget * parent() ;
+	QWidget * parent() const ;
 
 	void changeInternalWalletPassword( const QString&,const QString&,std::function< void() > ) ;
 	void setParent( QWidget * ) ;
@@ -72,9 +72,9 @@ public:
 
 	~secrets() ;
 private:
-	LXQt::Wallet::Wallet ** internalWallet() ;
+	LXQt::Wallet::Wallet ** internalWallet() const ;
 	QWidget * m_parent = nullptr ;
-	LXQt::Wallet::Wallet * m_internalWallet = nullptr ;
+	mutable LXQt::Wallet::Wallet * m_internalWallet = nullptr ;
 };
 
 #endif

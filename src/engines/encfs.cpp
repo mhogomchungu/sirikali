@@ -25,19 +25,24 @@ static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
 
-	s.autoMountsOnCreate  = true ;
-	s.hasGUICreateOptions = true ;
-	s.setsCipherPath      = false ;
 	s.supportsMountPathsOnWindows = true ;
-
-	s.configFileArgument  = "--config" ;
-
-	s.configFileNames = QStringList{ ".encfs6.xml","encfs6.xml",".encfs5",".encfs4" } ;
-
-	s.fuseNames = QStringList{ "fuse.encfs" } ;
-	s.names     = QStringList{ "encfs" } ;
-
-	s.notFoundCode = engines::engine::status::encfsNotFound ;
+	s.customBackend         = false ;
+	s.requiresAPassword     = true ;
+	s.hasConfigFile         = true ;
+	s.autoMountsOnCreate    = true ;
+	s.hasGUICreateOptions   = true ;
+	s.setsCipherPath        = false ;
+	s.reverseString         = "--reverse" ;
+	s.idleString            = "-i" ;
+	s.executableName        = "encfs" ;
+	s.incorrectPasswordText = "Error decoding volume key, password incorrect" ;
+	s.configFileArgument    = "--config" ;
+	s.configFileNames       = QStringList{ ".encfs6.xml","encfs6.xml",".encfs5",".encfs4" } ;
+	s.fuseNames             = QStringList{ "fuse.encfs" } ;
+	s.names                 = QStringList{ "encfs" } ;
+	s.failedToMountList     = QStringList{ "Error" } ;
+	s.successfulMountedList = QStringList{ "has been started" } ;
+	s.notFoundCode          = engines::engine::status::encfsNotFound ;
 
 	return s ;
 }
@@ -63,7 +68,7 @@ engines::engine::args encfs::command( const engines::engine::cmdArgsList& args )
 
 	if( args.opt.reverseMode ){
 
-		exeOptions.add( "--reverse" ) ;
+		exeOptions.add( this->reverseString() ) ;
 	}
 
 	if( utility::platformIsWindows() ){
@@ -90,7 +95,7 @@ engines::engine::args encfs::command( const engines::engine::cmdArgsList& args )
 
 	if( !args.opt.idleTimeout.isEmpty() ){
 
-		exeOptions.addPair( "-i",args.opt.idleTimeout ) ;
+		exeOptions.addPair( this->idleString(),args.opt.idleTimeout ) ;
 	}
 
 	auto cmd = e.arg( args.exe,
@@ -102,25 +107,11 @@ engines::engine::args encfs::command( const engines::engine::cmdArgsList& args )
 	return { args,m,cmd } ;
 }
 
-engines::engine::error encfs::errorCode( const QString& e ) const
-{
-	if( utility::containsAtleastOne( e,"has been started" ) ){
-
-		return engines::engine::error::Success ;
-
-	}else if( e.contains( "Error" ) ){
-
-		return engines::engine::error::Failed ;
-	}else{
-		return engines::engine::error::Continue ;
-	}
-}
-
 engines::engine::status encfs::errorCode( const QString& e,int s ) const
 {
 	Q_UNUSED( s ) ;
 
-	if( e.contains( "Error decoding volume key, password incorrect" ) ){
+	if( e.contains( this->incorrectPasswordText() ) ){
 
 		return engines::engine::status::encfsBadPassword ;
 

@@ -39,6 +39,7 @@ class QTableWidget ;
 #include "can_build_pwquality.h"
 #include "secrets.h"
 #include "engines.h"
+#include "walletconfig.h"
 
 #include "favorites.h"
 
@@ -186,7 +187,7 @@ public:
 			      secrets& s,
 			      bool o,
 			      const QString& m,
-			      utility::volumeList e,
+			      favorites::volumeList e,
 			      std::function< void() > function )
 	{
 		new keyDialog( parent,s,o,m,std::move( e ),std::move( function ) ) ;
@@ -195,7 +196,7 @@ public:
 		   secrets&,
 		   bool,
 		   const QString&,
-		   utility::volumeList,
+		   favorites::volumeList,
 		   std::function< void() > ) ;
 	keyDialog( QWidget * parent,
 		   secrets&,
@@ -242,7 +243,8 @@ private :
 	void SetUISetKey( bool ) ;
 	void ShowUI( void ) ;
 	void HideUI( void ) ;
-
+	void setKeyInWallet() ;
+	void setKeyInWallet( const QString& volumeType,const QString& title ) ;
 	void showErrorMessage( const engines::engine::cmdStatus& ) ;
 	void showErrorMessage( const QString& ) ;
 	void reportErrorMessage( const engines::engine::cmdStatus& ) ;
@@ -261,10 +263,13 @@ private :
 	bool completed( const engines::engine::cmdStatus&,const QString& m ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 
+	bool keySelected( int ) ;
+
 	Ui::keyDialog * m_ui ;
 
 	QByteArray m_key ;
 
+	QString m_walletType ;
 	QString m_checkBoxOriginalText ;
 	QString m_path ;
 	QString m_deviceOffSet ;
@@ -285,12 +290,12 @@ private :
 	bool m_closeGUI = false ;
 	bool m_reverseMode = false ;
 
-	favorites::entry::readOnly m_favoriteReadOnly ;
+	favorites::triState m_favoriteReadOnly ;
 	secrets& m_secrets ;
 
 	keystrength m_keyStrength ;
 
-	typedef enum{ Key = 0,keyfile = 1,hmacKeyFile = 2,keyKeyFile = 3,Plugin = 4 } keyType ;
+	typedef enum{ Key = 0,keyfile = 1,hmacKeyFile = 2,keyKeyFile = 3,Plugin = 4,yubikey = 5 } keyType ;
 
 	keyType m_keyType ;
 
@@ -299,11 +304,46 @@ private :
 	std::function< void() > m_cancel = [](){} ;
 	std::function< void() > m_done = [](){} ;
 
-	utility::volumeList m_volumes ;
+	favorites::volumeList m_volumes ;
 
 	cryfsWarning m_cryfsWarning ;
 
 	decltype( m_volumes.size() ) m_counter = 0 ;
+
+	struct walletKey
+	{
+		walletKey( secrets& s ) : secret( s )
+		{
+		}
+		secrets& secret ;
+		QString id ;
+		QString walletName ;
+		QString appName ;
+		LXQt::Wallet::BackEnd bk ;
+		bool set = false ;
+
+		void deleteKey()
+		{
+			if( set ){
+
+				set = false ;
+
+				auto s = secret.walletBk( bk ) ;
+
+				s->setImage( QIcon( ":/sirikali" ) ) ;
+
+				if( s->opened() ){
+
+					walletconfig::deleteKey( s,id ) ;
+				}else {
+					if( s->open( walletName,appName ) ){
+
+						walletconfig::deleteKey( s,id ) ;
+					}
+				}
+			}
+		}
+	} m_walletKey;
 };
 
 #endif // KEYDIALOG_H

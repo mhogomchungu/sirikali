@@ -23,12 +23,13 @@ static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
 
+	s.hasConfigFile       = false ;
 	s.autoMountsOnCreate  = false ;
 	s.hasGUICreateOptions = true ;
 	s.setsCipherPath      = false ;
 	s.supportsMountPathsOnWindows = false ;
 
-	s.configFileArgument   = QString() ;
+	s.configFileArgument = QString() ;
 
 	s.configFileNames = QStringList{} ;
 
@@ -48,13 +49,6 @@ engines::engine::args unknown::command( const engines::engine::cmdArgsList& args
 {
 	Q_UNUSED( args ) ;
 	return {} ;
-}
-
-engines::engine::error unknown::errorCode( const QString& e ) const
-{
-	Q_UNUSED( e ) ;
-
-	return engines::engine::error::Failed ;
 }
 
 engines::engine::status unknown::errorCode( const QString& e,int s ) const

@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (c) 2018
+ *  Copyright (c) 2019
  *  name : Francis Banyikwa
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -19,9 +19,23 @@
 
 #include "../engines.h"
 
-struct unknown : public engines::engine
+#include <QStringList>
+
+#include <vector>
+#include <memory>
+
+class custom : public engines::engine
 {
-	unknown() ;
+public:
+	static void addEngines( QStringList&,std::vector< std::unique_ptr< engines::engine > >& ) ;
+
+	struct opts{
+		engines::engine::BaseOptions baseOpts ;
+		QString mountControlStructure ;
+		QString createControlStructure ;
+	};
+
+	custom( custom::opts ) ;
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 
@@ -31,4 +45,7 @@ struct unknown : public engines::engine
 	QString installedVersionString() const override ;
 
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
+private:
+	const QString m_mountControlStructure ;
+	const QString m_createControlStructure ;
 } ;

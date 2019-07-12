@@ -20,109 +20,96 @@
 #ifndef FAVORITES_H
 #define FAVORITES_H
 
-#include <QDialog>
 #include <QString>
-#include <QStringList>
+#include <vector>
+#include "utility.h"
 
-#include "utility2.h"
-
-class QAction ;
-class QWidget ;
-class QTableWidgetItem ;
-class QCloseEvent ;
-
-namespace Ui {
-class favorites ;
-}
-
-class favorites : public QDialog
+class favorites
 {
-	Q_OBJECT
 public:
-	static constexpr const char * reverseModeOption = "-SiriKaliReverseMode" ;
-	static constexpr const char * volumeNeedNoPassword = "-SiriKaliVolumeNeedNoPassword" ;
-	static constexpr const char * mountReadOnly = "-SiriKaliMountReadOnly" ;
+	enum class type{ sshfs,others } ;
+
+	class triState{
+	public:
+		triState() : m_state( triState::STATES::UNDEFINED )
+		{
+		}
+		triState( bool e ) : m_state( e ? STATES::TRUE : STATES::FALSE )
+		{
+		}
+		void toggle()
+		{
+			if( m_state == STATES::TRUE ){
+
+				m_state = STATES::FALSE ;
+
+			}else if( m_state == STATES::FALSE ){
+
+				m_state = STATES::TRUE ;
+			}
+		}
+		bool undefined() const
+		{
+			return m_state == STATES::UNDEFINED ;
+		}
+		bool defined() const
+		{
+			return !this->undefined() ;
+		}
+		bool True() const
+		{
+			return m_state == STATES::TRUE ;
+		}
+		bool False() const
+		{
+			return m_state != STATES::TRUE ;
+		}
+	private:
+		enum class STATES{ UNDEFINED,TRUE,FALSE } m_state ;
+	};
 
 	struct entry
 	{
-		class readOnly
-		{
-		public:
-			readOnly() ;
-			readOnly( bool e ) ;
-			operator bool() const ;
-			bool onlyRead() const ;
-			bool operator==( const readOnly& other ) ;
-		private:
-			bool m_readOnlyVolume = false ;
-			bool m_isSet = false ;
-		} ;
-
 		entry() ;
-		entry( const QStringList& e ) ;
-		entry( const QString& r ) ;
-		QStringList list( bool e = true ) const ;
-		QString string( char s = '\t' ) const ;
-		QString configString() const ;
-		QStringList configStringList() const;
-		bool operator!=( const favorites::entry& other ) const ;
-		bool operator==( const favorites::entry& other ) const ;
-		bool autoMount() const ;
-		QString sanitizedMountOptions() const ;
-		static QString sanitizedMountOptions( const QString& s ) ;
+		entry( const QString& volumePath ) ;
+
 		QString volumePath ;
 		QString mountPointPath ;
-		QString autoMountVolume ;
 		QString configFilePath ;
 		QString idleTimeOut ;
 		QString mountOptions ;
+		QString preMountCommand ;
+		QString postMountCommand ;
+		QString preUnmountCommand ;
+		QString postUnmountCommand ;
+
 		bool reverseMode = false ;
 		bool volumeNeedNoPassword = false ;
-		favorites::entry::readOnly readOnlyMode = readOnly() ;
-	private:
-		void config( const QStringList& e ) ;
+
+		favorites::triState readOnlyMode ;
+		favorites::triState autoMount ;
 	};
 
-	enum class type{ sshfs,others } ;
-	static favorites& instance( QWidget * parent = 0,favorites::type type = favorites::type::others )
+	static favorites& instance()
 	{
-		return *( new favorites( parent,type ) ) ;
+		static favorites m ;
+		return m ;
 	}
-	explicit favorites( QWidget * parent = 0,favorites::type type = favorites::type::others ) ;
-	~favorites() ;
-signals:
-	void ShowPartitionUI( void ) ;
-private slots:
-	void toggleAutoMount( void ) ;
-	void edit( void ) ;
-	void configPath( void ) ;
-	void removeEntryFromFavoriteList( void ) ;
-	void add( void ) ;
-	void cancel( void ) ;
-	void folderPath( void ) ;
-	void mountPointPath( void ) ;
-	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
-	void itemClicked( QTableWidgetItem * current,bool ) ;
-	void itemClicked( QTableWidgetItem * current ) ;
-	void shortcutPressed( void ) ;
-	void devicePathTextChange( QString ) ;
-private:
-	void ShowUI( favorites::type ) ;
-	void HideUI( void ) ;
-	void checkFavoritesConsistency() ;
-	favorites::entry getEntry( int ) ;
-	QString getExistingFile( const QString& ) ;
-	QString getExistingDirectory( const QString& ) ;
-	void closeEvent( QCloseEvent * ) ;
-	bool eventFilter( QObject * watched,QEvent * event ) ;
-	void addEntries( const QStringList& ) ;
-	Ui::favorites * m_ui ;
-	QWidget * m_parentWidget ;
-	favorites::type m_type ;
-	int m_editRow ;
-	bool m_reverseMode = false ;
-	bool m_volumeNeedNoPassword = false ;
-	bool m_mountReadOnly = false ;
+
+	using volumeList = std::vector< std::pair< favorites::entry,QByteArray > > ;
+
+	enum class error{ ENTRY_ALREADY_EXISTS,FAILED_TO_CREATE_ENTRY,SUCCESS } ;
+
+	error add( const favorites::entry& ) ;
+
+	void replaceFavorite( const favorites::entry&, const favorites::entry& ) ;
+	void removeFavoriteEntry( const favorites::entry& ) ;
+
+	std::vector< favorites::entry > readFavorites() const ;
+
+	utility::result< favorites::entry > readFavorite( const QString&,const QString& = QString() ) const ;
+
+	void updateFavorites() ;
 };
 
 #endif // FAVORITES_H

@@ -46,13 +46,16 @@ class walletconfig : public QDialog
 public:
 	static void instance( QWidget * parent,
 			      secrets::wallet&& wallet,
-			      std::function< void() > e = [](){} )
+			      std::function< void() > e = [](){}, QString folderPath = QString() )
 	{
-		new walletconfig( parent,std::move( wallet ),std::move( e ) ) ;
+		new walletconfig( parent,std::move( wallet ),std::move( e ),folderPath ) ;
 	}
-	explicit walletconfig( QWidget * parent,secrets::wallet&&,std::function< void() > ) ;
+	explicit walletconfig( QWidget * parent,secrets::wallet&&,std::function< void() >, QString folderPath ) ;
 	~walletconfig() ;
 	void HideUI( void ) ;
+	static bool addKey( secrets::wallet&,const QString& id,
+			    const QString& key,const QString& comment ) ;
+	static void deleteKey( secrets::wallet&,const QString& id ) ;
 private slots:
 	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
 	void itemClicked( QTableWidgetItem * item ) ;

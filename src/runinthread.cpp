@@ -1,12 +1,12 @@
 /*
  *
- *  Copyright (c) 2018
+ *  Copyright ( c ) 2019
  *  name : Francis Banyikwa
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
- *  (at your option) any later version.
+ *  ( at your option ) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,18 +17,19 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../engines.h"
+#include "runinthread.h"
 
-struct unknown : public engines::engine
+#include <QMetaObject>
+
+runInThread::runInThread( QThread * thread,std::function< void() > function ) :
+	m_function( std::move( function ) )
 {
-	unknown() ;
+	this->moveToThread( thread ) ;
+	QMetaObject::invokeMethod( this,"run",Qt::QueuedConnection ) ;
+}
 
-	engines::engine::status errorCode( const QString& e,int s ) const override ;
-
-	engines::engine::args command( const engines::engine::cmdArgsList& args ) const override ;
-
-	QString setPassword( const QString& ) const override ;
-	QString installedVersionString() const override ;
-
-	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
-} ;
+void runInThread::run()
+{
+	m_function() ;
+	this->deleteLater() ;
+}

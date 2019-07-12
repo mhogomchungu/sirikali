@@ -4,7 +4,7 @@ set_property( GLOBAL PROPERTY ALLOW_DUPLICATE_CUSTOM_TARGETS ON )
 
 project( sirikali )
 
-set( PGR_VERSION "1.3.7" )
+set( PGR_VERSION "1.3.8" )
 
 add_definitions( -Wextra -Wall -pedantic )
 
@@ -228,7 +228,7 @@ set( UI_FILES 	src/sirikali.ui
 		src/keydialog.ui
 		src/dialogmsg.ui
 		src/plugin.ui
-		src/favorites.ui
+		src/createbackendwindow.ui
 		src/favorites2.ui
 		src/readonlywarning.ui
 		src/walletconfig.ui
@@ -240,6 +240,7 @@ set( UI_FILES 	src/sirikali.ui
 		src/debugwindow.ui
 		src/configfileoption.ui
 		src/configoptions.ui
+		src/engines/customcreateoptions.ui
 		src/engines/gocryptfscreateoptions.ui
 		src/engines/ecryptfscreateoptions.ui
 		src/engines/securefscreateoptions.ui
@@ -253,12 +254,12 @@ set( MOC_FILES
                 src/checkforupdates.h
                 src/dialogok.h
                 src/help.h
+                src/createbackendwindow.h
 		src/sirikali.h
 		src/keydialog.h
 		src/oneinstance.h
 		src/dialogmsg.h
 		src/plugin.h
-		src/favorites.h
 		src/favorites2.h
 		src/readonlywarning.h
 		src/walletconfig.h
@@ -267,6 +268,8 @@ set( MOC_FILES
 		src/filemanager.h
 		src/mountinfo.h
 		src/debugwindow.h
+		src/runinthread.h
+		src/engines/customcreateoptions.h
 		src/engines/gocryptfscreateoptions.h
 		src/engines/ecryptfscreateoptions.h
 		src/engines/securefscreateoptions.h
@@ -278,6 +281,7 @@ set( SRC 	src/dialogok.cpp
 		src/main.cpp
 		src/systemsignalhandler.cpp
 		src/crypto.cpp
+		src/runinthread.cpp
 		src/debugwindow.cpp
 		src/configoptions.cpp
 		src/configfileoption.cpp
@@ -285,6 +289,7 @@ set( SRC 	src/dialogok.cpp
 		src/keydialog.cpp
 		src/siritask.cpp
 		src/help.cpp
+		src/createbackendwindow.cpp
 		src/engines.cpp
 		src/oneinstance.cpp
 		src/mountinfo.cpp
@@ -309,8 +314,10 @@ set( SRC 	src/dialogok.cpp
 		src/engines/gocryptfs.cpp
 		src/engines/securefs.cpp
 		src/engines/sshfs.cpp
+		src/engines/customcreateoptions.cpp
 		src/engines/encfs.cpp
 		src/engines/unknown.cpp
+		src/engines/custom.cpp
 		src/engines/gocryptfscreateoptions.cpp
 		src/engines/ecryptfscreateoptions.cpp
 		src/engines/securefscreateoptions.cpp
@@ -456,7 +463,7 @@ NoDisplay=false
 StartupNotify=true
 Terminal=false
 Type=Application
-MimeType=inode/directory;
+MimeType=inode/directory:1;
 Categories=Security;Utility;Qt;X-MandrivaLinux-System-FileTools;\n")
 
 install( FILES ${PROJECT_BINARY_DIR}/io.github.mhogomchungu.sirikali.desktop
@@ -565,7 +572,6 @@ Name: \"quicklaunchicon\"; Description: \"{cm:CreateQuickLaunchIcon}\"; GroupDes
 Source: {#MyEXELocation}; DestDir: {app}; Flags: ignoreversion
 
 Source: {#MyLibrariesLocation}\\*.dll; DestDir: {app} ; Flags: ignoreversion
-Source: {#MyGcryptLibraryPath}\\*.dll; DestDir: {app} ; Flags: ignoreversion
 
 Source: {#MySourcesPath}\\LICENSE.txt; DestDir: {app}; Flags: ignoreversion
 

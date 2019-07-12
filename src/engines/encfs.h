@@ -26,8 +26,6 @@ struct encfs : public engines::engine
 
 	engines::engine::args command( const engines::engine::cmdArgsList& args ) const override ;
 
-	engines::engine::error errorCode( const QString& ) const override ;
-
 	QString setPassword( const QString& ) const override ;
 	QString installedVersionString() const override ;
 

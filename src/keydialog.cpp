@@ -26,6 +26,7 @@
 #include <QTableWidget>
 #include <QDebug>
 #include <QFile>
+#include <QMessageBox>
 
 #include "win.h"
 #include "options.h"
@@ -38,6 +39,7 @@
 #include "crypto.h"
 #include "configfileoption.h"
 #include "settings.h"
+#include "walletconfig.h"
 
 static QString _kwallet()
 {
@@ -63,7 +65,7 @@ keyDialog::keyDialog( QWidget * parent,
 		      secrets& s,
 		      bool o,
 		      const QString& q,
-		      utility::volumeList z,
+		      favorites::volumeList z,
 		      std::function< void() > f ) :
 	QDialog( parent ),
 	m_ui( new Ui::keyDialog ),
@@ -72,7 +74,8 @@ keyDialog::keyDialog( QWidget * parent,
 	m_create( false ),
 	m_secrets( s ),
 	m_done( std::move( f ) ),
-	m_volumes( std::move( z ) )
+	m_volumes( std::move( z ) ),
+	m_walletKey( s )
 {
 	m_ui->setupUi( this ) ;
 
@@ -118,7 +121,8 @@ keyDialog::keyDialog( QWidget * parent,
 	m_autoOpenMountPoint( o ),
 	m_create( e.isNotValid() ),
 	m_secrets( s ),
-	m_cancel( std::move( p ) )
+	m_cancel( std::move( p ) ),
+	m_walletKey( s )
 {
 	m_ui->setupUi( this ) ;
 
@@ -257,6 +261,7 @@ void keyDialog::setUpInitUI()
 	m_ui->cbKeyType->addItem( tr( "Key+KeyFile" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "HMAC+KeyFile" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "ExternalExecutable" ) ) ;
+	m_ui->cbKeyType->addItem( tr( "YubiKey Challenge/Response" ) ) ;
 
 	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::internal ) ){
 
@@ -332,9 +337,9 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 	m_favoriteReadOnly = e.mountReadOnly() ;
 
-	if( m_favoriteReadOnly ){
+	if( m_favoriteReadOnly.defined() ){
 
-		m_ui->checkBoxOpenReadOnly->setChecked( m_favoriteReadOnly.onlyRead() ) ;
+		m_ui->checkBoxOpenReadOnly->setChecked( m_favoriteReadOnly.True() ) ;
 	}else{
 		if( utility::platformIsWindows() ){
 
@@ -517,12 +522,16 @@ void keyDialog::pbOptions()
 
 			m_checked = true ;
 
-			auto f = settings::instance().readFavorite( m_path ) ;
+			auto f = favorites::instance().readFavorite( m_path ) ;
 
-			m_idleTimeOut  = f.idleTimeOut ;
-			m_configFile   = f.configFilePath ;
-			m_mountOptions = f.sanitizedMountOptions() ;
-			m_reverseMode  = f.reverseMode ;
+			if( f.has_value() ){
+
+				const auto& e = f.value() ;
+				m_idleTimeOut  = e.idleTimeOut ;
+				m_configFile   = e.configFilePath ;
+				m_mountOptions = e.mountOptions ;
+				m_reverseMode  = e.reverseMode ;
+			}
 		}
 
 		options::Options e{ { m_idleTimeOut,m_configFile,m_mountOptions,m_exe },m_reverseMode } ;
@@ -563,7 +572,9 @@ void keyDialog::passWordTextChanged( QString e )
 			this->setWindowTitle( tr( "Passphrase Quality: %1%" ).arg( QString::number( r ) ) ) ;
 		}
 
-	}else if( m_keyType == keyDialog::keyKeyFile || m_keyType == keyDialog::hmacKeyFile ){
+	}else if( m_keyType == keyDialog::keyKeyFile ||
+		  m_keyType == keyDialog::hmacKeyFile ||
+		  m_keyType == keyDialog::yubikey ){
 
 		this->setWindowTitle( tr( "Passphrase Quality: 100%" ) ) ;
 	}else{
@@ -576,6 +587,11 @@ bool keyDialog::eventFilter( QObject * watched,QEvent * event )
 	return utility::eventFilter( this,watched,event,[ this ](){ this->pbCancel() ; } ) ;
 }
 
+bool keyDialog::keySelected( int e )
+{
+	return e == keyDialog::keyType::Key || e == keyDialog::keyType::yubikey ;
+}
+
 void keyDialog::cbMountReadOnlyStateChanged( int state )
 {
 	if( this->upgradingFileSystem() ){
@@ -583,7 +599,7 @@ void keyDialog::cbMountReadOnlyStateChanged( int state )
 		return ;
 	}
 
-	if( m_favoriteReadOnly ){
+	if( m_favoriteReadOnly.defined() ){
 
 		m_ui->checkBoxOpenReadOnly->setChecked( state == Qt::Checked ) ;
 		return ;
@@ -663,7 +679,7 @@ void keyDialog::enableAll()
 
 	auto index = m_ui->cbKeyType->currentIndex() ;
 
-	m_ui->lineEditKey->setEnabled( index == keyDialog::Key ) ;
+	m_ui->lineEditKey->setEnabled( this->keySelected( index ) ) ;
 
 	auto enable = index == keyDialog::keyfile || index == keyDialog::keyKeyFile ;
 
@@ -671,7 +687,7 @@ void keyDialog::enableAll()
 
 	if( settings::instance().enableRevealingPasswords() ){
 
-		m_ui->checkBoxVisibleKey->setEnabled( index == keyDialog::Key ) ;
+		m_ui->checkBoxVisibleKey->setEnabled( this->keySelected( index ) ) ;
 	}
 
 	if( !utility::platformIsWindows() ){
@@ -797,15 +813,8 @@ void keyDialog::pbOpen()
 			m_ui->lineEditMountPoint->setFocus() ;
 
 			return ;
-		}
-
-		if( m_ui->lineEditKey->text().isEmpty() ){
-
-			this->showErrorMessage( tr( "Key Field Is Empty." ) ) ;
-
-			m_ui->lineEditKey->setFocus() ;
-
-			return ;
+		}else{
+			m_path = m_ui->lineEditFolderPath->text() ;
 		}
 	}
 
@@ -822,29 +831,20 @@ void keyDialog::pbOpen()
 		auto internal = wallet == _internalWallet() ;
 		auto osx      = wallet == _OSXKeyChain() ;
 
+		/* Figure out which wallet is used. Defaults to 'internal' */
+		using bk = LXQt::Wallet::BackEnd ;
+		bk bkwallet = LXQt::Wallet::BackEnd::internal ;
+		if( wallet == _kwallet() ){
+			bkwallet = LXQt::Wallet::BackEnd::kwallet ;
+		}else if( wallet == _gnomeWallet() ){
+			bkwallet = LXQt::Wallet::BackEnd::libsecret ;
+		}else if( wallet == _OSXKeyChain() ){
+			bkwallet = LXQt::Wallet::BackEnd::osxkeychain ;
+		}
+
 		if( kde || gnome || osx ){
 
-			w = utility::getKey( m_path,m_secrets.walletBk( [ & ](){
-
-				if( wallet == _kwallet() ){
-
-					return LXQt::Wallet::BackEnd::kwallet ;
-
-				}else if( wallet == _gnomeWallet() ){
-
-					return LXQt::Wallet::BackEnd::libsecret ;
-
-				}else if( wallet == _OSXKeyChain() ){
-
-					return LXQt::Wallet::BackEnd::osxkeychain ;
-				}else{
-					/*
-					 * We should not get here.
-					 */
-					return LXQt::Wallet::BackEnd::internal ;
-				}
-
-			}() ).bk() ) ;
+			w = utility::getKey( m_path,m_secrets.walletBk( bkwallet ).bk() ) ;
 
 		}else if( internal ){
 
@@ -865,11 +865,11 @@ void keyDialog::pbOpen()
 
 			if( w.key.isEmpty() ){
 
-				this->showErrorMessage( "The Volume Does Not Appear To Have An Entry In The Wallet." ) ;
+				m_walletType = wallet ;
 
-				this->enableAll() ;
+				auto s = tr( "Volume Not Found in \"%1\".\n\nSet The Volume Key To Add It To The Wallet Before Mounting." ).arg( wallet ) ;
 
-				m_ui->lineEditKey->setEnabled( false ) ;
+				this->setKeyInWallet( wallet,s ) ;
 			}else{
 				m_key = w.key.toLatin1() ;
 				this->openVolume() ;
@@ -940,7 +940,7 @@ void keyDialog::pbOK()
 
 	m_ui->textEdit->setVisible( false ) ;
 
-	if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
+	if( this->keySelected( m_ui->cbKeyType->currentIndex() ) ) {
 
 		m_ui->checkBoxVisibleKey->setVisible( true ) ;
 		m_ui->pbkeyOption->setVisible( false ) ;
@@ -952,6 +952,8 @@ void keyDialog::pbOK()
 
 void keyDialog::encryptedFolderCreate()
 {
+	utility::raii deleteKey( [ & ](){ m_walletKey.deleteKey() ; } ) ;
+
 	auto path = m_ui->lineEditFolderPath->text() ;
 
 	auto m = utility::split( path,'/' ).last() ;
@@ -1004,17 +1006,6 @@ void keyDialog::encryptedFolderCreate()
 		}
 	}
 
-	if( m_key.isEmpty() ){
-
-		this->showErrorMessage( tr( "Atleast One Required Field Is Empty." ) ) ;
-
-		this->enableAll() ;
-
-		m_ui->lineEditKey->setFocus() ;
-
-		return ;
-	}
-
 	m_working = true ;
 
 	engines::engine::options s( path,
@@ -1030,13 +1021,15 @@ void keyDialog::encryptedFolderCreate()
 
 	m_cryfsWarning.showCreate( m_exe.toLower() ) ;
 
-	auto e = siritask::encryptedFolderCreate( s ) ;
+	auto e = siritask::encryptedFolderCreate( s,m_secrets ) ;
 
 	m_cryfsWarning.hide() ;
 
 	m_working = false ;
 
 	if( e == engines::engine::status::success ){
+
+		deleteKey.cancel() ;
 
 		this->openMountPoint( m ) ;
 		this->HideUI() ;
@@ -1047,7 +1040,7 @@ void keyDialog::encryptedFolderCreate()
 
 			m_closeGUI = true ;
 		}else{
-			if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
+			if( this->keySelected( m_ui->cbKeyType->currentIndex() ) ){
 
 				m_ui->lineEditKey->clear() ;
 			}
@@ -1066,9 +1059,151 @@ void keyDialog::pbSetKeyKeyFile()
 	m_ui->lineEditSetKeyKeyFile->setText( a ) ;
 }
 
+void keyDialog::setKeyInWallet()
+{
+	auto _enable_all = [ & ](){
+
+		m_ui->labelSetKeyKeyFile->setEnabled( false ) ;
+		m_ui->labelSetKeyPassword->setEnabled( true ) ;
+		m_ui->lineEditSetKeyKeyFile->setEnabled( false ) ;
+		m_ui->lineEditSetKeyPassword->setEnabled( true ) ;
+		m_ui->pbSetKey->setEnabled( true ) ;
+		m_ui->pbSetKeyCancel->setEnabled( true ) ;
+		m_ui->pbSetKeyKeyFile->setEnabled( false ) ;
+		m_ui->labelSetKey->setEnabled( true ) ;
+	} ;
+
+	auto passphrase = m_ui->lineEditSetKeyPassword->text() ;
+
+	if( passphrase.isEmpty() ){
+
+		m_ui->labelSetKey->setText( tr( "Volume Key Can Not Be Empty." ) ) ;
+		return _enable_all() ;
+	}
+
+	auto w = [ & ](){
+
+		if( m_walletType == _kwallet() ){
+
+			return m_secrets.walletBk( LXQt::Wallet::BackEnd::kwallet ) ;
+
+		}else if( m_walletType == _gnomeWallet() ){
+
+			return m_secrets.walletBk( LXQt::Wallet::BackEnd::libsecret ) ;
+
+		}else if ( m_walletType == _OSXKeyChain() ){
+
+			return m_secrets.walletBk( LXQt::Wallet::BackEnd::osxkeychain ) ;
+		}else{
+			return m_secrets.walletBk( LXQt::Wallet::BackEnd::internal ) ;
+		}
+	}() ;
+
+	auto& settings = settings::instance() ;
+
+	auto _add_key = [ & ]{
+
+		QString id ;
+
+		if( m_create ){
+
+			id = m_ui->lineEditFolderPath->text() ;
+		}else{
+			id = m_path ;
+		}
+
+		if( w->readValue( id ).isEmpty() ){
+
+			if( walletconfig::addKey( w,id,passphrase,"Nil" ) ){
+
+				m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
+				m_ui->lineEditKey->setText( passphrase ) ;
+				this->SetUISetKey( false ) ;
+				this->setUIVisible( true ) ;
+				m_ui->pbkeyOption->setVisible( false ) ;
+				this->disableAll() ;
+
+				m_walletKey.set = true ;
+				m_walletKey.id = id ;
+				m_walletKey.bk = w->backEnd() ;
+				m_walletKey.walletName = settings.walletName( m_walletKey.bk ) ;
+				m_walletKey.appName = settings.applicationName() ;
+
+				this->openVolume() ;
+
+				return true ;
+			}else{
+				m_ui->labelSetKey->setText( tr( "Failed To Add A Volume To The A Wallet." ) ) ;
+			}
+		}else{
+			m_ui->labelSetKey->setText( tr( "Volume Already Exists In The Wallet." ) ) ;
+		}
+
+		return false ;
+	} ;
+
+	if( w->opened() ){
+
+		if( _add_key() ){
+
+			return ;
+		}
+	}else{
+		w->setImage( QIcon( ":/sirikali" ) ) ;
+
+		auto bk = w->backEnd() ;
+		bool s ;
+
+		if( bk == LXQt::Wallet::BackEnd::internal ){
+
+			this->hide() ;
+
+			s = w->open( settings.walletName( bk ),settings.applicationName() ) ;
+
+			this->show() ;
+		}else{
+			s = w->open( settings.walletName( bk ),settings.applicationName() ) ;
+		}
+
+		if( s ){
+
+			if( _add_key() ){
+
+				return ;
+			}
+		}else{
+			m_ui->labelSetKey->setText( tr( "Failed To Open Wallet." ) ) ;
+		}
+	}
+
+	_enable_all() ;
+}
+
+void keyDialog::setKeyInWallet( const QString& volumeType,const QString& title )
+{
+	m_walletType = volumeType ;
+
+	m_ui->labelSetKey->setText( title ) ;
+
+	m_ui->lineEditSetKeyPassword->clear() ;
+	m_ui->lineEditSetKeyKeyFile->clear() ;
+
+	m_ui->labelMsg->clear() ;
+
+	this->setUIVisible( false ) ;
+	this->SetUISetKey( true ) ;
+
+	m_ui->lineEditSetKeyPassword->setFocus() ;
+}
+
 void keyDialog::pbSetKey()
 {
 	this->setKeyEnabled( false ) ;
+
+	if( !m_walletType.isEmpty() ){
+
+		return this->setKeyInWallet() ;
+	}
 
 	auto keyFile    = m_ui->lineEditSetKeyKeyFile->text() ;
 	auto passphrase = m_ui->lineEditSetKeyPassword->text() ;
@@ -1114,6 +1249,7 @@ void keyDialog::pbSetKeyCancel()
 {
 	this->SetUISetKey( false ) ;
 	this->setUIVisible( true ) ;
+	this->enableAll() ;
 	m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
 }
 
@@ -1140,6 +1276,13 @@ void keyDialog::SetUISetKey( bool e )
 	m_ui->pbSetKeyKeyFile->setVisible( e ) ;
 	m_ui->labelSetKey->setVisible( e ) ;
 	m_ui->pbOK->setVisible( e ) ;
+
+	if( e && !m_walletType.isEmpty() ){
+
+		m_ui->labelSetKeyKeyFile->setEnabled( false ) ;
+		m_ui->lineEditSetKeyKeyFile->setEnabled( false ) ;
+		m_ui->pbSetKeyKeyFile->setEnabled( false ) ;
+	}
 
 	if( e ){
 
@@ -1197,30 +1340,6 @@ void keyDialog::encryptedFolderMount()
 		}
 	}
 
-	if( !m_path.startsWith( "sshfs " ) ){
-
-		if( !utility::pathExists( m_path ) ){
-
-			this->showErrorMessage( tr( "Encrypted Folder Appear To Not Be Present." ) ) ;
-
-			return this->enableAll() ;
-		}
-	}
-
-	if( !m_path.startsWith( "sshfs " ) ){
-
-		if( m_key.isEmpty() ){
-
-			this->showErrorMessage( tr( "Atleast One Required Field Is Empty." ) ) ;
-
-			this->enableAll() ;
-
-			m_ui->lineEditKey->setFocus() ;
-
-			return ;
-		}
-	}
-
 	if( this->upgradingFileSystem() ){
 
 		if( m_ui->checkBoxOpenReadOnly->isChecked() ){
@@ -1249,7 +1368,7 @@ void keyDialog::encryptedFolderMount()
 
 	m_cryfsWarning.showUnlock( siritask::mountEngine( m_path,m_configFile ).engine.name() ) ;
 
-	auto e = siritask::encryptedFolderMount( s ) ;
+	auto e = siritask::encryptedFolderMount( s,m_secrets ) ;
 
 	m_cryfsWarning.hide() ;
 
@@ -1291,7 +1410,28 @@ void keyDialog::openVolume()
 		}
 	} ;
 
-	if( keyType == keyDialog::Key ){
+	if( keyType == keyDialog::yubikey ){
+
+		auto s = m_ui->lineEditKey->text().toLatin1() ;
+
+		if( s.isEmpty() ){
+
+			s = "\n" ;
+		}
+
+		auto m = utility::yubiKey( s ) ;
+
+		if( m.has_value() ){
+
+			m_key = m.value() ;
+
+			_run() ;
+		}else{
+			this->showErrorMessage( tr( "Failed To Locate Or Run Yubikey's \"ykchalresp\" Program." ) ) ;
+			return this->enableAll() ;
+		}
+
+	}else if( keyType == keyDialog::Key ){
 
 		m_key = m_ui->lineEditKey->text().toLatin1() ;
 
@@ -1346,7 +1486,7 @@ QString keyDialog::keyFileError()
 
 void keyDialog::cbVisibleKeyStateChanged( int s )
 {
-	if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
+	if( this->keySelected( m_ui->cbKeyType->currentIndex() ) ){
 
 		if( s == Qt::Checked ){
 
@@ -1361,7 +1501,16 @@ void keyDialog::cbVisibleKeyStateChanged( int s )
 
 void keyDialog::cbActicated( QString e )
 {
-	e.remove( '&' ) ;
+	m_walletType.clear() ;
+
+	auto _t = []( QString&& e ){
+
+		e.remove( '&' ) ;
+
+		return std::move( e ) ;
+	} ;
+
+	e = _t( std::move( e ) ) ;
 
 	auto _showVisibleKeyOption = [ this ]( bool e ){
 
@@ -1372,13 +1521,13 @@ void keyDialog::cbActicated( QString e )
 		m_ui->pbkeyOption->setVisible( !e ) ;
 	} ;
 
-	if( e == tr( "Key" ).remove( '&' ) ){
+	if( e == _t( tr( "Key" ) ) || e == _t( tr( "YubiKey Challenge/Response" ) ) ){
 
 		this->key() ;
 
 		_showVisibleKeyOption( true ) ;
 
-	}else if( e == tr( "KeyFile" ).remove( '&' ) ){
+	}else if( e == _t( tr( "KeyFile" ) ) ){
 
 		_showVisibleKeyOption( false ) ;
 
@@ -1386,11 +1535,11 @@ void keyDialog::cbActicated( QString e )
 
 		this->KeyFile() ;
 
-	}else if( e == tr( "Key+KeyFile" ).remove( '&' ) || e == tr( "ExternalExecutable" ).remove( '&' ) ){
+	}else if( e == _t( tr( "Key+KeyFile" ) ) || e == _t ( tr( "ExternalExecutable" ) ) ){
 
 		QString s ;
 
-		if( e == tr( "Key+KeyFile" ).remove( '&' ) ){
+		if( e == _t( tr( "Key+KeyFile" ) ) ){
 
 			s = QObject::tr( "Effective Key Is Generated With Below Formula:\n\nkey = hmac_sha256(password,keyfile contents)" ) ;
 
@@ -1413,7 +1562,7 @@ void keyDialog::cbActicated( QString e )
 		this->setUIVisible( false ) ;
 		this->SetUISetKey( true ) ;
 
-	}else if( e == tr( "HMAC+KeyFile" ).remove( '&' ) ){
+	}else if( e == _t( tr( "HMAC+KeyFile" ) ) ){
 
 		_showVisibleKeyOption( false ) ;
 
@@ -1446,6 +1595,25 @@ void keyDialog::cbActicated( QString e )
 				this->enableAll() ;
 			} ) ;
 		}
+
+	}else if( m_create && utility::equalsAtleastOne( e,
+							 _t( _kwallet() ),
+							 _t( _gnomeWallet() ),
+							 _t( _internalWallet() ),
+							 _t( _OSXKeyChain() ) ) ){
+
+		if( m_ui->lineEditMountPoint->text().isEmpty() ){
+
+			this->showErrorMessage( tr( "Volume Name Field Is Empty." ) ) ;
+			m_ui->cbKeyType->setCurrentIndex( 0 ) ;
+			m_ui->lineEditMountPoint->setFocus() ;
+			m_ui->checkBoxVisibleKey->setVisible( false ) ;
+			return ;
+		}
+
+		auto s = tr( "Create A Volume With Specified Key And Then Add The Key In \n\"%1\"." ).arg( e ) ;
+
+		this->setKeyInWallet( e,s ) ;
 	}else{
 		this->plugIn() ;
 

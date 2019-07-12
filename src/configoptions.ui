@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>621</width>
-    <height>395</height>
+    <height>475</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <x>20</x>
      <y>10</y>
      <width>581</width>
-     <height>351</height>
+     <height>431</height>
     </rect>
    </property>
    <property name="currentIndex">
@@ -33,7 +33,7 @@
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>0</y>
+       <y>30</y>
        <width>21</width>
        <height>41</height>
       </rect>
@@ -46,7 +46,7 @@
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>40</y>
+       <y>70</y>
        <width>21</width>
        <height>41</height>
       </rect>
@@ -59,7 +59,7 @@
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>80</y>
+       <y>110</y>
        <width>21</width>
        <height>41</height>
       </rect>
@@ -72,7 +72,7 @@
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>120</y>
+       <y>150</y>
        <width>21</width>
        <height>41</height>
       </rect>
@@ -85,7 +85,7 @@
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>280</y>
+       <y>360</y>
        <width>331</width>
        <height>33</height>
       </rect>
@@ -98,7 +98,7 @@
      <property name="geometry">
       <rect>
        <x>150</x>
-       <y>0</y>
+       <y>30</y>
        <width>401</width>
        <height>41</height>
       </rect>
@@ -114,7 +114,7 @@
      <property name="geometry">
       <rect>
        <x>150</x>
-       <y>40</y>
+       <y>70</y>
        <width>401</width>
        <height>41</height>
       </rect>
@@ -130,7 +130,7 @@
      <property name="geometry">
       <rect>
        <x>150</x>
-       <y>80</y>
+       <y>110</y>
        <width>401</width>
        <height>41</height>
       </rect>
@@ -146,7 +146,7 @@
      <property name="geometry">
       <rect>
        <x>150</x>
-       <y>120</y>
+       <y>150</y>
        <width>401</width>
        <height>41</height>
       </rect>
@@ -162,7 +162,7 @@
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>160</y>
+       <y>190</y>
        <width>21</width>
        <height>41</height>
       </rect>
@@ -175,7 +175,7 @@
      <property name="geometry">
       <rect>
        <x>150</x>
-       <y>160</y>
+       <y>190</y>
        <width>401</width>
        <height>41</height>
       </rect>
@@ -191,7 +191,7 @@
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>200</y>
+       <y>230</y>
        <width>21</width>
        <height>41</height>
       </rect>
@@ -210,7 +210,7 @@
      <property name="geometry">
       <rect>
        <x>150</x>
-       <y>200</y>
+       <y>230</y>
        <width>401</width>
        <height>41</height>
       </rect>
@@ -226,7 +226,7 @@
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>240</y>
+       <y>270</y>
        <width>21</width>
        <height>41</height>
       </rect>
@@ -239,13 +239,42 @@
      <property name="geometry">
       <rect>
        <x>150</x>
-       <y>240</y>
+       <y>270</y>
        <width>401</width>
        <height>41</height>
       </rect>
      </property>
      <property name="text">
       <string>Show Mount Dialog When Auto Mounting</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="cbAllowExternalToolsToReadPasswords">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>310</y>
+       <width>21</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_15">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>310</y>
+       <width>401</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Allow External Tools To Get Passwords From Wallets</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
@@ -262,7 +291,7 @@
        <x>40</x>
        <y>10</y>
        <width>491</width>
-       <height>241</height>
+       <height>321</height>
       </rect>
      </property>
      <property name="title">
@@ -272,7 +301,7 @@
       <property name="geometry">
        <rect>
         <x>100</x>
-        <y>70</y>
+        <y>90</y>
         <width>311</width>
         <height>31</height>
        </rect>
@@ -285,7 +314,7 @@
       <property name="geometry">
        <rect>
         <x>100</x>
-        <y>110</y>
+        <y>150</y>
         <width>311</width>
         <height>31</height>
        </rect>
@@ -298,7 +327,7 @@
       <property name="geometry">
        <rect>
         <x>100</x>
-        <y>150</y>
+        <y>210</y>
         <width>311</width>
         <height>31</height>
        </rect>
@@ -311,7 +340,7 @@
       <property name="geometry">
        <rect>
         <x>100</x>
-        <y>190</y>
+        <y>270</y>
         <width>311</width>
         <height>31</height>
        </rect>
@@ -338,7 +367,7 @@
      <property name="geometry">
       <rect>
        <x>70</x>
-       <y>250</y>
+       <y>330</y>
        <width>431</width>
        <height>31</height>
       </rect>
@@ -351,7 +380,7 @@
      <property name="geometry">
       <rect>
        <x>140</x>
-       <y>280</y>
+       <y>360</y>
        <width>291</width>
        <height>33</height>
       </rect>
@@ -363,7 +392,7 @@
    </widget>
    <widget class="QWidget" name="setExecutables">
     <attribute name="title">
-     <string>Editable Options</string>
+     <string>External Commands</string>
     </attribute>
     <widget class="QLabel" name="label_2">
      <property name="geometry">
@@ -523,13 +552,232 @@
       <bool>true</bool>
      </property>
     </widget>
+    <widget class="QPushButton" name="pbPostMountCommand">
+     <property name="geometry">
+      <rect>
+       <x>460</x>
+       <y>210</y>
+       <width>31</width>
+       <height>33</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pbPreUnMountCommand">
+     <property name="geometry">
+      <rect>
+       <x>460</x>
+       <y>270</y>
+       <width>31</width>
+       <height>33</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_13">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>300</y>
+       <width>391</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Set Command To Run Periodically</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEditRunPeriodically">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>330</y>
+       <width>391</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pbRunPeriodicallyCommand">
+     <property name="geometry">
+      <rect>
+       <x>460</x>
+       <y>330</y>
+       <width>31</width>
+       <height>33</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEditRunPeriodicallyInterval">
+     <property name="geometry">
+      <rect>
+       <x>330</x>
+       <y>360</y>
+       <width>131</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_14">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>360</y>
+       <width>251</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Interval In Minutes Periodic Command Will Run</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pbSetFileManager">
+     <property name="geometry">
+      <rect>
+       <x>460</x>
+       <y>90</y>
+       <width>31</width>
+       <height>33</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pbSetExternalCommand">
+     <property name="geometry">
+      <rect>
+       <x>460</x>
+       <y>150</y>
+       <width>31</width>
+       <height>33</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pbExternalExecutableDefault">
+     <property name="geometry">
+      <rect>
+       <x>490</x>
+       <y>150</y>
+       <width>31</width>
+       <height>33</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Set To Default</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pbSetFileManagerToDefault">
+     <property name="geometry">
+      <rect>
+       <x>490</x>
+       <y>90</y>
+       <width>31</width>
+       <height>33</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Set To Default</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pbMountPointPrefixDefault">
+     <property name="geometry">
+      <rect>
+       <x>490</x>
+       <y>30</y>
+       <width>31</width>
+       <height>33</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Set To Default</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pbRunPostMountCommandDefault">
+     <property name="geometry">
+      <rect>
+       <x>490</x>
+       <y>210</y>
+       <width>31</width>
+       <height>33</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Set To Default</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pbRunPreUnMountCommandDefault">
+     <property name="geometry">
+      <rect>
+       <x>490</x>
+       <y>270</y>
+       <width>31</width>
+       <height>33</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Set To Default</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pbRunCommandPeriodicallyDefault">
+     <property name="geometry">
+      <rect>
+       <x>490</x>
+       <y>330</y>
+       <width>31</width>
+       <height>33</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Set To Default</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
-     <x>240</x>
-     <y>360</y>
+     <x>220</x>
+     <y>440</y>
      <width>131</width>
      <height>33</height>
     </rect>
@@ -545,8 +793,11 @@
   <tabstop>cbReUseMountPoint</tabstop>
   <tabstop>cbAutoCheckForUpdates</tabstop>
   <tabstop>cbStartMinimized</tabstop>
+  <tabstop>cbAutoMountAtStartUp</tabstop>
+  <tabstop>cbAutoMountWhenAvailable</tabstop>
+  <tabstop>cbShowMountDialogWhenAutoMounting</tabstop>
+  <tabstop>cbAllowExternalToolsToReadPasswords</tabstop>
   <tabstop>pbSelectLanguage</tabstop>
-  <tabstop>pushButton</tabstop>
   <tabstop>rbNone</tabstop>
   <tabstop>rbInternalWallet</tabstop>
   <tabstop>rbLibSecret</tabstop>
@@ -556,10 +807,24 @@
   <tabstop>pbKeyStorage</tabstop>
   <tabstop>lineEditMountPointPrefix</tabstop>
   <tabstop>pbMountPointPrefix</tabstop>
+  <tabstop>pbMountPointPrefixDefault</tabstop>
   <tabstop>lineEditFileManager</tabstop>
+  <tabstop>pbSetFileManager</tabstop>
+  <tabstop>pbSetFileManagerToDefault</tabstop>
   <tabstop>lineEditExecutableKeySource</tabstop>
+  <tabstop>pbSetExternalCommand</tabstop>
+  <tabstop>pbExternalExecutableDefault</tabstop>
   <tabstop>lineEditAfterMountCommand</tabstop>
+  <tabstop>pbPostMountCommand</tabstop>
+  <tabstop>pbRunPostMountCommandDefault</tabstop>
   <tabstop>lineEditBeforesUnMount</tabstop>
+  <tabstop>pbPreUnMountCommand</tabstop>
+  <tabstop>pbRunPreUnMountCommandDefault</tabstop>
+  <tabstop>lineEditRunPeriodically</tabstop>
+  <tabstop>pbRunPeriodicallyCommand</tabstop>
+  <tabstop>pbRunCommandPeriodicallyDefault</tabstop>
+  <tabstop>lineEditRunPeriodicallyInterval</tabstop>
+  <tabstop>pushButton</tabstop>
  </tabstops>
  <resources/>
  <connections/>

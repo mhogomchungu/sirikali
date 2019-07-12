@@ -22,7 +22,7 @@
 #include "siriPolkit.h"
 #include "task.hpp"
 #include "../utility2.h"
-#include "json.h"
+#include "../json_parser.hpp"
 
 #include <termios.h>
 #include <memory>
@@ -154,7 +154,7 @@ void zuluPolkit::start()
 
 static void _respond( QLocalSocket& s,const char * e )
 {
-	nlohmann::json json ;
+	sirikali::json json ;
 
 	json[ "stdOut" ]     = e ;
 	json[ "stdError" ]   = e ;
@@ -162,22 +162,22 @@ static void _respond( QLocalSocket& s,const char * e )
 	json[ "exitStatus" ] = 255 ;
 	json[ "finished" ]   = true ;
 
-	s.write( json.dump().c_str() ) ;
+	s.write( json.structure() ) ;
 
 	s.waitForBytesWritten() ;
 }
 
 static void _respond( QLocalSocket& s,const Task::process::result& e )
 {
-	nlohmann::json json ;
+	sirikali::json json ;
 
-	json[ "stdOut" ]     = e.std_out().constData() ;
-	json[ "stdError" ]   = e.std_error().constData() ;
+	json[ "stdOut" ]     = e.std_out() ;
+	json[ "stdError" ]   = e.std_error() ;
 	json[ "exitCode" ]   = e.exit_code() ;
 	json[ "exitStatus" ] = e.exit_status() ;
 	json[ "finished" ]   = e.finished() ;
 
-	s.write( json.dump().c_str() ) ;
+	s.write( json.structure() ) ;
 
 	s.waitForBytesWritten() ;
 }
@@ -191,11 +191,11 @@ void zuluPolkit::gotConnection()
 	try{
 		m.waitForReadyRead() ;
 
-		auto json = nlohmann::json::parse( m.readAll().constData() ) ;
+		auto json = sirikali::json( m.readAll(),sirikali::json::type::CONTENTS ) ;
 
-		auto password = QString::fromStdString( json[ "password" ].get< std::string >() ) ;
-		auto cookie   = QString::fromStdString( json[ "cookie" ].get< std::string >() ) ;
-		auto command  = QString::fromStdString( json[ "command" ].get< std::string >() ) ;
+		auto password = json.getString( "password" ) ;
+		auto cookie   = json.getString( "cookie" ) ;
+		auto command  = json.getString( "command" ) ;
 
 		auto su = executableFullPath( "su" ) ;
 

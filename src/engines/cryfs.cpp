@@ -24,19 +24,23 @@ static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
 
-	s.autoMountsOnCreate  = true ;
-	s.hasGUICreateOptions = true ;
-	s.setsCipherPath      = true ;
 	s.supportsMountPathsOnWindows = true ;
-
-	s.configFileArgument  = "--config" ;
-
-	s.configFileNames = QStringList{ "cryfs.config",".cryfs.config" } ;
-
-	s.fuseNames = QStringList{ "fuse.cryfs" } ;
-	s.names     = QStringList{ "cryfs" } ;
-
-	s.notFoundCode = engines::engine::status::cryfsNotFound ;
+	s.customBackend         = false ;
+	s.requiresAPassword     = true ;
+	s.hasConfigFile         = true ;
+	s.autoMountsOnCreate    = true ;
+	s.hasGUICreateOptions   = true ;
+	s.setsCipherPath        = true ;
+	s.idleString            = "--unmount-idle" ;
+	s.executableName        = "cryfs" ;
+	s.incorrectPasswordText = "Could not load config file. Did you enter the correct password?" ;
+	s.configFileArgument    = "--config" ;
+	s.successfulMountedList = QStringList{ "Mounting filesystem." } ;
+	s.configFileNames       = QStringList{ "cryfs.config",".cryfs.config" } ;
+	s.fuseNames             = QStringList{ "fuse.cryfs" } ;
+	s.failedToMountList     = QStringList{ "Error" } ;
+	s.names                 = QStringList{ "cryfs" } ;
+	s.notFoundCode          = engines::engine::status::cryfsNotFound ;
 
 	return s ;
 }
@@ -74,7 +78,7 @@ engines::engine::args cryfs::command( const engines::engine::cmdArgsList& args )
 
 	if( !args.opt.idleTimeout.isEmpty() ){
 
-		exeOptions.addPair( "--unmount-idle",args.opt.idleTimeout ) ;
+		exeOptions.addPair( this->idleString(),args.opt.idleTimeout ) ;
 	}
 
 	if( args.create ){
@@ -122,7 +126,7 @@ engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 		 * Falling back to parsing strings
 		 */
 
-		if( e.contains( "Could not load config file. Did you enter the correct password?" ) ){
+		if( e.contains( this->incorrectPasswordText() ) ){
 
 			return engines::engine::status::cryfsBadPassword ;
 
@@ -149,20 +153,6 @@ QString cryfs::installedVersionString() const
 	}
 
 	return m_version ;
-}
-
-engines::engine::error cryfs::errorCode( const QString& e ) const
-{
-	if( e.contains( "Mounting filesystem." ) ){
-
-		return engines::engine::error::Success ;
-
-	}else if( e.contains( "Error" ) ){
-
-		return engines::engine::error::Failed ;
-	}else{
-		return engines::engine::error::Continue ;
-	}
 }
 
 void cryfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

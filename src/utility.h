@@ -56,8 +56,8 @@
 
 #include "task.hpp"
 #include "lxqt_wallet.h"
-#include "favorites.h"
 #include "plugins.h"
+#include "secrets.h"
 #include "utility2.h"
 #include "debugwindow.h"
 
@@ -72,8 +72,27 @@ class QEvent ;
 
 namespace utility
 {
-	using volumeList = std::vector< std::pair< favorites::entry,QByteArray > > ;
+	class raii
+	{
+	public:
+		raii( std::function< void() > s ) : m_function( std::move( s ) )
+		{
+		}
+		~raii()
+		{
+			if( m_run ){
 
+				m_function() ;
+			}
+		}
+		void cancel()
+		{
+			m_run = false ;
+		}
+	private:
+		bool m_run = true ;
+		std::function< void() > m_function ;
+	};
 	template< typename T >
 	class result
 	{
@@ -242,6 +261,8 @@ namespace utility
 
 	bool printVersionOrHelpInfo( const QStringList& ) ;
 
+	QString getKey( const QString& keyID,const secrets& secret ) ;
+
 	wallet getKey( const QString& keyID,LXQt::Wallet::Wallet&,QWidget * = nullptr ) ;
 
 	QString cmdArgumentValue( const QStringList&,const QString& arg,const QString& defaulT = QString() ) ;
@@ -256,12 +277,15 @@ namespace utility
 
 	QString freeWindowsDriveLetter() ;
 	bool isDriveLetter( const QString& ) ;
+	bool startsWithDriveLetter( const QString& ) ;
 
 	void setWindowsMountPointOptions( QWidget *,QTextEdit *,QPushButton * ) ;
 
 	void setWindowsMountPointOptions( QWidget *,QLineEdit *,QPushButton * ) ;
 
 	QString homeConfigPath( const QString& = QString() ) ;
+
+	QString getExistingFile( QWidget *,const QString& caption,const QString& dir ) ;
 
 	QString getExistingDirectory( QWidget *,const QString& caption,const QString& dir ) ;
 
@@ -280,11 +304,16 @@ namespace utility
 
 	bool runningOnBackGroundThread( void ) ;
 
+	void runInUiThread( std::function< void() > function ) ;
+
 	void waitForOneSecond( void ) ;
 
 	void wait( int ) ;
 
 	void waitForFinished( QProcess& ) ;
+
+	void setMainQWidget( QWidget * ) ;
+	QWidget * mainQWidget() ;
 
 	template< typename Future >
 	static inline auto unwrap( Future& x )
@@ -320,9 +349,12 @@ namespace utility
 
 	void setDefaultMountPointPrefix( const QString& path ) ;
 
+	utility::result< QByteArray > yubiKey( const QString& challenge ) ;
+
 	QString mountPathPostFix( const QString& path ) ;
 	QString mountPathPostFix( const QString& prefix,const QString& path ) ;
 
+	bool pathIsFile( const QString& ) ;
 	bool pathIsReadable( const QString&,bool isFolder = true ) ;
 	bool pathIsWritable( const QString&,bool isFolder = true ) ;
 
@@ -598,6 +630,10 @@ namespace utility
 		bool finished() const
 		{
 			return m_finished ;
+		}
+		::Task::process::result toProcessResult()
+		{
+			return { m_stdOut,m_stdError,m_exitCode,m_exitStatus,m_finished } ;
 		}
 	private:
 		void execute( const QString& exe,int waitTime,const QProcessEnvironment& env,
