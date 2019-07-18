@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="ru_UA">
+<TS version="2.1" language="ru_UA">
 <context>
     <name>DialogMsg</name>
     <message>
@@ -964,25 +964,25 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="306"/>
-        <location filename="../src/favorites2.ui" line="824"/>
+        <location filename="../src/favorites2.ui" line="830"/>
         <source>PreMount Command</source>
         <translation>Команда перед монтированием</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="325"/>
-        <location filename="../src/favorites2.ui" line="843"/>
+        <location filename="../src/favorites2.ui" line="849"/>
         <source>PostMount Command</source>
         <translation>Команда после монтирования</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="344"/>
-        <location filename="../src/favorites2.ui" line="862"/>
+        <location filename="../src/favorites2.ui" line="868"/>
         <source>PreUnMount Command</source>
         <translation>Команда перед размонтированием</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="363"/>
-        <location filename="../src/favorites2.ui" line="881"/>
+        <location filename="../src/favorites2.ui" line="887"/>
         <source>PostUnMount Command</source>
         <translation>Команда после размонтирования</translation>
     </message>
@@ -1002,12 +1002,12 @@ p, li { white-space: pre-wrap; }
         <translation>Общие параметры</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="787"/>
+        <location filename="../src/favorites2.ui" line="793"/>
         <source>Reverse Mode (Gocryptfs and Encfs Only)</source>
         <translation>Режим &quot;reverse&quot; (только для Gocryptfs и Encfs)</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="758"/>
+        <location filename="../src/favorites2.ui" line="761"/>
         <source>Mount In Read Only Mode</source>
         <translation>Смонтировать в режиме &quot;только для чтения&quot;</translation>
     </message>
@@ -1064,12 +1064,12 @@ p, li { white-space: pre-wrap; }
         <translation>Тип тома (требуется для томов, которые не используют файл конфигурации, например sshfs)</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="812"/>
+        <location filename="../src/favorites2.ui" line="818"/>
         <source>Custom Commands</source>
         <translation>Пользовательские команды</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="997"/>
+        <location filename="../src/favorites2.ui" line="1003"/>
         <source>&amp;Close</source>
         <translation>&amp;Закрыть</translation>
     </message>

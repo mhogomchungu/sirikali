@@ -897,25 +897,25 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="306"/>
-        <location filename="../src/favorites2.ui" line="824"/>
+        <location filename="../src/favorites2.ui" line="830"/>
         <source>PreMount Command</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="325"/>
-        <location filename="../src/favorites2.ui" line="843"/>
+        <location filename="../src/favorites2.ui" line="849"/>
         <source>PostMount Command</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="344"/>
-        <location filename="../src/favorites2.ui" line="862"/>
+        <location filename="../src/favorites2.ui" line="868"/>
         <source>PreUnMount Command</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="363"/>
-        <location filename="../src/favorites2.ui" line="881"/>
+        <location filename="../src/favorites2.ui" line="887"/>
         <source>PostUnMount Command</source>
         <translation type="unfinished"></translation>
     </message>
@@ -935,12 +935,12 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="787"/>
+        <location filename="../src/favorites2.ui" line="793"/>
         <source>Reverse Mode (Gocryptfs and Encfs Only)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="758"/>
+        <location filename="../src/favorites2.ui" line="761"/>
         <source>Mount In Read Only Mode</source>
         <translation type="unfinished"></translation>
     </message>
@@ -997,12 +997,12 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="812"/>
+        <location filename="../src/favorites2.ui" line="818"/>
         <source>Custom Commands</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="997"/>
+        <location filename="../src/favorites2.ui" line="1003"/>
         <source>&amp;Close</source>
         <translation type="unfinished"></translation>
     </message>
