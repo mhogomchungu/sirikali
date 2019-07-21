@@ -179,15 +179,22 @@ static bool _unmount_rest_( const QString& cmd,const QString& mountPoint )
 	return s && s.value().success() ;
 }
 
-static bool _unmount_rest( const QString& mountPoint,int maxCount )
+static bool _unmount_rest( const QString& mountPoint,const QString& fs,int maxCount )
 {
 	auto cmd = [ & ](){
 
-		if( utility::platformIsOSX() ){
+		auto m = engines::instance().getByName( fs ).unMountCommand() ;
 
-			return "umount " + mountPoint ;
+		if( m.isEmpty() ){
+
+			if( utility::platformIsOSX() ){
+
+				return "umount " + mountPoint ;
+			}else{
+				return "fusermount -u " + mountPoint ;
+			}
 		}else{
-			return "fusermount -u " + mountPoint ;
+			return m ;
 		}
 	}() ;
 
@@ -270,7 +277,7 @@ static bool _encrypted_unmount( const QString& cipherFolder,
 
 				return _unmount_ecryptfs( a,b,numberOfAttempts ) ;
 			}else{
-				return _unmount_rest( _makePath( mountPoint ),numberOfAttempts ) ;
+				return _unmount_rest( _makePath( mountPoint ),fileSystem,numberOfAttempts ) ;
 			}
 
 		} ) ;

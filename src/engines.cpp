@@ -300,6 +300,17 @@ const QString& engines::engine::incorrectPasswordCode() const
 	return m_Options.incorrectPassWordCode ;
 }
 
+const QString& engines::engine::unMountCommand() const
+{
+	if( m_Options.unMountCommand.isEmpty() ){
+
+		static QString s ;
+		return s ;
+	}else{
+		return m_Options.unMountCommand ;
+	}
+}
+
 static bool _contains( const QString& e,const QStringList& m )
 {
 	for( const auto& it : m ){

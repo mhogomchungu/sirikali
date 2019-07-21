@@ -45,6 +45,7 @@ static utility::result< custom::opts > _getOptions( const QByteArray& e,const QS
 		s.baseOpts.executableName              = json.getString( "executableName" ) ;
 		s.baseOpts.incorrectPasswordText       = json.getString( "wrongPasswordText" ) ;
 		s.baseOpts.incorrectPassWordCode       = json.getString( "wrongPasswordErrorCode" ) ;
+		s.baseOpts.unMountCommand              = json.getString( "unMountCommand" ) ;
 		s.baseOpts.configFileArgument          = json.getString( "configFileArgument" ) ;
 		s.baseOpts.failedToMountList           = json.getStringList( "failedToMountTextList" ) ;
 		s.baseOpts.successfulMountedList       = json.getStringList( "successfullyMountedList" ) ;

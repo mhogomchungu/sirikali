@@ -1504,8 +1504,7 @@ p, li { white-space: pre-wrap; }
 Set The Volume Key To Add It To The Wallet Before Mounting.</source>
         <translation>Том не найден в &quot;%1&quot;.
 
-Укажите ключ тома, чтобы добавить его в хранилище ключей перед монтированием.
-</translation>
+Укажите ключ тома, чтобы добавить его в хранилище ключей перед монтированием.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="897"/>

@@ -138,6 +138,7 @@ void createBackendWIndow::save()
 	config[ "mountControlStructure" ]       = "%{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
 	config[ "idleString" ]                  = "" ;
 	config[ "reverseString"]                = "" ;
+	config[ "unMountCommand"]               = "" ;
 	config[ "executableName" ]              = executable ;
 	config[ "configFileNames" ]             = _addList( configFileNames ) ;
 	config[ "fuseNames" ]                   = _addList( fusenames ) ;

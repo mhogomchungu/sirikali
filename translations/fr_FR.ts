@@ -999,7 +999,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.ui" line="446"/>
         <source>General Options</source>
-        <translation type="unfinished">Options Générales</translation>
+        <translation>Options Générales</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="793"/>
