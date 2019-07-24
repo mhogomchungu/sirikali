@@ -606,13 +606,13 @@ int sirikali::start( QApplication& e )
 
 	const auto l = QCoreApplication::arguments() ;
 
-	for( const QString& it : l ){
+	if( utility::platformIsWindows() ){
 
-		if( it.startsWith( "terminateProcess-" ) ){
+		if( l.size() > 1 && l.at( 1 ).startsWith( "-T" ) ){
 
-			auto s = it ;
+			auto s = l.at( 1 ) ;
 
-			s.replace( "terminateProcess-","" ) ;
+			s.replace( "-T","" ) ;
 
 			return SiriKali::Windows::terminateProcess( s.toULong() ) ;
 		}

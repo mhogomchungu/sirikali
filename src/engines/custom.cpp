@@ -33,10 +33,10 @@ static utility::result< custom::opts > _getOptions( const QByteArray& e,const QS
 
 		sirikali::json json( e,sirikali::json::type::CONTENTS ) ;
 
-		s.mountControlStructure                = json.getString( "mountControlStructure" ) ;
-		s.createControlStructure               = json.getString( "createControlStructure" ) ;
 		s.baseOpts.hasGUICreateOptions         = true ;
 		s.baseOpts.customBackend               = true ;
+		s.mountControlStructure                = json.getString( "mountControlStructure" ) ;
+		s.createControlStructure               = json.getString( "createControlStructure" ) ;
 		s.baseOpts.reverseString               = json.getString( "reverseString" ) ;
 		s.baseOpts.idleString                  = json.getString( "idleString" ) ;
 		s.baseOpts.requiresAPassword           = json.getBool( "requiresAPassword" ) ;
@@ -46,6 +46,7 @@ static utility::result< custom::opts > _getOptions( const QByteArray& e,const QS
 		s.baseOpts.incorrectPasswordText       = json.getString( "wrongPasswordText" ) ;
 		s.baseOpts.incorrectPassWordCode       = json.getString( "wrongPasswordErrorCode" ) ;
 		s.baseOpts.unMountCommand              = json.getString( "unMountCommand" ) ;
+		s.baseOpts.windowsUnMountCommand       = json.getString( "windowsUnMountCommand" ) ;
 		s.baseOpts.configFileArgument          = json.getString( "configFileArgument" ) ;
 		s.baseOpts.failedToMountList           = json.getStringList( "failedToMountTextList" ) ;
 		s.baseOpts.successfulMountedList       = json.getStringList( "successfullyMountedList" ) ;

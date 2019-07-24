@@ -53,11 +53,16 @@ struct result
 	QByteArray outPut ;
 } ;
 
-class instances
+class volumes
 {
 public:
+	static SiriKali::Windows::volumes& get()
+	{
+		static SiriKali::Windows::volumes s ;
+		return s ;
+	}
 	Task::process::result add( const SiriKali::Windows::opts& ) ;
-	Task::process::result remove( const QString& mountPoint ) ;
+	Task::process::result remove(const QString& unMountCommand,const QString& mountPoint ) ;
 	std::vector< QStringList > commands() const ;
 	QString volumeProperties( const QString& mountPath ) ;
 	void updateVolumeList( std::function< void() > ) ;
@@ -67,12 +72,6 @@ private:
 	std::vector< Process > m_instances ;
 	std::function< void() > m_updateVolumeList ;
 } ;
-
-static SiriKali::Windows::instances& _instances()
-{
-	static SiriKali::Windows::instances s ;
-	return s ;
-}
 
 bool backEndTimedOut( const QString& e )
 {
@@ -120,7 +119,7 @@ QStringList SiriKali::Windows::engineInstalledDirs()
 		 _readRegistry( m,"InstallLocation" ) } ;
 }
 
-std::vector< QStringList > SiriKali::Windows::instances::commands() const
+std::vector< QStringList > SiriKali::Windows::volumes::commands() const
 {
 	std::vector< QStringList > s ;
 
@@ -139,7 +138,7 @@ std::vector< QStringList > SiriKali::Windows::instances::commands() const
 	return s ;
 }
 
-void SiriKali::Windows::instances::updateVolumeList( std::function< void() > function )
+void SiriKali::Windows::volumes::updateVolumeList( std::function< void() > function )
 {
 	m_updateVolumeList = std::move( function ) ;
 }
@@ -276,7 +275,9 @@ Task::process::result SiriKali::Windows::create( const SiriKali::Windows::opts& 
 	}
 }
 
-static std::pair< Task::process::result,QString > _terminate_process( QProcess& e,const QString& p = QString() )
+static std::pair< Task::process::result,QString > _terminate_process( QProcess& e,
+								      const QString& mountPath = QString(),
+								      const QString& unMountCommand = QString() )
 {
 	auto cmd = e.program() ;
 
@@ -292,24 +293,15 @@ static std::pair< Task::process::result,QString > _terminate_process( QProcess& 
 		}
 	}() ;
 
-	if( cmd.endsWith( "securefs.exe" ) ){
+	if( unMountCommand == "sirikali.exe -T" ){
 
-		exe = "sirikali.exe terminateProcess-" + QString::number( e.processId() ) ;
+		exe = unMountCommand + QString::number( e.processId() ) ;
 
-	}else if( cmd.endsWith( "cryfs.exe" ) && !p.isEmpty() ){
+	}else if( unMountCommand.isEmpty() || mountPath.isEmpty() ){
 
-		auto a = SiriKali::Windows::engineInstalledDir( "cryfs" ) ;
-
-		auto b = a + "\\bin\\cryfs-unmount.exe" ;
-
-		if( a.isEmpty() || utility::pathNotExists( b ) ){
-
-			exe = "taskkill /F /PID " + QString::number( e.processId() ) ;
-		}else{
-			exe = utility::Task::makePath( b ) + " " + p ;
-		}
-	}else{
 		exe = "taskkill /F /PID " + QString::number( e.processId() ) ;
+	}else{
+		exe = utility::Task::makePath( unMountCommand ) + " " + mountPath ;
 	}
 
 	auto m = utility::unwrap( Task::process::run( exe,{},-1,"",env ) ) ;
@@ -322,7 +314,7 @@ static std::pair< Task::process::result,QString > _terminate_process( QProcess& 
 	return { std::move( m ),std::move( exe ) } ;
 }
 
-Task::process::result SiriKali::Windows::instances::add( const SiriKali::Windows::opts& opts )
+Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::opts& opts )
 {
 	auto exe = utility2::unique_qptr< QProcess >() ;
 
@@ -404,7 +396,8 @@ static QString _make_path( QString e,encode s )
 	}
 }
 
-Task::process::result SiriKali::Windows::instances::remove( const QString& mountPoint )
+Task::process::result SiriKali::Windows::volumes::remove( const QString& unMountCommand,
+							  const QString& mountPoint )
 {
 	for( auto it = m_instances.begin() ; it != m_instances.end() ; it++ ){
 
@@ -412,7 +405,8 @@ Task::process::result SiriKali::Windows::instances::remove( const QString& mount
 
 		if( s.args.mountPath == mountPoint ){
 
-			auto m = _terminate_process( *s.instance,s.args.mountPath ) ;
+			auto& p = s.instance ;
+			auto m = _terminate_process( *p,s.args.mountPath,unMountCommand ) ;
 
 			auto r = [ & ](){
 
@@ -437,7 +431,7 @@ Task::process::result SiriKali::Windows::instances::remove( const QString& mount
 	return Task::process::result() ;
 }
 
-QString SiriKali::Windows::instances::volumeProperties( const QString& mm )
+QString SiriKali::Windows::volumes::volumeProperties( const QString& mm )
 {
 	auto mountPath = "\"" + mm + "\"" ;
 
@@ -464,7 +458,7 @@ QString SiriKali::Windows::instances::volumeProperties( const QString& mm )
 	return QString() ;
 }
 
-std::vector< SiriKali::Windows::mountOptions > SiriKali::Windows::instances::mountOptions()
+std::vector< SiriKali::Windows::mountOptions > SiriKali::Windows::volumes::mountOptions()
 {
 	std::vector< SiriKali::Windows::mountOptions > mOpts ;
 
@@ -498,7 +492,7 @@ std::vector< SiriKali::Windows::mountOptions > SiriKali::Windows::instances::mou
 	return mOpts ;
 }
 
-bool SiriKali::Windows::instances::mountPointTaken( const QString& ee )
+bool SiriKali::Windows::volumes::mountPointTaken( const QString& ee )
 {
 	auto e = "\"" + QDir::toNativeSeparators( ee ) + "\"" ;
 
@@ -515,30 +509,30 @@ bool SiriKali::Windows::instances::mountPointTaken( const QString& ee )
 
 QString SiriKali::Windows::volumeProperties( const QString& mountPath )
 {
-	return _instances().volumeProperties( mountPath ) ;
+	return volumes::get().volumeProperties( mountPath ) ;
 }
 
 std::vector< SiriKali::Windows::mountOptions > SiriKali::Windows::getMountOptions()
 {
-	return _instances().mountOptions() ;
+	return volumes::get().mountOptions() ;
 }
 
-Task::process::result SiriKali::Windows::unmount( const QString& m )
+Task::process::result SiriKali::Windows::unmount( const QString& unMountCommand,const QString& m )
 {
-	return _instances().remove( m ) ;
+	return volumes::get().remove( unMountCommand,m ) ;
 }
 
 Task::process::result SiriKali::Windows::mount( const SiriKali::Windows::opts& opts )
 {
-	return _instances().add( opts ) ;
+	return volumes::get().add( opts ) ;
 }
 
 void SiriKali::Windows::updateVolumeList( std::function< void() > function )
 {
-	_instances().updateVolumeList( std::move( function ) ) ;
+	volumes::get().updateVolumeList( std::move( function ) ) ;
 }
 
 bool SiriKali::Windows::mountPointTaken( const QString& e )
 {
-	return _instances().mountPointTaken( e ) ;
+	return volumes::get().mountPointTaken( e ) ;
 }

@@ -19,6 +19,7 @@
 
 #include "cryfs.h"
 #include "cryfscreateoptions.h"
+#include "../win.h"
 
 static engines::engine::BaseOptions _setOptions()
 {
@@ -31,6 +32,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = true ;
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = true ;
+	s.windowsUnMountCommand = SiriKali::Windows::engineInstalledDir( "cryfs" ) + "\\bin\\cryfs-unmount.exe" ;
 	s.idleString            = "--unmount-idle" ;
 	s.executableName        = "cryfs" ;
 	s.incorrectPasswordText = "Could not load config file. Did you enter the correct password?" ;

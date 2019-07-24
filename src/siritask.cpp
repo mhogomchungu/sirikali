@@ -179,13 +179,11 @@ static bool _unmount_rest_( const QString& cmd,const QString& mountPoint )
 	return s && s.value().success() ;
 }
 
-static bool _unmount_rest( const QString& mountPoint,const QString& fs,int maxCount )
+static bool _unmount_rest( const QString& mountPoint,const QString& unMountCommand,int maxCount )
 {
 	auto cmd = [ & ](){
 
-		auto m = engines::instance().getByName( fs ).unMountCommand() ;
-
-		if( m.isEmpty() ){
+		if( unMountCommand.isEmpty() ){
 
 			if( utility::platformIsOSX() ){
 
@@ -194,7 +192,7 @@ static bool _unmount_rest( const QString& mountPoint,const QString& fs,int maxCo
 				return "fusermount -u " + mountPoint ;
 			}
 		}else{
-			return m ;
+			return unMountCommand + " " + mountPoint ;
 		}
 	}() ;
 
@@ -263,11 +261,15 @@ static bool _encrypted_unmount( const QString& cipherFolder,
 {
 	if( utility::platformIsWindows() ){
 
+		auto m = engines::instance().getByName( fileSystem ).windowsUnMountCommand() ;
+
 		/*
 		 * We should first make sure we are on a GUI thread before continuing
 		 */
-		return SiriKali::Windows::unmount( _makePath( mountPoint ) ).success() ;
+		return SiriKali::Windows::unmount( m,_makePath( mountPoint ) ).success() ;
 	}else{
+		auto m = engines::instance().getByName( fileSystem ).unMountCommand() ;
+
 		auto& e = Task::run( [ = ](){
 
 			if( _ecryptfs( fileSystem ) ){
@@ -277,7 +279,7 @@ static bool _encrypted_unmount( const QString& cipherFolder,
 
 				return _unmount_ecryptfs( a,b,numberOfAttempts ) ;
 			}else{
-				return _unmount_rest( _makePath( mountPoint ),fileSystem,numberOfAttempts ) ;
+				return _unmount_rest( _makePath( mountPoint ),m,numberOfAttempts ) ;
 			}
 
 		} ) ;

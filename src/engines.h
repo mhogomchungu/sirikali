@@ -171,6 +171,7 @@ public:
 			QString incorrectPassWordCode ;
 			QString configFileArgument ;
 			QString unMountCommand ;
+			QString windowsUnMountCommand ;
 			QStringList successfulMountedList ;
 			QStringList failedToMountList ;
 			QStringList names ;
@@ -224,6 +225,7 @@ public:
 		const QString& incorrectPasswordText() const ;
 		const QString& incorrectPasswordCode() const ;
 		const QString& unMountCommand() const ;
+		const QString& windowsUnMountCommand() const ;
 
 		engine::engine::error errorCode( const QString& ) const ;
 

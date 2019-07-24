@@ -311,6 +311,17 @@ const QString& engines::engine::unMountCommand() const
 	}
 }
 
+const QString& engines::engine::windowsUnMountCommand() const
+{
+	if( m_Options.windowsUnMountCommand.isEmpty() ){
+
+		static QString s ;
+		return s ;
+	}else{
+		return m_Options.windowsUnMountCommand ;
+	}
+}
+
 static bool _contains( const QString& e,const QStringList& m )
 {
 	for( const auto& it : m ){
