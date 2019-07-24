@@ -208,7 +208,7 @@ clé = hmac_sha256(mot de passe,contenu du fichier de clé)</translation>
     <message>
         <location filename="../src/engines.cpp" line="559"/>
         <source>Backend Requires A Password.</source>
-        <translation type="unfinished"></translation>
+        <translation>Le processus nécessite un mot de passe.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="563"/>
@@ -266,7 +266,8 @@ Mot de passe entré incorrect.</translation>
         <location filename="../src/engines.cpp" line="595"/>
         <source>Failed To Unlock A Custom Volume.
 Wrong Password Entered.</source>
-        <translation type="unfinished"></translation>
+        <translation>Echec de l&apos;ouverture du volume personnalisé.
+Mot de passe entré incorrect.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="599"/>
@@ -362,7 +363,8 @@ Volume non supporté rencontré.</translation>
         <location filename="../src/engines.cpp" line="651"/>
         <source>Failed To Complete The Request.
 The Executable For This Backend Could Not Be Found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible de finir la requête.
+L&apos;exécutable de ce processus est introuvable.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="659"/>
@@ -634,7 +636,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configoptions.ui" line="277"/>
         <source>Allow External Tools To Get Passwords From Wallets</source>
-        <translation type="unfinished"></translation>
+        <translation>Autoriser des outils externes pour obtenir les mots de passe des trousseaux</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="286"/>
@@ -680,7 +682,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configoptions.ui" line="395"/>
         <source>External Commands</source>
-        <translation type="unfinished"></translation>
+        <translation>Commandes externes</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="407"/>
@@ -695,12 +697,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configoptions.ui" line="591"/>
         <source>Set Command To Run Periodically</source>
-        <translation type="unfinished"></translation>
+        <translation>Paramétrer la commande pour s&apos;exécuter périodiquement</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="643"/>
         <source>Interval In Minutes Periodic Command Will Run</source>
-        <translation type="unfinished"></translation>
+        <translation>Intervalle périodique en minutes entre laquelle la commande s&apos;exécutera</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="688"/>
@@ -710,7 +712,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/configoptions.ui" line="752"/>
         <location filename="../src/configoptions.ui" line="768"/>
         <source>Set To Default</source>
-        <translation type="unfinished"></translation>
+        <translation>Paramétrer par défaut</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="786"/>
@@ -736,18 +738,18 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configoptions.cpp" line="261"/>
         <source>Set Post Mount Command</source>
-        <translation type="unfinished"></translation>
+        <translation>Paramétrer la commande de prémontage</translation>
     </message>
     <message>
         <location filename="../src/configoptions.cpp" line="271"/>
         <location filename="../src/configoptions.cpp" line="281"/>
         <source>Set Pre UnMount Command</source>
-        <translation type="unfinished"></translation>
+        <translation>Paramétrer la commande de prédémontage</translation>
     </message>
     <message>
         <location filename="../src/configoptions.cpp" line="291"/>
         <source>Set Command To Open Mount Points</source>
-        <translation type="unfinished"></translation>
+        <translation>Paramétrer la commande pour ouvrir les points de montage</translation>
     </message>
 </context>
 <context>
@@ -966,25 +968,25 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/favorites2.ui" line="306"/>
         <location filename="../src/favorites2.ui" line="830"/>
         <source>PreMount Command</source>
-        <translation type="unfinished"></translation>
+        <translation>Commande de prémontage</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="325"/>
         <location filename="../src/favorites2.ui" line="849"/>
         <source>PostMount Command</source>
-        <translation type="unfinished"></translation>
+        <translation>Commande de postmontage</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="344"/>
         <location filename="../src/favorites2.ui" line="868"/>
         <source>PreUnMount Command</source>
-        <translation type="unfinished"></translation>
+        <translation>Commande de prédémontage</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="363"/>
         <location filename="../src/favorites2.ui" line="887"/>
         <source>PostUnMount Command</source>
-        <translation type="unfinished"></translation>
+        <translation>Commande de postdémontage</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="383"/>
@@ -1061,12 +1063,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.ui" line="500"/>
         <source>Volume Type (Required For Volumes That Do Not Use A Configuration File Like sshfs)</source>
-        <translation type="unfinished"></translation>
+        <translation>Type de volume (Nécessaire pour les volumes n&apos;utilisant pas un fichier de configuration comme sshfs)</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="818"/>
         <source>Custom Commands</source>
-        <translation type="unfinished"></translation>
+        <translation>Commandes personnalisées</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="1003"/>
@@ -1076,7 +1078,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.cpp" line="86"/>
         <source>Select A Command Executable</source>
-        <translation type="unfinished"></translation>
+        <translation>Sélectionner une commande à exécuter</translation>
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="138"/>
@@ -1134,7 +1136,8 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/favorites2.cpp" line="745"/>
         <source>Remote Ssh Server Address
 (Example: woof@example.com:/remote/path)</source>
-        <translation type="unfinished"></translation>
+        <translation>Adresse distante du serveur SSH
+(Exemple: woof@example.com:/remote/path)</translation>
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="746"/>
@@ -1403,7 +1406,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/keydialog.cpp" line="264"/>
         <location filename="../src/keydialog.cpp" line="1524"/>
         <source>YubiKey Challenge/Response</source>
-        <translation type="unfinished"></translation>
+        <translation>YubiKey Challenge/Réponse</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="307"/>
@@ -1465,7 +1468,9 @@ p, li { white-space: pre-wrap; }
         <source>Volume Not Found in &quot;%1&quot;.
 
 Set The Volume Key To Add It To The Wallet Before Mounting.</source>
-        <translation type="unfinished"></translation>
+        <translation>Volume introuvable dans &quot;%1&quot;.
+
+Mettre la clé de volume à ajouter dans le trousseau avant le montage.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="897"/>
@@ -1476,22 +1481,22 @@ Set The Volume Key To Add It To The Wallet Before Mounting.</source>
     <message>
         <location filename="../src/keydialog.cpp" line="1080"/>
         <source>Volume Key Can Not Be Empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>La clé de volume ne peut pas être vide.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1136"/>
         <source>Failed To Add A Volume To The A Wallet.</source>
-        <translation type="unfinished"></translation>
+        <translation>Echec de l&apos;ajout du volume au trousseau.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1139"/>
         <source>Volume Already Exists In The Wallet.</source>
-        <translation type="unfinished"></translation>
+        <translation>Volume déjà existant dans le trousseau.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1175"/>
         <source>Failed To Open Wallet.</source>
-        <translation type="unfinished"></translation>
+        <translation>Echec de l&apos;ouverture du trousseau.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1237"/>
@@ -1506,7 +1511,7 @@ Set The Volume Key To Add It To The Wallet Before Mounting.</source>
     <message>
         <location filename="../src/keydialog.cpp" line="1430"/>
         <source>Failed To Locate Or Run Yubikey&apos;s &quot;ykchalresp&quot; Program.</source>
-        <translation type="unfinished"></translation>
+        <translation>Echec de la localisation ou de l&apos;exécution de Yubikey&apos;s &quot;ykchalresp&quot; Program.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1569"/>
@@ -1537,7 +1542,8 @@ Set The Volume Key To Add It To The Wallet Before Mounting.</source>
         <location filename="../src/keydialog.cpp" line="1614"/>
         <source>Create A Volume With Specified Key And Then Add The Key In 
 &quot;%1&quot;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Crée un volume avec la clé spécifiée et ajouter la clé dans 
+&quot;%1&quot;.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1660"/>
@@ -1915,12 +1921,12 @@ Le &quot;format allégé&quot; est devenu le mode par défaut des systèmes bas�
     <message>
         <location filename="../src/sirikali.cpp" line="232"/>
         <source>Mount Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Répertoire monté</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="233"/>
         <source>Mount File</source>
-        <translation type="unfinished"></translation>
+        <translation>Fichier monté</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="437"/>
@@ -1997,17 +2003,17 @@ Merci de reporter ce bug important.</translation>
     <message>
         <location filename="../src/sirikali.cpp" line="1665"/>
         <source>Select A File To Be Mounted</source>
-        <translation type="unfinished"></translation>
+        <translation>Sélectiionner un fichier à monter</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="1861"/>
         <source>Failed To Unmount 1 Volume.</source>
-        <translation type="unfinished"></translation>
+        <translation>Echec de démontage d&apos;un volume.</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="1863"/>
         <source>Failed To Unmount %1 Volumes.</source>
-        <translation type="unfinished"></translation>
+        <translation>Echec de démontage de %1 volumes.</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="1364"/>
