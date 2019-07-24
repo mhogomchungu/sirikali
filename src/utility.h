@@ -315,8 +315,8 @@ namespace utility
 	void setMainQWidget( QWidget * ) ;
 	QWidget * mainQWidget() ;
 
-	template< typename Future >
-	static inline auto unwrap( Future& x )
+	template< typename T >
+	static inline auto unwrap( Task::future< T >& x )
 	{
 		if( utility::runningOnGUIThread() ){
 

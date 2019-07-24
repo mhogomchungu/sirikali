@@ -139,6 +139,7 @@ void createBackendWIndow::save()
 	config[ "idleString" ]                  = "" ;
 	config[ "reverseString"]                = "" ;
 	config[ "unMountCommand"]               = "" ;
+	config[ "windowsUnMountCommand"]        = "" ;
 	config[ "executableName" ]              = executable ;
 	config[ "configFileNames" ]             = _addList( configFileNames ) ;
 	config[ "fuseNames" ]                   = _addList( fusenames ) ;

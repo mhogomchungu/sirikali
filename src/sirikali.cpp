@@ -490,9 +490,9 @@ void sirikali::autoUpdateCheck()
 	m_checkUpdates.run( true ) ;
 }
 
-static void _connect_to_ssh_server( QWidget * parent,const favorites::entry& entry,secrets& secret )
+static void _connect_to_ssh_server( QWidget * parent,const favorites::entry& entry )
 {
-	auto s = siritask::encryptedFolderMount( entry,secret ) ;
+	auto s = siritask::encryptedFolderMount( entry ) ;
 
 	if( s == engines::engine::status::sshfsNotFound ){
 
@@ -549,7 +549,7 @@ void sirikali::favoriteClicked( QAction * ac )
 
 						this->disableAll() ;
 
-						_connect_to_ssh_server( this,it.first,m_secrets ) ;
+						_connect_to_ssh_server( this,it.first ) ;
 
 						this->enableAll() ;
 					}else{
@@ -788,7 +788,7 @@ void sirikali::unlockVolume( const QStringList& l )
 
 			engines::engine::options s( volume,m,key,idleTime,cPath,QString(),mode,reverse,mOpt,QString() ) ;
 
-			auto e = siritask::encryptedFolderMount( s,m_secrets ) ;
+			auto e = siritask::encryptedFolderMount( s ) ;
 
 			if( e == engines::engine::status::success ){
 
@@ -977,7 +977,7 @@ favorites::volumeList sirikali::autoUnlockVolumes( favorites::volumeList l,bool 
 
 				q.emplace_back( e.first,key ) ;
 			}else{
-				auto s = siritask::encryptedFolderMount( { e.first,key },m_secrets ) ;
+				auto s = siritask::encryptedFolderMount( { e.first,key } ) ;
 
 				if( s == engines::engine::status::success && autoOpenFolderOnMount ){
 

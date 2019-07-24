@@ -72,8 +72,8 @@ namespace siritask
 				     const QString& fileSystem,
 				     int numberOfAttempts = 5 ) ;
 
-	engines::engine::cmdStatus encryptedFolderMount( const engines::engine::options&,const secrets&,bool = false ) ;
-	engines::engine::cmdStatus encryptedFolderCreate( const engines::engine::options&,const secrets& ) ;
+	engines::engine::cmdStatus encryptedFolderMount( const engines::engine::options&,bool = false ) ;
+	engines::engine::cmdStatus encryptedFolderCreate( const engines::engine::options& ) ;
 }
 
 #endif // SIRITASK_H

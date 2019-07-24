@@ -31,6 +31,20 @@ namespace sirikali
 	class json
 	{
 	public:
+		class exception
+		{
+		public:
+			exception( const char * e ) : m_reason( QString( "Key \"%1\" not found" ).arg( e ) )
+			{
+			}
+			const QString& what() const noexcept
+			{
+				return m_reason ;
+			}
+		private:
+			QString m_reason ;
+		} ;
+
 		enum class type{ PATH,CONTENTS } ;
 
 		json()
@@ -46,8 +60,12 @@ namespace sirikali
 		}
 		template< typename T >
 		T get( const char * key ) const
-		{
-			return m_json[ key ].get< T >() ;
+		{			
+			try{
+				return m_json[ key ].get< T >() ;
+			}catch( ... ){
+				throw sirikali::json::exception( key ) ;
+			}
 		}
 		QStringList getStringList( const char * key ) const
 		{

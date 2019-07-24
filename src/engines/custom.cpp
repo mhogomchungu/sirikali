@@ -59,9 +59,9 @@ static utility::result< custom::opts > _getOptions( const QByteArray& e,const QS
 
 		return s ;
 
-	}catch( ... ){
+	}catch( const sirikali::json::exception& e ){
 
-		utility::debug::cout() << "Failed to parse config file: " + s ;
+		utility::debug::cout() << "Failed to parse config file: " + s << e.what() ;
 
 		return {} ;
 	}
