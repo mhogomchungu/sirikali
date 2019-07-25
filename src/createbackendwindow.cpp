@@ -137,9 +137,11 @@ void createBackendWIndow::save()
 	config[ "createControlStructure" ]      = "%{createOptions} %{cipherFolder} %{mountPoint}" ;
 	config[ "mountControlStructure" ]       = "%{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
 	config[ "idleString" ]                  = "" ;
-	config[ "reverseString"]                = "" ;
-	config[ "unMountCommand"]               = "" ;
-	config[ "windowsUnMountCommand"]        = "" ;
+	config[ "reverseString" ]               = "" ;
+	config[ "unMountCommand" ]              = "" ;
+	config[ "windowsUnMountCommand" ]       = "" ;
+	config[ "windowsInstallPathRegistryKey" ]   = "" ;
+	config[ "windowsInstallPathRegistryValue" ] = "" ;
 	config[ "executableName" ]              = executable ;
 	config[ "configFileNames" ]             = _addList( configFileNames ) ;
 	config[ "fuseNames" ]                   = _addList( fusenames ) ;

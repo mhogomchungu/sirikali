@@ -322,6 +322,28 @@ const QString& engines::engine::windowsUnMountCommand() const
 	}
 }
 
+const QString& engines::engine::windowsInstallPathRegistryKey() const
+{
+	if( m_Options.windowsInstallPathRegistryKey.isEmpty() ){
+
+		static QString s ;
+		return s ;
+	}else{
+		return m_Options.windowsInstallPathRegistryKey ;
+	}
+}
+
+const QString& engines::engine::windowsInstallPathRegistryValue() const
+{
+	if( m_Options.windowsInstallPathRegistryValue.isEmpty() ){
+
+		static QString s ;
+		return s ;
+	}else{
+		return m_Options.windowsInstallPathRegistryValue ;
+	}
+}
+
 static bool _contains( const QString& e,const QStringList& m )
 {
 	for( const auto& it : m ){

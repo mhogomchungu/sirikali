@@ -31,6 +31,8 @@ static engines::engine::BaseOptions _setOptions()
 	s.hasGUICreateOptions   = false ;
 	s.setsCipherPath        = true ;
 	s.executableName        = "sshfs" ;
+	s.windowsInstallPathRegistryKey = "SOFTWARE\\SSHFS-Win" ;
+	s.windowsInstallPathRegistryValue = "InstallDir" ;
 	s.failedToMountList     = QStringList{ "ssh:","read:","Cannot create WinFsp-FUSE file system" } ;
 	s.successfulMountedList = QStringList{ "has been started" } ;
 	s.fuseNames             = QStringList{ "fuse.sshfs" } ;

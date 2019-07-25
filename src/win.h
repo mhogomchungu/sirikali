@@ -54,6 +54,8 @@ QString volumeProperties( const QString& mountPath ) ;
 int terminateProcess( unsigned long pid ) ;
 
 QString engineInstalledDir( const QString& ) ;
+QString engineInstalledDir( const QString& key,const QString& value ) ;
+
 QStringList engineInstalledDirs() ;
 
 bool mountPointTaken( const QString& ) ;

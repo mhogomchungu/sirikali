@@ -46,8 +46,10 @@ static utility::result< custom::opts > _getOptions( const QByteArray& e,const QS
 		s.baseOpts.incorrectPasswordText       = json.getString( "wrongPasswordText" ) ;
 		s.baseOpts.incorrectPassWordCode       = json.getString( "wrongPasswordErrorCode" ) ;
 		s.baseOpts.unMountCommand              = json.getString( "unMountCommand" ) ;
-		s.baseOpts.windowsUnMountCommand       = json.getString( "windowsUnMountCommand" ) ;
 		s.baseOpts.configFileArgument          = json.getString( "configFileArgument" ) ;
+		s.baseOpts.windowsUnMountCommand       = json.getString( "windowsUnMountCommand" ) ;
+		s.baseOpts.windowsInstallPathRegistryKey   = json.getString( "windowsInstallPathRegistryKey" ) ;
+		s.baseOpts.windowsInstallPathRegistryValue = json.getString( "windowsInstallPathRegistryValue" ) ;
 		s.baseOpts.failedToMountList           = json.getStringList( "failedToMountTextList" ) ;
 		s.baseOpts.successfulMountedList       = json.getStringList( "successfullyMountedList" ) ;
 		s.baseOpts.configFileNames             = json.getStringList( "configFileNames" ) ;

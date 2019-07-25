@@ -172,6 +172,8 @@ public:
 			QString configFileArgument ;
 			QString unMountCommand ;
 			QString windowsUnMountCommand ;
+			QString windowsInstallPathRegistryKey ;
+			QString windowsInstallPathRegistryValue ;
 			QStringList successfulMountedList ;
 			QStringList failedToMountList ;
 			QStringList names ;
@@ -226,6 +228,8 @@ public:
 		const QString& incorrectPasswordCode() const ;
 		const QString& unMountCommand() const ;
 		const QString& windowsUnMountCommand() const ;
+		const QString& windowsInstallPathRegistryKey() const ;
+		const QString& windowsInstallPathRegistryValue() const ;
 
 		engine::engine::error errorCode( const QString& ) const ;
 

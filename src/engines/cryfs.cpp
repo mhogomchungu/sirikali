@@ -25,6 +25,9 @@ static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
 
+	auto a = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{26116061-4F99-4C44-A178-2153FA396308}" ;
+	auto b = "InstallLocation" ;
+
 	s.supportsMountPathsOnWindows = true ;
 	s.customBackend         = false ;
 	s.requiresAPassword     = true ;
@@ -32,11 +35,13 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = true ;
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = true ;
-	s.windowsUnMountCommand = SiriKali::Windows::engineInstalledDir( "cryfs" ) + "\\bin\\cryfs-unmount.exe" ;
 	s.idleString            = "--unmount-idle" ;
 	s.executableName        = "cryfs" ;
 	s.incorrectPasswordText = "Could not load config file. Did you enter the correct password?" ;
 	s.configFileArgument    = "--config" ;
+	s.windowsInstallPathRegistryKey   = a ;
+	s.windowsInstallPathRegistryValue = b ;
+	s.windowsUnMountCommand = SiriKali::Windows::engineInstalledDir( a,b ) + "\\bin\\cryfs-unmount.exe" ;
 	s.successfulMountedList = QStringList{ "Mounting filesystem." } ;
 	s.configFileNames       = QStringList{ "cryfs.config",".cryfs.config" } ;
 	s.fuseNames             = QStringList{ "fuse.cryfs" } ;
