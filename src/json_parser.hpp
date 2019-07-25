@@ -60,10 +60,13 @@ namespace sirikali
 		}
 		template< typename T >
 		T get( const char * key ) const
-		{			
-			try{
-				return m_json[ key ].get< T >() ;
-			}catch( ... ){
+		{
+			auto a = m_json.find( key ) ;
+
+			if( a != m_json.end() ){
+
+				return a->get< T >() ;
+			}else{
 				throw sirikali::json::exception( key ) ;
 			}
 		}
