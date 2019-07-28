@@ -58,12 +58,6 @@ engines::engine::status unknown::errorCode( const QString& e,int s ) const
 	return engines::engine::status::backendFail ;
 }
 
-QString unknown::setPassword( const QString& e ) const
-{
-	Q_UNUSED( e ) ;
-	return QString() ;
-}
-
 QString unknown::installedVersionString() const
 {
 	return {} ;

@@ -32,8 +32,9 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = false ;
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = true ;
+	s.passwordFormat        = "%{password}" ;
 	s.volumePropertiesCommands = QStringList{ "gocryptfs -info %{cipherFolder}",
-						   "gocryptfs -info %{plainFolder}" } ;
+						  "gocryptfs -info %{plainFolder}" } ;
 	s.reverseString         = "-reverse" ;
 	s.idleString            = "-idle" ;
 	s.executableName        = "gocryptfs" ;
@@ -116,11 +117,6 @@ engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const
 	}else{
 		return engines::engine::status::backendFail ;
 	}
-}
-
-QString gocryptfs::setPassword( const QString& e ) const
-{
-	return e ;
 }
 
 QString gocryptfs::installedVersionString() const

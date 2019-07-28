@@ -26,7 +26,6 @@ struct encfs : public engines::engine
 
 	engines::engine::args command( const engines::engine::cmdArgsList& args ) const override ;
 
-	QString setPassword( const QString& ) const override ;
 	QString installedVersionString() const override ;
 
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;

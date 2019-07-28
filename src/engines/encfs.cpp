@@ -32,6 +32,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = true ;
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = false ;
+	s.passwordFormat        = "%{password}\n%{password}" ;
 	s.reverseString         = "--reverse" ;
 	s.idleString            = "-i" ;
 	s.executableName        = "encfs" ;
@@ -124,11 +125,6 @@ engines::engine::status encfs::errorCode( const QString& e,int s ) const
 	}else{
 		return engines::engine::status::backendFail ;
 	}
-}
-
-QString encfs::setPassword( const QString& e ) const
-{
-	return e + "\n" + e ;
 }
 
 QString encfs::installedVersionString() const

@@ -140,6 +140,7 @@ void createBackendWIndow::save()
 	config[ "reverseString" ]               = "" ;
 	config[ "unMountCommand" ]              = "" ;
 	config[ "windowsUnMountCommand" ]       = "" ;
+	config[ "passwordFormat" ]              = "%{password}" ;
 	config[ "windowsInstallPathRegistryKey" ]   = "" ;
 	config[ "windowsInstallPathRegistryValue" ] = "" ;
 	config[ "executableName" ]              = executable ;

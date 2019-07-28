@@ -164,6 +164,7 @@ public:
 			bool supportsMountPathsOnWindows ;
 			bool requiresAPassword ;
 			bool customBackend ;
+			QString passwordFormat ;
 			QString reverseString ;
 			QString idleString ;
 			QString executableName ;
@@ -236,11 +237,11 @@ public:
 		engine::engine::error errorCode( const QString& ) const ;
 
 		QString setConfigFilePath( const QString& ) const ;
+		QString setPassword( const QString& ) const ;
 
 		virtual ~engine() ;
 
 		virtual QString installedVersionString() const = 0 ;
-		virtual QString setPassword( const QString& ) const = 0 ;
 		virtual args command( const engines::engine::cmdArgsList& args ) const = 0 ;
 		virtual engines::engine::status errorCode( const QString& e,int s ) const = 0 ;
 		using function = std::function< void( const Options& ) > ;

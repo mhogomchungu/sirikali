@@ -44,6 +44,7 @@ static utility::result< custom::opts > _getOptions( const QByteArray& e,const QS
 		s.baseOpts.supportsMountPathsOnWindows = json.getBool( "supportsMountPointPaths" ) ;
 		s.baseOpts.executableName              = json.getString( "executableName" ) ;
 		s.baseOpts.incorrectPasswordText       = json.getString( "wrongPasswordText" ) ;
+		s.baseOpts.passwordFormat              = json.getString( "passwordFormat" ) ;
 		s.baseOpts.incorrectPassWordCode       = json.getString( "wrongPasswordErrorCode" ) ;
 		s.baseOpts.unMountCommand              = json.getString( "unMountCommand" ) ;
 		s.baseOpts.configFileArgument          = json.getString( "configFileArgument" ) ;
@@ -211,11 +212,6 @@ engines::engine::status custom::errorCode( const QString& e,int s ) const
 			return engines::engine::status::backendFail ;
 		}
 	}
-}
-
-QString custom::setPassword( const QString& e ) const
-{
-	return e ;
 }
 
 QString custom::installedVersionString() const

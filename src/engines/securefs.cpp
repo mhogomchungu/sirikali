@@ -32,6 +32,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = false ;
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = false ;
+	s.passwordFormat        = "%{password}\n%{password}" ;
 	s.executableName        = "securefs" ;
 	s.incorrectPasswordText = "Invalid password" ;
 	s.configFileArgument    = "--config" ;
@@ -104,11 +105,6 @@ engines::engine::status securefs::errorCode( const QString& e,int s ) const
 	}else{
 		return engines::engine::status::backendFail ;
 	}
-}
-
-QString securefs::setPassword( const QString& e ) const
-{
-	return e + "\n" + e ;
 }
 
 QString securefs::installedVersionString() const

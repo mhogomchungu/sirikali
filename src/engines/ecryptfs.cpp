@@ -31,6 +31,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = true ;
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = true ;
+	s.passwordFormat        = "%{password}" ;
 	s.executableName        = "ecryptfs-simple" ;
 	s.incorrectPasswordText = "error: mount failed" ;
 	s.configFileArgument    = "--config" ;
@@ -105,11 +106,6 @@ engines::engine::status ecryptfs::errorCode( const QString& e,int s ) const
 	}else{
 		return engines::engine::status::backendFail ;
 	}
-}
-
-QString ecryptfs::setPassword( const QString& e ) const
-{
-	return e ;
 }
 
 QString ecryptfs::installedVersionString() const

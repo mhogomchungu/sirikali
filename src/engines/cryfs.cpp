@@ -35,6 +35,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = true ;
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = true ;
+	s.passwordFormat        = "%{password}" ;
 	s.idleString            = "--unmount-idle" ;
 	s.executableName        = "cryfs" ;
 	s.incorrectPasswordText = "Could not load config file. Did you enter the correct password?" ;
@@ -145,11 +146,6 @@ engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 	}
 
 	return engines::engine::status::backendFail ;
-}
-
-QString cryfs::setPassword( const QString& e ) const
-{
-	return e ;
 }
 
 QString cryfs::installedVersionString() const
