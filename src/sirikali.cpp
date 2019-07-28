@@ -1047,6 +1047,9 @@ void sirikali::volumeProperties()
 
 		if( !b.isEmpty() ){
 
+			cipherPath = utility::Task::makePath( cipherPath ) ;
+			mountPath  = utility::Task::makePath( mountPath ) ;
+
 			c.replace( "%{cipherFolder}",cipherPath ) ;
 			c.replace( "%{plainFolder}",mountPath ) ;
 
