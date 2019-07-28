@@ -71,12 +71,8 @@ private slots:
 	void setUpApp( const QString& ) ;
 	void start( const QStringList& ) ;
 	void autoUpdateCheck( void ) ;
-	void gocryptfsProperties( void ) ;
-	void sshfsProperties( void ) ;
-	void cryfsProperties( void ) ;
-	void encfsProperties( void ) ;
-	void ecryptfsProperties( void ) ;
-	void securefsProperties( void ) ;
+	void volumeProperties() ;
+	void genericVolumeProperties( void ) ;
 	void unlockVolume( const QStringList& ) ;
 	void closeApplication( int = 0,const QString& = QString() ) ;
 	void unlockVolume( bool ) ;

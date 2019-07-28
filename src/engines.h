@@ -174,6 +174,7 @@ public:
 			QString windowsUnMountCommand ;
 			QString windowsInstallPathRegistryKey ;
 			QString windowsInstallPathRegistryValue ;
+			QStringList volumePropertiesCommands ;
 			QStringList successfulMountedList ;
 			QStringList failedToMountList ;
 			QStringList names ;
@@ -218,6 +219,7 @@ public:
 		const QStringList& fuseNames() const ;
 		const QStringList& configFileNames() const ;
 		const QStringList& fileExtensions() const ;
+		const QStringList& volumePropertiesCommands() const ;
 
 		const QString& reverseString() const ;
 		const QString& idleString() const ;

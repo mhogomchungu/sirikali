@@ -300,12 +300,17 @@ const QString& engines::engine::incorrectPasswordCode() const
 	return m_Options.incorrectPassWordCode ;
 }
 
+static const QString& _defaultEmptyString()
+{
+	static QString s ;
+	return s ;
+}
+
 const QString& engines::engine::unMountCommand() const
 {
 	if( m_Options.unMountCommand.isEmpty() ){
 
-		static QString s ;
-		return s ;
+		return _defaultEmptyString() ;
 	}else{
 		return m_Options.unMountCommand ;
 	}
@@ -315,8 +320,7 @@ const QString& engines::engine::windowsUnMountCommand() const
 {
 	if( m_Options.windowsUnMountCommand.isEmpty() ){
 
-		static QString s ;
-		return s ;
+		return _defaultEmptyString() ;
 	}else{
 		return m_Options.windowsUnMountCommand ;
 	}
@@ -326,8 +330,7 @@ const QString& engines::engine::windowsInstallPathRegistryKey() const
 {
 	if( m_Options.windowsInstallPathRegistryKey.isEmpty() ){
 
-		static QString s ;
-		return s ;
+		return _defaultEmptyString() ;
 	}else{
 		return m_Options.windowsInstallPathRegistryKey ;
 	}
@@ -337,10 +340,20 @@ const QString& engines::engine::windowsInstallPathRegistryValue() const
 {
 	if( m_Options.windowsInstallPathRegistryValue.isEmpty() ){
 
-		static QString s ;
-		return s ;
+		return _defaultEmptyString() ;
 	}else{
 		return m_Options.windowsInstallPathRegistryValue ;
+	}
+}
+
+const QStringList& engines::engine::volumePropertiesCommands() const
+{
+	if( m_Options.volumePropertiesCommands.isEmpty() ){
+
+		static QStringList s ;
+		return s ;
+	}else{
+		return m_Options.volumePropertiesCommands ;
 	}
 }
 

@@ -32,6 +32,8 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = false ;
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = true ;
+	s.volumePropertiesCommands = QStringList{ "gocryptfs -info %{cipherFolder}",
+						   "gocryptfs -info %{plainFolder}" } ;
 	s.reverseString         = "-reverse" ;
 	s.idleString            = "-idle" ;
 	s.executableName        = "gocryptfs" ;
@@ -42,7 +44,7 @@ static engines::engine::BaseOptions _setOptions()
 					       ".gocryptfs.reverse.conf",
 					       "gocryptfs.reverse.conf" } ;
 	s.fuseNames             = QStringList{ "fuse.gocryptfs","fuse.gocryptfs-reverse" } ;
-	s.names                 = QStringList{ "gocryptfs","gocryptfs.reverse" } ;
+	s.names                 = QStringList{ "gocryptfs","gocryptfs.reverse","gocryptfs-reverse" } ;
 	s.notFoundCode          = engines::engine::status::gocryptfsNotFound ;
 
 	return s ;

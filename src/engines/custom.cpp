@@ -56,6 +56,7 @@ static utility::result< custom::opts > _getOptions( const QByteArray& e,const QS
 		s.baseOpts.names                       = json.getStringList( "names" ) ;
 		s.baseOpts.fuseNames                   = json.getStringList( "fuseNames" ) ;
 		s.baseOpts.fileExtensions              = json.getStringList( "fileExtensions" ) ;
+		s.baseOpts.volumePropertiesCommands    = json.getStringList( "volumePropertiesCommands" ) ;
 		s.baseOpts.hasConfigFile               = s.baseOpts.configFileNames.size() > 0 ;
 		s.baseOpts.notFoundCode                = engines::engine::status::customCommandNotFound ;
 

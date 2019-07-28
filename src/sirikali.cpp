@@ -1021,9 +1021,70 @@ favorites::volumeList sirikali::autoUnlockVolumes( favorites::volumeList l,bool 
 	}
 }
 
-void sirikali::ecryptfsProperties()
+void sirikali::volumeProperties()
+{
+	auto table = m_ui->tableWidget ;
+
+	auto row = table->currentRow() ;
+
+	QString cipherPath ;
+	QString mountPath ;
+	QString volumeType ;
+
+	utility2::stringListToStrings( tablewidget::rowEntries( table,row ),
+				       cipherPath,
+				       mountPath,
+				       volumeType ) ;
+
+	const auto& engine = engines::instance().getByName( volumeType ) ;
+
+	for( const auto& it : engine.volumePropertiesCommands() ){
+
+		auto a = utility::split( it,' ' ) ;
+		auto b = utility::executableFullPath( a.first() ) ;
+		a.removeFirst() ;
+		auto c = a.join( " " ) ;
+
+		if( !b.isEmpty() ){
+
+			c.replace( "%{cipherFolder}",cipherPath ) ;
+			c.replace( "%{plainFolder}",mountPath ) ;
+
+			auto d = utility::Task::makePath( b ) ;
+
+			auto e = utility::Task::run( d + " " + c ).await() ;
+
+			if( e.success() ){
+
+				return DialogMsg( this ).ShowUIInfo( tr( "INFORMATION" ),true,e.stdOut() ) ;
+			}
+		}
+	}
+
+	this->genericVolumeProperties() ;
+}
+
+void sirikali::genericVolumeProperties()
 {
 	this->disableAll() ;
+
+	if( utility::platformIsWindows() ){
+
+		auto table = m_ui->tableWidget ;
+
+		auto row = table->currentRow() ;
+
+		auto m = SiriKali::Windows::volumeProperties( table->item( row,1 )->text() ) ;
+
+		if( m.isEmpty() ){
+
+			DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Read Volume Properties" ) ) ;
+		}else{
+			DialogMsg( this ).ShowUIInfo( tr( "INFORMATION" ),true,m ) ;
+		}
+
+		return this->enableAll() ;
+	}
 
 	auto s = [ this ](){
 
@@ -1062,350 +1123,24 @@ void sirikali::ecryptfsProperties()
 	this->enableAll() ;
 }
 
-void sirikali::cryfsProperties()
-{
-	this->disableAll() ;
-
-	auto m = [ this ](){
-
-		auto table = m_ui->tableWidget ;
-
-		auto row = table->currentRow() ;
-
-		if( row >= 0 ){
-
-			return table->item( row,1 )->text().toLatin1() ;
-		}else{
-			return QByteArray() ;
-		}
-	}() ;
-
-	auto vfs = utility::fileSystemInfo( m ).await() ;
-
-	if( !vfs.valid ){
-
-		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Read Volume Properties" ) ) ;
-
-		return this->enableAll() ;
-	}
-
-	DialogMsg( this ).ShowUIInfo( tr( "INFORMATION" ),true,[ & ](){
-
-		auto _prettify = []( quint64 s ){
-
-			auto _convert = [ & ]( const char * p,double q ){
-
-				auto e = QString::number( double( s ) / q,'f',2 ) ;
-
-				e.remove( ".00" ) ;
-
-				return QString( "%1 %2" ).arg( e,p ) ;
-			} ;
-
-			switch( QString::number( s ).size() ){
-
-				case 0 :
-				case 1 : case 2 : case 3 :
-
-					return QString( "%1 B" ).arg( QString::number( s ) ) ;
-
-				case 4 : case 5 : case 6 :
-
-					return _convert( "KB",1024 ) ;
-
-				case 7 : case 8 : case 9 :
-
-					return _convert( "MB",1048576 ) ;
-
-				case 10: case 11 : case 12 :
-
-					return _convert( "GB",1073741824 ) ;
-
-				default:
-					return _convert( "TB",1024.0 * 1073741824 ) ;
-			}
-		} ;
-
-		return QString( [](){
-
-			auto l = { tr( "Block Size: %1" ),
-				   tr( "Used Blocks: %2" ),
-				   tr( "Free Blocks: %3" ),
-				   tr( "Total Blocks %4" ),
-				   tr( "Used Space: %5" ),
-				   tr( "Free Space: %6" ),
-				   tr( "Total Space: %7" ),
-				   tr( "Used %: %8" ) } ;
-
-			QString e ;
-
-			for( const auto& it : l ){
-
-				e += it + "\n\n" ;
-			}
-
-			e.truncate( e.size() - 2 ) ;
-
-			return e ;
-
-		}() ).arg( [ & ](){
-
-			return _prettify( vfs.f_bsize ) ;
-
-		}(),[ & ](){
-
-			return QString::number( vfs.f_blocks - vfs.f_bavail ) ;
-
-		}(),[ & ](){
-
-			return QString::number( vfs.f_bfree ) ;
-
-		}(),[ & ](){
-
-			return QString::number( vfs.f_blocks ) ;
-
-		}(),[ & ](){
-
-			return _prettify( vfs.f_bsize * ( vfs.f_blocks - vfs.f_bavail ) ) ;
-
-		}(),[ & ](){
-
-			return _prettify( vfs.f_bsize * vfs.f_bavail ) ;
-
-		}(),[ & ](){
-
-			return _prettify( vfs.f_bsize * vfs.f_blocks ) ;
-
-		}(),[ & ]()->QString{
-
-			if( vfs.f_bfree == 0 ){
-
-				return "100%" ;
-			}else{
-				quint64 s = vfs.f_blocks - vfs.f_bavail ;
-
-				auto e = double( s ) / double( vfs.f_blocks ) ;
-
-				return QString::number( e * 100,'f',2 ) + "%" ;
-			}
-		}() ) ;
-	}() ) ;
-
-	this->enableAll() ;
-}
-
-static utility::result< QByteArray > _volume_properties( const QString& cmd,
-							 const std::pair< QString,QString >& args,
-							 const QString& path )
-{
-	auto e = utility::Task::run( cmd + args.first + path ).await() ;
-
-	if( e.success() ){
-
-		return e.stdOut() ;
-	}else{
-		for( const auto& it : favorites::instance().readFavorites() ){
-
-			if( utility::Task::makePath( it.volumePath ) == path ){
-
-				auto s = [ & ]{
-
-					if( cmd.endsWith( "gocryptfs\"" ) ){
-
-						auto a = utility::Task::makePath( it.configFilePath ) ;
-						auto b = utility::Task::makePath( it.volumePath ) ;
-
-						return a + " " + b ;
-
-					}else if( utility::endsWithAtLeastOne( cmd,"encfsctl\"","encfsctl.exe\"" ) ){
-
-						auto s = it.configFilePath ;
-
-						int index = s.lastIndexOf( "/" ) ;
-						if( index != -1 ){
-
-							s.remove( index,s.length() - index ) ;
-						}
-
-						return utility::Task::makePath( s ) ;
-					}else{
-						return utility::Task::makePath( it.configFilePath ) ;
-					}
-				}() ;
-
-				e = utility::Task::run( cmd + args.first + args.second + s ).await() ;
-
-				if( e.success() ){
-
-					return e.stdOut() ;
-				}else{
-					break ;
-				}
-			}
-		}
-
-		return utility::result< QByteArray >() ;
-	}
-}
-
-static void _volume_properties( const QString& cmd,const std::pair<QString,QString>& args,
-				QTableWidget * table,QWidget * w )
-{
-	auto exe = utility::executableFullPath( cmd ) ;
-
-	auto path = [ & ](){
-
-		auto row = table->currentRow() ;
-
-		if( row < 0 ){
-
-			return QString() ;
-		}else{
-			auto m = table->item( row,2 )->text() ;
-
-			if( cmd == "gocryptfs" && m == "gocryptfs-reverse" ){
-
-				return utility::Task::makePath( table->item( row,1 )->text() ) ;
-			}else{
-				return utility::Task::makePath( table->item( row,0 )->text() ) ;
-			}
-		}
-	}() ;
-
-	if( exe.isEmpty() ){
-
-		DialogMsg( w ).ShowUIOK( QObject::tr( "ERROR" ),
-					 QObject::tr( "Failed To Find %1 Executable" ).arg( cmd ) ) ;
-	}else{
-		auto e = _volume_properties( utility::Task::makePath( exe ),args,path ) ;
-
-		if( e ){
-
-			auto& s = e.value() ;
-
-			if( cmd == "gocryptfs" ){
-
-				s.replace( "Creator:      ","Creator: " ).replace( "\n","\n\n" ) ;
-			}
-
-			DialogMsg( w ).ShowUIInfo( QObject::tr( "INFORMATION" ),true,s ) ;
-		}else{
-			DialogMsg( w ).ShowUIOK( QObject::tr( "ERROR" ),
-						 QObject::tr( "Failed To Get Volume Properties" ) ) ;
-		}
-	}
-}
-
-void sirikali::encfsProperties()
-{
-	this->disableAll() ;
-
-	_volume_properties( "encfsctl",{ " ","" },m_ui->tableWidget,this ) ;
-
-	this->enableAll() ;
-}
-
-void sirikali::securefsProperties()
-{
-	this->disableAll() ;
-
-	_volume_properties( "securefs",{ " info ","" },m_ui->tableWidget,this ) ;
-
-	this->enableAll() ;
-}
-
-void sirikali::gocryptfsProperties()
-{
-	this->disableAll() ;
-
-	_volume_properties( "gocryptfs",{ " -info "," -config " },m_ui->tableWidget,this ) ;
-
-	this->enableAll() ;
-}
-
-void sirikali::sshfsProperties()
-{
-	auto table = m_ui->tableWidget ;
-
-	auto row = table->currentRow() ;
-
-	auto m = SiriKali::Windows::volumeProperties( table->item( row,1 )->text() ) ;
-
-	if( m.isEmpty() ){
-
-		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Read Volume Properties" ) ) ;
-	}else{
-		DialogMsg( this ).ShowUIInfo( tr( "INFORMATION" ),true,m ) ;
-	}
-}
-
 void sirikali::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 {
-	struct volumeType{ const char * slot ; bool enabled ; } ;
-
 	QMenu m ;
 
 	m.setFont( this->font() ) ;
 
-	auto _addAction = [ & ]( const auto& txt,const volumeType& e ){
+	auto _addAction = [ & ]( const auto& txt,const char * slot ){
 
 		auto ac = m.addAction( txt ) ;
 
-		if( e.enabled ){
-
-			ac->setEnabled( true ) ;
-
-			connect( ac,SIGNAL( triggered() ),this,e.slot ) ;
-		}else{
-			ac->setEnabled( false ) ;
-		}
+		connect( ac,SIGNAL( triggered() ),this,slot ) ;
 	} ;
 
-	_addAction( tr( "Open Folder" ),{ SLOT( slotOpenFolder() ),true } ) ;
+	_addAction( tr( "Open Folder" ),SLOT( slotOpenFolder() ) ) ;
 
-	_addAction( tr( "Unmount" ),{ SLOT( pbUmount() ),true } ) ;
+	_addAction( tr( "Unmount" ),SLOT( pbUmount() ) ) ;
 
-	_addAction( tr( "Properties" ),[ this ]()->volumeType{
-
-		auto table = m_ui->tableWidget ;
-
-		auto row = table->currentRow() ;
-
-		if( row >= 0 ){
-
-			auto e = table->item( row,2 )->text() ;
-
-			if( e == "cryfs" ){
-
-				return { SLOT( cryfsProperties() ),!utility::platformIsWindows() } ;
-
-			}else if( e == "ecryptfs" ){
-
-				return { SLOT( ecryptfsProperties() ),true } ;
-
-			}else if( e == "securefs" ){
-
-				return { SLOT( securefsProperties() ),true } ;
-
-			}else if( e == "encfs" ){
-
-				return { SLOT( encfsProperties() ),true } ;
-
-			}else if( utility::containsAtleastOne( e,"gocryptfs","gocryptfs-reverse" ) ){
-
-				return { SLOT( gocryptfsProperties() ),true } ;
-
-			}else if( e == "sshfs" ){
-
-				if( utility::platformIsWindows() ){
-
-					return { SLOT( sshfsProperties() ),true } ;
-				}
-			}
-		}
-
-		return { nullptr,false } ;
-	}() ) ;
+	_addAction( tr( "Properties" ),SLOT( volumeProperties() ) ) ;
 
 	m.addSeparator() ;
 
