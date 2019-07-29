@@ -186,7 +186,7 @@ engines::engine::args custom::command( const engines::engine::cmdArgsList& args 
 
 engines::engine::status custom::errorCode( const QString& e,int s ) const
 {
-	auto m = this->incorrectPasswordCode() ;
+	const auto& m = this->incorrectPasswordCode() ;
 
 	if( !m.isEmpty() ){
 
@@ -201,7 +201,9 @@ engines::engine::status custom::errorCode( const QString& e,int s ) const
 			return engines::engine::status::backendFail ;
 		}
 	}else{
-		if( e.contains( this->incorrectPasswordText() ) ){
+		const auto& s = this->incorrectPasswordText() ;
+
+		if( !s.isEmpty() && e.contains( s ) ){
 
 			return engines::engine::status::customCommandBadPassword ;
 

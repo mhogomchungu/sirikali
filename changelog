@@ -159,10 +159,11 @@ version 1.3.8(May 1st,2019)
 -- Show a warning that says working with cryfs >= 0.10.0 may take a very long time when creating/unlocking cryfs volumes.
 -- Improves a window that manages favorites.
 
-version 1.3.9(Unreleased)
+version 1.3.9(August 1st,2019)
 -- Add ability to run a custom command on user specified time interval.
 -- Add ability to set premount, postmount, preunmount and postunmount commands to run per favorite entry.
 -- Add support for creating and unlocking volumes using yubikey's challenge-response feature.
--- Add ability to run user created custom backends.
+-- Add ability to run user created custom backends/extensions. This feature make it possible to configure SiriKali
+   to run any tool that deals with mounting file systems.
 -- Fix an an occassional crash that happens when creating an internal wallet when an internal version of
    lxqt_wallet is in use.
