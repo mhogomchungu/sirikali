@@ -362,6 +362,64 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 		m_ui->lineEditMountPoint->setFocus() ;
 	}else{
+		const auto& engine = siritask::mountEngine( m_path,m_configFile ).engine ;
+
+		m_engineName = engine.name() ;
+
+		auto m = m_ui->pbOptions->menu() ;
+
+		if( m ){
+
+			m->deleteLater() ;
+		}
+
+		m = new QMenu( this ) ;
+
+		auto _addAction = [ & ]( QString e,const QString& s,bool a ){
+
+			auto ac = m->addAction( e.replace( 0,1,e.front().toUpper() ) ) ;
+			ac->setObjectName( s ) ;
+			ac->setEnabled( a ) ;
+			m->addAction( ac ) ;
+		} ;
+
+		_addAction( tr( "Select Volume Type" ),"Select Volume Type",false ) ;
+
+		m->addSeparator() ;
+
+		if( engine.known() ){
+
+			_addAction( m_engineName,m_engineName,false ) ;
+		}else{
+			auto s = engines::instance().enginesWithNoConfigFile() ;
+
+			if( s.isEmpty() ){
+
+				// ????
+			}else {
+				for( const auto& it : s ){
+
+					_addAction( it,it,true ) ;
+				}
+			}
+		}
+
+		m->addSeparator() ;
+
+		_addAction( tr( "Options" ),"Options",true ) ;
+
+		connect( m,&QMenu::triggered,[ this ]( QAction * ac ){
+
+			if( ac->objectName() == "Options" ){
+
+				this->pbOptions() ;
+			}else{
+				m_engineName = ac->objectName() ;
+			}
+		} ) ;
+
+		m_ui->pbOptions->setMenu( m ) ;
+
 		if( key.isEmpty() ){
 
 			m_ui->lineEditKey->setFocus() ;
@@ -1366,9 +1424,9 @@ void keyDialog::encryptedFolderMount()
 				    m_mountOptions,
 				    QString() } ;
 
-	m_cryfsWarning.showUnlock( siritask::mountEngine( m_path,m_configFile ).engine.name() ) ;
+	m_cryfsWarning.showUnlock( m_engineName ) ;
 
-	auto e = siritask::encryptedFolderMount( s ) ;
+	auto e = siritask::encryptedFolderMount( s,false,m_engineName ) ;
 
 	m_cryfsWarning.hide() ;
 

@@ -489,9 +489,15 @@ static utility::result< QString > _path_exist( QString e,const QString& m )
 }
 
 siritask::Engine siritask::mountEngine( const QString& cipherFolder,
-					const QString& configFilePath )
+					const QString& configFilePath,
+					const QString& engineName )
 {
 	const auto& engines = engines::instance() ;
+
+	if( !engineName.isEmpty() ){
+
+		return { engines.getByName( engineName ),cipherFolder } ;
+	}
 
 	if( utility::pathIsFile( cipherFolder ) ){
 
@@ -552,9 +558,11 @@ siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 	}
 }
 
-static engines::engine::cmdStatus _encrypted_folder_mount( const engines::engine::options& opt,bool reUseMP )
+static engines::engine::cmdStatus _encrypted_folder_mount( const engines::engine::options& opt,
+							   bool reUseMP,
+							   const QString& engineName )
 {
-	auto Engine = siritask::mountEngine( opt.cipherFolder,opt.configFilePath ) ;
+	auto Engine = siritask::mountEngine( opt.cipherFolder,opt.configFilePath,engineName ) ;
 
 	const auto& engine         = Engine.engine ;
 	const auto& configFilePath = Engine.configFilePath ;
@@ -759,7 +767,8 @@ static void _run_command_on_mount( const engines::engine::options& opt )
 }
 
 engines::engine::cmdStatus siritask::encryptedFolderMount( const engines::engine::options& opt,
-							   bool reUseMountPoint )
+							   bool reUseMountPoint,
+							   const QString& engineName )
 {
 	auto s = [ & ](){
 
@@ -767,19 +776,19 @@ engines::engine::cmdStatus siritask::encryptedFolderMount( const engines::engine
 
 			if( utility::runningOnGUIThread() ){
 
-				return _encrypted_folder_mount( opt,reUseMountPoint ) ;
+				return _encrypted_folder_mount( opt,reUseMountPoint,engineName ) ;
 			}else{
 				/*
 				 * We should not take this path
 				 */
 				utility::logCommandOutPut( "ERROR!!\nsiritask::encryptedFolderMount is running from a background thread" ) ;
 
-				return _encrypted_folder_mount( opt,reUseMountPoint ) ;
+				return _encrypted_folder_mount( opt,reUseMountPoint,engineName ) ;
 			}
 		}else{
 			auto& e = Task::run( [ & ](){
 
-				return _encrypted_folder_mount( opt,reUseMountPoint ) ;
+				return _encrypted_folder_mount( opt,reUseMountPoint,engineName ) ;
 			} ) ;
 
 			return utility::unwrap( e ) ;
