@@ -59,8 +59,11 @@ cryfs::cryfs() : engines::engine( _setOptions() )
 	qputenv( "CRYFS_FRONTEND","noninteractive" ) ;
 }
 
-engines::engine::args cryfs::command( const engines::engine::cmdArgsList& args ) const
+engines::engine::args cryfs::command( const QString& password,
+				      const engines::engine::cmdArgsList& args ) const
 {
+	Q_UNUSED( password ) ;
+
 	auto separator = [](){
 
 		auto m = utility::unwrap( utility::backendIsLessThan( "cryfs","0.10" ) ) ;

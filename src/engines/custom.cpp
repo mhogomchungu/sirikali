@@ -133,7 +133,8 @@ custom::custom( custom::opts s ) :
 {
 }
 
-engines::engine::args custom::command( const engines::engine::cmdArgsList& args ) const
+engines::engine::args custom::command( const QString& password,
+				       const engines::engine::cmdArgsList& args ) const
 {
 	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
 
@@ -153,6 +154,7 @@ engines::engine::args custom::command( const engines::engine::cmdArgsList& args 
 		cmd.replace( "%{mountOptions}",exeOptions.get(),Qt::CaseInsensitive ) ;
 		cmd.replace( "%{cipherFolder}",args.cipherFolder,Qt::CaseInsensitive ) ;
 		cmd.replace( "%{mountPoint}",args.mountPoint,Qt::CaseInsensitive ) ;
+		cmd.replace( "%{password}",password ) ;
 
 		return { args,m,args.exe + " " + cmd } ;
 	}else{

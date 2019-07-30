@@ -55,8 +55,11 @@ encfs::encfs() : engines::engine( _setOptions() )
 {
 }
 
-engines::engine::args encfs::command( const engines::engine::cmdArgsList& args ) const
+engines::engine::args encfs::command( const QString& password,
+				      const engines::engine::cmdArgsList& args ) const
 {
+	Q_UNUSED( password ) ;
+
 	QString e = "%1 %2 %3 %4 %5" ;
 
 	engines::engine::commandOptions m( args,this->name(),this->name() ) ;

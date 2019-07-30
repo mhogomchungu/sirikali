@@ -409,7 +409,7 @@ static engines::engine::cmdStatus _cmd( const engines::engine& engine,
 				auto cc = _makePath( opts.cipherFolder ) ;
 				auto mm = _makePath( opts.plainFolder ) ;
 
-				auto cmd = engine.command( { exe,opts,m.value(),cc,mm,create } ) ;
+				auto cmd = engine.command( password,{ exe,opts,m.value(),cc,mm,create } ) ;
 
 				auto s = _run_task( cmd,engine,password,opts,create,_ecryptfs( engine.name() ) ) ;
 

@@ -54,8 +54,11 @@ sshfs::sshfs() : engines::engine( _setOptions() )
 {
 }
 
-engines::engine::args sshfs::command( const engines::engine::cmdArgsList& args ) const
+engines::engine::args sshfs::command( const QString& password,
+				      const engines::engine::cmdArgsList& args ) const
 {
+	Q_UNUSED( password ) ;
+
 	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
 
 	auto fuseOptions = m.fuseOpts() ;

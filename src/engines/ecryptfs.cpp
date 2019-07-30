@@ -48,8 +48,11 @@ ecryptfs::ecryptfs() : engines::engine( _setOptions() )
 {
 }
 
-engines::engine::args ecryptfs::command( const engines::engine::cmdArgsList& args ) const
+engines::engine::args ecryptfs::command( const QString& password,
+					 const engines::engine::cmdArgsList& args ) const
 {
+	Q_UNUSED( password ) ;
+
 	auto e = QString( "%1 %2 -a %3 %4 %5" ) ;
 
 	engines::engine::commandOptions m( args,QString() ) ;

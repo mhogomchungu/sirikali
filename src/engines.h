@@ -242,7 +242,7 @@ public:
 		virtual ~engine() ;
 
 		virtual QString installedVersionString() const = 0 ;
-		virtual args command( const engines::engine::cmdArgsList& args ) const = 0 ;
+		virtual args command( const QString& password,const engines::engine::cmdArgsList& args ) const = 0 ;
 		virtual engines::engine::status errorCode( const QString& e,int s ) const = 0 ;
 		using function = std::function< void( const Options& ) > ;
 		virtual void GUICreateOptionsinstance( QWidget * parent,function ) const = 0 ;

@@ -52,8 +52,11 @@ securefs::securefs() : engines::engine( _setOptions() )
 {
 }
 
-engines::engine::args securefs::command( const engines::engine::cmdArgsList& args ) const
+engines::engine::args securefs::command( const QString& password,
+					 const engines::engine::cmdArgsList& args ) const
 {
+	Q_UNUSED( password ) ;
+
 	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
 
 	if( args.create ){

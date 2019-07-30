@@ -45,8 +45,10 @@ unknown::unknown() : engines::engine( _setOptions() )
 {
 }
 
-engines::engine::args unknown::command( const engines::engine::cmdArgsList& args ) const
+engines::engine::args unknown::command( const QString& password,
+					const engines::engine::cmdArgsList& args ) const
 {
+	Q_UNUSED( password ) ;
 	Q_UNUSED( args ) ;
 	return {} ;
 }
