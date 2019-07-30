@@ -229,21 +229,20 @@ void sirikali::setUpApp( const QString& volume )
 
 		auto m = new QMenu( this ) ;
 
-		auto a = m->addAction( tr( "Mount Folder" ) ) ;
-		auto b = m->addAction( tr( "Mount File" ) ) ;
+		auto _addAction = [ & ]( const QString& a,const char * b,bool c ){
 
-		connect( a,&QAction::triggered,[ this ](){
+			auto ac = m->addAction( a ) ;
+			m_actionPair.emplace_back( ac,b ) ;
 
-			this->unlockVolume( true ) ;
-		} ) ;
+			connect( ac,&QAction::triggered,[ = ](){
 
-		connect( b,&QAction::triggered,[ this ](){
+				this->unlockVolume( c ) ;
+			} ) ;
+		} ;
 
-			this->unlockVolume( false ) ;
-		} ) ;
+		_addAction( tr( "Mount Folder" ),"Mount Folder",true ) ;
 
-		m->addAction( a ) ;
-		m->addAction( b ) ;
+		_addAction( tr( "Mount File" ),"Mount File",false ) ;
 
 		m_ui->pbunlockvolume->setMenu( m ) ;
 	}else{
