@@ -38,7 +38,8 @@ QStringList engines::executableSearchPaths()
 
 	if( utility::platformIsWindows() ){
 
-		QStringList s = { a + "\\bin\\",
+		QStringList s = { QDir().currentPath() + "\\bin\\",
+				  a + "\\bin\\",
 				  a + "\\.bin\\",
 				  settings::instance().windowsExecutableSearchPath() + "\\" } ;
 

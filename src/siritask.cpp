@@ -720,7 +720,7 @@ engines::engine::cmdStatus siritask::encryptedFolderCreate( const engines::engin
 			/*
 			 * We should not take this path
 			 */
-			utility::logCommandOutPut( "ERROR!!\nsiritask::encryptedFolderCreate is running\nfrom a background thread" ) ;
+			utility::debug() << "ERROR!!\nsiritask::encryptedFolderCreate is running\nfrom a background thread" ;
 			return _encrypted_folder_create( opt ) ;
 		}
 	}else{
@@ -781,7 +781,7 @@ engines::engine::cmdStatus siritask::encryptedFolderMount( const engines::engine
 				/*
 				 * We should not take this path
 				 */
-				utility::logCommandOutPut( "ERROR!!\nsiritask::encryptedFolderMount is running from a background thread" ) ;
+				utility::debug() << "ERROR!!\nsiritask::encryptedFolderMount is running from a background thread" ;
 
 				return _encrypted_folder_mount( opt,reUseMountPoint,engineName ) ;
 			}

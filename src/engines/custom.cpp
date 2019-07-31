@@ -120,8 +120,10 @@ void custom::addEngines( QStringList& list,std::vector< std::unique_ptr< engines
 		_add_engines( list,m + "/backends/",engines ) ;
 	}
 
-	if( !utility::platformIsWindows() ){
+	if( utility::platformIsWindows() ){
 
+		_add_engines( list,QDir().currentPath() + "/backends/",engines ) ;
+	}else{
 		_add_engines( list,INSTALL_PREFIX"/share/SiriKali/backends/",engines ) ;
 	}
 }
@@ -181,6 +183,7 @@ engines::engine::args custom::command( const QString& password,
 		cmd.replace( "%{cipherFolder}",args.cipherFolder,Qt::CaseInsensitive ) ;
 		cmd.replace( "%{mountPoint}",args.mountPoint,Qt::CaseInsensitive ) ;
 		cmd.replace( "%{fuseOpts}",m.fuseOpts().get(),Qt::CaseInsensitive ) ;
+		cmd.replace( "%{password}",password ) ;
 
 		return { args,m,args.exe + " " + cmd } ;
 	}
