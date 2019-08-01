@@ -48,16 +48,18 @@ Send me an email through mhogomchungu at Gmail Dot coM for transfer details.
 
 ## Download links
 
-Latest released version is 1.3.8 and its source code can be downloaded by clicking below link.
+Latest released version is 1.3.9 and its source code can be downloaded by clicking below link.
 
-<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.8/SiriKali-1.3.8.tar.xz">SiriKali-1.3.8.tar.xz</a>
+<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.9/SiriKali-1.3.9.tar.xz">SiriKali-1.3.9.tar.xz</a>
 
-Users of Microsoft Windows Operating System should download SiriKali installer by clicking below link. The installer is not
-signed and expect to get a warning from windows saying the installer is from an unknown publisher.
+Binary packages for Microsoft Windows are provides through a package with an installer and a
+packager without an installer(portable version).
 
-<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.8/SiriKali-1.3.8.setup.exe">SiriKali-1.3.8.setup.exe</a>
+The installer version is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.9/SiriKali-1.3.9.setup.exe">here.</a>
 
+The portable version is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.9/SiriKali-1.3.9.exe.zip">here.</a>
 
+The installer is not signed and expect to get a warning from windows saying the installer is from an unknown publisher.
 
 ## Binary packages
 
@@ -141,4 +143,4 @@ cv9jY9bZAbVaMUjF7dw/bsqgJ2HCJ33cf16GybRtozOE36YDB2omg58ngIrlmlea
 -----END PGP PUBLIC KEY BLOCK-----
 ```
 
-last update: Wed 01 May 2019 09:32:12 AM EAT
+last update: Thu 01 Aug 2019 12:19:47 PM EAT
