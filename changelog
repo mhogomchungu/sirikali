@@ -164,6 +164,7 @@ version 1.3.9(August 1st,2019)
 -- Add ability to set premount, postmount, preunmount and postunmount commands to run per favorite entry.
 -- Add support for creating and unlocking volumes using yubikey's challenge-response feature.
 -- Add ability to run user created custom backends/extensions. This feature make it possible to configure SiriKali
-   to run any tool that deals with mounting file systems.
--- Fix an an occassional crash that happens when creating an internal wallet when an internal version of
+   to run any tool that deals with mounting file systems. Documentation on how to create a custom backed is
+   here: https://github.com/mhogomchungu/sirikali/wiki/How-to-create-SiriKali-custom-backend
+-- Fix an occassional crash that happens when creating an internal wallet when an internal version of
    lxqt_wallet is in use.
