@@ -46,22 +46,20 @@ Donations are accepted through:
 Send me an email through mhogomchungu at Gmail Dot coM for transfer details.
 ```
 
-## Download links
+## Source download link.
 
 Latest released version is 1.3.9 and its source code can be downloaded by clicking below link.
 
 <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.9/SiriKali-1.3.9.tar.xz">SiriKali-1.3.9.tar.xz</a>
 
-Binary packages for Microsoft Windows are provides through a package with an installer and a
-packager without an installer(portable version).
+## Download links for Microsoft Windows Operating System.
 
-The installer version is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.9/SiriKali-1.3.9.setup.exe">here.</a>
-
-The portable version is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.9/SiriKali-1.3.9.exe.zip">here.</a>
+There are two packages for Windows, the one with an installer is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.9/SiriKali-1.3.9.setup.exe">here</a> and the one without out(portable version) is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.3.9/SiriKali-1.3.9.exe.zip">here.</a>
 
 The installer is not signed and expect to get a warning from windows saying the installer is from an unknown publisher.
+We recommend using the installer version.
 
-## Binary packages
+## Binary packages for Linux.
 
 Check first if SiriKali is present in your distribution's repositories and use that version if it is.
 ```Fedora,opensuse,ubuntu and debian``` users can install binary packages by following instructions on <a href="http://software.opensuse.org//download.html?project=home%3Aobs_mhogomchungu&package=sirikali">this</a> link.
