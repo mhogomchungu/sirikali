@@ -377,7 +377,7 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 		auto _addAction = [ & ]( QString e,const QString& s,bool a ){
 
-			auto ac = m->addAction( e.replace( 0,1,e.front().toUpper() ) ) ;
+			auto ac = m->addAction( e.replace( 0,1,e.at( 0 ).toUpper() ) ) ;
 			ac->setObjectName( s ) ;
 			ac->setEnabled( a ) ;
 			m->addAction( ac ) ;
