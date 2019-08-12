@@ -87,11 +87,26 @@ bool siritask::deleteMountFolder( const QString& m )
 	}
 }
 
+static QString _cmd_args( const QString& e )
+{
+	auto a = utility::split( e,' ' ) ;
+	auto b = utility::executableFullPath( a.at( 0 ) ) ;
+
+	if( b.isEmpty() ){
+
+		return {} ;
+	}
+
+	a.removeFirst() ;
+
+	return utility::Task::makePath( b ) + " " + a.join( " " ) ;
+}
+
 static utility::result< utility::Task > _unmount_volume( const QString& exe,
 							 const QString& mountPoint,
 							 bool usePolkit )
 {
-	auto e = settings::instance().preUnMountCommand() ;
+	auto e = _cmd_args( settings::instance().preUnMountCommand() ) ;
 
 	int timeOut = 10000 ;
 
@@ -99,9 +114,7 @@ static utility::result< utility::Task > _unmount_volume( const QString& exe,
 
 		return utility::unwrap( utility::Task::run( exe,timeOut,usePolkit ) ) ;
 	}else{
-		auto s = utility::Task::makePath( e ) ;
-
-		auto m = utility::unwrap( utility::Task::run( s + " " + mountPoint,timeOut,false ) ) ;
+		auto m = utility::unwrap( utility::Task::run( e + " " + mountPoint,timeOut,false ) ) ;
 
 		if( m.success() ){
 
@@ -240,14 +253,12 @@ static void _run_command( const QString& command,
 		return ;
 	}
 
-	auto exe = utility::executableFullPath( command ) ;
+	auto exe = _cmd_args( command ) ;
 
-	if( exe.isEmpty() || !utility::pathExists( exe ) ){
+	if( exe.isEmpty() ){
 
 		utility::debug::cout() << "Failed to find \"" + commandType + "\" command : " + command ;
 	}else{
-		exe = utility::Task::makePath( exe ) ;
-
 		auto m = QString( "%1 %2 %3 %4" ).arg( exe,cipherFolder,plainFolder,volumeType ) ;
 
 		_run_command( m,password ) ;
@@ -732,14 +743,12 @@ engines::engine::cmdStatus siritask::encryptedFolderCreate( const engines::engin
 
 static void _run_command_on_mount( const engines::engine::options& opt )
 {
-	auto exe = settings::instance().runCommandOnMount() ;
+	auto exe = _cmd_args( settings::instance().runCommandOnMount() ) ;
 
 	if( !exe.isEmpty() ){
 
 		auto a = _makePath( opt.cipherFolder ) ;
 		auto b = _makePath( opt.plainFolder ) ;
-
-		exe = utility::Task::makePath( exe ) ;
 
 		exe = QString( "%1 %2 %3 %4" ).arg( exe,a,b,opt.type ) ;
 
