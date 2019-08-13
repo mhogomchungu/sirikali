@@ -87,8 +87,35 @@ bool siritask::deleteMountFolder( const QString& m )
 	}
 }
 
+static QString _cmd_args_1( QString e )
+{
+	e.remove( 0,1 ) ;
+
+	for( int i = 1 ; i < e.size() ; i++ ){
+
+		if( e.at( i ) == '\"' ){
+
+			auto a = e.mid( 0,i ) ;
+
+			auto b = utility::executableFullPath( a ) ;
+
+			if( !b.isEmpty() ){
+
+				return utility::Task::makePath( b ) + " " + e.mid( i + 1 ) ;
+			}
+		}
+	}
+
+	return {} ;
+}
+
 static QString _cmd_args( const QString& e )
 {
+	if( e.startsWith( "\"" ) ){
+
+		return _cmd_args_1( e ) ;
+	}
+
 	auto a = utility::split( e,' ' ) ;
 	auto b = utility::executableFullPath( a.at( 0 ) ) ;
 
@@ -257,7 +284,7 @@ static void _run_command( const QString& command,
 
 	if( exe.isEmpty() ){
 
-		utility::debug::cout() << "Failed to find \"" + commandType + "\" command : " + command ;
+		utility::debug() << "Failed to find \"" + commandType + "\" command : " + command ;
 	}else{
 		auto m = QString( "%1 %2 %3 %4" ).arg( exe,cipherFolder,plainFolder,volumeType ) ;
 
