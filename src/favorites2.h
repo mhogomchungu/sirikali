@@ -26,6 +26,9 @@
 #include "settings.h"
 #include "favorites.h"
 
+#include <functional>
+#include <memory>
+
 namespace Ui {
 class favorites2;
 }
@@ -36,9 +39,15 @@ class favorites2 : public QDialog
 public:
 	static favorites2& instance( QWidget * parent,favorites::type type = favorites::type::others )
 	{
-		return *( new favorites2( parent,type ) ) ;
+		return *( new favorites2( parent,type,[](){} ) ) ;
 	}
-	favorites2( QWidget * parent,favorites::type type = favorites::type::others ) ;
+	static favorites2& instance( QWidget * parent,std::function< void() > function )
+	{
+		return *( new favorites2( parent,favorites::type::others,std::move( function ) ) ) ;
+	}
+	favorites2( QWidget * parent,
+		    favorites::type type = favorites::type::others,
+		    std::function< void() > function = [](){} ) ;
 	~favorites2() ;
 private :
 	void tabChanged( int ) ;
@@ -81,6 +90,7 @@ private :
 	bool m_editMode = false ;
 	QMenu m_optionMenu ;
 	settings& m_settings ;
+	std::function< void() > m_function ;
 } ;
 
 #endif // FAVORITES2_H

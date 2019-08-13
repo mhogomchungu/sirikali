@@ -850,6 +850,21 @@ bool settings::autoMountFavoritesOnAvailable()
 	}
 }
 
+void settings::showFavoritesInContextMenu( bool e )
+{
+	m_settings.setValue( "ShowFavoritesInContextMenu",e ) ;
+}
+
+bool settings::showFavoritesInContextMenu()
+{
+	if( !m_settings.contains( "ShowFavoritesInContextMenu" ) ){
+
+		m_settings.setValue( "ShowFavoritesInContextMenu",false ) ;
+	}
+
+	return m_settings.value( "ShowFavoritesInContextMenu" ).toBool() ;
+}
+
 int settings::networkTimeOut()
 {
 	if( m_settings.contains( "NetworkTimeOut" ) ){

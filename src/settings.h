@@ -171,6 +171,8 @@ public:
 	void autoMountFavoritesOnStartUp( bool ) ;
 	void autoMountFavoritesOnAvailable( bool ) ;
 	bool autoMountFavoritesOnAvailable() ;
+	void showFavoritesInContextMenu( bool ) ;
+	bool showFavoritesInContextMenu( void ) ;
 	int networkTimeOut() ;
 	bool showMountDialogWhenAutoMounting() ;
 	int checkForUpdateInterval() ;

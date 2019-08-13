@@ -60,6 +60,11 @@ configOptions::configOptions( QWidget * parent,
 		m_settings.autoOpenFolderOnMount( e ) ;
 	} ) ;
 
+	connect( m_ui->cbShowFavoriteListOnContextMenu,&QCheckBox::toggled,[ this ]( bool e ){
+
+		m_settings.showFavoritesInContextMenu( e ) ;
+	} ) ;
+
 	connect( m_ui->cbReUseMountPoint,&QCheckBox::toggled,[ this ]( bool e ){
 
 		m_settings.reUseMountPoint( e ) ;
@@ -374,6 +379,8 @@ void configOptions::ShowUI()
 	m_ui->cbStartMinimized->setChecked( m_settings.startMinimized() ) ;
 
 	m_ui->cbAutoMountAtStartUp->setChecked( m_settings.autoMountFavoritesOnStartUp() ) ;
+
+	m_ui->cbShowFavoriteListOnContextMenu->setChecked( m_settings.showFavoritesInContextMenu() ) ;
 
 	m_ui->cbShowMountDialogWhenAutoMounting->setChecked( m_settings.showMountDialogWhenAutoMounting() ) ;
 

@@ -111,6 +111,11 @@ static QString _cmd_args_1( QString e )
 
 static QString _cmd_args( const QString& e )
 {
+	if( e.isEmpty() ){
+
+		return {} ;
+	}
+
 	if( e.startsWith( "\"" ) ){
 
 		return _cmd_args_1( e ) ;
@@ -126,7 +131,7 @@ static QString _cmd_args( const QString& e )
 
 	a.removeFirst() ;
 
-	return utility::Task::makePath( b ) + " " + a.join( " " ) ;
+	return utility::Task::makePath( b ) + " " + a.join( ' ' ) ;
 }
 
 static utility::result< utility::Task > _unmount_volume( const QString& exe,

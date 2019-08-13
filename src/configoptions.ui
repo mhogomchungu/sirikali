@@ -280,6 +280,32 @@
       <bool>true</bool>
      </property>
     </widget>
+    <widget class="QCheckBox" name="cbShowFavoriteListOnContextMenu">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>0</y>
+       <width>21</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_16">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>-10</y>
+       <width>401</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Show Favorite List On Context Menu</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="manageKeys">
     <attribute name="title">

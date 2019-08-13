@@ -115,6 +115,7 @@ private:
 
 	QFont getSystemVolumeFont( void ) ;
 
+	void updateFavoritesInContextMenu( void ) ;
 	void runIntervalCustomCommand( const QString& ) ;
 	void cliCommand( const QStringList& ) ;
 	void updateVolumeList( const std::vector< volumeInfo >& ) ;
@@ -152,6 +153,8 @@ private:
 	QMenu * m_hidden_volume_menu = nullptr ;
 	QMenu * m_not_hidden_volume_menu = nullptr ;
 	QMenu * m_key_manager_menu = nullptr ;
+	QMenu * m_main_menu = nullptr ;
+	QMenu * m_context_menu = nullptr ;
 
 	QMenu m_language_menu ;
 

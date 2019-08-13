@@ -27,11 +27,14 @@
 
 #include <QFileDialog>
 
-favorites2::favorites2( QWidget * parent,favorites::type type ) :
+favorites2::favorites2( QWidget * parent,
+			favorites::type type,
+			std::function< void() > function ) :
 	QDialog ( parent) ,
 	m_ui( new Ui::favorites2 ),
 	m_type( type ),
-	m_settings( settings::instance() )
+	m_settings( settings::instance() ),
+	m_function( std::move( function ) )
 {
 	m_ui->setupUi( this ) ;
 
@@ -655,6 +658,7 @@ void favorites2::closeEvent( QCloseEvent * e )
 void favorites2::HideUI()
 {
 	this->hide() ;
+	m_function() ;
 	this->deleteLater() ;
 }
 
