@@ -305,6 +305,9 @@
      <property name="text">
       <string>Show Favorite List On Context Menu(Restart Required)</string>
      </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
     </widget>
    </widget>
    <widget class="QWidget" name="manageKeys">

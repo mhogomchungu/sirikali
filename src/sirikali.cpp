@@ -522,7 +522,7 @@ void sirikali::favoriteClicked( QAction * ac )
 
 	if( e == "Manage Favorites" ){
 
-		favorites2::instance( this,[ this ](){
+		favorites2::instance( this,favorites::type::others,[ this ](){
 
 			this->updateFavoritesInContextMenu() ;
 		} ) ;
@@ -1156,6 +1156,8 @@ void sirikali::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 	_addAction( tr( "Properties" ),SLOT( volumeProperties() ) ) ;
 
+	_addAction( tr( "Add To Favorites" ),SLOT( addToFavorites() ) ) ;
+
 	m.addSeparator() ;
 
 	m.addAction( tr( "Close Menu" ) ) ;
@@ -1172,6 +1174,22 @@ void sirikali::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 		p.setX( x ) ;
 		p.setY( y ) ;
 		m.exec( p ) ;
+	}
+}
+
+void sirikali::addToFavorites()
+{
+	auto table = m_ui->tableWidget ;
+
+	auto cp = tablewidget::rowEntries( table,table->currentRow() ) ;
+
+	if( cp.size() > 0 ){
+
+		favorites2::instance( this,favorites::type::others,[ this ](){
+
+			this->updateFavoritesInContextMenu() ;
+
+		},cp.first() ) ;
 	}
 }
 
@@ -1360,7 +1378,10 @@ void sirikali::createVolume( QAction * ac )
 
 		if( s == "Sshfs" ){
 
-			favorites2::instance( this,favorites::type::sshfs ) ;
+			favorites2::instance( this,favorites::type::sshfs,[ this ](){
+
+				this->updateFavoritesInContextMenu() ;
+			} ) ;
 		}else{
 			this->mount( volumeInfo(),s ) ;
 		}

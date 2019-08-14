@@ -29,12 +29,14 @@
 
 favorites2::favorites2( QWidget * parent,
 			favorites::type type,
-			std::function< void() > function ) :
+			std::function< void() > function,
+			const QString& cp ) :
 	QDialog ( parent) ,
 	m_ui( new Ui::favorites2 ),
 	m_type( type ),
 	m_settings( settings::instance() ),
-	m_function( std::move( function ) )
+	m_function( std::move( function ) ),
+	m_cipherPath( cp )
 {
 	m_ui->setupUi( this ) ;
 
@@ -242,6 +244,12 @@ void favorites2::tabChanged( int index )
 			m_ui->pbEdit->setFocus() ;
 		}else{
 			this->clearEditVariables() ;
+
+			if( !m_cipherPath.isEmpty() ){
+
+				m_ui->lineEditEncryptedFolderPath->setText( m_cipherPath ) ;
+				m_cipherPath.clear() ;
+			}
 
 			m_ui->pbEdit->setEnabled( false ) ;
 			m_ui->pbAdd->setEnabled( true ) ;
@@ -756,6 +764,11 @@ void favorites2::ShowUI( favorites::type type )
 		m_ui->pbIdentityFile->setVisible( false ) ;
 		m_ui->tabWidget->setCurrentIndex( 0 ) ;
 		m_ui->tabWidget_2->setCurrentIndex( 0 ) ;
+	}
+
+	if( !m_cipherPath.isEmpty() ){
+
+		m_ui->tabWidget->setCurrentIndex( 1 ) ;
 	}
 
 	m_ui->tableWidget->setFocus() ;

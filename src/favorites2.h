@@ -37,17 +37,17 @@ class favorites2 : public QDialog
 {
 	Q_OBJECT
 public:
-	static favorites2& instance( QWidget * parent,favorites::type type = favorites::type::others )
+	static favorites2& instance( QWidget * parent,
+				     favorites::type type,
+				     std::function< void() > function,
+				     const QString& cp = QString() )
 	{
-		return *( new favorites2( parent,type,[](){} ) ) ;
-	}
-	static favorites2& instance( QWidget * parent,std::function< void() > function )
-	{
-		return *( new favorites2( parent,favorites::type::others,std::move( function ) ) ) ;
+		return *( new favorites2( parent,type,std::move( function ),cp ) ) ;
 	}
 	favorites2( QWidget * parent,
-		    favorites::type type = favorites::type::others,
-		    std::function< void() > function = [](){} ) ;
+		    favorites::type type,
+		    std::function< void() > function,
+		    const QString& cp ) ;
 	~favorites2() ;
 private :
 	void tabChanged( int ) ;
@@ -91,6 +91,7 @@ private :
 	QMenu m_optionMenu ;
 	settings& m_settings ;
 	std::function< void() > m_function ;
+	QString m_cipherPath ;
 } ;
 
 #endif // FAVORITES2_H
