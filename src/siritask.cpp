@@ -91,7 +91,7 @@ static QString _cmd_args_1( QString e )
 {
 	e.remove( 0,1 ) ;
 
-	for( int i = 1 ; i < e.size() ; i++ ){
+	for( int i = 0 ; i < e.size() ; i++ ){
 
 		if( e.at( i ) == '\"' ){
 
@@ -269,7 +269,7 @@ static void _run_command( const QString& command,const QString& password = QStri
 
 		e.insert( settings::instance().environmentalVariableVolumeKey(),password ) ;
 
-		utility::unwrap( Task::run( [ & ](){ return utility::Task( command,e,[](){} ) ; } ) ) ;
+		utility::unwrap( Task::run( [ & ](){ utility::Task( command,e,[](){} ) ; } ) ) ;
 	}
 }
 

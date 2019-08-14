@@ -1454,6 +1454,53 @@ QFont sirikali::getSystemVolumeFont()
 
 void sirikali::updateFavoritesInContextMenu()
 {
+	class mountedVolumes{
+	public:
+		mountedVolumes( QTableWidget * table ) :
+			m_cipherPath( tablewidget::columnEntries( table,0 ) ),
+			m_mountPath( tablewidget::columnEntries( table,1 ) )
+		{
+		}
+		int row( const QString& e )
+		{
+			auto a = utility::split( e,'\n' ) ;
+
+			if( a.size() == 1 ){
+
+				const auto& m = a.at( 0 ) ;
+
+				for( int i = 0 ; i < m_cipherPath.size() ; i++ ){
+
+					if( m == m_cipherPath.at( i ) ){
+
+						return i ;
+					}
+				}
+			}else{
+				const auto& x = a.at( 0 ) ;
+				const auto& y = a.at( 1 ) ;
+
+				for( int i = 0 ; i < m_cipherPath.size() ; i++ ){
+
+					if( x == m_cipherPath.at( i ) && y == m_mountPath.at( i ) ){
+
+						return i ;
+					}
+				}
+			}
+
+			return -1 ;
+		}
+
+		bool mounted( const QString& e )
+		{
+			return this->row( e ) != -1 ;
+		}
+	private:
+		QStringList m_cipherPath ;
+		QStringList m_mountPath ;
+	};
+
 	if( !settings::instance().showFavoritesInContextMenu() ){
 
 		return ;
@@ -1471,15 +1518,12 @@ void sirikali::updateFavoritesInContextMenu()
 
 					this->favoriteClicked( ac ) ;
 				}else{
-					auto a = utility::split( ac->objectName(),'\n' ).first() ;
-
-					auto b = tablewidget::columnHasEntry( m_ui->tableWidget,a,0 ) ;
+					auto b = mountedVolumes( m_ui->tableWidget ).row( ac->objectName() ) ;
 
 					if( b != -1 ){
 
 						tablewidget::selectRow( m_ui->tableWidget,b ) ;
-
-						return this->pbUmount() ;
+						this->pbUmount() ;
 					}
 				}
 			}else{
@@ -1494,47 +1538,13 @@ void sirikali::updateFavoritesInContextMenu()
 
 	auto s = m_context_menu->actions() ;
 
-	s.removeFirst() ;
-	s.removeFirst() ;
+	mountedVolumes m( m_ui->tableWidget ) ;
 
-	auto cp = tablewidget::columnEntries( m_ui->tableWidget,0 ) ;
-	auto mp = tablewidget::columnEntries( m_ui->tableWidget,1 ) ;
+	for( int i = 2 ; i < s.size() ; i++ ){
 
-	auto _mounted = [ & ]( const QString& e ){
-
-		auto a = utility::split( e,'\n' ) ;
-
-		if( a.size() == 1 ){
-
-			const auto& m = a.at( 0 ) ;
-
-			for( const auto& it : cp ){
-
-				if( it == m ){
-
-					return true ;
-				}
-			}
-		}else{
-			const auto& x = a.at( 0 ) ;
-			const auto& y = a.at( 1 ) ;
-
-			for( int i = 0 ; i < cp.size() ; i++ ){
-
-				if( x == cp.at( i ) && y == mp.at( i ) ){
-
-					return true ;
-				}
-			}
-		}
-
-		return false ;
-	} ;
-
-	for( auto& it : s ){
-
+		auto it = s.at( i ) ;
 		it->setCheckable( true ) ;
-		it->setChecked( _mounted( it->objectName() ) ) ;
+		it->setChecked( m.mounted( it->objectName() ) ) ;
 	}
 
 	m_context_menu->addSeparator() ;
