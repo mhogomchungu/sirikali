@@ -71,17 +71,22 @@ QStringList engines::executableSearchPaths()
 	}
 }
 
+static bool _has_no_extension( const QString& e )
+{
+	return !e.contains( '.' ) ;
+}
+
 QString engines::executableFullPath( const QString& f )
 {
 	if( utility::platformIsWindows() ){
 
 		if( utility::startsWithDriveLetter( f ) ){
 
-			if( f.endsWith( ".exe" ) ){
+			if( _has_no_extension( f ) ){
 
-				return f ;
-			}else{
 				return f + ".exe " ;
+			}else{
+				return f ;
 			}
 		}
 	}else{
@@ -93,7 +98,7 @@ QString engines::executableFullPath( const QString& f )
 
 	QString e = f ;
 
-	if( utility::platformIsWindows() && !e.endsWith( ".exe" ) ){
+	if( utility::platformIsWindows() && _has_no_extension( e ) ){
 
 		e += ".exe" ;
 	}
