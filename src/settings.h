@@ -191,7 +191,7 @@ public:
 	QSettings& backend();
 	bool setOpenVolumeReadOnly( QWidget * parent,bool checked ) ;
 	bool getOpenVolumeReadOnlyOption() ;
-	void readFavorites( QMenu * m ) ;
+	bool readFavorites( QMenu * m ) ;
 	QString localizationLanguagePath() ;
 	void languageMenu( QMenu * m,QAction * ac,settings::translator& ) ;
 	void setLocalizationLanguage( bool translate,QMenu * m,settings::translator& ) ;

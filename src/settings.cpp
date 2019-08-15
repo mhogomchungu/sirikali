@@ -400,7 +400,7 @@ bool settings::unMountVolumesOnLogout()
 	return m_settings.value( "UnMountVolumesOnLogout" ).toBool() ;
 }
 
-void settings::readFavorites( QMenu * m )
+bool settings::readFavorites( QMenu * m )
 {
 	m->clear() ;
 
@@ -462,6 +462,8 @@ void settings::readFavorites( QMenu * m )
 			m->addAction( _add_action( e,e ) ) ;
 		}
 	}
+
+	return _showCipherPathAndMountPath ;
 }
 
 void settings::setDefaultMountPointPrefix( const QString& path )

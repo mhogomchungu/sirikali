@@ -1494,7 +1494,41 @@ void sirikali::updateFavoritesInContextMenu()
 
 		bool mounted( const QString& e )
 		{
-			return this->row( e ) != -1 ;
+			auto s = this->row( e ) ;
+
+			if( s == -1 ){
+
+				return false ;
+			}else{
+				m_cipherPath.removeAt( s ) ;
+				m_mountPath.removeAt( s ) ;
+
+				return true ;
+			}
+		}
+
+		void addMounted( QMenu * m,bool e )
+		{
+			for( int i = 0 ; i < m_cipherPath.size() ; i++ ){
+
+				auto ac = new QAction( m ) ;
+
+				QString n ;
+
+				if( e ){
+
+					n = m_cipherPath.at( i ) + "\n" + m_mountPath.at( i ) ;
+				}else{
+					n = m_cipherPath.at( i ) ;
+				}
+
+				ac->setText( n ) ;
+				ac->setObjectName( n ) ;
+				ac->setCheckable( true ) ;
+				ac->setChecked( true ) ;
+
+				m->addAction( ac ) ;
+			}
 		}
 	private:
 		QStringList m_cipherPath ;
@@ -1534,7 +1568,7 @@ void sirikali::updateFavoritesInContextMenu()
 		m_trayIcon.setContextMenu( m_context_menu ) ;
 	}
 
-	settings::instance().readFavorites( m_context_menu ) ;
+	auto e = settings::instance().readFavorites( m_context_menu ) ;
 
 	auto s = m_context_menu->actions() ;
 
@@ -1546,6 +1580,8 @@ void sirikali::updateFavoritesInContextMenu()
 		it->setCheckable( true ) ;
 		it->setChecked( m.mounted( it->objectName() ) ) ;
 	}
+
+	m.addMounted( m_context_menu,e ) ;
 
 	m_context_menu->addSeparator() ;
 
@@ -1628,8 +1664,6 @@ void sirikali::updateList( const volumeInfo& entry )
 		tablewidget::updateRow( table,entry.mountInfo().minimalList(),row,this->font() ) ;
 
 		tablewidget::selectRow( table,row ) ;
-
-		this->updateFavoritesInContextMenu() ;
 	}
 }
 
@@ -1761,6 +1795,8 @@ void sirikali::pbUpdate()
 	}else{
 		this->updateVolumeList( mountinfo::unlockedVolumes().await() ) ;
 	}
+
+	this->updateFavoritesInContextMenu() ;
 }
 
 void sirikali::updateVolumeList( const std::vector< volumeInfo >& r )
