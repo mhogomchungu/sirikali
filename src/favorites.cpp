@@ -177,7 +177,7 @@ std::vector<favorites::entry> favorites::readFavorites() const
 
 	auto a = m.value() ;
 
-	const auto s = QDir( a ).entryList( QDir::Filter::Files ) ;
+	const auto s = QDir( a ).entryList( QDir::Filter::Files | QDir::Filter::Hidden ) ;
 
 	std::vector<favorites::entry> e ;
 
