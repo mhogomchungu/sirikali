@@ -230,6 +230,23 @@ void favorites::updateFavorites()
 	}
 }
 
+static void _set_tristate_entry( sirikali::json& json,
+				 const favorites::triState& state,
+				 const char * entry )
+{
+	if( state.defined() ){
+
+		if( state.True() ){
+
+			json[ entry ] = "true" ;
+		}else{
+			json[ entry ] = "false" ;
+		}
+	}else{
+		json[ entry ] = "" ;
+	}
+}
+
 favorites::error favorites::add( const favorites::entry& e )
 {
 	auto m = _config_path() ;
@@ -253,29 +270,8 @@ favorites::error favorites::add( const favorites::entry& e )
 	json[ "reverseMode" ]          = e.reverseMode ;
 	json[ "volumeNeedNoPassword" ] = e.volumeNeedNoPassword ;
 
-	if( e.readOnlyMode.defined() ){
-
-		if( e.readOnlyMode.True() ){
-
-			json[ "mountReadOnly" ] = "true" ;
-		}else{
-			json[ "mountReadOnly" ] = "false" ;
-		}
-	}else{
-		json[ "mountReadOnly" ] = "" ;
-	}
-
-	if( e.autoMount.defined() ){
-
-		if( e.autoMount.True() ){
-
-			json[ "autoMountVolume" ] = "true" ;
-		}else{
-			json[ "autoMountVolume" ] = "false" ;
-		}
-	}else{
-		json[ "autoMountVolume" ] = "" ;
-	}
+	_set_tristate_entry( json,e.readOnlyMode,"mountReadOnly" ) ;
+	_set_tristate_entry( json,e.autoMount,"autoMountVolume" ) ;
 
 	auto a = _create_path( m.value(),e ) ;
 
