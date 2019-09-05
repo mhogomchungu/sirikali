@@ -401,7 +401,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>SiriKali Will Have To Be Started For These Changes To Take Effect.</string>
+       <string>SiriKali Will Have To Be Restarted For These Changes To Take Effect.</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
