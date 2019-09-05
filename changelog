@@ -174,3 +174,4 @@ version 1.4.0(unreleased)
 -- Add a config option to show favorites entries on the tray icon context menu with an ability to
    mount/unmount volume from the menu.
 -- Fix a bug that prevented favorite entries with cipher path that starts with a dot from showing up in the GUI.
+-- Add GUI options to enable HiDPI option to scale the GUI when runing in HiDPI displays.
