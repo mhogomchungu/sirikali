@@ -744,9 +744,9 @@ void favorites2::ShowUI( favorites::type type )
 
 	if( utility::platformIsWindows() ){
 
-		m_ui->lineEditMountPath->setText( "Z:" ) ;
+		m_ui->lineEditMountPath->setText( utility::freeWindowsDriveLetter() ) ;
 	}else{
-		m_ui->lineEditMountPath->clear() ;
+		m_ui->lineEditMountPath->setText( m_settings.mountPath() ) ;
 	}
 
 	if( m_type == favorites::type::sshfs ){
@@ -758,7 +758,6 @@ void favorites2::ShowUI( favorites::type type )
 		m_ui->labelCofigFilePath->setText( tr( "SSH_AUTH_SOCK Socket Path (Optional)" ) ) ;
 		m_ui->labelIdleTimeOut->setText( tr( "IdentityFile Path (Optional)" ) ) ;
 		m_ui->lineEditVolumeType->setText( "Sshfs" ) ;
-		m_ui->lineEditMountPath->setText( m_settings.mountPath() ) ;
 		m_ui->pbEdit->setEnabled( false ) ;
 	}else{
 		m_ui->pbIdentityFile->setVisible( false ) ;
