@@ -142,6 +142,10 @@ public:
 	QString mountPath( const QString& ) ;
 	QString ConfigLocation() ;
 	QString environmentalVariableVolumeKey() ;
+	bool enableHighDpiScaling() ;
+	void enableHighDpiScaling( bool ) ;
+	QByteArray enabledHighDpiScalingFactor() ;
+	void enabledHighDpiScalingFactor( const QString& ) ;
 	void removeKey( const QString& ) ;
 	void allowExternalToolsToReadPasswords( bool ) ;
 	bool allowExternalToolsToReadPasswords() ;

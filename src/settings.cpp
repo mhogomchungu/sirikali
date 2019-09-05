@@ -195,6 +195,36 @@ bool settings::enableRevealingPasswords()
 	}
 }
 
+bool settings::enableHighDpiScaling()
+{
+	if( !m_settings.contains( "EnableHighDpiScaling" ) ){
+
+		m_settings.setValue( "EnableHighDpiScaling",false ) ;
+	}
+
+	return m_settings.value( "EnableHighDpiScaling" ).toBool() ;
+}
+
+void settings::enableHighDpiScaling( bool e )
+{
+	m_settings.setValue( "EnableHighDpiScaling",e ) ;
+}
+
+QByteArray settings::enabledHighDpiScalingFactor()
+{
+	if( !m_settings.contains( "EnabledHighDpiScalingFactor" ) ){
+
+		m_settings.setValue( "EnabledHighDpiScalingFactor","1.0" ) ;
+	}
+
+	return m_settings.value( "EnabledHighDpiScalingFactor" ).toByteArray() ;
+}
+
+void settings::enabledHighDpiScalingFactor( const QString& e )
+{
+	m_settings.setValue( "EnabledHighDpiScalingFactor",e ) ;
+}
+
 void settings::clearFavorites()
 {
 	m_settings.setValue( "FavoritesVolumes",QStringList() ) ;
@@ -252,35 +282,12 @@ void settings::scaleGUI()
 {
 #if QT_VERSION >= 0x050600
 
-	bool e = [ this ](){
-
-		if( m_settings.contains( "EnableHighDpiScaling" ) ){
-
-			return m_settings.value( "EnableHighDpiScaling" ).toBool() ;
-		}else{
-			bool s = false ;
-			m_settings.setValue( "EnableHighDpiScaling",s ) ;
-			m_settings.setValue( "EnabledHighDpiScalingFactor",QString( "1" ) ) ;
-			return s ;
-		}
-	}() ;
-
-	if( e ){
+	if( this->enableHighDpiScaling() ){
 
 		QApplication::setAttribute( Qt::AA_EnableHighDpiScaling ) ;
 
-		qputenv( "QT_SCALE_FACTOR",[ this ](){
-
-			if( m_settings.contains( "EnabledHighDpiScalingFactor" ) ){
-
-				return m_settings.value( "EnabledHighDpiScalingFactor" ).toString().toLatin1() ;
-			}else{
-				m_settings.setValue( "EnabledHighDpiScalingFactor",QString( "1" ) ) ;
-				return QByteArray( "1" ) ;
-			}
-		}() ) ;
+		qputenv( "QT_SCALE_FACTOR",this->enabledHighDpiScalingFactor().constData() ) ;
 	}
-
 #endif
 }
 

@@ -344,6 +344,11 @@ configOptions::configOptions( QWidget * parent,
 
 		m_ui->lineEditRunPeriodically->clear() ;
 	} ) ;
+
+	connect( m_ui->cbHiDPI,&QCheckBox::toggled,[ this ]( bool e ){
+
+		m_ui->lineEditHiDPI->setEnabled( e ) ;
+	} ) ;
 }
 
 configOptions::~configOptions()
@@ -396,6 +401,12 @@ void configOptions::ShowUI()
 
 	m_ui->lineEditRunPeriodicallyInterval->setText( QString::number( m_settings.runCommandOnIntervalTime() ) ) ;
 
+	m_ui->cbHiDPI->setChecked( m_settings.enableHighDpiScaling() ) ;
+
+	m_ui->lineEditHiDPI->setText( m_settings.enabledHighDpiScalingFactor() ) ;
+
+	m_ui->lineEditHiDPI->setEnabled( m_ui->cbHiDPI->isChecked() ) ;
+
 	if( utility::platformIsWindows() ){
 
 		m_ui->lineEditMountPointPrefix->setText( m_settings.windowsExecutableSearchPath() ) ;
@@ -415,6 +426,22 @@ void configOptions::HideUI()
 	m_settings.preUnMountCommand( m_ui->lineEditBeforesUnMount->text() ) ;
 	m_settings.runCommandOnMount( m_ui->lineEditAfterMountCommand->text() ) ;
 	m_settings.runCommandOnInterval( m_ui->lineEditRunPeriodically->text() ) ;
+	m_settings.enableHighDpiScaling( m_ui->cbHiDPI->isChecked() ) ;
+
+	m_settings.enabledHighDpiScalingFactor( [ this ]()->QString{
+
+		auto s = m_ui->lineEditHiDPI->text() ;
+		bool ok ;
+
+		s.toDouble( &ok ) ;
+
+		if( ok ){
+
+			return s ;
+		}else{
+			return "1.0" ;
+		}
+	}() ) ;
 
 	bool ok ;
 
