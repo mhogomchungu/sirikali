@@ -214,7 +214,7 @@ QByteArray settings::enabledHighDpiScalingFactor()
 {
 	if( !m_settings.contains( "EnabledHighDpiScalingFactor" ) ){
 
-		m_settings.setValue( "EnabledHighDpiScalingFactor","1.0" ) ;
+		m_settings.setValue( "EnabledHighDpiScalingFactor","1.1" ) ;
 	}
 
 	return m_settings.value( "EnabledHighDpiScalingFactor" ).toByteArray() ;
@@ -286,7 +286,7 @@ void settings::scaleGUI()
 
 		QApplication::setAttribute( Qt::AA_EnableHighDpiScaling ) ;
 
-		qputenv( "QT_SCALE_FACTOR",this->enabledHighDpiScalingFactor().constData() ) ;
+		qputenv( "QT_SCALE_FACTOR",this->enabledHighDpiScalingFactor() ) ;
 	}
 #endif
 }
