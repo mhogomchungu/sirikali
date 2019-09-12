@@ -69,13 +69,13 @@ Check first if SiriKali is present in your distribution's repositories and use t
 
 ## Screenshots
 
-<a href="http://tinypic.com?ref=1572g3n" target="_blank"><img src="http://i67.tinypic.com/1572g3n.png" border="0" alt="Image and video hosting by TinyPic"></a>
+<a href="https://github.com/mhogomchungu/sirikali/raw/master/images/Screenshot_20190912_113741.png" target="_blank"><img src="https://github.com/mhogomchungu/sirikali/raw/master/images/Screenshot_20190912_113741.png"></a>
 
-<a href="http://tinypic.com?ref=v81umb" target="_blank"><img src="http://i64.tinypic.com/v81umb.png" border="0" alt="Image and video hosting by TinyPic"></a>
+<a href="https://github.com/mhogomchungu/sirikali/raw/master/images/Screenshot_20190912_113930.png" target="_blank"><img src="https://github.com/mhogomchungu/sirikali/raw/master/images/Screenshot_20190912_113930.png"></a>
 
-<a href="http://tinypic.com?ref=2h2hax3" target="_blank"><img src="http://i67.tinypic.com/2h2hax3.png" border="0" alt="Image and video hosting by TinyPic"></a>
+<a href="https://github.com/mhogomchungu/sirikali/raw/master/images/Screenshot_20190912_114512.png" target="_blank"><img src="https://github.com/mhogomchungu/sirikali/raw/master/images/Screenshot_20190912_114512.png"></a>
 
-<a href="http://tinypic.com?ref=2rojij6" target="_blank"><img src="http://i65.tinypic.com/2rojij6.png" border="0" alt="Image and video hosting by TinyPic"></a>
+<a href="https://github.com/mhogomchungu/sirikali/raw/master/images/Screenshot_20190912_114700.png" target="_blank"><img src="https://github.com/mhogomchungu/sirikali/raw/master/images/Screenshot_20190912_114700.png"></a>
 
 ## Contact info:
 ```
