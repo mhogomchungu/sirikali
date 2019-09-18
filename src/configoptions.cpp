@@ -128,7 +128,7 @@ configOptions::configOptions( QWidget * parent,
 		m_settings.autoMountFavoritesOnStartUp( e ) ;
 	} ) ;
 
-	m_ui->cbAutoMountWhenAvailable->setChecked( settings::instance().autoMountFavoritesOnAvailable() ) ;
+	m_ui->cbAutoMountWhenAvailable->setChecked( m_settings.autoMountFavoritesOnAvailable() ) ;
 
 
 	connect( m_ui->cbAllowExternalToolsToReadPasswords,&QCheckBox::toggled,[ this ]( bool e ){

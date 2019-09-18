@@ -637,7 +637,7 @@ void favorites2::devicePathTextChange( QString txt )
 
 			m_ui->lineEditMountPath->setText( txt ) ;
 		}else{
-			auto m = settings::instance().mountPath( s ) ;
+			auto m = m_settings.mountPath( s ) ;
 			m_ui->lineEditMountPath->setText( m ) ;
 		}
 	}

@@ -445,9 +445,14 @@ bool utility::enablePolkit()
 
 void utility::initGlobals()
 {
+	settings::instance().scaleGUI() ;
+
 	favorites::instance().updateFavorites() ;
+
 	utility::setGUIThread() ;
+
 #ifdef Q_OS_LINUX
+
 	auto uid = getuid() ;
 
 	QString a = "/tmp/SiriKali-" + QString::number( uid ) ;

@@ -428,10 +428,11 @@ void sirikali::setUpAppMenu()
 		return e ;
 	} ;
 
-#ifndef Q_OS_WIN
-	m->addAction( _addAction( false,false,tr( "Check For Updates" ),"Check For Updates",
-				  SLOT( updateCheck() ) ) ) ;
-#endif
+	if( !utility::platformIsWindows() ){
+
+		m->addAction( _addAction( false,false,tr( "Check For Updates" ),"Check For Updates",
+					  SLOT( updateCheck() ) ) ) ;
+	}
 	m->addAction( _addAction( false,false,tr( "Unmount All" ),
 				  "Unmount All",SLOT( unMountAll() ) ) ) ;
 

@@ -38,7 +38,6 @@
 #include "plugin.h"
 #include "crypto.h"
 #include "configfileoption.h"
-#include "settings.h"
 #include "walletconfig.h"
 
 static QString _kwallet()
@@ -73,13 +72,14 @@ keyDialog::keyDialog( QWidget * parent,
 	m_autoOpenMountPoint( o ),
 	m_create( false ),
 	m_secrets( s ),
+	m_settings( settings::instance() ),
 	m_done( std::move( f ) ),
 	m_volumes( std::move( z ) ),
 	m_walletKey( s )
 {
 	m_ui->setupUi( this ) ;
 
-	settings::instance().setParent( parent,&m_parentWidget,this ) ;
+	m_settings.setParent( parent,&m_parentWidget,this ) ;
 	utility::setWindowOptions( this ) ;
 
 	this->setFont( parent->font() ) ;
@@ -121,12 +121,13 @@ keyDialog::keyDialog( QWidget * parent,
 	m_autoOpenMountPoint( o ),
 	m_create( e.isNotValid() ),
 	m_secrets( s ),
+	m_settings( settings::instance() ),
 	m_cancel( std::move( p ) ),
 	m_walletKey( s )
 {
 	m_ui->setupUi( this ) ;
 
-	settings::instance().setParent( parent,&m_parentWidget,this ) ;
+	m_settings.setParent( parent,&m_parentWidget,this ) ;
 	utility::setWindowOptions( this ) ;
 
 	this->setFont( parent->font() ) ;
@@ -157,7 +158,7 @@ void keyDialog::setUpInitUI()
 		m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
 	}
 
-	m_reUseMountPoint = settings::instance().reUseMountPoint() ;
+	m_reUseMountPoint = m_settings.reUseMountPoint() ;
 
 	m_checkBoxOriginalText = m_ui->checkBoxOpenReadOnly->text() ;
 
@@ -191,7 +192,7 @@ void keyDialog::setUpInitUI()
 	connect( m_ui->pbMountPoint_1,&QPushButton::clicked,[ this ](){
 
 		auto msg = tr( "Select A Folder To Create A Mount Point In." ) ;
-		auto e = utility::getExistingDirectory( this,msg,settings::instance().homePath() ) ;
+		auto e = utility::getExistingDirectory( this,msg,m_settings.homePath() ) ;
 
 		if( !e.isEmpty() ){
 
@@ -219,10 +220,10 @@ void keyDialog::setUpInitUI()
 
 			//m_ui->lineEditFolderPath->setText( "Z:" ) ;
 			//utility::setWindowsMountPointOptions( this,m_ui->lineEditFolderPath,m_ui->pbOpenFolderPath ) ;
-			m_ui->lineEditFolderPath->setText( settings::instance().homePath() + "/Desktop/" ) ;
+			m_ui->lineEditFolderPath->setText( m_settings.homePath() + "/Desktop/" ) ;
 			//m_ui->pbOpenFolderPath->setIcon( QIcon( ":/folder.png" ) ) ;
 		}else{
-			m_ui->lineEditFolderPath->setText( settings::instance().homePath() + "/" ) ;
+			m_ui->lineEditFolderPath->setText( m_settings.homePath() + "/" ) ;
 		}
 
 		m_ui->lineEditMountPoint->setFocus() ;
@@ -252,7 +253,7 @@ void keyDialog::setUpInitUI()
 
 	this->setFixedSize( this->size() ) ;
 
-	m_ui->checkBoxOpenReadOnly->setChecked( settings::instance().getOpenVolumeReadOnlyOption() ) ;
+	m_ui->checkBoxOpenReadOnly->setChecked( m_settings.getOpenVolumeReadOnlyOption() ) ;
 
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
 
@@ -306,7 +307,7 @@ void keyDialog::setUpInitUI()
 
 	m_ui->checkBoxVisibleKey->setToolTip( tr( "Check This Box To Make Password Visible" ) ) ;
 
-	m_ui->checkBoxVisibleKey->setEnabled( settings::instance().enableRevealingPasswords() ) ;
+	m_ui->checkBoxVisibleKey->setEnabled( m_settings.enableRevealingPasswords() ) ;
 }
 
 void keyDialog::setVolumeToUnlock()
@@ -346,7 +347,7 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 			m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
 		}else{
 			m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
-			m_ui->checkBoxOpenReadOnly->setChecked( settings::instance().getOpenVolumeReadOnlyOption() ) ;
+			m_ui->checkBoxOpenReadOnly->setChecked( m_settings.getOpenVolumeReadOnlyOption() ) ;
 		}
 	}
 
@@ -442,9 +443,9 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 				const auto& e = siritask::mountEngine( m_path,m_configFile ).engine ;
 
-				if( settings::instance().windowsUseMountPointPath( e.name() ) ){
+				if( m_settings.windowsUseMountPointPath( e.name() ) ){
 
-					auto mm = settings::instance().windowsMountPointPath() ;
+					auto mm = m_settings.windowsMountPointPath() ;
 
 					utility::createFolder( mm ) ;
 
@@ -478,12 +479,12 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 				if( m.isEmpty() ){
 
-					return settings::instance().mountPath( m_path.split( "/" ).last() ) ;
+					return m_settings.mountPath( m_path.split( "/" ).last() ) ;
 				}else{
-					return settings::instance().mountPath( m.split( "/" ).last() ) ;
+					return m_settings.mountPath( m.split( "/" ).last() ) ;
 				}
 			}else{
-				return settings::instance().mountPath( [ &m,this ](){
+				return m_settings.mountPath( [ &m,this ](){
 
 					if( m.isEmpty() ){
 
@@ -663,7 +664,7 @@ void keyDialog::cbMountReadOnlyStateChanged( int state )
 		return ;
 	}
 
-	auto e = settings::instance().setOpenVolumeReadOnly( this,state == Qt::Checked ) ;
+	auto e = m_settings.setOpenVolumeReadOnly( this,state == Qt::Checked ) ;
 
 	m_ui->checkBoxOpenReadOnly->setChecked( e ) ;
 
@@ -700,7 +701,7 @@ void keyDialog::textChanged( QString e )
 void keyDialog::pbMountPointPath()
 {
 	auto msg = tr( "Select A Folder To Create A Mount Point In." ) ;
-	auto e = utility::getExistingDirectory( this,msg,settings::instance().homePath() ) ;
+	auto e = utility::getExistingDirectory( this,msg,m_settings.homePath() ) ;
 
 	if( !e.isEmpty() ){
 
@@ -713,7 +714,7 @@ void keyDialog::pbMountPointPath()
 void keyDialog::pbFolderPath()
 {
 	auto msg = tr( "Select A Folder To Create A Mount Point In." ) ;
-	auto e = utility::getExistingDirectory( this,msg,settings::instance().homePath() ) ;
+	auto e = utility::getExistingDirectory( this,msg,m_settings.homePath() ) ;
 
 	if( !e.isEmpty() ){
 
@@ -743,7 +744,7 @@ void keyDialog::enableAll()
 
 	m_ui->pbkeyOption->setEnabled( enable ) ;
 
-	if( settings::instance().enableRevealingPasswords() ){
+	if( m_settings.enableRevealingPasswords() ){
 
 		m_ui->checkBoxVisibleKey->setEnabled( this->keySelected( index ) ) ;
 	}
@@ -827,7 +828,7 @@ void keyDialog::KeyFile()
 	if( m_ui->cbKeyType->currentIndex() == keyDialog::keyfile ){
 
 		auto msg = tr( "Select A File To Be Used As A Keyfile." ) ;
-		auto e = QFileDialog::getOpenFileName( this,msg,settings::instance().homePath() ) ;
+		auto e = QFileDialog::getOpenFileName( this,msg,m_settings.homePath() ) ;
 
 		if( !e.isEmpty() ){
 
@@ -841,7 +842,7 @@ void keyDialog::KeyFile()
 void keyDialog::pbkeyOption()
 {
 	auto msg = tr( "Select A File To Be Used As A Keyfile." ) ;
-	auto e = QFileDialog::getOpenFileName( this,msg,settings::instance().homePath() ) ;
+	auto e = QFileDialog::getOpenFileName( this,msg,m_settings.homePath() ) ;
 
 	if( !e.isEmpty() ){
 
@@ -942,7 +943,7 @@ void keyDialog::pbOpen()
 
 void keyDialog::openMountPoint( const QString& m )
 {
-	if( settings::instance().autoOpenFolderOnMount() ){
+	if( m_settings.autoOpenFolderOnMount() ){
 
 		utility::Task::exec( m_fileManagerOpen + " " + utility::Task::makePath( m ) ) ;
 	}
@@ -1025,9 +1026,9 @@ void keyDialog::encryptedFolderCreate()
 
 	if( utility::platformIsWindows() ){
 
-		if( settings::instance().windowsUseMountPointPath( m_exe.toLower() ) ){
+		if( m_settings.windowsUseMountPointPath( m_exe.toLower() ) ){
 
-			m = settings::instance().windowsMountPointPath() + m ;
+			m = m_settings.windowsMountPointPath() + m ;
 
 			if( SiriKali::Windows::mountPointTaken( m ) ){
 
@@ -1054,7 +1055,7 @@ void keyDialog::encryptedFolderCreate()
 		}
 
 	}else{
-		m = settings::instance().mountPath( utility::mountPathPostFix( m ) ) ;
+		m = m_settings.mountPath( utility::mountPathPostFix( m ) ) ;
 
 		if( utility::pathExists( m ) && !m_reUseMountPoint ){
 
@@ -1112,7 +1113,7 @@ void keyDialog::encryptedFolderCreate()
 
 void keyDialog::pbSetKeyKeyFile()
 {
-	auto m = settings::instance().homePath() ;
+	auto m = m_settings.homePath() ;
 	auto a = QFileDialog::getOpenFileName( this,tr( "KeyFile" ),m,nullptr ) ;
 	m_ui->lineEditSetKeyKeyFile->setText( a ) ;
 }
@@ -1157,8 +1158,6 @@ void keyDialog::setKeyInWallet()
 		}
 	}() ;
 
-	auto& settings = settings::instance() ;
-
 	auto _add_key = [ & ]{
 
 		QString id ;
@@ -1184,8 +1183,8 @@ void keyDialog::setKeyInWallet()
 				m_walletKey.set = true ;
 				m_walletKey.id = id ;
 				m_walletKey.bk = w->backEnd() ;
-				m_walletKey.walletName = settings.walletName( m_walletKey.bk ) ;
-				m_walletKey.appName = settings.applicationName() ;
+				m_walletKey.walletName = m_settings.walletName( m_walletKey.bk ) ;
+				m_walletKey.appName = m_settings.applicationName() ;
 
 				this->openVolume() ;
 
@@ -1216,11 +1215,11 @@ void keyDialog::setKeyInWallet()
 
 			this->hide() ;
 
-			s = w->open( settings.walletName( bk ),settings.applicationName() ) ;
+			s = w->open( m_settings.walletName( bk ),m_settings.applicationName() ) ;
 
 			this->show() ;
 		}else{
-			s = w->open( settings.walletName( bk ),settings.applicationName() ) ;
+			s = w->open( m_settings.walletName( bk ),m_settings.applicationName() ) ;
 		}
 
 		if( s ){
@@ -1272,7 +1271,7 @@ void keyDialog::pbSetKey()
 
 			return crypto::hmac_key( keyFile,passphrase ) ;
 		}else{
-			auto exe = settings::instance().externalPluginExecutable() ;
+			auto exe = m_settings.externalPluginExecutable() ;
 
 			if( exe.isEmpty() ){
 
@@ -1372,7 +1371,7 @@ void keyDialog::encryptedFolderMount()
 
 		if( utility::platformIsWindows() ){
 
-			settings::instance().reUseMountPoint( true ) ;
+			m_settings.reUseMountPoint( true ) ;
 			m_reUseMountPoint = true ;
 		}else{
 			this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
@@ -1572,7 +1571,7 @@ void keyDialog::cbActicated( QString e )
 
 	auto _showVisibleKeyOption = [ this ]( bool e ){
 
-		bool s = settings::instance().enableRevealingPasswords() ;
+		bool s = m_settings.enableRevealingPasswords() ;
 		m_ui->checkBoxVisibleKey->setEnabled( e && s ) ;
 		m_ui->checkBoxVisibleKey->setChecked( false ) ;
 		m_ui->checkBoxVisibleKey->setVisible( e ) ;

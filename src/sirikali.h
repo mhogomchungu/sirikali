@@ -57,7 +57,7 @@ class sirikali : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit sirikali() ;
+	sirikali() ;
 	int start( QApplication& ) ;
 	~sirikali() ;
 private slots:
