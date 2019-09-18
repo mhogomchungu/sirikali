@@ -576,6 +576,11 @@ p, li { white-space: pre-wrap; }
         <translation>Sélectionner la langue</translation>
     </message>
     <message>
+        <location filename="../src/configoptions.ui" line="404"/>
+        <source>SiriKali Will Have To Be Restarted For These Changes To Take Effect.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../src/configoptions.ui" line="467"/>
         <source>&amp;KWallet</source>
         <translation>&amp;KWallet</translation>
@@ -640,11 +645,6 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configoptions.ui" line="370"/>
         <source>Enable HiDPI Scalling</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/configoptions.ui" line="404"/>
-        <source>SiriKali Will Have To Be Started For These Changes To Take Effect.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

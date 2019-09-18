@@ -618,7 +618,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="404"/>
-        <source>SiriKali Will Have To Be Started For These Changes To Take Effect.</source>
+        <source>SiriKali Will Have To Be Restarted For These Changes To Take Effect.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
