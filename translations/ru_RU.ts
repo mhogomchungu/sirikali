@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="ru_UA">
+<TS version="2.0" language="ru_UA">
 <context>
     <name>DialogMsg</name>
     <message>
@@ -578,7 +578,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configoptions.ui" line="404"/>
         <source>SiriKali Will Have To Be Restarted For These Changes To Take Effect.</source>
-        <translation type="unfinished"></translation>
+        <translation>SiriKali требует перезагрузки, чтобы эти изменения вступили в силу.</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="467"/>
@@ -629,23 +629,24 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configoptions.ui" line="306"/>
         <source>Show Favorite List On Context Menu(Restart Required)</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать список избранного в контекстном меню (требуется перезагрузка)</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="315"/>
         <source>HiDPI Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Настройки HiDPI</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="350"/>
         <source>Scale Factor
 (Enter A Decimal Number)</source>
-        <translation type="unfinished"></translation>
+        <translation>Масштаб
+(Введите десятичное число)</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="370"/>
         <source>Enable HiDPI Scalling</source>
-        <translation type="unfinished"></translation>
+        <translation>Включить масштабирование HiDPI</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="417"/>
@@ -2009,7 +2010,7 @@ Please Report This Serious Bug.</source>
     <message>
         <location filename="../src/sirikali.cpp" line="1159"/>
         <source>Add To Favorites</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить в Избранное</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="1435"/>
