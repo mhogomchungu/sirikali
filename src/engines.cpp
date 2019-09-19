@@ -38,7 +38,8 @@ QStringList engines::executableSearchPaths()
 
 	if( utility::platformIsWindows() ){
 
-		QStringList s = { a + "\\bin\\",
+		QStringList s = { QDir().currentPath() + "\\bin\\",
+				  a + "\\bin\\",
 				  a + "\\.bin\\",
 				  settings::instance().windowsExecutableSearchPath() + "\\" } ;
 
@@ -70,17 +71,22 @@ QStringList engines::executableSearchPaths()
 	}
 }
 
+static bool _has_no_extension( const QString& e )
+{
+	return !e.contains( '.' ) ;
+}
+
 QString engines::executableFullPath( const QString& f )
 {
 	if( utility::platformIsWindows() ){
 
 		if( utility::startsWithDriveLetter( f ) ){
 
-			if( f.endsWith( ".exe" ) ){
+			if( _has_no_extension( f ) ){
 
-				return f ;
-			}else{
 				return f + ".exe " ;
+			}else{
+				return f ;
 			}
 		}
 	}else{
@@ -92,7 +98,7 @@ QString engines::executableFullPath( const QString& f )
 
 	QString e = f ;
 
-	if( utility::platformIsWindows() && !e.endsWith( ".exe" ) ){
+	if( utility::platformIsWindows() && _has_no_extension( e ) ){
 
 		e += ".exe" ;
 	}
@@ -300,6 +306,31 @@ const QString& engines::engine::incorrectPasswordCode() const
 	return m_Options.incorrectPassWordCode ;
 }
 
+const QString& engines::engine::unMountCommand() const
+{
+	return m_Options.unMountCommand ;
+}
+
+const QString& engines::engine::windowsUnMountCommand() const
+{
+	return m_Options.windowsUnMountCommand ;
+}
+
+const QString& engines::engine::windowsInstallPathRegistryKey() const
+{
+	return m_Options.windowsInstallPathRegistryKey ;
+}
+
+const QString& engines::engine::windowsInstallPathRegistryValue() const
+{
+	return m_Options.windowsInstallPathRegistryValue ;
+}
+
+const QStringList& engines::engine::volumePropertiesCommands() const
+{
+	return m_Options.volumePropertiesCommands ;
+}
+
 static bool _contains( const QString& e,const QStringList& m )
 {
 	for( const auto& it : m ){
@@ -335,6 +366,13 @@ QString engines::engine::setConfigFilePath( const QString& e ) const
 	}else{
 		return m_Options.configFileArgument + " " + e ;
 	}
+}
+
+QString engines::engine::setPassword( const QString& e ) const
+{
+	auto s = m_Options.passwordFormat ;
+	s.replace( "%{password}",e ) ;
+	return s ;
 }
 
 engines::engine::status engines::engine::notFoundCode() const

@@ -19,10 +19,14 @@
 
 #include "cryfs.h"
 #include "cryfscreateoptions.h"
+#include "../win.h"
 
 static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
+
+	auto a = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{26116061-4F99-4C44-A178-2153FA396308}" ;
+	auto b = "InstallLocation" ;
 
 	s.supportsMountPathsOnWindows = true ;
 	s.customBackend         = false ;
@@ -31,10 +35,14 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = true ;
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = true ;
+	s.passwordFormat        = "%{password}" ;
 	s.idleString            = "--unmount-idle" ;
 	s.executableName        = "cryfs" ;
 	s.incorrectPasswordText = "Could not load config file. Did you enter the correct password?" ;
 	s.configFileArgument    = "--config" ;
+	s.windowsInstallPathRegistryKey   = a ;
+	s.windowsInstallPathRegistryValue = b ;
+	s.windowsUnMountCommand = SiriKali::Windows::engineInstalledDir( a,b ) + "\\bin\\cryfs-unmount.exe" ;
 	s.successfulMountedList = QStringList{ "Mounting filesystem." } ;
 	s.configFileNames       = QStringList{ "cryfs.config",".cryfs.config" } ;
 	s.fuseNames             = QStringList{ "fuse.cryfs" } ;
@@ -51,8 +59,11 @@ cryfs::cryfs() : engines::engine( _setOptions() )
 	qputenv( "CRYFS_FRONTEND","noninteractive" ) ;
 }
 
-engines::engine::args cryfs::command( const engines::engine::cmdArgsList& args ) const
+engines::engine::args cryfs::command( const QString& password,
+				      const engines::engine::cmdArgsList& args ) const
 {
+	Q_UNUSED( password ) ;
+
 	auto separator = [](){
 
 		auto m = utility::unwrap( utility::backendIsLessThan( "cryfs","0.10" ) ) ;
@@ -138,11 +149,6 @@ engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 	}
 
 	return engines::engine::status::backendFail ;
-}
-
-QString cryfs::setPassword( const QString& e ) const
-{
-	return e ;
 }
 
 QString cryfs::installedVersionString() const

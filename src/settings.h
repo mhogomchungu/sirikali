@@ -142,6 +142,10 @@ public:
 	QString mountPath( const QString& ) ;
 	QString ConfigLocation() ;
 	QString environmentalVariableVolumeKey() ;
+	bool enableHighDpiScaling() ;
+	void enableHighDpiScaling( bool ) ;
+	QByteArray enabledHighDpiScalingFactor() ;
+	void enabledHighDpiScalingFactor( const QString& ) ;
 	void removeKey( const QString& ) ;
 	void allowExternalToolsToReadPasswords( bool ) ;
 	bool allowExternalToolsToReadPasswords() ;
@@ -171,6 +175,8 @@ public:
 	void autoMountFavoritesOnStartUp( bool ) ;
 	void autoMountFavoritesOnAvailable( bool ) ;
 	bool autoMountFavoritesOnAvailable() ;
+	void showFavoritesInContextMenu( bool ) ;
+	bool showFavoritesInContextMenu( void ) ;
 	int networkTimeOut() ;
 	bool showMountDialogWhenAutoMounting() ;
 	int checkForUpdateInterval() ;
@@ -189,7 +195,7 @@ public:
 	QSettings& backend();
 	bool setOpenVolumeReadOnly( QWidget * parent,bool checked ) ;
 	bool getOpenVolumeReadOnlyOption() ;
-	void readFavorites( QMenu * m ) ;
+	bool readFavorites( QMenu * m ) ;
 	QString localizationLanguagePath() ;
 	void languageMenu( QMenu * m,QAction * ac,settings::translator& ) ;
 	void setLocalizationLanguage( bool translate,QMenu * m,settings::translator& ) ;

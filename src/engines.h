@@ -164,12 +164,18 @@ public:
 			bool supportsMountPathsOnWindows ;
 			bool requiresAPassword ;
 			bool customBackend ;
+			QString passwordFormat ;
 			QString reverseString ;
 			QString idleString ;
 			QString executableName ;
 			QString incorrectPasswordText ;
 			QString incorrectPassWordCode ;
 			QString configFileArgument ;
+			QString unMountCommand ;
+			QString windowsUnMountCommand ;
+			QString windowsInstallPathRegistryKey ;
+			QString windowsInstallPathRegistryValue ;
+			QStringList volumePropertiesCommands ;
 			QStringList successfulMountedList ;
 			QStringList failedToMountList ;
 			QStringList names ;
@@ -214,6 +220,7 @@ public:
 		const QStringList& fuseNames() const ;
 		const QStringList& configFileNames() const ;
 		const QStringList& fileExtensions() const ;
+		const QStringList& volumePropertiesCommands() const ;
 
 		const QString& reverseString() const ;
 		const QString& idleString() const ;
@@ -221,17 +228,21 @@ public:
 		const QString& name() const ;
 		const QString& configFileName() const ;
 		const QString& incorrectPasswordText() const ;
-                const QString& incorrectPasswordCode() const ;
+		const QString& incorrectPasswordCode() const ;
+		const QString& unMountCommand() const ;
+		const QString& windowsUnMountCommand() const ;
+		const QString& windowsInstallPathRegistryKey() const ;
+		const QString& windowsInstallPathRegistryValue() const ;
 
 		engine::engine::error errorCode( const QString& ) const ;
 
 		QString setConfigFilePath( const QString& ) const ;
+		QString setPassword( const QString& ) const ;
 
 		virtual ~engine() ;
 
 		virtual QString installedVersionString() const = 0 ;
-		virtual QString setPassword( const QString& ) const = 0 ;
-		virtual args command( const engines::engine::cmdArgsList& args ) const = 0 ;
+		virtual args command( const QString& password,const engines::engine::cmdArgsList& args ) const = 0 ;
 		virtual engines::engine::status errorCode( const QString& e,int s ) const = 0 ;
 		using function = std::function< void( const Options& ) > ;
 		virtual void GUICreateOptionsinstance( QWidget * parent,function ) const = 0 ;

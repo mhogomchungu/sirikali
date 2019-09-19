@@ -32,14 +32,18 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = true ;
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = false ;
+	s.passwordFormat        = "%{password}\n%{password}" ;
 	s.reverseString         = "--reverse" ;
 	s.idleString            = "-i" ;
 	s.executableName        = "encfs" ;
 	s.incorrectPasswordText = "Error decoding volume key, password incorrect" ;
 	s.configFileArgument    = "--config" ;
+	s.windowsInstallPathRegistryKey   = "SOFTWARE\\ENCFS" ;
+	s.windowsInstallPathRegistryValue = "InstallDir" ;
+	s.volumePropertiesCommands        = QStringList{ "encfsctl %{cipherFolder}" } ;
 	s.configFileNames       = QStringList{ ".encfs6.xml","encfs6.xml",".encfs5",".encfs4" } ;
 	s.fuseNames             = QStringList{ "fuse.encfs" } ;
-	s.names                 = QStringList{ "encfs" } ;
+	s.names                 = QStringList{ "encfs","encfsctl" } ;
 	s.failedToMountList     = QStringList{ "Error" } ;
 	s.successfulMountedList = QStringList{ "has been started" } ;
 	s.notFoundCode          = engines::engine::status::encfsNotFound ;
@@ -51,8 +55,11 @@ encfs::encfs() : engines::engine( _setOptions() )
 {
 }
 
-engines::engine::args encfs::command( const engines::engine::cmdArgsList& args ) const
+engines::engine::args encfs::command( const QString& password,
+				      const engines::engine::cmdArgsList& args ) const
 {
+	Q_UNUSED( password ) ;
+
 	QString e = "%1 %2 %3 %4 %5" ;
 
 	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
@@ -121,11 +128,6 @@ engines::engine::status encfs::errorCode( const QString& e,int s ) const
 	}else{
 		return engines::engine::status::backendFail ;
 	}
-}
-
-QString encfs::setPassword( const QString& e ) const
-{
-	return e + "\n" + e ;
 }
 
 QString encfs::installedVersionString() const

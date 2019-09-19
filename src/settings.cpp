@@ -195,6 +195,36 @@ bool settings::enableRevealingPasswords()
 	}
 }
 
+bool settings::enableHighDpiScaling()
+{
+	if( !m_settings.contains( "EnableHighDpiScaling" ) ){
+
+		m_settings.setValue( "EnableHighDpiScaling",false ) ;
+	}
+
+	return m_settings.value( "EnableHighDpiScaling" ).toBool() ;
+}
+
+void settings::enableHighDpiScaling( bool e )
+{
+	m_settings.setValue( "EnableHighDpiScaling",e ) ;
+}
+
+QByteArray settings::enabledHighDpiScalingFactor()
+{
+	if( !m_settings.contains( "EnabledHighDpiScalingFactor" ) ){
+
+		m_settings.setValue( "EnabledHighDpiScalingFactor","1.1" ) ;
+	}
+
+	return m_settings.value( "EnabledHighDpiScalingFactor" ).toByteArray() ;
+}
+
+void settings::enabledHighDpiScalingFactor( const QString& e )
+{
+	m_settings.setValue( "EnabledHighDpiScalingFactor",e ) ;
+}
+
 void settings::clearFavorites()
 {
 	m_settings.setValue( "FavoritesVolumes",QStringList() ) ;
@@ -252,35 +282,12 @@ void settings::scaleGUI()
 {
 #if QT_VERSION >= 0x050600
 
-	bool e = [ this ](){
-
-		if( m_settings.contains( "EnableHighDpiScaling" ) ){
-
-			return m_settings.value( "EnableHighDpiScaling" ).toBool() ;
-		}else{
-			bool s = false ;
-			m_settings.setValue( "EnableHighDpiScaling",s ) ;
-			m_settings.setValue( "EnabledHighDpiScalingFactor",QString( "1" ) ) ;
-			return s ;
-		}
-	}() ;
-
-	if( e ){
+	if( this->enableHighDpiScaling() ){
 
 		QApplication::setAttribute( Qt::AA_EnableHighDpiScaling ) ;
 
-		qputenv( "QT_SCALE_FACTOR",[ this ](){
-
-			if( m_settings.contains( "EnabledHighDpiScalingFactor" ) ){
-
-				return m_settings.value( "EnabledHighDpiScalingFactor" ).toString().toLatin1() ;
-			}else{
-				m_settings.setValue( "EnabledHighDpiScalingFactor",QString( "1" ) ) ;
-				return QByteArray( "1" ) ;
-			}
-		}() ) ;
+		qputenv( "QT_SCALE_FACTOR",this->enabledHighDpiScalingFactor() ) ;
 	}
-
 #endif
 }
 
@@ -400,7 +407,7 @@ bool settings::unMountVolumesOnLogout()
 	return m_settings.value( "UnMountVolumesOnLogout" ).toBool() ;
 }
 
-void settings::readFavorites( QMenu * m )
+bool settings::readFavorites( QMenu * m )
 {
 	m->clear() ;
 
@@ -462,6 +469,8 @@ void settings::readFavorites( QMenu * m )
 			m->addAction( _add_action( e,e ) ) ;
 		}
 	}
+
+	return _showCipherPathAndMountPath ;
 }
 
 void settings::setDefaultMountPointPrefix( const QString& path )
@@ -848,6 +857,21 @@ bool settings::autoMountFavoritesOnAvailable()
 		settings::autoMountFavoritesOnAvailable( false ) ;
 		return false ;
 	}
+}
+
+void settings::showFavoritesInContextMenu( bool e )
+{
+	m_settings.setValue( "ShowFavoritesInContextMenu",e ) ;
+}
+
+bool settings::showFavoritesInContextMenu()
+{
+	if( !m_settings.contains( "ShowFavoritesInContextMenu" ) ){
+
+		m_settings.setValue( "ShowFavoritesInContextMenu",false ) ;
+	}
+
+	return m_settings.value( "ShowFavoritesInContextMenu" ).toBool() ;
 }
 
 int settings::networkTimeOut()

@@ -62,8 +62,10 @@ namespace siritask
 		QString cipherFolder ;
 	} ;
 
+
 	siritask::Engine mountEngine( const QString& cipherFolder,
-				      const QString& configFilePath ) ;
+				      const QString& configFilePath,
+				      const QString& engineName = QString() ) ;
 
 	bool deleteMountFolder( const QString& ) ;
 
@@ -72,8 +74,10 @@ namespace siritask
 				     const QString& fileSystem,
 				     int numberOfAttempts = 5 ) ;
 
-	engines::engine::cmdStatus encryptedFolderMount( const engines::engine::options&,const secrets&,bool = false ) ;
-	engines::engine::cmdStatus encryptedFolderCreate( const engines::engine::options&,const secrets& ) ;
+	engines::engine::cmdStatus encryptedFolderMount( const engines::engine::options&,
+							 bool = false,
+							 const QString& = QString() ) ;
+	engines::engine::cmdStatus encryptedFolderCreate( const engines::engine::options& ) ;
 }
 
 #endif // SIRITASK_H

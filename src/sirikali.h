@@ -57,10 +57,11 @@ class sirikali : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit sirikali() ;
+	sirikali() ;
 	int start( QApplication& ) ;
 	~sirikali() ;
 private slots:
+	void addToFavorites( void ) ;
 	void createbackendwindow( void ) ;
 	void showDebugWindow( void ) ;
 	void configurationOptions( void ) ;
@@ -71,12 +72,8 @@ private slots:
 	void setUpApp( const QString& ) ;
 	void start( const QStringList& ) ;
 	void autoUpdateCheck( void ) ;
-	void gocryptfsProperties( void ) ;
-	void sshfsProperties( void ) ;
-	void cryfsProperties( void ) ;
-	void encfsProperties( void ) ;
-	void ecryptfsProperties( void ) ;
-	void securefsProperties( void ) ;
+	void volumeProperties() ;
+	void genericVolumeProperties( void ) ;
 	void unlockVolume( const QStringList& ) ;
 	void closeApplication( int = 0,const QString& = QString() ) ;
 	void unlockVolume( bool ) ;
@@ -119,6 +116,7 @@ private:
 
 	QFont getSystemVolumeFont( void ) ;
 
+	void updateFavoritesInContextMenu( void ) ;
 	void runIntervalCustomCommand( const QString& ) ;
 	void cliCommand( const QStringList& ) ;
 	void updateVolumeList( const std::vector< volumeInfo >& ) ;
@@ -156,6 +154,8 @@ private:
 	QMenu * m_hidden_volume_menu = nullptr ;
 	QMenu * m_not_hidden_volume_menu = nullptr ;
 	QMenu * m_key_manager_menu = nullptr ;
+	QMenu * m_main_menu = nullptr ;
+	QMenu * m_context_menu = nullptr ;
 
 	QMenu m_language_menu ;
 

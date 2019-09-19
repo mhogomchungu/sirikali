@@ -33,10 +33,10 @@ static utility::result< custom::opts > _getOptions( const QByteArray& e,const QS
 
 		sirikali::json json( e,sirikali::json::type::CONTENTS ) ;
 
-		s.mountControlStructure                = json.getString( "mountControlStructure" ) ;
-		s.createControlStructure               = json.getString( "createControlStructure" ) ;
 		s.baseOpts.hasGUICreateOptions         = true ;
 		s.baseOpts.customBackend               = true ;
+		s.mountControlStructure                = json.getString( "mountControlStructure" ) ;
+		s.createControlStructure               = json.getString( "createControlStructure" ) ;
 		s.baseOpts.reverseString               = json.getString( "reverseString" ) ;
 		s.baseOpts.idleString                  = json.getString( "idleString" ) ;
 		s.baseOpts.requiresAPassword           = json.getBool( "requiresAPassword" ) ;
@@ -44,22 +44,28 @@ static utility::result< custom::opts > _getOptions( const QByteArray& e,const QS
 		s.baseOpts.supportsMountPathsOnWindows = json.getBool( "supportsMountPointPaths" ) ;
 		s.baseOpts.executableName              = json.getString( "executableName" ) ;
 		s.baseOpts.incorrectPasswordText       = json.getString( "wrongPasswordText" ) ;
+		s.baseOpts.passwordFormat              = json.getString( "passwordFormat" ) ;
 		s.baseOpts.incorrectPassWordCode       = json.getString( "wrongPasswordErrorCode" ) ;
+		s.baseOpts.unMountCommand              = json.getString( "unMountCommand" ) ;
 		s.baseOpts.configFileArgument          = json.getString( "configFileArgument" ) ;
+		s.baseOpts.windowsUnMountCommand       = json.getString( "windowsUnMountCommand" ) ;
+		s.baseOpts.windowsInstallPathRegistryKey   = json.getString( "windowsInstallPathRegistryKey" ) ;
+		s.baseOpts.windowsInstallPathRegistryValue = json.getString( "windowsInstallPathRegistryValue" ) ;
 		s.baseOpts.failedToMountList           = json.getStringList( "failedToMountTextList" ) ;
 		s.baseOpts.successfulMountedList       = json.getStringList( "successfullyMountedList" ) ;
 		s.baseOpts.configFileNames             = json.getStringList( "configFileNames" ) ;
 		s.baseOpts.names                       = json.getStringList( "names" ) ;
 		s.baseOpts.fuseNames                   = json.getStringList( "fuseNames" ) ;
 		s.baseOpts.fileExtensions              = json.getStringList( "fileExtensions" ) ;
+		s.baseOpts.volumePropertiesCommands    = json.getStringList( "volumePropertiesCommands" ) ;
 		s.baseOpts.hasConfigFile               = s.baseOpts.configFileNames.size() > 0 ;
 		s.baseOpts.notFoundCode                = engines::engine::status::customCommandNotFound ;
 
 		return s ;
 
-	}catch( ... ){
+	}catch( const sirikali::json::exception& e ){
 
-		utility::debug::cout() << "Failed to parse config file: " + s ;
+		utility::debug::cout() << "Failed to parse config file: " + s << e.what() ;
 
 		return {} ;
 	}
@@ -114,8 +120,10 @@ void custom::addEngines( QStringList& list,std::vector< std::unique_ptr< engines
 		_add_engines( list,m + "/backends/",engines ) ;
 	}
 
-	if( !utility::platformIsWindows() ){
+	if( utility::platformIsWindows() ){
 
+		_add_engines( list,QDir().currentPath() + "/backends/",engines ) ;
+	}else{
 		_add_engines( list,INSTALL_PREFIX"/share/SiriKali/backends/",engines ) ;
 	}
 }
@@ -127,7 +135,8 @@ custom::custom( custom::opts s ) :
 {
 }
 
-engines::engine::args custom::command( const engines::engine::cmdArgsList& args ) const
+engines::engine::args custom::command( const QString& password,
+				       const engines::engine::cmdArgsList& args ) const
 {
 	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
 
@@ -147,6 +156,7 @@ engines::engine::args custom::command( const engines::engine::cmdArgsList& args 
 		cmd.replace( "%{mountOptions}",exeOptions.get(),Qt::CaseInsensitive ) ;
 		cmd.replace( "%{cipherFolder}",args.cipherFolder,Qt::CaseInsensitive ) ;
 		cmd.replace( "%{mountPoint}",args.mountPoint,Qt::CaseInsensitive ) ;
+		cmd.replace( "%{password}",password ) ;
 
 		return { args,m,args.exe + " " + cmd } ;
 	}else{
@@ -173,6 +183,7 @@ engines::engine::args custom::command( const engines::engine::cmdArgsList& args 
 		cmd.replace( "%{cipherFolder}",args.cipherFolder,Qt::CaseInsensitive ) ;
 		cmd.replace( "%{mountPoint}",args.mountPoint,Qt::CaseInsensitive ) ;
 		cmd.replace( "%{fuseOpts}",m.fuseOpts().get(),Qt::CaseInsensitive ) ;
+		cmd.replace( "%{password}",password ) ;
 
 		return { args,m,args.exe + " " + cmd } ;
 	}
@@ -180,7 +191,7 @@ engines::engine::args custom::command( const engines::engine::cmdArgsList& args 
 
 engines::engine::status custom::errorCode( const QString& e,int s ) const
 {
-	auto m = this->incorrectPasswordCode() ;
+	const auto& m = this->incorrectPasswordCode() ;
 
 	if( !m.isEmpty() ){
 
@@ -195,7 +206,9 @@ engines::engine::status custom::errorCode( const QString& e,int s ) const
 			return engines::engine::status::backendFail ;
 		}
 	}else{
-		if( e.contains( this->incorrectPasswordText() ) ){
+		const auto& s = this->incorrectPasswordText() ;
+
+		if( !s.isEmpty() && e.contains( s ) ){
 
 			return engines::engine::status::customCommandBadPassword ;
 
@@ -206,11 +219,6 @@ engines::engine::status custom::errorCode( const QString& e,int s ) const
 			return engines::engine::status::backendFail ;
 		}
 	}
-}
-
-QString custom::setPassword( const QString& e ) const
-{
-	return e ;
 }
 
 QString custom::installedVersionString() const

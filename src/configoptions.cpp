@@ -60,6 +60,11 @@ configOptions::configOptions( QWidget * parent,
 		m_settings.autoOpenFolderOnMount( e ) ;
 	} ) ;
 
+	connect( m_ui->cbShowFavoriteListOnContextMenu,&QCheckBox::toggled,[ this ]( bool e ){
+
+		m_settings.showFavoritesInContextMenu( e ) ;
+	} ) ;
+
 	connect( m_ui->cbReUseMountPoint,&QCheckBox::toggled,[ this ]( bool e ){
 
 		m_settings.reUseMountPoint( e ) ;
@@ -123,7 +128,7 @@ configOptions::configOptions( QWidget * parent,
 		m_settings.autoMountFavoritesOnStartUp( e ) ;
 	} ) ;
 
-	m_ui->cbAutoMountWhenAvailable->setChecked( settings::instance().autoMountFavoritesOnAvailable() ) ;
+	m_ui->cbAutoMountWhenAvailable->setChecked( m_settings.autoMountFavoritesOnAvailable() ) ;
 
 
 	connect( m_ui->cbAllowExternalToolsToReadPasswords,&QCheckBox::toggled,[ this ]( bool e ){
@@ -339,6 +344,11 @@ configOptions::configOptions( QWidget * parent,
 
 		m_ui->lineEditRunPeriodically->clear() ;
 	} ) ;
+
+	connect( m_ui->cbHiDPI,&QCheckBox::toggled,[ this ]( bool e ){
+
+		m_ui->lineEditHiDPI->setEnabled( e ) ;
+	} ) ;
 }
 
 configOptions::~configOptions()
@@ -375,6 +385,8 @@ void configOptions::ShowUI()
 
 	m_ui->cbAutoMountAtStartUp->setChecked( m_settings.autoMountFavoritesOnStartUp() ) ;
 
+	m_ui->cbShowFavoriteListOnContextMenu->setChecked( m_settings.showFavoritesInContextMenu() ) ;
+
 	m_ui->cbShowMountDialogWhenAutoMounting->setChecked( m_settings.showMountDialogWhenAutoMounting() ) ;
 
 	m_ui->lineEditFileManager->setText( m_settings.fileManager() ) ;
@@ -388,6 +400,12 @@ void configOptions::ShowUI()
 	m_ui->lineEditRunPeriodically->setText( m_settings.runCommandOnInterval() ) ;
 
 	m_ui->lineEditRunPeriodicallyInterval->setText( QString::number( m_settings.runCommandOnIntervalTime() ) ) ;
+
+	m_ui->cbHiDPI->setChecked( m_settings.enableHighDpiScaling() ) ;
+
+	m_ui->lineEditHiDPI->setText( m_settings.enabledHighDpiScalingFactor() ) ;
+
+	m_ui->lineEditHiDPI->setEnabled( m_ui->cbHiDPI->isChecked() ) ;
 
 	if( utility::platformIsWindows() ){
 
@@ -408,6 +426,22 @@ void configOptions::HideUI()
 	m_settings.preUnMountCommand( m_ui->lineEditBeforesUnMount->text() ) ;
 	m_settings.runCommandOnMount( m_ui->lineEditAfterMountCommand->text() ) ;
 	m_settings.runCommandOnInterval( m_ui->lineEditRunPeriodically->text() ) ;
+	m_settings.enableHighDpiScaling( m_ui->cbHiDPI->isChecked() ) ;
+
+	m_settings.enabledHighDpiScalingFactor( [ this ]()->QString{
+
+		auto s = m_ui->lineEditHiDPI->text() ;
+		bool ok ;
+
+		s.toDouble( &ok ) ;
+
+		if( ok ){
+
+			return s ;
+		}else{
+			return "1.0" ;
+		}
+	}() ) ;
 
 	bool ok ;
 

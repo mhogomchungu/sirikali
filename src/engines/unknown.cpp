@@ -45,8 +45,10 @@ unknown::unknown() : engines::engine( _setOptions() )
 {
 }
 
-engines::engine::args unknown::command( const engines::engine::cmdArgsList& args ) const
+engines::engine::args unknown::command( const QString& password,
+					const engines::engine::cmdArgsList& args ) const
 {
+	Q_UNUSED( password ) ;
 	Q_UNUSED( args ) ;
 	return {} ;
 }
@@ -56,12 +58,6 @@ engines::engine::status unknown::errorCode( const QString& e,int s ) const
 	Q_UNUSED( e ) ;
 	Q_UNUSED( s ) ;
 	return engines::engine::status::backendFail ;
-}
-
-QString unknown::setPassword( const QString& e ) const
-{
-	Q_UNUSED( e ) ;
-	return QString() ;
 }
 
 QString unknown::installedVersionString() const

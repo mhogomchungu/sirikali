@@ -1,0 +1,9 @@
+
+1. Update release date in changelog.
+2. Update new features in changelog.
+3. Update new version info in spec file.
+3. Update release date in sirikali.appdata.xml.
+4. Update version info in CMakeLists.txt.
+5. Update licence year in CMakeLists.txt file if applicable.
+6. Make sure the new release is buildable on all supported version in opensuse build service.
+   https://build.opensuse.org/package/show/home:obs_mhogomchungu/sirikali

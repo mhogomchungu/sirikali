@@ -32,9 +32,12 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = false ;
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = false ;
+	s.passwordFormat        = "%{password}\n%{password}" ;
 	s.executableName        = "securefs" ;
 	s.incorrectPasswordText = "Invalid password" ;
 	s.configFileArgument    = "--config" ;
+	s.volumePropertiesCommands = QStringList{ "securefs info %{cipherFolder}" } ;
+	s.windowsUnMountCommand = "sirikali.exe -T" ;
 	s.configFileNames       = QStringList{ ".securefs.json","securefs.json" } ;
 	s.fuseNames             = QStringList{ "fuse.securefs" } ;
 	s.names                 = QStringList{ "securefs" } ;
@@ -49,8 +52,11 @@ securefs::securefs() : engines::engine( _setOptions() )
 {
 }
 
-engines::engine::args securefs::command( const engines::engine::cmdArgsList& args ) const
+engines::engine::args securefs::command( const QString& password,
+					 const engines::engine::cmdArgsList& args ) const
 {
+	Q_UNUSED( password ) ;
+
 	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
 
 	if( args.create ){
@@ -102,11 +108,6 @@ engines::engine::status securefs::errorCode( const QString& e,int s ) const
 	}else{
 		return engines::engine::status::backendFail ;
 	}
-}
-
-QString securefs::setPassword( const QString& e ) const
-{
-	return e + "\n" + e ;
 }
 
 QString securefs::installedVersionString() const

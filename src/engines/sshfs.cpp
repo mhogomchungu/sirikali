@@ -23,6 +23,14 @@ static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
 
+	/*
+	 * On my linux box, sshfs prompts six times when entered password is wrong before
+	 * giving up, here, we simulate replaying the password 10 times hoping it will be
+	 * enough for sshfs.
+	 */
+
+	s.passwordFormat        = "%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}" ;
+
 	s.supportsMountPathsOnWindows = true ;
 	s.customBackend         = false ;
 	s.requiresAPassword     = false ;
@@ -31,6 +39,8 @@ static engines::engine::BaseOptions _setOptions()
 	s.hasGUICreateOptions   = false ;
 	s.setsCipherPath        = true ;
 	s.executableName        = "sshfs" ;
+	s.windowsInstallPathRegistryKey = "SOFTWARE\\SSHFS-Win" ;
+	s.windowsInstallPathRegistryValue = "InstallDir" ;
 	s.failedToMountList     = QStringList{ "ssh:","read:","Cannot create WinFsp-FUSE file system" } ;
 	s.successfulMountedList = QStringList{ "has been started" } ;
 	s.fuseNames             = QStringList{ "fuse.sshfs" } ;
@@ -44,8 +54,11 @@ sshfs::sshfs() : engines::engine( _setOptions() )
 {
 }
 
-engines::engine::args sshfs::command( const engines::engine::cmdArgsList& args ) const
+engines::engine::args sshfs::command( const QString& password,
+				      const engines::engine::cmdArgsList& args ) const
 {
+	Q_UNUSED( password ) ;
+
 	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
 
 	auto fuseOptions = m.fuseOpts() ;
@@ -119,23 +132,6 @@ engines::engine::status sshfs::errorCode( const QString& e,int s ) const
 	}else{
 		return engines::engine::status::backendFail ;
 	}
-}
-
-QString sshfs::setPassword( const QString& e ) const
-{
-	auto m = e ;
-
-	/*
-	 * On my linux box, sshfs prompts six times when entered password is wrong before
-	 * giving up, here, we simulate replaying the password 10 times hoping it will be
-	 * enough for sshfs.
-	 */
-	for( int i = 0 ; i < 9 ; i++ ){
-
-		m += "\n" + m ;
-	}
-
-	return m ;
 }
 
 QString sshfs::installedVersionString() const

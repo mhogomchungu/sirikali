@@ -32,6 +32,9 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = false ;
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = true ;
+	s.passwordFormat        = "%{password}" ;
+	s.volumePropertiesCommands = QStringList{ "gocryptfs -info %{cipherFolder}",
+						  "gocryptfs -info %{plainFolder}" } ;
 	s.reverseString         = "-reverse" ;
 	s.idleString            = "-idle" ;
 	s.executableName        = "gocryptfs" ;
@@ -42,7 +45,7 @@ static engines::engine::BaseOptions _setOptions()
 					       ".gocryptfs.reverse.conf",
 					       "gocryptfs.reverse.conf" } ;
 	s.fuseNames             = QStringList{ "fuse.gocryptfs","fuse.gocryptfs-reverse" } ;
-	s.names                 = QStringList{ "gocryptfs","gocryptfs.reverse" } ;
+	s.names                 = QStringList{ "gocryptfs","gocryptfs.reverse","gocryptfs-reverse" } ;
 	s.notFoundCode          = engines::engine::status::gocryptfsNotFound ;
 
 	return s ;
@@ -52,8 +55,11 @@ gocryptfs::gocryptfs() : engines::engine( _setOptions() )
 {
 }
 
-engines::engine::args gocryptfs::command( const engines::engine::cmdArgsList& args ) const
+engines::engine::args gocryptfs::command( const QString& password,
+					  const engines::engine::cmdArgsList& args ) const
 {
+	Q_UNUSED( password ) ;
+
 	engines::engine::commandOptions m( args,this->name() ) ;
 
 	auto exeOptions  = m.exeOptions() ;
@@ -114,11 +120,6 @@ engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const
 	}else{
 		return engines::engine::status::backendFail ;
 	}
-}
-
-QString gocryptfs::setPassword( const QString& e ) const
-{
-	return e ;
 }
 
 QString gocryptfs::installedVersionString() const

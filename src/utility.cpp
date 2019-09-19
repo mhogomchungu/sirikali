@@ -356,9 +356,9 @@ utility::debug utility::debug::operator<<( const QStringList& e )
 	return utility::debug() ;
 }
 
-void utility::logCommandOutPut( const QString& exe )
+void utility::logCommandOutPut( const QString& e )
 {
-	utility::logCommandOutPut( ::Task::process::result(),exe ) ;
+	_set_debug_window_text( "---------\n" + e + "\n---------\n" ) ;
 }
 
 void utility::logCommandOutPut( const ::Task::process::result& m,const QString& exe )
@@ -445,9 +445,14 @@ bool utility::enablePolkit()
 
 void utility::initGlobals()
 {
+	settings::instance().scaleGUI() ;
+
 	favorites::instance().updateFavorites() ;
+
 	utility::setGUIThread() ;
+
 #ifdef Q_OS_LINUX
+
 	auto uid = getuid() ;
 
 	QString a = "/tmp/SiriKali-" + QString::number( uid ) ;

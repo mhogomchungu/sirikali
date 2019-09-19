@@ -40,7 +40,7 @@ class QTableWidget ;
 #include "secrets.h"
 #include "engines.h"
 #include "walletconfig.h"
-
+#include "settings.h"
 #include "favorites.h"
 
 #include <functional>
@@ -276,6 +276,7 @@ private :
 	QString m_idleTimeOut ;
 	QString m_configFile ;
 	QString m_exe ;
+	QString m_engineName ;
 	QString m_mountOptions ;
 	QString m_createOptions ;
 	QString m_fileManagerOpen ;
@@ -291,7 +292,9 @@ private :
 	bool m_reverseMode = false ;
 
 	favorites::triState m_favoriteReadOnly ;
+
 	secrets& m_secrets ;
+	settings& m_settings ;
 
 	keystrength m_keyStrength ;
 
