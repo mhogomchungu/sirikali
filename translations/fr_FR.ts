@@ -578,7 +578,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configoptions.ui" line="404"/>
         <source>SiriKali Will Have To Be Restarted For These Changes To Take Effect.</source>
-        <translation type="unfinished"></translation>
+        <translation>SiriKali doit être redémarré pour que les changements prennent effet.</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="467"/>
@@ -629,23 +629,24 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configoptions.ui" line="306"/>
         <source>Show Favorite List On Context Menu(Restart Required)</source>
-        <translation type="unfinished"></translation>
+        <translation>Montrer la liste des favoris dans le menu contextuel (Redémarrage requis)</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="315"/>
         <source>HiDPI Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Réglages HiDPI</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="350"/>
         <source>Scale Factor
 (Enter A Decimal Number)</source>
-        <translation type="unfinished"></translation>
+        <translation>Facteur d&apos;échelle
+(Entrer un nombre décimal)</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="370"/>
         <source>Enable HiDPI Scalling</source>
-        <translation type="unfinished"></translation>
+        <translation>Activer la mise à l&apos;échelle HiDPI</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="417"/>
@@ -1980,7 +1981,7 @@ Merci de reporter ce bug important.</translation>
     <message>
         <location filename="../src/sirikali.cpp" line="1159"/>
         <source>Add To Favorites</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajouter aux favoris</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="1435"/>
