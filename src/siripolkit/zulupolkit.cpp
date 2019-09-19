@@ -154,7 +154,7 @@ void zuluPolkit::start()
 
 static void _respond( QLocalSocket& s,const char * e )
 {
-	sirikali::json json ;
+	SirikaliJson json ;
 
 	json[ "stdOut" ]     = e ;
 	json[ "stdError" ]   = e ;
@@ -169,7 +169,7 @@ static void _respond( QLocalSocket& s,const char * e )
 
 static void _respond( QLocalSocket& s,const Task::process::result& e )
 {
-	sirikali::json json ;
+	SirikaliJson json ;
 
 	json[ "stdOut" ]     = e.std_out() ;
 	json[ "stdError" ]   = e.std_error() ;
@@ -191,7 +191,7 @@ void zuluPolkit::gotConnection()
 	try{
 		m.waitForReadyRead() ;
 
-		auto json = sirikali::json( m.readAll(),sirikali::json::type::CONTENTS ) ;
+		auto json = SirikaliJson( m.readAll(),SirikaliJson::type::CONTENTS ) ;
 
 		auto password = json.getString( "password" ) ;
 		auto cookie   = json.getString( "cookie" ) ;

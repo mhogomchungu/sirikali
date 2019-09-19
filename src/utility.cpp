@@ -271,7 +271,7 @@ void utility::Task::execute( const QString& exe,int waitTime,
 
 		s.write( [ & ]()->QByteArray{
 
-			sirikali::json json ;
+			SirikaliJson json ;
 
 			json[ "cookie" ]   = _cookie ;
 			json[ "password" ] = password ;
@@ -285,7 +285,7 @@ void utility::Task::execute( const QString& exe,int waitTime,
 		s.waitForReadyRead() ;
 
 		try{
-			sirikali::json json( s.readAll(),sirikali::json::type::CONTENTS ) ;
+			SirikaliJson json( s.readAll(),SirikaliJson::type::CONTENTS ) ;
 
 			m_finished   = json.getBool( "finished" ) ;
 			m_exitCode   = json.getInterger( "exitCode" ) ;
@@ -498,7 +498,7 @@ void utility::quitHelper()
 
 			s.write( [ & ]()->QByteArray{
 
-				sirikali::json json ;
+				SirikaliJson json ;
 
 				json[ "cookie" ]   = _cookie ;
 				json[ "password" ] = "" ;
