@@ -169,7 +169,7 @@ version 1.3.9(August 1st,2019)
 -- Fix an occassional crash that happens when creating an internal wallet when an internal version of
    lxqt_wallet is in use.
 
-version 1.4.0(unreleased)
+version 1.4.0(October 1st,2019)
 -- Make it buildable again on Qt < 5.10.0(1.3.9 broke this promise because it should be buildable in debian 8)
 -- Add a config option to show favorites entries on the tray icon context menu with an ability to
    mount/unmount volume from the menu.
