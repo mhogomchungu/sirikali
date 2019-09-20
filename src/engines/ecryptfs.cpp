@@ -51,7 +51,7 @@ ecryptfs::ecryptfs() : engines::engine( _setOptions() )
 engines::engine::args ecryptfs::command( const QString& password,
 					 const engines::engine::cmdArgsList& args ) const
 {
-	Q_UNUSED( password ) ;
+	Q_UNUSED( password )
 
 	auto e = QString( "%1 %2 -a %3 %4 %5" ) ;
 
@@ -97,7 +97,7 @@ engines::engine::args ecryptfs::command( const QString& password,
 
 engines::engine::status ecryptfs::errorCode( const QString& e,int s ) const
 {
-	Q_UNUSED( s ) ;
+	Q_UNUSED( s )
 
 	if( e.contains( "Operation not permitted" ) ){
 

@@ -66,9 +66,9 @@ void LXQt::Wallet::osxKeyChain::open( const QString& walletName,
 				      const QString& password,
 				      const QString& displayApplicationName )
 {
-	Q_UNUSED( widget ) ;
-	Q_UNUSED( password ) ;
-	Q_UNUSED( displayApplicationName ) ;
+	Q_UNUSED( widget )
+	Q_UNUSED( password )
+	Q_UNUSED( displayApplicationName )
 
 	m_walletName = _walletPrefix + walletName.toLatin1() + "." + applicationName.toLatin1() ;
 
@@ -83,9 +83,9 @@ bool LXQt::Wallet::osxKeyChain::open( const QString& walletName,
 				      const QString& password,
 				      const QString& displayApplicationName )
 {
-	Q_UNUSED( widget ) ;
-	Q_UNUSED( password ) ;
-	Q_UNUSED( displayApplicationName ) ;
+	Q_UNUSED( widget )
+	Q_UNUSED( password )
+	Q_UNUSED( displayApplicationName )
 
 	m_walletName = _walletPrefix + walletName.toLatin1() + "." + applicationName.toLatin1() ;
 
@@ -286,21 +286,21 @@ QString LXQt::Wallet::osxKeyChain::networkDefaultWalletName()
 
 void LXQt::Wallet::osxKeyChain::closeWallet( bool e )
 {
-	Q_UNUSED( e ) ;
+	Q_UNUSED( e )
 }
 
 void LXQt::Wallet::osxKeyChain::changeWalletPassWord( const QString& walletName,
 						      const QString& applicationName,
 						      std::function< void( bool )> function )
 {
-	Q_UNUSED( walletName ) ;
-	Q_UNUSED( applicationName ) ;
-	Q_UNUSED( function ) ;
+	Q_UNUSED( walletName )
+	Q_UNUSED( applicationName )
+	Q_UNUSED( function )
 }
 
 void LXQt::Wallet::osxKeyChain::setImage( const QIcon& e )
 {
-	Q_UNUSED( e ) ;
+	Q_UNUSED( e )
 }
 
 int LXQt::Wallet::osxKeyChain::walletSize()

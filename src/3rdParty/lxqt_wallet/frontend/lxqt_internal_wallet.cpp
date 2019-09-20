@@ -88,7 +88,7 @@ bool LXQt::Wallet::internalWallet::open( const QString& walletName,
 {
 	this->open( walletName,
 		    applicationName,
-		    []( bool e ){ Q_UNUSED( e ) ; },
+		    []( bool e ){ Q_UNUSED( e ) },
 		    parent,
 		    password,
 		    displayApplicationName ) ;
@@ -301,7 +301,7 @@ int LXQt::Wallet::internalWallet::walletSize( void )
 
 void LXQt::Wallet::internalWallet::closeWallet( bool b )
 {
-	Q_UNUSED( b ) ;
+	Q_UNUSED( b )
 	lxqt_wallet_close( &m_wallet ) ;
 }
 

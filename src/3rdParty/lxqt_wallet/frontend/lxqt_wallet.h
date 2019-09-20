@@ -233,7 +233,7 @@ public:
 	 */
 	virtual void changeWalletPassWord( const QString& walletName,
 					   const QString& applicationName = QString(),
-					   std::function< void( bool ) > = []( bool e ){ Q_UNUSED( e ) ; } ) = 0 ;
+					   std::function< void( bool ) > = []( bool e ){ Q_UNUSED( e ) } ) = 0 ;
 
 	/*
 	 * List all wallets managed by an application.

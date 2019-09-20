@@ -58,7 +58,7 @@ gocryptfs::gocryptfs() : engines::engine( _setOptions() )
 engines::engine::args gocryptfs::command( const QString& password,
 					  const engines::engine::cmdArgsList& args ) const
 {
-	Q_UNUSED( password ) ;
+	Q_UNUSED( password )
 
 	engines::engine::commandOptions m( args,this->name() ) ;
 

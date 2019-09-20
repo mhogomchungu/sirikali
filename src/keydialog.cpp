@@ -749,7 +749,7 @@ void keyDialog::enableAll()
 		m_ui->checkBoxVisibleKey->setEnabled( this->keySelected( index ) ) ;
 	}
 
-	if( !utility::platformIsWindows() ){
+	if( utility::platformIsNOTWindows() ){
 
 		m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
 	}

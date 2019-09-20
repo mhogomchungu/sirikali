@@ -198,7 +198,7 @@ favorites2::favorites2( QWidget * parent,
 
 	m_ui->cbAutoMount->setChecked( false ) ;
 
-	m_ui->cbReadOnlyMode->setEnabled( !utility::platformIsWindows() ) ;
+	m_ui->cbReadOnlyMode->setEnabled( utility::platformIsNOTWindows() ) ;
 
 	this->checkFavoritesConsistency() ;
 
@@ -611,8 +611,8 @@ void favorites2::currentItemChanged( QTableWidgetItem * current,QTableWidgetItem
 
 void favorites2::itemClicked( QTableWidgetItem * current,bool clicked )
 {
-	Q_UNUSED( current ) ;
-	Q_UNUSED( clicked ) ;
+	Q_UNUSED( current )
+	Q_UNUSED( clicked )
 }
 
 void favorites2::itemClicked( QTableWidgetItem * current )

@@ -55,7 +55,7 @@ securefs::securefs() : engines::engine( _setOptions() )
 engines::engine::args securefs::command( const QString& password,
 					 const engines::engine::cmdArgsList& args ) const
 {
-	Q_UNUSED( password ) ;
+	Q_UNUSED( password )
 
 	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
 
@@ -74,7 +74,7 @@ engines::engine::args securefs::command( const QString& password,
 
 		auto exeOptions = m.exeOptions() ;
 
-		if( !utility::platformIsWindows() ){
+		if( utility::platformIsNOTWindows() ){
 
 			exeOptions.add( "-b" ) ;
 		}
@@ -96,7 +96,7 @@ engines::engine::args securefs::command( const QString& password,
 
 engines::engine::status securefs::errorCode( const QString& e,int s ) const
 {
-	Q_UNUSED( s ) ;
+	Q_UNUSED( s )
 
 	if( e.contains( this->incorrectPasswordText() ) ){
 

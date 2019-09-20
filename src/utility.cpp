@@ -136,6 +136,11 @@ bool utility::platformIsWindows()
 
 #endif
 
+bool utility::platformIsNOTWindows()
+{
+	return !utility::platformIsWindows() ;
+}
+
 static QByteArray _cookie ;
 static QString _polkit_socket_path ;
 
@@ -536,7 +541,7 @@ void utility::openPath( const QString& path,const QString& opener,
 
 		openPath( path,opener ).then( [ title,msg,obj ]( bool failed ){
 
-			if( !utility::platformIsWindows() ){
+			if( utility::platformIsNOTWindows() ){
 
 				if( failed && obj ){
 
@@ -551,7 +556,7 @@ void utility::openPath( const QString& path,const QString& opener,
 {
 	return ::Task::run( [ = ](){
 
-		Q_UNUSED( q ) ;
+		Q_UNUSED( q )
 
 		utility::fsInfo s ;
 
@@ -801,7 +806,7 @@ QString utility::cmdArgumentValue( const QStringList& l,const QString& arg,const
 
 QString utility::getVolumeID( const QString& id,bool expand )
 {
-	Q_UNUSED( expand ) ;
+	Q_UNUSED( expand )
 	return id ;
 }
 

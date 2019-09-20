@@ -164,7 +164,7 @@ namespace Task
                 }
         private:
                 QThread * m_thread ;
-                std::function< void( T ) > m_function = []( T&& t ){ Q_UNUSED( t ) ; } ;
+		std::function< void( T ) > m_function = []( T&& t ){ Q_UNUSED( t ) } ;
                 std::function< void() > m_start ;
                 std::function< void() > m_cancel ;
                 std::function< void( T& ) > m_get ;

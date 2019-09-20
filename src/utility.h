@@ -254,6 +254,7 @@ namespace utility
 	bool platformIsLinux() ;
 	bool platformIsOSX() ;
 	bool platformIsWindows() ;
+	bool platformIsNOTWindows() ;
 
 	void setWindowOptions( QDialog * ) ;
 

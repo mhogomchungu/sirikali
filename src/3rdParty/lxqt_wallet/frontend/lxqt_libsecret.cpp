@@ -61,7 +61,7 @@ LXQt::Wallet::libsecret::~libsecret()
 
 void LXQt::Wallet::libsecret::setImage( const QIcon& image )
 {
-	Q_UNUSED( image ) ;
+	Q_UNUSED( image )
 }
 
 bool LXQt::Wallet::libsecret::addKey( const QString& key,const QByteArray& value )
@@ -90,7 +90,7 @@ bool LXQt::Wallet::libsecret::open( const QString& walletName,
 {
 	this->open( walletName,
 		    applicationName,
-		    []( bool e ){ Q_UNUSED( e ) ; },
+		    []( bool e ){ Q_UNUSED( e ) },
 		    parent,
 		    password,
 		    displayApplicationName ) ;
@@ -114,8 +114,8 @@ void LXQt::Wallet::libsecret::open( const QString& walletName,
 
 	m_walletOpened = std::move( function ) ;
 
-	Q_UNUSED( password ) ;
-	Q_UNUSED( displayApplicationName ) ;
+	Q_UNUSED( password )
+	Q_UNUSED( displayApplicationName )
 
 	if( applicationName.isEmpty() ){
 
@@ -248,7 +248,7 @@ int LXQt::Wallet::libsecret::walletSize( void )
 
 void LXQt::Wallet::libsecret::closeWallet( bool b )
 {
-	Q_UNUSED( b ) ;
+	Q_UNUSED( b )
 }
 
 LXQt::Wallet::BackEnd LXQt::Wallet::libsecret::backEnd( void )
@@ -280,8 +280,8 @@ void LXQt::Wallet::libsecret::changeWalletPassWord( const QString& walletName,
 							const QString& applicationName,
 							std::function< void( bool ) > function )
 {
-	Q_UNUSED( applicationName ) ;
-	Q_UNUSED( walletName ) ;
+	Q_UNUSED( applicationName )
+	Q_UNUSED( walletName )
 	Q_UNUSED( function )
 }
 

@@ -95,7 +95,7 @@ std::function< void( systemSignalHandler::signal ) > sirikali::getEmergencyShutD
 {
 	return [ this ]( systemSignalHandler::signal s ){
 
-		Q_UNUSED( s ) ;
+		Q_UNUSED( s )
 
 		this->emergencyShutDown() ;
 	} ;
@@ -206,7 +206,7 @@ void sirikali::setUpApp( const QString& volume )
 
 	connect( m_ui->tableWidget,&QTableWidget::customContextMenuRequested,[ this ]( QPoint s ){
 
-		Q_UNUSED( s ) ;
+		Q_UNUSED( s )
 
 		auto item = m_ui->tableWidget->currentItem() ;
 
@@ -428,7 +428,7 @@ void sirikali::setUpAppMenu()
 		return e ;
 	} ;
 
-	if( !utility::platformIsWindows() ){
+	if( utility::platformIsNOTWindows() ){
 
 		m->addAction( _addAction( false,false,tr( "Check For Updates" ),"Check For Updates",
 					  SLOT( updateCheck() ) ) ) ;
@@ -680,7 +680,7 @@ void sirikali::start( const QStringList& l )
 
 		auto s = utility::socketPath() ;
 
-		if( !utility::platformIsWindows() ){
+		if( utility::platformIsNOTWindows() ){
 
 			utility::createFolder( s.folderPath ) ;
 

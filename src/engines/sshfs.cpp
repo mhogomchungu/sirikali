@@ -57,7 +57,7 @@ sshfs::sshfs() : engines::engine( _setOptions() )
 engines::engine::args sshfs::command( const QString& password,
 				      const engines::engine::cmdArgsList& args ) const
 {
-	Q_UNUSED( password ) ;
+	Q_UNUSED( password )
 
 	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
 
@@ -124,7 +124,7 @@ engines::engine::args sshfs::command( const QString& password,
 
 engines::engine::status sshfs::errorCode( const QString& e,int s ) const
 {
-	Q_UNUSED( s ) ;
+	Q_UNUSED( s )
 
 	if( e.contains( "cygfuse: initialization failed: winfsp" ) ){
 
@@ -146,6 +146,6 @@ QString sshfs::installedVersionString() const
 
 void sshfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
 {
-	Q_UNUSED( parent ) ;
-	Q_UNUSED( function ) ;
+	Q_UNUSED( parent )
+	Q_UNUSED( function )
 }

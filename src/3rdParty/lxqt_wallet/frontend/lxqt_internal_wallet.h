@@ -92,7 +92,7 @@ public:
 	void closeWallet( bool ) ;
 	void changeWalletPassWord( const QString& walletName,
 				   const QString& applicationName = QString(),
-				   std::function< void( bool ) > = []( bool e ){ Q_UNUSED( e ) ; } ) ;
+				   std::function< void( bool ) > = []( bool e ){ Q_UNUSED( e ) } ) ;
 	void setImage( const QIcon& ) ;
 
 	int walletSize( void )  ;
@@ -117,7 +117,7 @@ private:
 	bool m_opened ;
 
 	std::function< void( bool ) > m_correctPassword = []( bool e ){ Q_UNUSED( e ) } ;
-	std::function< void( bool ) > m_walletOpened = []( bool e ){ Q_UNUSED( e ) ; } ;
+	std::function< void( bool ) > m_walletOpened = []( bool e ){ Q_UNUSED( e ) } ;
 };
 
 }

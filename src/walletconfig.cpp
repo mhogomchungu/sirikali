@@ -101,7 +101,7 @@ void walletconfig::currentItemChanged( QTableWidgetItem * current,QTableWidgetIt
 
 void walletconfig::itemClicked( QTableWidgetItem * item )
 {
-	Q_UNUSED( item ) ;
+	Q_UNUSED( item )
 
 	QMenu m ;
 

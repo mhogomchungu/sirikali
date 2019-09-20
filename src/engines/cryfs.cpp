@@ -62,7 +62,7 @@ cryfs::cryfs() : engines::engine( _setOptions() )
 engines::engine::args cryfs::command( const QString& password,
 				      const engines::engine::cmdArgsList& args ) const
 {
-	Q_UNUSED( password ) ;
+	Q_UNUSED( password )
 
 	auto separator = [](){
 
