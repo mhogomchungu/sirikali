@@ -35,16 +35,6 @@ static const char * _backEndTimedOut = "SiriKali::Windows::BackendTimedOut" ;
 #ifdef Q_OS_WIN
 
 #include <windows.h>
-
-int poll( struct pollfd * a,int b,int c )
-{
-	Q_UNUSED( a ) ;
-	Q_UNUSED( b ) ;
-	Q_UNUSED( c ) ;
-
-	return 0 ;
-}
-
 class regOpenKey{
 public:
 	regOpenKey( const char * subKey,HKEY hkey = HKEY_LOCAL_MACHINE )

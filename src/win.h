@@ -142,7 +142,14 @@ struct pollfd {
 
 const static short POLLPRI = 0 ;
 
-int poll( struct pollfd * a,int b,int c ) ;
+static inline int poll( struct pollfd * a,int b,int c )
+{
+	Q_UNUSED( a )
+	Q_UNUSED( b )
+	Q_UNUSED( c )
+
+	return 0 ;
+}
 
 #else
 
