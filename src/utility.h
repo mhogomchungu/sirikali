@@ -450,18 +450,22 @@ namespace utility
 		return false ;
 	}
 
-	template< typename E,typename ... F >
-	bool containsAtleastOne( const E& e,const F& ... f )
+	template< typename E >
+	bool containsAtleastOne( const E& e )
 	{
-		for( const auto& it : { f ... } ){
-
-			if( e.contains( it ) ){
-
-				return true ;
-			}
-		}
-
+		Q_UNUSED( e )
 		return false ;
+	}
+
+	template< typename E,typename F,typename ... G >
+	bool containsAtleastOne( const E& e,F&& f,G&& ... g )
+	{
+		if( e.contains( f ) ){
+
+			return true ;
+		}else{
+			return containsAtleastOne( e,std::forward< G >( g ) ... ) ;
+		}
 	}
 
 	template< typename E,typename ... F >

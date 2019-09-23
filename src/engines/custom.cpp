@@ -35,13 +35,13 @@ static utility::result< custom::opts > _getOptions( const QByteArray& e,const QS
 
 		s.baseOpts.hasGUICreateOptions         = true ;
 		s.baseOpts.customBackend               = true ;
+		s.baseOpts.requiresAPassword           = json.getBool( "requiresAPassword" ) ;
+		s.baseOpts.autoMountsOnCreate          = json.getBool( "autoMountsOnVolumeCreation" ) ;
+		s.baseOpts.supportsMountPathsOnWindows = json.getBool( "supportsMountPointPaths" ) ;
 		s.mountControlStructure                = json.getString( "mountControlStructure" ) ;
 		s.createControlStructure               = json.getString( "createControlStructure" ) ;
 		s.baseOpts.reverseString               = json.getString( "reverseString" ) ;
 		s.baseOpts.idleString                  = json.getString( "idleString" ) ;
-		s.baseOpts.requiresAPassword           = json.getBool( "requiresAPassword" ) ;
-		s.baseOpts.autoMountsOnCreate          = json.getBool( "autoMountsOnVolumeCreation" ) ;
-		s.baseOpts.supportsMountPathsOnWindows = json.getBool( "supportsMountPointPaths" ) ;
 		s.baseOpts.executableName              = json.getString( "executableName" ) ;
 		s.baseOpts.incorrectPasswordText       = json.getString( "wrongPasswordText" ) ;
 		s.baseOpts.passwordFormat              = json.getString( "passwordFormat" ) ;
