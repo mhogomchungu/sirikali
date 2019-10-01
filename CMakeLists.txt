@@ -4,7 +4,18 @@ set_property( GLOBAL PROPERTY ALLOW_DUPLICATE_CUSTOM_TARGETS ON )
 
 project( sirikali )
 
-set( PGR_VERSION "1.3.9" )
+set( PGR_VERSION "1.4.0" )
+
+file( WRITE ${PROJECT_BINARY_DIR}/version.h "
+#ifndef THIS_VERSION
+#define THIS_VERSION \"${PGR_VERSION}\"
+#endif
+\n
+#ifndef SIRIKALI_VERSION
+#define SIRIKALI_VERSION
+#define VERSION_STRING \"Version  : ${PGR_VERSION} (Compiled with Qt ${Qt5Core_VERSION})\\nCopyright: 2016-2019 Francis Banyikwa,mhogomchungu@gmail.com\\nLicense  : GPLv2+\"
+#endif
+\n" )
 
 add_definitions( -Wextra -Wall -pedantic )
 
@@ -124,17 +135,6 @@ find_package( Qt5Network REQUIRED )
 message( STATUS "Found Qt5Widgets, version  ${Qt5Widgets_VERSION}" )
 message( STATUS "Found Qt5Core, version  ${Qt5Core_VERSION}" )
 message( STATUS "Found Qt5Network, version  ${Qt5Network_VERSION}" )
-
-file( WRITE ${PROJECT_BINARY_DIR}/version.h "
-#ifndef THIS_VERSION
-#define THIS_VERSION \"${PGR_VERSION}\"
-#endif
-\n
-#ifndef SIRIKALI_VERSION
-#define SIRIKALI_VERSION
-#define VERSION_STRING \"Version  : ${PGR_VERSION} (Compiled with Qt ${Qt5Core_VERSION})\\nCopyright: 2016-2019 Francis Banyikwa,mhogomchungu@gmail.com\\nLicense  : GPLv2+\"
-#endif
-\n" )
 
 pkg_check_modules( MCHUNGU_NETWORK mhogomchungu_network )
 pkg_check_modules( MCHUNGU_TASK mhogomchungu_task )
@@ -463,7 +463,7 @@ NoDisplay=false
 StartupNotify=true
 Terminal=false
 Type=Application
-MimeType=inode/directory:1;
+MimeType=inode/directory;
 Categories=Security;Utility;Qt;X-MandrivaLinux-System-FileTools;\n")
 
 install( FILES ${PROJECT_BINARY_DIR}/io.github.mhogomchungu.sirikali.desktop

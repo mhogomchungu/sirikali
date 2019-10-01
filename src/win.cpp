@@ -35,6 +35,7 @@ static const char * _backEndTimedOut = "SiriKali::Windows::BackendTimedOut" ;
 #ifdef Q_OS_WIN
 
 #include <windows.h>
+
 class regOpenKey{
 public:
 	regOpenKey( const char * subKey,HKEY hkey = HKEY_LOCAL_MACHINE )

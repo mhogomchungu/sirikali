@@ -34,6 +34,7 @@
   </screenshots>
   <releases>
     <!-- Get timestamp with 'date +%s' -->
+    <release version="1.4.0" timestamp="1569904705"></release>
     <release version="1.3.9" timestamp="1564635737"></release>
     <release version="1.3.8" timestamp="1556683711"></release>
     <release version="1.3.7" timestamp="1549702316"></release>
