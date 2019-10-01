@@ -5,17 +5,7 @@ set_property( GLOBAL PROPERTY ALLOW_DUPLICATE_CUSTOM_TARGETS ON )
 project( sirikali )
 
 set( PGR_VERSION "1.4.0" )
-
-file( WRITE ${PROJECT_BINARY_DIR}/version.h "
-#ifndef THIS_VERSION
-#define THIS_VERSION \"${PGR_VERSION}\"
-#endif
-\n
-#ifndef SIRIKALI_VERSION
-#define SIRIKALI_VERSION
-#define VERSION_STRING \"Version  : ${PGR_VERSION} (Compiled with Qt ${Qt5Core_VERSION})\\nCopyright: 2016-2019 Francis Banyikwa,mhogomchungu@gmail.com\\nLicense  : GPLv2+\"
-#endif
-\n" )
+set( COPYRIGHT_YEARS "2016-2019" )
 
 add_definitions( -Wextra -Wall -pedantic )
 
@@ -138,6 +128,17 @@ message( STATUS "Found Qt5Network, version  ${Qt5Network_VERSION}" )
 
 pkg_check_modules( MCHUNGU_NETWORK mhogomchungu_network )
 pkg_check_modules( MCHUNGU_TASK mhogomchungu_task )
+
+file( WRITE ${PROJECT_BINARY_DIR}/version.h "
+#ifndef THIS_VERSION
+#define THIS_VERSION \"${PGR_VERSION}\"
+#endif
+\n
+#ifndef SIRIKALI_VERSION
+#define SIRIKALI_VERSION
+#define VERSION_STRING \"Version  : ${PGR_VERSION} (Compiled with Qt ${Qt5Core_VERSION})\\nCopyright: ${COPYRIGHT_YEARS} Francis Banyikwa,mhogomchungu@gmail.com\\nLicense  : GPLv2+\"
+#endif
+\n" )
 
 if( INTERNAL_LXQT_WALLET )
 
@@ -329,7 +330,7 @@ if( APPLE )
 
 	SET( MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/MacOSXBundleInfo.plist.in" )
 	SET( MACOSX_BUNDLE_BUNDLE_NAME "SiriKali" )
-	SET( MACOSX_BUNDLE_COPYRIGHT "(c)2016-2018,Francis Banyikwa,mhogomchungu@gmail.com" )
+	SET( MACOSX_BUNDLE_COPYRIGHT "(c)${COPYRIGHT_YEARS},Francis Banyikwa,mhogomchungu@gmail.com" )
 	SET( MACOSX_BUNDLE_BUNDLE_VERSION "${PGR_VERSION}" )
 	SET( MACOSX_BUNDLE_GUI_IDENTIFIER "com.crypto.SiriKali" )
 	SET( MACOSX_BUNDLE_SHORT_VERSION_STRING "${PGR_VERSION}" )
