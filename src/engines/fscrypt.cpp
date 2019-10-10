@@ -78,7 +78,7 @@ static std::vector< protector > _getProtectors( int& s,const QStringList l )
 {
 	std::vector< protector > m ;
 
-	for( ; s < l.size() ; s++  ){
+	for( ; s < l.size() ; s++ ){
 
 		const auto& e = l.at( s ) ;
 
@@ -103,7 +103,7 @@ static std::vector< policy > _getPolicies( int& s,const QStringList l )
 {
 	std::vector< policy > m ;
 
-	for( ; s < l.size() ; s++  ){
+	for( ; s < l.size() ; s++ ){
 
 		const auto& e = l.at( s ) ;
 
@@ -253,7 +253,8 @@ static engines::engine::BaseOptions _setOptions()
 	s.fuseNames             = QStringList{ "fscrypt" } ;
 	s.failedToMountList     = QStringList{ "Error" } ;
 	s.names                 = QStringList{ "fscrypt" } ;
-	s.notFoundCode          = engines::engine::status::fscryptNotFound ;
+	s.volumePropertiesCommands = QStringList{ "fscrypt status %{plainFolder}" } ;
+	s.notFoundCode             = engines::engine::status::fscryptNotFound ;
 
 	return s ;
 }
