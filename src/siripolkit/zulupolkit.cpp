@@ -201,6 +201,7 @@ void zuluPolkit::gotConnection()
 
 		auto e = su + " - -c \"'" + executableFullPath( "ecryptfs-simple" ) ;
 		auto f = su + " - -c \"" + executableFullPath( "ecryptfs-simple" ) ;
+		auto g = executableFullPath( "fscrypt" ) ;
 
 		if( cookie == m_cookie ){
 
@@ -208,7 +209,10 @@ void zuluPolkit::gotConnection()
 
 				return QCoreApplication::quit() ;
 
-			}else if( command.startsWith( e ) || command.startsWith( f ) ){
+			}else if( command.startsWith( e ) ||
+				  command.startsWith( f ) ||
+				  command.startsWith( g ) ||
+				  command.startsWith( "\"" + g ) ){
 
 				return _respond( m,Task::process::run( command,password.toLatin1() ).get() ) ;
 			}else{

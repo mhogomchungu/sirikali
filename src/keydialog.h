@@ -176,31 +176,35 @@ public:
 			      secrets& s,
 			      const volumeInfo& v,
 			      std::function< void() > cancel,
+			      std::function< void() > updateList,
 			      bool o,
 			      const QString& m,
 			      const QString& exe = QString(),
 			      const QByteArray& key = QByteArray() )
 	{
-		new keyDialog( parent,s,v,std::move( cancel ),o,m,exe,key ) ;
+		new keyDialog( parent,s,v,std::move( cancel ),std::move( updateList),o,m,exe,key ) ;
 	}
 	static void instance( QWidget * parent,
 			      secrets& s,
 			      bool o,
 			      const QString& m,
 			      favorites::volumeList e,
-			      std::function< void() > function )
+			      std::function< void() > function,
+			      std::function< void() > updateList )
 	{
-		new keyDialog( parent,s,o,m,std::move( e ),std::move( function ) ) ;
+		new keyDialog( parent,s,o,m,std::move( e ),std::move( function ),std::move( updateList ) ) ;
 	}
 	keyDialog( QWidget * parent,
 		   secrets&,
 		   bool,
 		   const QString&,
 		   favorites::volumeList,
+		   std::function< void() >,
 		   std::function< void() > ) ;
 	keyDialog( QWidget * parent,
 		   secrets&,
 		   const volumeInfo&,
+		   std::function< void() >,
 		   std::function< void() >,
 		   bool,
 		   const QString&,
@@ -306,6 +310,7 @@ private :
 
 	std::function< void() > m_cancel = [](){} ;
 	std::function< void() > m_done = [](){} ;
+	std::function< void() > m_updateVolumeList ;
 
 	favorites::volumeList m_volumes ;
 

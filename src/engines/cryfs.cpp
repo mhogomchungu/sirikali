@@ -29,6 +29,9 @@ static engines::engine::BaseOptions _setOptions()
 	auto b = "InstallLocation" ;
 
 	s.supportsMountPathsOnWindows = true ;
+	s.autorefreshOnMountUnMount   = true ;
+	s.backendRequireMountPath     = true ;
+	s.requiresPolkit        = false ;
 	s.customBackend         = false ;
 	s.requiresAPassword     = true ;
 	s.hasConfigFile         = true ;

@@ -65,7 +65,8 @@ keyDialog::keyDialog( QWidget * parent,
 		      bool o,
 		      const QString& q,
 		      favorites::volumeList z,
-		      std::function< void() > f ) :
+		      std::function< void() > f,
+		      std::function< void() > g ) :
 	QDialog( parent ),
 	m_ui( new Ui::keyDialog ),
 	m_fileManagerOpen( q ),
@@ -74,6 +75,7 @@ keyDialog::keyDialog( QWidget * parent,
 	m_secrets( s ),
 	m_settings( settings::instance() ),
 	m_done( std::move( f ) ),
+	m_updateVolumeList( std::move( g ) ),
 	m_volumes( std::move( z ) ),
 	m_walletKey( s )
 {
@@ -110,6 +112,7 @@ keyDialog::keyDialog( QWidget * parent,
 		      secrets& s,
 		      const volumeInfo& e,
 		      std::function< void() > p,
+		      std::function< void() > l,
 		      bool o,
 		      const QString& q,
 		      const QString& exe,
@@ -123,6 +126,7 @@ keyDialog::keyDialog( QWidget * parent,
 	m_secrets( s ),
 	m_settings( settings::instance() ),
 	m_cancel( std::move( p ) ),
+	m_updateVolumeList( std::move( l ) ),
 	m_walletKey( s )
 {
 	m_ui->setupUi( this ) ;
@@ -431,6 +435,13 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 	m_ui->lineEditMountPoint->setText( [ & ]()->QString{
 
+		const auto& engine = siritask::mountEngine( m_path,m_configFile ).engine ;
+
+		if( !engine.backendRequireMountPath() ){
+
+			return tr( "Not Used" ) ;
+		}
+
 		auto m = e.mountPoint() ;
 
 		if( utility::platformIsWindows() ){
@@ -441,9 +452,7 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 			if( m.isEmpty() ){
 
-				const auto& e = siritask::mountEngine( m_path,m_configFile ).engine ;
-
-				if( m_settings.windowsUseMountPointPath( e.name() ) ){
+				if( m_settings.windowsUseMountPointPath( engine.name() ) ){
 
 					auto mm = m_settings.windowsMountPointPath() ;
 
@@ -1080,7 +1089,7 @@ void keyDialog::encryptedFolderCreate()
 
 	m_cryfsWarning.showCreate( m_exe.toLower() ) ;
 
-	auto e = siritask::encryptedFolderCreate( s ) ;
+	auto e = siritask::encryptedFolderCreate( s,m_updateVolumeList ) ;
 
 	m_cryfsWarning.hide() ;
 
@@ -1425,7 +1434,7 @@ void keyDialog::encryptedFolderMount()
 
 	m_cryfsWarning.showUnlock( m_engineName ) ;
 
-	auto e = siritask::encryptedFolderMount( s,false,m_engineName ) ;
+	auto e = siritask::encryptedFolderMount( s,m_updateVolumeList,false,m_engineName ) ;
 
 	m_cryfsWarning.hide() ;
 

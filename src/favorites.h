@@ -38,6 +38,15 @@ public:
 		triState( bool e ) : m_state( e ? STATES::TRUE : STATES::FALSE )
 		{
 		}
+		void operator=( bool e )
+		{
+			if( e ){
+
+				m_state = STATES::TRUE ;
+			}else{
+				m_state = STATES::FALSE ;
+			}
+		}
 		void toggle()
 		{
 			if( m_state == STATES::TRUE ){
@@ -89,7 +98,7 @@ public:
 
 			if( !s.isEmpty() ){
 
-				state = favorites::triState( s == "true" ? true : false ) ;
+				state = s == "true" ? true : false ;
 			}
 		}
 	private:

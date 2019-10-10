@@ -18,12 +18,14 @@
  */
 
 #include "../engines.h"
+#include <QStringList>
 
-struct ecryptfs : public engines::engine
+class fscrypt : public engines::engine
 {
-	ecryptfs() ;
+public:
+	static Task::future< QStringList >& fscryptVolumes( const QStringList& s ) ;
 
-	bool requiresPolkit() const override ;
+	fscrypt() ;
 
 	bool unmount( const QString& cipherFolder,
 		      const QString& mountPoint,
@@ -37,8 +39,7 @@ struct ecryptfs : public engines::engine
 	QString installedVersionString() const override ;
 
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
-
 private:
-	mutable bool m_unset = true ;
-	mutable bool m_requirePolkit = true ;
+	QString userOption() const ;
+	mutable QString m_version ;
 } ;

@@ -368,6 +368,11 @@ void utility::logCommandOutPut( const QString& e )
 
 void utility::logCommandOutPut( const ::Task::process::result& m,const QString& exe )
 {
+	if( exe.contains( "fscrypt status" ) ){
+
+		return ;
+	}
+
 	auto _trim = []( QString e ){
 
 		while( true ){

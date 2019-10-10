@@ -86,9 +86,9 @@ static void _move_favorites_to_new_system( const QStringList& m )
 
 		if( autoMountVolume == "true" ){
 
-			s.autoMount = favorites::triState( true ) ;
+			s.autoMount = true ;
 		}else{
-			s.autoMount = favorites::triState( false ) ;
+			s.autoMount = false ;
 		}
 	}
 
@@ -112,7 +112,7 @@ static void _move_favorites_to_new_system( const QStringList& m )
 
 	if( s.mountOptions.contains( "-SiriKaliMountReadOnly" ) ){
 
-		s.readOnlyMode = favorites::triState( true ) ;
+		s.readOnlyMode = true ;
 	}
 
 	s.mountOptions.replace( "-SiriKaliMountReadOnly","" ) ;

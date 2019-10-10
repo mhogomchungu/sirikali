@@ -33,6 +33,9 @@ static utility::result< custom::opts > _getOptions( const QByteArray& e,const QS
 
 		SirikaliJson json( e,SirikaliJson::type::CONTENTS ) ;
 
+		s.baseOpts.requiresPolkit              = false ;
+		s.baseOpts.autorefreshOnMountUnMount   = true ;
+		s.baseOpts.backendRequireMountPath     = true ;
 		s.baseOpts.hasGUICreateOptions         = true ;
 		s.baseOpts.customBackend               = true ;
 		s.baseOpts.requiresAPassword           = json.getBool( "requiresAPassword" ) ;

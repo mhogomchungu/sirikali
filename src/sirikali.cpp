@@ -497,9 +497,9 @@ void sirikali::autoUpdateCheck()
 	m_checkUpdates.run( true ) ;
 }
 
-static void _connect_to_ssh_server( QWidget * parent,const favorites::entry& entry )
+static void _connect_to_ssh_server( QWidget * parent,const favorites::entry& entry,std::function< void() > function )
 {
-	auto s = siritask::encryptedFolderMount( entry ) ;
+	auto s = siritask::encryptedFolderMount( entry,std::move( function ) ) ;
 
 	if( s == engines::engine::status::sshfsNotFound ){
 
@@ -559,7 +559,7 @@ void sirikali::favoriteClicked( QAction * ac )
 
 						this->disableAll() ;
 
-						_connect_to_ssh_server( this,it.first ) ;
+						_connect_to_ssh_server( this,it.first,[ this ](){ this->pbUpdate() ; } ) ;
 
 						this->enableAll() ;
 					}else{
@@ -735,7 +735,7 @@ void sirikali::cliCommand( const QStringList& l )
 
 			if( a == volume || b == volume ){
 
-				if( siritask::encryptedFolderUnMount( a,b,c ) ){
+				if( siritask::encryptedFolderUnMount( a,b,c,5,[](){} ) ){
 
 					siritask::deleteMountFolder( b ) ;
 
@@ -800,7 +800,7 @@ void sirikali::unlockVolume( const QStringList& l )
 
 			engines::engine::options s( volume,m,key,idleTime,cPath,QString(),mode,reverse,mOpt,QString() ) ;
 
-			auto e = siritask::encryptedFolderMount( s ) ;
+			auto e = siritask::encryptedFolderMount( s,[](){} ) ;
 
 			if( e == engines::engine::status::success ){
 
@@ -904,7 +904,8 @@ void sirikali::mountMultipleVolumes( favorites::volumeList e )
 				     m_autoOpenFolderOnMount,
 				     m_folderOpener,
 				     std::move( e ),
-				     [ this ](){ m_disableEnableAll = false ; this->enableAll() ; } ) ;
+				     [ this ](){ m_disableEnableAll = false ; this->enableAll() ; },
+				     [ this ](){ this->pbUpdate() ; } ) ;
 	}
 }
 
@@ -989,7 +990,7 @@ favorites::volumeList sirikali::autoUnlockVolumes( favorites::volumeList l,bool 
 
 				q.emplace_back( e.first,key ) ;
 			}else{
-				auto s = siritask::encryptedFolderMount( { e.first,key } ) ;
+				auto s = siritask::encryptedFolderMount( { e.first,key },[ this ](){ this->pbUpdate() ; } ) ;
 
 				if( s == engines::engine::status::success && autoOpenFolderOnMount ){
 
@@ -1365,6 +1366,7 @@ void sirikali::mount( const volumeInfo& entry,const QString& exe,const QByteArra
 			     m_secrets,
 			     entry,
 			     [ this ](){ this->enableAll() ; },
+			     [ this ](){ this->pbUpdate() ; },
 			     m_autoOpenFolderOnMount,
 			     m_folderOpener,
 			     exe,
@@ -1660,6 +1662,11 @@ void sirikali::updateList( const volumeInfo& entry )
 		if( row == -1 ){
 
 			row = tablewidget::addRow( table ) ;
+		}else{
+			if( entry.fileSystem() == "fscrypt" ){
+
+				row = tablewidget::addRow( table ) ;
+			}
 		}
 
 		tablewidget::updateRow( table,entry.mountInfo().minimalList(),row,this->font() ) ;
@@ -1670,8 +1677,12 @@ void sirikali::updateList( const volumeInfo& entry )
 
 bool sirikali::unMountVolume( const sirikali::mountedEntry& e )
 {
-	if( siritask::encryptedFolderUnMount( e.cipherPath,e.mountPoint,e.volumeType ) ){
+	auto s = siritask::encryptedFolderUnMount( e.cipherPath,e.mountPoint,e.volumeType,5,[ & ](){
 
+		this->pbUpdate() ;
+	} ) ;
+
+	if( s ){
 		siritask::deleteMountFolder( e.mountPoint ) ;
 
 		return true ;

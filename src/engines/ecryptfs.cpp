@@ -19,12 +19,16 @@
 
 #include "ecryptfs.h"
 #include "ecryptfscreateoptions.h"
+#include "../siritask.h"
 
 static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
 
 	s.supportsMountPathsOnWindows = false ;
+	s.autorefreshOnMountUnMount   = true ;
+	s.backendRequireMountPath     = true ;
+	s.requiresPolkit        = true ;
 	s.customBackend         = false ;
 	s.requiresAPassword     = true ;
 	s.hasConfigFile         = true ;
@@ -46,6 +50,101 @@ static engines::engine::BaseOptions _setOptions()
 
 ecryptfs::ecryptfs() : engines::engine( _setOptions() )
 {
+}
+
+#ifdef Q_OS_LINUX
+
+#include <sys/stat.h>
+
+bool ecryptfs::requiresPolkit() const
+{
+	if( m_unset ){
+
+		m_unset = false ;
+
+		auto e = utility::executableFullPath( "ecryptfs-simple" ) ;
+
+		struct stat st ;
+
+		stat( e.toLatin1().constData(),&st ) ;
+
+		bool root_owner = st.st_uid == 0 ;
+		bool is_suid    = st.st_mode & S_ISUID ;
+
+		m_requirePolkit = !( root_owner && is_suid ) ;
+	}
+
+	return m_requirePolkit ;
+}
+
+#else
+bool ecryptfs::requiresPolkit() const
+{
+	return m_requirePolkit ;
+}
+
+#endif
+
+template< typename Function >
+static bool _unmount_ecryptfs_( Function cmd,const QString& mountPoint,bool& not_set )
+{
+	auto s = siritask::unmountVolume( cmd(),mountPoint,true ) ;
+
+	if( s && s.value().success() ){
+
+		return true ;
+	}else{
+		if( not_set && s.value().stdError().contains( "error: failed to set gid" ) ){
+
+			not_set = false ;
+
+			if( utility::enablePolkit() ){
+
+				auto s = siritask::unmountVolume( cmd(),mountPoint,true ) ;
+				return s && s.value().success() ;
+			}
+		}
+
+		return false ;
+	}
+}
+
+bool ecryptfs::unmount( const QString& cipherFolder,
+			const QString& mountPoint,
+			int maxCount ) const
+{
+	bool not_set = true ;
+
+	auto cmd = [ & ](){
+
+		auto exe = utility::executableFullPath( "ecryptfs-simple" ) ;
+
+		auto s = exe + " -k " + cipherFolder ;
+
+		if( utility::useSiriPolkit() ){
+
+			return utility::wrap_su( s ) ;
+		}else{
+			return s ;
+		}
+	} ;
+
+	if( _unmount_ecryptfs_( cmd,mountPoint,not_set ) ){
+
+		return true ;
+	}else{
+		for( int i = 1 ; i < maxCount ; i++ ){
+
+			utility::Task::waitForOneSecond() ;
+
+			if( _unmount_ecryptfs_( cmd,mountPoint,not_set ) ){
+
+				return true ;
+			}
+		}
+
+		return false ;
+	}
 }
 
 engines::engine::args ecryptfs::command( const QString& password,

@@ -67,17 +67,26 @@ namespace siritask
 				      const QString& configFilePath,
 				      const QString& engineName = QString() ) ;
 
+	utility::result< utility::Task > unmountVolume( const QString& exe,
+							const QString& mountPoint,
+							bool usePolkit ) ;
+
+	bool unmountVolume( const QString& mountPoint,const QString& unMountCommand,int maxCount ) ;
+
 	bool deleteMountFolder( const QString& ) ;
 
 	bool encryptedFolderUnMount( const QString& cipherFolder,
 				     const QString& mountPoint,
 				     const QString& fileSystem,
-				     int numberOfAttempts = 5 ) ;
+				     int numberOfAttempts,
+				     std::function< void() > updateVolumeList ) ;
 
 	engines::engine::cmdStatus encryptedFolderMount( const engines::engine::options&,
+							 std::function< void() > updateVolumeList,
 							 bool = false,
 							 const QString& = QString() ) ;
-	engines::engine::cmdStatus encryptedFolderCreate( const engines::engine::options& ) ;
+	engines::engine::cmdStatus encryptedFolderCreate( const engines::engine::options&,
+							  std::function< void() > updateVolumeList ) ;
 }
 
 #endif // SIRITASK_H

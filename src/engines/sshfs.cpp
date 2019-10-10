@@ -32,6 +32,9 @@ static engines::engine::BaseOptions _setOptions()
 	s.passwordFormat        = "%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}" ;
 
 	s.supportsMountPathsOnWindows = true ;
+	s.autorefreshOnMountUnMount   = true ;
+	s.backendRequireMountPath     = true ;
+	s.requiresPolkit        = false ;
 	s.customBackend         = false ;
 	s.requiresAPassword     = false ;
 	s.hasConfigFile         = false ;

@@ -527,7 +527,7 @@ void favorites2::updateFavorite( bool edit )
 	favorites::entry e ;
 	e.volumePath = dev_path ;
 	e.mountPointPath = path ;
-	e.autoMount = favorites::triState( m_ui->cbAutoMount->isChecked() ) ;
+	e.autoMount = m_ui->cbAutoMount->isChecked() ;
 	e.configFilePath = configPath ;
 	e.idleTimeOut = idleTimeOUt ;
 	e.mountOptions = mOpts ;

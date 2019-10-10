@@ -324,6 +324,7 @@ set( SRC 	src/dialogok.cpp
 		src/engines/securefscreateoptions.cpp
 		src/engines/encfscreateoptions.cpp
 		src/engines/cryfscreateoptions.cpp
+		src/engines/fscrypt.cpp
 )
 
 if( APPLE )

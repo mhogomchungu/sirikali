@@ -26,6 +26,7 @@
 #include "engines/sshfs.h"
 #include "engines/unknown.h"
 #include "engines/securefs.h"
+#include "engines/fscrypt.h"
 #include "engines/custom.h"
 
 #include "utility.h"
@@ -123,6 +124,14 @@ QString engines::executableFullPath( const QString& f )
 
 engines::engine::~engine()
 {
+}
+
+bool engines::engine::unmount( const QString& cipherFolder,
+			       const QString& mountPoint,
+			       int maxCount ) const
+{
+	Q_UNUSED( cipherFolder )
+	return siritask::unmountVolume( mountPoint,this->unMountCommand(),maxCount ) ;
 }
 
 QString engines::engine::sanitizeVersionString( const QString& s ) const
@@ -237,6 +246,21 @@ bool engines::engine::requiresAPassword() const
 bool engines::engine::customBackend() const
 {
 	return m_Options.customBackend ;
+}
+
+bool engines::engine::autorefreshOnMountUnMount() const
+{
+	return m_Options.autorefreshOnMountUnMount ;
+}
+
+bool engines::engine::backendRequireMountPath() const
+{
+	return m_Options.backendRequireMountPath ;
+}
+
+bool engines::engine::requiresPolkit() const
+{
+	return m_Options.requiresPolkit ;
 }
 
 const QStringList& engines::engine::names() const
@@ -456,7 +480,7 @@ engines::engines()
 		m_backends.emplace_back( std::make_unique< gocryptfs >() ) ;
 		m_backends.emplace_back( std::make_unique< encfs >() ) ;
 	}else{
-		m_supported = QStringList{ "Securefs","Cryfs","Gocryptfs","Encfs","Ecryptfs","Sshfs" } ;
+		m_supported = QStringList{ "Securefs","Cryfs","Gocryptfs","Encfs","Ecryptfs","Sshfs","Fscrypt" } ;
 
 		m_backends.emplace_back( std::make_unique< securefs >() ) ;
 		m_backends.emplace_back( std::make_unique< cryfs >() ) ;
@@ -464,6 +488,7 @@ engines::engines()
 		m_backends.emplace_back( std::make_unique< encfs >() ) ;
 		m_backends.emplace_back( std::make_unique< ecryptfs >() ) ;
 		m_backends.emplace_back( std::make_unique< sshfs >() ) ;
+		m_backends.emplace_back( std::make_unique< fscrypt >() ) ;
 	}
 
 	custom::addEngines( m_supported,m_backends ) ;
@@ -616,7 +641,15 @@ QString engines::engine::cmdStatus::toString() const
 
 		return QObject::tr( "Failed To Unlock An Ecryptfs Volume.\nWrong Password Entered." ) ;
 
-	case engines::engine::engine::status::ecryptfsIllegalPath :
+	case engines::engine::status::fscryptBadPassword :
+
+		return QObject::tr( "Failed To Unlock An fscrypt Volume.\nWrong Password Entered." ) ;
+
+	case engines::engine::status::failedToStartPolkit :
+
+		return QObject::tr( "Backend Requires Polkit Support and SiriKali Failed To Start It." ) ;
+
+	case engines::engine::engine::status::IllegalPath :
 
 		return QObject::tr( "A Space Character Is Not Allowed In Paths When Using Ecryptfs Backend And Polkit." ) ;
 
@@ -635,6 +668,10 @@ QString engines::engine::cmdStatus::toString() const
 	case engines::engine::status::sshfsNotFound :
 
 		return QObject::tr( "Failed To Complete The Request.\nSshfs Executable Could Not Be Found." ) ;
+
+	case engines::engine::status::fscryptNotFound :
+
+		return QObject::tr( "Failed To Complete The Request.\nFscrypt Executable Could Not Be Found." ) ;
 
 	case engines::engine::status::backEndDoesNotSupportCustomConfigPath :
 

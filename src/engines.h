@@ -58,10 +58,12 @@ public:
 			gocryptfsBadPassword,
 			securefsBadPassword,
 			ecryptfsBadPassword,
+			fscryptBadPassword,
 
 			sshfsNotFound,
 			cryfsNotFound,
 			encfsNotFound,
+			fscryptNotFound,
 			securefsNotFound,
 			gocryptfsNotFound,
 			ecryptfs_simpleNotFound,
@@ -74,9 +76,10 @@ public:
 
 			failedToLoadWinfsp,
 
-			ecryptfsIllegalPath,
+			IllegalPath,
 			ecrypfsBadExePermissions,
 
+			failedToStartPolkit,
 			backEndDoesNotSupportCustomConfigPath,
 			failedToCreateMountPoint,
 			invalidConfigFileName,
@@ -164,6 +167,10 @@ public:
 			bool supportsMountPathsOnWindows ;
 			bool requiresAPassword ;
 			bool customBackend ;
+			bool requiresPolkit ;
+			bool autorefreshOnMountUnMount ;
+			bool backendRequireMountPath ;
+
 			QString passwordFormat ;
 			QString reverseString ;
 			QString idleString ;
@@ -213,6 +220,8 @@ public:
 		bool supportsMountPathsOnWindows() const ;
 		bool requiresAPassword() const ;
 		bool customBackend() const ;
+		bool autorefreshOnMountUnMount() const ;
+		bool backendRequireMountPath() const ;
 
 		engines::engine::status notFoundCode() const ;
 
@@ -241,6 +250,9 @@ public:
 
 		virtual ~engine() ;
 
+		virtual bool unmount( const QString& cipherFolder,const QString& mountPoint,int maxCount ) const ;
+
+		virtual bool requiresPolkit() const ;
 		virtual QString installedVersionString() const = 0 ;
 		virtual args command( const QString& password,const engines::engine::cmdArgsList& args ) const = 0 ;
 		virtual engines::engine::status errorCode( const QString& e,int s ) const = 0 ;
