@@ -1049,6 +1049,34 @@ void sirikali::volumeProperties()
 				       mountPath,
 				       volumeType ) ;
 
+	if( volumeType == "fscrypt" ){
+
+		auto exe = utility::executableFullPath( "fscrypt" ) ;
+
+		if( !exe.isEmpty() ){
+
+			auto a = utility::split( cipherPath,':' ) ;
+
+			auto s = utility::Task::makePath( mountPath ) ;
+
+			if( a.size() > 1 ){
+
+				exe = utility::Task::makePath( exe ) ;
+
+				a = utility::split( a.at( 1 ) ) ;
+
+				exe += " metadata dump --policy=" + s + ":" + a.at( 0 ) ;
+
+				auto e = utility::Task::run( exe ).await() ;
+
+				if( e.success() ){
+
+					return DialogMsg( this ).ShowUIInfo( tr( "INFORMATION" ),true,e.stdOut() ) ;
+				}
+			}
+		}
+	}
+
 	const auto& engine = engines::instance().getByName( volumeType ) ;
 
 	for( const auto& it : engine.volumePropertiesCommands() ){
