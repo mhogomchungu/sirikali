@@ -84,6 +84,7 @@ private slots:
 	void defaultButton( void ) ;
 	void itemClicked( QTableWidgetItem * ) ;
 	void pbUpdate( void ) ;
+	void updateList( void ) ;
 	void createVolume( QAction * = nullptr ) ;
 	void slotMount( void ) ;
 	void unMountAll( void ) ;

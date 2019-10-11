@@ -559,7 +559,7 @@ void sirikali::favoriteClicked( QAction * ac )
 
 						this->disableAll() ;
 
-						_connect_to_ssh_server( this,it.first,[ this ](){ this->pbUpdate() ; } ) ;
+						_connect_to_ssh_server( this,it.first,[ this ](){ this->updateList() ; } ) ;
 
 						this->enableAll() ;
 					}else{
@@ -905,7 +905,7 @@ void sirikali::mountMultipleVolumes( favorites::volumeList e )
 				     m_folderOpener,
 				     std::move( e ),
 				     [ this ](){ m_disableEnableAll = false ; this->enableAll() ; },
-				     [ this ](){ this->pbUpdate() ; } ) ;
+				     [ this ](){ this->updateList() ; } ) ;
 	}
 }
 
@@ -990,7 +990,7 @@ favorites::volumeList sirikali::autoUnlockVolumes( favorites::volumeList l,bool 
 
 				q.emplace_back( e.first,key ) ;
 			}else{
-				auto s = siritask::encryptedFolderMount( { e.first,key },[ this ](){ this->pbUpdate() ; } ) ;
+				auto s = siritask::encryptedFolderMount( { e.first,key },[ this ](){ this->updateList() ; } ) ;
 
 				if( s == engines::engine::status::success && autoOpenFolderOnMount ){
 
@@ -1394,7 +1394,7 @@ void sirikali::mount( const volumeInfo& entry,const QString& exe,const QByteArra
 			     m_secrets,
 			     entry,
 			     [ this ](){ this->enableAll() ; },
-			     [ this ](){ this->pbUpdate() ; },
+			     [ this ](){ this->updateList() ; },
 			     m_autoOpenFolderOnMount,
 			     m_folderOpener,
 			     exe,
@@ -1707,7 +1707,7 @@ bool sirikali::unMountVolume( const sirikali::mountedEntry& e )
 {
 	auto s = siritask::encryptedFolderUnMount( e.cipherPath,e.mountPoint,e.volumeType,5,[ & ](){
 
-		this->pbUpdate() ;
+		this->updateList() ;
 	} ) ;
 
 	if( s ){
@@ -1825,10 +1825,8 @@ void sirikali::unMountAllAndQuit()
 	}
 }
 
-void sirikali::pbUpdate()
+void sirikali::updateList()
 {
-	this->disableAll() ;
-
 	if( utility::platformIsWindows() ){
 
 		this->updateVolumeList( mountinfo::unlockedVolumes().get() ) ;
@@ -1837,6 +1835,13 @@ void sirikali::pbUpdate()
 	}
 
 	this->updateFavoritesInContextMenu() ;
+}
+
+void sirikali::pbUpdate()
+{
+	this->disableAll() ;
+
+	this->updateList() ;
 }
 
 void sirikali::updateVolumeList( const std::vector< volumeInfo >& r )
