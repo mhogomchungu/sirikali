@@ -31,6 +31,9 @@ public:
 		      const QString& mountPoint,
 		      int maxCount ) const override ;
 
+	virtual Task::future< QString >& volumeProperties( const QString& cipherFolder,
+							   const QString& mountPoint ) const override ;
+
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 
 	engines::engine::args command( const QString& password,

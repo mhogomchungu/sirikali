@@ -126,6 +126,41 @@ engines::engine::~engine()
 {
 }
 
+Task::future< QString >& engines::engine::volumeProperties( const QString& cipherFolder,
+							    const QString& mountPoint ) const
+{
+	return Task::run( [ = ](){
+
+		for( const auto& it : this->volumePropertiesCommands() ){
+
+			auto a = utility::split( it,' ' ) ;
+			auto b = utility::executableFullPath( a.first() ) ;
+			a.removeFirst() ;
+			auto c = a.join( " " ) ;
+
+			if( !b.isEmpty() ){
+
+				auto x = utility::Task::makePath( cipherFolder ) ;
+				auto y  = utility::Task::makePath( mountPoint ) ;
+
+				c.replace( "%{cipherFolder}",x ) ;
+				c.replace( "%{plainFolder}",y ) ;
+
+				auto d = utility::Task::makePath( b ) ;
+
+				auto e = utility::Task::run( d + " " + c ).await() ;
+
+				if( e.success() ){
+
+					return QString( e.stdOut() ) ;
+				}
+			}
+		}
+
+		return QString() ;
+	} ) ;
+}
+
 bool engines::engine::unmount( const QString& cipherFolder,
 			       const QString& mountPoint,
 			       int maxCount ) const

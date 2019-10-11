@@ -301,6 +301,40 @@ bool fscrypt::unmount( const QString& cipherFolder,
 	return false ;
 }
 
+Task::future< QString >& fscrypt::volumeProperties( const QString& cipherFolder,
+						    const QString& mountPoint) const
+{
+	return Task::run( [ = ](){
+
+		auto exe = this->executableFullPath() ;
+
+		if( !exe.isEmpty() ){
+
+			auto a = utility::split( cipherFolder,':' ) ;
+
+			auto s = utility::Task::makePath( mountPoint ) ;
+
+			if( a.size() > 1 ){
+
+				exe = utility::Task::makePath( exe ) ;
+
+				a = utility::split( a.at( 1 ) ) ;
+
+				exe += " metadata dump --policy=" + s + ":" + a.at( 0 ) ;
+
+				auto e = utility::Task::run( exe ).await() ;
+
+				if( e.success() ){
+
+					return QString( e.stdOut() ) ;
+				}
+			}
+		}
+
+		return QString() ;
+	} ) ;
+}
+
 engines::engine::args fscrypt::command( const QString& password,
 					const engines::engine::cmdArgsList& args ) const
 {

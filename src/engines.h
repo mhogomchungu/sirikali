@@ -250,7 +250,12 @@ public:
 
 		virtual ~engine() ;
 
-		virtual bool unmount( const QString& cipherFolder,const QString& mountPoint,int maxCount ) const ;
+		virtual Task::future< QString >& volumeProperties( const QString& cipherFolder,
+								   const QString& mountPoint ) const ;
+
+		virtual bool unmount( const QString& cipherFolder,
+				      const QString& mountPoint,
+				      int maxCount ) const ;
 
 		virtual bool requiresPolkit() const ;
 		virtual QString installedVersionString() const = 0 ;

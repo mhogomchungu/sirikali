@@ -1049,63 +1049,16 @@ void sirikali::volumeProperties()
 				       mountPath,
 				       volumeType ) ;
 
-	if( volumeType == "fscrypt" ){
-
-		auto exe = utility::executableFullPath( "fscrypt" ) ;
-
-		if( !exe.isEmpty() ){
-
-			auto a = utility::split( cipherPath,':' ) ;
-
-			auto s = utility::Task::makePath( mountPath ) ;
-
-			if( a.size() > 1 ){
-
-				exe = utility::Task::makePath( exe ) ;
-
-				a = utility::split( a.at( 1 ) ) ;
-
-				exe += " metadata dump --policy=" + s + ":" + a.at( 0 ) ;
-
-				auto e = utility::Task::run( exe ).await() ;
-
-				if( e.success() ){
-
-					return DialogMsg( this ).ShowUIInfo( tr( "INFORMATION" ),true,e.stdOut() ) ;
-				}
-			}
-		}
-	}
-
 	const auto& engine = engines::instance().getByName( volumeType ) ;
 
-	for( const auto& it : engine.volumePropertiesCommands() ){
+	auto s = engine.volumeProperties( cipherPath,mountPath ).await() ;
 
-		auto a = utility::split( it,' ' ) ;
-		auto b = utility::executableFullPath( a.first() ) ;
-		a.removeFirst() ;
-		auto c = a.join( " " ) ;
+	if( s.isEmpty() ){
 
-		if( !b.isEmpty() ){
-
-			cipherPath = utility::Task::makePath( cipherPath ) ;
-			mountPath  = utility::Task::makePath( mountPath ) ;
-
-			c.replace( "%{cipherFolder}",cipherPath ) ;
-			c.replace( "%{plainFolder}",mountPath ) ;
-
-			auto d = utility::Task::makePath( b ) ;
-
-			auto e = utility::Task::run( d + " " + c ).await() ;
-
-			if( e.success() ){
-
-				return DialogMsg( this ).ShowUIInfo( tr( "INFORMATION" ),true,e.stdOut() ) ;
-			}
-		}
+		this->genericVolumeProperties() ;
+	}else {
+		return DialogMsg( this ).ShowUIInfo( tr( "INFORMATION" ),true,s ) ;
 	}
-
-	this->genericVolumeProperties() ;
 }
 
 void sirikali::genericVolumeProperties()
