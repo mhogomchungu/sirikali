@@ -760,7 +760,12 @@ static engines::engine::cmdStatus _encrypted_folder_create( const engines::engin
 
 			if( e != engines::engine::status::success ){
 
-				_deleteFolders( opt.cipherFolder,opt.plainFolder ) ;
+				if( engine.backendRequireMountPath() ){
+
+					_deleteFolders( opt.plainFolder,opt.cipherFolder ) ;
+				}else{
+					_deleteFolders( opt.cipherFolder ) ;
+				}
 			}
 		}else{
 			if( !engine.autorefreshOnMountUnMount() ){
@@ -769,7 +774,12 @@ static engines::engine::cmdStatus _encrypted_folder_create( const engines::engin
 			}
 		}
 	}else{
-		_deleteFolders( opt.plainFolder,opt.cipherFolder ) ;
+		if( engine.backendRequireMountPath() ){
+
+			_deleteFolders( opt.plainFolder,opt.cipherFolder ) ;
+		}else{
+			_deleteFolders( opt.cipherFolder ) ;
+		}
 	}
 
 	return e ;

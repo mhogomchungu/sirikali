@@ -41,5 +41,5 @@ public:
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
 private:
 	QString userOption() const ;
-	mutable QString m_version ;
+	bool m_requirePolkitOnUnmount ;
 } ;

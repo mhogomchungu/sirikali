@@ -407,6 +407,16 @@ bool settings::unMountVolumesOnLogout()
 	return m_settings.value( "UnMountVolumesOnLogout" ).toBool() ;
 }
 
+bool settings::requirePolkitOnFsCryptUnmount()
+{
+	if( !m_settings.contains( "RequirePolkitOnFsCryptUnmount" ) ){
+
+		m_settings.setValue( "RequirePolkitOnFsCryptUnmount",false ) ;
+	}
+
+	return m_settings.value( "RequirePolkitOnFsCryptUnmount" ).toBool() ;
+}
+
 bool settings::readFavorites( QMenu * m )
 {
 	m->clear() ;

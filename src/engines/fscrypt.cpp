@@ -18,10 +18,10 @@
  */
 
 #include "fscrypt.h"
-//#include "fscryptcreateoptions.h"
 #include "../win.h"
 #include <pwd.h>
 #include <vector>
+#include "../settings.h"
 
 static QStringList _encryptedVolumes( const QString& list )
 {
@@ -239,7 +239,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.supportsMountPathsOnWindows = true ;
 	s.autorefreshOnMountUnMount   = false ;
 	s.backendRequireMountPath     = false ;
-	s.requiresPolkit        = true ;
+	s.requiresPolkit        = false ;
 	s.customBackend         = false ;
 	s.requiresAPassword     = true ;
 	s.hasConfigFile         = false ;
@@ -259,7 +259,9 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
-fscrypt::fscrypt() : engines::engine( _setOptions() )
+fscrypt::fscrypt() :
+	engines::engine( _setOptions() ),
+	m_requirePolkitOnUnmount( settings::instance().requirePolkitOnFsCryptUnmount() )
 {
 }
 
@@ -267,8 +269,6 @@ bool fscrypt::unmount( const QString& cipherFolder,
 		       const QString& mountPoint,
 		       int maxCount) const
 {
-	maxCount = 1 ;
-
 	Q_UNUSED( cipherFolder )
 
 	auto exe = this->executableFullPath() ;
@@ -278,16 +278,21 @@ bool fscrypt::unmount( const QString& cipherFolder,
 		return false ;
 	}
 
-	if( !utility::enablePolkit() ){
+	if( m_requirePolkitOnUnmount ){
 
-		return false ;
+		if( !utility::enablePolkit() ){
+
+			return false ;
+		}
+
+		exe += " purge " + mountPoint + " --force " + this->userOption() ;
+	}else{
+		exe += " purge " + mountPoint + " --force --drop-caches=false " + this->userOption() ;
 	}
-
-	exe += " purge " + mountPoint + " --force " + this->userOption() ;
 
 	for( int i = 0 ; i < maxCount ; i++ ){
 
-		if( utility::Task::run( exe,true ).get().success() ){
+		if( utility::Task::run( exe,m_requirePolkitOnUnmount ).get().success() ){
 
 			return true ;
 		}
@@ -297,7 +302,7 @@ bool fscrypt::unmount( const QString& cipherFolder,
 }
 
 engines::engine::args fscrypt::command( const QString& password,
-				      const engines::engine::cmdArgsList& args ) const
+					const engines::engine::cmdArgsList& args ) const
 {
 	Q_UNUSED( password )
 
@@ -307,9 +312,16 @@ engines::engine::args fscrypt::command( const QString& password,
 
 	auto exeOptions = m.exeOptions() ;
 
-	auto s = QString( "unlock --quiet %1" ).arg( this->userOption() ) ;
+	if( args.create ){
 
-	exeOptions.add( s ) ;
+		auto m = "encrypt --source=custom_passphrase --name=\"%1\" --quiet %2" ;
+		auto n = utility::split( args.opt.cipherFolder,'/' ).last() ;
+
+		auto s = QString( m ).arg( n,this->userOption() ) ;
+		exeOptions.add( s ) ;
+	}else{
+		exeOptions.add( QString( "unlock --quiet %1" ).arg( this->userOption() ) ) ;
+	}
 
 	auto cmd = e.arg( args.exe,
 			  exeOptions.get(),
@@ -318,9 +330,16 @@ engines::engine::args fscrypt::command( const QString& password,
 	return { args,m,cmd } ;
 }
 
-engines::engine::status fscrypt::errorCode( const QString&,int ) const
+engines::engine::status fscrypt::errorCode( const QString& e,int s ) const
 {
-	return engines::engine::status::fscryptBadPassword ;
+	Q_UNUSED( s )
+
+	if( e.contains( this->incorrectPasswordText() ) ){
+
+		return engines::engine::status::fscryptBadPassword ;
+	}else{
+		return engines::engine::status::backendFail ;
+	}
 }
 
 QString fscrypt::installedVersionString() const
@@ -335,6 +354,5 @@ void fscrypt::GUICreateOptionsinstance( QWidget *,engines::engine::function ) co
 
 QString fscrypt::userOption() const
 {
-	return QString( "--user=%1" ).arg( getpwuid( getuid() )->pw_name ) ;
+	return QString( "--user=\"%1\"" ).arg( getpwuid( getuid() )->pw_name ) ;
 }
-
