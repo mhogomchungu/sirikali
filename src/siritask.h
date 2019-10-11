@@ -75,18 +75,63 @@ namespace siritask
 
 	bool deleteMountFolder( const QString& ) ;
 
-	bool encryptedFolderUnMount( const QString& cipherFolder,
-				     const QString& mountPoint,
-				     const QString& fileSystem,
-				     int numberOfAttempts,
-				     std::function< void() > updateVolumeList ) ;
+	class result{
+	public:
+		result()
+		{
+		}
+		result( bool s,const engines::engine& e ) :
+			m_success( s ),m_engine( conv( e ) )
+		{
+		}
+		result( engines::engine::cmdStatus c ) :
+			m_success( c == engines::engine::status::success ),
+			m_cmdStatus( c ),
+			m_engine( conv( engines::instance().getByName( "" ) ) )
+		{
+		}
+		result( const engines::engine::cmdStatus& c,const engines::engine& e ) :
+			m_success( c == engines::engine::status::success ),
+			m_cmdStatus( c ),
+			m_engine( conv( e ) )
+		{
+		}
+		bool backendDoesNotAutoRefresh() const
+		{
+			return !this->engine().autorefreshOnMountUnMount() ;
+		}
+		bool success() const
+		{
+			return m_success ;
+		}
+		const engines::engine::cmdStatus& cmdStatus() const
+		{
+			return m_cmdStatus ;
+		}
+		const engines::engine& engine() const
+		{
+			return *m_engine ;
+		}
+	private:
+		engines::engine * conv( const engines::engine& m )
+		{
+			return std::addressof( const_cast< engines::engine& >( m ) ) ;
+		}
+		bool m_success ;
+		engines::engine::cmdStatus m_cmdStatus ;
+		engines::engine * m_engine ;
+	} ;
 
-	engines::engine::cmdStatus encryptedFolderMount( const engines::engine::options&,
-							 std::function< void() > updateVolumeList,
-							 bool = false,
-							 const QString& = QString() ) ;
-	engines::engine::cmdStatus encryptedFolderCreate( const engines::engine::options&,
-							  std::function< void() > updateVolumeList ) ;
+	siritask::result encryptedFolderUnMount( const QString& cipherFolder,
+						 const QString& mountPoint,
+						 const QString& fileSystem,
+						 int numberOfAttempts ) ;
+
+	siritask::result encryptedFolderMount( const engines::engine::options&,
+					       bool = false,
+					       const QString& = QString() ) ;
+
+	siritask::result encryptedFolderCreate( const engines::engine::options& ) ;
 }
 
 #endif // SIRITASK_H

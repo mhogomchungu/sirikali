@@ -144,7 +144,7 @@ private:
 
 	void processMountedVolumes( std::function< void( const sirikali::mountedEntry& ) > function ) ;
 
-	bool unMountVolume( const sirikali::mountedEntry& ) ;
+	siritask::result unMountVolume( const sirikali::mountedEntry& ) ;
 
 	Ui::sirikali * m_ui = nullptr ;
 
