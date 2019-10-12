@@ -1664,7 +1664,7 @@ void sirikali::updateList( const volumeInfo& entry )
 	}
 }
 
-siritask::result sirikali::unMountVolume( const sirikali::mountedEntry& e )
+siritask::taskResult sirikali::unMountVolume( const sirikali::mountedEntry& e )
 {
 	auto s = siritask::encryptedFolderUnMount( e.cipherPath,e.mountPoint,e.volumeType,5 ) ;
 

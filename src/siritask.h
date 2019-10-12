@@ -75,22 +75,22 @@ namespace siritask
 
 	bool deleteMountFolder( const QString& ) ;
 
-	class result{
+	class taskResult{
 	public:
-		result()
+		taskResult()
 		{
 		}
-		result( bool s,const engines::engine& e ) :
+		taskResult( bool s,const engines::engine& e ) :
 			m_success( s ),m_engine( conv( e ) )
 		{
 		}
-		result( engines::engine::cmdStatus c ) :
+		taskResult( engines::engine::cmdStatus c ) :
 			m_success( c == engines::engine::status::success ),
 			m_cmdStatus( c ),
-			m_engine( conv( engines::instance().getByName( "" ) ) )
+			m_engine( conv( engines::instance().getUnKnown() ) )
 		{
 		}
-		result( const engines::engine::cmdStatus& c,const engines::engine& e ) :
+		taskResult( const engines::engine::cmdStatus& c,const engines::engine& e ) :
 			m_success( c == engines::engine::status::success ),
 			m_cmdStatus( c ),
 			m_engine( conv( e ) )
@@ -113,7 +113,7 @@ namespace siritask
 			return *m_engine ;
 		}
 	private:
-		engines::engine * conv( const engines::engine& m )
+		engines::engine * conv( const engines::engine& m ) const
 		{
 			return std::addressof( const_cast< engines::engine& >( m ) ) ;
 		}
@@ -122,16 +122,16 @@ namespace siritask
 		engines::engine * m_engine ;
 	} ;
 
-	siritask::result encryptedFolderUnMount( const QString& cipherFolder,
-						 const QString& mountPoint,
-						 const QString& fileSystem,
-						 int numberOfAttempts ) ;
+	siritask::taskResult encryptedFolderUnMount( const QString& cipherFolder,
+						     const QString& mountPoint,
+						     const QString& fileSystem,
+						     int numberOfAttempts ) ;
 
-	siritask::result encryptedFolderMount( const engines::engine::options&,
-					       bool = false,
-					       const QString& = QString() ) ;
+	siritask::taskResult encryptedFolderMount( const engines::engine::options&,
+						   bool = false,
+						   const QString& = QString() ) ;
 
-	siritask::result encryptedFolderCreate( const engines::engine::options& ) ;
+	siritask::taskResult encryptedFolderCreate( const engines::engine::options& ) ;
 }
 
 #endif // SIRITASK_H

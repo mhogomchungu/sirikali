@@ -179,3 +179,4 @@ version 1.4.0(October 1st,2019)
 version 1.4.1(Unreleased)
 -- Add support for fscrypt backend. This backend will allow encrypting individual folders that reside in a
    file system that supports encryption like ext4. More info about this backed is here: https://github.com/google/fscrypt
+-- Fix a bug with sshfs backend introducedin 1.4.0.

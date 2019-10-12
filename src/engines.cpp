@@ -493,6 +493,11 @@ const QStringList& engines::supported() const
 	return m_supported ;
 }
 
+const engines::engine& engines::getUnKnown() const
+{
+	return **( m_backends.data() ) ;
+}
+
 engines::engines()
 {
 	m_backends.emplace_back( std::make_unique< unknown >() ) ;

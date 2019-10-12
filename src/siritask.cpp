@@ -236,7 +236,7 @@ static void _run_command( const QString& command,
 	}
 }
 
-static siritask::result _encrypted_unmount( const QString& cipherFolder,
+static siritask::taskResult _encrypted_unmount( const QString& cipherFolder,
 					    const QString& mountPoint,
 					    const QString& fileSystem,
 					    int numberOfAttempts )
@@ -267,7 +267,7 @@ static siritask::result _encrypted_unmount( const QString& cipherFolder,
 	}
 }
 
-siritask::result siritask::encryptedFolderUnMount( const QString& cipherFolder,
+siritask::taskResult siritask::encryptedFolderUnMount( const QString& cipherFolder,
 						   const QString& mountPoint,
 						   const QString& fileSystem,
 						   int numberOfAttempts )
@@ -441,10 +441,10 @@ static engines::engine::cmdStatus _cmd( const engines::engine& engine,
 	}
 }
 
-static siritask::result _mount( bool reUseMountPoint,
-				const engines::engine& engine,
-				const engines::engine::options& copt,
-				const QString& configFilePath )
+static siritask::taskResult _mount( bool reUseMountPoint,
+				    const engines::engine& engine,
+				    const engines::engine::options& copt,
+				    const QString& configFilePath )
 {
 	auto opt = copt ;
 
@@ -580,9 +580,9 @@ siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 	}
 }
 
-static siritask::result _encrypted_folder_mount( const engines::engine::options& opt,
-						 bool reUseMP,
-						 const QString& engineName )
+static siritask::taskResult _encrypted_folder_mount( const engines::engine::options& opt,
+						     bool reUseMP,
+						     const QString& engineName )
 {
 	auto Engine = siritask::mountEngine( opt.cipherFolder,opt.configFilePath,engineName ) ;
 
@@ -622,7 +622,6 @@ static siritask::result _encrypted_folder_mount( const engines::engine::options&
 
 		auto opts = opt ;
 		opts.cipherFolder = Engine.cipherFolder ;
-		utility::debug::cout() << Engine.cipherFolder;
 
 		if( !opts.key.isEmpty() ){
 
@@ -697,7 +696,7 @@ static utility::result< QString > _configFilePath( const engines::engine& engine
 	}
 }
 
-static siritask::result _encrypted_folder_create( const engines::engine::options& opt )
+static siritask::taskResult _encrypted_folder_create( const engines::engine::options& opt )
 {
 	const auto& engine = engines::instance().getByName( opt ) ;
 
@@ -770,7 +769,7 @@ static siritask::result _encrypted_folder_create( const engines::engine::options
 	}	
 }
 
-siritask::result siritask::encryptedFolderCreate( const engines::engine::options& opt )
+siritask::taskResult siritask::encryptedFolderCreate( const engines::engine::options& opt )
 {
 	if( utility::platformIsWindows() ){
 
@@ -825,9 +824,9 @@ static void _run_command_on_mount( const engines::engine::options& opt )
 	}
 }
 
-siritask::result siritask::encryptedFolderMount( const engines::engine::options& opt,
-						 bool reUseMountPoint,
-						 const QString& engineName )
+siritask::taskResult siritask::encryptedFolderMount( const engines::engine::options& opt,
+						     bool reUseMountPoint,
+						     const QString& engineName )
 {
 	auto s = [ & ](){
 
