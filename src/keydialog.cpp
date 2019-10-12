@@ -437,7 +437,7 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 		const auto& engine = siritask::mountEngine( m_path,m_configFile ).engine ;
 
-		if( !engine.backendRequireMountPath() ){
+		if( engine.known() && !engine.backendRequireMountPath() ){
 
 			return tr( "Not Used" ) ;
 		}

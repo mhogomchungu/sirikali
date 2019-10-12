@@ -490,6 +490,33 @@ static utility::result< QString > _path_exist( QString e,const QString& m )
 	}
 }
 
+static const engines::engine& _getFscrypt( const QString& cipherPath,const engines& engines )
+{
+	if( !utility::platformIsLinux() ){
+
+		return engines.getUnKnown() ;
+	}
+
+	const auto& engine = engines.getByName( "fscrypt" ) ;
+
+	const auto exe = engine.executableFullPath() ;
+
+	if( exe.isEmpty() ){
+
+		return engines.getUnKnown() ;
+	}else{
+		auto m = utility::Task::makePath( cipherPath ) ;
+
+		auto s = utility::unwrap( utility::Task::run( exe + " status " + m ) ).success() ;
+
+		if( s ){
+			return engine ;
+		}else{
+			return engines.getUnKnown() ;
+		}
+	}
+}
+
 siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 					const QString& configFilePath,
 					const QString& engineName )
@@ -526,26 +553,17 @@ siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 
 	if( configFilePath.isEmpty() ){
 
-		auto mm = utility::split( cipherFolder,'/' ) ;
-
-		mm.removeLast() ;
-
-		auto ss = "/" + mm.join( "/" ) + "/" ;
-
 		auto m = engines.getByConfigFileNames( [ & ]( const QString& e ){
 
-			return utility::pathExists( ss + e ) ;
+			return utility::pathExists( cipherFolder + "/" + e ) ;
 		} ) ;
 
 		if( m.first.known() ){
 
 			return m ;
+		}else{
+			return { _getFscrypt( cipherFolder,engines ),cipherFolder } ;
 		}
-
-		return engines.getByConfigFileNames( [ & ]( const QString& e ){
-
-			return utility::pathExists( cipherFolder + "/" + e ) ;
-		} ) ;
 
 	}else if( utility::pathExists( configFilePath ) ){
 

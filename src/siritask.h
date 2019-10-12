@@ -52,7 +52,7 @@ namespace siritask
 			configFilePath( configFilePath )
 		{
 		}
-		Engine() : engine( engines::instance().getByName( "" ) )
+		Engine() : engine( engines::instance().getUnKnown() )
 		{
 		}
 
