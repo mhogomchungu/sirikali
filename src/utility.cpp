@@ -1505,3 +1505,13 @@ utility::result< QByteArray > utility::yubiKey( const QString& challenge )
 
 	return {} ;
 }
+
+QString utility::policyString()
+{
+	return QObject::tr( "Policy:" ) ;
+}
+
+QString utility::commentString()
+{
+	return QObject::tr( "Comment:" ) ;
+}

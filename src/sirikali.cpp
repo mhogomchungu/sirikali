@@ -1455,7 +1455,29 @@ void sirikali::updateFavoritesInContextMenu()
 		}
 		int row( const QString& e )
 		{
+			auto x = utility::policyString() ;
+			auto y = "\n" + utility::commentString() ;
+
 			auto a = utility::split( e,'\n' ) ;
+
+			if( e.startsWith( x ) && e.contains( y ) ){
+
+				/*
+				 * we have an fscrypt volume, cipherpath for this volume
+				 * is in a format of "Policy:xys\nComment:abc" and below
+				 * code combines these two into a single entry since
+				 * variable "a" above split it into two.
+				 */
+				if( a.size() > 1 ){
+
+					auto m = a.at( 0 ) + "\n" + a.at( 1 ) ;
+
+					a.removeAt( 0 ) ;
+					a.removeAt( 0 ) ;
+
+					a.insert( 0,m ) ;
+				}
+			}
 
 			if( a.size() == 1 ){
 

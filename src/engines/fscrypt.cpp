@@ -214,8 +214,9 @@ static QStringList _fscryptVolumes( const QStringList& s )
 
 			if( xt.unlocked == "Yes" ){
 
-				auto a = QObject::tr( "Policy:" ) ;
-				auto b = QObject::tr( "Comment:" ) ;
+				auto a = utility::policyString() ;
+				auto b = utility::commentString() ;
+
 				auto c = a + xt.poly + "\n" + b + xt.comment ;
 
 				l.append( w.arg( it,_getFsMode( s,it ),"fscrypt",c ) ) ;
@@ -321,7 +322,7 @@ Task::future< QString >& fscrypt::volumeProperties( const QString& cipherFolder,
 
 				exe += " metadata dump --policy=" + s + ":" + a.at( 0 ) ;
 
-				auto e = utility::Task::run( exe ).await() ;
+				auto e = utility::unwrap( utility::Task::run( exe ) ) ;
 
 				if( e.success() ){
 

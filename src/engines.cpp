@@ -148,7 +148,7 @@ Task::future< QString >& engines::engine::volumeProperties( const QString& ciphe
 
 				auto d = utility::Task::makePath( b ) ;
 
-				auto e = utility::Task::run( d + " " + c ).await() ;
+				auto e = utility::unwrap( utility::Task::run( d + " " + c ) ) ;
 
 				if( e.success() ){
 
