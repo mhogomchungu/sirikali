@@ -19,7 +19,6 @@
 
 #include "fscrypt.h"
 #include "../win.h"
-#include <pwd.h>
 #include <vector>
 #include "../settings.h"
 
@@ -386,7 +385,21 @@ void fscrypt::GUICreateOptionsinstance( QWidget *,engines::engine::function ) co
 	//fscryptcreateoptions::instance( parent,std::move( function ) ) ;
 }
 
+#ifdef Q_OS_WIN
+
+QString fscrypt::userOption() const
+{
+	return QString() ;
+}
+
+#else
+
+#include <pwd.h>
+
 QString fscrypt::userOption() const
 {
 	return QString( "--user=\"%1\"" ).arg( getpwuid( getuid() )->pw_name ) ;
 }
+
+#endif
+
