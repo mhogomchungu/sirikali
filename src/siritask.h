@@ -33,39 +33,63 @@
 
 namespace siritask
 {
-	struct Engine
+	class Engine
 	{
-		Engine( std::pair< const engines::engine&,QString > m,
-			const QString& configFilePath = QString() ) :
-			engine( m.first ),configFileName( std::move( m.second ) ),
-			configFilePath( configFilePath )
+	public:
+		struct opts{
+			const engines::engine& engine ;
+			const QString& configFileName ;
+			const QString& configFilePath ;
+			const QString& cipherFolder ;
+		};
+		Engine() : m_engine( this->conv( engines::instance().getUnKnown() ) )
 		{
 		}
-		Engine( const engines::engine& engine,const QString& s ) :
-			engine( engine ),cipherFolder( s )
+		Engine( const engines::engine& engine ) :
+			m_engine( this->conv( engine ) )
 		{
 		}
-		Engine( const engines::engine& engine,
-			const QString& configFileName,
-			const QString& configFilePath ) :
-			engine( engine ),configFileName( configFileName ),
-			configFilePath( configFilePath )
+		Engine( const QString& engine ) :
+			m_engine( this->conv( engines::instance().getByName( engine ) ) )
 		{
 		}
-		Engine() : engine( engines::instance().getUnKnown() )
+		Engine( const opts& e ) :
+			m_engine( this->conv( e.engine ) ),
+			m_configFileName( e.configFileName ),
+			m_configFilePath( e.configFilePath ),
+			m_cipherFolder( e.cipherFolder )
 		{
 		}
-
-		const engines::engine& engine ;
-		QString configFileName ;
-		QString configFilePath ;
-		QString cipherFolder ;
+		const QString& cipherFolder() const
+		{
+			return m_cipherFolder ;
+		}
+		const QString& configFileName() const
+		{
+			return m_configFileName ;
+		}
+		const QString& configFilePath() const
+		{
+			return m_configFilePath ;
+		}
+		const engines::engine& engine() const
+		{
+			return *m_engine ;
+		}
+	private:
+		engines::engine * conv( const engines::engine& m ) const
+		{
+			return std::addressof( const_cast< engines::engine& >( m ) ) ;
+		}
+		engines::engine * m_engine ;
+		QString m_configFileName ;
+		QString m_configFilePath ;
+		QString m_cipherFolder ;
 	} ;
-
 
 	siritask::Engine mountEngine( const QString& cipherFolder,
 				      const QString& configFilePath,
-				      const QString& engineName = QString() ) ;
+				      const siritask::Engine& engine = siritask::Engine() ) ;
 
 	utility::result< utility::Task > unmountVolume( const QString& exe,
 							const QString& mountPoint,
@@ -129,7 +153,7 @@ namespace siritask
 
 	siritask::taskResult encryptedFolderMount( const engines::engine::options&,
 						   bool = false,
-						   const QString& = QString() ) ;
+						   const siritask::Engine& = siritask::Engine() ) ;
 
 	siritask::taskResult encryptedFolderCreate( const engines::engine::options& ) ;
 }

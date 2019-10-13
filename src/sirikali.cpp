@@ -553,7 +553,7 @@ void sirikali::favoriteClicked( QAction * ac )
 
 				if( _found( it ) ){
 
-					auto s = siritask::mountEngine( it.first.volumePath,QString() ).engine.name() ;
+					auto s = siritask::mountEngine( it.first.volumePath,QString() ).engine().name() ;
 
 					if( it.first.volumeNeedNoPassword && s == "sshfs" ){
 

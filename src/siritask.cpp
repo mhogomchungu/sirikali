@@ -518,23 +518,20 @@ static const engines::engine& _getFscrypt( const QString& cipherPath,const engin
 
 siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 					const QString& configFilePath,
-					const QString& engineName )
+					const siritask::Engine& engine )
 {
-	const auto& engines = engines::instance() ;
+	if( engine.engine().known() ){
 
-	if( !engineName.isEmpty() ){
-
-		if( cipherFolder.startsWith( engineName + " ",Qt::CaseInsensitive ) ){
-
-			return { engines.getByName( engineName ),cipherFolder.mid( engineName.size() + 1 ) } ;
-		}else{
-			return { engines.getByName( engineName ),cipherFolder } ;
-		}
+		return engine ;
 	}
+
+	const auto& engines = engines::instance() ;
 
 	if( utility::pathIsFile( cipherFolder ) ){
 
-		return { engines.getByFileExtension( cipherFolder ),cipherFolder } ;
+		const auto& engine = engines.getByFileExtension( cipherFolder ) ;
+
+		return { { engine,"",configFilePath,cipherFolder } } ;
 	}
 
 	for( const auto& it : engines.supported() ){
@@ -545,7 +542,7 @@ siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 
 			if( engine.known() ){
 
-				return { engine,cipherFolder.mid( it.size() + 1 ) } ;
+				return { { engine,"",configFilePath,cipherFolder.mid( it.size() + 1 ) } } ;
 			}
 		}
 	}
@@ -559,9 +556,11 @@ siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 
 		if( m.first.known() ){
 
-			return m ;
+			return { { m.first,m.second,"",cipherFolder } } ;
 		}else{
-			return { _getFscrypt( cipherFolder,engines ),cipherFolder } ;
+			const auto& engine = _getFscrypt( cipherFolder,engines ) ;
+
+			return { { engine,"","",cipherFolder } } ;
 		}
 
 	}else if( utility::pathExists( configFilePath ) ){
@@ -571,7 +570,7 @@ siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 			return configFilePath.endsWith( e ) ;
 		} ) ;
 
-		return { std::move( m ),configFilePath } ;
+		return { { m.first,m.second,configFilePath,cipherFolder } } ;
 	}else{
 		for( const auto& it : engines.supported() ){
 
@@ -587,7 +586,7 @@ siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 
 					if( m ){
 
-						return { engine,xt,m.value() } ;
+						return { { engine,xt,m.value(),"" } } ;
 					}
 				}
 			}
@@ -599,13 +598,13 @@ siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 
 static siritask::taskResult _encrypted_folder_mount( const engines::engine::options& opt,
 						     bool reUseMP,
-						     const QString& engineName )
+						     const siritask::Engine& eng )
 {
-	auto Engine = siritask::mountEngine( opt.cipherFolder,opt.configFilePath,engineName ) ;
+	auto Engine = siritask::mountEngine( opt.cipherFolder,opt.configFilePath,eng ) ;
 
-	const auto& engine         = Engine.engine ;
-	const auto& configFilePath = Engine.configFilePath ;
-	const auto& configFileName = Engine.configFileName ;
+	const auto& engine         = Engine.engine() ;
+	const auto& configFilePath = Engine.configFilePath() ;
+	const auto& configFileName = Engine.configFileName() ;
 
 	if( engine.unknown() ){
 
@@ -625,7 +624,7 @@ static siritask::taskResult _encrypted_folder_mount( const engines::engine::opti
 		}
 	}
 
-	if( !Engine.cipherFolder.isEmpty() ){
+	if( !Engine.cipherFolder().isEmpty() ){
 
 		if( engine.name() == "sshfs" && utility::platformIsWindows() ){
 
@@ -638,7 +637,7 @@ static siritask::taskResult _encrypted_folder_mount( const engines::engine::opti
 		}
 
 		auto opts = opt ;
-		opts.cipherFolder = Engine.cipherFolder ;
+		opts.cipherFolder = Engine.cipherFolder() ;
 
 		if( !opts.key.isEmpty() ){
 
@@ -843,7 +842,7 @@ static void _run_command_on_mount( const engines::engine::options& opt )
 
 siritask::taskResult siritask::encryptedFolderMount( const engines::engine::options& opt,
 						     bool reUseMountPoint,
-						     const QString& engineName )
+						     const siritask::Engine& engine )
 {
 	auto s = [ & ](){
 
@@ -851,19 +850,19 @@ siritask::taskResult siritask::encryptedFolderMount( const engines::engine::opti
 
 			if( utility::runningOnGUIThread() ){
 
-				return _encrypted_folder_mount( opt,reUseMountPoint,engineName ) ;
+				return _encrypted_folder_mount( opt,reUseMountPoint,engine ) ;
 			}else{
 				/*
 				 * We should not take this path
 				 */
 				utility::debug() << "ERROR!!\nsiritask::encryptedFolderMount is running from a background thread" ;
 
-				return _encrypted_folder_mount( opt,reUseMountPoint,engineName ) ;
+				return _encrypted_folder_mount( opt,reUseMountPoint,engine ) ;
 			}
 		}else{
 			auto& e = Task::run( [ & ](){
 
-				return _encrypted_folder_mount( opt,reUseMountPoint,engineName ) ;
+				return _encrypted_folder_mount( opt,reUseMountPoint,engine ) ;
 			} ) ;
 
 			return utility::unwrap( e ) ;

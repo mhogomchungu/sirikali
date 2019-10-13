@@ -280,7 +280,6 @@ private :
 	QString m_idleTimeOut ;
 	QString m_configFile ;
 	QString m_exe ;
-	QString m_engineName ;
 	QString m_mountOptions ;
 	QString m_createOptions ;
 	QString m_fileManagerOpen ;
@@ -299,6 +298,8 @@ private :
 
 	secrets& m_secrets ;
 	settings& m_settings ;
+
+	siritask::Engine m_engine ;
 
 	keystrength m_keyStrength ;
 
