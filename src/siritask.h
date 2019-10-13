@@ -42,19 +42,19 @@ namespace siritask
 			const QString& configFilePath ;
 			const QString& cipherFolder ;
 		};
-		Engine() : m_engine( this->conv( engines::instance().getUnKnown() ) )
+		Engine() : m_engine( std::addressof( engines::instance().getUnKnown() ) )
 		{
 		}
 		Engine( const engines::engine& engine ) :
-			m_engine( this->conv( engine ) )
+			m_engine( std::addressof( engine ) )
 		{
 		}
 		Engine( const QString& engine ) :
-			m_engine( this->conv( engines::instance().getByName( engine ) ) )
+			m_engine( std::addressof( engines::instance().getByName( engine ) ) )
 		{
 		}
 		Engine( const opts& e ) :
-			m_engine( this->conv( e.engine ) ),
+			m_engine( std::addressof( e.engine ) ),
 			m_configFileName( e.configFileName ),
 			m_configFilePath( e.configFilePath ),
 			m_cipherFolder( e.cipherFolder )
@@ -77,11 +77,7 @@ namespace siritask
 			return *m_engine ;
 		}
 	private:
-		engines::engine * conv( const engines::engine& m ) const
-		{
-			return std::addressof( const_cast< engines::engine& >( m ) ) ;
-		}
-		engines::engine * m_engine ;
+		const engines::engine * m_engine ;
 		QString m_configFileName ;
 		QString m_configFilePath ;
 		QString m_cipherFolder ;
@@ -105,19 +101,19 @@ namespace siritask
 		{
 		}
 		taskResult( bool s,const engines::engine& e ) :
-			m_success( s ),m_engine( conv( e ) )
+			m_success( s ),m_engine( std::addressof( e ) )
 		{
 		}
 		taskResult( engines::engine::cmdStatus c ) :
 			m_success( c == engines::engine::status::success ),
 			m_cmdStatus( c ),
-			m_engine( conv( engines::instance().getUnKnown() ) )
+			m_engine( std::addressof( engines::instance().getUnKnown() ) )
 		{
 		}
 		taskResult( const engines::engine::cmdStatus& c,const engines::engine& e ) :
 			m_success( c == engines::engine::status::success ),
 			m_cmdStatus( c ),
-			m_engine( conv( e ) )
+			m_engine( std::addressof( e ) )
 		{
 		}
 		bool backendDoesNotAutoRefresh() const
@@ -137,13 +133,9 @@ namespace siritask
 			return *m_engine ;
 		}
 	private:
-		engines::engine * conv( const engines::engine& m ) const
-		{
-			return std::addressof( const_cast< engines::engine& >( m ) ) ;
-		}
 		bool m_success ;
 		engines::engine::cmdStatus m_cmdStatus ;
-		engines::engine * m_engine ;
+		const engines::engine * m_engine ;
 	} ;
 
 	siritask::taskResult encryptedFolderUnMount( const QString& cipherFolder,

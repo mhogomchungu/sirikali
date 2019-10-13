@@ -1125,7 +1125,8 @@ QString utility::readPassword( bool addNewLine )
 
 const QProcessEnvironment& utility::systemEnvironment()
 {
-	return utility::globalEnvironment().instance().get() ;
+	static QProcessEnvironment env = QProcessEnvironment::systemEnvironment() ;
+	return env ;
 }
 
 QString utility::configFilePath( QWidget * s,const QString& e )
@@ -1390,37 +1391,6 @@ QString utility::wrap_su( const QString& s )
 	}else{
 		return QString( "%1 - -c \"%2\"" ).arg( su,QString( s ).replace( "\"","'" ) ) ;
 	}
-}
-
-utility::globalEnvironment& utility::globalEnvironment::instance()
-{
-	static utility::globalEnvironment m ;
-	return m ;
-}
-
-const QProcessEnvironment& utility::globalEnvironment::get() const
-{
-	return m_environment ;
-}
-
-void utility::globalEnvironment::remove( const QString& e )
-{
-	m_environment.remove( e ) ;
-}
-
-void utility::globalEnvironment::insert( const QString& key,const QString& value )
-{
-	m_environment.insert( key,value ) ;
-}
-
-utility::globalEnvironment::globalEnvironment() :
-	m_environment( QProcessEnvironment::systemEnvironment() )
-{
-	auto m = utility::executableSearchPaths( m_environment.value( "PATH" ) ) ;
-
-	m_environment.insert( "PATH",m ) ;
-
-	m_environment.insert( "LANG","C" ) ;
 }
 
 void utility::setGUIThread()

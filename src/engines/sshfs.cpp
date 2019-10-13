@@ -53,8 +53,15 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
-sshfs::sshfs() : engines::engine( _setOptions() )
+sshfs::sshfs() :
+	engines::engine( _setOptions() ),
+	m_environment( engines::engine::getProcessEnvironment() )
 {
+}
+
+const QProcessEnvironment& sshfs::getProcessEnvironment() const
+{
+	return m_environment ;
 }
 
 engines::engine::args sshfs::command( const QString& password,
@@ -94,23 +101,21 @@ engines::engine::args sshfs::command( const QString& password,
 		}
 	}
 
-	auto& env = utility::globalEnvironment::instance() ;
-
 	if( fuseOptions.contains( "IdentityAgent" ) ){
 
 		auto m = "IdentityAgent=" ;
 
 		auto n = fuseOptions.extractStartsWith( m ).replace( m,"" ) ;
 
-		env.insert( "SSH_AUTH_SOCK",n ) ;
+		m_environment.insert( "SSH_AUTH_SOCK",n ) ;
 	}else{
 		auto m = qgetenv( "SSH_AUTH_SOCK" ) ;
 
 		if( m.isEmpty() ){
 
-			env.remove( "SSH_AUTH_SOCK" ) ;
+			m_environment.remove( "SSH_AUTH_SOCK" ) ;
 		}else{
-			env.insert( "SSH_AUTH_SOCK",m ) ;
+			m_environment.insert( "SSH_AUTH_SOCK",m ) ;
 		}
 	}
 

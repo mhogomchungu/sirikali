@@ -169,6 +169,11 @@ bool engines::engine::unmount( const QString& cipherFolder,
 	return siritask::unmountVolume( mountPoint,this->unMountCommand(),maxCount ) ;
 }
 
+const QProcessEnvironment& engines::engine::getProcessEnvironment() const
+{
+	return m_processEnvironment ;
+}
+
 QString engines::engine::sanitizeVersionString( const QString& s ) const
 {
 	auto e = s ;
@@ -219,8 +224,10 @@ QString engines::engine::baseInstalledVersionString( const QString& versionArgum
 }
 
 engines::engine::engine( engines::engine::BaseOptions o ) :
-	m_Options( std::move( o ) )
+	m_Options( std::move( o ) ),
+	m_processEnvironment( utility::systemEnvironment() )
 {
+	m_processEnvironment.insert( "LANG","C" ) ;
 }
 
 QString engines::engine::executableFullPath() const

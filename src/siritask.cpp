@@ -317,7 +317,7 @@ static utility::Task _run_task_0( const engines::engine::args& args,
 			return SiriKali::Windows::mount( { args,opts,engine,password } ) ;
 		}
 	}else{
-		return utility::Task( args.cmd,-1,utility::systemEnvironment(),
+		return utility::Task( args.cmd,-1,engine.getProcessEnvironment(),
 				      password.toLatin1(),[](){},require_polkit ) ;
 	}
 }

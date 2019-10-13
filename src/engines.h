@@ -257,6 +257,7 @@ public:
 				      const QString& mountPoint,
 				      int maxCount ) const ;
 
+		virtual const QProcessEnvironment& getProcessEnvironment() const ;
 		virtual bool requiresPolkit() const ;
 		virtual QString installedVersionString() const = 0 ;
 		virtual args command( const QString& password,const engines::engine::cmdArgsList& args ) const = 0 ;
@@ -406,6 +407,7 @@ public:
 		engine( BaseOptions ) ;
 	private:
 		BaseOptions m_Options ;
+		QProcessEnvironment m_processEnvironment ;
 	} ;
 
 	engines() ;

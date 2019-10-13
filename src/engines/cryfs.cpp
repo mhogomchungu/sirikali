@@ -56,10 +56,17 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
-cryfs::cryfs() : engines::engine( _setOptions() )
+cryfs::cryfs() :
+	engines::engine( _setOptions() ),
+	m_env( engines::engine::getProcessEnvironment() )
 {
-	qputenv( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
-	qputenv( "CRYFS_FRONTEND","noninteractive" ) ;
+	m_env.insert( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
+	m_env.insert( "CRYFS_FRONTEND","noninteractive" ) ;
+}
+
+const QProcessEnvironment& cryfs::getProcessEnvironment() const
+{
+	return m_env ;
 }
 
 engines::engine::args cryfs::command( const QString& password,
