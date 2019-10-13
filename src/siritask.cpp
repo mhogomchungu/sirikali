@@ -237,9 +237,8 @@ static void _run_command( const QString& command,
 }
 
 static siritask::taskResult _encrypted_unmount( const QString& cipherFolder,
-					    const QString& mountPoint,
-					    const QString& fileSystem,
-					    int numberOfAttempts )
+						const QString& mountPoint,
+						const QString& fileSystem,int numberOfAttempts )
 {
 	const auto& engine = engines::instance().getByName( fileSystem ) ;
 
@@ -268,9 +267,9 @@ static siritask::taskResult _encrypted_unmount( const QString& cipherFolder,
 }
 
 siritask::taskResult siritask::encryptedFolderUnMount( const QString& cipherFolder,
-						   const QString& mountPoint,
-						   const QString& fileSystem,
-						   int numberOfAttempts )
+						       const QString& mountPoint,
+						       const QString& fileSystem,
+						       int numberOfAttempts )
 {
 	auto fav = favorites::instance().readFavorite( cipherFolder,mountPoint ) ;
 
