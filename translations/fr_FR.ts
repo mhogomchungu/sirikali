@@ -139,12 +139,12 @@ Options:
     <message>
         <location filename="../src/utility.cpp" line="1511"/>
         <source>Policy:</source>
-        <translation type="unfinished"></translation>
+        <translation>Règle:</translation>
     </message>
     <message>
         <location filename="../src/utility.cpp" line="1516"/>
         <source>Comment:</source>
-        <translation type="unfinished"></translation>
+        <translation>Commentaire:</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1628"/>
@@ -257,12 +257,13 @@ Mot de passe entré incorrect.</translation>
         <location filename="../src/engines.cpp" line="686"/>
         <source>Failed To Unlock An fscrypt Volume.
 Wrong Password Entered.</source>
-        <translation type="unfinished"></translation>
+        <translation>Echec de l&apos;ouverture du volume fscrypt.
+Mot de passe entré incorrect.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="690"/>
         <source>Backend Requires Polkit Support and SiriKali Failed To Start It.</source>
-        <translation type="unfinished"></translation>
+        <translation>Le processus nécessite le support de Polkit et SiriKali n&apos;a pas réussi à le démarrer.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="694"/>
@@ -300,7 +301,8 @@ L&apos;exécutable Sshfs n&apos;a pu être trouvé.</translation>
         <location filename="../src/engines.cpp" line="714"/>
         <source>Failed To Complete The Request.
 Fscrypt Executable Could Not Be Found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible de finir la requête.
+L&apos;exécutable Fscrypt est introuvable.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="718"/>
@@ -1496,7 +1498,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.cpp" line="442"/>
         <source>Not Used</source>
-        <translation type="unfinished"></translation>
+        <translation>Non Utilisé</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="839"/>
