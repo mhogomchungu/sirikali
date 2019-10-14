@@ -59,6 +59,21 @@ sshfs::sshfs() :
 {
 }
 
+engines::engine::status sshfs::passMinimumVersion() const
+{
+	if( utility::platformIsWindows() ){
+
+		auto m = utility::unwrap( utility::backendIsLessThan( "sshfs","3.4.0" ) ) ;
+
+		if( m && m.value() ){
+
+			return engines::engine::status::sshfsTooOld ;
+		}
+	}
+
+	return engines::engine::status::success ;
+}
+
 const QProcessEnvironment& sshfs::getProcessEnvironment() const
 {
 	return m_environment ;

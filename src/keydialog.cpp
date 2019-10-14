@@ -435,7 +435,7 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 	m_ui->lineEditMountPoint->setText( [ & ]()->QString{
 
-		const auto& engine = siritask::mountEngine( m_path,m_configFile ).engine() ;
+		const auto& engine = m_engine.engine() ;
 
 		if( engine.known() && !engine.backendRequireMountPath() ){
 

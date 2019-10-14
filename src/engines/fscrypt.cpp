@@ -301,6 +301,31 @@ bool fscrypt::unmount( const QString& cipherFolder,
 	return false ;
 }
 
+const engines::engine& fscrypt::proveEngine( const QString& cipherPath ) const
+{
+	if( !utility::platformIsLinux() ){
+
+		return engines::instance().getUnKnown() ;
+	}
+
+	auto exe = this->executableFullPath() ;
+
+	if( exe.isEmpty() ){
+
+		return engines::instance().getUnKnown() ;
+	}else{
+		auto m = utility::Task::makePath( cipherPath ) ;
+
+		auto s = utility::unwrap( utility::Task::run( exe + " status " + m ) ).success() ;
+
+		if( s ){
+			return *this ;
+		}else{
+			return engines::instance().getUnKnown() ;
+		}
+	}
+}
+
 Task::future< QString >& fscrypt::volumeProperties( const QString& cipherFolder,
 						    const QString& mountPoint) const
 {

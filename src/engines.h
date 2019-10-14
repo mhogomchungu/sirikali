@@ -244,6 +244,7 @@ public:
 		const QString& windowsInstallPathRegistryValue() const ;
 
 		engine::engine::error errorCode( const QString& ) const ;
+		engine::engine::status passMinimumVersion() const ;
 
 		QString setConfigFilePath( const QString& ) const ;
 		QString setPassword( const QString& ) const ;
@@ -256,6 +257,11 @@ public:
 		virtual bool unmount( const QString& cipherFolder,
 				      const QString& mountPoint,
 				      int maxCount ) const ;
+
+		virtual const engines::engine& proveEngine( const QString& cipherPath ) const ;
+
+		virtual void updateMountOptions( engines::engine::options&,
+						 QString& configFilePath ) const ;
 
 		virtual const QProcessEnvironment& getProcessEnvironment() const ;
 		virtual bool requiresPolkit() const ;

@@ -169,6 +169,13 @@ bool engines::engine::unmount( const QString& cipherFolder,
 	return siritask::unmountVolume( mountPoint,this->unMountCommand(),maxCount ) ;
 }
 
+const engines::engine& engines::engine::proveEngine( const QString& cipherPath ) const
+{
+	Q_UNUSED( cipherPath )
+
+	return engines::instance().getUnKnown() ;
+}
+
 const QProcessEnvironment& engines::engine::getProcessEnvironment() const
 {
 	return m_processEnvironment ;
@@ -422,6 +429,18 @@ engines::engine::error engines::engine::errorCode( const QString& e ) const
 	}else{
 		return engines::engine::error::Continue ;
 	}
+}
+
+engines::engine::status engines::engine::passMinimumVersion() const
+{
+	return engines::engine::status::success ;
+}
+
+void engines::engine::updateMountOptions( engines::engine::options& e,
+					  QString& configFilePath ) const
+{
+	Q_UNUSED( e )
+	Q_UNUSED( configFilePath )
 }
 
 QString engines::engine::setConfigFilePath( const QString& e ) const

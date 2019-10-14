@@ -38,11 +38,18 @@ namespace siritask
 	public:
 		struct opts{
 			const engines::engine& engine ;
-			const QString& configFileName ;
 			const QString& configFilePath ;
 			const QString& cipherFolder ;
 		};
 		Engine() : m_engine( std::addressof( engines::instance().getUnKnown() ) )
+		{
+		}
+		Engine( const engines::engine& engine,
+			const QString& cipherFolder,
+			const QString& configFilePath ) :
+			m_engine( std::addressof( engine ) ),
+			m_configFilePath( configFilePath ),
+			m_cipherFolder( cipherFolder )
 		{
 		}
 		Engine( const engines::engine& engine ) :
@@ -55,7 +62,6 @@ namespace siritask
 		}
 		Engine( const opts& e ) :
 			m_engine( std::addressof( e.engine ) ),
-			m_configFileName( e.configFileName ),
 			m_configFilePath( e.configFilePath ),
 			m_cipherFolder( e.cipherFolder )
 		{
@@ -63,10 +69,6 @@ namespace siritask
 		const QString& cipherFolder() const
 		{
 			return m_cipherFolder ;
-		}
-		const QString& configFileName() const
-		{
-			return m_configFileName ;
 		}
 		const QString& configFilePath() const
 		{
@@ -78,7 +80,6 @@ namespace siritask
 		}
 	private:
 		const engines::engine * m_engine ;
-		QString m_configFileName ;
 		QString m_configFilePath ;
 		QString m_cipherFolder ;
 	} ;

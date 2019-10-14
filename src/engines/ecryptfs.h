@@ -25,6 +25,9 @@ struct ecryptfs : public engines::engine
 
 	bool requiresPolkit() const override ;
 
+	void updateMountOptions( engines::engine::options&,
+				 QString& configFilePath ) const override ;
+
 	bool unmount( const QString& cipherFolder,
 		      const QString& mountPoint,
 		      int maxCount ) const override ;

@@ -77,6 +77,15 @@ bool ecryptfs::requiresPolkit() const
 	return m_requirePolkit ;
 }
 
+void ecryptfs::updateMountOptions( engines::engine::options& opt,
+				   QString& configFilePath ) const
+{
+	if( configFilePath.isEmpty() ){
+
+		configFilePath = opt.cipherFolder + "/" + this->configFileName() ;
+	}
+}
+
 #else
 bool ecryptfs::requiresPolkit() const
 {

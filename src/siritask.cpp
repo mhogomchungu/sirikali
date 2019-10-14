@@ -442,13 +442,9 @@ static engines::engine::cmdStatus _cmd( const engines::engine& engine,
 
 static siritask::taskResult _mount( bool reUseMountPoint,
 				    const engines::engine& engine,
-				    const engines::engine::options& copt,
+				    const engines::engine::options& opt,
 				    const QString& configFilePath )
 {
-	auto opt = copt ;
-
-	opt.type = engine.name() ;
-
 	if( _illegal_path( opt,engine ) ){
 
 		return { engines::engine::status::IllegalPath } ;
@@ -489,40 +485,20 @@ static utility::result< QString > _path_exist( QString e,const QString& m )
 	}
 }
 
-static const engines::engine& _getFscrypt( const QString& cipherPath,const engines& engines )
-{
-	if( !utility::platformIsLinux() ){
-
-		return engines.getUnKnown() ;
-	}
-
-	const auto& engine = engines.getByName( "fscrypt" ) ;
-
-	const auto exe = engine.executableFullPath() ;
-
-	if( exe.isEmpty() ){
-
-		return engines.getUnKnown() ;
-	}else{
-		auto m = utility::Task::makePath( cipherPath ) ;
-
-		auto s = utility::unwrap( utility::Task::run( exe + " status " + m ) ).success() ;
-
-		if( s ){
-			return engine ;
-		}else{
-			return engines.getUnKnown() ;
-		}
-	}
-}
-
 siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 					const QString& configFilePath,
 					const siritask::Engine& engine )
 {
 	if( engine.engine().known() ){
 
-		return engine ;
+		auto s = "[[[" + engine.engine().name() + "]]]" ;
+
+		if( configFilePath.startsWith( s ) ){
+
+			return { engine.engine(),cipherFolder,configFilePath.mid( s.size() ) } ;
+		}else{
+			return { engine.engine(),cipherFolder,configFilePath } ;
+		}
 	}
 
 	const auto& engines = engines::instance() ;
@@ -531,7 +507,7 @@ siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 
 		const auto& engine = engines.getByFileExtension( cipherFolder ) ;
 
-		return { { engine,"",configFilePath,cipherFolder } } ;
+		return { { engine,configFilePath,cipherFolder } } ;
 	}
 
 	for( const auto& it : engines.supported() ){
@@ -542,7 +518,7 @@ siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 
 			if( engine.known() ){
 
-				return { { engine,"",configFilePath,cipherFolder.mid( it.size() + 1 ) } } ;
+				return { { engine,configFilePath,cipherFolder.mid( it.size() + 1 ) } } ;
 			}
 		}
 	}
@@ -556,11 +532,11 @@ siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 
 		if( m.first.known() ){
 
-			return { { m.first,m.second,"",cipherFolder } } ;
+			return { { m.first,"",cipherFolder } } ;
 		}else{
-			const auto& engine = _getFscrypt( cipherFolder,engines ) ;
+			const auto& engine = engines::instance().getByName( "fscrypt" ) ;
 
-			return { { engine,"","",cipherFolder } } ;
+			return { { engine.proveEngine( cipherFolder ),"",cipherFolder } } ;
 		}
 
 	}else if( utility::pathExists( configFilePath ) ){
@@ -570,7 +546,7 @@ siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 			return configFilePath.endsWith( e ) ;
 		} ) ;
 
-		return { { m.first,m.second,configFilePath,cipherFolder } } ;
+		return { { m.first,configFilePath,cipherFolder } } ;
 	}else{
 		for( const auto& it : engines.supported() ){
 
@@ -586,7 +562,7 @@ siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 
 					if( m ){
 
-						return { { engine,xt,m.value(),"" } } ;
+						return { { engine,m.value(),cipherFolder } } ;
 					}
 				}
 			}
@@ -596,19 +572,30 @@ siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 	}
 }
 
-static siritask::taskResult _encrypted_folder_mount( const engines::engine::options& opt,
+static siritask::taskResult _encrypted_folder_mount( const engines::engine::options& opts,
 						     bool reUseMP,
 						     const siritask::Engine& eng )
-{
-	auto Engine = siritask::mountEngine( opt.cipherFolder,opt.configFilePath,eng ) ;
+{	
+	auto Engine = siritask::mountEngine( opts.cipherFolder,opts.configFilePath,eng ) ;
 
-	const auto& engine         = Engine.engine() ;
-	const auto& configFilePath = Engine.configFilePath() ;
-	const auto& configFileName = Engine.configFileName() ;
+	const auto& engine  = Engine.engine() ;
+	auto configFilePath = Engine.configFilePath() ;
+
+	engines::engine::options opt = opts ;
+
+	opt.cipherFolder = Engine.cipherFolder() ;
+	opt.type         = Engine.engine().name() ;
 
 	if( engine.unknown() ){
 
 		return { engines::engine::status::unknown } ;
+	}
+
+	auto mm = engine.passMinimumVersion() ;
+
+	if( mm != engines::engine::status::success ){
+
+		return { mm } ;
 	}
 
 	if( opt.key.isEmpty() && engine.requiresAPassword() ){
@@ -624,66 +611,9 @@ static siritask::taskResult _encrypted_folder_mount( const engines::engine::opti
 		}
 	}
 
-	if( !Engine.cipherFolder().isEmpty() ){
+	engine.updateMountOptions( opt,configFilePath ) ;
 
-		if( engine.name() == "sshfs" && utility::platformIsWindows() ){
-
-			auto m = utility::unwrap( utility::backendIsLessThan( "sshfs","3.4.0" ) ) ;
-
-			if( m && m.value() ){
-
-				return { engines::engine::status::sshfsTooOld } ;
-			}
-		}
-
-		auto opts = opt ;
-		opts.cipherFolder = Engine.cipherFolder() ;
-
-		if( !opts.key.isEmpty() ){
-
-			opts.key = engine.setPassword( opts.key ) ;
-		}
-
-		return _mount( reUseMP,
-			       engine,
-			       opts,
-			       configFilePath ) ;
-	}
-
-	if( engine.name() == "ecryptfs" ){
-
-		if( configFilePath.isEmpty() ){
-
-			return _mount( reUseMP,
-				       engine,
-				       opt,
-				       opt.cipherFolder + "/" + configFileName ) ;
-		}else{
-			return _mount( reUseMP,
-				       engine,
-				       opt,
-				       configFilePath ) ;
-		}
-	}
-
-	if( utility::endsWithAtLeastOne( configFileName,"gocryptfs.reverse.conf",
-					 ".gocryptfs.reverse.conf","gocryptfs.reverse" ) ){
-
-		if( !opt.reverseMode ){
-
-			auto opts = opt ;
-			opts.reverseMode = true ;
-			return _mount( reUseMP,
-				       engine,
-				       opts,
-				       configFilePath ) ;
-		}
-	}
-
-	return _mount( reUseMP,
-		       engine,
-		       opt,
-		       configFilePath ) ;
+	return _mount( reUseMP,engine,opt,configFilePath ) ;
 }
 
 static utility::result< QString > _configFilePath( const engines::engine& engine,
@@ -719,6 +649,13 @@ static siritask::taskResult _encrypted_folder_create( const engines::engine::opt
 	if( engine.unknown() ){
 
 		return { engines::engine::status::unknown } ;
+	}
+
+	auto mm = engine.passMinimumVersion() ;
+
+	if( mm != engines::engine::status::success ){
+
+		return { mm } ;
 	}
 
 	if( _illegal_path( opt,engine ) ){
