@@ -388,11 +388,11 @@ static SiriKali::Windows::result _getProcessOutput( QProcess& exe,const engines:
 	}
 }
 
-static QProcessEnvironment _update_environment( const QString& e )
+static QProcessEnvironment _update_environment( const engines::engine& e )
 {
-	auto env = utility::systemEnvironment() ;
+	auto env = e.getProcessEnvironment() ;
 
-	auto s = SiriKali::Windows::engineInstalledDir( e ) ;
+	auto s = SiriKali::Windows::engineInstalledDir( e.name() ) ;
 
 	if( s.isEmpty() ){
 
@@ -422,7 +422,7 @@ Task::process::result SiriKali::Windows::create( const SiriKali::Windows::opts& 
 }
 
 static std::pair< Task::process::result,QString > _terminate_process( QProcess& e,
-								      const QString& engine,
+								      const engines::engine& engine,
 								      const QString& mountPath = QString(),
 								      const QString& unMountCommand = QString() )
 {
@@ -453,7 +453,7 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 {
 	auto exe = utility2::unique_qptr< QProcess >() ;
 
-	exe->setProcessEnvironment( _update_environment( opts.engine.name() ) ) ;
+	exe->setProcessEnvironment( _update_environment( opts.engine ) ) ;
 	exe->setProcessChannelMode( QProcess::MergedChannels ) ;
 	exe->start( opts.args.cmd ) ;
 	exe->waitForStarted() ;
@@ -466,7 +466,7 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 
 		if( m.type == engines::engine::error::Timeout ){
 
-			_terminate_process( *exe,opts.engine.name() ) ;
+			_terminate_process( *exe,opts.engine ) ;
 
 			return Task::process::result( SiriKali::Windows::_backEndTimedOut,
 						      QByteArray(),
@@ -541,7 +541,10 @@ Task::process::result SiriKali::Windows::volumes::remove( const QString& unMount
 		if( s.args.mountPath == mountPoint ){
 
 			auto& p = s.instance ;
-			auto m = _terminate_process( *p,s.engineName,s.args.mountPath,unMountCommand ) ;
+			auto m = _terminate_process( *p,
+						     engines::instance().getByName( s.engineName ),
+						     s.args.mountPath,
+						     unMountCommand ) ;
 
 			auto r = [ & ](){
 
