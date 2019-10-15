@@ -253,6 +253,14 @@ static siritask::taskResult _encrypted_unmount( const QString& cipherFolder,
 
 			return { false,engine } ;
 		}else{
+			if( engine.requiresPolkit() ){
+
+				if( !utility::enablePolkit() ){
+
+					return { engines::engine::status::failedToStartPolkit } ;
+				}
+			}
+
 			auto a = _makePath( cipherFolder ) ;
 			auto b = _makePath( mountPoint ) ;
 
@@ -391,6 +399,14 @@ static engines::engine::cmdStatus _cmd( const engines::engine& engine,
 
 		return engine.notFoundCode() ;
 	}else{
+		if( engine.requiresPolkit() ){
+
+			if( !utility::enablePolkit() ){
+
+				return { engines::engine::status::failedToStartPolkit } ;
+			}
+		}
+
 		exe = utility::Task::makePath( exe ) ;
 
 		auto _run = [ & ]()->engines::engine::cmdStatus{
@@ -607,14 +623,6 @@ static siritask::taskResult _encrypted_folder_mount( const engines::engine::opti
 	if( opt.key.isEmpty() && engine.requiresAPassword() ){
 
 		return { engines::engine::status::backendRequiresPassword } ;
-	}
-
-	if( engine.requiresPolkit() ){
-
-		if( !utility::enablePolkit() ){
-
-			return { engines::engine::status::failedToStartPolkit } ;
-		}
 	}
 
 	engine.updateMountOptions( opt,configFilePath ) ;
