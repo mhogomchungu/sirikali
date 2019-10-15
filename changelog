@@ -176,7 +176,8 @@ version 1.4.0(October 1st,2019)
 -- Fix a bug that prevented favorite entries with cipher path that starts with a dot from showing up in the GUI.
 -- Add GUI options to enable HiDPI option to scale the GUI when runing in HiDPI displays.
 
-version 1.4.1(Unreleased)
+version 1.4.1(October 15,2019)
 -- Add support for fscrypt backend. This backend will allow encrypting individual folders that reside in a
    file system that supports encryption like ext4. More info about this backed is here: https://github.com/google/fscrypt
 -- Fix a bug with sshfs backend introducedin 1.4.0.
+-- Various changes and improvements.
