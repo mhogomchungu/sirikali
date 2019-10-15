@@ -1,10 +1,10 @@
 ## SiriKali works on Linux, macOS and Microsoft Windows Operating Systems
 
-SiriKali is a Qt/C++ GUI application that manages ecryptfs,cryfs,encfs,gocryptfs and securefs based encrypted folders. These projects are compared <a href="https://nuetzlich.net/gocryptfs/comparison/">here.</a> SiriKali can also connect to ssh servers using sshfs.
+SiriKali is a Qt/C++ GUI application that manages ecryptfs,cryfs,encfs,gocryptfs,fscrypt and securefs based encrypted folders. These projects are compared <a href="https://nuetzlich.net/gocryptfs/comparison/">here.</a> SiriKali can also connect to ssh servers using sshfs.
 
 #### Supported Backends on Linux:
 
-<a href="https://github.com/netheril96/securefs">Securefs</a>, <a href="https://github.com/mhogomchungu/ecryptfs-simple">Ecryptfs</a>, <a href="https://www.cryfs.org/">Cryfs</a>, <a href="https://github.com/vgough/encfs">Encfs, </a><a href="https://nuetzlich.net/gocryptfs">Gocryptfs</a> and <a href="https://github.com/libfuse/sshfs">Sshfs.</a>
+<a href="https://github.com/google/fscrypt">Fscrypt</a>, <a href="https://github.com/netheril96/securefs">Securefs</a>, <a href="https://github.com/mhogomchungu/ecryptfs-simple">Ecryptfs</a>, <a href="https://www.cryfs.org/">Cryfs</a>, <a href="https://github.com/vgough/encfs">Encfs, </a><a href="https://nuetzlich.net/gocryptfs">Gocryptfs</a> and <a href="https://github.com/libfuse/sshfs">Sshfs.</a>
 
 #### Supported Backends on Microsoft Windows:
  <a href="https://www.cryfs.org/">Cryfs</a>, <a href="https://github.com/netheril96/securefs">Securefs</a>, <a href="https://github.com/mhogomchungu/encfs/latest">Encfs</a> and <a href="https://github.com/billziss-gh/sshfs-win">Sshfs.</a>
@@ -48,13 +48,13 @@ Send me an email through mhogomchungu at Gmail Dot coM for transfer details.
 
 ## Source download link.
 
-Latest released version is 1.4.0 and its source code can be downloaded by clicking below link.
+Latest released version is 1.4.1 and its source code can be downloaded by clicking below link.
 
-<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.4.0/SiriKali-1.4.0.tar.xz">SiriKali-1.4.0.tar.xz</a>
+<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.4.1/SiriKali-1.4.1.tar.xz">SiriKali-1.4.1.tar.xz</a>
 
 ## Download links for Microsoft Windows Operating System.
 
-There are two packages for Windows Windows, the one with an installer is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.4.0/SiriKali-1.4.0.setup.exe">here</a> and the one without an installer(portable version) is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.4.0/SiriKali-1.4.0.exe.zip">here.</a>
+There are two packages for Windows Windows, the one with an installer is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.4.1/SiriKali-1.4.1.setup.exe">here</a> and the one without an installer(portable version) is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.4.1/SiriKali-1.4.1.exe.zip">here.</a>
 
 The installer is not signed and expect to get a warning from windows saying the installer is from an unknown publisher.
 We recommend using the installer version.
@@ -141,4 +141,4 @@ cv9jY9bZAbVaMUjF7dw/bsqgJ2HCJ33cf16GybRtozOE36YDB2omg58ngIrlmlea
 -----END PGP PUBLIC KEY BLOCK-----
 ```
 
-last update: Tue 01 Oct 2019 10:22:15 PM EAT
+last update: Tue 15 Oct 2019 04:02:07 PM EAT
