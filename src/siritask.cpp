@@ -491,11 +491,17 @@ siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 {
 	if( engine.engine().known() ){
 
-		auto s = "[[[" + engine.engine().name() + "]]]" ;
+		auto a = "[[[" + engine.engine().name() + "]]]" ;
 
-		if( configFilePath.startsWith( s ) ){
+		auto b = engine.engine().name() + " " ;
 
-			return { engine.engine(),cipherFolder,configFilePath.mid( s.size() ) } ;
+		if( configFilePath.startsWith( a ) ){
+
+			return { engine.engine(),cipherFolder,configFilePath.mid( a.size() ) } ;
+
+		}else if( cipherFolder.startsWith( b,Qt::CaseInsensitive ) ){
+
+			return { engine.engine(),cipherFolder.mid( b.size() ),configFilePath.mid( b.size() ) } ;
 		}else{
 			return { engine.engine(),cipherFolder,configFilePath } ;
 		}
