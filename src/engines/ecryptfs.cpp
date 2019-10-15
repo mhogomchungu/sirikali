@@ -52,6 +52,15 @@ ecryptfs::ecryptfs() : engines::engine( _setOptions() )
 {
 }
 
+void ecryptfs::updateMountOptions( engines::engine::options& opt,
+				   QString& configFilePath ) const
+{
+	if( configFilePath.isEmpty() ){
+
+		configFilePath = opt.cipherFolder + "/" + this->configFileName() ;
+	}
+}
+
 #ifdef Q_OS_LINUX
 
 #include <sys/stat.h>
@@ -75,15 +84,6 @@ bool ecryptfs::requiresPolkit() const
 	}
 
 	return m_requirePolkit ;
-}
-
-void ecryptfs::updateMountOptions( engines::engine::options& opt,
-				   QString& configFilePath ) const
-{
-	if( configFilePath.isEmpty() ){
-
-		configFilePath = opt.cipherFolder + "/" + this->configFileName() ;
-	}
 }
 
 #else
