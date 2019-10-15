@@ -403,6 +403,7 @@ void favorites2::edit()
 		m_ui->lineEditPreUnMount->setText( entry.preUnmountCommand ) ;
 		m_ui->lineEditPostMount->setText( entry.postMountCommand ) ;
 		m_ui->lineEditPostUnmount->setText( entry.postUnmountCommand ) ;
+		m_ui->lineEditMountOptions->setText( entry.mountOptions ) ;
 
 		for( const auto& it : engines::instance().enginesWithNoConfigFile() ){
 
