@@ -594,16 +594,14 @@ siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 	}
 }
 
-static siritask::taskResult _encrypted_folder_mount( const engines::engine::options& opts,
+static siritask::taskResult _encrypted_folder_mount( engines::engine::options opt,
 						     bool reUseMP,
 						     const siritask::Engine& eng )
 {	
-	auto Engine = siritask::mountEngine( opts.cipherFolder,opts.configFilePath,eng ) ;
+	auto Engine = siritask::mountEngine( opt.cipherFolder,opt.configFilePath,eng ) ;
 
 	const auto& engine  = Engine.engine() ;
 	auto configFilePath = Engine.configFilePath() ;
-
-	engines::engine::options opt = opts ;
 
 	opt.cipherFolder = Engine.cipherFolder() ;
 	opt.type         = Engine.engine().name() ;

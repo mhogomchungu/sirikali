@@ -73,7 +73,7 @@ struct policy{
 	QString comment ;
 };
 
-static std::vector< protector > _getProtectors( int& s,const QStringList l )
+static std::vector< protector > _getProtectors( int& s,const QStringList& l )
 {
 	std::vector< protector > m ;
 
@@ -98,7 +98,7 @@ static std::vector< protector > _getProtectors( int& s,const QStringList l )
 	return m ;
 }
 
-static std::vector< policy > _getPolicies( int& s,const QStringList l )
+static std::vector< policy > _getPolicies( int& s,const QStringList& l )
 {
 	std::vector< policy > m ;
 
