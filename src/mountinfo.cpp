@@ -24,7 +24,7 @@
 #include "win.h"
 #include "settings.h"
 #include "engines.h"
-
+#include "engines/fscrypt.h"
 #include <QMetaObject>
 #include <QtGlobal>
 
@@ -128,7 +128,11 @@ static QStringList _unlocked_volumes()
 {
 	if( utility::platformIsLinux() ){
 
-		return utility::split( utility::fileContents( "/proc/self/mountinfo" ) ) ;
+		auto a = utility::split( utility::fileContents( "/proc/self/mountinfo" ) ) ;
+
+		auto b = utility::unwrap( fscrypt::fscryptVolumes( a ) ) ;
+
+		return b + a ;
 
 	}else if( utility::platformIsOSX() ){
 
@@ -250,7 +254,7 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 
 			const auto s = k.size() ;
 
-			if( s < 6 ){
+			if( s < 8 ){
 
 				continue ;
 			}
@@ -265,7 +269,11 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 
 			if( engine.known() ){
 
-				if( _starts_with( engine,cf ) ){
+				if( engine.name() == "fscrypt" ){
+
+					info.volumePath = k.at( 8 ) ;
+
+				}else if( _starts_with( engine,cf ) ){
 
 					info.volumePath = _decode( cf,true ) ;
 

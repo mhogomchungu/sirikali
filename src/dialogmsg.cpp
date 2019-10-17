@@ -94,14 +94,14 @@ void DialogMsg::ShowUI( const QString& title,const QString& msg )
 
 void DialogMsg::ShowPermissionProblem( const QString& device )
 {
-	Q_UNUSED( device ) ;
+	Q_UNUSED( device )
 	this->ShowUIInfo( tr( "INFORMATION" ),false,QString() ) ;
 }
 
 void DialogMsg::ShowPermissionProblem( const QString& msg,const QString& device )
 {
-	Q_UNUSED( msg ) ;
-	Q_UNUSED( device ) ;
+	Q_UNUSED( msg )
+	Q_UNUSED( device )
 }
 
 void DialogMsg::setDimentions( const QString& msg )

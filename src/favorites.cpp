@@ -20,9 +20,7 @@
 #include "favorites.h"
 
 #include "utility.h"
-#include "json.h"
 #include "settings.h"
-#include "json_parser.hpp"
 
 #include <QDir>
 #include <QFile>
@@ -88,9 +86,9 @@ static void _move_favorites_to_new_system( const QStringList& m )
 
 		if( autoMountVolume == "true" ){
 
-			s.autoMount = favorites::triState( true ) ;
+			s.autoMount = true ;
 		}else{
-			s.autoMount = favorites::triState( false ) ;
+			s.autoMount = false ;
 		}
 	}
 
@@ -114,7 +112,7 @@ static void _move_favorites_to_new_system( const QStringList& m )
 
 	if( s.mountOptions.contains( "-SiriKaliMountReadOnly" ) ){
 
-		s.readOnlyMode = favorites::triState( true ) ;
+		s.readOnlyMode = true ;
 	}
 
 	s.mountOptions.replace( "-SiriKaliMountReadOnly","" ) ;
@@ -127,7 +125,7 @@ static void _move_favorites_to_new_system( const QStringList& m )
 static void _add_entries( std::vector< favorites::entry >& e,const QString& path )
 {
 	try {
-		sirikali::json json( path,sirikali::json::type::PATH ) ;
+		SirikaliJson json( path,SirikaliJson::type::PATH ) ;
 
 		favorites::entry m ;
 
@@ -143,23 +141,12 @@ static void _add_entries( std::vector< favorites::entry >& e,const QString& path
 		m.reverseMode          = json.getBool( "reverseMode" ) ;
 		m.volumeNeedNoPassword = json.getBool( "volumeNeedNoPassword" ) ;
 
-		auto s = json.getString( "mountReadOnly" ) ;
-
-		if( !s.isEmpty() ){
-
-			m.readOnlyMode = favorites::triState( s == "true" ? true : false ) ;
-		}
-
-		s = json.getString( "autoMountVolume" ) ;
-
-		if( !s.isEmpty() ){
-
-			m.autoMount = favorites::triState( s == "true" ? true : false ) ;
-		}
+		favorites::triState::readTriState( json,m.readOnlyMode,"mountReadOnly" ) ;
+		favorites::triState::readTriState( json,m.autoMount,"autoMountVolume" ) ;
 
 		e.emplace_back( std::move( m ) ) ;
 
-	}catch( std::exception& e ){
+	}catch( const SirikaliJson::exception& e ){
 
 		utility::debug::cout() << e.what() ;
 		utility::debug::cout() << "Failed to parse file for reading: " + path ;
@@ -230,23 +217,6 @@ void favorites::updateFavorites()
 	}
 }
 
-static void _set_tristate_entry( sirikali::json& json,
-				 const favorites::triState& state,
-				 const char * entry )
-{
-	if( state.defined() ){
-
-		if( state.True() ){
-
-			json[ entry ] = "true" ;
-		}else{
-			json[ entry ] = "false" ;
-		}
-	}else{
-		json[ entry ] = "" ;
-	}
-}
-
 favorites::error favorites::add( const favorites::entry& e )
 {
 	auto m = _config_path() ;
@@ -256,7 +226,7 @@ favorites::error favorites::add( const favorites::entry& e )
 		return error::FAILED_TO_CREATE_ENTRY ;
 	}
 
-	sirikali::json json ;
+	SirikaliJson json ;
 
 	json[ "volumePath" ]           = e.volumePath ;
 	json[ "mountPointPath" ]       = e.mountPointPath ;
@@ -270,8 +240,8 @@ favorites::error favorites::add( const favorites::entry& e )
 	json[ "reverseMode" ]          = e.reverseMode ;
 	json[ "volumeNeedNoPassword" ] = e.volumeNeedNoPassword ;
 
-	_set_tristate_entry( json,e.readOnlyMode,"mountReadOnly" ) ;
-	_set_tristate_entry( json,e.autoMount,"autoMountVolume" ) ;
+	favorites::triState::writeTriState( json,e.readOnlyMode,"mountReadOnly" ) ;
+	favorites::triState::writeTriState( json,e.autoMount,"autoMountVolume" ) ;
 
 	auto a = _create_path( m.value(),e ) ;
 

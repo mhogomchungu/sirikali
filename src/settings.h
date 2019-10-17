@@ -203,6 +203,7 @@ public:
 	QString applicationName( void ) ;
 	int readPasswordMaximumLength() ;
 	bool unMountVolumesOnLogout( void ) ;
+	bool requirePolkitOnFsCryptUnmount( void ) ;
 private:
 	QSettings m_settings ;
 };

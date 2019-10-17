@@ -46,7 +46,7 @@ LXQt::Wallet::kwallet::~kwallet()
 
 void LXQt::Wallet::kwallet::setImage( const QIcon& image )
 {
-	Q_UNUSED( image ) ;
+	Q_UNUSED( image )
 }
 
 bool LXQt::Wallet::kwallet::addKey( const QString& key,const QByteArray& value )
@@ -75,7 +75,7 @@ bool LXQt::Wallet::kwallet::open( const QString& walletName,
 		this->setParent( parent ) ;
 	}
 
-	Q_UNUSED( displayApplicationName ) ;
+	Q_UNUSED( displayApplicationName )
 
 	m_kwallet = LXQt::Wallet::Task::await< KWallet::Wallet * >( [ this ](){
 
@@ -125,7 +125,7 @@ void LXQt::Wallet::kwallet::open( const QString& walletName,
 
 	m_walletOpened = std::move( function ) ;
 
-	Q_UNUSED( displayApplicationName ) ;
+	Q_UNUSED( displayApplicationName )
 
 	m_kwallet = KWallet::Wallet::openWallet( m_walletName,0,KWallet::Wallet::Asynchronous ) ;
 
@@ -217,8 +217,8 @@ void LXQt::Wallet::kwallet::changeWalletPassWord( const QString& walletName,
 						  const QString& applicationName,
 						  std::function< void( bool ) > function )
 {
-	Q_UNUSED( applicationName ) ;
-	Q_UNUSED( function ) ;
+	Q_UNUSED( applicationName )
+	Q_UNUSED( function )
 
 	m_kwallet->changePassword( walletName,0 ) ;
 }

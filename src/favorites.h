@@ -23,6 +23,7 @@
 #include <QString>
 #include <vector>
 #include "utility.h"
+#include "json_parser.hpp"
 
 class favorites
 {
@@ -36,6 +37,15 @@ public:
 		}
 		triState( bool e ) : m_state( e ? STATES::TRUE : STATES::FALSE )
 		{
+		}
+		void operator=( bool e )
+		{
+			if( e ){
+
+				m_state = STATES::TRUE ;
+			}else{
+				m_state = STATES::FALSE ;
+			}
 		}
 		void toggle()
 		{
@@ -63,6 +73,33 @@ public:
 		bool False() const
 		{
 			return m_state != STATES::TRUE ;
+		}
+		static void writeTriState( SirikaliJson& json,
+					   const favorites::triState& state,
+					   const char * entry )
+		{
+			if( state.defined() ){
+
+				if( state.True() ){
+
+					json[ entry ] = "true" ;
+				}else{
+					json[ entry ] = "false" ;
+				}
+			}else{
+				json[ entry ] = "" ;
+			}
+		}
+		static void readTriState( SirikaliJson& json,
+					  favorites::triState& state,
+					  const char * entry )
+		{
+			auto s = json.getString( entry ) ;
+
+			if( !s.isEmpty() ){
+
+				state = s == "true" ? true : false ;
+			}
 		}
 	private:
 		enum class STATES{ UNDEFINED,TRUE,FALSE } m_state ;

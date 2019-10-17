@@ -26,6 +26,9 @@ static engines::engine::BaseOptions _setOptions()
 	engines::engine::BaseOptions s ;
 
 	s.supportsMountPathsOnWindows = true ;
+	s.autorefreshOnMountUnMount   = true ;
+	s.backendRequireMountPath     = true ;
+	s.requiresPolkit        = false ;
 	s.customBackend         = false ;
 	s.requiresAPassword     = true ;
 	s.hasConfigFile         = true ;
@@ -58,7 +61,7 @@ encfs::encfs() : engines::engine( _setOptions() )
 engines::engine::args encfs::command( const QString& password,
 				      const engines::engine::cmdArgsList& args ) const
 {
-	Q_UNUSED( password ) ;
+	Q_UNUSED( password )
 
 	QString e = "%1 %2 %3 %4 %5" ;
 
@@ -116,7 +119,7 @@ engines::engine::args encfs::command( const QString& password,
 
 engines::engine::status encfs::errorCode( const QString& e,int s ) const
 {
-	Q_UNUSED( s ) ;
+	Q_UNUSED( s )
 
 	if( e.contains( this->incorrectPasswordText() ) ){
 

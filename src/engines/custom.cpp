@@ -31,17 +31,20 @@ static utility::result< custom::opts > _getOptions( const QByteArray& e,const QS
 	try{
 		custom::opts s ;
 
-		sirikali::json json( e,sirikali::json::type::CONTENTS ) ;
+		SirikaliJson json( e,SirikaliJson::type::CONTENTS ) ;
 
+		s.baseOpts.requiresPolkit              = false ;
+		s.baseOpts.autorefreshOnMountUnMount   = true ;
+		s.baseOpts.backendRequireMountPath     = true ;
 		s.baseOpts.hasGUICreateOptions         = true ;
 		s.baseOpts.customBackend               = true ;
+		s.baseOpts.requiresAPassword           = json.getBool( "requiresAPassword" ) ;
+		s.baseOpts.autoMountsOnCreate          = json.getBool( "autoMountsOnVolumeCreation" ) ;
+		s.baseOpts.supportsMountPathsOnWindows = json.getBool( "supportsMountPointPaths" ) ;
 		s.mountControlStructure                = json.getString( "mountControlStructure" ) ;
 		s.createControlStructure               = json.getString( "createControlStructure" ) ;
 		s.baseOpts.reverseString               = json.getString( "reverseString" ) ;
 		s.baseOpts.idleString                  = json.getString( "idleString" ) ;
-		s.baseOpts.requiresAPassword           = json.getBool( "requiresAPassword" ) ;
-		s.baseOpts.autoMountsOnCreate          = json.getBool( "autoMountsOnVolumeCreation" ) ;
-		s.baseOpts.supportsMountPathsOnWindows = json.getBool( "supportsMountPointPaths" ) ;
 		s.baseOpts.executableName              = json.getString( "executableName" ) ;
 		s.baseOpts.incorrectPasswordText       = json.getString( "wrongPasswordText" ) ;
 		s.baseOpts.passwordFormat              = json.getString( "passwordFormat" ) ;
@@ -49,8 +52,6 @@ static utility::result< custom::opts > _getOptions( const QByteArray& e,const QS
 		s.baseOpts.unMountCommand              = json.getString( "unMountCommand" ) ;
 		s.baseOpts.configFileArgument          = json.getString( "configFileArgument" ) ;
 		s.baseOpts.windowsUnMountCommand       = json.getString( "windowsUnMountCommand" ) ;
-		s.baseOpts.windowsInstallPathRegistryKey   = json.getString( "windowsInstallPathRegistryKey" ) ;
-		s.baseOpts.windowsInstallPathRegistryValue = json.getString( "windowsInstallPathRegistryValue" ) ;
 		s.baseOpts.failedToMountList           = json.getStringList( "failedToMountTextList" ) ;
 		s.baseOpts.successfulMountedList       = json.getStringList( "successfullyMountedList" ) ;
 		s.baseOpts.configFileNames             = json.getStringList( "configFileNames" ) ;
@@ -58,12 +59,14 @@ static utility::result< custom::opts > _getOptions( const QByteArray& e,const QS
 		s.baseOpts.fuseNames                   = json.getStringList( "fuseNames" ) ;
 		s.baseOpts.fileExtensions              = json.getStringList( "fileExtensions" ) ;
 		s.baseOpts.volumePropertiesCommands    = json.getStringList( "volumePropertiesCommands" ) ;
-		s.baseOpts.hasConfigFile               = s.baseOpts.configFileNames.size() > 0 ;
-		s.baseOpts.notFoundCode                = engines::engine::status::customCommandNotFound ;
+		s.baseOpts.windowsInstallPathRegistryKey   = json.getString( "windowsInstallPathRegistryKey" ) ;
+		s.baseOpts.windowsInstallPathRegistryValue = json.getString( "windowsInstallPathRegistryValue" ) ;
+		s.baseOpts.hasConfigFile                   = s.baseOpts.configFileNames.size() > 0 ;
+		s.baseOpts.notFoundCode                    = engines::engine::status::customCommandNotFound ;
 
 		return s ;
 
-	}catch( const sirikali::json::exception& e ){
+	}catch( const SirikaliJson::exception& e ){
 
 		utility::debug::cout() << "Failed to parse config file: " + s << e.what() ;
 

@@ -26,6 +26,7 @@
 #include "engines/sshfs.h"
 #include "engines/unknown.h"
 #include "engines/securefs.h"
+#include "engines/fscrypt.h"
 #include "engines/custom.h"
 
 #include "utility.h"
@@ -125,6 +126,61 @@ engines::engine::~engine()
 {
 }
 
+Task::future< QString >& engines::engine::volumeProperties( const QString& cipherFolder,
+							    const QString& mountPoint ) const
+{
+	return Task::run( [ = ](){
+
+		for( const auto& it : this->volumePropertiesCommands() ){
+
+			auto a = utility::split( it,' ' ) ;
+			auto b = utility::executableFullPath( a.first() ) ;
+			a.removeFirst() ;
+			auto c = a.join( " " ) ;
+
+			if( !b.isEmpty() ){
+
+				auto x = utility::Task::makePath( cipherFolder ) ;
+				auto y  = utility::Task::makePath( mountPoint ) ;
+
+				c.replace( "%{cipherFolder}",x ) ;
+				c.replace( "%{plainFolder}",y ) ;
+
+				auto d = utility::Task::makePath( b ) ;
+
+				auto e = utility::unwrap( utility::Task::run( d + " " + c ) ) ;
+
+				if( e.success() ){
+
+					return QString( e.stdOut() ) ;
+				}
+			}
+		}
+
+		return QString() ;
+	} ) ;
+}
+
+bool engines::engine::unmount( const QString& cipherFolder,
+			       const QString& mountPoint,
+			       int maxCount ) const
+{
+	Q_UNUSED( cipherFolder )
+	return siritask::unmountVolume( mountPoint,this->unMountCommand(),maxCount ) ;
+}
+
+const engines::engine& engines::engine::proveEngine( const QString& cipherPath ) const
+{
+	Q_UNUSED( cipherPath )
+
+	return engines::instance().getUnKnown() ;
+}
+
+const QProcessEnvironment& engines::engine::getProcessEnvironment() const
+{
+	return m_processEnvironment ;
+}
+
 QString engines::engine::sanitizeVersionString( const QString& s ) const
 {
 	auto e = s ;
@@ -175,8 +231,10 @@ QString engines::engine::baseInstalledVersionString( const QString& versionArgum
 }
 
 engines::engine::engine( engines::engine::BaseOptions o ) :
-	m_Options( std::move( o ) )
+	m_Options( std::move( o ) ),
+	m_processEnvironment( utility::systemEnvironment() )
 {
+	m_processEnvironment.insert( "LANG","C" ) ;
 }
 
 QString engines::engine::executableFullPath() const
@@ -237,6 +295,21 @@ bool engines::engine::requiresAPassword() const
 bool engines::engine::customBackend() const
 {
 	return m_Options.customBackend ;
+}
+
+bool engines::engine::autorefreshOnMountUnMount() const
+{
+	return m_Options.autorefreshOnMountUnMount ;
+}
+
+bool engines::engine::backendRequireMountPath() const
+{
+	return m_Options.backendRequireMountPath ;
+}
+
+bool engines::engine::requiresPolkit() const
+{
+	return m_Options.requiresPolkit ;
 }
 
 const QStringList& engines::engine::names() const
@@ -358,6 +431,18 @@ engines::engine::error engines::engine::errorCode( const QString& e ) const
 	}
 }
 
+engines::engine::status engines::engine::passMinimumVersion() const
+{
+	return engines::engine::status::success ;
+}
+
+void engines::engine::updateMountOptions( engines::engine::options& e,
+					  QString& configFilePath ) const
+{
+	Q_UNUSED( e )
+	Q_UNUSED( configFilePath )
+}
+
 QString engines::engine::setConfigFilePath( const QString& e ) const
 {
 	if( m_Options.configFileArgument.isEmpty() ){
@@ -434,6 +519,11 @@ const QStringList& engines::supported() const
 	return m_supported ;
 }
 
+const engines::engine& engines::getUnKnown() const
+{
+	return **( m_backends.data() ) ;
+}
+
 engines::engines()
 {
 	m_backends.emplace_back( std::make_unique< unknown >() ) ;
@@ -456,7 +546,7 @@ engines::engines()
 		m_backends.emplace_back( std::make_unique< gocryptfs >() ) ;
 		m_backends.emplace_back( std::make_unique< encfs >() ) ;
 	}else{
-		m_supported = QStringList{ "Securefs","Cryfs","Gocryptfs","Encfs","Ecryptfs","Sshfs" } ;
+		m_supported = QStringList{ "Securefs","Cryfs","Gocryptfs","Encfs","Ecryptfs","Sshfs","Fscrypt" } ;
 
 		m_backends.emplace_back( std::make_unique< securefs >() ) ;
 		m_backends.emplace_back( std::make_unique< cryfs >() ) ;
@@ -464,6 +554,7 @@ engines::engines()
 		m_backends.emplace_back( std::make_unique< encfs >() ) ;
 		m_backends.emplace_back( std::make_unique< ecryptfs >() ) ;
 		m_backends.emplace_back( std::make_unique< sshfs >() ) ;
+		m_backends.emplace_back( std::make_unique< fscrypt >() ) ;
 	}
 
 	custom::addEngines( m_supported,m_backends ) ;
@@ -616,7 +707,15 @@ QString engines::engine::cmdStatus::toString() const
 
 		return QObject::tr( "Failed To Unlock An Ecryptfs Volume.\nWrong Password Entered." ) ;
 
-	case engines::engine::engine::status::ecryptfsIllegalPath :
+	case engines::engine::status::fscryptBadPassword :
+
+		return QObject::tr( "Failed To Unlock An fscrypt Volume.\nWrong Password Entered." ) ;
+
+	case engines::engine::status::failedToStartPolkit :
+
+		return QObject::tr( "Backend Requires Polkit Support and SiriKali Failed To Start It." ) ;
+
+	case engines::engine::engine::status::IllegalPath :
 
 		return QObject::tr( "A Space Character Is Not Allowed In Paths When Using Ecryptfs Backend And Polkit." ) ;
 
@@ -635,6 +734,10 @@ QString engines::engine::cmdStatus::toString() const
 	case engines::engine::status::sshfsNotFound :
 
 		return QObject::tr( "Failed To Complete The Request.\nSshfs Executable Could Not Be Found." ) ;
+
+	case engines::engine::status::fscryptNotFound :
+
+		return QObject::tr( "Failed To Complete The Request.\nFscrypt Executable Could Not Be Found." ) ;
 
 	case engines::engine::status::backEndDoesNotSupportCustomConfigPath :
 

@@ -169,9 +169,15 @@ version 1.3.9(August 1st,2019)
 -- Fix an occassional crash that happens when creating an internal wallet when an internal version of
    lxqt_wallet is in use.
 
-version 1.4.0(unreleased)
+version 1.4.0(October 1st,2019)
 -- Make it buildable again on Qt < 5.10.0(1.3.9 broke this promise because it should be buildable in debian 8)
 -- Add a config option to show favorites entries on the tray icon context menu with an ability to
    mount/unmount volume from the menu.
 -- Fix a bug that prevented favorite entries with cipher path that starts with a dot from showing up in the GUI.
 -- Add GUI options to enable HiDPI option to scale the GUI when runing in HiDPI displays.
+
+version 1.4.1(October 15,2019)
+-- Add support for fscrypt backend. This backend will allow encrypting individual folders that reside in a
+   file system that supports encryption like ext4. More info about this backed is here: https://github.com/google/fscrypt
+-- Fix a bug with sshfs backend introducedin 1.4.0.
+-- Various changes and improvements.

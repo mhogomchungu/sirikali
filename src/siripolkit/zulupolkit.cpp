@@ -154,7 +154,7 @@ void zuluPolkit::start()
 
 static void _respond( QLocalSocket& s,const char * e )
 {
-	sirikali::json json ;
+	SirikaliJson json ;
 
 	json[ "stdOut" ]     = e ;
 	json[ "stdError" ]   = e ;
@@ -169,7 +169,7 @@ static void _respond( QLocalSocket& s,const char * e )
 
 static void _respond( QLocalSocket& s,const Task::process::result& e )
 {
-	sirikali::json json ;
+	SirikaliJson json ;
 
 	json[ "stdOut" ]     = e.std_out() ;
 	json[ "stdError" ]   = e.std_error() ;
@@ -191,7 +191,7 @@ void zuluPolkit::gotConnection()
 	try{
 		m.waitForReadyRead() ;
 
-		auto json = sirikali::json( m.readAll(),sirikali::json::type::CONTENTS ) ;
+		auto json = SirikaliJson( m.readAll(),SirikaliJson::type::CONTENTS ) ;
 
 		auto password = json.getString( "password" ) ;
 		auto cookie   = json.getString( "cookie" ) ;
@@ -201,6 +201,7 @@ void zuluPolkit::gotConnection()
 
 		auto e = su + " - -c \"'" + executableFullPath( "ecryptfs-simple" ) ;
 		auto f = su + " - -c \"" + executableFullPath( "ecryptfs-simple" ) ;
+		auto g = executableFullPath( "fscrypt" ) ;
 
 		if( cookie == m_cookie ){
 
@@ -208,7 +209,10 @@ void zuluPolkit::gotConnection()
 
 				return QCoreApplication::quit() ;
 
-			}else if( command.startsWith( e ) || command.startsWith( f ) ){
+			}else if( command.startsWith( e ) ||
+				  command.startsWith( f ) ||
+				  command.startsWith( g ) ||
+				  command.startsWith( "\"" + g ) ){
 
 				return _respond( m,Task::process::run( command,password.toLatin1() ).get() ) ;
 			}else{

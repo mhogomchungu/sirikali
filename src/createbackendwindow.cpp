@@ -121,7 +121,7 @@ void createBackendWIndow::save()
 		return DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Wrong Password Field Can Not Be Empty" ) ) ;
 	}
 
-	sirikali::json config ;
+	SirikaliJson config ;
 
 	auto _addList = [ & ]( const QString& e ){
 

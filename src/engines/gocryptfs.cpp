@@ -26,6 +26,9 @@ static engines::engine::BaseOptions _setOptions()
 	engines::engine::BaseOptions s ;
 
 	s.supportsMountPathsOnWindows = false ;
+	s.autorefreshOnMountUnMount   = true ;
+	s.backendRequireMountPath     = true ;
+	s.requiresPolkit        = false ;
 	s.customBackend         = false ;
 	s.requiresAPassword     = true ;
 	s.hasConfigFile         = true ;
@@ -55,10 +58,47 @@ gocryptfs::gocryptfs() : engines::engine( _setOptions() )
 {
 }
 
+template< typename Function >
+static bool _set_if_found( const Function& function )
+{
+	std::array< QString,3 > m = { "gocryptfs.reverse.conf",
+				      ".gocryptfs.reverse.conf",
+				      "gocryptfs.reverse" } ;
+	for( const auto& it : m ){
+
+		if( function( it ) ){
+
+			return true ;
+		}
+	}
+
+	return false ;
+}
+
+void gocryptfs::updateMountOptions( engines::engine::options& opt,
+				    QString& configFilePath ) const
+{
+	opt.reverseMode = [ & ](){
+
+		if( configFilePath.isEmpty() ){
+
+			return _set_if_found( [ & ]( const QString& e ){
+
+				return utility::pathExists( opt.cipherFolder + "/" + e ) ;
+			} ) ;
+		}else{
+			return _set_if_found( [ & ]( const QString& e ){
+
+				return configFilePath.endsWith( e ) ;
+			} ) ;
+		}
+	}() ;
+}
+
 engines::engine::args gocryptfs::command( const QString& password,
 					  const engines::engine::cmdArgsList& args ) const
 {
-	Q_UNUSED( password ) ;
+	Q_UNUSED( password )
 
 	engines::engine::commandOptions m( args,this->name() ) ;
 

@@ -84,6 +84,7 @@ private slots:
 	void defaultButton( void ) ;
 	void itemClicked( QTableWidgetItem * ) ;
 	void pbUpdate( void ) ;
+	void updateList( void ) ;
 	void createVolume( QAction * = nullptr ) ;
 	void slotMount( void ) ;
 	void unMountAll( void ) ;
@@ -143,7 +144,7 @@ private:
 
 	void processMountedVolumes( std::function< void( const sirikali::mountedEntry& ) > function ) ;
 
-	bool unMountVolume( const sirikali::mountedEntry& ) ;
+	siritask::taskResult unMountVolume( const sirikali::mountedEntry& ) ;
 
 	Ui::sirikali * m_ui = nullptr ;
 

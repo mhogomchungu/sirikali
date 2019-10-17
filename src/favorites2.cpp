@@ -198,7 +198,7 @@ favorites2::favorites2( QWidget * parent,
 
 	m_ui->cbAutoMount->setChecked( false ) ;
 
-	m_ui->cbReadOnlyMode->setEnabled( !utility::platformIsWindows() ) ;
+	m_ui->cbReadOnlyMode->setEnabled( utility::platformIsNOTWindows() ) ;
 
 	this->checkFavoritesConsistency() ;
 
@@ -403,6 +403,7 @@ void favorites2::edit()
 		m_ui->lineEditPreUnMount->setText( entry.preUnmountCommand ) ;
 		m_ui->lineEditPostMount->setText( entry.postMountCommand ) ;
 		m_ui->lineEditPostUnmount->setText( entry.postUnmountCommand ) ;
+		m_ui->lineEditMountOptions->setText( entry.mountOptions ) ;
 
 		for( const auto& it : engines::instance().enginesWithNoConfigFile() ){
 
@@ -527,7 +528,7 @@ void favorites2::updateFavorite( bool edit )
 	favorites::entry e ;
 	e.volumePath = dev_path ;
 	e.mountPointPath = path ;
-	e.autoMount = favorites::triState( m_ui->cbAutoMount->isChecked() ) ;
+	e.autoMount = m_ui->cbAutoMount->isChecked() ;
 	e.configFilePath = configPath ;
 	e.idleTimeOut = idleTimeOUt ;
 	e.mountOptions = mOpts ;
@@ -611,8 +612,8 @@ void favorites2::currentItemChanged( QTableWidgetItem * current,QTableWidgetItem
 
 void favorites2::itemClicked( QTableWidgetItem * current,bool clicked )
 {
-	Q_UNUSED( current ) ;
-	Q_UNUSED( clicked ) ;
+	Q_UNUSED( current )
+	Q_UNUSED( clicked )
 }
 
 void favorites2::itemClicked( QTableWidgetItem * current )

@@ -21,31 +21,181 @@
 #include "utility.h"
 #include "mountinfo.h"
 #include "settings.h"
-#include "win.hpp"
 
 #include <utility>
 #include <tuple>
+#include <QtGlobal>
+
+#include <QString>
 
 namespace SiriKali{
 namespace Windows{
 static const char * _backEndTimedOut = "SiriKali::Windows::BackendTimedOut" ;
 
-static void _deleteLater( QObject * e )
+#ifdef Q_OS_WIN
+
+#include <windows.h>
+
+class regOpenKey{
+public:
+	regOpenKey( const char * subKey,HKEY hkey = HKEY_LOCAL_MACHINE )
+	{
+		HKEY m ;
+		REGSAM wow64 = KEY_QUERY_VALUE | KEY_WOW64_64KEY ;
+		REGSAM wow32 = KEY_QUERY_VALUE | KEY_WOW64_32KEY ;
+
+		if( this->success( RegOpenKeyExA,hkey,subKey,0,wow64,&m ) ){
+
+			m_hkey = m ;
+
+		}else if( this->success( RegOpenKeyExA,hkey,subKey,0,wow32,&m ) ){
+
+			m_hkey = m ;
+		}else{
+			m_hkey = nullptr ;
+		}
+	}
+	regOpenKey( const regOpenKey& ) = delete ;
+	regOpenKey& operator=( const regOpenKey& ) = delete ;
+	regOpenKey( regOpenKey&& other )
+	{
+		this->closeKey() ;
+		m_hkey = other.m_hkey ;
+		other.m_hkey = nullptr ;
+	}
+	regOpenKey& operator=( regOpenKey&& other )
+	{
+		this->closeKey() ;
+		m_hkey = other.m_hkey ;
+		other.m_hkey = nullptr ;
+		return *this ;
+	}
+	operator bool()
+	{
+		return m_hkey != nullptr ;
+	}
+	QByteArray getValue( const char * key )
+	{
+		if( m_hkey != nullptr ){
+
+			DWORD dwType = REG_SZ ;
+
+			std::array< char,4096 > buffer ;
+
+			std::fill( buffer.begin(),buffer.end(),'\0' ) ;
+
+			auto e = reinterpret_cast< BYTE * >( buffer.data() ) ;
+			auto m = static_cast< DWORD >( buffer.size() ) ;
+
+			if( this->success( RegQueryValueEx,m_hkey,key,nullptr,&dwType,e,&m ) ){
+
+				return { buffer.data(),static_cast< int >( m ) } ;
+			}
+		}
+
+		return {} ;
+	}
+	HKEY handle()
+	{
+		return m_hkey ;
+	}
+	~regOpenKey()
+	{
+		this->closeKey() ;
+	}
+private:
+	template< typename Function,typename ... Args >
+	bool success( Function&& function,Args&& ... args )
+	{
+		return function( std::forward< Args >( args ) ... ) == ERROR_SUCCESS ;
+	}
+	void closeKey()
+	{
+		RegCloseKey( m_hkey ) ;
+	}
+	HKEY m_hkey ;
+};
+
+// SiriKali took below code from "https://stackoverflow.com/questions/813086/can-i-send-a-ctrl-c-sigint-to-an-application-on-windows"
+
+// Inspired from http://stackoverflow.com/a/15281070/1529139
+// and http://stackoverflow.com/q/40059902/1529139
+static bool signalCtrl(DWORD dwProcessId, DWORD dwCtrlEvent)
 {
-	e->deleteLater() ;
+    bool success = false;
+    DWORD thisConsoleId = GetCurrentProcessId();
+    // Leave current console if it exists
+    // (otherwise AttachConsole will return ERROR_ACCESS_DENIED)
+    bool consoleDetached = (FreeConsole() != FALSE);
+
+    if (AttachConsole(dwProcessId) != FALSE)
+    {
+	// Add a fake Ctrl-C handler for avoid instant kill is this console
+	// WARNING: do not revert it or current program will be also killed
+	SetConsoleCtrlHandler(nullptr, true);
+	success = (GenerateConsoleCtrlEvent(dwCtrlEvent, 0) != FALSE);
+	FreeConsole();
+    }
+
+    if (consoleDetached)
+    {
+	// Create a new console if previous was deleted by OS
+	if (AttachConsole(thisConsoleId) == FALSE)
+	{
+	    int errorCode = GetLastError();
+	    if (errorCode == 31) // 31=ERROR_GEN_FAILURE
+	    {
+		AllocConsole();
+	    }
+	}
+    }
+    return success;
 }
+
+static int _terminateProcess( unsigned long pid )
+{
+	if( signalCtrl( pid,CTRL_C_EVENT ) ){
+
+		return 0 ;
+	}else{
+		return 1 ;
+	}
+}
+
+static QString _readRegistry( const char * subKey,const char * key )
+{
+	return regOpenKey( subKey ).getValue( key ) ;
+}
+
+#else
+
+static int _terminateProcess( unsigned long pid )
+{
+	Q_UNUSED( pid )
+	return 1 ;
+}
+
+static QString _readRegistry( const char * subKey,const char * key )
+{
+	Q_UNUSED( subKey )
+	Q_UNUSED( key )
+	return QString() ;
+}
+
+#endif
 
 struct Process
 {
-	Process( const engines::engine::args& args,const QString& e,QProcess * p ) :
-		args( args ),engineName( e ),instance( p,_deleteLater )
+	template< typename T >
+	Process( const engines::engine::args& args,const QString& e,T x ) :
+		args( args ),engineName( e ),instance( std::move( x ) )
 	{
 	}
 	Process( Process&& ) = default ;
 	Process& operator=( Process&& ) = default ;
 	engines::engine::args args ;
 	QString engineName ;
-	std::unique_ptr< QProcess,void(*)( QObject * ) > instance ;
+	std::unique_ptr< QProcess,void(*)( QProcess * ) > instance ;
 } ;
 
 struct result
@@ -238,11 +388,11 @@ static SiriKali::Windows::result _getProcessOutput( QProcess& exe,const engines:
 	}
 }
 
-static QProcessEnvironment _update_environment( const QString& e )
+static QProcessEnvironment _update_environment( const engines::engine& e )
 {
-	auto env = utility::systemEnvironment() ;
+	auto env = e.getProcessEnvironment() ;
 
-	auto s = SiriKali::Windows::engineInstalledDir( e ) ;
+	auto s = SiriKali::Windows::engineInstalledDir( e.name() ) ;
 
 	if( s.isEmpty() ){
 
@@ -272,7 +422,7 @@ Task::process::result SiriKali::Windows::create( const SiriKali::Windows::opts& 
 }
 
 static std::pair< Task::process::result,QString > _terminate_process( QProcess& e,
-								      const QString& engine,
+								      const engines::engine& engine,
 								      const QString& mountPath = QString(),
 								      const QString& unMountCommand = QString() )
 {
@@ -303,7 +453,7 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 {
 	auto exe = utility2::unique_qptr< QProcess >() ;
 
-	exe->setProcessEnvironment( _update_environment( opts.engine.name() ) ) ;
+	exe->setProcessEnvironment( _update_environment( opts.engine ) ) ;
 	exe->setProcessChannelMode( QProcess::MergedChannels ) ;
 	exe->start( opts.args.cmd ) ;
 	exe->waitForStarted() ;
@@ -316,7 +466,7 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 
 		if( m.type == engines::engine::error::Timeout ){
 
-			_terminate_process( *exe,opts.engine.name() ) ;
+			_terminate_process( *exe,opts.engine ) ;
 
 			return Task::process::result( SiriKali::Windows::_backEndTimedOut,
 						      QByteArray(),
@@ -329,7 +479,7 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 			exe->closeReadChannel( QProcess::StandardError ) ;
 			exe->closeReadChannel( QProcess::StandardOutput ) ;
 
-			m_instances.emplace_back( opts.args,opts.engine.name(),exe.release() ) ;
+			m_instances.emplace_back( opts.args,opts.engine.name(),std::move( exe ) ) ;
 
 			m_updateVolumeList() ;
 
@@ -391,7 +541,10 @@ Task::process::result SiriKali::Windows::volumes::remove( const QString& unMount
 		if( s.args.mountPath == mountPoint ){
 
 			auto& p = s.instance ;
-			auto m = _terminate_process( *p,s.engineName,s.args.mountPath,unMountCommand ) ;
+			auto m = _terminate_process( *p,
+						     engines::instance().getByName( s.engineName ),
+						     s.args.mountPath,
+						     unMountCommand ) ;
 
 			auto r = [ & ](){
 

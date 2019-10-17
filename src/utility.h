@@ -144,18 +144,6 @@ namespace utility
 		bool m_valid = false ;
 		T m_value ;
 	} ;
-
-	class globalEnvironment
-	{
-	public:
-		static globalEnvironment& instance() ;
-		const QProcessEnvironment& get() const ;
-		void insert( const QString&,const QString& ) ;
-		void remove( const QString& ) ;
-		globalEnvironment() ;
-	private:
-		QProcessEnvironment m_environment ;
-	} ;
 }
 
 namespace utility
@@ -254,6 +242,7 @@ namespace utility
 	bool platformIsLinux() ;
 	bool platformIsOSX() ;
 	bool platformIsWindows() ;
+	bool platformIsNOTWindows() ;
 
 	void setWindowOptions( QDialog * ) ;
 
@@ -373,6 +362,9 @@ namespace utility
 
 	QString configFilePath( QWidget *,const QString& ) ;
 
+	QString policyString() ;
+	QString commentString() ;
+
 	QStringList split( const QString&,char = '\n' ) ;
 	QStringList executableSearchPaths( void ) ;
 	QString executableSearchPaths( const QString& ) ;
@@ -449,18 +441,22 @@ namespace utility
 		return false ;
 	}
 
-	template< typename E,typename ... F >
-	bool containsAtleastOne( const E& e,const F& ... f )
+	template< typename E >
+	bool containsAtleastOne( const E& e )
 	{
-		for( const auto& it : { f ... } ){
-
-			if( e.contains( it ) ){
-
-				return true ;
-			}
-		}
-
+		Q_UNUSED( e )
 		return false ;
+	}
+
+	template< typename E,typename F,typename ... G >
+	bool containsAtleastOne( const E& e,F&& f,G&& ... g )
+	{
+		if( e.contains( f ) ){
+
+			return true ;
+		}else{
+			return containsAtleastOne( e,std::forward< G >( g ) ... ) ;
+		}
 	}
 
 	template< typename E,typename ... F >

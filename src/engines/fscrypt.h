@@ -18,19 +18,23 @@
  */
 
 #include "../engines.h"
+#include <QStringList>
 
-struct ecryptfs : public engines::engine
+class fscrypt : public engines::engine
 {
-	ecryptfs() ;
+public:
+	static Task::future< QStringList >& fscryptVolumes( const QStringList& s ) ;
 
-	bool requiresPolkit() const override ;
-
-	void updateMountOptions( engines::engine::options&,
-				 QString& configFilePath ) const override ;
+	fscrypt() ;
 
 	bool unmount( const QString& cipherFolder,
 		      const QString& mountPoint,
 		      int maxCount ) const override ;
+
+	const engines::engine& proveEngine( const QString& cipherPath ) const override ;
+
+	Task::future< QString >& volumeProperties( const QString& cipherFolder,
+						   const QString& mountPoint ) const override ;
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 
@@ -40,8 +44,7 @@ struct ecryptfs : public engines::engine
 	QString installedVersionString() const override ;
 
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
-
 private:
-	mutable bool m_unset = true ;
-	mutable bool m_requirePolkit = true ;
+	QString userOption() const ;
+	bool m_requirePolkitOnUnmount ;
 } ;

@@ -136,6 +136,11 @@ bool utility::platformIsWindows()
 
 #endif
 
+bool utility::platformIsNOTWindows()
+{
+	return !utility::platformIsWindows() ;
+}
+
 static QByteArray _cookie ;
 static QString _polkit_socket_path ;
 
@@ -271,7 +276,7 @@ void utility::Task::execute( const QString& exe,int waitTime,
 
 		s.write( [ & ]()->QByteArray{
 
-			sirikali::json json ;
+			SirikaliJson json ;
 
 			json[ "cookie" ]   = _cookie ;
 			json[ "password" ] = password ;
@@ -285,7 +290,7 @@ void utility::Task::execute( const QString& exe,int waitTime,
 		s.waitForReadyRead() ;
 
 		try{
-			sirikali::json json( s.readAll(),sirikali::json::type::CONTENTS ) ;
+			SirikaliJson json( s.readAll(),SirikaliJson::type::CONTENTS ) ;
 
 			m_finished   = json.getBool( "finished" ) ;
 			m_exitCode   = json.getInterger( "exitCode" ) ;
@@ -363,6 +368,11 @@ void utility::logCommandOutPut( const QString& e )
 
 void utility::logCommandOutPut( const ::Task::process::result& m,const QString& exe )
 {
+	if( exe.contains( "fscrypt status" ) ){
+
+		return ;
+	}
+
 	auto _trim = []( QString e ){
 
 		while( true ){
@@ -498,7 +508,7 @@ void utility::quitHelper()
 
 			s.write( [ & ]()->QByteArray{
 
-				sirikali::json json ;
+				SirikaliJson json ;
 
 				json[ "cookie" ]   = _cookie ;
 				json[ "password" ] = "" ;
@@ -536,7 +546,7 @@ void utility::openPath( const QString& path,const QString& opener,
 
 		openPath( path,opener ).then( [ title,msg,obj ]( bool failed ){
 
-			if( !utility::platformIsWindows() ){
+			if( utility::platformIsNOTWindows() ){
 
 				if( failed && obj ){
 
@@ -551,7 +561,7 @@ void utility::openPath( const QString& path,const QString& opener,
 {
 	return ::Task::run( [ = ](){
 
-		Q_UNUSED( q ) ;
+		Q_UNUSED( q )
 
 		utility::fsInfo s ;
 
@@ -801,7 +811,7 @@ QString utility::cmdArgumentValue( const QStringList& l,const QString& arg,const
 
 QString utility::getVolumeID( const QString& id,bool expand )
 {
-	Q_UNUSED( expand ) ;
+	Q_UNUSED( expand )
 	return id ;
 }
 
@@ -1115,7 +1125,8 @@ QString utility::readPassword( bool addNewLine )
 
 const QProcessEnvironment& utility::systemEnvironment()
 {
-	return utility::globalEnvironment().instance().get() ;
+	static QProcessEnvironment env = QProcessEnvironment::systemEnvironment() ;
+	return env ;
 }
 
 QString utility::configFilePath( QWidget * s,const QString& e )
@@ -1382,37 +1393,6 @@ QString utility::wrap_su( const QString& s )
 	}
 }
 
-utility::globalEnvironment& utility::globalEnvironment::instance()
-{
-	static utility::globalEnvironment m ;
-	return m ;
-}
-
-const QProcessEnvironment& utility::globalEnvironment::get() const
-{
-	return m_environment ;
-}
-
-void utility::globalEnvironment::remove( const QString& e )
-{
-	m_environment.remove( e ) ;
-}
-
-void utility::globalEnvironment::insert( const QString& key,const QString& value )
-{
-	m_environment.insert( key,value ) ;
-}
-
-utility::globalEnvironment::globalEnvironment() :
-	m_environment( QProcessEnvironment::systemEnvironment() )
-{
-	auto m = utility::executableSearchPaths( m_environment.value( "PATH" ) ) ;
-
-	m_environment.insert( "PATH",m ) ;
-
-	m_environment.insert( "LANG","C" ) ;
-}
-
 void utility::setGUIThread()
 {
 	_main_gui_thread = QThread::currentThread() ;
@@ -1494,4 +1474,14 @@ utility::result< QByteArray > utility::yubiKey( const QString& challenge )
 	}
 
 	return {} ;
+}
+
+QString utility::policyString()
+{
+	return QObject::tr( "Policy:" ) ;
+}
+
+QString utility::commentString()
+{
+	return QObject::tr( "Comment:" ) ;
 }

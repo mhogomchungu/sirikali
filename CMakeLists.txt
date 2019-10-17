@@ -4,7 +4,8 @@ set_property( GLOBAL PROPERTY ALLOW_DUPLICATE_CUSTOM_TARGETS ON )
 
 project( sirikali )
 
-set( PGR_VERSION "1.3.9" )
+set( PGR_VERSION "1.4.1" )
+set( COPYRIGHT_YEARS "2016-2019" )
 
 add_definitions( -Wextra -Wall -pedantic )
 
@@ -125,6 +126,9 @@ message( STATUS "Found Qt5Widgets, version  ${Qt5Widgets_VERSION}" )
 message( STATUS "Found Qt5Core, version  ${Qt5Core_VERSION}" )
 message( STATUS "Found Qt5Network, version  ${Qt5Network_VERSION}" )
 
+pkg_check_modules( MCHUNGU_NETWORK mhogomchungu_network )
+pkg_check_modules( MCHUNGU_TASK mhogomchungu_task )
+
 file( WRITE ${PROJECT_BINARY_DIR}/version.h "
 #ifndef THIS_VERSION
 #define THIS_VERSION \"${PGR_VERSION}\"
@@ -132,12 +136,9 @@ file( WRITE ${PROJECT_BINARY_DIR}/version.h "
 \n
 #ifndef SIRIKALI_VERSION
 #define SIRIKALI_VERSION
-#define VERSION_STRING \"Version  : ${PGR_VERSION} (Compiled with Qt ${Qt5Core_VERSION})\\nCopyright: 2016-2019 Francis Banyikwa,mhogomchungu@gmail.com\\nLicense  : GPLv2+\"
+#define VERSION_STRING \"Version  : ${PGR_VERSION} (Compiled with Qt ${Qt5Core_VERSION})\\nCopyright: ${COPYRIGHT_YEARS} Francis Banyikwa,mhogomchungu@gmail.com\\nLicense  : GPLv2+\"
 #endif
 \n" )
-
-pkg_check_modules( MCHUNGU_NETWORK mhogomchungu_network )
-pkg_check_modules( MCHUNGU_TASK mhogomchungu_task )
 
 if( INTERNAL_LXQT_WALLET )
 
@@ -323,13 +324,14 @@ set( SRC 	src/dialogok.cpp
 		src/engines/securefscreateoptions.cpp
 		src/engines/encfscreateoptions.cpp
 		src/engines/cryfscreateoptions.cpp
+		src/engines/fscrypt.cpp
 )
 
 if( APPLE )
 
 	SET( MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/MacOSXBundleInfo.plist.in" )
 	SET( MACOSX_BUNDLE_BUNDLE_NAME "SiriKali" )
-	SET( MACOSX_BUNDLE_COPYRIGHT "(c)2016-2018,Francis Banyikwa,mhogomchungu@gmail.com" )
+	SET( MACOSX_BUNDLE_COPYRIGHT "(c)${COPYRIGHT_YEARS},Francis Banyikwa,mhogomchungu@gmail.com" )
 	SET( MACOSX_BUNDLE_BUNDLE_VERSION "${PGR_VERSION}" )
 	SET( MACOSX_BUNDLE_GUI_IDENTIFIER "com.crypto.SiriKali" )
 	SET( MACOSX_BUNDLE_SHORT_VERSION_STRING "${PGR_VERSION}" )
@@ -463,7 +465,7 @@ NoDisplay=false
 StartupNotify=true
 Terminal=false
 Type=Application
-MimeType=inode/directory:1;
+MimeType=inode/directory;
 Categories=Security;Utility;Qt;X-MandrivaLinux-System-FileTools;\n")
 
 install( FILES ${PROJECT_BINARY_DIR}/io.github.mhogomchungu.sirikali.desktop

@@ -29,6 +29,9 @@ static engines::engine::BaseOptions _setOptions()
 	auto b = "InstallLocation" ;
 
 	s.supportsMountPathsOnWindows = true ;
+	s.autorefreshOnMountUnMount   = true ;
+	s.backendRequireMountPath     = true ;
+	s.requiresPolkit        = false ;
 	s.customBackend         = false ;
 	s.requiresAPassword     = true ;
 	s.hasConfigFile         = true ;
@@ -53,16 +56,23 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
-cryfs::cryfs() : engines::engine( _setOptions() )
+cryfs::cryfs() :
+	engines::engine( _setOptions() ),
+	m_env( engines::engine::getProcessEnvironment() )
 {
-	qputenv( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
-	qputenv( "CRYFS_FRONTEND","noninteractive" ) ;
+	m_env.insert( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
+	m_env.insert( "CRYFS_FRONTEND","noninteractive" ) ;
+}
+
+const QProcessEnvironment& cryfs::getProcessEnvironment() const
+{
+	return m_env ;
 }
 
 engines::engine::args cryfs::command( const QString& password,
 				      const engines::engine::cmdArgsList& args ) const
 {
-	Q_UNUSED( password ) ;
+	Q_UNUSED( password )
 
 	auto separator = [](){
 
@@ -114,7 +124,15 @@ engines::engine::args cryfs::command( const QString& password,
 
 engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 {
-	auto m = utility::unwrap( utility::backendIsGreaterOrEqualTo( "cryfs","0.9.9" ) ) ;
+	auto m = [ & ](){
+
+		if( utility::platformIsWindows() ){
+
+			return utility::result< bool >() ;
+		}else{
+			return utility::unwrap( utility::backendIsGreaterOrEqualTo( "cryfs","0.9.9" ) ) ;
+		}
+	}() ;
 
 	if( m && m.value() ){
 
@@ -136,8 +154,7 @@ engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 		/*
 		 * Falling back to parsing strings
 		 */
-
-		if( e.contains( this->incorrectPasswordText() ) ){
+		if( utility::containsAtleastOne( e,"Error 11:",this->incorrectPasswordText() ) ){
 
 			return engines::engine::status::cryfsBadPassword ;
 

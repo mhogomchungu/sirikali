@@ -65,7 +65,8 @@ keyDialog::keyDialog( QWidget * parent,
 		      bool o,
 		      const QString& q,
 		      favorites::volumeList z,
-		      std::function< void() > f ) :
+		      std::function< void() > f,
+		      std::function< void() > g ) :
 	QDialog( parent ),
 	m_ui( new Ui::keyDialog ),
 	m_fileManagerOpen( q ),
@@ -74,6 +75,7 @@ keyDialog::keyDialog( QWidget * parent,
 	m_secrets( s ),
 	m_settings( settings::instance() ),
 	m_done( std::move( f ) ),
+	m_updateVolumeList( std::move( g ) ),
 	m_volumes( std::move( z ) ),
 	m_walletKey( s )
 {
@@ -110,6 +112,7 @@ keyDialog::keyDialog( QWidget * parent,
 		      secrets& s,
 		      const volumeInfo& e,
 		      std::function< void() > p,
+		      std::function< void() > l,
 		      bool o,
 		      const QString& q,
 		      const QString& exe,
@@ -123,6 +126,7 @@ keyDialog::keyDialog( QWidget * parent,
 	m_secrets( s ),
 	m_settings( settings::instance() ),
 	m_cancel( std::move( p ) ),
+	m_updateVolumeList( std::move( l ) ),
 	m_walletKey( s )
 {
 	m_ui->setupUi( this ) ;
@@ -363,9 +367,7 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 		m_ui->lineEditMountPoint->setFocus() ;
 	}else{
-		const auto& engine = siritask::mountEngine( m_path,m_configFile ).engine ;
-
-		m_engineName = engine.name() ;
+		m_engine = siritask::mountEngine( m_path,m_configFile ) ;
 
 		auto m = m_ui->pbOptions->menu() ;
 
@@ -388,9 +390,11 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 		m->addSeparator() ;
 
-		if( engine.known() ){
+		if( m_engine.engine().known() ){
 
-			_addAction( m_engineName,m_engineName,false ) ;
+			const auto& aa = m_engine.engine().name() ;
+
+			_addAction( aa,aa,false ) ;
 		}else{
 			auto s = engines::instance().enginesWithNoConfigFile() ;
 
@@ -415,7 +419,7 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 				this->pbOptions() ;
 			}else{
-				m_engineName = ac->objectName() ;
+				m_engine = ac->objectName() ;
 			}
 		} ) ;
 
@@ -431,6 +435,13 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 	m_ui->lineEditMountPoint->setText( [ & ]()->QString{
 
+		const auto& engine = m_engine.engine() ;
+
+		if( engine.known() && !engine.backendRequireMountPath() ){
+
+			return tr( "Not Used" ) ;
+		}
+
 		auto m = e.mountPoint() ;
 
 		if( utility::platformIsWindows() ){
@@ -441,9 +452,7 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 			if( m.isEmpty() ){
 
-				const auto& e = siritask::mountEngine( m_path,m_configFile ).engine ;
-
-				if( m_settings.windowsUseMountPointPath( e.name() ) ){
+				if( m_settings.windowsUseMountPointPath( engine.name() ) ){
 
 					auto mm = m_settings.windowsMountPointPath() ;
 
@@ -749,7 +758,7 @@ void keyDialog::enableAll()
 		m_ui->checkBoxVisibleKey->setEnabled( this->keySelected( index ) ) ;
 	}
 
-	if( !utility::platformIsWindows() ){
+	if( utility::platformIsNOTWindows() ){
 
 		m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
 	}
@@ -1082,20 +1091,27 @@ void keyDialog::encryptedFolderCreate()
 
 	auto e = siritask::encryptedFolderCreate( s ) ;
 
+	const auto& cmdStatus = e.cmdStatus() ;
+
 	m_cryfsWarning.hide() ;
 
 	m_working = false ;
 
-	if( e == engines::engine::status::success ){
+	if( cmdStatus == engines::engine::status::success ){
+
+		if( e.backendDoesNotAutoRefresh() ){
+
+			m_updateVolumeList() ;
+		}
 
 		deleteKey.cancel() ;
 
 		this->openMountPoint( m ) ;
 		this->HideUI() ;
 	}else{
-		this->reportErrorMessage( e ) ;
+		this->reportErrorMessage( cmdStatus ) ;
 
-		if( e == engines::engine::status::volumeCreatedSuccessfully ){
+		if( cmdStatus == engines::engine::status::volumeCreatedSuccessfully ){
 
 			m_closeGUI = true ;
 		}else{
@@ -1423,22 +1439,29 @@ void keyDialog::encryptedFolderMount()
 				    m_mountOptions,
 				    QString() } ;
 
-	m_cryfsWarning.showUnlock( m_engineName ) ;
+	m_cryfsWarning.showUnlock( m_engine.engine().name() ) ;
 
-	auto e = siritask::encryptedFolderMount( s,false,m_engineName ) ;
+	auto e = siritask::encryptedFolderMount( s,false,m_engine ) ;
+
+	const auto& cmdStatus = e.cmdStatus() ;
 
 	m_cryfsWarning.hide() ;
 
 	m_working = false ;
 
-	if( e == engines::engine::status::success ){
+	if( cmdStatus == engines::engine::status::success ){
+
+		if( e.backendDoesNotAutoRefresh() ){
+
+			m_updateVolumeList() ;
+		}
 
 		this->openMountPoint( m ) ;
 
 		this->enableAll() ;
 		this->unlockVolume() ;
 	}else{
-		this->reportErrorMessage( e ) ;
+		this->reportErrorMessage( cmdStatus ) ;
 
 		m_ui->lineEditKey->clear() ;
 

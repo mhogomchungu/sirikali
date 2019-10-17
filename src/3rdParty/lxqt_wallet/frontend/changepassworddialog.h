@@ -103,11 +103,11 @@ private:
 
 	std::function< void( const QString&,bool ) > m_create = []( const QString& e,bool f ){
 
-		Q_UNUSED( e ) ;
-		Q_UNUSED( f ) ;
+		Q_UNUSED( e )
+		Q_UNUSED( f )
 	} ;
 
-	std::function< void( bool ) > m_change = []( bool e ){ Q_UNUSED( e ) ; } ;
+	std::function< void( bool ) > m_change = []( bool e ){ Q_UNUSED( e ) } ;
 };
 
 }

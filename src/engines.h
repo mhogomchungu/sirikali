@@ -58,10 +58,12 @@ public:
 			gocryptfsBadPassword,
 			securefsBadPassword,
 			ecryptfsBadPassword,
+			fscryptBadPassword,
 
 			sshfsNotFound,
 			cryfsNotFound,
 			encfsNotFound,
+			fscryptNotFound,
 			securefsNotFound,
 			gocryptfsNotFound,
 			ecryptfs_simpleNotFound,
@@ -74,9 +76,10 @@ public:
 
 			failedToLoadWinfsp,
 
-			ecryptfsIllegalPath,
+			IllegalPath,
 			ecrypfsBadExePermissions,
 
+			failedToStartPolkit,
 			backEndDoesNotSupportCustomConfigPath,
 			failedToCreateMountPoint,
 			invalidConfigFileName,
@@ -164,6 +167,10 @@ public:
 			bool supportsMountPathsOnWindows ;
 			bool requiresAPassword ;
 			bool customBackend ;
+			bool requiresPolkit ;
+			bool autorefreshOnMountUnMount ;
+			bool backendRequireMountPath ;
+
 			QString passwordFormat ;
 			QString reverseString ;
 			QString idleString ;
@@ -213,6 +220,8 @@ public:
 		bool supportsMountPathsOnWindows() const ;
 		bool requiresAPassword() const ;
 		bool customBackend() const ;
+		bool autorefreshOnMountUnMount() const ;
+		bool backendRequireMountPath() const ;
 
 		engines::engine::status notFoundCode() const ;
 
@@ -235,12 +244,27 @@ public:
 		const QString& windowsInstallPathRegistryValue() const ;
 
 		engine::engine::error errorCode( const QString& ) const ;
+		engine::engine::status passMinimumVersion() const ;
 
 		QString setConfigFilePath( const QString& ) const ;
 		QString setPassword( const QString& ) const ;
 
 		virtual ~engine() ;
 
+		virtual Task::future< QString >& volumeProperties( const QString& cipherFolder,
+								   const QString& mountPoint ) const ;
+
+		virtual bool unmount( const QString& cipherFolder,
+				      const QString& mountPoint,
+				      int maxCount ) const ;
+
+		virtual const engines::engine& proveEngine( const QString& cipherPath ) const ;
+
+		virtual void updateMountOptions( engines::engine::options&,
+						 QString& configFilePath ) const ;
+
+		virtual const QProcessEnvironment& getProcessEnvironment() const ;
+		virtual bool requiresPolkit() const ;
 		virtual QString installedVersionString() const = 0 ;
 		virtual args command( const QString& password,const engines::engine::cmdArgsList& args ) const = 0 ;
 		virtual engines::engine::status errorCode( const QString& e,int s ) const = 0 ;
@@ -389,6 +413,7 @@ public:
 		engine( BaseOptions ) ;
 	private:
 		BaseOptions m_Options ;
+		QProcessEnvironment m_processEnvironment ;
 	} ;
 
 	engines() ;
@@ -397,6 +422,7 @@ public:
 	QStringList enginesWithNoConfigFile() const ;
 	QStringList enginesWithConfigFile() const ;
 	const QStringList& supported() const ;
+	const engine& getUnKnown() const ;
 	const engine& getByName( const engines::engine::options& e ) const ;
 	const engine& getByName( const QString& e ) const ;
 	const engine& getByFuseName( const QString& e ) const ;

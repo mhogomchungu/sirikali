@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="ru_UA">
+<TS version="2.1" language="ru_UA">
 <context>
     <name>DialogMsg</name>
     <message>
@@ -92,107 +92,124 @@ Latest Version Is : %4.</source>
     </message>
     <message>
         <location filename="../src/checkforupdates.cpp" line="199"/>
-        <location filename="../src/sirikali.cpp" line="507"/>
-        <location filename="../src/sirikali.cpp" line="515"/>
+        <location filename="../src/sirikali.cpp" line="508"/>
+        <location filename="../src/sirikali.cpp" line="516"/>
         <source>ERROR</source>
         <translation>ОШИБКА</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="593"/>
+        <location filename="../src/engines.cpp" line="684"/>
         <source>Volume Created Successfully.</source>
         <translation>Том успешно создан.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="597"/>
+        <location filename="../src/engines.cpp" line="688"/>
         <source>Backend Requires A Password.</source>
         <translation>Бэкэнд требует пароль.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="601"/>
+        <location filename="../src/engines.cpp" line="692"/>
         <source>Failed To Unlock A Cryfs Volume.
 Wrong Password Entered.</source>
         <translation>Не удалось разблокировать том Cryfs.
 Введен неверный пароль.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="605"/>
+        <location filename="../src/engines.cpp" line="696"/>
         <source>Failed To Connect To The Remote Computer.
 Wrong Password Entered.</source>
         <translation>Не удалось подключиться к удаленному компьютеру.
 Введен неверный пароль.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="609"/>
+        <location filename="../src/engines.cpp" line="700"/>
         <source>Failed To Unlock An Encfs Volume.
 Wrong Password Entered.</source>
         <translation>Не удалось разблокировать том Encfs.
 Введен неверный пароль.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="613"/>
+        <location filename="../src/engines.cpp" line="704"/>
         <source>Failed To Unlock A Gocryptfs Volume.
 Wrong Password Entered.</source>
         <translation>Не удалось разблокировать том Gocryptfs.
 Введен неверный пароль.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="617"/>
+        <location filename="../src/engines.cpp" line="708"/>
         <source>Failed To Unlock An Ecryptfs Volume.
 Wrong Password Entered.</source>
         <translation>Не удалось разблокировать том Ecryptfs.
 Введен неверный пароль.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="621"/>
+        <location filename="../src/engines.cpp" line="712"/>
+        <source>Failed To Unlock An fscrypt Volume.
+Wrong Password Entered.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/engines.cpp" line="716"/>
+        <source>Backend Requires Polkit Support and SiriKali Failed To Start It.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/engines.cpp" line="720"/>
         <source>A Space Character Is Not Allowed In Paths When Using Ecryptfs Backend And Polkit.</source>
         <translation>Символ пробела не разрешается в пути при использовании Ecryptfs и Polkit.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="625"/>
+        <location filename="../src/engines.cpp" line="724"/>
         <source>This Backend Requires Root&apos;s Privileges And An attempt To Acquire Them Has Failed.</source>
         <translation>Этот бэкэнд требует привилегий Root, и попытка получить их не удалась.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="629"/>
+        <location filename="../src/engines.cpp" line="728"/>
         <source>Failed To Unlock A Securefs Volume.
 Wrong Password Entered.</source>
         <translation>Не удалось разблокировать том Securefs.
 Введен неверный пароль.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="633"/>
+        <location filename="../src/engines.cpp" line="732"/>
         <source>Failed To Unlock A Custom Volume.
 Wrong Password Entered.</source>
         <translation>Не удалось разблокировать пользовательский том.
 Введен неверный пароль.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="637"/>
-        <location filename="../src/sirikali.cpp" line="505"/>
+        <location filename="../src/engines.cpp" line="736"/>
+        <location filename="../src/sirikali.cpp" line="506"/>
         <source>Failed To Complete The Request.
 Sshfs Executable Could Not Be Found.</source>
         <translation>Не удалось выполнить запрос.
  Исполняемый файл sshfs не найден.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="641"/>
+        <location filename="../src/engines.cpp" line="740"/>
+        <source>Failed To Complete The Request.
+Fscrypt Executable Could Not Be Found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/engines.cpp" line="744"/>
         <source>Backend Does Not Support Custom Configuration File Path.</source>
         <translation>Бэкэнд не поддерживает изменение пути к файлу.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="645"/>
+        <location filename="../src/engines.cpp" line="748"/>
         <source>Failed To Complete The Request.
 Cryfs Executable Could Not Be Found.</source>
         <translation>Не удалось выполнить запрос.
 Исполняемый файл Cryfs не может быть найден.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="649"/>
+        <location filename="../src/engines.cpp" line="752"/>
         <source>Something Is Wrong With The Backend And It Took Too Long To Respond.</source>
         <translation>Что-то не так с бэкэндом и потребовалось слишком много времени, чтобы ответить.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="653"/>
+        <location filename="../src/engines.cpp" line="756"/>
         <source>This Volume Of Cryfs Needs To Be Upgraded To Work With The Version Of Cryfs You Are Using.
 
 The Upgrade is IRREVERSIBLE And The Volume Will No Longer Work With Older Versions of Cryfs.
@@ -205,73 +222,73 @@ To Do The Upgrade, Check The &quot;Upgrade File System&quot; Option And Unlock T
 Чтобы выполнить обновление, установите флажок «Обновить файловую систему» ​​и снова разблокируйте том.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="657"/>
+        <location filename="../src/engines.cpp" line="760"/>
         <source>Failed To Complete The Request.
 Encfs Executable Could Not Be Found.</source>
         <translation>Не удалось выполнить запрос.
 Исполняемый файл Encfs не может быть найден.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="661"/>
+        <location filename="../src/engines.cpp" line="764"/>
         <source>Failed To Complete The Request.
 Ecryptfs-simple Executable Could Not Be Found.</source>
         <translation>Не удалось выполнить запрос.
 Исполняемый файл Ecryptfs-simple не может быть найден.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="665"/>
+        <location filename="../src/engines.cpp" line="768"/>
         <source>Failed To Complete The Request.
 Gocryptfs Executable Could Not Be Found.</source>
         <translation>Не удалось выполнить запрос.
 Исполняемый файл Gocryptfs не может быть найден.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="669"/>
+        <location filename="../src/engines.cpp" line="772"/>
         <source>Failed To Complete The Request.
 Securefs Executable Could Not Be Found.</source>
         <translation>Не удалось выполнить запрос.
 Исполняемый файл Securefs не может быть найден.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="673"/>
+        <location filename="../src/engines.cpp" line="776"/>
         <source>Failed To Create Mount Point.</source>
         <translation>Не удалось создать точку монтирования.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="677"/>
+        <location filename="../src/engines.cpp" line="780"/>
         <source>Backend Could Not Load WinFsp. Please Make Sure You Have WinFsp Properly Installed.</source>
         <translation>Бэкэнд не смог загрузить WinFsp. Пожалуйста, убедитесь, что WinFsp установлен правильно.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="681"/>
+        <location filename="../src/engines.cpp" line="784"/>
         <source>Failed To Unlock The Volume.
 Not Supported Volume Encountered.</source>
         <translation>Не удалось разблокировать том.
 Не поддерживается формат тома.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="685"/>
+        <location filename="../src/engines.cpp" line="788"/>
         <source>Installed &quot;%1&quot; Version Is Too Old.
  Please Update To Atleast Version %2.</source>
         <translation>Установленная версия &quot;%1&quot; устарела.
  Пожалуйста, обновите до последней версии%2.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="689"/>
+        <location filename="../src/engines.cpp" line="792"/>
         <source>Failed To Complete The Request.
 The Executable For This Backend Could Not Be Found.</source>
         <translation>Не удалось выполнить запрос.
 Исполняемый файл для этого бэкэнда не найден.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="697"/>
+        <location filename="../src/engines.cpp" line="800"/>
         <source>Invalid Config File Name.
 Its Name Must End With &quot;%1&quot;</source>
         <translation>Неверное имя файла конфигурации.
 Его имя должно заканчиваться на &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="700"/>
+        <location filename="../src/engines.cpp" line="803"/>
         <source>Invalid Config File Name.
 It Must End With One Of The Following:
 &quot;%1&quot;</source>
@@ -280,41 +297,41 @@ It Must End With One Of The Following:
 &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="709"/>
+        <location filename="../src/engines.cpp" line="812"/>
         <source>Failed To Complete The Task And Below Log was Generated By The Backend.
 </source>
         <translation>Не удалось завершить задачу, журнал событий был создан на бэкенде.
 </translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="511"/>
+        <location filename="../src/sirikali.cpp" line="512"/>
         <source>Failed To Connect To &quot;%1&quot; And Below Log was Generated By The Backend.
 </source>
         <translation>Не удалось подключиться к &quot;%1&quot; и Лог-файл был создан на стороне бэкенда.
 </translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="46"/>
+        <location filename="../src/keydialog.cpp" line="45"/>
         <source>Kde Wallet</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="51"/>
+        <location filename="../src/keydialog.cpp" line="50"/>
         <source>Internal Wallet</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="56"/>
+        <location filename="../src/keydialog.cpp" line="55"/>
         <source>Gnome Wallet</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="61"/>
+        <location filename="../src/keydialog.cpp" line="60"/>
         <source>OSX KeyChain</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1542"/>
+        <location filename="../src/keydialog.cpp" line="1564"/>
         <source>Not Supported KeyFile Encountered Since It Contains AtLeast One Illegal Character(&apos;\n&apos;,&apos;\0&apos;,&apos;\r&apos;).
 
 Please Use a Hash Of The KeyFile Through &quot;HMAC+KeyFile&quot; Option.</source>
@@ -323,7 +340,7 @@ Please Use a Hash Of The KeyFile Through &quot;HMAC+KeyFile&quot; Option.</sourc
 Пожалуйста, используйте хэш Файлового ключа с помощью опции «HMAC + Файл ключа».</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1602"/>
+        <location filename="../src/keydialog.cpp" line="1624"/>
         <source>Effective Key Is Generated With Below Formula:
 
 key = hmac_sha256(password,keyfile contents)</source>
@@ -332,7 +349,7 @@ key = hmac_sha256(password,keyfile contents)</source>
 key = hmac_sha256 (пароль, содержимое Файлового ключа)</translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="569"/>
+        <location filename="../src/utility.cpp" line="584"/>
         <source>
 options:
 	-d   Path to where a volume to be auto unlocked/mounted is located.
@@ -385,57 +402,67 @@ options:
 	-s     Возможность запуска генерации хэша паролей.</translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="817"/>
+        <location filename="../src/utility.cpp" line="832"/>
         <source>about SiriKali</source>
         <translation>О SiriKali</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1606"/>
+        <location filename="../src/utility.cpp" line="1481"/>
+        <source>Policy:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/utility.cpp" line="1486"/>
+        <source>Comment:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/keydialog.cpp" line="1628"/>
         <source>This plugin delegates key generation to an external application</source>
         <translation>Этот плагин делегирует генерацию ключей во внешнее приложение</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="424"/>
+        <location filename="../src/settings.cpp" line="434"/>
         <source>Manage Favorites</source>
         <translation>Управление Избранным</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="425"/>
+        <location filename="../src/settings.cpp" line="435"/>
         <source>Mount All</source>
         <translation>Смонтировать все</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1074"/>
+        <location filename="../src/settings.cpp" line="1084"/>
         <source>Russian (RU)</source>
         <translation>Русский (RU)</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1075"/>
+        <location filename="../src/settings.cpp" line="1085"/>
         <source>French (FR)</source>
         <translation>Français (FR)</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1076"/>
+        <location filename="../src/settings.cpp" line="1086"/>
         <source>German (DE)</source>
         <translation>Deutsch (DE)</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1077"/>
+        <location filename="../src/settings.cpp" line="1087"/>
         <source>English (US)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1078"/>
+        <location filename="../src/settings.cpp" line="1088"/>
         <source>Swedish (SE)</source>
         <translation>Svenska (SE)</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1079"/>
+        <location filename="../src/settings.cpp" line="1089"/>
         <source>Arabic (SA)</source>
         <translation>(SA) العربية</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1080"/>
+        <location filename="../src/settings.cpp" line="1090"/>
         <source>Spanish (MX)</source>
         <translation>Español (MX)</translation>
     </message>
@@ -1090,7 +1117,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="143"/>
-        <location filename="../src/favorites2.cpp" line="434"/>
+        <location filename="../src/favorites2.cpp" line="435"/>
         <source>Path To A Config File</source>
         <translation>Путь к файлу конфигурации</translation>
     </message>
@@ -1115,45 +1142,45 @@ p, li { white-space: pre-wrap; }
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="471"/>
-        <location filename="../src/favorites2.cpp" line="476"/>
+        <location filename="../src/favorites2.cpp" line="472"/>
+        <location filename="../src/favorites2.cpp" line="477"/>
         <source>ERROR!</source>
         <translation>ОШИБКА!</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="471"/>
+        <location filename="../src/favorites2.cpp" line="472"/>
         <source>Encrypted Folder Address Field Is Empty</source>
         <translation>Поле &quot;Путь к зашифрованной папке&quot; пустое</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="476"/>
+        <location filename="../src/favorites2.cpp" line="477"/>
         <source>Mount Point Path Field Is Empty</source>
         <translation>Поле &quot;Путь к точке монтирования&quot; пустое</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="589"/>
+        <location filename="../src/favorites2.cpp" line="590"/>
         <source>Path To An Encrypted Folder</source>
         <translation>Путь к зашифрованной папке</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="599"/>
+        <location filename="../src/favorites2.cpp" line="600"/>
         <source>Path To Mount Folder</source>
         <translation>Путь к точке монтирования</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="757"/>
+        <location filename="../src/favorites2.cpp" line="758"/>
         <source>Remote Ssh Server Address
 (Example: woof@example.com:/remote/path)</source>
         <translation>Адрес удаленного SSH-сервера
 (Пример: woof@example.com:/remote/path)</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="758"/>
+        <location filename="../src/favorites2.cpp" line="759"/>
         <source>SSH_AUTH_SOCK Socket Path (Optional)</source>
         <translation>Путь сокета SSH_AUTH_SOCK (опционально)</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="759"/>
+        <location filename="../src/favorites2.cpp" line="760"/>
         <source>IdentityFile Path (Optional)</source>
         <translation>IdentityFile путь (опционально)</translation>
     </message>
@@ -1348,15 +1375,15 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/keydialog.ui" line="58"/>
-        <location filename="../src/keydialog.cpp" line="259"/>
-        <location filename="../src/keydialog.cpp" line="1582"/>
-        <location filename="../src/keydialog.cpp" line="1741"/>
+        <location filename="../src/keydialog.cpp" line="264"/>
+        <location filename="../src/keydialog.cpp" line="1604"/>
+        <location filename="../src/keydialog.cpp" line="1763"/>
         <source>Key</source>
         <translation>Пароль</translation>
     </message>
     <message>
         <location filename="../src/keydialog.ui" line="100"/>
-        <location filename="../src/keydialog.cpp" line="216"/>
+        <location filename="../src/keydialog.cpp" line="221"/>
         <source>Volume Name</source>
         <translation>Имя тома</translation>
     </message>
@@ -1402,123 +1429,128 @@ p, li { white-space: pre-wrap; }
         <translation>Путь к тому</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="214"/>
+        <location filename="../src/keydialog.cpp" line="219"/>
         <source>&amp;Create</source>
         <translation>&amp;Создать</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="234"/>
-        <location filename="../src/keydialog.cpp" line="524"/>
+        <location filename="../src/keydialog.cpp" line="239"/>
+        <location filename="../src/keydialog.cpp" line="534"/>
         <source>Unlocking &quot;%1&quot;</source>
         <translation>Разблокировать &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="238"/>
+        <location filename="../src/keydialog.cpp" line="243"/>
         <source>Mount Path</source>
         <translation>Путь к точке монтирования</translation>
     </message>
     <message>
         <location filename="../src/keydialog.ui" line="352"/>
-        <location filename="../src/keydialog.cpp" line="260"/>
-        <location filename="../src/keydialog.cpp" line="1116"/>
-        <location filename="../src/keydialog.cpp" line="1588"/>
-        <location filename="../src/keydialog.cpp" line="1706"/>
+        <location filename="../src/keydialog.cpp" line="265"/>
+        <location filename="../src/keydialog.cpp" line="1133"/>
+        <location filename="../src/keydialog.cpp" line="1610"/>
+        <location filename="../src/keydialog.cpp" line="1728"/>
         <source>KeyFile</source>
         <translation>Файловый ключ</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="262"/>
-        <location filename="../src/keydialog.cpp" line="1623"/>
+        <location filename="../src/keydialog.cpp" line="267"/>
+        <location filename="../src/keydialog.cpp" line="1645"/>
         <source>HMAC+KeyFile</source>
         <translation>HMAC+Файловый ключ</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="261"/>
-        <location filename="../src/keydialog.cpp" line="1596"/>
-        <location filename="../src/keydialog.cpp" line="1600"/>
-        <location filename="../src/keydialog.cpp" line="1720"/>
+        <location filename="../src/keydialog.cpp" line="266"/>
+        <location filename="../src/keydialog.cpp" line="1618"/>
+        <location filename="../src/keydialog.cpp" line="1622"/>
+        <location filename="../src/keydialog.cpp" line="1742"/>
         <source>Key+KeyFile</source>
         <translation>Пароль+Файловый ключ</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="263"/>
-        <location filename="../src/keydialog.cpp" line="1596"/>
+        <location filename="../src/keydialog.cpp" line="268"/>
+        <location filename="../src/keydialog.cpp" line="1618"/>
         <source>ExternalExecutable</source>
         <translation>Внешнее приложение</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="264"/>
-        <location filename="../src/keydialog.cpp" line="1582"/>
+        <location filename="../src/keydialog.cpp" line="269"/>
+        <location filename="../src/keydialog.cpp" line="1604"/>
         <source>YubiKey Challenge/Response</source>
         <translation>Yubikey Вызов/Ответ</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="307"/>
+        <location filename="../src/keydialog.cpp" line="312"/>
         <source>Check This Box To Make Password Visible</source>
         <translation>Установите этот флажок для отображения пароля</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="325"/>
+        <location filename="../src/keydialog.cpp" line="330"/>
         <source>(%1/%2) Unlocking &quot;%3&quot;</source>
         <translation>(%1/%2) Разблокировка &quot;%3&quot;</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="548"/>
+        <location filename="../src/keydialog.cpp" line="558"/>
         <source>Create A New &quot;%1&quot; Volume</source>
         <translation>Создать новый &quot;%1&quot; том</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="628"/>
+        <location filename="../src/keydialog.cpp" line="638"/>
         <source>Passphrase Quality: 0%</source>
         <translation>Сложность пароля: 0%</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="630"/>
+        <location filename="../src/keydialog.cpp" line="640"/>
         <source>Passphrase Quality: %1%</source>
         <translation>Сложность пароля: %1%</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="637"/>
-        <location filename="../src/keydialog.cpp" line="1650"/>
+        <location filename="../src/keydialog.cpp" line="647"/>
+        <location filename="../src/keydialog.cpp" line="1672"/>
         <source>Passphrase Quality: 100%</source>
         <translation>Сложность пароля: 100%</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="193"/>
-        <location filename="../src/keydialog.cpp" line="702"/>
-        <location filename="../src/keydialog.cpp" line="715"/>
+        <location filename="../src/keydialog.cpp" line="198"/>
+        <location filename="../src/keydialog.cpp" line="712"/>
+        <location filename="../src/keydialog.cpp" line="725"/>
         <source>Select A Folder To Create A Mount Point In.</source>
         <translation>Выберите папку для создания точки монтирования.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="386"/>
+        <location filename="../src/keydialog.cpp" line="389"/>
         <source>Select Volume Type</source>
         <translation>Выберите тип тома</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="409"/>
+        <location filename="../src/keydialog.cpp" line="414"/>
         <source>Options</source>
         <translation>Параметры</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="829"/>
-        <location filename="../src/keydialog.cpp" line="843"/>
+        <location filename="../src/keydialog.cpp" line="442"/>
+        <source>Not Used</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/keydialog.cpp" line="839"/>
+        <location filename="../src/keydialog.cpp" line="853"/>
         <source>Select A File To Be Used As A Keyfile.</source>
         <translation>Выберите файл для использования в качестве Файлового ключа.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="869"/>
-        <location filename="../src/keydialog.cpp" line="1665"/>
+        <location filename="../src/keydialog.cpp" line="879"/>
+        <location filename="../src/keydialog.cpp" line="1687"/>
         <source>Volume Name Field Is Empty.</source>
         <translation>Поле &quot;Имя тома&quot; пустое.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="915"/>
+        <location filename="../src/keydialog.cpp" line="925"/>
         <source>Internal Wallet Is Not Configured.</source>
         <translation>Внутренее хранилище не настроенно.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="928"/>
+        <location filename="../src/keydialog.cpp" line="938"/>
         <source>Volume Not Found in &quot;%1&quot;.
 
 Set The Volume Key To Add It To The Wallet Before Mounting.</source>
@@ -1527,86 +1559,86 @@ Set The Volume Key To Add It To The Wallet Before Mounting.</source>
 Укажите ключ тома, чтобы добавить его в хранилище ключей перед монтированием.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="955"/>
-        <location filename="../src/keydialog.cpp" line="1454"/>
+        <location filename="../src/keydialog.cpp" line="965"/>
+        <location filename="../src/keydialog.cpp" line="1476"/>
         <source>Upgrade File System</source>
         <translation>Обновление файловой системы</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1138"/>
+        <location filename="../src/keydialog.cpp" line="1155"/>
         <source>Volume Key Can Not Be Empty.</source>
         <translation>Ключ тома не может быть пустым.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1194"/>
+        <location filename="../src/keydialog.cpp" line="1209"/>
         <source>Failed To Add A Volume To The A Wallet.</source>
         <translation>Не удалось добавить том в хранилище ключей.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1197"/>
+        <location filename="../src/keydialog.cpp" line="1212"/>
         <source>Volume Already Exists In The Wallet.</source>
         <translation>Том с таким именем уже есть в хранилище ключей.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1233"/>
+        <location filename="../src/keydialog.cpp" line="1248"/>
         <source>Failed To Open Wallet.</source>
         <translation>Не удалось открыть хранилище ключей.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1295"/>
+        <location filename="../src/keydialog.cpp" line="1310"/>
         <source>Failed To Generate Key.</source>
         <translation>Не удалось создать ключ.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1395"/>
+        <location filename="../src/keydialog.cpp" line="1410"/>
         <source>Mount Point Path Is Not Empty.</source>
         <translation>Путь точки монтирования не пустой.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1488"/>
+        <location filename="../src/keydialog.cpp" line="1510"/>
         <source>Failed To Locate Or Run Yubikey&apos;s &quot;ykchalresp&quot; Program.</source>
         <translation>Не удалось найти или запустить программу Yubikey &quot;ykchalresp&quot;.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1627"/>
+        <location filename="../src/keydialog.cpp" line="1649"/>
         <source>Select A KeyFile</source>
         <translation>Выберите Файловый ключ</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1021"/>
+        <location filename="../src/keydialog.cpp" line="1031"/>
         <source>Encrypted Folder Path Is Already Taken.</source>
         <translation>Путь к зашифрованной папке уже указан.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1034"/>
-        <location filename="../src/keydialog.cpp" line="1041"/>
-        <location filename="../src/keydialog.cpp" line="1050"/>
-        <location filename="../src/keydialog.cpp" line="1061"/>
-        <location filename="../src/keydialog.cpp" line="1378"/>
-        <location filename="../src/keydialog.cpp" line="1388"/>
+        <location filename="../src/keydialog.cpp" line="1044"/>
+        <location filename="../src/keydialog.cpp" line="1051"/>
+        <location filename="../src/keydialog.cpp" line="1060"/>
+        <location filename="../src/keydialog.cpp" line="1071"/>
+        <location filename="../src/keydialog.cpp" line="1393"/>
+        <location filename="../src/keydialog.cpp" line="1403"/>
         <source>Mount Point Path Already Taken.</source>
         <translation>Путь точки монтирования уже указан.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1362"/>
+        <location filename="../src/keydialog.cpp" line="1377"/>
         <source>Atleast One Required Field Is Empty.</source>
         <translation>По крайней мере одно обязательное поле пустое.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1672"/>
+        <location filename="../src/keydialog.cpp" line="1694"/>
         <source>Create A Volume With Specified Key And Then Add The Key In 
 &quot;%1&quot;.</source>
         <translation>Создайте том с указанным ключом, а затем добавьте ключ в
 &quot;%1&quot;.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1718"/>
-        <location filename="../src/keydialog.cpp" line="1730"/>
+        <location filename="../src/keydialog.cpp" line="1740"/>
+        <location filename="../src/keydialog.cpp" line="1752"/>
         <source>Plugin name</source>
         <translation>Имя плагина</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1755"/>
+        <location filename="../src/keydialog.cpp" line="1777"/>
         <source>Keyfile path</source>
         <translation>Путь к Файловому ключу</translation>
     </message>
@@ -1893,69 +1925,69 @@ The lite format has become the default on Unix-like operating systems as it is m
         <translation>&amp;Меню</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="435"/>
+        <location filename="../src/sirikali.cpp" line="436"/>
         <source>Unmount All</source>
         <translation>Отмонтировать все</translation>
     </message>
     <message>
         <location filename="../src/sirikali.ui" line="122"/>
-        <location filename="../src/sirikali.cpp" line="441"/>
+        <location filename="../src/sirikali.cpp" line="442"/>
         <source>Favorites</source>
         <translation>Избранное</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="432"/>
+        <location filename="../src/sirikali.cpp" line="433"/>
         <source>Check For Updates</source>
         <translation>Проверка обновлений</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="448"/>
+        <location filename="../src/sirikali.cpp" line="449"/>
         <source>About</source>
         <translation>О программе</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="455"/>
+        <location filename="../src/sirikali.cpp" line="456"/>
         <source>Quit</source>
         <translation>Выход</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="452"/>
+        <location filename="../src/sirikali.cpp" line="453"/>
         <source>Show/Hide</source>
         <translation>Отобразить/Спрятать окно</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="782"/>
+        <location filename="../src/sirikali.cpp" line="783"/>
         <source>ERROR: Volume Path Not Given.</source>
         <translation>ОШИБКА: Путь к тому не указан.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="883"/>
+        <location filename="../src/sirikali.cpp" line="884"/>
         <source>ERROR: Key Not Found In The Backend.</source>
         <translation>ОШИБКА: Ключ не найден.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="888"/>
+        <location filename="../src/sirikali.cpp" line="889"/>
         <source>ERROR: Failed To Unlock Requested Backend.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="646"/>
-        <location filename="../src/sirikali.cpp" line="688"/>
-        <location filename="../src/sirikali.cpp" line="1095"/>
-        <location filename="../src/sirikali.cpp" line="1407"/>
-        <location filename="../src/sirikali.cpp" line="1702"/>
+        <location filename="../src/sirikali.cpp" line="647"/>
+        <location filename="../src/sirikali.cpp" line="689"/>
+        <location filename="../src/sirikali.cpp" line="1086"/>
+        <location filename="../src/sirikali.cpp" line="1399"/>
+        <location filename="../src/sirikali.cpp" line="1728"/>
         <source>ERROR</source>
         <translation>ОШИБКА</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1095"/>
+        <location filename="../src/sirikali.cpp" line="1086"/>
         <source>Failed To Read Volume Properties</source>
         <translation>Не удалось прочитать Свойства тома</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1073"/>
-        <location filename="../src/sirikali.cpp" line="1097"/>
-        <location filename="../src/sirikali.cpp" line="1121"/>
+        <location filename="../src/sirikali.cpp" line="1068"/>
+        <location filename="../src/sirikali.cpp" line="1088"/>
+        <location filename="../src/sirikali.cpp" line="1112"/>
         <source>INFORMATION</source>
         <translation>ИНФОРМАЦИЯ</translation>
     </message>
@@ -1981,92 +2013,92 @@ The lite format has become the default on Unix-like operating systems as it is m
         <translation>%1 Не установлен</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="438"/>
+        <location filename="../src/sirikali.cpp" line="439"/>
         <source>Unmount All And Quit</source>
         <translation>Отмонтировать все и выйти</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="450"/>
+        <location filename="../src/sirikali.cpp" line="451"/>
         <source>FAQ</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="646"/>
+        <location filename="../src/sirikali.cpp" line="647"/>
         <source>SiriKali Failed To Connect To siriPolkit.
 Please Report This Serious Bug.</source>
         <translation>SiriKali не удалось подключиться к siriPolkit.
 Пожалуйста, сообщите об этой серьезной ошибке.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="688"/>
+        <location filename="../src/sirikali.cpp" line="689"/>
         <source>&quot;%1&quot; Folder Must Be Writable</source>
         <translation>Папка &quot;%1&quot; должна быть доступна для записи</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1155"/>
+        <location filename="../src/sirikali.cpp" line="1146"/>
         <source>Unmount</source>
         <translation>Отмонтировать</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1159"/>
+        <location filename="../src/sirikali.cpp" line="1150"/>
         <source>Add To Favorites</source>
         <translation>Добавить в Избранное</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1435"/>
+        <location filename="../src/sirikali.cpp" line="1427"/>
         <source>Select A File To Be Mounted</source>
         <translation>Выберите файл для монтирования</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1767"/>
+        <location filename="../src/sirikali.cpp" line="1793"/>
         <source>Failed To Unmount 1 Volume.</source>
         <translation>Не удалось размонтировать 1 том.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1769"/>
+        <location filename="../src/sirikali.cpp" line="1795"/>
         <source>Failed To Unmount %1 Volumes.</source>
         <translation>Не удалось размонтировать %1 тома(ов).</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1153"/>
+        <location filename="../src/sirikali.cpp" line="1144"/>
         <source>Open Folder</source>
         <translation>Открыть директорию</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="445"/>
+        <location filename="../src/sirikali.cpp" line="446"/>
         <source>Settings</source>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1157"/>
+        <location filename="../src/sirikali.cpp" line="1148"/>
         <source>Properties</source>
         <translation>Свойства</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1163"/>
+        <location filename="../src/sirikali.cpp" line="1154"/>
         <source>Close Menu</source>
         <translation>Закрыть меню</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="144"/>
-        <location filename="../src/sirikali.cpp" line="1236"/>
-        <location filename="../src/sirikali.cpp" line="1767"/>
-        <location filename="../src/sirikali.cpp" line="1769"/>
+        <location filename="../src/sirikali.cpp" line="1227"/>
+        <location filename="../src/sirikali.cpp" line="1793"/>
+        <location filename="../src/sirikali.cpp" line="1795"/>
         <source>WARNING</source>
         <translation>ПРЕДУПРЕЖДЕНИЕ</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1237"/>
+        <location filename="../src/sirikali.cpp" line="1228"/>
         <source>Could Not Open Mount Point Because &quot;%1&quot; Tool Does Not Appear To Be Working Correctly.</source>
         <translation>Не удалось открыть точку монтирования, потому что инструмент «%1» не работает корректно.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1286"/>
+        <location filename="../src/sirikali.cpp" line="1277"/>
         <source>&amp;Quit</source>
         <translation>&amp;Выход</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1408"/>
+        <location filename="../src/sirikali.cpp" line="1400"/>
         <source>Permission To Access The Volume Was Denied
 Or
 The Volume Is Not Supported</source>
@@ -2075,12 +2107,12 @@ The Volume Is Not Supported</source>
 формат тома не поддерживается</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1432"/>
+        <location filename="../src/sirikali.cpp" line="1424"/>
         <source>Select An Encrypted Volume Directory</source>
         <translation>Выберите папку зашифрованного тома</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1702"/>
+        <location filename="../src/sirikali.cpp" line="1728"/>
         <source>Failed To Unmount %1 Volume</source>
         <translation>Не удалось отключить том %1</translation>
     </message>
