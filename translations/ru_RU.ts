@@ -146,12 +146,13 @@ Wrong Password Entered.</source>
         <location filename="../src/engines.cpp" line="712"/>
         <source>Failed To Unlock An fscrypt Volume.
 Wrong Password Entered.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось разблокировать том fscrypt.
+Введен неверный пароль.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="716"/>
         <source>Backend Requires Polkit Support and SiriKali Failed To Start It.</source>
-        <translation type="unfinished"></translation>
+        <translation>Backend требует поддержки Polkit и SiriKali не удалось запустить его.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="720"/>
@@ -189,7 +190,8 @@ Sshfs Executable Could Not Be Found.</source>
         <location filename="../src/engines.cpp" line="740"/>
         <source>Failed To Complete The Request.
 Fscrypt Executable Could Not Be Found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось выполнить запрос.
+Не удалось найти исполняемый файл Fscrypt.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="744"/>
@@ -409,12 +411,12 @@ options:
     <message>
         <location filename="../src/utility.cpp" line="1481"/>
         <source>Policy:</source>
-        <translation type="unfinished"></translation>
+        <translation>Политика:</translation>
     </message>
     <message>
         <location filename="../src/utility.cpp" line="1486"/>
         <source>Comment:</source>
-        <translation type="unfinished"></translation>
+        <translation>Комментарий:</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1628"/>
@@ -1530,7 +1532,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.cpp" line="442"/>
         <source>Not Used</source>
-        <translation type="unfinished"></translation>
+        <translation>Не используется</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="839"/>
