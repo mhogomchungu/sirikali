@@ -55,7 +55,7 @@ securefs::securefs() : engines::engine( _setOptions() )
 {
 }
 
-engines::engine::args securefs::command( const QString& password,
+engines::engine::args securefs::command( const QByteArray& password,
 					 const engines::engine::cmdArgsList& args ) const
 {
 	Q_UNUSED( password )

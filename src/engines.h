@@ -91,11 +91,11 @@ public:
 		struct options
 		{
 			options( const favorites::entry& e,
-				 const QString& volumeKey = QString() ) ;
+				 const QByteArray& volumeKey = QByteArray() ) ;
 
 			options( const QString& cipher_folder,
 				 const QString& plain_folder,
-				 const QString& volume_key,
+				 const QByteArray& volume_key,
 				 const QString& idle_timeout,
 				 const QString& config_file_path,
 				 const QString& volume_type,
@@ -105,7 +105,7 @@ public:
 				 const QString& create_options ) ;
 			QString cipherFolder ;
 			QString plainFolder ;
-			QString key ;
+			QByteArray key ;
 			QString idleTimeout ;
 			QString configFilePath ;
 			QString type ;
@@ -247,7 +247,7 @@ public:
 		engine::engine::status passMinimumVersion() const ;
 
 		QString setConfigFilePath( const QString& ) const ;
-		QString setPassword( const QString& ) const ;
+		QByteArray setPassword( const QByteArray& ) const ;
 
 		virtual ~engine() ;
 
@@ -266,7 +266,7 @@ public:
 		virtual const QProcessEnvironment& getProcessEnvironment() const ;
 		virtual bool requiresPolkit() const ;
 		virtual QString installedVersionString() const = 0 ;
-		virtual args command( const QString& password,const engines::engine::cmdArgsList& args ) const = 0 ;
+		virtual args command( const QByteArray& password,const engines::engine::cmdArgsList& args ) const = 0 ;
 		virtual engines::engine::status errorCode( const QString& e,int s ) const = 0 ;
 		using function = std::function< void( const Options& ) > ;
 		virtual void GUICreateOptionsinstance( QWidget * parent,function ) const = 0 ;

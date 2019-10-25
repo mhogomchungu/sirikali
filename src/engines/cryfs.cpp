@@ -69,7 +69,7 @@ const QProcessEnvironment& cryfs::getProcessEnvironment() const
 	return m_env ;
 }
 
-engines::engine::args cryfs::command( const QString& password,
+engines::engine::args cryfs::command( const QByteArray& password,
 				      const engines::engine::cmdArgsList& args ) const
 {
 	Q_UNUSED( password )

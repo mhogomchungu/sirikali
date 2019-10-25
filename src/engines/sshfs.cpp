@@ -79,7 +79,7 @@ const QProcessEnvironment& sshfs::getProcessEnvironment() const
 	return m_environment ;
 }
 
-engines::engine::args sshfs::command( const QString& password,
+engines::engine::args sshfs::command( const QByteArray& password,
 				      const engines::engine::cmdArgsList& args ) const
 {
 	Q_UNUSED( password )

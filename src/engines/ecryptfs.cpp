@@ -156,7 +156,7 @@ bool ecryptfs::unmount( const QString& cipherFolder,
 	}
 }
 
-engines::engine::args ecryptfs::command( const QString& password,
+engines::engine::args ecryptfs::command( const QByteArray& password,
 					 const engines::engine::cmdArgsList& args ) const
 {
 	Q_UNUSED( password )

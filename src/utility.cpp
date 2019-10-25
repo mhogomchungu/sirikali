@@ -1034,11 +1034,11 @@ bool utility::removeFolder( const QString& e,int attempts )
 
 #ifdef Q_OS_WIN
 
-QString utility::readPassword( bool addNewLine )
+QByteArray utility::readPassword( bool addNewLine )
 {
 	std::cout << "Password: " << std::flush ;
 
-	QString s ;
+	QByteArray s ;
 	int e ;
 
 	int m = settings::instance().readPasswordMaximumLength() ;
@@ -1085,7 +1085,7 @@ static inline bool _terminalEchoOff( struct termios * old,struct termios * curre
 	}
 }
 
-QString utility::readPassword( bool addNewLine )
+QByteArray utility::readPassword( bool addNewLine )
 {
 	std::cout << "Password: " << std::flush ;
 
@@ -1094,7 +1094,7 @@ QString utility::readPassword( bool addNewLine )
 
 	_terminalEchoOff( &old,&current ) ;
 
-	QString s ;
+	QByteArray s ;
 	int e ;
 
 	int m = settings::instance().readPasswordMaximumLength() ;

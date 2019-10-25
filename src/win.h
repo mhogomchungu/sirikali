@@ -40,7 +40,7 @@ struct opts{
 	const engines::engine::args& args ;
 	const engines::engine::options& options ;
 	const engines::engine& engine ;
-	const QString& password ;
+	const QByteArray& password ;
 } ;
 
 Task::process::result mount( const SiriKali::Windows::opts& ) ;

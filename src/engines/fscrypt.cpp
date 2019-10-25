@@ -360,7 +360,7 @@ Task::future< QString >& fscrypt::volumeProperties( const QString& cipherFolder,
 	} ) ;
 }
 
-engines::engine::args fscrypt::command( const QString& password,
+engines::engine::args fscrypt::command( const QByteArray& password,
 					const engines::engine::cmdArgsList& args ) const
 {
 	Q_UNUSED( password )

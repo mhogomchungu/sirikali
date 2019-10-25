@@ -939,7 +939,7 @@ void keyDialog::pbOpen()
 
 				this->setKeyInWallet( wallet,s ) ;
 			}else{
-				m_key = w.key.toLatin1() ;
+				m_key = w.key.toUtf8() ;
 				this->openVolume() ;
 			}
 		}else{
@@ -1492,7 +1492,7 @@ void keyDialog::openVolume()
 
 	if( keyType == keyDialog::yubikey ){
 
-		auto s = m_ui->lineEditKey->text().toLatin1() ;
+		auto s = m_ui->lineEditKey->text().toUtf8() ;
 
 		if( s.isEmpty() ){
 
@@ -1513,7 +1513,7 @@ void keyDialog::openVolume()
 
 	}else if( keyType == keyDialog::Key ){
 
-		m_key = m_ui->lineEditKey->text().toLatin1() ;
+		m_key = m_ui->lineEditKey->text().toUtf8() ;
 
 		_run() ;
 

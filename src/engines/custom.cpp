@@ -138,7 +138,7 @@ custom::custom( custom::opts s ) :
 {
 }
 
-engines::engine::args custom::command( const QString& password,
+engines::engine::args custom::command( const QByteArray& password,
 				       const engines::engine::cmdArgsList& args ) const
 {
 	engines::engine::commandOptions m( args,this->name(),this->name() ) ;

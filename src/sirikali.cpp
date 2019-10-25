@@ -782,9 +782,9 @@ void sirikali::unlockVolume( const QStringList& l )
 
 		this->closeApplication( 1,tr( "ERROR: Volume Path Not Given." ) ) ;
 	}else{
-		auto _unlockVolume = [ & ]( const QString& key ){
+		auto _unlockVolume = [ & ]( const QByteArray& key ){
 
-			auto m = [ & ]()->QString{
+			auto m = [ & ](){
 
 				if( mountPath.isEmpty() ){
 
@@ -808,13 +808,14 @@ void sirikali::unlockVolume( const QStringList& l )
 
 				this->closeApplication( 0 ) ;
 			}else{
+				utility::debug::cerr() << e.cmdStatus().toString() ;
 				this->closeApplication( 1 ) ;
 			}
 		} ;
 
 		if( backEnd == "stdin" ){
 
-			return _unlockVolume( [ & ]()->QString{
+			return _unlockVolume( [ & ](){
 
 				auto e = utility::readPassword() ;
 
@@ -883,7 +884,7 @@ void sirikali::unlockVolume( const QStringList& l )
 
 				this->closeApplication( 1,tr( "ERROR: Key Not Found In The Backend." ) ) ;
 			}else{
-				_unlockVolume( w.key ) ;
+				_unlockVolume( w.key.toUtf8() ) ;
 			}
 		}else{
 			this->closeApplication( 1,tr( "ERROR: Failed To Unlock Requested Backend." ) ) ;

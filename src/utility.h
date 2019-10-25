@@ -256,7 +256,7 @@ namespace utility
 
 	QString cmdArgumentValue( const QStringList&,const QString& arg,const QString& defaulT = QString() ) ;
 
-	QString readPassword( bool = true ) ;
+	QByteArray readPassword( bool = true ) ;
 
 	QIcon getIcon() ;
 

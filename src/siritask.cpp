@@ -198,7 +198,7 @@ bool siritask::unmountVolume( const QString& mountPoint,const QString& unMountCo
 	}
 }
 
-static void _run_command( const QString& command,const QString& password = QString() )
+static void _run_command( const QString& command,const QByteArray& password = QByteArray() )
 {
 	if( password.isEmpty() ){
 
@@ -217,7 +217,7 @@ static void _run_command( const QString& command,
 			  const QString& plainFolder,
 			  const QString& volumeType,
 			  const QString& commandType,
-			  const QString& password = QString() )
+			  const QByteArray& password = QByteArray() )
 {
 	if( command.isEmpty() ){
 
@@ -311,7 +311,7 @@ siritask::taskResult siritask::encryptedFolderUnMount( const QString& cipherFold
 
 static utility::Task _run_task_0( const engines::engine::args& args,
 				  const engines::engine& engine,
-				  const QString& password,
+				  const QByteArray& password,
 				  const engines::engine::options& opts,
 				  bool create,
 				  bool require_polkit )
@@ -326,13 +326,13 @@ static utility::Task _run_task_0( const engines::engine::args& args,
 		}
 	}else{
 		return utility::Task( args.cmd,-1,engine.getProcessEnvironment(),
-				      password.toLatin1(),[](){},require_polkit ) ;
+				      password,[](){},require_polkit ) ;
 	}
 }
 
 static utility::Task _run_task( const engines::engine::args& args,
 				const engines::engine& engine,
-				const QString& password,
+				const QByteArray& password,
 				const engines::engine::options& opts,
 				bool create,
 				bool require_polkit )
@@ -347,7 +347,7 @@ static utility::Task _run_task( const engines::engine::args& args,
 		auto b = utility::Task::makePath( opts.plainFolder ) ;
 		const auto& c = engine.name() ;
 
-		QString key ;
+		QByteArray key ;
 
 		if( settings::instance().allowExternalToolsToReadPasswords() ){
 
@@ -390,7 +390,7 @@ static utility::result< QString > _build_config_file_path( const engines::engine
 static engines::engine::cmdStatus _cmd( const engines::engine& engine,
 					bool create,
 					const engines::engine::options& opts,
-					const QString& password,
+					const QByteArray& password,
 					const QString& configFilePath )
 {
 	auto exe = engine.executableFullPath() ;

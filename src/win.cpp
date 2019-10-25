@@ -413,7 +413,7 @@ Task::process::result SiriKali::Windows::create( const SiriKali::Windows::opts& 
 
 		return SiriKali::Windows::mount( opts ) ;
 	}else{
-		auto s = utility::unwrap( Task::process::run( opts.args.cmd,opts.password.toLatin1() ) ) ;
+		auto s = utility::unwrap( Task::process::run( opts.args.cmd,opts.password ) ) ;
 
 		utility::logCommandOutPut( s,opts.args.cmd ) ;
 
@@ -457,7 +457,7 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 	exe->setProcessChannelMode( QProcess::MergedChannels ) ;
 	exe->start( opts.args.cmd ) ;
 	exe->waitForStarted() ;
-	exe->write( opts.password.toLatin1() + "\n" ) ;
+	exe->write( opts.password + "\n" ) ;
 	exe->closeWriteChannel() ;
 
 	auto m = _getProcessOutput( *exe,opts.engine ) ;

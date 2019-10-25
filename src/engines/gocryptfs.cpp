@@ -95,7 +95,7 @@ void gocryptfs::updateMountOptions( engines::engine::options& opt,
 	}() ;
 }
 
-engines::engine::args gocryptfs::command( const QString& password,
+engines::engine::args gocryptfs::command( const QByteArray& password,
 					  const engines::engine::cmdArgsList& args ) const
 {
 	Q_UNUSED( password )

@@ -453,9 +453,9 @@ QString engines::engine::setConfigFilePath( const QString& e ) const
 	}
 }
 
-QString engines::engine::setPassword( const QString& e ) const
+QByteArray engines::engine::setPassword( const QByteArray& e ) const
 {
-	auto s = m_Options.passwordFormat ;
+	QByteArray s = m_Options.passwordFormat.toLatin1() ;
 	s.replace( "%{password}",e ) ;
 	return s ;
 }
@@ -847,7 +847,7 @@ engines::engine::Options::Options() : success( false )
 {
 }
 
-engines::engine::options::options( const favorites::entry& e,const QString& volumeKey ) :
+engines::engine::options::options( const favorites::entry& e,const QByteArray& volumeKey ) :
 	cipherFolder( e.volumePath ),
 	plainFolder( e.mountPointPath ),
 	key( volumeKey ),
@@ -862,7 +862,7 @@ engines::engine::options::options( const favorites::entry& e,const QString& volu
 
 engines::engine::options::options( const QString& cipher_folder,
 				   const QString& plain_folder,
-				   const QString& volume_key,
+				   const QByteArray& volume_key,
 				   const QString& idle_timeout,
 				   const QString& config_file_path,
 				   const QString& volume_type,
