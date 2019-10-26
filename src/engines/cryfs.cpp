@@ -182,4 +182,3 @@ void cryfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function
 {
 	cryfscreateoptions::instance( parent,std::move( function ) ) ;
 }
-

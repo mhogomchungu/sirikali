@@ -1142,7 +1142,6 @@ QString utility::configFilePath( QWidget * s,const QString& e )
 	dialog.selectFile( [ = ](){
 
 		return engines::instance().getByName( e ).configFileName() ;
-
 	}() ) ;
 
 	if( dialog.exec() ){

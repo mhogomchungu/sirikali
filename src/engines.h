@@ -171,7 +171,7 @@ public:
 			bool autorefreshOnMountUnMount ;
 			bool backendRequireMountPath ;
 
-			QString passwordFormat ;
+			QByteArray passwordFormat ;
 			QString reverseString ;
 			QString idleString ;
 			QString executableName ;

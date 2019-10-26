@@ -455,7 +455,7 @@ QString engines::engine::setConfigFilePath( const QString& e ) const
 
 QByteArray engines::engine::setPassword( const QByteArray& e ) const
 {
-	QByteArray s = m_Options.passwordFormat.toLatin1() ;
+	auto s = m_Options.passwordFormat ;
 	s.replace( "%{password}",e ) ;
 	return s ;
 }

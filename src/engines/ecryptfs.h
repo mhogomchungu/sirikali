@@ -42,6 +42,5 @@ struct ecryptfs : public engines::engine
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
 
 private:
-	mutable bool m_unset = true ;
-	mutable bool m_requirePolkit = true ;
+	bool m_requirePolkit ;
 } ;

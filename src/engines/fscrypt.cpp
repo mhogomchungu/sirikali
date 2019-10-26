@@ -319,6 +319,7 @@ const engines::engine& fscrypt::proveEngine( const QString& cipherPath ) const
 		auto s = utility::unwrap( utility::Task::run( exe + " status " + m ) ).success() ;
 
 		if( s ){
+
 			return *this ;
 		}else{
 			return engines::instance().getUnKnown() ;

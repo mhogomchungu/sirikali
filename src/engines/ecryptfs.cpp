@@ -48,7 +48,36 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
-ecryptfs::ecryptfs() : engines::engine( _setOptions() )
+#ifdef Q_OS_LINUX
+
+#include <sys/stat.h>
+
+static bool _requiresPolkit()
+{
+	auto e = utility::executableFullPath( "ecryptfs-simple" ) ;
+
+	struct stat st ;
+
+	stat( e.toLatin1().constData(),&st ) ;
+
+	bool root_owner = st.st_uid == 0 ;
+	bool is_suid    = st.st_mode & S_ISUID ;
+
+	return !( root_owner && is_suid ) ;
+}
+
+#else
+
+static bool _requiresPolkit()
+{
+	return false ;
+}
+
+#endif
+
+ecryptfs::ecryptfs() :
+	engines::engine( _setOptions() ),
+	m_requirePolkit( _requiresPolkit() )
 {
 }
 
@@ -61,38 +90,10 @@ void ecryptfs::updateMountOptions( engines::engine::options& opt,
 	}
 }
 
-#ifdef Q_OS_LINUX
-
-#include <sys/stat.h>
-
-bool ecryptfs::requiresPolkit() const
-{
-	if( m_unset ){
-
-		m_unset = false ;
-
-		auto e = utility::executableFullPath( "ecryptfs-simple" ) ;
-
-		struct stat st ;
-
-		stat( e.toLatin1().constData(),&st ) ;
-
-		bool root_owner = st.st_uid == 0 ;
-		bool is_suid    = st.st_mode & S_ISUID ;
-
-		m_requirePolkit = !( root_owner && is_suid ) ;
-	}
-
-	return m_requirePolkit ;
-}
-
-#else
 bool ecryptfs::requiresPolkit() const
 {
 	return m_requirePolkit ;
 }
-
-#endif
 
 template< typename Function >
 static bool _unmount_ecryptfs_( Function cmd,const QString& mountPoint,bool& not_set )

@@ -181,3 +181,6 @@ version 1.4.1(October 15,2019)
    file system that supports encryption like ext4. More info about this backed is here: https://github.com/google/fscrypt
 -- Fix a bug with sshfs backend introducedin 1.4.0.
 -- Various changes and improvements.
+
+version 1.4.2(Unreleased)
+-- Assume passwords are utf8 encoded instead of latin-1.
