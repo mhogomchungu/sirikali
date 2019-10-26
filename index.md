@@ -64,6 +64,10 @@ We recommend using the installer version.
 Check first if SiriKali is present in your distribution's repositories and use that version if it is.
 ```Fedora,opensuse,ubuntu and debian``` users can install binary packages by following instructions on <a href="http://software.opensuse.org//download.html?project=home%3Aobs_mhogomchungu&package=sirikali">this</a> link.
 
+Gentoo users can get SiriKali from <a href="https://github.com/holgersson32644/holgersson-overlay">holgersson overlay.</a>
+
+Arch Linux users can get SiriKali from <a href="https://aur.archlinux.org/packages/sirikali/">AUR.</a>
+
 <a href="http://macdownload.informer.com/sirikali/" target="_blank"><img border="0" src="http://img.informer.com/awards/mi-award-epick4.png" alt="Mac Informer Editor's pick award" height="129" width="130" /></a>
 
 
@@ -141,4 +145,4 @@ cv9jY9bZAbVaMUjF7dw/bsqgJ2HCJ33cf16GybRtozOE36YDB2omg58ngIrlmlea
 -----END PGP PUBLIC KEY BLOCK-----
 ```
 
-last update: Tue 15 Oct 2019 04:02:07 PM EAT
+last update: Sat 26 Oct 2019 12:16:39 PM EAT
