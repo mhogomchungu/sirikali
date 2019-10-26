@@ -1484,3 +1484,23 @@ QString utility::commentString()
 {
 	return QObject::tr( "Comment:" ) ;
 }
+
+QByteArray utility::convertPassword( const QString& e )
+{
+	if( settings::instance().passWordIsUTF8Encoded() ){
+
+		return e.toUtf8() ;
+	}else{
+		return e.toLatin1() ;
+	}
+}
+
+QString utility::convertPassword( const QByteArray& e )
+{
+	if( settings::instance().passWordIsUTF8Encoded() ){
+
+		return QString::fromUtf8( e ) ;
+	}else{
+		return QString::fromLatin1( e ) ;
+	}
+}

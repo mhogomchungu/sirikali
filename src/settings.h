@@ -151,6 +151,7 @@ public:
 	bool allowExternalToolsToReadPasswords() ;
 	void setDefaultMountPointPrefix( const QString& ) ;
 	bool startMinimized() ;
+	bool passWordIsUTF8Encoded() ;
 	void setStartMinimized( bool ) ;
 	void setFileManager( const QString& ) ;
 	QString preUnMountCommand() ;

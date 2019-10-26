@@ -582,6 +582,16 @@ bool settings::startMinimized()
 	}
 }
 
+bool settings::passWordIsUTF8Encoded()
+{
+	if( !m_settings.contains( "PassWordIsUTF8Encoded" ) ){
+
+		m_settings.setValue( "PassWordIsUTF8Encoded",true ) ;
+	}
+
+	return m_settings.value( "PassWordIsUTF8Encoded" ).toBool() ;
+}
+
 void settings::setStartMinimized( bool e )
 {
 	m_settings.setValue( "StartMinimized",e ) ;

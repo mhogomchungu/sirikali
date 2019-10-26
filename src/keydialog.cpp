@@ -305,7 +305,7 @@ void keyDialog::setUpInitUI()
 
 	if( !m_key.isEmpty() ){
 
-		m_ui->lineEditKey->setText( m_key ) ;
+		m_ui->lineEditKey->setText( utility::convertPassword( m_key ) ) ;
 		m_ui->pbOpen->setFocus() ;
 	}
 
@@ -939,7 +939,7 @@ void keyDialog::pbOpen()
 
 				this->setKeyInWallet( wallet,s ) ;
 			}else{
-				m_key = w.key.toUtf8() ;
+				m_key = utility::convertPassword( w.key ) ;
 				this->openVolume() ;
 			}
 		}else{
@@ -1513,7 +1513,7 @@ void keyDialog::openVolume()
 
 	}else if( keyType == keyDialog::Key ){
 
-		m_key = m_ui->lineEditKey->text().toUtf8() ;
+		m_key = utility::convertPassword( m_ui->lineEditKey->text() ) ;
 
 		_run() ;
 
@@ -1665,7 +1665,7 @@ void keyDialog::cbActicated( QString e )
 
 				m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
 
-				m_ui->lineEditKey->setText( m_key ) ;
+				m_ui->lineEditKey->setText( utility::convertPassword( m_key ) ) ;
 
 				if( m_keyStrength && m_create ){
 

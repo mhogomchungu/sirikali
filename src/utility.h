@@ -258,6 +258,9 @@ namespace utility
 
 	QByteArray readPassword( bool = true ) ;
 
+	QByteArray convertPassword( const QString& ) ;
+	QString convertPassword( const QByteArray& ) ;
+
 	QIcon getIcon() ;
 
 	QStringList directoryList( const QString& e ) ;
