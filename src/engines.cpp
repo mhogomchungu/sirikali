@@ -465,6 +465,11 @@ engines::engine::status engines::engine::notFoundCode() const
 	return m_Options.notFoundCode ;
 }
 
+int engines::engine::backendTimeout() const
+{
+	return m_Options.backendTimeout ;
+}
+
 const engines& engines::instance()
 {
 	static engines v ;
@@ -613,11 +618,6 @@ const engines::engine& engines::getByName( const QString& e ) const
 			      [ & ]( const QString& s ){ return !e.compare( s,Qt::CaseInsensitive ) ; },
 			      []( const engines::engine& s ){ return s.names() ; } ) ;
 	return m.first ;
-}
-
-const engines::engine& engines::getByName( const engines::engine::options& e ) const
-{
-	return this->getByName( e.type ) ;
 }
 
 engines::engine::cmdStatus::cmdStatus()

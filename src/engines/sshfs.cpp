@@ -18,6 +18,7 @@
  */
 
 #include "sshfs.h"
+#include "../settings.h"
 
 static engines::engine::BaseOptions _setOptions()
 {
@@ -31,6 +32,7 @@ static engines::engine::BaseOptions _setOptions()
 
 	s.passwordFormat        = "%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}" ;
 
+	s.backendTimeout              = settings::instance().sshfsBackendTimeout() ;
 	s.supportsMountPathsOnWindows = true ;
 	s.autorefreshOnMountUnMount   = true ;
 	s.backendRequireMountPath     = true ;

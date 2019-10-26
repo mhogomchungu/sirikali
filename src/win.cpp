@@ -365,14 +365,15 @@ static SiriKali::Windows::result _read( QProcess& exe,Function function )
 
 static SiriKali::Windows::result _getProcessOutput( QProcess& exe,const engines::engine& engine )
 {
-	if( engine.name() == "sshfs" ){
+	int timeOut = engine.backendTimeout() ;
+
+	if( timeOut > 0 ){
 
 		int counter = 0 ;
-		int max = settings::instance().sshfsBackendTimeout() ;
 
 		return _read( exe,[ & ]( const QString& e ){
 
-			if( counter < max ){
+			if( counter < timeOut ){
 
 				counter++ ;
 				return engine.errorCode( e ) ;
@@ -487,18 +488,8 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 		}else{
 			utility::waitForFinished( *exe ) ;
 
-			QByteArray stdOut ;
-			QByteArray stdError ;
-
-			if( opts.options.type == "encfs" ){
-
-				stdOut = m.outPut ;
-			}else{
-				stdError = m.outPut ;
-			}
-
-			return Task::process::result( stdOut,
-						      stdError,
+			return Task::process::result( QByteArray(),
+						      m.outPut,
 						      exe->exitCode(),
 						      exe->exitStatus(),
 						      true ) ;

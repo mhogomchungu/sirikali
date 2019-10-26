@@ -160,6 +160,7 @@ public:
 
 		struct BaseOptions
 		{
+			int  backendTimeout = 0 ;
 			bool hasConfigFile ;
 			bool setsCipherPath ;
 			bool autoMountsOnCreate ;
@@ -225,6 +226,7 @@ public:
 
 		engines::engine::status notFoundCode() const ;
 
+		int backendTimeout() const ;
 		const QStringList& names() const ;
 		const QStringList& fuseNames() const ;
 		const QStringList& configFileNames() const ;
@@ -423,7 +425,6 @@ public:
 	QStringList enginesWithConfigFile() const ;
 	const QStringList& supported() const ;
 	const engine& getUnKnown() const ;
-	const engine& getByName( const engines::engine::options& e ) const ;
 	const engine& getByName( const QString& e ) const ;
 	const engine& getByFuseName( const QString& e ) const ;
 	const engine& getByFileExtension( const QString& e ) const ;

@@ -657,7 +657,7 @@ static utility::result< QString > _configFilePath( const engines::engine& engine
 
 static siritask::taskResult _encrypted_folder_create( const engines::engine::options& opt )
 {
-	const auto& engine = engines::instance().getByName( opt ) ;
+	const auto& engine = engines::instance().getByName( opt.type ) ;
 
 	if( engine.unknown() ){
 
