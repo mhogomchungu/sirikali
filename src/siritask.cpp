@@ -631,14 +631,15 @@ static siritask::taskResult _encrypted_folder_mount( engines::engine::options op
 static utility::result< QString > _configFilePath( const engines::engine& engine,
 						   const engines::engine::options& opt )
 {
-	if( opt.configFilePath.isEmpty() ){
+	QString configFilePath ;
 
-		if( engine.name() == "ecryptfs" ){
+	auto opts = opt ;
 
-			return opt.cipherFolder + "/" + engine.configFileName() ;
-		}else{
-			return QString() ;
-		}
+	engine.updateMountOptions( opts,configFilePath ) ;
+
+	if( !configFilePath.isEmpty() ){
+
+		return configFilePath ;
 	}else{
 		auto m = QDir().absoluteFilePath( opt.configFilePath ) ;
 
