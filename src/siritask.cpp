@@ -257,7 +257,7 @@ static siritask::taskResult _encrypted_unmount( const QString& cipherFolder,
 
 				if( !utility::enablePolkit() ){
 
-					return { engines::engine::status::failedToStartPolkit } ;
+					return { engines::engine::status::failedToStartPolkit,engine } ;
 				}
 			}
 
@@ -463,14 +463,14 @@ static siritask::taskResult _mount( bool reUseMountPoint,
 {
 	if( _illegal_path( opt,engine ) ){
 
-		return { engines::engine::status::IllegalPath } ;
+		return { engines::engine::status::IllegalPath,engine } ;
 	}
 
 	if( engine.backendRequireMountPath() ){
 
 		if( !( _create_folder( opt.plainFolder ) || reUseMountPoint ) ){
 
-			return { engines::engine::status::failedToCreateMountPoint } ;
+			return { engines::engine::status::failedToCreateMountPoint,engine } ;
 		}
 	}
 
@@ -482,11 +482,9 @@ static siritask::taskResult _mount( bool reUseMountPoint,
 
 			siritask::deleteMountFolder( opt.plainFolder ) ;
 		}
-
-		return e ;
-	}else{
-		return { e,engine } ;
 	}
+
+	return { e,engine } ;
 }
 
 static utility::result< QString > _path_exist( QString e,const QString& m )
@@ -513,13 +511,19 @@ siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 
 		if( configFilePath.startsWith( a ) ){
 
-			return { engine.engine(),cipherFolder,configFilePath.mid( a.size() ) } ;
+			return { { engine.engine(),
+				   configFilePath.mid( a.size() ),
+				   cipherFolder } } ;
 
 		}else if( cipherFolder.startsWith( b,Qt::CaseInsensitive ) ){
 
-			return { engine.engine(),cipherFolder.mid( b.size() ),configFilePath.mid( b.size() ) } ;
+			return { { engine.engine(),
+				   configFilePath,
+				   cipherFolder.mid( b.size() ) } } ;
 		}else{
-			return { engine.engine(),cipherFolder,configFilePath } ;
+			return { { engine.engine(),
+				   configFilePath,
+				   cipherFolder } } ;
 		}
 	}
 
@@ -608,19 +612,19 @@ static siritask::taskResult _encrypted_folder_mount( engines::engine::options op
 
 	if( engine.unknown() ){
 
-		return { engines::engine::status::unknown } ;
+		return { engines::engine::status::unknown,engine } ;
 	}
 
 	auto mm = engine.passMinimumVersion() ;
 
 	if( mm != engines::engine::status::success ){
 
-		return { mm } ;
+		return { mm,engine } ;
 	}
 
 	if( opt.key.isEmpty() && engine.requiresAPassword() ){
 
-		return { engines::engine::status::backendRequiresPassword } ;
+		return { engines::engine::status::backendRequiresPassword,engine } ;
 	}
 
 	engine.updateMountOptions( opt,configFilePath ) ;
@@ -631,13 +635,13 @@ static siritask::taskResult _encrypted_folder_mount( engines::engine::options op
 static utility::result< QString > _configFilePath( const engines::engine& engine,
 						   const engines::engine::options& opt )
 {
-	QString configFilePath ;
+	if( opt.configFilePath.isEmpty() ){
 
-	auto opts = opt ;
+		QString configFilePath ;
 
-	engine.updateMountOptions( opts,configFilePath ) ;
+		auto opts = opt ;
 
-	if( !configFilePath.isEmpty() ){
+		engine.updateMountOptions( opts,configFilePath ) ;
 
 		return configFilePath ;
 	}else{
@@ -661,36 +665,36 @@ static siritask::taskResult _encrypted_folder_create( const engines::engine::opt
 
 	if( engine.unknown() ){
 
-		return { engines::engine::status::unknown } ;
+		return { engines::engine::status::unknown,engine } ;
 	}
 
 	auto mm = engine.passMinimumVersion() ;
 
 	if( mm != engines::engine::status::success ){
 
-		return { mm } ;
+		return { mm,engine } ;
 	}
 
 	if( _illegal_path( opt,engine ) ){
 
-		return { engines::engine::status::IllegalPath } ;
+		return { engines::engine::status::IllegalPath,engine } ;
 	}
 
 	if( opt.key.isEmpty() && engine.requiresAPassword() ){
 
-		return { engines::engine::status::backendRequiresPassword } ;
+		return { engines::engine::status::backendRequiresPassword,engine } ;
 	}
 
 	auto configPath = _configFilePath( engine,opt ) ;
 
 	if( !configPath ){
 
-		return { { engines::engine::status::invalidConfigFileName,engine.configFileNames() } } ;
+		return { { engines::engine::status::invalidConfigFileName,engine.configFileNames() },engine } ;
 	}
 
 	if( !_create_folder( opt.cipherFolder ) ){
 
-		return { engines::engine::status::failedToCreateMountPoint } ;
+		return { engines::engine::status::failedToCreateMountPoint,engine } ;
 	}
 
 	if( engine.backendRequireMountPath() ){
@@ -699,7 +703,7 @@ static siritask::taskResult _encrypted_folder_create( const engines::engine::opt
 
 			_deleteFolders( opt.cipherFolder ) ;
 
-			return { engines::engine::status::failedToCreateMountPoint } ;
+			return { engines::engine::status::failedToCreateMountPoint,engine } ;
 		}
 	}
 
@@ -731,7 +735,7 @@ static siritask::taskResult _encrypted_folder_create( const engines::engine::opt
 			_deleteFolders( opt.cipherFolder ) ;
 		}
 
-		return e ;
+		return { e,engine } ;
 	}	
 }
 

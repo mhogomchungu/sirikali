@@ -44,14 +44,6 @@ namespace siritask
 		Engine() : m_engine( std::addressof( engines::instance().getUnKnown() ) )
 		{
 		}
-		Engine( const engines::engine& engine,
-			const QString& cipherFolder,
-			const QString& configFilePath ) :
-			m_engine( std::addressof( engine ) ),
-			m_configFilePath( configFilePath ),
-			m_cipherFolder( cipherFolder )
-		{
-		}
 		Engine( const engines::engine& engine ) :
 			m_engine( std::addressof( engine ) )
 		{
@@ -60,7 +52,7 @@ namespace siritask
 			m_engine( std::addressof( engines::instance().getByName( engine ) ) )
 		{
 		}
-		Engine( const opts& e ) :
+		Engine( const siritask::Engine::opts& e ) :
 			m_engine( std::addressof( e.engine ) ),
 			m_configFilePath( e.configFilePath ),
 			m_cipherFolder( e.cipherFolder )
@@ -98,17 +90,13 @@ namespace siritask
 
 	class taskResult{
 	public:
-		taskResult()
+		taskResult() :
+			m_success( false ),
+			m_engine( std::addressof( engines::instance().getUnKnown() ) )
 		{
 		}
 		taskResult( bool s,const engines::engine& e ) :
 			m_success( s ),m_engine( std::addressof( e ) )
-		{
-		}
-		taskResult( engines::engine::cmdStatus c ) :
-			m_success( c == engines::engine::status::success ),
-			m_cmdStatus( c ),
-			m_engine( std::addressof( engines::instance().getUnKnown() ) )
 		{
 		}
 		taskResult( const engines::engine::cmdStatus& c,const engines::engine& e ) :
