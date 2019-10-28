@@ -581,7 +581,7 @@ void utility::openPath( const QString& path,const QString& opener,
 
 static bool _help()
 {
-	utility::debug() << VERSION_STRING << QObject::tr( "\n\
+	utility::debug::cout() << VERSION_STRING << QObject::tr( "\n\
 options:\n\
 	-d   Path to where a volume to be auto unlocked/mounted is located.\n\
 	-m   Tool to use to open a default file manager(default tool is xdg-open).\n\
