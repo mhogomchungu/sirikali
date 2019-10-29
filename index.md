@@ -1,6 +1,6 @@
 ## SiriKali works on Linux, macOS and Microsoft Windows Operating Systems
 
-SiriKali is a Qt/C++ GUI application that manages ecryptfs,cryfs,encfs,gocryptfs,fscrypt and securefs based encrypted folders. These projects are compared <a href="https://nuetzlich.net/gocryptfs/comparison/">here.</a> SiriKali can also connect to ssh servers using sshfs.
+SiriKali is a Qt/C++ GUI application that manages ecryptfs, cryfs, encfs, gocryptfs, fscrypt and securefs based encrypted folders. These projects are compared <a href="https://nuetzlich.net/gocryptfs/comparison/">here.</a> SiriKali can also connect to ssh servers using sshfs.
 
 #### Supported Backends on Linux:
 
@@ -15,6 +15,9 @@ Users of Securefs should inform SiriKali of where Securefs binary is located on 
 #### Supported Backends on macOS:
 <a href="https://github.com/netheril96/securefs">Securefs, </a><a href="https://www.cryfs.org/">Cryfs, </a><a href="https://github.com/vgough/encfs">Encfs</a> and <a href="https://nuetzlich.net/gocryptfs">Gocryptfs.</a>
 
+Building SiriKali on a MAC is currently a bit involving process and the steps are documented <a href="https://github.com/mhogomchungu/sirikali/blob/master/OSX_BUILD_INSTRUCTIONS">here.</a>
+
+#### Using SiriKali to connect to ssh server using sshfs:
 Steps to setup SiriKali to connect to an ssh server are documented <a href="https://github.com/mhogomchungu/sirikali/wiki/Frequently-Asked-Questions#90-how-do-i-add-options-to-connect-to-an-ssh-server">here.</a>
 
 Encrypted container ```folders``` have an advantage over encrypted container ```files``` like the ones that are created by <a href="http://mhogomchungu.github.io/zuluCrypt/">zuluCrypt</a>,TrueCrypt,VeraCrypt among other projects that use file based encrypted containers.
@@ -145,4 +148,4 @@ cv9jY9bZAbVaMUjF7dw/bsqgJ2HCJ33cf16GybRtozOE36YDB2omg58ngIrlmlea
 -----END PGP PUBLIC KEY BLOCK-----
 ```
 
-last update: Sat 26 Oct 2019 12:16:39 PM EAT
+last update: Tue 29 Oct 2019 01:34:02 PM EAT
