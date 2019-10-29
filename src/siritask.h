@@ -41,19 +41,19 @@ namespace siritask
 			const QString& configFilePath ;
 			const QString& cipherFolder ;
 		};
-		Engine() : m_engine( std::addressof( engines::instance().getUnKnown() ) )
+		Engine()
 		{
 		}
 		Engine( const engines::engine& engine ) :
-			m_engine( std::addressof( engine ) )
+			m_engine( engine )
 		{
 		}
 		Engine( const QString& engine ) :
-			m_engine( std::addressof( engines::instance().getByName( engine ) ) )
+			m_engine( engines::instance().getByName( engine ) )
 		{
 		}
 		Engine( const siritask::Engine::opts& e ) :
-			m_engine( std::addressof( e.engine ) ),
+			m_engine( e.engine ),
 			m_configFilePath( e.configFilePath ),
 			m_cipherFolder( e.cipherFolder )
 		{
@@ -68,10 +68,10 @@ namespace siritask
 		}
 		const engines::engine& engine() const
 		{
-			return *m_engine ;
+			return m_engine.engine() ;
 		}
 	private:
-		const engines::engine * m_engine ;
+		engines::engine::cmdStatus::Engine m_engine ;
 		QString m_configFilePath ;
 		QString m_cipherFolder ;
 	} ;
@@ -88,55 +88,16 @@ namespace siritask
 
 	bool deleteMountFolder( const QString& ) ;
 
-	class taskResult{
-	public:
-		taskResult() :
-			m_success( false ),
-			m_engine( std::addressof( engines::instance().getUnKnown() ) )
-		{
-		}
-		taskResult( bool s,const engines::engine& e ) :
-			m_success( s ),m_engine( std::addressof( e ) )
-		{
-		}
-		taskResult( const engines::engine::cmdStatus& c,const engines::engine& e ) :
-			m_success( c == engines::engine::status::success ),
-			m_cmdStatus( c ),
-			m_engine( std::addressof( e ) )
-		{
-		}
-		bool backendDoesNotAutoRefresh() const
-		{
-			return !this->engine().autorefreshOnMountUnMount() ;
-		}
-		bool success() const
-		{
-			return m_success ;
-		}
-		const engines::engine::cmdStatus& cmdStatus() const
-		{
-			return m_cmdStatus ;
-		}
-		const engines::engine& engine() const
-		{
-			return *m_engine ;
-		}
-	private:
-		bool m_success ;
-		engines::engine::cmdStatus m_cmdStatus ;
-		const engines::engine * m_engine ;
-	} ;
+	engines::engine::cmdStatus encryptedFolderUnMount( const QString& cipherFolder,
+							   const QString& mountPoint,
+							   const QString& fileSystem,
+							   int numberOfAttempts ) ;
 
-	siritask::taskResult encryptedFolderUnMount( const QString& cipherFolder,
-						     const QString& mountPoint,
-						     const QString& fileSystem,
-						     int numberOfAttempts ) ;
+	engines::engine::cmdStatus encryptedFolderMount( const engines::engine::options&,
+							 bool = false,
+							 const siritask::Engine& = siritask::Engine() ) ;
 
-	siritask::taskResult encryptedFolderMount( const engines::engine::options&,
-						   bool = false,
-						   const siritask::Engine& = siritask::Engine() ) ;
-
-	siritask::taskResult encryptedFolderCreate( const engines::engine::options& ) ;
+	engines::engine::cmdStatus encryptedFolderCreate( const engines::engine::options& ) ;
 }
 
 #endif // SIRITASK_H

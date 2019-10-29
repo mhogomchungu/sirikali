@@ -1091,15 +1091,13 @@ void keyDialog::encryptedFolderCreate()
 
 	auto e = siritask::encryptedFolderCreate( s ) ;
 
-	const auto& cmdStatus = e.cmdStatus() ;
-
 	m_cryfsWarning.hide() ;
 
 	m_working = false ;
 
-	if( cmdStatus == engines::engine::status::success ){
+	if( e == engines::engine::status::success ){
 
-		if( e.backendDoesNotAutoRefresh() ){
+		if( !e.engine().autorefreshOnMountUnMount() ){
 
 			m_updateVolumeList() ;
 		}
@@ -1109,9 +1107,9 @@ void keyDialog::encryptedFolderCreate()
 		this->openMountPoint( m ) ;
 		this->HideUI() ;
 	}else{
-		this->reportErrorMessage( cmdStatus ) ;
+		this->reportErrorMessage( e ) ;
 
-		if( cmdStatus == engines::engine::status::volumeCreatedSuccessfully ){
+		if( e == engines::engine::status::volumeCreatedSuccessfully ){
 
 			m_closeGUI = true ;
 		}else{
@@ -1443,15 +1441,13 @@ void keyDialog::encryptedFolderMount()
 
 	auto e = siritask::encryptedFolderMount( s,false,m_engine ) ;
 
-	const auto& cmdStatus = e.cmdStatus() ;
-
 	m_cryfsWarning.hide() ;
 
 	m_working = false ;
 
-	if( cmdStatus == engines::engine::status::success ){
+	if( e == engines::engine::status::success ){
 
-		if( e.backendDoesNotAutoRefresh() ){
+		if( !e.engine().autorefreshOnMountUnMount() ){
 
 			m_updateVolumeList() ;
 		}
@@ -1461,7 +1457,7 @@ void keyDialog::encryptedFolderMount()
 		this->enableAll() ;
 		this->unlockVolume() ;
 	}else{
-		this->reportErrorMessage( cmdStatus ) ;
+		this->reportErrorMessage( e ) ;
 
 		m_ui->lineEditKey->clear() ;
 

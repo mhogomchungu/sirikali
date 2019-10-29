@@ -236,48 +236,59 @@ static void _run_command( const QString& command,
 	}
 }
 
-static siritask::taskResult _encrypted_unmount( const QString& cipherFolder,
-						const QString& mountPoint,
-						const QString& fileSystem,int numberOfAttempts )
+static engines::engine::cmdStatus _encrypted_unmount( const QString& cipherFolder,
+						      const QString& mountPoint,
+						      const QString& fileSystem,int numberOfAttempts )
 {
 	const auto& engine = engines::instance().getByName( fileSystem ) ;
+
+	if( engine.unknown() ){
+
+		return { engines::engine::status::unknown,engine } ;
+	}
 
 	if( utility::platformIsWindows() ){
 
 		auto m = engine.windowsUnMountCommand() ;
 
-		return { SiriKali::Windows::unmount( m,_makePath( mountPoint ) ).success(),engine } ;
-	}else{
+		auto s = SiriKali::Windows::unmount( m,_makePath( mountPoint ) ) ;
 
-		if( engine.unknown() ){
+		if( s.success() ){
 
-			return { false,engine } ;
+			return { engines::engine::status::success,engine } ;
 		}else{
-			if( engine.requiresPolkit() ){
+			return { engines::engine::status::failedToUnMount,engine } ;
+		}
+	}else{
+		if( engine.requiresPolkit() ){
 
-				if( !utility::enablePolkit() ){
+			if( !utility::enablePolkit() ){
 
-					return { engines::engine::status::failedToStartPolkit,engine } ;
-				}
+				return { engines::engine::status::failedToStartPolkit,engine } ;
 			}
+		}
 
-			auto a = _makePath( cipherFolder ) ;
-			auto b = _makePath( mountPoint ) ;
+		auto a = _makePath( cipherFolder ) ;
+		auto b = _makePath( mountPoint ) ;
 
-			auto& e = Task::run( [ & ](){
+		auto e = utility::unwrap( Task::run( [ & ](){
 
-				return engine.unmount( a,b,numberOfAttempts ) ;
-			} ) ;
+			return engine.unmount( a,b,numberOfAttempts ) ;
+		} ) ) ;
 
-			return { utility::unwrap( e ),engine } ;
+		if( e ){
+
+			return { engines::engine::status::success,engine } ;
+		}else{
+			return { engines::engine::status::failedToUnMount,engine } ;
 		}
 	}
 }
 
-siritask::taskResult siritask::encryptedFolderUnMount( const QString& cipherFolder,
-						       const QString& mountPoint,
-						       const QString& fileSystem,
-						       int numberOfAttempts )
+engines::engine::cmdStatus siritask::encryptedFolderUnMount( const QString& cipherFolder,
+							     const QString& mountPoint,
+							     const QString& fileSystem,
+							     int numberOfAttempts )
 {
 	auto fav = favorites::instance().readFavorite( cipherFolder,mountPoint ) ;
 
@@ -397,13 +408,13 @@ static engines::engine::cmdStatus _cmd( const engines::engine& engine,
 
 	if( exe.isEmpty() ){
 
-		return engine.notFoundCode() ;
+		return { engine.notFoundCode(),engine } ;
 	}else{
 		if( engine.requiresPolkit() ){
 
 			if( !utility::enablePolkit() ){
 
-				return { engines::engine::status::failedToStartPolkit } ;
+				return { engines::engine::status::failedToStartPolkit,engine } ;
 			}
 		}
 
@@ -424,21 +435,21 @@ static engines::engine::cmdStatus _cmd( const engines::engine& engine,
 
 				if( s.success() ){
 
-					return { engines::engine::status::success,s.exitCode() } ;
+					return { engines::engine::status::success,s.exitCode(),engine } ;
 				}else{				
 					if( SiriKali::Windows::backEndTimedOut( s.stdOut() ) ){
 
-						return engines::engine::status::backendTimedOut ;
+						return { engines::engine::status::backendTimedOut,engine } ;
 					}
 
 					auto m = s.stdError().isEmpty() ? s.stdOut() : s.stdError() ;
 
 					auto n = engine.errorCode( m,s.exitCode() ) ;
 
-					return { n,s.exitCode(),m } ;
+					return { n,s.exitCode(),engine,m } ;
 				}
 			}else{
-				return engines::engine::status::backEndDoesNotSupportCustomConfigPath ;
+				return { engines::engine::status::backEndDoesNotSupportCustomConfigPath,engine } ;
 			}
 		} ;
 
@@ -456,10 +467,10 @@ static engines::engine::cmdStatus _cmd( const engines::engine& engine,
 	}
 }
 
-static siritask::taskResult _mount( bool reUseMountPoint,
-				    const engines::engine& engine,
-				    const engines::engine::options& opt,
-				    const QString& configFilePath )
+static engines::engine::cmdStatus _mount( bool reUseMountPoint,
+					  const engines::engine& engine,
+					  const engines::engine::options& opt,
+					  const QString& configFilePath )
 {
 	if( _illegal_path( opt,engine ) ){
 
@@ -484,7 +495,7 @@ static siritask::taskResult _mount( bool reUseMountPoint,
 		}
 	}
 
-	return { e,engine } ;
+	return e ;
 }
 
 static utility::result< QString > _path_exist( QString e,const QString& m )
@@ -598,9 +609,9 @@ siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 	}
 }
 
-static siritask::taskResult _encrypted_folder_mount( engines::engine::options opt,
-						     bool reUseMP,
-						     const siritask::Engine& eng )
+static engines::engine::cmdStatus _encrypted_folder_mount( engines::engine::options opt,
+							   bool reUseMP,
+							   const siritask::Engine& eng )
 {	
 	auto Engine = siritask::mountEngine( opt.cipherFolder,opt.configFilePath,eng ) ;
 
@@ -659,7 +670,7 @@ static utility::result< QString > _configFilePath( const engines::engine& engine
 	}
 }
 
-static siritask::taskResult _encrypted_folder_create( const engines::engine::options& opt )
+static engines::engine::cmdStatus _encrypted_folder_create( const engines::engine::options& opt )
 {
 	const auto& engine = engines::instance().getByName( opt.type ) ;
 
@@ -689,7 +700,7 @@ static siritask::taskResult _encrypted_folder_create( const engines::engine::opt
 
 	if( !configPath ){
 
-		return { { engines::engine::status::invalidConfigFileName,engine.configFileNames() },engine } ;
+		return { engines::engine::status::invalidConfigFileName,engine,engine.configFileNames() } ;
 	}
 
 	if( !_create_folder( opt.cipherFolder ) ){
@@ -715,9 +726,9 @@ static siritask::taskResult _encrypted_folder_create( const engines::engine::opt
 
 			auto e = siritask::encryptedFolderMount( opt,true ) ;
 
-			if( e.cmdStatus() != engines::engine::status::success ){
+			if( e != engines::engine::status::success ){
 
-				if( engine.backendRequireMountPath() ){
+				if( e.engine().backendRequireMountPath() ){
 
 					_deleteFolders( opt.plainFolder,opt.cipherFolder ) ;
 				}else{
@@ -725,21 +736,19 @@ static siritask::taskResult _encrypted_folder_create( const engines::engine::opt
 				}
 			}
 		}
-
-		return { e,engine } ;
 	}else{
-		if( engine.backendRequireMountPath() ){
+		if( e.engine().backendRequireMountPath() ){
 
 			_deleteFolders( opt.plainFolder,opt.cipherFolder ) ;
 		}else{
 			_deleteFolders( opt.cipherFolder ) ;
-		}
-
-		return { e,engine } ;
+		}		
 	}	
+
+	return e ;
 }
 
-siritask::taskResult siritask::encryptedFolderCreate( const engines::engine::options& opt )
+engines::engine::cmdStatus siritask::encryptedFolderCreate( const engines::engine::options& opt )
 {
 	if( utility::platformIsWindows() ){
 
@@ -794,9 +803,9 @@ static void _run_command_on_mount( const engines::engine::options& opt )
 	}
 }
 
-siritask::taskResult siritask::encryptedFolderMount( const engines::engine::options& opt,
-						     bool reUseMountPoint,
-						     const siritask::Engine& engine )
+engines::engine::cmdStatus siritask::encryptedFolderMount( const engines::engine::options& opt,
+							   bool reUseMountPoint,
+							   const siritask::Engine& engine )
 {
 	auto s = [ & ](){
 
@@ -823,7 +832,7 @@ siritask::taskResult siritask::encryptedFolderMount( const engines::engine::opti
 		}
 	}() ;
 
-	if( s.cmdStatus() == engines::engine::status::success ){
+	if( s == engines::engine::status::success ){
 
 		_run_command_on_mount( opt ) ;
 	}

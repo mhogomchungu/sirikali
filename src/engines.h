@@ -71,15 +71,14 @@ public:
 			customCommandNotFound,
                         customCommandBadPassword,
 
-			sshfsTooOld,
 			cryfsMigrateFileSystem,
-
-			failedToLoadWinfsp,
-
 			IllegalPath,
 			ecrypfsBadExePermissions,
 
+			failedToLoadWinfsp,
+			backEndFailedToMeetMinimumRequirenment,
 			failedToStartPolkit,
+			failedToUnMount,
 			backEndDoesNotSupportCustomConfigPath,
 			failedToCreateMountPoint,
 			invalidConfigFileName,
@@ -128,16 +127,45 @@ public:
 		class cmdStatus
 		{
 		public:
+			class Engine{
+			public:
+				Engine( const engines::engine& e ) :
+					m_engine( std::addressof( e ) )
+				{
+				}
+				Engine() :
+					m_engine( std::addressof( engines::instance().getUnKnown() ) )
+				{
+				}
+				const engines::engine& engine() const
+				{
+					return *m_engine ;
+				}
+			private:
+				const engines::engine * m_engine ;
+			};
 			cmdStatus() ;
-			cmdStatus( engines::engine::status s,int c,const QString& e = QString() ) ;
-			cmdStatus( engines::engine::status s,const QString& e = QString() ) ;
-			cmdStatus( engines::engine::status s,const QStringList& ) ;
-			cmdStatus( int s,const QString& e = QString() ) ;
+			cmdStatus( engines::engine::status s,
+				   int c,
+				   const engines::engine&,
+				   const QString& e = QString() ) ;
+			cmdStatus( engines::engine::status s,
+				   const engines::engine&,
+				   const QString& e = QString() ) ;
+			cmdStatus( engines::engine::status s,
+				   const engines::engine&,
+				   const QStringList& ) ;
+			cmdStatus( int s,
+				   const engines::engine&,
+				   const QString& e = QString() ) ;
+
 			engines::engine::status status() const ;
 			bool operator==( engines::engine::status s ) const ;
 			bool operator!=( engines::engine::status s ) const ;
 			QString toString() const ;
 			QString toMiniString() const ;
+			const engines::engine& engine() const ;
+			bool success() const ;
 		private:
 			void message( const QString& e ) ;
 
@@ -145,6 +173,7 @@ public:
 			engines::engine::status m_status = engines::engine::status::backendFail ;
 			QString m_message ;
 			QStringList m_backendExtensionNames ;
+			engines::engine::cmdStatus::Engine m_engine ;
 		} ;
 
 		struct Options
@@ -173,6 +202,7 @@ public:
 			bool backendRequireMountPath ;
 
 			QByteArray passwordFormat ;
+			QString minimumVersion ;
 			QString reverseString ;
 			QString idleString ;
 			QString executableName ;
@@ -233,6 +263,7 @@ public:
 		const QStringList& fileExtensions() const ;
 		const QStringList& volumePropertiesCommands() const ;
 
+		const QString& minimumVersion() const ;
 		const QString& reverseString() const ;
 		const QString& idleString() const ;
 		const QString& executableName() const ;

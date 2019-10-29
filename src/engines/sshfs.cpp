@@ -52,6 +52,11 @@ static engines::engine::BaseOptions _setOptions()
 	s.names                 = QStringList{ "sshfs" } ;
 	s.notFoundCode          = engines::engine::status::sshfsNotFound ;
 
+	if( utility::platformIsWindows() ){
+
+		s.minimumVersion = "3.4.0" ;
+	}
+
 	return s ;
 }
 
@@ -65,11 +70,11 @@ engines::engine::status sshfs::passMinimumVersion() const
 {
 	if( utility::platformIsWindows() ){
 
-		static auto m = utility::unwrap( utility::backendIsLessThan( "sshfs","3.4.0" ) ) ;
+		static auto m = utility::unwrap( utility::backendIsLessThan( "sshfs",this->minimumVersion() ) ) ;
 
 		if( m && m.value() ){
 
-			return engines::engine::status::sshfsTooOld ;
+			return engines::engine::status::backEndFailedToMeetMinimumRequirenment ;
 		}
 	}
 
