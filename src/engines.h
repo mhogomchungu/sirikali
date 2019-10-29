@@ -137,7 +137,7 @@ public:
 					m_engine( std::addressof( engines::instance().getUnKnown() ) )
 				{
 				}
-				const engines::engine& engine() const
+				const engines::engine& get() const
 				{
 					return *m_engine ;
 				}
@@ -146,19 +146,8 @@ public:
 			};
 			cmdStatus() ;
 			cmdStatus( engines::engine::status s,
-				   int c,
 				   const engines::engine&,
 				   const QString& e = QString() ) ;
-			cmdStatus( engines::engine::status s,
-				   const engines::engine&,
-				   const QString& e = QString() ) ;
-			cmdStatus( engines::engine::status s,
-				   const engines::engine&,
-				   const QStringList& ) ;
-			cmdStatus( int s,
-				   const engines::engine&,
-				   const QString& e = QString() ) ;
-
 			engines::engine::status status() const ;
 			bool operator==( engines::engine::status s ) const ;
 			bool operator!=( engines::engine::status s ) const ;
@@ -167,12 +156,8 @@ public:
 			const engines::engine& engine() const ;
 			bool success() const ;
 		private:
-			void message( const QString& e ) ;
-
-			int m_exitCode = -1 ;
 			engines::engine::status m_status = engines::engine::status::backendFail ;
 			QString m_message ;
-			QStringList m_backendExtensionNames ;
 			engines::engine::cmdStatus::Engine m_engine ;
 		} ;
 

@@ -435,18 +435,21 @@ static engines::engine::cmdStatus _cmd( const engines::engine& engine,
 
 				if( s.success() ){
 
-					return { engines::engine::status::success,s.exitCode(),engine } ;
-				}else{				
-					if( SiriKali::Windows::backEndTimedOut( s.stdOut() ) ){
+					return { engines::engine::status::success,engine } ;
+				}else{
+					if( utility::platformIsWindows() ){
 
-						return { engines::engine::status::backendTimedOut,engine } ;
+						if( SiriKali::Windows::backEndTimedOut( s.stdOut() ) ){
+
+							return { engines::engine::status::backendTimedOut,engine } ;
+						}
 					}
 
 					auto m = s.stdError().isEmpty() ? s.stdOut() : s.stdError() ;
 
 					auto n = engine.errorCode( m,s.exitCode() ) ;
 
-					return { n,s.exitCode(),engine,m } ;
+					return { n,engine,m } ;
 				}
 			}else{
 				return { engines::engine::status::backEndDoesNotSupportCustomConfigPath,engine } ;
@@ -700,7 +703,7 @@ static engines::engine::cmdStatus _encrypted_folder_create( const engines::engin
 
 	if( !configPath ){
 
-		return { engines::engine::status::invalidConfigFileName,engine,engine.configFileNames() } ;
+		return { engines::engine::status::invalidConfigFileName,engine } ;
 	}
 
 	if( !_create_folder( opt.cipherFolder ) ){

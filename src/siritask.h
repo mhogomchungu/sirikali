@@ -68,7 +68,7 @@ namespace siritask
 		}
 		const engines::engine& engine() const
 		{
-			return m_engine.engine() ;
+			return m_engine.get() ;
 		}
 	private:
 		engines::engine::cmdStatus::Engine m_engine ;
