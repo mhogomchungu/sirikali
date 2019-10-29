@@ -24,7 +24,7 @@ class sshfs : public engines::engine
 public:
 	sshfs() ;
 
-	engine::engine::status passMinimumVersion() const ;
+	engine::engine::status passMinimumVersion() const override ;
 
 	const QProcessEnvironment& getProcessEnvironment() const override ;
 

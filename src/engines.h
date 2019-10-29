@@ -246,7 +246,6 @@ public:
 		const QString& windowsInstallPathRegistryValue() const ;
 
 		engine::engine::error errorCode( const QString& ) const ;
-		engine::engine::status passMinimumVersion() const ;
 
 		QString setConfigFilePath( const QString& ) const ;
 		QByteArray setPassword( const QByteArray& ) const ;
@@ -259,6 +258,8 @@ public:
 		virtual bool unmount( const QString& cipherFolder,
 				      const QString& mountPoint,
 				      int maxCount ) const ;
+
+		virtual engine::engine::status passMinimumVersion() const ;
 
 		virtual const engines::engine& proveEngine( const QString& cipherPath ) const ;
 

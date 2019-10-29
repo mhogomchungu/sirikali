@@ -65,7 +65,7 @@ engines::engine::status sshfs::passMinimumVersion() const
 {
 	if( utility::platformIsWindows() ){
 
-		auto m = utility::unwrap( utility::backendIsLessThan( "sshfs","3.4.0" ) ) ;
+		static auto m = utility::unwrap( utility::backendIsLessThan( "sshfs","3.4.0" ) ) ;
 
 		if( m && m.value() ){
 
