@@ -470,37 +470,6 @@ static engines::engine::cmdStatus _cmd( const engines::engine& engine,
 	}
 }
 
-static engines::engine::cmdStatus _mount( bool reUseMountPoint,
-					  const engines::engine& engine,
-					  const engines::engine::options& opt,
-					  const QString& configFilePath )
-{
-	if( _illegal_path( opt,engine ) ){
-
-		return { engines::engine::status::IllegalPath,engine } ;
-	}
-
-	if( engine.backendRequireMountPath() ){
-
-		if( !( _create_folder( opt.plainFolder ) || reUseMountPoint ) ){
-
-			return { engines::engine::status::failedToCreateMountPoint,engine } ;
-		}
-	}
-
-	auto e = _cmd( engine,false,opt,opt.key,configFilePath ) ;
-
-	if( e != engines::engine::status::success ){
-
-		if( engine.backendRequireMountPath() ){
-
-			siritask::deleteMountFolder( opt.plainFolder ) ;
-		}
-	}
-
-	return e ;
-}
-
 static utility::result< QString > _path_exist( QString e,const QString& m )
 {
 	e.remove( 0,m.size() ) ;
@@ -517,25 +486,25 @@ siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 					const QString& configFilePath,
 					const siritask::Engine& engine )
 {
-	if( engine.engine().known() ){
+	if( engine.get().known() ){
 
-		auto a = "[[[" + engine.engine().name() + "]]]" ;
+		auto a = "[[[" + engine.get().name() + "]]]" ;
 
-		auto b = engine.engine().name() + " " ;
+		auto b = engine.get().name() + " " ;
 
 		if( configFilePath.startsWith( a ) ){
 
-			return { { engine.engine(),
+			return { { engine.get(),
 				   configFilePath.mid( a.size() ),
 				   cipherFolder } } ;
 
 		}else if( cipherFolder.startsWith( b,Qt::CaseInsensitive ) ){
 
-			return { { engine.engine(),
+			return { { engine.get(),
 				   configFilePath,
 				   cipherFolder.mid( b.size() ) } } ;
 		}else{
-			return { { engine.engine(),
+			return { { engine.get(),
 				   configFilePath,
 				   cipherFolder } } ;
 		}
@@ -618,11 +587,13 @@ static engines::engine::cmdStatus _encrypted_folder_mount( engines::engine::opti
 {	
 	auto Engine = siritask::mountEngine( opt.cipherFolder,opt.configFilePath,eng ) ;
 
-	const auto& engine  = Engine.engine() ;
-	auto configFilePath = Engine.configFilePath() ;
+	const auto& engine  = Engine.get() ;
 
-	opt.cipherFolder = Engine.cipherFolder() ;
-	opt.type         = Engine.engine().name() ;
+	opt.configFilePath  = Engine.configFilePath() ;
+	opt.cipherFolder    = Engine.cipherFolder() ;
+	opt.type            = engine.name() ;
+
+	engine.updateOptions( opt ) ;
 
 	if( engine.unknown() ){
 
@@ -641,9 +612,30 @@ static engines::engine::cmdStatus _encrypted_folder_mount( engines::engine::opti
 		return { engines::engine::status::backendRequiresPassword,engine } ;
 	}
 
-	engine.updateMountOptions( opt,configFilePath ) ;
+	if( _illegal_path( opt,engine ) ){
 
-	return _mount( reUseMP,engine,opt,configFilePath ) ;
+		return { engines::engine::status::IllegalPath,engine } ;
+	}
+
+	if( engine.backendRequireMountPath() ){
+
+		if( !( _create_folder( opt.plainFolder ) || reUseMP ) ){
+
+			return { engines::engine::status::failedToCreateMountPoint,engine } ;
+		}
+	}
+
+	auto e = _cmd( engine,false,opt,opt.key,opt.configFilePath ) ;
+
+	if( e != engines::engine::status::success ){
+
+		if( engine.backendRequireMountPath() ){
+
+			siritask::deleteMountFolder( opt.plainFolder ) ;
+		}
+	}
+
+	return e ;
 }
 
 static utility::result< QString > _configFilePath( const engines::engine& engine,
@@ -651,13 +643,11 @@ static utility::result< QString > _configFilePath( const engines::engine& engine
 {
 	if( opt.configFilePath.isEmpty() ){
 
-		QString configFilePath ;
-
 		auto opts = opt ;
 
-		engine.updateMountOptions( opts,configFilePath ) ;
+		engine.updateOptions( opts ) ;
 
-		return configFilePath ;
+		return opts.configFilePath ;
 	}else{
 		auto m = QDir().absoluteFilePath( opt.configFilePath ) ;
 

@@ -1339,7 +1339,7 @@ static utility::result< int > _convert_string_to_version( const QString& e )
 
 static utility::result< int > _installedVersion( const QString& backend )
 {
-	auto s = utility::backEndInstalledVersion( backend ).get() ;
+	auto s = utility::unwrap( utility::backEndInstalledVersion( backend ) ) ;
 
 	if( s && !s.value().isEmpty() ){
 
@@ -1366,6 +1366,34 @@ template< typename Function >
 			return {} ;
 		}
 	} ) ;
+}
+
+utility::result< bool > utility::versionIsLessThan( const QString& installedVersion,
+						    const QString& checkedVersion )
+{
+	auto a = _convert_string_to_version( installedVersion ) ;
+	auto b = _convert_string_to_version( checkedVersion ) ;
+
+	if( a && b ){
+
+		return a.value() < b.value() ;
+	}else{
+		return {} ;
+	}
+}
+
+utility::result< bool > utility::versionIsGreaterOrEqualTo( const QString& installedVersion,
+							    const QString& checkedVersion )
+{
+	auto a = _convert_string_to_version( installedVersion ) ;
+	auto b = _convert_string_to_version( checkedVersion ) ;
+
+	if( a && b ){
+
+		return a.value() >= b.value() ;
+	}else{
+		return {} ;
+	}
 }
 
 ::Task::future< utility::result< bool > >& utility::backendIsGreaterOrEqualTo( const QString& backend,

@@ -390,9 +390,9 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 		m->addSeparator() ;
 
-		if( m_engine.engine().known() ){
+		if( m_engine.get().known() ){
 
-			const auto& aa = m_engine.engine().name() ;
+			const auto& aa = m_engine.get().name() ;
 
 			_addAction( aa,aa,false ) ;
 		}else{
@@ -435,7 +435,7 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 	m_ui->lineEditMountPoint->setText( [ & ]()->QString{
 
-		const auto& engine = m_engine.engine() ;
+		const auto& engine = m_engine.get() ;
 
 		if( engine.known() && !engine.backendRequireMountPath() ){
 
@@ -1437,7 +1437,17 @@ void keyDialog::encryptedFolderMount()
 				    m_mountOptions,
 				    QString() } ;
 
-	m_cryfsWarning.showUnlock( m_engine.engine().name() ) ;
+	const auto& engine = m_engine.get() ;
+
+	if( engine.name().isEmpty() ){
+
+		m_engine = siritask::mountEngine( m_path,m_configFile ) ;
+	}
+
+	if( engine.takesTooLongToUnlock() ){
+
+		m_cryfsWarning.showUnlock( engine.name() ) ;
+	}
 
 	auto e = siritask::encryptedFolderMount( s,false,m_engine ) ;
 

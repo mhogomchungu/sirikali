@@ -24,6 +24,8 @@ class cryfs : public engines::engine
 public:
 	cryfs() ;
 
+	bool takesTooLongToUnlock() const override ;
+
 	const QProcessEnvironment& getProcessEnvironment() const override ;
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
@@ -35,6 +37,7 @@ public:
 
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
 private:
+	bool versionGreaterOrEqualTo( const QString& ) const ;
 	QProcessEnvironment m_env ;
 	mutable QString m_version ;
 } ;

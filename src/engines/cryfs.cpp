@@ -64,6 +64,11 @@ cryfs::cryfs() :
 	m_env.insert( "CRYFS_FRONTEND","noninteractive" ) ;
 }
 
+bool cryfs::takesTooLongToUnlock() const
+{
+	return this->versionGreaterOrEqualTo( "0.10.0" ) ;
+}
+
 const QProcessEnvironment& cryfs::getProcessEnvironment() const
 {
 	return m_env ;
@@ -74,15 +79,13 @@ engines::engine::args cryfs::command( const QByteArray& password,
 {
 	Q_UNUSED( password )
 
-	auto separator = [](){
+	auto separator = [ & ](){
 
-		auto m = utility::unwrap( utility::backendIsLessThan( "cryfs","0.10" ) ) ;
+		if( this->versionGreaterOrEqualTo( "0.10.0" ) ){
 
-		if( m && m.value() ){
-
-			return "--" ;
-		}else{
 			return "" ;
+		}else{
+			return "--" ;
 		}
 	}() ;
 
@@ -124,13 +127,13 @@ engines::engine::args cryfs::command( const QByteArray& password,
 
 engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 {
-	auto m = [ & ](){
+	auto m = [ & ]()->utility::result< bool >{
 
 		if( utility::platformIsWindows() ){
 
 			return utility::result< bool >() ;
 		}else{
-			return utility::unwrap( utility::backendIsGreaterOrEqualTo( "cryfs","0.9.9" ) ) ;
+			return this->versionGreaterOrEqualTo( "0.9.9" ) ;
 		}
 	}() ;
 
@@ -181,4 +184,11 @@ QString cryfs::installedVersionString() const
 void cryfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
 {
 	cryfscreateoptions::instance( parent,std::move( function ) ) ;
+}
+
+bool cryfs::versionGreaterOrEqualTo( const QString& e ) const
+{
+	auto a = utility::versionIsGreaterOrEqualTo( this->installedVersionString(),e ) ;
+
+	return a.has_value() && a.value() ;
 }

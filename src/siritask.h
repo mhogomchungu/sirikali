@@ -66,7 +66,7 @@ namespace siritask
 		{
 			return m_configFilePath ;
 		}
-		const engines::engine& engine() const
+		const engines::engine& get() const
 		{
 			return m_engine.get() ;
 		}

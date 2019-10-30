@@ -81,12 +81,11 @@ ecryptfs::ecryptfs() :
 {
 }
 
-void ecryptfs::updateMountOptions( engines::engine::options& opt,
-				   QString& configFilePath ) const
+void ecryptfs::updateOptions( engines::engine::options& opt ) const
 {
-	if( configFilePath.isEmpty() ){
+	if( opt.configFilePath.isEmpty() ){
 
-		configFilePath = opt.cipherFolder + "/" + this->configFileName() ;
+		opt.configFilePath = opt.cipherFolder + "/" + this->configFileName() ;
 	}
 }
 

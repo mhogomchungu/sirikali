@@ -307,6 +307,11 @@ bool engines::engine::backendRequireMountPath() const
 	return m_Options.backendRequireMountPath ;
 }
 
+bool engines::engine::takesTooLongToUnlock() const
+{
+	return false ;
+}
+
 bool engines::engine::requiresPolkit() const
 {
 	return m_Options.requiresPolkit ;
@@ -441,11 +446,9 @@ engines::engine::status engines::engine::passMinimumVersion() const
 	return engines::engine::status::success ;
 }
 
-void engines::engine::updateMountOptions( engines::engine::options& e,
-					  QString& configFilePath ) const
+void engines::engine::updateOptions( engines::engine::options& e ) const
 {
 	Q_UNUSED( e )
-	Q_UNUSED( configFilePath )
 }
 
 QString engines::engine::setConfigFilePath( const QString& e ) const

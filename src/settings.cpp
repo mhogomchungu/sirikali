@@ -825,7 +825,7 @@ void settings::autoMountBackEnd( const settings::walletBackEnd& e )
 		}else{
 			return "none" ;
 		}
-			     }() ) ;
+	}() ) ;
 }
 
 QSettings &settings::backend()

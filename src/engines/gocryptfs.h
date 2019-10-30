@@ -23,8 +23,7 @@ struct gocryptfs : public engines::engine
 {
 	gocryptfs() ;
 
-	void updateMountOptions( engines::engine::options&,
-				 QString& configFilePath ) const override ;
+	void updateOptions( engines::engine::options& ) const override ;
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 

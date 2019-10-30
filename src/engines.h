@@ -275,12 +275,13 @@ public:
 				      const QString& mountPoint,
 				      int maxCount ) const ;
 
+		virtual bool takesTooLongToUnlock() const ;
+
 		virtual engine::engine::status passMinimumVersion() const ;
 
 		virtual const engines::engine& proveEngine( const QString& cipherPath ) const ;
 
-		virtual void updateMountOptions( engines::engine::options&,
-						 QString& configFilePath ) const ;
+		virtual void updateOptions( engines::engine::options& ) const ;
 
 		virtual const QProcessEnvironment& getProcessEnvironment() const ;
 		virtual bool requiresPolkit() const ;

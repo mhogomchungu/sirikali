@@ -75,12 +75,11 @@ static bool _set_if_found( const Function& function )
 	return false ;
 }
 
-void gocryptfs::updateMountOptions( engines::engine::options& opt,
-				    QString& configFilePath ) const
+void gocryptfs::updateOptions( engines::engine::options& opt ) const
 {
 	opt.reverseMode = [ & ](){
 
-		if( configFilePath.isEmpty() ){
+		if( opt.configFilePath.isEmpty() ){
 
 			return _set_if_found( [ & ]( const QString& e ){
 
@@ -89,7 +88,7 @@ void gocryptfs::updateMountOptions( engines::engine::options& opt,
 		}else{
 			return _set_if_found( [ & ]( const QString& e ){
 
-				return configFilePath.endsWith( e ) ;
+				return opt.configFilePath.endsWith( e ) ;
 			} ) ;
 		}
 	}() ;
