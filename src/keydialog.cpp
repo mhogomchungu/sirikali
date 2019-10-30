@@ -1081,17 +1081,21 @@ void keyDialog::encryptedFolderCreate()
 				    m_key,
 				    m_idleTimeOut,
 				    m_configFile,
-				    m_exe.toLower(),
 				    false,
 				    m_reverseMode,
 				    m_mountOptions,
 				    m_createOptions ) ;
 
-	m_cryfsWarning.showCreate( m_exe.toLower() ) ;
+	const auto& engine = engines::instance().getByName( m_exe.toLower() ) ;
 
-	auto e = siritask::encryptedFolderCreate( s ) ;
+	if( engine.takesTooLongToUnlock() ){
 
-	m_cryfsWarning.hide() ;
+		m_warningLabel.showCreate( engine.name() ) ;
+	}
+
+	auto e = siritask::encryptedFolderCreate( s,engine ) ;
+
+	m_warningLabel.hide() ;
 
 	m_working = false ;
 
@@ -1431,7 +1435,6 @@ void keyDialog::encryptedFolderMount()
 				    m_key,
 				    m_idleTimeOut,
 				    m_configFile,
-				    m_exe,
 				    ro,
 				    m_reverseMode,
 				    m_mountOptions,
@@ -1446,12 +1449,12 @@ void keyDialog::encryptedFolderMount()
 
 	if( engine.takesTooLongToUnlock() ){
 
-		m_cryfsWarning.showUnlock( engine.name() ) ;
+		m_warningLabel.showUnlock( engine.name() ) ;
 	}
 
 	auto e = siritask::encryptedFolderMount( s,false,m_engine ) ;
 
-	m_cryfsWarning.hide() ;
+	m_warningLabel.hide() ;
 
 	m_working = false ;
 
@@ -1800,7 +1803,7 @@ void keyDialog::pbCancel()
 
 void keyDialog::ShowUI()
 {
-	m_cryfsWarning.setWarningLabel( m_ui->cryfsWarning ) ;
+	m_warningLabel.setWarningLabel( m_ui->cryfsWarning ) ;
 	this->show() ;
 	this->raise() ;
 	this->activateWindow() ;

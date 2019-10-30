@@ -97,7 +97,8 @@ namespace siritask
 							 bool = false,
 							 const siritask::Engine& = siritask::Engine() ) ;
 
-	engines::engine::cmdStatus encryptedFolderCreate( const engines::engine::options& ) ;
+	engines::engine::cmdStatus encryptedFolderCreate( const engines::engine::options&,
+							  const engines::engine& ) ;
 }
 
 #endif // SIRITASK_H

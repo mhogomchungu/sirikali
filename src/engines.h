@@ -97,7 +97,6 @@ public:
 				 const QByteArray& volume_key,
 				 const QString& idle_timeout,
 				 const QString& config_file_path,
-				 const QString& volume_type,
 				 bool unlock_in_read_only,
 				 bool unlock_in_reverse_mode,
 				 const QString& mount_options,
@@ -107,7 +106,6 @@ public:
 			QByteArray key ;
 			QString idleTimeout ;
 			QString configFilePath ;
-			QString type ;
 			bool ro ;
 			bool reverseMode ;
 			QString mountOptions ;

@@ -591,7 +591,6 @@ static engines::engine::cmdStatus _encrypted_folder_mount( engines::engine::opti
 
 	opt.configFilePath  = Engine.configFilePath() ;
 	opt.cipherFolder    = Engine.cipherFolder() ;
-	opt.type            = engine.name() ;
 
 	engine.updateOptions( opt ) ;
 
@@ -663,10 +662,9 @@ static utility::result< QString > _configFilePath( const engines::engine& engine
 	}
 }
 
-static engines::engine::cmdStatus _encrypted_folder_create( const engines::engine::options& opt )
+static engines::engine::cmdStatus _encrypted_folder_create( const engines::engine::options& opt,
+							    const engines::engine& engine )
 {
-	const auto& engine = engines::instance().getByName( opt.type ) ;
-
 	if( engine.unknown() ){
 
 		return { engines::engine::status::unknown,engine } ;
@@ -741,28 +739,29 @@ static engines::engine::cmdStatus _encrypted_folder_create( const engines::engin
 	return e ;
 }
 
-engines::engine::cmdStatus siritask::encryptedFolderCreate( const engines::engine::options& opt )
+engines::engine::cmdStatus siritask::encryptedFolderCreate( const engines::engine::options& opt,
+							    const engines::engine& e )
 {
 	if( utility::platformIsWindows() ){
 
 		if( utility::runningOnGUIThread() ){
 
-			return _encrypted_folder_create( opt ) ;
+			return _encrypted_folder_create( opt,e ) ;
 		}else{
 			/*
 			 * We should not take this path
 			 */
 			utility::debug() << "ERROR!!\nsiritask::encryptedFolderCreate is running\nfrom a background thread" ;
-			return _encrypted_folder_create( opt ) ;
+			return _encrypted_folder_create( opt,e ) ;
 		}
 	}else{
-		auto& e = Task::run( [ & ](){ return _encrypted_folder_create( opt ) ; } ) ;
+		auto& s = Task::run( [ & ](){ return _encrypted_folder_create( opt,e ) ; } ) ;
 
-		return utility::unwrap( e ) ;
+		return utility::unwrap( s ) ;
 	}
 }
 
-static void _run_command_on_mount( const engines::engine::options& opt )
+static void _run_command_on_mount( const engines::engine::options& opt,const QString& type )
 {
 	auto exe = _cmd_args( settings::instance().runCommandOnMount() ) ;
 
@@ -771,7 +770,7 @@ static void _run_command_on_mount( const engines::engine::options& opt )
 		auto a = _makePath( opt.cipherFolder ) ;
 		auto b = _makePath( opt.plainFolder ) ;
 
-		exe = QString( "%1 %2 %3 %4" ).arg( exe,a,b,opt.type ) ;
+		exe = QString( "%1 %2 %3 %4" ).arg( exe,a,b,type ) ;
 
 		Task::exec( [ = ](){
 
@@ -827,7 +826,7 @@ engines::engine::cmdStatus siritask::encryptedFolderMount( const engines::engine
 
 	if( s == engines::engine::status::success ){
 
-		_run_command_on_mount( opt ) ;
+		_run_command_on_mount( opt,engine.get().name() ) ;
 	}
 
 	return s ;

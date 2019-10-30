@@ -307,7 +307,7 @@ private :
 
 	favorites::volumeList m_volumes ;
 
-	cryfsWarning m_cryfsWarning ;
+	cryfsWarning m_warningLabel ;
 
 	decltype( m_volumes.size() ) m_counter = 0 ;
 
