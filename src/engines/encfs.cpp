@@ -25,6 +25,8 @@ static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
 
+	s.backendTimeout              = 0 ;
+	s.takesTooLongToUnlock        = false ;
 	s.supportsMountPathsOnWindows = true ;
 	s.autorefreshOnMountUnMount   = true ;
 	s.backendRequireMountPath     = true ;

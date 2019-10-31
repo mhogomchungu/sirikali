@@ -28,6 +28,8 @@ static engines::engine::BaseOptions _setOptions()
 	auto a = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{26116061-4F99-4C44-A178-2153FA396308}" ;
 	auto b = "InstallLocation" ;
 
+	s.backendTimeout              = 0 ;
+	s.takesTooLongToUnlock        = false ;
 	s.supportsMountPathsOnWindows = true ;
 	s.autorefreshOnMountUnMount   = true ;
 	s.backendRequireMountPath     = true ;

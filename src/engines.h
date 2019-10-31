@@ -172,7 +172,7 @@ public:
 
 		struct BaseOptions
 		{
-			int  backendTimeout = 0 ;
+			int  backendTimeout ;
 			bool hasConfigFile ;
 			bool setsCipherPath ;
 			bool autoMountsOnCreate ;
@@ -183,6 +183,7 @@ public:
 			bool requiresPolkit ;
 			bool autorefreshOnMountUnMount ;
 			bool backendRequireMountPath ;
+			bool takesTooLongToUnlock ;
 
 			QByteArray passwordFormat ;
 			QString minimumVersion ;

@@ -133,7 +133,9 @@ void createBackendWIndow::save()
 		}
 	} ;
 
-	config[ "version" ]                     = 1.0 ;
+	config[ "versionNumber" ]               = "1.1" ;
+
+	//start of version 1.0
 	config[ "createControlStructure" ]      = "%{createOptions} %{cipherFolder} %{mountPoint}" ;
 	config[ "mountControlStructure" ]       = "%{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
 	config[ "idleString" ]                  = "" ;
@@ -157,6 +159,12 @@ void createBackendWIndow::save()
 	config[ "requiresAPassword" ]           = m_ui->cbRequiresAPassword->isChecked() ;
 	config[ "supportsMountPointPaths" ]     = m_ui->cbSupportsMountPointPaths->isChecked() ;
 	config[ "autoMountsOnVolumeCreation" ]  = m_ui->cbAutoMountsOnVolumeCreation->isChecked() ;
+
+	//start of version 1.1
+	config[ "backendRequireMountPath" ]     = true ;
+	config[ "autorefreshOnMountUnMount" ]   = true ;
+	config[ "backendTimeout" ]              = 0 ;
+	config[ "takesTooLongToUnlock" ]        = false ;
 
 	config.toFile( path ) ;
 

@@ -309,7 +309,7 @@ bool engines::engine::backendRequireMountPath() const
 
 bool engines::engine::takesTooLongToUnlock() const
 {
-	return false ;
+	return m_Options.takesTooLongToUnlock ;
 }
 
 bool engines::engine::requiresPolkit() const

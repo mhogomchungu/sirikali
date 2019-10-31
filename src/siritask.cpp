@@ -238,7 +238,8 @@ static void _run_command( const QString& command,
 
 static engines::engine::cmdStatus _encrypted_unmount( const QString& cipherFolder,
 						      const QString& mountPoint,
-						      const QString& fileSystem,int numberOfAttempts )
+						      const QString& fileSystem,
+						      int numberOfAttempts )
 {
 	const auto& engine = engines::instance().getByName( fileSystem ) ;
 
@@ -584,7 +585,7 @@ siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 static engines::engine::cmdStatus _encrypted_folder_mount( engines::engine::options opt,
 							   bool reUseMP,
 							   const siritask::Engine& eng )
-{	
+{
 	auto Engine = siritask::mountEngine( opt.cipherFolder,opt.configFilePath,eng ) ;
 
 	const auto& engine  = Engine.get() ;
@@ -733,8 +734,8 @@ static engines::engine::cmdStatus _encrypted_folder_create( const engines::engin
 			_deleteFolders( opt.plainFolder,opt.cipherFolder ) ;
 		}else{
 			_deleteFolders( opt.cipherFolder ) ;
-		}		
-	}	
+		}
+	}
 
 	return e ;
 }
