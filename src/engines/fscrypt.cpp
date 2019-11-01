@@ -303,6 +303,11 @@ bool fscrypt::unmount( const QString& cipherFolder,
 	return false ;
 }
 
+QStringList fscrypt::mountInfo( const QStringList& a ) const
+{
+	return utility::unwrap( fscrypt::fscryptVolumes( a ) ) ;
+}
+
 const engines::engine& fscrypt::proveEngine( const QString& cipherPath ) const
 {
 	if( !utility::platformIsLinux() ){

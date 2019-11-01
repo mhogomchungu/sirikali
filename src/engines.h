@@ -267,6 +267,8 @@ public:
 
 		virtual ~engine() ;
 
+		virtual QStringList mountInfo( const QStringList& ) const ;
+
 		virtual Task::future< QString >& volumeProperties( const QString& cipherFolder,
 								   const QString& mountPoint ) const ;
 
@@ -438,6 +440,7 @@ public:
 	engines() ;
 	static const engines& instance() ;
 	bool atLeastOneDealsWithFiles() const ;
+	QStringList mountInfo( const QStringList& ) const ;
 	QStringList enginesWithNoConfigFile() const ;
 	QStringList enginesWithConfigFile() const ;
 	const QStringList& supported() const ;

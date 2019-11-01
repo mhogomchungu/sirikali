@@ -126,20 +126,21 @@ static QStringList _windows_volumes()
 
 static QStringList _unlocked_volumes()
 {
-	if( utility::platformIsLinux() ){
+	auto a = [](){
 
-		auto a = utility::split( utility::fileContents( "/proc/self/mountinfo" ) ) ;
+		if( utility::platformIsLinux() ){
 
-		auto b = utility::unwrap( fscrypt::fscryptVolumes( a ) ) ;
+			return utility::split( utility::fileContents( "/proc/self/mountinfo" ) ) ;
 
-		return b + a ;
+		}else if( utility::platformIsOSX() ){
 
-	}else if( utility::platformIsOSX() ){
+			return _macox_volumes() ;
+		}else{
+			return _windows_volumes() ;
+		}
+	}() ;
 
-		return _macox_volumes() ;
-	}else{
-		return _windows_volumes() ;
-	}
+	return a + engines::instance().mountInfo( a ) ;
 }
 
 mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& quit ) :

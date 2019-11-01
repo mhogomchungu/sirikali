@@ -126,6 +126,12 @@ engines::engine::~engine()
 {
 }
 
+QStringList engines::engine::mountInfo( const QStringList& e ) const
+{
+	Q_UNUSED( e )
+	return {} ;
+}
+
 Task::future< QString >& engines::engine::volumeProperties( const QString& cipherFolder,
 							    const QString& mountPoint ) const
 {
@@ -495,6 +501,18 @@ bool engines::atLeastOneDealsWithFiles() const
 	}
 
 	return false ;
+}
+
+QStringList engines::mountInfo( const QStringList& m ) const
+{
+	QStringList s ;
+
+	for( const auto& e : this->supported() ){
+
+		s += this->getByName( e ).mountInfo( m ) ;
+	}
+
+	return s ;
 }
 
 QStringList engines::enginesWithNoConfigFile() const

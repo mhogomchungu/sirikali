@@ -31,6 +31,8 @@ public:
 		      const QString& mountPoint,
 		      int maxCount ) const override ;
 
+	QStringList mountInfo( const QStringList& ) const override ;
+
 	const engines::engine& proveEngine( const QString& cipherPath ) const override ;
 
 	Task::future< QString >& volumeProperties( const QString& cipherFolder,
