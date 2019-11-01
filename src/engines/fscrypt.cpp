@@ -247,7 +247,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.hasConfigFile         = false ;
 	s.autoMountsOnCreate    = true ;
 	s.hasGUICreateOptions   = false ;
-	s.setsCipherPath        = false ;
+	s.setsCipherPath        = true ;
 	s.passwordFormat        = "%{password}" ;
 	s.executableName        = "fscrypt" ;
 	s.incorrectPasswordText = "incorrect key provided" ;

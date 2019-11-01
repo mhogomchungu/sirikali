@@ -269,11 +269,7 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 
 			if( engine.known() ){
 
-				if( engine.name() == "fscrypt" ){
-
-					info.volumePath = k.at( 8 ) ;
-
-				}else if( _starts_with( engine,cf ) ){
+				if( _starts_with( engine,cf ) ){
 
 					info.volumePath = _decode( cf,true ) ;
 
