@@ -227,11 +227,6 @@ static QStringList _fscryptVolumes( const QStringList& s )
 	return l ;
 }
 
-Task::future< QStringList >& fscrypt::fscryptVolumes( const QStringList& s )
-{
-	return Task::run( [ & ](){ return _fscryptVolumes( s ) ; } ) ;
-}
-
 static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
@@ -305,7 +300,7 @@ bool fscrypt::unmount( const QString& cipherFolder,
 
 QStringList fscrypt::mountInfo( const QStringList& a ) const
 {
-	return utility::unwrap( fscrypt::fscryptVolumes( a ) ) ;
+	return Task::await( [ & ](){ return _fscryptVolumes( a ) ; } ) ;
 }
 
 const engines::engine& fscrypt::proveEngine( const QString& cipherPath ) const

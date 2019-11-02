@@ -23,8 +23,6 @@
 class fscrypt : public engines::engine
 {
 public:
-	static Task::future< QStringList >& fscryptVolumes( const QStringList& s ) ;
-
 	fscrypt() ;
 
 	bool unmount( const QString& cipherFolder,

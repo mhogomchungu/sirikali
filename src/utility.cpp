@@ -1271,13 +1271,13 @@ void utility::setWindowsMountPointOptions( QWidget * obj,QLineEdit * e,QPushButt
 	_setWindowsMountMountOptions( obj,e,s ) ;
 }
 
-static utility::result< int > _convert_string_to_version( const QString& e )
+static utility::result< quint64 > _convert_string_to_version( const QString& e )
 {
-	auto _convert = []( const QString& e )->utility::result< int >{
+	auto _convert = []( const QString& e )->utility::result< quint64 >{
 
 		bool ok ;
 
-		auto s = e.toInt( &ok ) ;
+		quint64 s = quint64( e.toInt( &ok ) ) ;
 
 		if( ok ){
 
@@ -1291,9 +1291,9 @@ static utility::result< int > _convert_string_to_version( const QString& e )
 
 	auto components = s.size() ;
 
-	int major = 1000000 ;
-	int minor = 1000 ;
-	int patch = 1 ;
+	quint64 major = 100000000 ;
+	quint64 minor = 10000 ;
+	quint64 patch = 1 ;
 
 	if( components == 1 ){
 
@@ -1337,7 +1337,7 @@ static utility::result< int > _convert_string_to_version( const QString& e )
 	} ) ;
 }
 
-static utility::result< int > _installedVersion( const QString& backend )
+static utility::result< quint64 > _installedVersion( const QString& backend )
 {
 	auto s = utility::unwrap( utility::backEndInstalledVersion( backend ) ) ;
 
@@ -1399,13 +1399,13 @@ utility::result< bool > utility::versionIsGreaterOrEqualTo( const QString& insta
 ::Task::future< utility::result< bool > >& utility::backendIsGreaterOrEqualTo( const QString& backend,
 									       const QString& version )
 {
-	return _compare_versions( backend,version,std::greater_equal<int>() ) ;
+	return _compare_versions( backend,version,std::greater_equal<quint64>() ) ;
 }
 
 ::Task::future< utility::result< bool > >& utility::backendIsLessThan( const QString& backend,
 								       const QString& version )
 {
-	return _compare_versions( backend,version,std::less<int>() ) ;
+	return _compare_versions( backend,version,std::less<quint64>() ) ;
 }
 
 QString utility::wrap_su( const QString& s )
