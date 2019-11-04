@@ -24,7 +24,8 @@
 #include "win.h"
 #include "settings.h"
 #include "engines.h"
-#include "engines/fscrypt.h"
+#include "crypto.h"
+
 #include <QMetaObject>
 #include <QtGlobal>
 
@@ -174,40 +175,6 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 {
 	return Task::run( [](){
 
-		auto _hash = []( const QString& e ){
-
-			/*
-			 * jenkins one at a time hash function.
-			 *
-			 * https://en.wikipedia.org/wiki/Jenkins_hash_function
-			 */
-
-			uint32_t hash = 0 ;
-
-			auto p = e.toLatin1() ;
-
-			auto key = p.constData() ;
-
-			auto l = p.size() ;
-
-			for( decltype( l ) i = 0 ; i < l ; i++ ){
-
-				hash += static_cast< uint32_t>( *( key + i ) ) ;
-
-				hash += ( hash << 10 ) ;
-
-				hash ^= ( hash >> 6 ) ;
-			}
-
-			hash += ( hash << 3 ) ;
-
-			hash ^= ( hash >> 11 ) ;
-
-			hash += ( hash << 15 ) ;
-
-			return QString::number( hash ) ;
-		} ;
-
 		auto _decode = []( QString path,bool set_offset ){
 
 			path.replace( "\\012","\n" ) ;
@@ -283,7 +250,7 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 
 					info.volumePath = _decode( cf,false ) ;
 				}else{
-					info.volumePath = _hash( m ) ;
+					info.volumePath = crypto::sha256( m ).mid( 0,20 ) ;
 				}
 
 				info.mountPoint   = _decode( m,false ) ;
