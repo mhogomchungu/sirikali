@@ -33,6 +33,14 @@
 #include <vector>
 #include <utility>
 
+QString mountinfo::mountProperties( const QString& mountPoint,
+				    const QString& mode,
+				    const QString& fileSystem,
+				    const QString& cipherPath )
+{
+	return QString( "x x x:x x %1 %2,x - %3 %4 x" ).arg( mountPoint,mode,fileSystem,cipherPath ) ;
+}
+
 QString mountinfo::encodeMountPath( const QString& e )
 {
 	auto m = e ;
@@ -82,7 +90,6 @@ static QStringList _macox_volumes()
 	QStringList s ;
 	QString mode ;
 	QString fs ;
-	const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
 
 	for( const auto& it : _macox_volumes_1() ){
 
@@ -99,7 +106,7 @@ static QStringList _macox_volumes()
 
 			fs = "fuse." + it.mid( 0,it.indexOf( '@' ) ) ;
 
-			s.append( w.arg( e.at( 2 ),mode,fs,e.at( 0 ) ) ) ;
+			s.append( mountinfo::mountProperties( e.at( 2 ),mode,fs,e.at( 0 ) ) ) ;
 		}
 	}
 
@@ -110,15 +117,13 @@ static QStringList _windows_volumes()
 {
 	QStringList s ;
 
-	const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
-
 	for( const auto& e : SiriKali::Windows::getMountOptions() ){
 
 		auto fs = "fuse." + e.subtype ;
 
 		auto m = e.subtype + "@" + e.cipherFolder ;
 
-		s.append( w.arg( e.mountPointPath,e.mode,fs,m ) ) ;
+		s.append( mountinfo::mountProperties( e.mountPointPath,e.mode,fs,m ) ) ;
 	}
 
 	return s ;

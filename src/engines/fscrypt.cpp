@@ -19,8 +19,9 @@
 
 #include "fscrypt.h"
 #include "../win.h"
-#include <vector>
 #include "../settings.h"
+#include "../mountinfo.h"
+#include <vector>
 
 static QStringList _encryptedVolumes( const QString& list )
 {
@@ -202,8 +203,6 @@ static QStringList _fscryptVolumes( const QStringList& s )
 		return {} ;
 	}
 
-	const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
-
 	QStringList l ;
 
 	for( const auto& it : _encryptedVolumes( status ) ){
@@ -219,7 +218,7 @@ static QStringList _fscryptVolumes( const QStringList& s )
 
 				auto c = a + xt.poly + "\n" + b + xt.comment ;
 
-				l.append( w.arg( it,_getFsMode( s,it ),"fscrypt",c ) ) ;
+				l.append( mountinfo::mountProperties( it,_getFsMode( s,it ),"fscrypt",c ) ) ;
 			}
 		}
 	}
