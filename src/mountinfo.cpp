@@ -223,7 +223,7 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 
 		for( const auto& it : _unlocked_volumes() ){
 
-			const auto& k = utility::split( it,' ' ) ;
+			const auto k = utility::split( it,' ' ) ;
 
 			const auto s = k.size() ;
 

@@ -899,14 +899,23 @@ void keyDialog::pbOpen()
 		auto internal = wallet == _internalWallet() ;
 		auto osx      = wallet == _OSXKeyChain() ;
 
-		/* Figure out which wallet is used. Defaults to 'internal' */
+		/*
+		 * Figure out which wallet is used. Defaults to 'internal'
+		 */
 		using bk = LXQt::Wallet::BackEnd ;
+
 		bk bkwallet = LXQt::Wallet::BackEnd::internal ;
+
 		if( wallet == _kwallet() ){
+
 			bkwallet = LXQt::Wallet::BackEnd::kwallet ;
+
 		}else if( wallet == _gnomeWallet() ){
+
 			bkwallet = LXQt::Wallet::BackEnd::libsecret ;
+
 		}else if( wallet == _OSXKeyChain() ){
+
 			bkwallet = LXQt::Wallet::BackEnd::osxkeychain ;
 		}
 
@@ -1299,7 +1308,7 @@ void keyDialog::pbSetKey()
 
 				const auto& env = utility::systemEnvironment() ;
 
-				return utility::Task( exe,20000,env,passphrase.toLatin1() ).stdOut() ;
+				return utility::Task( exe,20000,env,passphrase.toUtf8() ).stdOut() ;
 			}
 		}
 

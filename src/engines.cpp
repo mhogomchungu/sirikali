@@ -240,7 +240,6 @@ engines::engine::engine( engines::engine::BaseOptions o ) :
 	m_Options( std::move( o ) ),
 	m_processEnvironment( utility::systemEnvironment() )
 {
-	m_processEnvironment.insert( "LANG","C" ) ;
 }
 
 QString engines::engine::executableFullPath() const

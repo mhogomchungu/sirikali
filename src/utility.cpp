@@ -1125,8 +1125,21 @@ QByteArray utility::readPassword( bool addNewLine )
 
 const QProcessEnvironment& utility::systemEnvironment()
 {
-	static QProcessEnvironment env = QProcessEnvironment::systemEnvironment() ;
-	return env ;
+	static class sysEnv{
+	public:
+		sysEnv() : m_QProcessEnvironment( QProcessEnvironment::systemEnvironment() )
+		{
+			m_QProcessEnvironment.insert( "LANG","C" ) ;
+		}
+		const QProcessEnvironment& get() const
+		{
+			return m_QProcessEnvironment ;
+		}
+	private:
+		QProcessEnvironment m_QProcessEnvironment ;
+	} environment ;
+
+	return environment.get() ;
 }
 
 QString utility::configFilePath( QWidget * s,const QString& e )

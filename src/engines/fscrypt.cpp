@@ -187,10 +187,8 @@ static QString _getFsMode( const QStringList& s,const QString& m )
 	return "-" ;
 }
 
-static QStringList _fscryptVolumes( const QStringList& s )
+static QStringList _fscryptVolumes( const QStringList& s,const QString& exe )
 {
-	auto exe = utility::executableFullPath( "fscrypt" ) ;
-
 	if( exe.isEmpty() ){
 
 		return {} ;
@@ -299,7 +297,7 @@ bool fscrypt::unmount( const QString& cipherFolder,
 
 QStringList fscrypt::mountInfo( const QStringList& a ) const
 {
-	return Task::await( [ & ](){ return _fscryptVolumes( a ) ; } ) ;
+	return Task::await( [ & ](){ return _fscryptVolumes( a,this->executableFullPath() ) ; } ) ;
 }
 
 const engines::engine& fscrypt::proveEngine( const QString& cipherPath ) const
