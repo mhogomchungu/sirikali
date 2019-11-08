@@ -21,6 +21,7 @@
 
 #include "utility.h"
 #include "settings.h"
+#include "crypto.h"
 
 #include <QDir>
 #include <QFile>
@@ -47,9 +48,8 @@ static QString _create_path( const QString& m,const favorites::entry& e )
 {
 	auto a = utility::split( e.volumePath,'/' ).last() ;
 	auto b = a + e.mountPointPath ;
-	auto c = QCryptographicHash::hash( b.toLatin1(),QCryptographicHash::Sha256 ) ;
 
-	return m + a + "-" + c.toHex() + ".json" ;
+	return m + a + "-" + crypto::sha256( b ) + ".json" ;
 }
 
 static QString _create_path( const favorites::entry& e )
@@ -60,9 +60,8 @@ static QString _create_path( const favorites::entry& e )
 
 		auto a = utility::split( e.volumePath,'/' ).last() ;
 		auto b = a + e.mountPointPath ;
-		auto c = QCryptographicHash::hash( b.toLatin1(),QCryptographicHash::Sha256 ) ;
 
-		return s.value() + a + "-" + c.toHex() + ".json" ;
+		return s.value() + a + "-" + crypto::sha256( b ) + ".json" ;
 	}else{
 		return {} ;
 	}
@@ -155,14 +154,14 @@ static void _add_entries( std::vector< favorites::entry >& e,const QString& path
 
 std::vector<favorites::entry> favorites::readFavorites() const
 {
-	auto m = _config_path() ;
+	const auto m = _config_path() ;
 
 	if( !m.has_value() ){
 
 		return {} ;
 	}
 
-	auto a = m.value() ;
+	const auto& a = m.value() ;
 
 	const auto s = QDir( a ).entryList( QDir::Filter::Files | QDir::Filter::Hidden ) ;
 
