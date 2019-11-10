@@ -143,44 +143,44 @@ utility::result< utility::Task > siritask::unmountVolume( const QString& exe,
 
 	if( e.isEmpty() ){
 
-		return utility::unwrap( utility::Task::run( exe,timeOut,usePolkit ) ) ;
+		return utility::unwrap( utility::Task::run( exe + " " + mountPoint,timeOut,usePolkit ) ) ;
 	}else{
 		auto m = utility::unwrap( utility::Task::run( e + " " + mountPoint,timeOut,false ) ) ;
 
 		if( m.success() ){
 
-			return utility::unwrap( utility::Task::run( exe,timeOut,usePolkit ) ) ;
+			return utility::unwrap( utility::Task::run( exe + " " + mountPoint,timeOut,usePolkit ) ) ;
 		}else{
 			return {} ;
 		}
 	}
 }
 
-static bool _unmount_rest_( const QString& cmd,const QString& mountPoint )
-{
-	auto s = siritask::unmountVolume( cmd,mountPoint,false ) ;
-
-	return s && s.value().success() ;
-}
-
 bool siritask::unmountVolume( const QString& mountPoint,const QString& unMountCommand,int maxCount )
 {
-	auto cmd = [ & ](){
+	auto _unmount = []( const QString& cmd,const QString& mountPoint ){
+
+		auto s = siritask::unmountVolume( cmd,mountPoint,false ) ;
+
+		return s && s.value().success() ;
+	} ;
+
+	auto cmd = [ & ]()->QString{
 
 		if( unMountCommand.isEmpty() ){
 
 			if( utility::platformIsOSX() ){
 
-				return "umount " + mountPoint ;
+				return "umount" ;
 			}else{
-				return "fusermount -u " + mountPoint ;
+				return "fusermount -u" ;
 			}
 		}else{
-			return unMountCommand + " " + mountPoint ;
+			return unMountCommand ;
 		}
 	}() ;
 
-	if( _unmount_rest_( cmd,mountPoint ) ){
+	if( _unmount( cmd,mountPoint ) ){
 
 		return true ;
 	}else{
@@ -188,7 +188,7 @@ bool siritask::unmountVolume( const QString& mountPoint,const QString& unMountCo
 
 			utility::Task::waitForOneSecond() ;
 
-			if( _unmount_rest_( cmd,mountPoint ) ){
+			if( _unmount( cmd,mountPoint ) ){
 
 				return true ;
 			}
@@ -485,29 +485,25 @@ static utility::result< QString > _path_exist( QString e,const QString& m )
 
 siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 					const QString& configFilePath,
-					const siritask::Engine& engine )
+					const siritask::Engine& Engine )
 {
-	if( engine.get().known() ){
+	if( Engine.get().known() ){
 
-		auto a = "[[[" + engine.get().name() + "]]]" ;
+		const auto& engine = Engine.get() ;
 
-		auto b = engine.get().name() + " " ;
+		auto a = "[[[" + engine.name() + "]]]" ;
+
+		auto b = engine.name() + " " ;
 
 		if( configFilePath.startsWith( a ) ){
 
-			return { { engine.get(),
-				   configFilePath.mid( a.size() ),
-				   cipherFolder } } ;
+			return { { engine,configFilePath.mid( a.size() ),cipherFolder } } ;
 
 		}else if( cipherFolder.startsWith( b,Qt::CaseInsensitive ) ){
 
-			return { { engine.get(),
-				   configFilePath,
-				   cipherFolder.mid( b.size() ) } } ;
+			return { { engine,configFilePath,cipherFolder.mid( b.size() ) } } ;
 		}else{
-			return { { engine.get(),
-				   configFilePath,
-				   cipherFolder } } ;
+			return { { engine,configFilePath,cipherFolder } } ;
 		}
 	}
 
