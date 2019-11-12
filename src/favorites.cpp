@@ -149,6 +149,11 @@ static void _add_entries( std::vector< favorites::entry >& e,const QString& path
 
 		utility::debug::cout() << e.what() ;
 		utility::debug::cout() << "Failed to parse file for reading: " + path ;
+
+	}catch( const std::exception& e ){
+
+		utility::debug::cout() << e.what() ;
+		utility::debug::cout() << "Failed to parse file for reading: " + path ;
 	}
 }
 
