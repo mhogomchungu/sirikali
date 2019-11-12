@@ -152,8 +152,6 @@ static std::function< void() > _failed_to_connect_to_zulupolkit ;
 
 static bool _enable_debug = false ;
 
-static bool _enable_full_debug = false ;
-
 static QThread * _main_gui_thread ;
 
 static QWidget * _mainQWidget ;
@@ -178,29 +176,20 @@ bool utility::debugEnabled()
 	return _enable_debug ;
 }
 
-void utility::enableFullDebug( bool e )
-{
-	_enable_full_debug = e ;
-}
-
-bool utility::debugFullEnabled()
-{
-	return _enable_full_debug ;
-}
-
 void utility::setDebugWindow( debugWindow * w )
 {
 	_debugWindow = w ;
 }
 
+static void _show_debug_window()
+{
+	_debugWindow->Show() ;
+}
+
 static void _set_debug_window_text( const QString& e )
 {
-	if( utility::debugFullEnabled() ){
-
-		std::cout << e.toLatin1().constData() << std::endl ;
-	}
-
-	_debugWindow->UpdateOutPut( e,utility::debugFullEnabled() ) ;
+	std::cout << e.toLatin1().constData() << std::endl ;
+	_debugWindow->UpdateOutPut( e,utility::debugEnabled() ) ;
 }
 
 utility::SocketPaths utility::socketPath()
@@ -334,6 +323,13 @@ utility::debug utility::debug::operator<<( const QString& e )
 	return utility::debug() ;
 }
 
+void utility::debug::showDebugWindow( const QString& e )
+{
+	utility::enableDebug( true ) ;
+	_build_debug_msg( e ) ;
+	_show_debug_window() ;
+}
+
 utility::debug utility::debug::operator<<( int e )
 {
 	_build_debug_msg( QString::number( e ) ) ;
@@ -456,8 +452,6 @@ bool utility::enablePolkit()
 void utility::initGlobals()
 {
 	settings::instance().scaleGUI() ;
-
-	favorites::instance().updateFavorites() ;
 
 	utility::setGUIThread() ;
 

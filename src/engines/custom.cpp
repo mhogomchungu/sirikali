@@ -79,6 +79,13 @@ static QString _getVersion( const SirikaliJson& json )
 
 static utility::result< custom::opts > _getOptions( const QByteArray& e,const QString& s )
 {
+	auto _log_error = []( const QString& msg,const QString& path ){
+
+		auto a = "\nFailed to parse file for reading: " + path ;
+
+		utility::debug::showDebugWindow( msg + a ) ;
+	} ;
+
 	try{
 		custom::opts s ;
 
@@ -98,16 +105,18 @@ static utility::result< custom::opts > _getOptions( const QByteArray& e,const QS
 
 	}catch( const SirikaliJson::exception& e ){
 
-		utility::debug::cout() << "Failed to parse config file: " + s << e.what() ;
-
-		return {} ;
+		_log_error( e.what(),s ) ;
 
 	}catch( const std::exception& e ){
 
-		utility::debug::cout() << e.what() ;
+		_log_error( e.what(),s ) ;
 
-		return {} ;
+	}catch( ... ){
+
+		_log_error( "Unknown error has occured",s ) ;
 	}
+
+	return {} ;
 }
 
 static void _add_engines( QStringList& list,

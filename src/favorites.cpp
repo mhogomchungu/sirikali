@@ -121,6 +121,13 @@ static void _move_favorites_to_new_system( const QStringList& m )
 	favorites::instance().add( s ) ;
 }
 
+static void _log_error( const QString& msg,const QString& path )
+{
+	auto a = "\nFailed to parse file for reading: " + path ;
+
+	utility::debug::showDebugWindow( msg + a ) ;
+}
+
 static void _add_entries( std::vector< favorites::entry >& e,const QString& path )
 {
 	try {
@@ -147,13 +154,15 @@ static void _add_entries( std::vector< favorites::entry >& e,const QString& path
 
 	}catch( const SirikaliJson::exception& e ){
 
-		utility::debug::cout() << e.what() ;
-		utility::debug::cout() << "Failed to parse file for reading: " + path ;
+		_log_error( e.what(),path ) ;
 
 	}catch( const std::exception& e ){
 
-		utility::debug::cout() << e.what() ;
-		utility::debug::cout() << "Failed to parse file for reading: " + path ;
+		_log_error( e.what(),path ) ;
+
+	}catch( ... ){
+
+		_log_error( "Unknown error has occured",path ) ;
 	}
 }
 
@@ -230,36 +239,52 @@ favorites::error favorites::add( const favorites::entry& e )
 		return error::FAILED_TO_CREATE_ENTRY ;
 	}
 
-	SirikaliJson json ;
-
-	json[ "volumePath" ]           = e.volumePath ;
-	json[ "mountPointPath" ]       = e.mountPointPath ;
-	json[ "configFilePath" ]       = e.configFilePath ;
-	json[ "idleTimeOut" ]          = e.idleTimeOut ;
-	json[ "mountOptions" ]         = e.mountOptions ;
-	json[ "preMountCommand" ]      = e.preMountCommand ;
-	json[ "postMountCommand" ]     = e.postMountCommand ;
-	json[ "preUnmountCommand" ]    = e.preUnmountCommand ;
-	json[ "postUnmountCommand" ]   = e.postUnmountCommand ;
-	json[ "reverseMode" ]          = e.reverseMode ;
-	json[ "volumeNeedNoPassword" ] = e.volumeNeedNoPassword ;
-
-	favorites::triState::writeTriState( json,e.readOnlyMode,"mountReadOnly" ) ;
-	favorites::triState::writeTriState( json,e.autoMount,"autoMountVolume" ) ;
-
 	auto a = _create_path( m.value(),e ) ;
 
-	if( utility::pathExists( a ) ){
+	try{
+		SirikaliJson json ;
 
-		return error::ENTRY_ALREADY_EXISTS ;
-	}else{
-		if( json.toFile( a ) ){
+		json[ "volumePath" ]           = e.volumePath ;
+		json[ "mountPointPath" ]       = e.mountPointPath ;
+		json[ "configFilePath" ]       = e.configFilePath ;
+		json[ "idleTimeOut" ]          = e.idleTimeOut ;
+		json[ "mountOptions" ]         = e.mountOptions ;
+		json[ "preMountCommand" ]      = e.preMountCommand ;
+		json[ "postMountCommand" ]     = e.postMountCommand ;
+		json[ "preUnmountCommand" ]    = e.preUnmountCommand ;
+		json[ "postUnmountCommand" ]   = e.postUnmountCommand ;
+		json[ "reverseMode" ]          = e.reverseMode ;
+		json[ "volumeNeedNoPassword" ] = e.volumeNeedNoPassword ;
 
-			return error::SUCCESS ;
+		favorites::triState::writeTriState( json,e.readOnlyMode,"mountReadOnly" ) ;
+		favorites::triState::writeTriState( json,e.autoMount,"autoMountVolume" ) ;
+
+		if( utility::pathExists( a ) ){
+
+			return error::ENTRY_ALREADY_EXISTS ;
 		}else{
-			return error::FAILED_TO_CREATE_ENTRY ;
+			if( json.toFile( a ) ){
+
+				return error::SUCCESS ;
+			}else{
+				return error::FAILED_TO_CREATE_ENTRY ;
+			}
 		}
-	}	
+
+	}catch( const SirikaliJson::exception& e ){
+
+		_log_error( e.what(),a ) ;
+
+	}catch( const std::exception& e ){
+
+		_log_error( e.what(),a ) ;
+
+	}catch( ... ){
+
+		_log_error( "Unknown error has occured",a ) ;
+	}
+
+	return error::FAILED_TO_CREATE_ENTRY ;
 }
 
 void favorites::replaceFavorite( const favorites::entry& old,const favorites::entry& New )

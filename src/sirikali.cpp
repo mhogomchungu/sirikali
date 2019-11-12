@@ -89,6 +89,7 @@ sirikali::sirikali() :
 	m_signalHandler( this,this->getEmergencyShutDown() )
 {
 	utility::setMainQWidget( this ) ;
+	favorites::instance().updateFavorites() ;
 }
 
 std::function< void( systemSignalHandler::signal ) > sirikali::getEmergencyShutDown()
@@ -318,7 +319,7 @@ void sirikali::setUpApp( const QString& volume )
 
 	QTimer::singleShot( settings::instance().checkForUpdateInterval(),this,SLOT( autoUpdateCheck() ) ) ;
 
-	if( utility::debugEnabled() || utility::debugFullEnabled() ){
+	if( utility::debugEnabled() ){
 
 		this->showDebugWindow() ;
 	}
@@ -649,8 +650,8 @@ void sirikali::polkitFailedWarning()
 
 void sirikali::start( const QStringList& l )
 {
-	utility::enableDebug( l.contains( "--debug" ) ) ;
-	utility::enableFullDebug( l.contains( "--debug-full" ) ) ;
+	utility::enableDebug( l.contains( "--debug" ) ) ;	
+	utility::enableDebug( l.contains( "--debug-full" ) ) ;
 
 	m_startHidden  = l.contains( "-e" ) ;
 

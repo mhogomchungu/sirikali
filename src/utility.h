@@ -150,6 +150,8 @@ namespace utility
 {
 	struct debug
 	{
+		static void showDebugWindow( const QString& ) ;
+
 		struct cout{
 
 			template< typename T >
@@ -355,9 +357,6 @@ namespace utility
 
 	void enableDebug( bool ) ;
 	bool debugEnabled( void ) ;
-
-	void enableFullDebug( bool ) ;
-	bool debugFullEnabled( void ) ;
 
 	const QProcessEnvironment& systemEnvironment() ;
 
