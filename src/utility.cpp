@@ -188,7 +188,6 @@ static void _show_debug_window()
 
 static void _set_debug_window_text( const QString& e )
 {
-	std::cout << e.toLatin1().constData() << std::endl ;
 	_debugWindow->UpdateOutPut( e,utility::debugEnabled() ) ;
 }
 
@@ -1501,9 +1500,9 @@ utility::result< QByteArray > utility::yubiKey( const QString& challenge )
 
 			return m ;
 		}else{
-			utility::debug::cout() << "Failed to get a responce from ykchalresp" ;
-			utility::debug::cout() << "StdOUt:" << s.std_out() ;
-			utility::debug::cout() << "StdError:" << s.std_error() ;
+			utility::debug() << "Failed to get a responce from ykchalresp" ;
+			utility::debug() << "StdOUt:" << s.std_out() ;
+			utility::debug() << "StdError:" << s.std_error() ;
 		}
 	}
 
