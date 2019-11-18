@@ -46,7 +46,12 @@ static utility::result< QString > _config_path()
 
 static QString _create_path( const QString& m,const favorites::entry& e )
 {
-	auto a = utility::split( e.volumePath,'/' ).last() ;
+	auto a = utility::split( e.volumePath,'@' ).last() ;
+
+	a = utility::split( a,'/' ).last() ;
+
+	a.replace( ":","" ) ;
+
 	auto b = a + e.mountPointPath ;
 
 	return m + a + "-" + crypto::sha256( b ) + ".json" ;
@@ -58,10 +63,7 @@ static QString _create_path( const favorites::entry& e )
 
 	if( s.has_value() ){
 
-		auto a = utility::split( e.volumePath,'/' ).last() ;
-		auto b = a + e.mountPointPath ;
-
-		return s.value() + a + "-" + crypto::sha256( b ) + ".json" ;
+		return _create_path( s.value(),e ) ;
 	}else{
 		return {} ;
 	}
