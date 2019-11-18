@@ -150,7 +150,9 @@ static void _add_engines( QStringList& list,
 						engines.emplace_back( std::make_unique< custom >( m ) ) ;
 					}
 				}else{
-					utility::debug::cout() << "Name field/Fuse names not set in config file : " + path ;
+					auto a = "Name field/Fuse names not set in config file : " + path ;
+
+					utility::debug::showDebugWindow( a ) ;
 				}
 			}
 
