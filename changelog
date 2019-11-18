@@ -184,3 +184,6 @@ version 1.4.1(October 15,2019)
 
 version 1.4.2(Unreleased)
 -- Assume passwords are utf8 encoded instead of latin-1.
+-- Fix a crash on windows when an sshfs favorite entry is created with a remote folder path of just ":/", example
+   is a remote address of "abc@example:/".
+-- inforce a requirenment that says Sshfs-win should be atleast version 3.4.0.
