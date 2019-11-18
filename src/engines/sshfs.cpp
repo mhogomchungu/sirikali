@@ -122,6 +122,13 @@ engines::engine::args sshfs::command( const QByteArray& password,
 			 */
 			utility::removeFolder( m,5 ) ;
 		}
+
+		if( fuseOptions.contains( "CreateNetworkDrive=yes" ) ){
+
+			auto x = args.cipherFolder ;
+			x.replace( ":",";" ) ;
+			exeOptions.add ("--VolumePrefix=\\mysshfs\\" + x ) ;
+		}
 	}
 
 	if( fuseOptions.contains( "IdentityAgent" ) ){
