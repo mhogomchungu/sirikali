@@ -756,7 +756,7 @@ void favorites2::ShowUI( favorites::type type )
 
 		if( utility::platformIsWindows() ){
 
-			m_ui->lineEditMountOptions->setText( "idmap=user,StrictHostKeyChecking=no,CreateNetworkDrive=no" ) ;
+			m_ui->lineEditMountOptions->setText( "idmap=user,StrictHostKeyChecking=no,UseNetworkDrive=no" ) ;
 		}else{
 			m_ui->lineEditMountOptions->setText( "idmap=user,StrictHostKeyChecking=no" ) ;
 		}

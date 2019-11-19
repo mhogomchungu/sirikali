@@ -113,23 +113,23 @@ engines::engine::args sshfs::command( const QByteArray& password,
 
 		auto m = args.mountPoint.mid( 1,args.mountPoint.size() - 2 ) ;
 
-		if( !utility::isDriveLetter( m ) ){
+		if( utility::isDriveLetter( m ) ){
 
+			auto s = fuseOptions.extractStartsWith( "UseNetworkDrive=" ) ;
+
+			if( utility::endsWithAtLeastOne( s,"yes","Yes","YES" ) ){
+
+				auto x = args.cipherFolder ;
+				x.replace( ":",";" ) ;
+				exeOptions.add ( "--VolumePrefix=\\mysshfs\\" + x ) ;
+			}
+		}else{
 			/*
-			 * A user is trying to use a folder as a mount path and encfs
+			 * A user is trying to use a folder as a mount path and sshfs
 			 * requires the mount path to not exist and we are deleting
 			 * it because SiriKali created it previously.
 			 */
 			utility::removeFolder( m,5 ) ;
-		}
-
-		auto s = fuseOptions.extractStartsWith( "CreateNetworkDrive=" ) ;
-
-		if( utility::endsWithAtLeastOne( s,"yes","Yes","YES" ) ){
-
-			auto x = args.cipherFolder ;
-			x.replace( ":",";" ) ;
-			exeOptions.add ("--VolumePrefix=\\mysshfs\\" + x ) ;
 		}
 	}
 
