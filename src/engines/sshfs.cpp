@@ -123,7 +123,9 @@ engines::engine::args sshfs::command( const QByteArray& password,
 			utility::removeFolder( m,5 ) ;
 		}
 
-		if( fuseOptions.contains( "CreateNetworkDrive=yes" ) ){
+		auto s = fuseOptions.extractStartsWith( "CreateNetworkDrive=" ) ;
+
+		if( utility::endsWithAtLeastOne( s,"yes","Yes","YES" ) ){
 
 			auto x = args.cipherFolder ;
 			x.replace( ":",";" ) ;
