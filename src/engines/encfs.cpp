@@ -92,7 +92,7 @@ engines::engine::args encfs::command( const QByteArray& password,
 		if( !utility::isDriveLetter( m ) ){
 
 			/*
-			 * A user is trying to use a folder as a mount path and encfs
+			 * A user is trying to use a folder as a mount path and cryfs
 			 * requires the mount path to not exist and we are deleting
 			 * it because SiriKali created it previously.
 			 */

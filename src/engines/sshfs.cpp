@@ -115,13 +115,16 @@ engines::engine::args sshfs::command( const QByteArray& password,
 
 		if( utility::isDriveLetter( m ) ){
 
-			auto s = fuseOptions.extractStartsWith( "UseNetworkDrive=" ) ;
+			if( !fuseOptions.contains( "--VolumePrefix=" ) ){
 
-			if( utility::endsWithAtLeastOne( s,"yes","Yes","YES" ) ){
+				auto s = fuseOptions.extractStartsWith( "UseNetworkDrive=" ) ;
 
-				auto x = args.cipherFolder ;
-				x.replace( ":",";" ) ;
-				exeOptions.add ( "--VolumePrefix=\\mysshfs\\" + x ) ;
+				if( utility::endsWithAtLeastOne( s,"yes","Yes","YES" ) ){
+
+					auto x = args.cipherFolder ;
+					x.replace( ":",";" ) ;
+					exeOptions.add ( "--VolumePrefix=\\mysshfs\\" + x ) ;
+				}
 			}
 		}else{
 			/*
