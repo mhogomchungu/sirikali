@@ -179,11 +179,14 @@ version 1.4.0(October 1st,2019)
 version 1.4.1(October 15,2019)
 -- Add support for fscrypt backend. This backend will allow encrypting individual folders that reside in a
    file system that supports encryption like ext4. More info about this backed is here: https://github.com/google/fscrypt
--- Fix a bug with sshfs backend introducedin 1.4.0.
+-- Fix a bug with sshfs backend introduced in 1.4.0.
 -- Various changes and improvements.
 
 version 1.4.2(Unreleased)
--- Assume passwords are utf8 encoded instead of latin-1.
+-- Assume passwords are utf8 encoded instead of latin-1. This is a breaking change for those who were using a
+   password that was not a valid latin-1 password.
 -- Fix a crash on windows when an sshfs favorite entry is created with a remote folder path of just ":/", example
    is a remote address of "abc@example:/".
+-- Add a visible option to choose between creating a local drive or a network drive when connecting to ssh server
+   on windows.
 -- inforce a requirenment that says Sshfs-win should be atleast version 3.4.0.
