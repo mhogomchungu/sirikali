@@ -29,6 +29,9 @@
 #include <QDebug>
 #include <QFile>
 
+using Opts = engines::engine::options ;
+using Engs = engines::engine ;
+
 static bool _create_folder( const QString& m )
 {
 	if( utility::pathExists( m ) ){
@@ -44,7 +47,7 @@ static QString _makePath( const QString& e )
 	return utility::Task::makePath( e ) ;
 }
 
-static bool _illegal_path( const engines::engine::options& opts,const engines::engine& engine )
+static bool _illegal_path( const Opts& opts,const engines::engine& engine )
 {
 	if( engine.requiresPolkit() && utility::useSiriPolkit() ){
 
@@ -133,9 +136,7 @@ static QString _cmd_args( const QString& e )
 	return utility::Task::makePath( b ) + " " + a.join( ' ' ) ;
 }
 
-utility::result< utility::Task > siritask::unmountVolume( const QString& exe,
-							  const QString& mountPoint,
-							  bool usePolkit )
+utility::task_result siritask::unmountVolume( const QString& exe,const QString& mountPoint,bool usePolkit )
 {
 	auto e = _cmd_args( settings::instance().preUnMountCommand() ) ;
 
@@ -143,13 +144,19 @@ utility::result< utility::Task > siritask::unmountVolume( const QString& exe,
 
 	if( e.isEmpty() ){
 
-		return utility::unwrap( utility::Task::run( exe + " " + mountPoint,timeOut,usePolkit ) ) ;
+		auto& s = utility::Task::run( exe + " " + mountPoint,timeOut,usePolkit ) ;
+
+		return utility::unwrap( s ) ;
 	}else{
-		auto m = utility::unwrap( utility::Task::run( e + " " + mountPoint,timeOut,false ) ) ;
+		auto& s = utility::Task::run( e + " " + mountPoint,timeOut,false ) ;
+
+		auto m = utility::unwrap( s ) ;
 
 		if( m.success() ){
 
-			return utility::unwrap( utility::Task::run( exe + " " + mountPoint,timeOut,usePolkit ) ) ;
+			auto& m = utility::Task::run( exe + " " + mountPoint,timeOut,usePolkit ) ;
+
+			return utility::unwrap( m ) ;
 		}else{
 			return {} ;
 		}
@@ -212,36 +219,38 @@ static void _run_command( const QString& command,const QByteArray& password = QB
 	}
 }
 
-static void _run_command( const QString& command,
-			  const QString& cipherFolder,
-			  const QString& plainFolder,
-			  const QString& volumeType,
-			  const QString& commandType,
-			  const QByteArray& password = QByteArray() )
+struct run_command{
+
+	const QString& command ;
+	const QString& cipherFolder ;
+	const QString& plainFolder ;
+	const QString& volumeType ;
+	const QString& commandType ;
+	const QByteArray& password = QByteArray() ;
+};
+
+static void _run_command( const run_command& e )
 {
-	if( command.isEmpty() ){
+	if( e.command.isEmpty() ){
 
 		return ;
 	}
 
-	auto exe = _cmd_args( command ) ;
+	auto exe = _cmd_args( e.command ) ;
 
 	if( exe.isEmpty() ){
 
-		utility::debug() << "Failed to find \"" + commandType + "\" command : " + command ;
+		utility::debug() << "Failed to find \"" + e.commandType + "\" command : " + e.command ;
 	}else{
-		auto m = QString( "%1 %2 %3 %4" ).arg( exe,cipherFolder,plainFolder,volumeType ) ;
+		auto m = QString( "%1 %2 %3 %4" ).arg( exe,e.cipherFolder,e.plainFolder,e.volumeType ) ;
 
-		_run_command( m,password ) ;
+		_run_command( m,e.password ) ;
 	}
 }
 
-static engines::engine::cmdStatus _encrypted_unmount( const QString& cipherFolder,
-						      const QString& mountPoint,
-						      const QString& fileSystem,
-						      int numberOfAttempts )
+static engines::engine::cmdStatus _unmount( const siritask::unmount& e )
 {
-	const auto& engine = engines::instance().getByName( fileSystem ) ;
+	const auto& engine = engines::instance().getByName( e.fileSystem ) ;
 
 	if( engine.unknown() ){
 
@@ -252,7 +261,7 @@ static engines::engine::cmdStatus _encrypted_unmount( const QString& cipherFolde
 
 		auto m = engine.windowsUnMountCommand() ;
 
-		auto s = SiriKali::Windows::unmount( m,_makePath( mountPoint ) ) ;
+		auto s = SiriKali::Windows::unmount( m,_makePath( e.mountPoint ) ) ;
 
 		if( s.success() ){
 
@@ -269,15 +278,15 @@ static engines::engine::cmdStatus _encrypted_unmount( const QString& cipherFolde
 			}
 		}
 
-		auto a = _makePath( cipherFolder ) ;
-		auto b = _makePath( mountPoint ) ;
+		auto a = _makePath( e.cipherFolder ) ;
+		auto b = _makePath( e.mountPoint ) ;
 
-		auto e = utility::unwrap( Task::run( [ & ](){
+		auto s = utility::unwrap( Task::run( [ & ](){
 
-			return engine.unmount( a,b,numberOfAttempts ) ;
+			return engine.unmount( a,b,e.numberOfAttempts ) ;
 		} ) ) ;
 
-		if( e ){
+		if( s ){
 
 			return { engines::engine::status::success,engine } ;
 		}else{
@@ -286,109 +295,101 @@ static engines::engine::cmdStatus _encrypted_unmount( const QString& cipherFolde
 	}
 }
 
-engines::engine::cmdStatus siritask::encryptedFolderUnMount( const QString& cipherFolder,
-							     const QString& mountPoint,
-							     const QString& fileSystem,
-							     int numberOfAttempts )
+engines::engine::cmdStatus siritask::encryptedFolderUnMount( const siritask::unmount& e )
 {
-	auto fav = favorites::instance().readFavorite( cipherFolder,mountPoint ) ;
+	auto fav = favorites::instance().readFavorite( e.cipherFolder,e.mountPoint ) ;
 
 	if( fav.has_value() ){
 
 		const auto& m = fav.value() ;
 
-		auto a = utility::Task::makePath( cipherFolder ) ;
-		auto b = utility::Task::makePath( mountPoint ) ;
+		auto a = utility::Task::makePath( e.cipherFolder ) ;
+		auto b = utility::Task::makePath( e.mountPoint ) ;
 
-		_run_command( m.preUnmountCommand,a,b,fileSystem,"pre unmount" ) ;
+		_run_command( { m.preUnmountCommand,a,b,e.fileSystem,"pre unmount" } ) ;
 
-		auto s = _encrypted_unmount( cipherFolder,
-					     mountPoint,
-					     fileSystem,
-					     numberOfAttempts ) ;
+		auto s = _unmount( e ) ;
 
 		if( s.success() ){
 
-			_run_command( m.postUnmountCommand,a,b,fileSystem,"post unmount" ) ;
+			_run_command( { m.postUnmountCommand,a,b,e.fileSystem,"post unmount" } ) ;
 		}
 
 		return s ;
 	}else{
-		return _encrypted_unmount( cipherFolder,
-					   mountPoint,
-					   fileSystem,
-					   numberOfAttempts ) ;
+		return _unmount( e ) ;
 	}
 }
 
-static utility::Task _run_task_0( const engines::engine::args& args,
-				  const engines::engine& engine,
-				  const QByteArray& password,
-				  const engines::engine::options& opts,
-				  bool create,
-				  bool require_polkit )
+struct run_task{
+
+	const engines::engine::args& args ;
+	const engines::engine& engine ;
+	const QByteArray& password ;
+	const engines::engine::options& opts ;
+	bool create ;
+	bool require_polkit ;
+};
+
+static utility::Task _run_task_0( const run_task& e )
 {
 	if( utility::platformIsWindows() ){
 
-		if( create ){
-
-			return SiriKali::Windows::create( { args,opts,engine,password } ) ;
-		}else{
-			return SiriKali::Windows::mount( { args,opts,engine,password } ) ;
-		}
+		return SiriKali::Windows::run( { e.create,e.args,e.opts,e.engine,e.password } ) ;
 	}else{
-		return utility::Task( args.cmd,-1,engine.getProcessEnvironment(),
-				      password,[](){},require_polkit ) ;
+		const auto& s = e.engine.getProcessEnvironment() ;
+
+		return utility::Task( e.args.cmd,-1,s,e.password,[](){},e.require_polkit ) ;
 	}
 }
 
-static utility::Task _run_task( const engines::engine::args& args,
-				const engines::engine& engine,
-				const QByteArray& password,
-				const engines::engine::options& opts,
-				bool create,
-				bool require_polkit )
+static utility::Task _run_task( const run_task& e )
 {
-	auto fav = favorites::instance().readFavorite( opts.cipherFolder,opts.plainFolder ) ;
+	auto fav = favorites::instance().readFavorite( e.opts.cipherFolder,e.opts.plainFolder ) ;
 
 	if( fav.has_value() ){
 
 		const auto& m = fav.value() ;
 
-		auto a = utility::Task::makePath( opts.cipherFolder ) ;
-		auto b = utility::Task::makePath( opts.plainFolder ) ;
-		const auto& c = engine.name() ;
+		auto a = utility::Task::makePath( e.opts.cipherFolder ) ;
+		auto b = utility::Task::makePath( e.opts.plainFolder ) ;
+		const auto& c = e.engine.name() ;
 
 		QByteArray key ;
 
 		if( settings::instance().allowExternalToolsToReadPasswords() ){
 
-			key = password ;
+			key = e.password ;
 		}
 
-		_run_command( m.preMountCommand,a,b,c,"pre mount",key ) ;
+		_run_command( { m.preMountCommand,a,b,c,"pre mount",key } ) ;
 
-		auto s = _run_task_0( args,engine,password,opts,create,require_polkit ) ;
+		auto s = _run_task_0( e ) ;
 
 		if( s.success() ){
 
-			_run_command( m.postMountCommand,a,b,c,"post mount",key ) ;
+			_run_command( { m.postMountCommand,a,b,c,"post mount",key } ) ;
 		}
 
 		return s ;
 	}else{
-		return _run_task_0( args,engine,password,opts,create,require_polkit ) ;
+		return _run_task_0( e ) ;
 	}
 }
 
-static utility::result< QString > _build_config_file_path( const engines::engine& engine,
-							   const QString& configFilePath )
+struct build_config_path{
+
+	const engines::engine& engine ;
+	const QString& configFilePath ;
+};
+
+static utility::qstring_result _build_config_file_path( const build_config_path& e )
 {
-	if( configFilePath.isEmpty() ){
+	if( e.configFilePath.isEmpty() ){
 
 		return QString() ;
 	}else{
-		auto s = engine.setConfigFilePath( _makePath( configFilePath ) ) ;
+		auto s = e.engine.setConfigFilePath( _makePath( e.configFilePath ) ) ;
 
 		if( s.isEmpty() ){
 
@@ -399,12 +400,23 @@ static utility::result< QString > _build_config_file_path( const engines::engine
 	}
 }
 
-static engines::engine::cmdStatus _cmd( const engines::engine& engine,
-					bool create,
-					const engines::engine::options& opts,
-					const QByteArray& password,
-					const QString& configFilePath )
+struct cmd_args{
+
+	const engines::engine& engine ;
+	bool create ;
+	const engines::engine::options& opts ;
+	const QByteArray& password ;
+	const QString& configFilePath ;
+};
+
+static engines::engine::cmdStatus _cmd( const cmd_args& e )
 {
+	const engines::engine& engine        = e.engine ;
+	const engines::engine::options& opts = e.opts ;
+	const QByteArray& password           = e.password ;
+	const QString& configFilePath        = e.configFilePath ;
+	bool create                          = e.create ;
+
 	auto exe = engine.executableFullPath() ;
 
 	if( exe.isEmpty() ){
@@ -423,7 +435,7 @@ static engines::engine::cmdStatus _cmd( const engines::engine& engine,
 
 		auto _run = [ & ]()->engines::engine::cmdStatus{
 
-			auto m = _build_config_file_path( engine,configFilePath ) ;
+			auto m = _build_config_file_path( { engine,configFilePath } ) ;
 
 			if( m ){
 
@@ -432,7 +444,7 @@ static engines::engine::cmdStatus _cmd( const engines::engine& engine,
 
 				auto cmd = engine.command( password,{ exe,opts,m.value(),cc,mm,create } ) ;
 
-				auto s = _run_task( cmd,engine,password,opts,create,engine.requiresPolkit() ) ;
+				auto s = _run_task( { cmd,engine,password,opts,create,engine.requiresPolkit() } ) ;
 
 				if( s.success() ){
 
@@ -471,7 +483,7 @@ static engines::engine::cmdStatus _cmd( const engines::engine& engine,
 	}
 }
 
-static utility::result< QString > _path_exist( QString e,const QString& m )
+static utility::qstring_result _path_exist( QString e,const QString& m )
 {
 	e.remove( 0,m.size() ) ;
 
@@ -483,10 +495,12 @@ static utility::result< QString > _path_exist( QString e,const QString& m )
 	}
 }
 
-siritask::Engine siritask::mountEngine( const QString& cipherFolder,
-					const QString& configFilePath,
-					const siritask::Engine& Engine )
+siritask::Engine siritask::mountEngine( const siritask::mount& e )
 {
+	const QString& cipherFolder    = e.cipherFolder ;
+	const QString& configFilePath  = e.configFilePath ;
+	const siritask::Engine& Engine = e.engine ;
+
 	if( Engine.get().known() ){
 
 		const auto& engine = Engine.get() ;
@@ -578,11 +592,9 @@ siritask::Engine siritask::mountEngine( const QString& cipherFolder,
 	}
 }
 
-static engines::engine::cmdStatus _encrypted_folder_mount( engines::engine::options opt,
-							   bool reUseMP,
-							   const siritask::Engine& eng )
+static engines::engine::cmdStatus _mount( Opts opt,bool reUseMP,const siritask::Engine& eng )
 {
-	auto Engine = siritask::mountEngine( opt.cipherFolder,opt.configFilePath,eng ) ;
+	auto Engine = siritask::mountEngine( { opt.cipherFolder,opt.configFilePath,eng } ) ;
 
 	const auto& engine  = Engine.get() ;
 
@@ -621,7 +633,7 @@ static engines::engine::cmdStatus _encrypted_folder_mount( engines::engine::opti
 		}
 	}
 
-	auto e = _cmd( engine,false,opt,opt.key,opt.configFilePath ) ;
+	auto e = _cmd( { engine,false,opt,opt.key,opt.configFilePath } ) ;
 
 	if( e != engines::engine::status::success ){
 
@@ -634,8 +646,7 @@ static engines::engine::cmdStatus _encrypted_folder_mount( engines::engine::opti
 	return e ;
 }
 
-static utility::result< QString > _configFilePath( const engines::engine& engine,
-						   const engines::engine::options& opt )
+static utility::qstring_result _configFilePath( const Engs& engine,const Opts& opt )
 {
 	if( opt.configFilePath.isEmpty() ){
 
@@ -659,8 +670,7 @@ static utility::result< QString > _configFilePath( const engines::engine& engine
 	}
 }
 
-static engines::engine::cmdStatus _encrypted_folder_create( const engines::engine::options& opt,
-							    const engines::engine& engine )
+static engines::engine::cmdStatus _create( const Opts& opt,const Engs& engine )
 {
 	if( engine.unknown() ){
 
@@ -706,7 +716,7 @@ static engines::engine::cmdStatus _encrypted_folder_create( const engines::engin
 		}
 	}
 
-	auto e = _cmd( engine,true,opt,engine.setPassword( opt.key ),configPath.value() ) ;
+	auto e = _cmd( { engine,true,opt,engine.setPassword( opt.key ),configPath.value() } ) ;
 
 	if( e == engines::engine::status::success ){
 
@@ -736,29 +746,37 @@ static engines::engine::cmdStatus _encrypted_folder_create( const engines::engin
 	return e ;
 }
 
-engines::engine::cmdStatus siritask::encryptedFolderCreate( const engines::engine::options& opt,
-							    const engines::engine& e )
+static void _warning( const QString& e )
+{
+	auto a = "ERROR!!\n " + e + "siritask::encryptedFolderMount is"  ;
+	auto b = "running from a background thread" ;
+
+	utility::debug() << a + b ;
+}
+
+engines::engine::cmdStatus siritask::encryptedFolderCreate( const Opts& opt,const Engs& e )
 {
 	if( utility::platformIsWindows() ){
 
 		if( utility::runningOnGUIThread() ){
 
-			return _encrypted_folder_create( opt,e ) ;
+			return _create( opt,e ) ;
 		}else{
 			/*
 			 * We should not take this path
 			 */
-			utility::debug() << "ERROR!!\nsiritask::encryptedFolderCreate is running\nfrom a background thread" ;
-			return _encrypted_folder_create( opt,e ) ;
+			_warning( "siritask::encryptedFolderMount" ) ;
+
+			return _create( opt,e ) ;
 		}
 	}else{
-		auto& s = Task::run( [ & ](){ return _encrypted_folder_create( opt,e ) ; } ) ;
+		auto& s = Task::run( [ & ](){ return _create( opt,e ) ; } ) ;
 
 		return utility::unwrap( s ) ;
 	}
 }
 
-static void _run_command_on_mount( const engines::engine::options& opt,const QString& type )
+static void _run_command_on_mount( const Opts& opt,const QString& type )
 {
 	auto exe = _cmd_args( settings::instance().runCommandOnMount() ) ;
 
@@ -776,8 +794,9 @@ static void _run_command_on_mount( const engines::engine::options& opt,const QSt
 				if( settings::instance().allowExternalToolsToReadPasswords() ){
 
 					auto e = utility::systemEnvironment() ;
+					auto& m = settings::instance() ;
 
-					e.insert( settings::instance().environmentalVariableVolumeKey(),opt.key ) ;
+					e.insert( m.environmentalVariableVolumeKey(),opt.key ) ;
 
 					return Task::process::run( exe,{},-1,{},e ).get() ;
 				}else{
@@ -792,9 +811,8 @@ static void _run_command_on_mount( const engines::engine::options& opt,const QSt
 	}
 }
 
-engines::engine::cmdStatus siritask::encryptedFolderMount( const engines::engine::options& opt,
-							   bool reUseMountPoint,
-							   const siritask::Engine& engine )
+engines::engine::cmdStatus
+siritask::encryptedFolderMount( const Opts& opt,bool m,const siritask::Engine& engine )
 {
 	auto s = [ & ](){
 
@@ -802,19 +820,18 @@ engines::engine::cmdStatus siritask::encryptedFolderMount( const engines::engine
 
 			if( utility::runningOnGUIThread() ){
 
-				return _encrypted_folder_mount( opt,reUseMountPoint,engine ) ;
+				return _mount( opt,m,engine ) ;
 			}else{
 				/*
 				 * We should not take this path
 				 */
-				utility::debug() << "ERROR!!\nsiritask::encryptedFolderMount is running from a background thread" ;
-
-				return _encrypted_folder_mount( opt,reUseMountPoint,engine ) ;
+				_warning( "siritask::encryptedFolderMount" ) ;
+				return _mount( opt,m,engine ) ;
 			}
 		}else{
 			auto& e = Task::run( [ & ](){
 
-				return _encrypted_folder_mount( opt,reUseMountPoint,engine ) ;
+				return _mount( opt,m,engine ) ;
 			} ) ;
 
 			return utility::unwrap( e ) ;

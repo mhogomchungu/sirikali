@@ -76,9 +76,14 @@ namespace siritask
 		QString m_cipherFolder ;
 	} ;
 
-	siritask::Engine mountEngine( const QString& cipherFolder,
-				      const QString& configFilePath,
-				      const siritask::Engine& engine = siritask::Engine() ) ;
+	struct mount{
+
+		const QString& cipherFolder ;
+		const QString& configFilePath ;
+		const siritask::Engine& engine = siritask::Engine() ;
+	};
+
+	siritask::Engine mountEngine( const siritask::mount& ) ;
 
 	utility::result< utility::Task > unmountVolume( const QString& exe,
 							const QString& mountPoint,
@@ -88,10 +93,15 @@ namespace siritask
 
 	bool deleteMountFolder( const QString& ) ;
 
-	engines::engine::cmdStatus encryptedFolderUnMount( const QString& cipherFolder,
-							   const QString& mountPoint,
-							   const QString& fileSystem,
-							   int numberOfAttempts ) ;
+	struct unmount{
+
+		const QString& cipherFolder ;
+		const QString& mountPoint ;
+		const QString& fileSystem ;
+		int numberOfAttempts ;
+	};
+
+	engines::engine::cmdStatus encryptedFolderUnMount( const siritask::unmount& ) ;
 
 	engines::engine::cmdStatus encryptedFolderMount( const engines::engine::options&,
 							 bool = false,

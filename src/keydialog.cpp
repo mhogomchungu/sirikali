@@ -367,7 +367,7 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 		m_ui->lineEditMountPoint->setFocus() ;
 	}else{
-		m_engine = siritask::mountEngine( m_path,m_configFile ) ;
+		m_engine = siritask::mountEngine( { m_path,m_configFile } ) ;
 
 		auto m = m_ui->pbOptions->menu() ;
 
@@ -1453,7 +1453,7 @@ void keyDialog::encryptedFolderMount()
 
 	if( engine.name().isEmpty() ){
 
-		m_engine = siritask::mountEngine( m_path,m_configFile ) ;
+		m_engine = siritask::mountEngine( { m_path,m_configFile } ) ;
 	}
 
 	if( engine.takesTooLongToUnlock() ){

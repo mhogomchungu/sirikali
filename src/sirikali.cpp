@@ -554,7 +554,7 @@ void sirikali::favoriteClicked( QAction * ac )
 
 				if( _found( it ) ){
 
-					auto s = siritask::mountEngine( it.first.volumePath,QString() ).get().name() ;
+					auto s = siritask::mountEngine( { it.first.volumePath,QString() } ).get().name() ;
 
 					if( it.first.volumeNeedNoPassword && s == "sshfs" ){
 
@@ -736,7 +736,7 @@ void sirikali::cliCommand( const QStringList& l )
 
 			if( a == volume || b == volume ){
 
-				if( siritask::encryptedFolderUnMount( a,b,c,5 ).success() ){
+				if( siritask::encryptedFolderUnMount( { a,b,c,5 } ).success() ){
 
 					siritask::deleteMountFolder( b ) ;
 
@@ -1690,7 +1690,7 @@ void sirikali::updateList( const volumeInfo& entry )
 
 engines::engine::cmdStatus sirikali::unMountVolume( const sirikali::mountedEntry& e )
 {
-	auto s = siritask::encryptedFolderUnMount( e.cipherPath,e.mountPoint,e.volumeType,5 ) ;
+	auto s = siritask::encryptedFolderUnMount( { e.cipherPath,e.mountPoint,e.volumeType,5 } ) ;
 
 	if( s.success() && s.engine().backendRequireMountPath() ){
 

@@ -143,7 +143,12 @@ namespace utility
 	private:
 		bool m_valid = false ;
 		T m_value ;
-	} ;
+	} ;	
+
+	using qbytearray_result = result< QString > ;
+	using qstring_result    = result< QString > ;
+	using bool_result       = result< bool > ;
+	using int_result        = result< int > ;
 }
 
 namespace utility
@@ -648,6 +653,8 @@ namespace utility
 		int m_exitStatus = 255 ;
 		bool m_finished = false ;
 	};
+
+	using task_result = utility::result< utility::Task > ;
 }
 
 #endif // MISCFUNCTIONS_H
