@@ -97,25 +97,14 @@ bool ecryptfs::requiresPolkit() const
 }
 
 template< typename Function >
-static bool _unmount_ecryptfs_( Function cmd,const QString& mountPoint,bool& not_set )
+static bool _unmount_ecryptfs_( Function cmd )
 {
-	auto s = siritask::unmountVolume( cmd(),mountPoint,true ) ;
+	auto s = siritask::unmountVolume( cmd(),QString(),true ) ;
 
 	if( s && s.value().success() ){
 
 		return true ;
-	}else{
-		if( not_set && s.value().stdError().contains( "error: failed to set gid" ) ){
-
-			not_set = false ;
-
-			if( utility::enablePolkit() ){
-
-				auto s = siritask::unmountVolume( cmd(),mountPoint,true ) ;
-				return s && s.value().success() ;
-			}
-		}
-
+	}else{		
 		return false ;
 	}
 }
@@ -124,7 +113,7 @@ bool ecryptfs::unmount( const QString& cipherFolder,
 			const QString& mountPoint,
 			int maxCount ) const
 {
-	bool not_set = true ;
+	Q_UNUSED( mountPoint )
 
 	auto cmd = [ & ](){
 
@@ -140,7 +129,7 @@ bool ecryptfs::unmount( const QString& cipherFolder,
 		}
 	} ;
 
-	if( _unmount_ecryptfs_( cmd,mountPoint,not_set ) ){
+	if( _unmount_ecryptfs_( cmd ) ){
 
 		return true ;
 	}else{
@@ -148,7 +137,7 @@ bool ecryptfs::unmount( const QString& cipherFolder,
 
 			utility::Task::waitForOneSecond() ;
 
-			if( _unmount_ecryptfs_( cmd,mountPoint,not_set ) ){
+			if( _unmount_ecryptfs_( cmd ) ){
 
 				return true ;
 			}
@@ -211,7 +200,7 @@ engines::engine::status ecryptfs::errorCode( const QString& e,int s ) const
 
 	if( e.contains( "Operation not permitted" ) ){
 
-		return engines::engine::status::ecrypfsBadExePermissions ;
+		return engines::engine::status::failedToStartPolkit ;
 
 	}else if( e.contains( this->incorrectPasswordText() ) ){
 

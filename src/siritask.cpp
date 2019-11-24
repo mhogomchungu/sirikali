@@ -270,12 +270,9 @@ static engines::engine::cmdStatus _unmount( const siritask::unmount& e )
 			return { engines::engine::status::failedToUnMount,engine } ;
 		}
 	}else{
-		if( engine.requiresPolkit() ){
+		if( engine.requiresPolkit() && !utility::enablePolkit() ){
 
-			if( !utility::enablePolkit() ){
-
-				return { engines::engine::status::failedToStartPolkit,engine } ;
-			}
+			return { engines::engine::status::failedToStartPolkit,engine } ;
 		}
 
 		auto a = _makePath( e.cipherFolder ) ;
@@ -321,14 +318,27 @@ engines::engine::cmdStatus siritask::encryptedFolderUnMount( const siritask::unm
 	}
 }
 
+struct cmd_args{
+
+	const engines::engine& engine ;
+	bool create ;
+	const engines::engine::options& opts ;
+	const QByteArray& password ;
+	const QString& configFilePath ;
+};
+
 struct run_task{
 
+	run_task( const engines::engine::args& args,const cmd_args& e ) :
+		args( args ),engine( e.engine ),password( e.password ),
+		opts( e.opts ),create( e.create )
+	{
+	}
 	const engines::engine::args& args ;
 	const engines::engine& engine ;
 	const QByteArray& password ;
 	const engines::engine::options& opts ;
 	bool create ;
-	bool require_polkit ;
 };
 
 static utility::Task _run_task_0( const run_task& e )
@@ -339,7 +349,7 @@ static utility::Task _run_task_0( const run_task& e )
 	}else{
 		const auto& s = e.engine.getProcessEnvironment() ;
 
-		return utility::Task( e.args.cmd,-1,s,e.password,[](){},e.require_polkit ) ;
+		return utility::Task( e.args.cmd,-1,s,e.password,[](){},e.engine.requiresPolkit() ) ;
 	}
 }
 
@@ -400,15 +410,6 @@ static utility::qstring_result _build_config_file_path( const build_config_path&
 	}
 }
 
-struct cmd_args{
-
-	const engines::engine& engine ;
-	bool create ;
-	const engines::engine::options& opts ;
-	const QByteArray& password ;
-	const QString& configFilePath ;
-};
-
 static engines::engine::cmdStatus _cmd( const cmd_args& e )
 {
 	const engines::engine& engine        = e.engine ;
@@ -422,64 +423,46 @@ static engines::engine::cmdStatus _cmd( const cmd_args& e )
 	if( exe.isEmpty() ){
 
 		return { engine.notFoundCode(),engine } ;
+	}
+
+	if( engine.requiresPolkit() && !utility::enablePolkit() ){
+
+		return { engines::engine::status::failedToStartPolkit,engine } ;
+	}
+
+	auto m = _build_config_file_path( { engine,configFilePath } ) ;
+
+	if( !m ){
+
+		return { engines::engine::status::backEndDoesNotSupportCustomConfigPath,engine } ;
+	}
+
+	auto cc = _makePath( opts.cipherFolder ) ;
+	auto mm = _makePath( opts.plainFolder ) ;
+
+	exe = utility::Task::makePath( exe ) ;
+
+	auto cmd = engine.command( password,{ exe,opts,m.value(),cc,mm,create } ) ;
+
+	auto s = _run_task( { cmd,e } ) ;
+
+	if( s.success() ){
+
+		return { engines::engine::status::success,engine } ;
 	}else{
-		if( engine.requiresPolkit() ){
+		if( utility::platformIsWindows() ){
 
-			if( !utility::enablePolkit() ){
+			if( SiriKali::Windows::backEndTimedOut( s.stdOut() ) ){
 
-				return { engines::engine::status::failedToStartPolkit,engine } ;
+				return { engines::engine::status::backendTimedOut,engine } ;
 			}
 		}
 
-		exe = utility::Task::makePath( exe ) ;
+		auto ss = s.stdError().isEmpty() ? s.stdOut() : s.stdError() ;
 
-		auto _run = [ & ]()->engines::engine::cmdStatus{
+		auto n = engine.errorCode( ss,s.exitCode() ) ;
 
-			auto m = _build_config_file_path( { engine,configFilePath } ) ;
-
-			if( m ){
-
-				auto cc = _makePath( opts.cipherFolder ) ;
-				auto mm = _makePath( opts.plainFolder ) ;
-
-				auto cmd = engine.command( password,{ exe,opts,m.value(),cc,mm,create } ) ;
-
-				auto s = _run_task( { cmd,engine,password,opts,create,engine.requiresPolkit() } ) ;
-
-				if( s.success() ){
-
-					return { engines::engine::status::success,engine } ;
-				}else{
-					if( utility::platformIsWindows() ){
-
-						if( SiriKali::Windows::backEndTimedOut( s.stdOut() ) ){
-
-							return { engines::engine::status::backendTimedOut,engine } ;
-						}
-					}
-
-					auto m = s.stdError().isEmpty() ? s.stdOut() : s.stdError() ;
-
-					auto n = engine.errorCode( m,s.exitCode() ) ;
-
-					return { n,engine,m } ;
-				}
-			}else{
-				return { engines::engine::status::backEndDoesNotSupportCustomConfigPath,engine } ;
-			}
-		} ;
-
-		auto s = _run() ;
-
-		if( s == engines::engine::status::ecrypfsBadExePermissions ){
-
-			if( utility::enablePolkit() ){
-
-				s = _run() ;
-			}
-		}
-
-		return s ;
+		return { n,engine,ss } ;
 	}
 }
 

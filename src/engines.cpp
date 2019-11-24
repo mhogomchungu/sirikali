@@ -754,10 +754,6 @@ QString engines::engine::cmdStatus::toString() const
 
 		return QObject::tr( "A Space Character Is Not Allowed In Paths When Using Ecryptfs Backend And Polkit." ) ;
 
-	case engines::engine::status::ecrypfsBadExePermissions :
-
-		return QObject::tr( "This Backend Requires Root's Privileges And An attempt To Acquire Them Has Failed." ) ;
-
 	case engines::engine::status::securefsBadPassword :
 
 		return QObject::tr( "Failed To Unlock A Securefs Volume.\nWrong Password Entered." ) ;

@@ -73,7 +73,6 @@ public:
 
 			cryfsMigrateFileSystem,
 			IllegalPath,
-			ecrypfsBadExePermissions,
 
 			failedToLoadWinfsp,
 			backEndFailedToMeetMinimumRequirenment,
