@@ -71,7 +71,7 @@ namespace siritask
 			return m_engine.get() ;
 		}
 	private:
-		engines::engine::cmdStatus::Engine m_engine ;
+		engines::engine::Wrapper m_engine ;
 		QString m_configFilePath ;
 		QString m_cipherFolder ;
 	} ;

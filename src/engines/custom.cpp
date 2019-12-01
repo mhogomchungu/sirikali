@@ -119,8 +119,7 @@ static utility::result< custom::opts > _getOptions( const QByteArray& e,const QS
 	return {} ;
 }
 
-static void _add_engines( QStringList& list,
-			  const QString& path,
+static void _add_engines( const QString& path,
 			  std::vector< std::unique_ptr< engines::engine >>& engines )
 {
 	const auto s = QDir( path ).entryList( QDir::Filter::Files ) ;
@@ -146,7 +145,6 @@ static void _add_engines( QStringList& list,
 
 					if( n.size() > 0 ){
 
-						list.append( n.replace( 0,1,n.at( 0 ).toUpper() ) ) ;
 						engines.emplace_back( std::make_unique< custom >( m ) ) ;
 					}
 				}else{
@@ -161,20 +159,20 @@ static void _add_engines( QStringList& list,
 	}
 }
 
-void custom::addEngines( QStringList& list,std::vector< std::unique_ptr< engines::engine >>& engines )
+void custom::addEngines( std::vector< std::unique_ptr< engines::engine >>& engines )
 {
 	auto m = settings::instance().ConfigLocation() ;
 
 	if( !m.isEmpty() ){
 
-		_add_engines( list,m + "/backends/",engines ) ;
+		_add_engines( m + "/backends/",engines ) ;
 	}
 
 	if( utility::platformIsWindows() ){
 
-		_add_engines( list,QDir().currentPath() + "/backends/",engines ) ;
+		_add_engines( QDir().currentPath() + "/backends/",engines ) ;
 	}else{
-		_add_engines( list,INSTALL_PREFIX"/share/SiriKali/backends/",engines ) ;
+		_add_engines( INSTALL_PREFIX"/share/SiriKali/backends/",engines ) ;
 	}
 }
 

@@ -513,15 +513,15 @@ siritask::Engine siritask::mountEngine( const siritask::mount& e )
 		return { { engine,configFilePath,cipherFolder } } ;
 	}
 
-	for( const auto& it : engines.supported() ){
+	for( const auto& it : engines.supportedEngines() ){
 
-		if( cipherFolder.startsWith( it + " ",Qt::CaseInsensitive ) ){
+		if( cipherFolder.startsWith( it->name() + " ",Qt::CaseInsensitive ) ){
 
-			const auto& engine = engines.getByName( it ) ;
+			const auto& engine = it.get() ;
 
 			if( engine.known() ){
 
-				return { { engine,configFilePath,cipherFolder.mid( it.size() + 1 ) } } ;
+				return { { engine,configFilePath,cipherFolder.mid( it->name().size() + 1 ) } } ;
 			}
 		}
 	}
@@ -551,9 +551,9 @@ siritask::Engine siritask::mountEngine( const siritask::mount& e )
 
 		return { { m.first,configFilePath,cipherFolder } } ;
 	}else{
-		for( const auto& it : engines.supported() ){
+		for( const auto& it : engines.supportedEngines() ){
 
-			const auto& engine = engines.getByName( it.toLower() ) ;
+			const auto& engine = it.get() ;
 
 			for( const auto& xt: engine.names() ){
 

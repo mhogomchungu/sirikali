@@ -27,7 +27,7 @@
 class custom : public engines::engine
 {
 public:
-	static void addEngines( QStringList&,std::vector< std::unique_ptr< engines::engine > >& ) ;
+	static void addEngines( std::vector< std::unique_ptr< engines::engine > >& ) ;
 
 	struct opts{
 		engines::engine::BaseOptions baseOpts ;

@@ -43,12 +43,13 @@ public:
 		HKEY m ;
 		REGSAM wow64 = KEY_QUERY_VALUE | KEY_WOW64_64KEY ;
 		REGSAM wow32 = KEY_QUERY_VALUE | KEY_WOW64_32KEY ;
+		unsigned long x = 0 ;
 
-		if( this->success( RegOpenKeyExA,hkey,subKey,0,wow64,&m ) ){
+		if( this->success( RegOpenKeyExA,hkey,subKey,x,wow64,&m ) ){
 
 			m_hkey = m ;
 
-		}else if( this->success( RegOpenKeyExA,hkey,subKey,0,wow32,&m ) ){
+		}else if( this->success( RegOpenKeyExA,hkey,subKey,x,wow32,&m ) ){
 
 			m_hkey = m ;
 		}else{
@@ -142,7 +143,7 @@ static bool signalCtrl(DWORD dwProcessId, DWORD dwCtrlEvent)
 	// Create a new console if previous was deleted by OS
 	if (AttachConsole(thisConsoleId) == FALSE)
 	{
-	    int errorCode = GetLastError();
+	    auto errorCode = GetLastError();
 	    if (errorCode == 31) // 31=ERROR_GEN_FAILURE
 	    {
 		AllocConsole();
@@ -238,10 +239,8 @@ int SiriKali::Windows::terminateProcess( unsigned long pid )
 	return _terminateProcess( pid ) ;
 }
 
-QString SiriKali::Windows::engineInstalledDir( const QString& e )
+QString SiriKali::Windows::engineInstalledDir( const engines::engine& m )
 {
-	const auto& m = engines::instance().getByName( e ) ;
-
 	const auto& key   = m.windowsInstallPathRegistryKey() ;
 	const auto& value = m.windowsInstallPathRegistryValue() ;
 
@@ -262,9 +261,9 @@ QStringList SiriKali::Windows::engineInstalledDirs()
 {
 	QStringList s ;
 
-	for( const auto& it : engines::instance().supported() ){
+	for( const auto& it : engines::instance().supportedEngines() ){
 
-		auto a = SiriKali::Windows::engineInstalledDir( it ) ;
+		auto a = SiriKali::Windows::engineInstalledDir( it.get() ) ;
 
 		if( !a.isEmpty() ){
 
@@ -354,11 +353,7 @@ static SiriKali::Windows::result _read( QProcess& exe,Function function )
 		}
 	}
 
-	auto a = QString::number( counter ) ;
-
-	auto b = "Backend took " + a + " seconds to finish\nGenerated backend output:\n" ;
-
-	utility::debug() << b + m ;
+	utility::debug() << "Backend took " + QString::number( counter ) + " seconds to finish" ;
 
 	return { r,std::move( m ) } ;
 }
@@ -389,25 +384,6 @@ static SiriKali::Windows::result _getProcessOutput( QProcess& exe,const engines:
 	}
 }
 
-static QProcessEnvironment _update_environment( const engines::engine& e )
-{
-	auto env = e.getProcessEnvironment() ;
-
-	auto s = SiriKali::Windows::engineInstalledDir( e.name() ) ;
-
-	if( s.isEmpty() ){
-
-		return env ;
-	}else{
-		auto a = s + ";" ;
-		auto b = s + "\\bin;" ;
-		auto c = a + b + env.value( "PATH" ) ;
-
-		env.insert( "PATH",c ) ;
-		return env ;
-	}
-}
-
 struct terminate_process{
 
 	QProcess& exe ;
@@ -431,7 +407,7 @@ static std::pair< Task::process::result,QString > _terminate_process( const term
 		exe = utility::Task::makePath( e.unMountCommand ) + " " + e.mountPath ;
 	}
 
-	auto m = utility::unwrap( Task::process::run( exe,{},-1,"",_update_environment( e.engine ) ) ) ;
+	auto m = utility::unwrap( Task::process::run( exe,{},-1,"",e.engine.getProcessEnvironment() ) ) ;
 
 	if( m.success() ){
 
@@ -445,7 +421,7 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 {
 	auto exe = utility2::unique_qptr< QProcess >() ;
 
-	exe->setProcessEnvironment( _update_environment( opts.engine ) ) ;
+	exe->setProcessEnvironment( opts.engine.getProcessEnvironment() ) ;
 	exe->setProcessChannelMode( QProcess::MergedChannels ) ;
 	exe->start( opts.args.cmd ) ;
 	exe->waitForStarted() ;

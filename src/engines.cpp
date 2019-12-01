@@ -240,6 +240,22 @@ engines::engine::engine( engines::engine::BaseOptions o ) :
 	m_Options( std::move( o ) ),
 	m_processEnvironment( utility::systemEnvironment() )
 {
+	if( utility::platformIsWindows() ){
+
+		const auto& a = m_Options.windowsInstallPathRegistryKey ;
+		const auto& b = m_Options.windowsInstallPathRegistryValue ;
+
+		auto s = SiriKali::Windows::engineInstalledDir( a,b ) ;
+
+		if( !s.isEmpty() ){
+
+			auto a = s + ";" ;
+			auto b = s + "\\bin;" ;
+			auto c = a + b + m_processEnvironment.value( "PATH" ) ;
+
+			m_processEnvironment.insert( "PATH",c ) ;
+		}
+	}
 }
 
 QString engines::engine::executableFullPath() const
@@ -491,9 +507,9 @@ const engines& engines::instance()
 
 bool engines::atLeastOneDealsWithFiles() const
 {
-	for( const auto& it : this->supported() ){
+	for( const auto& it : this->supportedEngines() ){
 
-		if( this->getByName( it ).fileExtensions().size() > 0 ){
+		if( it->fileExtensions().size() > 0 ){
 
 			return true ;
 		}
@@ -506,9 +522,9 @@ QStringList engines::mountInfo( const QStringList& m ) const
 {
 	QStringList s ;
 
-	for( const auto& e : this->supported() ){
+	for( const auto& e : this->supportedEngines() ){
 
-		s += this->getByName( e ).mountInfo( m ) ;
+		s += e->mountInfo( m ) ;
 	}
 
 	return s ;
@@ -518,11 +534,11 @@ QStringList engines::enginesWithNoConfigFile() const
 {
 	QStringList m ;
 
-	for( const auto& it : this->supported() ){
+	for( const auto& it : this->supportedEngines() ){
 
-		if( !this->getByName( it ).hasConfigFile() ){
+		if( !it->hasConfigFile() ){
 
-			m.append( it ) ;
+			m.append( it->name() ) ;
 		}
 	}
 
@@ -533,20 +549,20 @@ QStringList engines::enginesWithConfigFile() const
 {
 	QStringList m ;
 
-	for( const auto& it : this->supported() ){
+	for( const auto& it : this->supportedEngines() ){
 
-		if( this->getByName( it ).hasConfigFile() ){
+		if( it->hasConfigFile() ){
 
-			m.append( it ) ;
+			m.append( it->name() ) ;
 		}
 	}
 
 	return m ;
 }
 
-const QStringList& engines::supported() const
+const std::vector< engines::engine::Wrapper >& engines::supportedEngines() const
 {
-	return m_supported ;
+	return m_backendWrappers ;
 }
 
 const engines::engine& engines::getUnKnown() const
@@ -560,8 +576,6 @@ engines::engines()
 
 	if( utility::platformIsWindows() ){
 
-		m_supported = QStringList{ "Securefs","Cryfs","Encfs","Sshfs" } ;
-
 		m_backends.emplace_back( std::make_unique< securefs >() ) ;
 		m_backends.emplace_back( std::make_unique< cryfs >() ) ;
 		m_backends.emplace_back( std::make_unique< encfs >() ) ;
@@ -569,15 +583,11 @@ engines::engines()
 
 	}else if( utility::platformIsOSX() ){
 
-		m_supported = QStringList{ "Securefs","Cryfs","Gocryptfs","Encfs" } ;
-
 		m_backends.emplace_back( std::make_unique< securefs >() ) ;
 		m_backends.emplace_back( std::make_unique< cryfs >() ) ;
 		m_backends.emplace_back( std::make_unique< gocryptfs >() ) ;
 		m_backends.emplace_back( std::make_unique< encfs >() ) ;
 	}else{
-		m_supported = QStringList{ "Securefs","Cryfs","Gocryptfs","Encfs","Ecryptfs","Sshfs","Fscrypt" } ;
-
 		m_backends.emplace_back( std::make_unique< securefs >() ) ;
 		m_backends.emplace_back( std::make_unique< cryfs >() ) ;
 		m_backends.emplace_back( std::make_unique< gocryptfs >() ) ;
@@ -587,7 +597,12 @@ engines::engines()
 		m_backends.emplace_back( std::make_unique< fscrypt >() ) ;
 	}
 
-	custom::addEngines( m_supported,m_backends ) ;
+	custom::addEngines( m_backends ) ;
+
+	for( size_t i = 1 ; i < m_backends.size() ; i++ ){
+
+		m_backendWrappers.emplace_back( *( m_backends[ i ] ) ) ;
+	}
 }
 
 template< typename Engines,typename Compare,typename listSource >

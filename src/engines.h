@@ -43,6 +43,36 @@ public:
 	protected:
 		class commandOptions ;
 	public:
+		class Wrapper{
+		public:
+			Wrapper( const engines::engine& e ) :
+			        m_engine( std::addressof( e ) )
+			{
+			}
+			Wrapper() :
+			        m_engine( std::addressof( engines::instance().getUnKnown() ) )
+			{
+			}
+			const engines::engine& get() const
+			{
+				return *m_engine ;
+			}
+			const engines::engine& get()
+			{
+				return *m_engine ;
+			}
+			const engines::engine * operator->() const
+			{
+				return m_engine ;
+			}
+			const engines::engine * operator->()
+			{
+				return m_engine ;
+			}
+		private:
+			const engines::engine * m_engine ;
+		};
+
 		enum class error{ Success,Failed,Timeout,Continue } ;
 
 		enum class status
@@ -124,23 +154,6 @@ public:
 		class cmdStatus
 		{
 		public:
-			class Engine{
-			public:
-				Engine( const engines::engine& e ) :
-					m_engine( std::addressof( e ) )
-				{
-				}
-				Engine() :
-					m_engine( std::addressof( engines::instance().getUnKnown() ) )
-				{
-				}
-				const engines::engine& get() const
-				{
-					return *m_engine ;
-				}
-			private:
-				const engines::engine * m_engine ;
-			};
 			cmdStatus() ;
 			cmdStatus( engines::engine::status s,
 				   const engines::engine&,
@@ -155,7 +168,7 @@ public:
 		private:
 			engines::engine::status m_status = engines::engine::status::backendFail ;
 			QString m_message ;
-			engines::engine::cmdStatus::Engine m_engine ;
+			engines::engine::Wrapper m_engine ;
 		} ;
 
 		struct Options
@@ -442,7 +455,7 @@ public:
 	QStringList mountInfo( const QStringList& ) const ;
 	QStringList enginesWithNoConfigFile() const ;
 	QStringList enginesWithConfigFile() const ;
-	const QStringList& supported() const ;
+	const std::vector< engines::engine::Wrapper >& supportedEngines() const ;
 	const engine& getUnKnown() const ;
 	const engine& getByName( const QString& e ) const ;
 	const engine& getByFuseName( const QString& e ) const ;
@@ -452,7 +465,7 @@ public:
 
 private:
 	std::vector< std::unique_ptr< engines::engine > > m_backends ;
-	QStringList m_supported ;
+	std::vector< engines::engine::Wrapper > m_backendWrappers ;
 };
 
 #endif

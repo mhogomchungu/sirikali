@@ -262,21 +262,25 @@ void sirikali::setUpApp( const QString& volume )
 
 		const auto& engines = engines::instance() ;
 
-		for( const auto& it : engines.supported() ){
+		for( const auto& it : engines.supportedEngines() ){
 
-			auto ac = m->addAction( it ) ;
+			auto name = it->name() ;
 
-			ac->setObjectName( it ) ;
+			name.replace( 0,1,name.at( 0 ).toUpper() ) ;
 
-			if( engines.getByName( it ).isNotInstalled() ){
+			auto ac = m->addAction( name ) ;
+
+			ac->setObjectName( name ) ;
+
+			if( it->isNotInstalled() ){
 
 				ac->setEnabled( false ) ;
 
-				if( it == "Ecryptfs" ){
+				if( name == "Ecryptfs" ){
 
 					ac->setText( tr( "%1 Is Not Installed" ).arg( "Ecryptfs-simple" ) ) ;
 				}else{
-					ac->setText( tr( "%1 Is Not Installed" ).arg( it ) ) ;
+					ac->setText( tr( "%1 Is Not Installed" ).arg( name ) ) ;
 				}
 			}
 		}
