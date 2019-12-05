@@ -163,7 +163,9 @@ utility::task_result siritask::unmountVolume( const QString& exe,const QString& 
 	}
 }
 
-bool siritask::unmountVolume( const QString& mountPoint,const QString& unMountCommand,int maxCount )
+engines::engine::status siritask::unmountVolume( const QString& mountPoint,
+						 const QString& unMountCommand,
+						 int maxCount )
 {
 	auto _unmount = []( const QString& cmd,const QString& mountPoint ){
 
@@ -189,7 +191,7 @@ bool siritask::unmountVolume( const QString& mountPoint,const QString& unMountCo
 
 	if( _unmount( cmd,mountPoint ) ){
 
-		return true ;
+		return engines::engine::status::success ;
 	}else{
 		for( int i = 1 ; i < maxCount ; i++ ){
 
@@ -197,11 +199,11 @@ bool siritask::unmountVolume( const QString& mountPoint,const QString& unMountCo
 
 			if( _unmount( cmd,mountPoint ) ){
 
-				return true ;
+				return engines::engine::status::success ;
 			}
 		}
 
-		return false ;
+		return engines::engine::status::failedToUnMount ;
 	}
 }
 
@@ -283,12 +285,7 @@ static engines::engine::cmdStatus _unmount( const siritask::unmount& e )
 			return engine.unmount( a,b,e.numberOfAttempts ) ;
 		} ) ) ;
 
-		if( s ){
-
-			return { engines::engine::status::success,engine } ;
-		}else{
-			return { engines::engine::status::failedToUnMount,engine } ;
-		}
+		return { s,engine } ;
 	}
 }
 
@@ -596,6 +593,11 @@ static engines::engine::cmdStatus _mount( Opts opt,bool reUseMP,const siritask::
 	if( mm != engines::engine::status::success ){
 
 		return { mm,engine } ;
+	}
+
+	if( engine.volumeFailedRequirenment( opt ) ){
+
+		return { engines::engine::status::volumeFailedRequirenment,engine } ;
 	}
 
 	if( opt.key.isEmpty() && engine.requiresAPassword() ){

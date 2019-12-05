@@ -27,9 +27,9 @@ struct ecryptfs : public engines::engine
 
 	void updateOptions( engines::engine::options& ) const override ;
 
-	bool unmount( const QString& cipherFolder,
-		      const QString& mountPoint,
-		      int maxCount ) const override ;
+	engines::engine::status unmount( const QString& cipherFolder,
+					 const QString& mountPoint,
+					 int maxCount ) const override ;
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 

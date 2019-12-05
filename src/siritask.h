@@ -89,7 +89,9 @@ namespace siritask
 							const QString& mountPoint,
 							bool usePolkit ) ;
 
-	bool unmountVolume( const QString& mountPoint,const QString& unMountCommand,int maxCount ) ;
+	engines::engine::status unmountVolume( const QString& mountPoint,
+					       const QString& unMountCommand,
+					       int maxCount ) ;
 
 	bool deleteMountFolder( const QString& ) ;
 

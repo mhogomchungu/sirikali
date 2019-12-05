@@ -23,7 +23,9 @@
 #include "../mountinfo.h"
 #include <vector>
 
-static QStringList _encryptedVolumes( const QString& list )
+static const char * _spaceToken = " " ;
+
+static QStringList _encrypted_volumes( const QString& list )
 {
 	QStringList l ;
 
@@ -37,7 +39,7 @@ static QStringList _encryptedVolumes( const QString& list )
 
 			break ;
 		}else{
-			auto a = utility::split( x,' ' ) ;
+			auto a = utility::split( x,_spaceToken ) ;
 
 			if( a.size() > 4 ){
 
@@ -74,7 +76,7 @@ struct policy{
 	QString comment ;
 };
 
-static std::vector< protector > _getProtectors( int& s,const QStringList& l )
+static std::vector< protector > _get_protectors( int& s,const QStringList& l )
 {
 	std::vector< protector > m ;
 
@@ -88,7 +90,7 @@ static std::vector< protector > _getProtectors( int& s,const QStringList& l )
 			break ;
 		}
 
-		auto a = utility::split( e,' ' ) ;
+		auto a = utility::split( e,_spaceToken ) ;
 
 		if( e.size() > 4 ){
 
@@ -99,7 +101,7 @@ static std::vector< protector > _getProtectors( int& s,const QStringList& l )
 	return m ;
 }
 
-static std::vector< policy > _getPolicies( int& s,const QStringList& l )
+static std::vector< policy > _get_policies( int& s,const QStringList& l )
 {
 	std::vector< policy > m ;
 
@@ -107,18 +109,22 @@ static std::vector< policy > _getPolicies( int& s,const QStringList& l )
 
 		const auto& e = l.at( s ) ;
 
-		auto a = utility::split( e,' ' ) ;
+		auto a = utility::split( e,_spaceToken ) ;
 
-		if( e.size() > 2 ){
+		if( a.size() == 3 ){
 
 			m.emplace_back( a.at( 0 ),a.at( 1 ),a.at( 2 ) ) ;
+
+		}else if( a.size() == 5 ){
+
+			m.emplace_back( a.at( 0 ),a.at( 1 ),a.at( 4 ) ) ;
 		}
 	}
 
 	return m ;
 }
 
-static std::vector< policy > _getPolicies( const QString& m,const QString& exe )
+static std::vector< policy > _get_policies( const QString& m,const QString& exe )
 {
 	auto e = utility::Task::run( exe + " status " + m ).get().stdOut() ;
 
@@ -141,8 +147,8 @@ static std::vector< policy > _getPolicies( const QString& m,const QString& exe )
 		}
 	}
 
-	auto protectors = _getProtectors( i,s ) ;
-	auto policies   = _getPolicies( i,s ) ;
+	auto protectors = _get_protectors( i,s ) ;
+	auto policies   = _get_policies( i,s ) ;
 
 	for( auto& it : policies ){
 
@@ -158,13 +164,13 @@ static std::vector< policy > _getPolicies( const QString& m,const QString& exe )
 	return policies ;
 }
 
-static QString _getFsMode( const QStringList& s,const QString& m )
+static QString _get_fs_mode( const QStringList& s,const QString& m )
 {
 	for( const auto& it : s ){
 
 		if( it.contains( " " + m + " " ) ){
 
-			auto a = utility::split( it,' ' ) ;
+			auto a = utility::split( it,_spaceToken ) ;
 
 			if( a.size() > 6 ){
 
@@ -187,41 +193,108 @@ static QString _getFsMode( const QStringList& s,const QString& m )
 	return "-" ;
 }
 
-static QStringList _fscryptVolumes( const QStringList& s,const QString& exe )
+static QStringList _fscrypt_mount_points( const QString& exe )
 {
-	if( exe.isEmpty() ){
-
-		return {} ;
-	}
-
-	auto status = utility::Task::run( exe + " status" ).get().stdOut() ;
+	auto status = utility::unwrap( utility::Task::run( exe + " status" ) ).stdOut() ;
 
 	if( status.isEmpty() ){
 
 		return {} ;
 	}
 
+	return _encrypted_volumes( status ) ;
+}
+
+static QStringList _fscrypt_volumes( const QStringList& s,const QString& exe,const QStringList& n )
+{
 	QStringList l ;
 
-	for( const auto& it : _encryptedVolumes( status ) ){
+	for( const auto& it : _fscrypt_mount_points( exe ) ){
 
-		auto m = _getPolicies( it,exe ) ;
+		auto m = _get_policies( it,exe ) ;
 
 		for( const auto& xt : m ){
 
+			if( !xt.comment.startsWith( "\"volname=" ) ){
+
+				continue ;
+			}
+
+			auto cf = utility::policyString() + xt.poly ;
+			auto md = _get_fs_mode( s,it ) ;
+			auto mp = xt.comment ;
+			mp.remove( 0,9 ) ;
+			mp.remove( mp.length() - 1,1 ) ;
+
+			if( utility::pathNotExists( mp ) ){
+
+				continue ;
+			}
+
 			if( xt.unlocked == "Yes" ){
 
-				auto a = utility::policyString() ;
-				auto b = utility::commentString() ;
+				l.append( mountinfo::mountProperties( mp,md,n.at( 0 ),cf ) ) ;
 
-				auto c = a + xt.poly + "\n" + b + xt.comment ;
+			}else if( xt.unlocked.startsWith( "Partially" ) ){
 
-				l.append( mountinfo::mountProperties( it,_getFsMode( s,it ),"fscrypt",c ) ) ;
+				l.append( mountinfo::mountProperties( mp,md,n.at( 1 ),cf ) ) ;
 			}
 		}
 	}
 
 	return l ;
+}
+
+static QString _mount_point( const QString& e,const QString& exe )
+{
+	for( const auto& it : _fscrypt_mount_points( exe ) ){
+
+		if( e.startsWith( it ) ){
+
+			return it ;
+		}
+	}
+
+	return QString() ;
+}
+
+static QString _volume_properties( const QString& cipherFolder,
+				   const QString& mountPoint,
+				   const QString& e )
+{
+	if( e.isEmpty() ){
+
+		return QString() ;
+	}
+
+	auto a = utility::split( cipherFolder,':' ) ;
+
+	if( a.size() < 2 ){
+
+		return QString() ;
+	}
+
+	auto s = utility::Task::makePath( mountPoint ) ;
+
+	auto exe = utility::Task::makePath( e ) ;
+
+	auto m = _mount_point( mountPoint,exe ) ;
+
+	if( m.isEmpty() ){
+
+		return QString() ;
+	}
+
+	exe += " metadata dump --policy=" + m + ":" + a.at( 1 ) ;
+
+	auto r = utility::unwrap( utility::Task::run( exe ) ) ;
+
+	if( r.success() ){
+
+		return r.stdOut() ;
+	}else{
+		return QString() ;
+	}
 }
 
 static engines::engine::BaseOptions _setOptions()
@@ -244,60 +317,59 @@ static engines::engine::BaseOptions _setOptions()
 	s.executableName        = "fscrypt" ;
 	s.incorrectPasswordText = "incorrect key provided" ;
 	s.configFileNames       = QStringList{ ".fscrypt" } ;
-	s.fuseNames             = QStringList{ "fscrypt" } ;
+	s.fuseNames             = QStringList{ "fscrypt","fscrypt*" } ;
 	s.failedToMountList     = QStringList{ "Error" } ;
-	s.names                 = QStringList{ "fscrypt" } ;
+	s.names                 = QStringList{ "fscrypt","fscrypt*" } ;
 	s.volumePropertiesCommands = QStringList{ "fscrypt status %{plainFolder}" } ;
 	s.notFoundCode             = engines::engine::status::fscryptNotFound ;
 
 	return s ;
 }
 
-fscrypt::fscrypt() :
-	engines::engine( _setOptions() ),
-	m_requirePolkitOnUnmount( settings::instance().requirePolkitOnFsCryptUnmount() )
+fscrypt::fscrypt() : engines::engine( _setOptions() )
 {
 }
 
-bool fscrypt::unmount( const QString& cipherFolder,
-		       const QString& mountPoint,
-		       int maxCount) const
+engines::engine::status fscrypt::unmount( const QString& cipherFolder,
+					  const QString& mountPoint,
+					  int maxCount) const
 {
 	Q_UNUSED( cipherFolder )
 
-	auto exe = this->executableFullPath() ;
+	auto exe = this->executablePath() ;
 
 	if( exe.isEmpty() ){
 
-		return false ;
+		return engines::engine::status::failedToUnMount ;
 	}
 
-	if( m_requirePolkitOnUnmount ){
+	exe = utility::Task::makePath( exe ) ;
 
-		if( !utility::enablePolkit() ){
-
-			return false ;
-		}
-
-		exe += " purge " + mountPoint + " --force " + this->userOption() ;
-	}else{
-		exe += " purge " + mountPoint + " --force --drop-caches=false " + this->userOption() ;
-	}
+	exe += " lock " + mountPoint + " " + this->userOption() ;
 
 	for( int i = 0 ; i < maxCount ; i++ ){
 
-		if( utility::Task::run( exe,m_requirePolkitOnUnmount ).get().success() ){
+		auto s = utility::unwrap( utility::Task::run( exe,false ) ) ;
 
-			return true ;
+		if( s.success() ){
+
+			return engines::engine::status::success ;
+
+		}else if( s.stdError().contains( "Directory was incompletely locked because some files are still open" ) ){
+
+			return engines::engine::status::fscryptPartialVolumeClose ;
 		}
 	}
 
-	return false ;
+	return engines::engine::status::failedToUnMount ;
 }
 
 QStringList fscrypt::mountInfo( const QStringList& a ) const
 {
-	return Task::await( [ & ](){ return _fscryptVolumes( a,this->executableFullPath() ) ; } ) ;
+	return Task::await( [ & ](){
+
+		return _fscrypt_volumes( a,this->executablePath(),this->names() ) ;
+	} ) ;
 }
 
 const engines::engine& fscrypt::proveEngine( const QString& cipherPath ) const
@@ -307,13 +379,15 @@ const engines::engine& fscrypt::proveEngine( const QString& cipherPath ) const
 		return engines::instance().getUnKnown() ;
 	}
 
-	auto exe = this->executableFullPath() ;
+	auto exe = this->executablePath() ;
 
 	if( exe.isEmpty() ){
 
 		return engines::instance().getUnKnown() ;
 	}else{
 		auto m = utility::Task::makePath( cipherPath ) ;
+
+		exe = utility::Task::makePath( exe ) ;
 
 		auto s = utility::unwrap( utility::Task::run( exe + " status " + m ) ).success() ;
 
@@ -326,37 +400,18 @@ const engines::engine& fscrypt::proveEngine( const QString& cipherPath ) const
 	}
 }
 
+bool fscrypt::volumeFailedRequirenment( const engines::engine::options& e ) const
+{
+	Q_UNUSED( e )
+	return false ;
+}
+
 Task::future< QString >& fscrypt::volumeProperties( const QString& cipherFolder,
-						    const QString& mountPoint) const
+						    const QString& mountPoint ) const
 {
 	return Task::run( [ = ](){
 
-		auto exe = this->executableFullPath() ;
-
-		if( !exe.isEmpty() ){
-
-			auto a = utility::split( cipherFolder,':' ) ;
-
-			auto s = utility::Task::makePath( mountPoint ) ;
-
-			if( a.size() > 1 ){
-
-				exe = utility::Task::makePath( exe ) ;
-
-				a = utility::split( a.at( 1 ) ) ;
-
-				exe += " metadata dump --policy=" + s + ":" + a.at( 0 ) ;
-
-				auto e = utility::unwrap( utility::Task::run( exe ) ) ;
-
-				if( e.success() ){
-
-					return QString( e.stdOut() ) ;
-				}
-			}
-		}
-
-		return QString() ;
+		return _volume_properties( cipherFolder,mountPoint,this->executablePath() ) ;
 	} ) ;
 }
 
@@ -373,10 +428,8 @@ engines::engine::args fscrypt::command( const QByteArray& password,
 
 	if( args.create ){
 
-		auto m = "encrypt --source=custom_passphrase --name=\"%1\" --quiet %2" ;
-		auto n = utility::split( args.opt.cipherFolder,'/' ).last() ;
-
-		auto s = QString( m ).arg( n,this->userOption() ) ;
+		auto m = "encrypt --source=custom_passphrase --name=volname=\"%1\" --quiet %2" ;
+		auto s = QString( m ).arg( args.opt.cipherFolder,this->userOption() ) ;
 		exeOptions.add( s ) ;
 	}else{
 		exeOptions.add( QString( "unlock --quiet %1" ).arg( this->userOption() ) ) ;
@@ -425,6 +478,16 @@ QString fscrypt::userOption() const
 QString fscrypt::userOption() const
 {
 	return QString( "--user=\"%1\"" ).arg( getpwuid( getuid() )->pw_name ) ;
+}
+
+const QString& fscrypt::executablePath() const
+{
+	if( m_exe.isEmpty() ){
+
+		m_exe = this->executableFullPath() ;
+	}
+
+	return m_exe ;
 }
 
 #endif

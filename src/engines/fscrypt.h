@@ -25,13 +25,15 @@ class fscrypt : public engines::engine
 public:
 	fscrypt() ;
 
-	bool unmount( const QString& cipherFolder,
-		      const QString& mountPoint,
-		      int maxCount ) const override ;
+	engines::engine::status unmount( const QString& cipherFolder,
+					 const QString& mountPoint,
+					 int maxCount ) const override ;
 
 	QStringList mountInfo( const QStringList& ) const override ;
 
 	const engines::engine& proveEngine( const QString& cipherPath ) const override ;
+
+	bool volumeFailedRequirenment( const engines::engine::options& ) const override ;
 
 	Task::future< QString >& volumeProperties( const QString& cipherFolder,
 						   const QString& mountPoint ) const override ;
@@ -46,5 +48,6 @@ public:
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
 private:
 	QString userOption() const ;
-	bool m_requirePolkitOnUnmount ;
+	const QString& executablePath() const ;
+	mutable QString m_exe ;
 } ;

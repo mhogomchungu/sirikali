@@ -1461,29 +1461,7 @@ void sirikali::updateFavoritesInContextMenu()
 		}
 		int row( const QString& e )
 		{
-			auto x = utility::policyString() ;
-			auto y = "\n" + utility::commentString() ;
-
 			auto a = utility::split( e,'\n' ) ;
-
-			if( e.startsWith( x ) && e.contains( y ) ){
-
-				/*
-				 * we have an fscrypt volume, cipherpath for this volume
-				 * is in a format of "Policy:xys\nComment:abc" and below
-				 * code combines these two into a single entry since
-				 * variable "a" above split it into two.
-				 */
-				if( a.size() > 1 ){
-
-					auto m = a.at( 0 ) + "\n" + a.at( 1 ) ;
-
-					a.removeAt( 0 ) ;
-					a.removeAt( 0 ) ;
-
-					a.insert( 0,m ) ;
-				}
-			}
 
 			if( a.size() == 1 ){
 
@@ -1679,11 +1657,6 @@ void sirikali::updateList( const volumeInfo& entry )
 		if( row == -1 ){
 
 			row = tablewidget::addRow( table ) ;
-		}else{
-			if( entry.fileSystem() == "fscrypt" ){
-
-				row = tablewidget::addRow( table ) ;
-			}
 		}
 
 		tablewidget::updateRow( table,entry.mountInfo().minimalList(),row,this->font() ) ;
@@ -1731,9 +1704,14 @@ void sirikali::pbUmount()
 				this->updateList() ;
 			}
 		}else{
-			DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Unmount %1 Volume" ).arg( type ) ) ;
+			DialogMsg( this ).ShowUIOK( tr( "ERROR" ),s.toString() ) ;
 
-			this->enableAll() ;
+			if( s == engines::engine::status::failedToUnMount ){
+
+				this->enableAll() ;
+			}else{
+				this->pbUpdate() ;
+			}
 		}
 	}
 }

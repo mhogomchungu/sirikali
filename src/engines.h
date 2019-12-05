@@ -104,6 +104,7 @@ public:
 			cryfsMigrateFileSystem,
 			IllegalPath,
 
+			fscryptPartialVolumeClose,
 			failedToLoadWinfsp,
 			backEndFailedToMeetMinimumRequirenment,
 			failedToStartPolkit,
@@ -113,6 +114,7 @@ public:
 			invalidConfigFileName,
 			backendFail,
 			backendTimedOut,
+			volumeFailedRequirenment,
 			unknown
 		} ;
 
@@ -279,14 +281,16 @@ public:
 
 		virtual ~engine() ;
 
+		virtual bool volumeFailedRequirenment( const engines::engine::options& ) const ;
+
 		virtual QStringList mountInfo( const QStringList& ) const ;
 
 		virtual Task::future< QString >& volumeProperties( const QString& cipherFolder,
 								   const QString& mountPoint ) const ;
 
-		virtual bool unmount( const QString& cipherFolder,
-				      const QString& mountPoint,
-				      int maxCount ) const ;
+		virtual engines::engine::status unmount( const QString& cipherFolder,
+							 const QString& mountPoint,
+							 int maxCount ) const ;
 
 		virtual bool takesTooLongToUnlock() const ;
 

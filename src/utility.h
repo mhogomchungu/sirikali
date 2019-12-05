@@ -372,6 +372,7 @@ namespace utility
 	QString policyString() ;
 	QString commentString() ;
 
+	QStringList split( const QString&,const QString& ) ;
 	QStringList split( const QString&,char = '\n' ) ;
 	QStringList executableSearchPaths( void ) ;
 	QString executableSearchPaths( const QString& ) ;

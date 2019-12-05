@@ -109,9 +109,9 @@ static bool _unmount_ecryptfs_( Function cmd )
 	}
 }
 
-bool ecryptfs::unmount( const QString& cipherFolder,
-			const QString& mountPoint,
-			int maxCount ) const
+engines::engine::status ecryptfs::unmount( const QString& cipherFolder,
+					   const QString& mountPoint,
+					   int maxCount ) const
 {
 	Q_UNUSED( mountPoint )
 
@@ -131,7 +131,7 @@ bool ecryptfs::unmount( const QString& cipherFolder,
 
 	if( _unmount_ecryptfs_( cmd ) ){
 
-		return true ;
+		return engines::engine::status::success ;
 	}else{
 		for( int i = 1 ; i < maxCount ; i++ ){
 
@@ -139,11 +139,11 @@ bool ecryptfs::unmount( const QString& cipherFolder,
 
 			if( _unmount_ecryptfs_( cmd ) ){
 
-				return true ;
+				return engines::engine::status::success ;
 			}
 		}
 
-		return false ;
+		return engines::engine::status::failedToUnMount ;
 	}
 }
 

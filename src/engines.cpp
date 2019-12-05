@@ -126,6 +126,13 @@ engines::engine::~engine()
 {
 }
 
+bool engines::engine::volumeFailedRequirenment( const engines::engine::options& e ) const
+{
+	Q_UNUSED( e )
+
+	return false ;
+}
+
 QStringList engines::engine::mountInfo( const QStringList& e ) const
 {
 	Q_UNUSED( e )
@@ -167,9 +174,9 @@ Task::future< QString >& engines::engine::volumeProperties( const QString& ciphe
 	} ) ;
 }
 
-bool engines::engine::unmount( const QString& cipherFolder,
-			       const QString& mountPoint,
-			       int maxCount ) const
+engines::engine::status engines::engine::unmount( const QString& cipherFolder,
+						  const QString& mountPoint,
+						  int maxCount ) const
 {
 	Q_UNUSED( cipherFolder )
 	return siritask::unmountVolume( mountPoint,this->unMountCommand(),maxCount ) ;
@@ -722,12 +729,13 @@ QString engines::engine::cmdStatus::toString() const
 
 		return "Success" ;
 
+	case engines::engine::status::volumeFailedRequirenment :
+
+		return QObject::tr( "Volume Failed To Meet Requirenment, See Documentation For Further Information." ) ;
+
 	case engines::engine::status::failedToUnMount :
 
-		/*
-		 * Should not get here
-		 */
-		break ;
+		return QObject::tr( "Failed To Unmount %1 Volume" ).arg( m_engine->name() ) ;
 
 	case engines::engine::status::volumeCreatedSuccessfully :
 
@@ -839,6 +847,10 @@ QString engines::engine::cmdStatus::toString() const
 
 		return QObject::tr( "Installed \"%1\" Version Is Too Old.\n Please Update To Atleast Version %2." ).arg( a,b ) ;
 	}
+
+	case engines::engine::status::fscryptPartialVolumeClose :
+
+		return QObject::tr( "Folder Not Fully Locked Because Some Files Are Still In Use." ) ;
 
 	case engines::engine::status::customCommandNotFound :
 

@@ -893,7 +893,8 @@ bool utility::pathNotExists( const QString& path )
 	return !utility::pathExists( path ) ;
 }
 
-QStringList utility::split( const QString& e,char token )
+template< typename T >
+static QStringList _split( const QString& e,const T& token )
 {
 	if( e.isEmpty() ){
 
@@ -901,6 +902,16 @@ QStringList utility::split( const QString& e,char token )
 	}else{
 		return e.split( token,QString::SkipEmptyParts ) ;
 	}
+}
+
+QStringList utility::split( const QString& e,const QString& token )
+{
+	return _split( e,token ) ;
+}
+
+QStringList utility::split( const QString& e,char token )
+{
+	return _split( e,token ) ;
 }
 
 QString utility::removeOption( const QStringList& e,const QString& s )
