@@ -33,7 +33,7 @@ public:
 
 	const engines::engine& proveEngine( const QString& cipherPath ) const override ;
 
-	bool volumeFailedRequirenment( const engines::engine::options& ) const override ;
+	void updateVolumeList( const engines::engine::options& ) const override ;
 
 	Task::future< QString >& volumeProperties( const QString& cipherFolder,
 						   const QString& mountPoint ) const override ;
@@ -47,7 +47,19 @@ public:
 
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
 private:
+	class unlockedVolumeList{
+	public:
+		unlockedVolumeList() ;
+		QStringList getList() const ;
+		void addEntry( const QString& ) ;
+		void removeEntry( const QString& ) ;
+	private:
+		void updateList( const QStringList& ) ;
+		const QString m_configFilePath ;
+		const char * m_keyName = "unlockedList" ;
+	} mutable m_unlockedVolumeManager ;
+
 	QString userOption() const ;
-	const QString& executablePath() const ;
+	const QString& executablePath() const ;	
 	mutable QString m_exe ;
 } ;

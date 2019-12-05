@@ -126,11 +126,9 @@ engines::engine::~engine()
 {
 }
 
-bool engines::engine::volumeFailedRequirenment( const engines::engine::options& e ) const
+void engines::engine::updateVolumeList( const engines::engine::options& e ) const
 {
 	Q_UNUSED( e )
-
-	return false ;
 }
 
 QStringList engines::engine::mountInfo( const QStringList& e ) const
@@ -728,10 +726,6 @@ QString engines::engine::cmdStatus::toString() const
 		 */
 
 		return "Success" ;
-
-	case engines::engine::status::volumeFailedRequirenment :
-
-		return QObject::tr( "Volume Failed To Meet Requirenment, See Documentation For Further Information." ) ;
 
 	case engines::engine::status::failedToUnMount :
 

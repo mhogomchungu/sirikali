@@ -595,11 +595,6 @@ static engines::engine::cmdStatus _mount( Opts opt,bool reUseMP,const siritask::
 		return { mm,engine } ;
 	}
 
-	if( engine.volumeFailedRequirenment( opt ) ){
-
-		return { engines::engine::status::volumeFailedRequirenment,engine } ;
-	}
-
 	if( opt.key.isEmpty() && engine.requiresAPassword() ){
 
 		return { engines::engine::status::backendRequiresPassword,engine } ;
@@ -626,6 +621,8 @@ static engines::engine::cmdStatus _mount( Opts opt,bool reUseMP,const siritask::
 
 			siritask::deleteMountFolder( opt.plainFolder ) ;
 		}
+	}else{
+		engine.updateVolumeList( opt ) ;
 	}
 
 	return e ;
@@ -704,6 +701,8 @@ static engines::engine::cmdStatus _create( const Opts& opt,const Engs& engine )
 	auto e = _cmd( { engine,true,opt,engine.setPassword( opt.key ),configPath.value() } ) ;
 
 	if( e == engines::engine::status::success ){
+
+		engine.updateVolumeList( opt ) ;
 
 		if( !engine.autoMountsOnCreate() ){
 

@@ -114,7 +114,6 @@ public:
 			invalidConfigFileName,
 			backendFail,
 			backendTimedOut,
-			volumeFailedRequirenment,
 			unknown
 		} ;
 
@@ -281,7 +280,7 @@ public:
 
 		virtual ~engine() ;
 
-		virtual bool volumeFailedRequirenment( const engines::engine::options& ) const ;
+		virtual void updateVolumeList( const engines::engine::options& ) const ;
 
 		virtual QStringList mountInfo( const QStringList& ) const ;
 
