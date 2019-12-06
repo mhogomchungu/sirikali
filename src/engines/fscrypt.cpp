@@ -81,9 +81,14 @@ static QString _get_fs_mode( const QStringList& s,const QString& m )
 	return "-" ;
 }
 
+static utility::Task _run( const QString& cmd )
+{
+	return utility::unwrap( utility::Task::run( cmd ) ) ;
+}
+
 static QStringList _fscrypt_mount_points( const QString& exe )
 {
-	auto s = utility::unwrap( utility::Task::run( exe + " status" ) ).stdOut() ;
+	auto s = _run( exe + " status" ).stdOut() ;
 
 	if( s.isEmpty() ){
 
@@ -125,7 +130,7 @@ static QString _sanitize( const QStringList& m )
 
 static QString _property( const QString& exe,const QString& m,const QString& opt )
 {
-	auto s = utility::unwrap( utility::Task::run( exe + " status " + m ) ) ;
+	auto s = _run( exe + " status " + m ) ;
 
 	if( s.success() ){
 
@@ -206,9 +211,7 @@ static QString _volume_properties( const QString& cipherFolder,
 		return QString() ;
 	}
 
-	exe += " metadata dump --policy=" + m + ":" + a ;
-
-	auto r = utility::unwrap( utility::Task::run( exe ) ) ;
+	auto r = _run( exe + " metadata dump --policy=" + m + ":" + a ) ;
 
 	if( r.success() ){
 
@@ -270,7 +273,7 @@ engines::engine::status fscrypt::unmount( const QString& cipherFolder,
 
 	for( int i = 0 ; i < maxCount ; i++ ){
 
-		auto s = utility::unwrap( utility::Task::run( exe,false ) ) ;
+		auto s = _run( exe ) ;
 
 		if( s.success() ){
 
@@ -325,7 +328,7 @@ const engines::engine& fscrypt::proveEngine( const QString& cipherPath ) const
 
 		exe = utility::Task::makePath( exe ) ;
 
-		auto s = utility::unwrap( utility::Task::run( exe + " status " + m ) ).success() ;
+		auto s = _run( exe + " status " + m ).success() ;
 
 		if( s ){
 
