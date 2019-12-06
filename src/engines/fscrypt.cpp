@@ -27,6 +27,13 @@
 
 static const char * _spaceToken = " " ;
 
+struct mountInfo{
+	const QStringList& mountInfo ;
+	const QStringList& mountedVolumes ;
+	const QStringList& fuseNames ;
+	const QString& exe ;
+} ;
+
 static QStringList _encrypted_volumes( const QString& list )
 {
 	QStringList l ;
@@ -99,25 +106,98 @@ static QString _mount_point( const QString& e,const QString& exe )
 	return QString() ;
 }
 
+static QString _sanitize( const QStringList& m )
+{
+	if( m.size() > 1 ){
+
+		auto s = m.at( 1 ) ;
+
+		while( s.contains( ' ' ) ){
+
+			s.replace( " ","" ) ;
+		}
+
+		return s ;
+	}else{
+		return QString() ;
+	}
+}
+
+static QString _property( const QString& exe,const QString& m,const QString& opt )
+{
+	auto s = utility::unwrap( utility::Task::run( exe + " status " + m ) ) ;
+
+	if( s.success() ){
+
+		for( const auto& xt : utility::split( s.stdOut(),'\n' ) ){
+
+			if( xt.startsWith( opt ) ){
+
+				auto m = utility::split( xt,':' ) ;
+
+				return _sanitize( m ) ;
+			}
+		}
+	}
+
+	return QString() ;
+}
+
+template< typename Function >
+static QStringList _mountInfo( const mountInfo& e,Function removeEntry )
+{
+	QStringList l ;
+
+	QString a = e.fuseNames.at( 0 ) ;
+	QString b = e.fuseNames.at( 1 ) ;
+
+	for( const auto& it : e.mountedVolumes ){
+
+		auto s = _property( e.exe,it,"Unlocked:" ) ;
+
+		if( !s.isEmpty() ){
+
+			auto md = _get_fs_mode( e.mountInfo,it ) ;
+
+			if( s == "Yes" ){
+
+				l.append( mountinfo::mountProperties( it,md,a,it ) ) ;
+
+			}else if( s.startsWith( "Partially" ) ){
+
+				l.append( mountinfo::mountProperties( it,md,b,it ) ) ;
+			}else{
+				removeEntry( it ) ;
+			}
+		}else{
+			removeEntry( it ) ;
+		}
+	}
+
+	return l ;
+}
+
 static QString _volume_properties( const QString& cipherFolder,
 				   const QString& mountPoint,
 				   const QString& e )
 {
+	Q_UNUSED( cipherFolder )
+
 	if( e.isEmpty() ){
 
 		return QString() ;
 	}
 
-	auto a = utility::split( cipherFolder,':' ) ;
+	auto exe = utility::Task::makePath( e ) ;
 
-	if( a.size() < 2 ){
+	auto a = _property( exe,mountPoint,"Policy:" ) ;
+
+	if( a.isEmpty() ){
 
 		return QString() ;
 	}
 
 	auto s = utility::Task::makePath( mountPoint ) ;
-
-	auto exe = utility::Task::makePath( e ) ;
 
 	auto m = _mount_point( mountPoint,exe ) ;
 
@@ -126,7 +206,7 @@ static QString _volume_properties( const QString& cipherFolder,
 		return QString() ;
 	}
 
-	exe += " metadata dump --policy=" + m + ":" + a.at( 1 ) ;
+	exe += " metadata dump --policy=" + m + ":" + a ;
 
 	auto r = utility::unwrap( utility::Task::run( exe ) ) ;
 
@@ -205,83 +285,6 @@ engines::engine::status fscrypt::unmount( const QString& cipherFolder,
 	}
 
 	return engines::engine::status::failedToUnMount ;
-}
-
-struct mountInfo{
-	const QStringList& mountInfo ;
-	const QStringList& mountedVolumes ;
-	const QStringList& fuseNames ;
-	const QString& exe ;
-} ;
-
-static QString _sanitize( const QStringList& m )
-{
-	if( m.size() > 1 ){
-
-		auto s = m.at( 1 ) ;
-
-		while( s.contains( ' ' ) ){
-
-			s.replace( " ","" ) ;
-		}
-
-		return s ;
-	}else{
-		return QString() ;
-	}
-}
-
-template< typename Function >
-static QStringList _mountInfo( const mountInfo& e,Function removeEntry )
-{
-	QStringList l ;
-
-	QString unlockedName      = e.fuseNames.at( 0 ) ;
-	QString unlockedPartially = e.fuseNames.at( 1 ) ;
-
-	for( const auto& it : e.mountedVolumes ){
-
-		auto s = utility::Task::run( e.exe + " status " + it ).get() ;
-
-		if( s.success() ){
-
-			QString policy ;
-			QString unlockStatus ;
-
-			auto md = _get_fs_mode( e.mountInfo,it ) ;
-
-			for( const auto& xt : utility::split( s.stdOut(),'\n' ) ){
-
-				if( xt.startsWith( "Policy:" ) ){
-
-					auto m = utility::split( xt,':' ) ;
-
-					policy = utility::policyString() + _sanitize( m ) ;
-
-				}else if( xt.startsWith( "Unlocked:" ) ){
-
-					auto m = utility::split( xt,':' ) ;
-
-					unlockStatus = _sanitize( m ) ;
-				}
-			}
-
-			if( unlockStatus == "Yes" ){
-
-				l.append( mountinfo::mountProperties( it,md,unlockedName,policy ) ) ;
-
-			}else if( unlockStatus.startsWith( "Partially" ) ){
-
-				l.append( mountinfo::mountProperties( it,md,unlockedPartially,policy ) ) ;
-			}else{
-				removeEntry( it ) ;
-			}
-		}else{
-			removeEntry( it ) ;
-		}
-	}
-
-	return l ;
 }
 
 QStringList fscrypt::mountInfo( const QStringList& a ) const
@@ -468,7 +471,7 @@ QStringList fscrypt::unlockedVolumeList::getList() const
 
 	}catch( ... ){
 
-		_log_error( "Unknown error has occured","ff" ) ;
+		_log_error( "Unknown error has occured",m_configFilePath ) ;
 	}
 
 	return {} ;
@@ -495,7 +498,7 @@ void fscrypt::unlockedVolumeList::updateList( const QStringList& e )
 
 	}catch( ... ){
 
-		_log_error( "Unknown error has occured","ff" ) ;
+		_log_error( "Unknown error has occured",m_configFilePath ) ;
 	}
 }
 
