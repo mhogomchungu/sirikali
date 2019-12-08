@@ -411,8 +411,8 @@ namespace utility
 
 	SocketPaths socketPath() ;
 
-	utility::result< bool > versionIsLessThan( const QString& installedVersion,
-						   const QString& checkedVersion ) ;
+	utility::result< bool > versionIsLessOrEqualTo( const QString& installedVersion,
+							const QString& checkedVersion ) ;
 	utility::result< bool > versionIsGreaterOrEqualTo( const QString& installedVersion,
 							   const QString& checkedVersion ) ;
 

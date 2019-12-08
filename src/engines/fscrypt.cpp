@@ -251,7 +251,7 @@ static engines::engine::BaseOptions _setOptions()
 }
 
 fscrypt::fscrypt() : engines::engine( _setOptions() )
-{	
+{
 }
 
 engines::engine::status fscrypt::unmount( const QString& cipherFolder,
@@ -269,7 +269,16 @@ engines::engine::status fscrypt::unmount( const QString& cipherFolder,
 
 	exe = utility::Task::makePath( exe ) ;
 
-	exe += " lock " + mountPoint + " " + this->userOption() ;
+	if( this->versionIsLessOrEqualTo( "0.2.5" ) ){
+
+		auto mp = mountPoint.mid( 1,mountPoint.size() -1 ) ;
+
+		auto m = _mount_point( mp,this->executablePath() ) ;
+
+		exe += " purge " + m + " --force --drop-caches=false " + this->userOption() ;
+	}else{
+		exe += " lock " + mountPoint + " " + this->userOption() ;
+	}
 
 	for( int i = 0 ; i < maxCount ; i++ ){
 
@@ -403,12 +412,24 @@ engines::engine::status fscrypt::errorCode( const QString& e,int s ) const
 
 QString fscrypt::installedVersionString() const
 {
-	return QString() ;
+	if( m_version.isEmpty() ){
+
+		m_version = this->baseInstalledVersionString( "--version",true,0,2 ) ;
+	}
+
+	return m_version ;
 }
 
 void fscrypt::GUICreateOptionsinstance( QWidget *,engines::engine::function ) const
 {
 	//fscryptcreateoptions::instance( parent,std::move( function ) ) ;
+}
+
+bool fscrypt::versionIsLessOrEqualTo( const QString& e ) const
+{
+	auto a = utility::versionIsLessOrEqualTo( this->installedVersionString(),e ) ;
+
+	return a.has_value() && a.value() ;
 }
 
 #ifdef Q_OS_WIN

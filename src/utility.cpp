@@ -1385,15 +1385,15 @@ template< typename Function >
 	} ) ;
 }
 
-utility::result< bool > utility::versionIsLessThan( const QString& installedVersion,
-						    const QString& checkedVersion )
+utility::result< bool > utility::versionIsLessOrEqualTo( const QString& installedVersion,
+							 const QString& checkedVersion )
 {
 	auto a = _convert_string_to_version( installedVersion ) ;
 	auto b = _convert_string_to_version( checkedVersion ) ;
 
 	if( a && b ){
 
-		return a.value() < b.value() ;
+		return a.value() <= b.value() ;
 	}else{
 		return {} ;
 	}

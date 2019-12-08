@@ -59,7 +59,9 @@ private:
 		const char * m_keyName = "unlockedList" ;
 	} mutable m_unlockedVolumeManager ;
 
+	bool versionIsLessOrEqualTo( const QString& ) const ;
 	QString userOption() const ;
 	const QString& executablePath() const ;	
 	mutable QString m_exe ;
+	mutable QString m_version ;
 } ;
