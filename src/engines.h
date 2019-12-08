@@ -342,6 +342,10 @@ public:
 				template< typename E >
 				void add( E&& e )
 				{
+					while( m_options.endsWith( "\n" ) ){
+
+						utility::removeLastCharacters( m_options,1 ) ;
+					}
 					if( m_options.isEmpty() ){
 
 						m_options = std::forward< E >( e ) ;

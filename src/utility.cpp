@@ -928,7 +928,7 @@ QString utility::removeOption( const QStringList& e,const QString& s )
 
 	if( n.endsWith( "," ) ){
 
-		n.remove( n.size() - 1,1 ) ;
+		utility::removeLastCharacters( n,1 ) ;
 	}
 
 	return n ;
@@ -1548,4 +1548,9 @@ QString utility::convertPassword( const QByteArray& e )
 	}else{
 		return QString::fromLatin1( e ) ;
 	}
+}
+
+void utility::removeLastCharacters( QString& s,int n )
+{
+	s.remove( s.size() - n,n ) ;
 }

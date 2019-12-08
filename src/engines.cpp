@@ -958,12 +958,13 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 
 	if( m_exeOptions.endsWith( " " ) ){
 
-		m_exeOptions.remove( m_exeOptions.size() - 1,1 ) ;
+		utility::removeLastCharacters( m_exeOptions,1 ) ;
 	}
 
 	if( m_fuseOptions.endsWith( "," ) ){
 
-		m_fuseOptions.remove( m_fuseOptions.size() - 1,1 ) ;
+		utility::removeLastCharacters( m_fuseOptions,1 ) ;
+
 	}
 
 	if( !utility::platformIsLinux() && !m_fuseOptions.contains( "volname=" ) ){
