@@ -269,9 +269,9 @@ engines::engine::status custom::errorCode( const QString& e,int s ) const
 	}
 }
 
-QString custom::installedVersionString() const
+const QString& custom::installedVersionString() const
 {
-	return QString() ;
+	return m_version.get() ;
 }
 
 void custom::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

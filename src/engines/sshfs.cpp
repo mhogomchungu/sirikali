@@ -63,7 +63,8 @@ static engines::engine::BaseOptions _setOptions()
 
 sshfs::sshfs() :
 	engines::engine( _setOptions() ),
-	m_environment( engines::engine::getProcessEnvironment() )
+	m_environment( engines::engine::getProcessEnvironment() ),
+	m_version( [ this ]{ return this->baseInstalledVersionString( "--version",true,2,0 ) ; } )
 {
 }
 
@@ -177,14 +178,9 @@ engines::engine::status sshfs::errorCode( const QString& e,int s ) const
 	}
 }
 
-QString sshfs::installedVersionString() const
+const QString& sshfs::installedVersionString() const
 {
-	if( m_version.isEmpty() ){
-
-		m_version = this->baseInstalledVersionString( "--version",true,2,0 ) ;
-	}
-
-	return m_version ;
+	return m_version.get() ;
 }
 
 void sshfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

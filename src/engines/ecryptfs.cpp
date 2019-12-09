@@ -79,7 +79,8 @@ static bool _requiresPolkit()
 
 ecryptfs::ecryptfs() :
 	engines::engine( _setOptions() ),
-	m_requirePolkit( _requiresPolkit() )
+	m_requirePolkit( _requiresPolkit() ),
+	m_version( [ this ]{ return this->baseInstalledVersionString( "--version",true,1,0 ) ; } )
 {
 }
 
@@ -210,9 +211,9 @@ engines::engine::status ecryptfs::errorCode( const QString& e,int s ) const
 	}
 }
 
-QString ecryptfs::installedVersionString() const
+const QString& ecryptfs::installedVersionString() const
 {
-	return this->baseInstalledVersionString( "--version",true,1,0 ) ;
+	return m_version.get() ;
 }
 
 void ecryptfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

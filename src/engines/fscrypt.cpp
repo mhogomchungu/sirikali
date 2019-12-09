@@ -250,7 +250,9 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
-fscrypt::fscrypt() : engines::engine( _setOptions() )
+fscrypt::fscrypt() : engines::engine( _setOptions() ),
+	m_exeFullPath( *this ),
+	m_version( [ this ]{ return this->baseInstalledVersionString( "--version",true,0,2 ) ; } )
 {
 }
 
@@ -260,20 +262,22 @@ engines::engine::status fscrypt::unmount( const QString& cipherFolder,
 {
 	Q_UNUSED( cipherFolder )
 
-	auto exe = this->executablePath() ;
+	const auto& e = m_exeFullPath.get() ;
 
-	if( exe.isEmpty() ){
+	if( e.isEmpty() ){
 
 		return engines::engine::status::failedToUnMount ;
 	}
 
-	exe = utility::Task::makePath( exe ) ;
+	auto exe = utility::Task::makePath( e ) ;
 
 	if( this->versionIsLessOrEqualTo( "0.2.5" ) ){
 
 		auto mp = mountPoint.mid( 1,mountPoint.size() -1 ) ;
 
-		auto m = _mount_point( mp,this->executablePath() ) ;
+		auto m = _mount_point( mp,m_exeFullPath.get() ) ;
+
+		m = utility::Task::makePath( m ) ;
 
 		exe += " purge " + m + " --force --drop-caches=false " + this->userOption() ;
 	}else{
@@ -301,7 +305,7 @@ engines::engine::status fscrypt::unmount( const QString& cipherFolder,
 
 QStringList fscrypt::mountInfo( const QStringList& a ) const
 {
-	auto exe = this->executablePath() ;
+	const auto& exe = m_exeFullPath.get() ;
 
 	if( exe.isEmpty() ){
 
@@ -327,7 +331,7 @@ const engines::engine& fscrypt::proveEngine( const QString& cipherPath ) const
 		return engines::instance().getUnKnown() ;
 	}
 
-	auto exe = this->executablePath() ;
+	const auto& exe = m_exeFullPath.get() ;
 
 	if( exe.isEmpty() ){
 
@@ -335,9 +339,9 @@ const engines::engine& fscrypt::proveEngine( const QString& cipherPath ) const
 	}else{
 		auto m = utility::Task::makePath( cipherPath ) ;
 
-		exe = utility::Task::makePath( exe ) ;
+		auto ee = utility::Task::makePath( exe ) ;
 
-		auto s = _run( exe + " status " + m ).success() ;
+		auto s = _run( ee + " status " + m ).success() ;
 
 		if( s ){
 
@@ -358,7 +362,7 @@ Task::future< QString >& fscrypt::volumeProperties( const QString& cipherFolder,
 {
 	return Task::run( [ = ](){
 
-		return _volume_properties( cipherFolder,mountPoint,this->executablePath() ) ;
+		return _volume_properties( cipherFolder,mountPoint,m_exeFullPath.get() ) ;
 	} ) ;
 }
 
@@ -410,26 +414,14 @@ engines::engine::status fscrypt::errorCode( const QString& e,int s ) const
 	}
 }
 
-QString fscrypt::installedVersionString() const
+const QString& fscrypt::installedVersionString() const
 {
-	if( m_version.isEmpty() ){
-
-		m_version = this->baseInstalledVersionString( "--version",true,0,2 ) ;
-	}
-
-	return m_version ;
+	return m_version.get() ;
 }
 
 void fscrypt::GUICreateOptionsinstance( QWidget *,engines::engine::function ) const
 {
 	//fscryptcreateoptions::instance( parent,std::move( function ) ) ;
-}
-
-bool fscrypt::versionIsLessOrEqualTo( const QString& e ) const
-{
-	auto a = utility::versionIsLessOrEqualTo( this->installedVersionString(),e ) ;
-
-	return a.has_value() && a.value() ;
 }
 
 #ifdef Q_OS_WIN
@@ -446,16 +438,6 @@ QString fscrypt::userOption() const
 QString fscrypt::userOption() const
 {
 	return QString( "--user=\"%1\"" ).arg( getpwuid( getuid() )->pw_name ) ;
-}
-
-const QString& fscrypt::executablePath() const
-{
-	if( m_exe.isEmpty() ){
-
-		m_exe = this->executableFullPath() ;
-	}
-
-	return m_exe ;
 }
 
 #endif

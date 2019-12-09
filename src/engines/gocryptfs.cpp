@@ -56,7 +56,8 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
-gocryptfs::gocryptfs() : engines::engine( _setOptions() )
+gocryptfs::gocryptfs() : engines::engine( _setOptions() ),
+	m_version( [ this ]{ return this->baseInstalledVersionString( "--version",true,1,0 ) ; } )
 {
 }
 
@@ -163,9 +164,9 @@ engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const
 	}
 }
 
-QString gocryptfs::installedVersionString() const
+const QString& gocryptfs::installedVersionString() const
 {
-	return this->baseInstalledVersionString( "--version",true,1,0 ) ;
+	return m_version.get() ;
 }
 
 void gocryptfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

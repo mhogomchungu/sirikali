@@ -333,6 +333,20 @@ bool engines::engine::backendRequireMountPath() const
 	return m_Options.backendRequireMountPath ;
 }
 
+bool engines::engine::versionIsLessOrEqualTo( const QString& e ) const
+{
+	auto a = utility::versionIsLessOrEqualTo( this->installedVersionString(),e ) ;
+
+	return a.has_value() && a.value() ;
+}
+
+bool engines::engine::versionGreaterOrEqualTo( const QString& e ) const
+{
+	auto a = utility::versionIsGreaterOrEqualTo( this->installedVersionString(),e ) ;
+
+	return a.has_value() && a.value() ;
+}
+
 bool engines::engine::takesTooLongToUnlock() const
 {
 	return m_Options.takesTooLongToUnlock ;

@@ -56,7 +56,8 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
-encfs::encfs() : engines::engine( _setOptions() )
+encfs::encfs() : engines::engine( _setOptions() ),
+      m_version( [ this ]{ return this->baseInstalledVersionString( "--version",false,2,0 ) ; } )
 {
 }
 
@@ -135,9 +136,9 @@ engines::engine::status encfs::errorCode( const QString& e,int s ) const
 	}
 }
 
-QString encfs::installedVersionString() const
+const QString& encfs::installedVersionString() const
 {
-	return this->baseInstalledVersionString( "--version",false,2,0 ) ;
+	return m_version.get() ;
 }
 
 void encfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

@@ -60,9 +60,9 @@ engines::engine::status unknown::errorCode( const QString& e,int s ) const
 	return engines::engine::status::backendFail ;
 }
 
-QString unknown::installedVersionString() const
+const QString& unknown::installedVersionString() const
 {
-	return {} ;
+	return m_version.get() ;
 }
 
 void unknown::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

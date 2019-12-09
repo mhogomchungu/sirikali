@@ -42,10 +42,11 @@ public:
 	engines::engine::args command( const QByteArray& password,
 				       const engines::engine::cmdArgsList& args ) const override ;
 
-	QString installedVersionString() const override ;
+	const QString& installedVersionString() const override ;
 
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
 private:
 	const QString m_mountControlStructure ;
 	const QString m_createControlStructure ;
+	engines::version m_version ;
 } ;

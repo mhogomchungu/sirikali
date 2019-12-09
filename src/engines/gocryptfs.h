@@ -19,8 +19,9 @@
 
 #include "../engines.h"
 
-struct gocryptfs : public engines::engine
+class gocryptfs : public engines::engine
 {
+public:
 	gocryptfs() ;
 
 	void updateOptions( engines::engine::options& ) const override ;
@@ -30,7 +31,9 @@ struct gocryptfs : public engines::engine
 	engines::engine::args command( const QByteArray& password,
 				       const engines::engine::cmdArgsList& args ) const override ;
 
-	QString installedVersionString() const override ;
+	const QString& installedVersionString() const override ;
 
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
+private:
+	engines::version m_version ;
 } ;

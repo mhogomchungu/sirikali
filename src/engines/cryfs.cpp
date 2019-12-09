@@ -60,7 +60,8 @@ static engines::engine::BaseOptions _setOptions()
 
 cryfs::cryfs() :
 	engines::engine( _setOptions() ),
-	m_env( engines::engine::getProcessEnvironment() )
+	m_env( engines::engine::getProcessEnvironment() ),
+	m_version( [ this ]{ return this->baseInstalledVersionString( "--version",true,2,0 ) ; } )
 {
 	m_env.insert( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
 	m_env.insert( "CRYFS_FRONTEND","noninteractive" ) ;
@@ -129,17 +130,17 @@ engines::engine::args cryfs::command( const QByteArray& password,
 
 engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 {
-	auto m = [ & ]()->utility::result< bool >{
+	auto m = [ & ](){
 
 		if( utility::platformIsWindows() ){
 
-			return utility::result< bool >() ;
+			return false ;
 		}else{
 			return this->versionGreaterOrEqualTo( "0.9.9" ) ;
 		}
 	}() ;
 
-	if( m && m.value() ){
+	if( m ){
 
 		/*
 		 * Error codes are here: https://github.com/cryfs/cryfs/blob/develop/src/cryfs/ErrorCodes.h
@@ -173,24 +174,12 @@ engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 	return engines::engine::status::backendFail ;
 }
 
-QString cryfs::installedVersionString() const
-{
-	if( m_version.isEmpty() ){
-
-		m_version = this->baseInstalledVersionString( "--version",true,2,0 ) ;
-	}
-
-	return m_version ;
+const QString& cryfs::installedVersionString() const
+{	
+	return m_version.get() ;
 }
 
 void cryfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
 {
 	cryfscreateoptions::instance( parent,std::move( function ) ) ;
-}
-
-bool cryfs::versionGreaterOrEqualTo( const QString& e ) const
-{
-	auto a = utility::versionIsGreaterOrEqualTo( this->installedVersionString(),e ) ;
-
-	return a.has_value() && a.value() ;
 }

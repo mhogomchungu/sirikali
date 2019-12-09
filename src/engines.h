@@ -251,6 +251,9 @@ public:
 		bool autorefreshOnMountUnMount() const ;
 		bool backendRequireMountPath() const ;
 
+		bool versionIsLessOrEqualTo( const QString& ) const ;
+		bool versionGreaterOrEqualTo( const QString& ) const ;
+
 		engines::engine::status notFoundCode() const ;
 
 		int backendTimeout() const ;
@@ -301,7 +304,7 @@ public:
 
 		virtual const QProcessEnvironment& getProcessEnvironment() const ;
 		virtual bool requiresPolkit() const ;
-		virtual QString installedVersionString() const = 0 ;
+		virtual const QString& installedVersionString() const = 0 ;
 		virtual args command( const QByteArray& password,const engines::engine::cmdArgsList& args ) const = 0 ;
 		virtual engines::engine::status errorCode( const QString& e,int s ) const = 0 ;
 		using function = std::function< void( const Options& ) > ;
@@ -455,6 +458,47 @@ public:
 		BaseOptions m_Options ;
 		QProcessEnvironment m_processEnvironment ;
 	} ;
+
+	class version{
+	public:
+		version( std::function< QString() > function ) : m_function( std::move( function ) )
+		{
+		}
+		version() : m_function( [](){ return QString() ; } )
+		{
+		}
+		const QString& get() const
+		{
+			if( m_version.isEmpty() ){
+
+				m_version = m_function() ;
+			}
+
+			return m_version ;
+		}
+	private:
+		std::function< QString() > m_function ;
+		mutable QString m_version ;
+	};
+
+	class exeFullPath{
+	public:
+		exeFullPath( const engines::engine& e ) : m_engine( e )
+		{
+		}
+		const QString& get() const
+		{
+			if( m_path.isEmpty() ){
+
+				m_path = m_engine->executableFullPath() ;
+			}
+
+			return m_path ;
+		}
+	private:
+		const engines::engine::Wrapper m_engine ;
+		mutable QString m_path ;
+	};
 
 	engines() ;
 	static const engines& instance() ;

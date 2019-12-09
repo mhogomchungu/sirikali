@@ -53,7 +53,8 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
-securefs::securefs() : engines::engine( _setOptions() )
+securefs::securefs() : engines::engine( _setOptions() ),
+	m_version( [ this ]{ return this->baseInstalledVersionString( "version",true,1,0 ) ; } )
 {
 }
 
@@ -115,9 +116,9 @@ engines::engine::status securefs::errorCode( const QString& e,int s ) const
 	}
 }
 
-QString securefs::installedVersionString() const
+const QString& securefs::installedVersionString() const
 {
-	return this->baseInstalledVersionString( "version",true,1,0 ) ;
+	return m_version.get() ;
 }
 
 void securefs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

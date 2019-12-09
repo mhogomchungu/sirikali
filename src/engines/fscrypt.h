@@ -43,7 +43,7 @@ public:
 	engines::engine::args command( const QByteArray& password,
 				       const engines::engine::cmdArgsList& args ) const override ;
 
-	QString installedVersionString() const override ;
+	const QString& installedVersionString() const override ;
 
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
 private:
@@ -59,9 +59,7 @@ private:
 		const char * m_keyName = "unlockedList" ;
 	} mutable m_unlockedVolumeManager ;
 
-	bool versionIsLessOrEqualTo( const QString& ) const ;
 	QString userOption() const ;
-	const QString& executablePath() const ;	
-	mutable QString m_exe ;
-	mutable QString m_version ;
+	engines::exeFullPath m_exeFullPath ;
+	engines::version m_version ;
 } ;
