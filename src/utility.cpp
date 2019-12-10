@@ -928,7 +928,7 @@ QString utility::removeOption( const QStringList& e,const QString& s )
 
 	if( n.endsWith( "," ) ){
 
-		utility::removeLast( n,1 ) ;
+		n = utility::removeLast( n,1 ) ;
 	}
 
 	return n ;

@@ -347,7 +347,7 @@ public:
 				{
 					while( m_options.endsWith( "\n" ) ){
 
-						utility::removeLast( m_options,1 ) ;
+						m_options = utility::removeLast( m_options,1 ) ;
 					}
 					if( m_options.isEmpty() ){
 

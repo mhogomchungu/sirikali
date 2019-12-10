@@ -972,13 +972,12 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 
 	if( m_exeOptions.endsWith( " " ) ){
 
-		utility::removeLast( m_exeOptions,1 ) ;
+		m_exeOptions = utility::removeLast( m_exeOptions,1 ) ;
 	}
 
 	if( m_fuseOptions.endsWith( "," ) ){
 
-		utility::removeLast( m_fuseOptions,1 ) ;
-
+		m_fuseOptions = utility::removeLast( m_fuseOptions,1 ) ;
 	}
 
 	if( !utility::platformIsLinux() && !m_fuseOptions.contains( "volname=" ) ){
