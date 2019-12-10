@@ -88,7 +88,7 @@ engines::engine::args encfs::command( const QByteArray& password,
 
 		exeOptions.add( "-f" ) ;
 
-		auto m = args.mountPoint.mid( 1,args.mountPoint.size() - 2 ) ;
+		auto m = utility::removeFirstAndLast( args.mountPoint,1,1 ) ;
 
 		if( !utility::isDriveLetter( m ) ){
 

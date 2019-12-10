@@ -347,7 +347,7 @@ public:
 				{
 					while( m_options.endsWith( "\n" ) ){
 
-						utility::removeLastCharacters( m_options,1 ) ;
+						utility::removeLast( m_options,1 ) ;
 					}
 					if( m_options.isEmpty() ){
 

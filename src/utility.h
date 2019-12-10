@@ -377,7 +377,8 @@ namespace utility
 	QStringList executableSearchPaths( void ) ;
 	QString executableSearchPaths( const QString& ) ;
 
-	void removeLastCharacters( QString&,int characters ) ;
+	QString removeLast( const QString&,int lastChars ) ;
+	QString removeFirstAndLast( const QString&,int firstChars,int lastChars ) ;
 
 	void logCommandOutPut( const ::Task::process::result&,const QString& ) ;
 	void logCommandOutPut( const QString& ) ;

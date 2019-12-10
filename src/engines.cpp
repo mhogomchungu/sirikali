@@ -972,12 +972,12 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 
 	if( m_exeOptions.endsWith( " " ) ){
 
-		utility::removeLastCharacters( m_exeOptions,1 ) ;
+		utility::removeLast( m_exeOptions,1 ) ;
 	}
 
 	if( m_fuseOptions.endsWith( "," ) ){
 
-		utility::removeLastCharacters( m_fuseOptions,1 ) ;
+		utility::removeLast( m_fuseOptions,1 ) ;
 
 	}
 

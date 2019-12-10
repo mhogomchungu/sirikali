@@ -153,8 +153,8 @@ static QStringList _mountInfo( const mountInfo& e,Function removeEntry )
 {
 	QStringList l ;
 
-	QString a = e.fuseNames.at( 0 ) ;
-	QString b = e.fuseNames.at( 1 ) ;
+	const auto& a = e.fuseNames.at( 0 ) ;
+	const auto& b = e.fuseNames.at( 1 ) ;
 
 	for( const auto& it : e.mountedVolumes ){
 
@@ -273,11 +273,9 @@ engines::engine::status fscrypt::unmount( const QString& cipherFolder,
 
 	if( this->versionIsLessOrEqualTo( "0.2.5" ) ){
 
-		auto mp = mountPoint.mid( 1,mountPoint.size() -1 ) ;
+		auto mp = utility::removeFirstAndLast( mountPoint,1,1 ) ;
 
-		auto m = _mount_point( mp,m_exeFullPath.get() ) ;
-
-		m = utility::Task::makePath( m ) ;
+		auto m = utility::Task::makePath( _mount_point( mp,m_exeFullPath.get() ) ) ;
 
 		exe += " purge " + m + " --force --drop-caches=false " + this->userOption() ;
 	}else{
@@ -521,7 +519,7 @@ void fscrypt::unlockedVolumeList::removeEntry( const QString& e )
 {
 	auto a = this->getList() ;
 
-	a.removeAll( e.mid( 1,e.length() - 2 ) ) ;
+	a.removeAll( utility::removeFirstAndLast( e,1,1 ) ) ;
 
 	this->updateList( a ) ;
 }
