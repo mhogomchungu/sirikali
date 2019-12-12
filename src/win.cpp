@@ -388,8 +388,8 @@ struct terminate_process{
 
 	QProcess& exe ;
 	const engines::engine& engine ;
-	const QString& mountPath = QString() ;
-	const QString& unMountCommand = QString() ;
+	const QString& mountPath ;
+	const QString& unMountCommand ;
 };
 
 static std::pair< Task::process::result,QString > _terminate_process( const terminate_process& e )
@@ -434,7 +434,7 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 
 		if( m.type == engines::engine::error::Timeout ){
 
-			_terminate_process( { *exe,opts.engine } ) ;
+			_terminate_process( { *exe,opts.engine,QString(),QString() } ) ;
 
 			return Task::process::result( SiriKali::Windows::_backEndTimedOut,
 						      QByteArray(),
