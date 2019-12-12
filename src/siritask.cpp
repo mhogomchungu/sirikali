@@ -228,7 +228,7 @@ struct run_command{
 	const QString& plainFolder ;
 	const QString& volumeType ;
 	const QString& commandType ;
-	const QByteArray& password = QByteArray() ;
+	const QByteArray& password ;
 };
 
 static void _run_command( const run_command& e )
@@ -300,13 +300,13 @@ engines::engine::cmdStatus siritask::encryptedFolderUnMount( const siritask::unm
 		auto a = utility::Task::makePath( e.cipherFolder ) ;
 		auto b = utility::Task::makePath( e.mountPoint ) ;
 
-		_run_command( { m.preUnmountCommand,a,b,e.fileSystem,"pre unmount" } ) ;
+		_run_command( { m.preUnmountCommand,a,b,e.fileSystem,"pre unmount",QByteArray() } ) ;
 
 		auto s = _unmount( e ) ;
 
 		if( s.success() ){
 
-			_run_command( { m.postUnmountCommand,a,b,e.fileSystem,"post unmount" } ) ;
+			_run_command( { m.postUnmountCommand,a,b,e.fileSystem,"post unmount",QByteArray() } ) ;
 		}
 
 		return s ;
