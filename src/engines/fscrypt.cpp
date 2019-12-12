@@ -519,7 +519,8 @@ void fscrypt::unlockedVolumeList::removeEntry( const QString& e )
 {
 	auto a = this->getList() ;
 
-	a.removeAll( utility::removeFirstAndLast( e,1,1 ) ) ;
+	if( a.removeAll( utility::removeFirstAndLast( e,1,1 ) ) ){
 
-	this->updateList( a ) ;
+		this->updateList( a ) ;
+	}
 }
