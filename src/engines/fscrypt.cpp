@@ -240,7 +240,6 @@ static engines::engine::BaseOptions _setOptions()
 	s.passwordFormat        = "%{password}" ;
 	s.executableName        = "fscrypt" ;
 	s.incorrectPasswordText = "incorrect key provided" ;
-	s.configFileNames       = QStringList{ ".fscrypt" } ;
 	s.fuseNames             = QStringList{ "fscrypt","fscrypt*" } ;
 	s.failedToMountList     = QStringList{ "Error" } ;
 	s.names                 = QStringList{ "fscrypt","fscrypt*" } ;

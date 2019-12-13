@@ -189,4 +189,6 @@ version 1.4.2(Unreleased)
    is a remote address of "abc@example:/".
 -- Add a visible option to choose between creating a local drive or a network drive when connecting to ssh server
    on windows.
--- inforce a requirenment that says Sshfs-win should be atleast version 3.4.0.
+-- Inforce a requirenment that says Sshfs-win should be atleast version 3.4.0.
+-- Add support for "lock" command in fscrypt backend. This option is used for locking directories that use V2
+   encryption policies.

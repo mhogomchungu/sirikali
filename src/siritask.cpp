@@ -534,7 +534,7 @@ siritask::Engine siritask::mountEngine( const siritask::mount& e )
 
 			return { { m.first,"",cipherFolder } } ;
 		}else{
-			const auto& engine = engines::instance().getByName( "fscrypt" ) ;
+			const auto& engine = engines.getByName( "fscrypt" ) ;
 
 			return { { engine.proveEngine( cipherFolder ),"",cipherFolder } } ;
 		}
