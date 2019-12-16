@@ -152,8 +152,6 @@ static std::function< void() > _failed_to_connect_to_zulupolkit ;
 
 static bool _enable_debug = false ;
 
-static bool _enable_full_debug = false ;
-
 static QThread * _main_gui_thread ;
 
 static QWidget * _mainQWidget ;
@@ -178,29 +176,19 @@ bool utility::debugEnabled()
 	return _enable_debug ;
 }
 
-void utility::enableFullDebug( bool e )
-{
-	_enable_full_debug = e ;
-}
-
-bool utility::debugFullEnabled()
-{
-	return _enable_full_debug ;
-}
-
 void utility::setDebugWindow( debugWindow * w )
 {
 	_debugWindow = w ;
 }
 
+static void _show_debug_window()
+{
+	_debugWindow->Show() ;
+}
+
 static void _set_debug_window_text( const QString& e )
 {
-	if( utility::debugFullEnabled() ){
-
-		std::cout << e.toLatin1().constData() << std::endl ;
-	}
-
-	_debugWindow->UpdateOutPut( e,utility::debugFullEnabled() ) ;
+	_debugWindow->UpdateOutPut( e,utility::debugEnabled() ) ;
 }
 
 utility::SocketPaths utility::socketPath()
@@ -334,6 +322,13 @@ utility::debug utility::debug::operator<<( const QString& e )
 	return utility::debug() ;
 }
 
+void utility::debug::showDebugWindow( const QString& e )
+{
+	utility::enableDebug( true ) ;
+	_build_debug_msg( e ) ;
+	_show_debug_window() ;
+}
+
 utility::debug utility::debug::operator<<( int e )
 {
 	_build_debug_msg( QString::number( e ) ) ;
@@ -457,8 +452,6 @@ void utility::initGlobals()
 {
 	settings::instance().scaleGUI() ;
 
-	favorites::instance().updateFavorites() ;
-
 	utility::setGUIThread() ;
 
 #ifdef Q_OS_LINUX
@@ -581,7 +574,7 @@ void utility::openPath( const QString& path,const QString& opener,
 
 static bool _help()
 {
-	utility::debug() << VERSION_STRING << QObject::tr( "\n\
+	utility::debug::cout() << VERSION_STRING << QObject::tr( "\n\
 options:\n\
 	-d   Path to where a volume to be auto unlocked/mounted is located.\n\
 	-m   Tool to use to open a default file manager(default tool is xdg-open).\n\
@@ -900,7 +893,8 @@ bool utility::pathNotExists( const QString& path )
 	return !utility::pathExists( path ) ;
 }
 
-QStringList utility::split( const QString& e,char token )
+template< typename T >
+static QStringList _split( const QString& e,const T& token )
 {
 	if( e.isEmpty() ){
 
@@ -908,6 +902,16 @@ QStringList utility::split( const QString& e,char token )
 	}else{
 		return e.split( token,QString::SkipEmptyParts ) ;
 	}
+}
+
+QStringList utility::split( const QString& e,const QString& token )
+{
+	return _split( e,token ) ;
+}
+
+QStringList utility::split( const QString& e,char token )
+{
+	return _split( e,token ) ;
 }
 
 QString utility::removeOption( const QStringList& e,const QString& s )
@@ -924,7 +928,7 @@ QString utility::removeOption( const QStringList& e,const QString& s )
 
 	if( n.endsWith( "," ) ){
 
-		n.remove( n.size() - 1,1 ) ;
+		n = utility::removeLast( n,1 ) ;
 	}
 
 	return n ;
@@ -1034,11 +1038,11 @@ bool utility::removeFolder( const QString& e,int attempts )
 
 #ifdef Q_OS_WIN
 
-QString utility::readPassword( bool addNewLine )
+QByteArray utility::readPassword( bool addNewLine )
 {
 	std::cout << "Password: " << std::flush ;
 
-	QString s ;
+	QByteArray s ;
 	int e ;
 
 	int m = settings::instance().readPasswordMaximumLength() ;
@@ -1085,7 +1089,7 @@ static inline bool _terminalEchoOff( struct termios * old,struct termios * curre
 	}
 }
 
-QString utility::readPassword( bool addNewLine )
+QByteArray utility::readPassword( bool addNewLine )
 {
 	std::cout << "Password: " << std::flush ;
 
@@ -1094,7 +1098,7 @@ QString utility::readPassword( bool addNewLine )
 
 	_terminalEchoOff( &old,&current ) ;
 
-	QString s ;
+	QByteArray s ;
 	int e ;
 
 	int m = settings::instance().readPasswordMaximumLength() ;
@@ -1125,8 +1129,21 @@ QString utility::readPassword( bool addNewLine )
 
 const QProcessEnvironment& utility::systemEnvironment()
 {
-	static QProcessEnvironment env = QProcessEnvironment::systemEnvironment() ;
-	return env ;
+	static class sysEnv{
+	public:
+		sysEnv() : m_QProcessEnvironment( QProcessEnvironment::systemEnvironment() )
+		{
+			m_QProcessEnvironment.insert( "LANG","C" ) ;
+		}
+		const QProcessEnvironment& get() const
+		{
+			return m_QProcessEnvironment ;
+		}
+	private:
+		QProcessEnvironment m_QProcessEnvironment ;
+	} environment ;
+
+	return environment.get() ;
 }
 
 QString utility::configFilePath( QWidget * s,const QString& e )
@@ -1142,7 +1159,6 @@ QString utility::configFilePath( QWidget * s,const QString& e )
 	dialog.selectFile( [ = ](){
 
 		return engines::instance().getByName( e ).configFileName() ;
-
 	}() ) ;
 
 	if( dialog.exec() ){
@@ -1272,13 +1288,13 @@ void utility::setWindowsMountPointOptions( QWidget * obj,QLineEdit * e,QPushButt
 	_setWindowsMountMountOptions( obj,e,s ) ;
 }
 
-static utility::result< int > _convert_string_to_version( const QString& e )
+static utility::result< quint64 > _convert_string_to_version( const QString& e )
 {
-	auto _convert = []( const QString& e )->utility::result< int >{
+	auto _convert = []( const QString& e )->utility::result< quint64 >{
 
 		bool ok ;
 
-		auto s = e.toInt( &ok ) ;
+		quint64 s = quint64( e.toInt( &ok ) ) ;
 
 		if( ok ){
 
@@ -1292,9 +1308,9 @@ static utility::result< int > _convert_string_to_version( const QString& e )
 
 	auto components = s.size() ;
 
-	int major = 1000000 ;
-	int minor = 1000 ;
-	int patch = 1 ;
+	quint64 major = 100000000 ;
+	quint64 minor = 10000 ;
+	quint64 patch = 1 ;
 
 	if( components == 1 ){
 
@@ -1338,9 +1354,9 @@ static utility::result< int > _convert_string_to_version( const QString& e )
 	} ) ;
 }
 
-static utility::result< int > _installedVersion( const QString& backend )
+static utility::result< quint64 > _installedVersion( const QString& backend )
 {
-	auto s = utility::backEndInstalledVersion( backend ).get() ;
+	auto s = utility::unwrap( utility::backEndInstalledVersion( backend ) ) ;
 
 	if( s && !s.value().isEmpty() ){
 
@@ -1369,16 +1385,44 @@ template< typename Function >
 	} ) ;
 }
 
+utility::result< bool > utility::versionIsLessOrEqualTo( const QString& installedVersion,
+							 const QString& checkedVersion )
+{
+	auto a = _convert_string_to_version( installedVersion ) ;
+	auto b = _convert_string_to_version( checkedVersion ) ;
+
+	if( a && b ){
+
+		return a.value() <= b.value() ;
+	}else{
+		return {} ;
+	}
+}
+
+utility::result< bool > utility::versionIsGreaterOrEqualTo( const QString& installedVersion,
+							    const QString& checkedVersion )
+{
+	auto a = _convert_string_to_version( installedVersion ) ;
+	auto b = _convert_string_to_version( checkedVersion ) ;
+
+	if( a && b ){
+
+		return a.value() >= b.value() ;
+	}else{
+		return {} ;
+	}
+}
+
 ::Task::future< utility::result< bool > >& utility::backendIsGreaterOrEqualTo( const QString& backend,
 									       const QString& version )
 {
-	return _compare_versions( backend,version,std::greater_equal<int>() ) ;
+	return _compare_versions( backend,version,std::greater_equal<quint64>() ) ;
 }
 
 ::Task::future< utility::result< bool > >& utility::backendIsLessThan( const QString& backend,
 								       const QString& version )
 {
-	return _compare_versions( backend,version,std::less<int>() ) ;
+	return _compare_versions( backend,version,std::less<quint64>() ) ;
 }
 
 QString utility::wrap_su( const QString& s )
@@ -1467,9 +1511,9 @@ utility::result< QByteArray > utility::yubiKey( const QString& challenge )
 
 			return m ;
 		}else{
-			utility::debug::cout() << "Failed to get a responce from ykchalresp" ;
-			utility::debug::cout() << "StdOUt:" << s.std_out() ;
-			utility::debug::cout() << "StdError:" << s.std_error() ;
+			utility::debug() << "Failed to get a responce from ykchalresp" ;
+			utility::debug() << "StdOUt:" << s.std_out() ;
+			utility::debug() << "StdError:" << s.std_error() ;
 		}
 	}
 
@@ -1484,4 +1528,47 @@ QString utility::policyString()
 QString utility::commentString()
 {
 	return QObject::tr( "Comment:" ) ;
+}
+
+QByteArray utility::convertPassword( const QString& e )
+{
+	if( settings::instance().passWordIsUTF8Encoded() ){
+
+		return e.toUtf8() ;
+	}else{
+		return e.toLatin1() ;
+	}
+}
+
+QString utility::convertPassword( const QByteArray& e )
+{
+	if( settings::instance().passWordIsUTF8Encoded() ){
+
+		return QString::fromUtf8( e ) ;
+	}else{
+		return QString::fromLatin1( e ) ;
+	}
+}
+
+static void _remove_last( QString& e,int n )
+{
+	e.remove( e.size() - n,n ) ;
+}
+
+QString utility::removeLast( const QString& s,int n )
+{
+	auto m = s ;
+
+	_remove_last( m,n ) ;
+
+	return m ;
+}
+
+QString utility::removeFirstAndLast( const QString& s,int first,int last )
+{
+	auto m = s.mid( first ) ;
+
+	_remove_last( m,last ) ;
+
+	return m ;
 }

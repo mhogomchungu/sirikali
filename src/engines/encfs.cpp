@@ -25,6 +25,8 @@ static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
 
+	s.backendTimeout              = 0 ;
+	s.takesTooLongToUnlock        = false ;
 	s.supportsMountPathsOnWindows = true ;
 	s.autorefreshOnMountUnMount   = true ;
 	s.backendRequireMountPath     = true ;
@@ -54,11 +56,12 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
-encfs::encfs() : engines::engine( _setOptions() )
+encfs::encfs() : engines::engine( _setOptions() ),
+      m_version( [ this ]{ return this->baseInstalledVersionString( "--version",false,2,0 ) ; } )
 {
 }
 
-engines::engine::args encfs::command( const QString& password,
+engines::engine::args encfs::command( const QByteArray& password,
 				      const engines::engine::cmdArgsList& args ) const
 {
 	Q_UNUSED( password )
@@ -85,12 +88,12 @@ engines::engine::args encfs::command( const QString& password,
 
 		exeOptions.add( "-f" ) ;
 
-		auto m = args.mountPoint.mid( 1,args.mountPoint.size() - 2 ) ;
+		auto m = utility::removeFirstAndLast( args.mountPoint,1,1 ) ;
 
 		if( !utility::isDriveLetter( m ) ){
 
 			/*
-			 * A user is trying to use a folder as a mount path and encfs
+			 * A user is trying to use a folder as a mount path and cryfs
 			 * requires the mount path to not exist and we are deleting
 			 * it because SiriKali created it previously.
 			 */
@@ -133,9 +136,9 @@ engines::engine::status encfs::errorCode( const QString& e,int s ) const
 	}
 }
 
-QString encfs::installedVersionString() const
+const QString& encfs::installedVersionString() const
 {
-	return this->baseInstalledVersionString( "--version",false,2,0 ) ;
+	return m_version.get() ;
 }
 
 void encfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

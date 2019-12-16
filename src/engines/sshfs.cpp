@@ -18,6 +18,7 @@
  */
 
 #include "sshfs.h"
+#include "../settings.h"
 
 static engines::engine::BaseOptions _setOptions()
 {
@@ -31,6 +32,8 @@ static engines::engine::BaseOptions _setOptions()
 
 	s.passwordFormat        = "%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}" ;
 
+	s.backendTimeout              = settings::instance().sshfsBackendTimeout() ;
+	s.takesTooLongToUnlock        = false ;
 	s.supportsMountPathsOnWindows = true ;
 	s.autorefreshOnMountUnMount   = true ;
 	s.backendRequireMountPath     = true ;
@@ -50,12 +53,18 @@ static engines::engine::BaseOptions _setOptions()
 	s.names                 = QStringList{ "sshfs" } ;
 	s.notFoundCode          = engines::engine::status::sshfsNotFound ;
 
+	if( utility::platformIsWindows() ){
+
+		s.minimumVersion = "3.4.0" ;
+	}
+
 	return s ;
 }
 
 sshfs::sshfs() :
 	engines::engine( _setOptions() ),
-	m_environment( engines::engine::getProcessEnvironment() )
+	m_environment( engines::engine::getProcessEnvironment() ),
+	m_version( [ this ]{ return this->baseInstalledVersionString( "--version",true,2,0 ) ; } )
 {
 }
 
@@ -63,11 +72,11 @@ engines::engine::status sshfs::passMinimumVersion() const
 {
 	if( utility::platformIsWindows() ){
 
-		auto m = utility::unwrap( utility::backendIsLessThan( "sshfs","3.4.0" ) ) ;
+		static auto m = utility::unwrap( utility::backendIsLessThan( "sshfs",this->minimumVersion() ) ) ;
 
 		if( m && m.value() ){
 
-			return engines::engine::status::sshfsTooOld ;
+			return engines::engine::status::backEndFailedToMeetMinimumRequirenment ;
 		}
 	}
 
@@ -79,7 +88,7 @@ const QProcessEnvironment& sshfs::getProcessEnvironment() const
 	return m_environment ;
 }
 
-engines::engine::args sshfs::command( const QString& password,
+engines::engine::args sshfs::command( const QByteArray& password,
 				      const engines::engine::cmdArgsList& args ) const
 {
 	Q_UNUSED( password )
@@ -103,12 +112,24 @@ engines::engine::args sshfs::command( const QString& password,
 
 		exeOptions.add( "-f" ) ;
 
-		auto m = args.mountPoint.mid( 1,args.mountPoint.size() - 2 ) ;
+		auto m = utility::removeFirstAndLast( args.mountPoint,1,1 ) ;
 
-		if( !utility::isDriveLetter( m ) ){
+		if( utility::isDriveLetter( m ) ){
 
+			if( !fuseOptions.contains( "--VolumePrefix=" ) ){
+
+				auto s = fuseOptions.extractStartsWith( "UseNetworkDrive=" ) ;
+
+				if( utility::endsWithAtLeastOne( s,"yes","Yes","YES" ) ){
+
+					auto x = args.cipherFolder ;
+					x.replace( ":",";" ) ;
+					exeOptions.add ( "--VolumePrefix=\\mysshfs\\" + x ) ;
+				}
+			}
+		}else{
 			/*
-			 * A user is trying to use a folder as a mount path and encfs
+			 * A user is trying to use a folder as a mount path and sshfs
 			 * requires the mount path to not exist and we are deleting
 			 * it because SiriKali created it previously.
 			 */
@@ -157,14 +178,9 @@ engines::engine::status sshfs::errorCode( const QString& e,int s ) const
 	}
 }
 
-QString sshfs::installedVersionString() const
+const QString& sshfs::installedVersionString() const
 {
-	if( m_version.isEmpty() ){
-
-		m_version = this->baseInstalledVersionString( "--version",true,2,0 ) ;
-	}
-
-	return m_version ;
+	return m_version.get() ;
 }
 
 void sshfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

@@ -25,6 +25,8 @@ static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
 
+	s.backendTimeout              = 0 ;
+	s.takesTooLongToUnlock        = false ;
 	s.supportsMountPathsOnWindows = false ;
 	s.autorefreshOnMountUnMount   = true ;
 	s.backendRequireMountPath     = true ;
@@ -48,81 +50,71 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
-ecryptfs::ecryptfs() : engines::engine( _setOptions() )
-{
-}
-
-void ecryptfs::updateMountOptions( engines::engine::options& opt,
-				   QString& configFilePath ) const
-{
-	if( configFilePath.isEmpty() ){
-
-		configFilePath = opt.cipherFolder + "/" + this->configFileName() ;
-	}
-}
-
 #ifdef Q_OS_LINUX
 
 #include <sys/stat.h>
 
-bool ecryptfs::requiresPolkit() const
+static bool _requiresPolkit()
 {
-	if( m_unset ){
+	auto e = utility::executableFullPath( "ecryptfs-simple" ) ;
 
-		m_unset = false ;
+	struct stat st ;
 
-		auto e = utility::executableFullPath( "ecryptfs-simple" ) ;
+	stat( e.toLatin1().constData(),&st ) ;
 
-		struct stat st ;
+	bool root_owner = st.st_uid == 0 ;
+	bool is_suid    = st.st_mode & S_ISUID ;
 
-		stat( e.toLatin1().constData(),&st ) ;
-
-		bool root_owner = st.st_uid == 0 ;
-		bool is_suid    = st.st_mode & S_ISUID ;
-
-		m_requirePolkit = !( root_owner && is_suid ) ;
-	}
-
-	return m_requirePolkit ;
+	return !( root_owner && is_suid ) ;
 }
 
 #else
-bool ecryptfs::requiresPolkit() const
+
+static bool _requiresPolkit()
 {
-	return m_requirePolkit ;
+	return false ;
 }
 
 #endif
 
-template< typename Function >
-static bool _unmount_ecryptfs_( Function cmd,const QString& mountPoint,bool& not_set )
+ecryptfs::ecryptfs() :
+	engines::engine( _setOptions() ),
+	m_requirePolkit( _requiresPolkit() ),
+	m_version( [ this ]{ return this->baseInstalledVersionString( "--version",true,1,0 ) ; } )
 {
-	auto s = siritask::unmountVolume( cmd(),mountPoint,true ) ;
+}
+
+void ecryptfs::updateOptions( engines::engine::options& opt ) const
+{
+	if( opt.configFilePath.isEmpty() ){
+
+		opt.configFilePath = opt.cipherFolder + "/" + this->configFileName() ;
+	}
+}
+
+bool ecryptfs::requiresPolkit() const
+{
+	return m_requirePolkit ;
+}
+
+template< typename Function >
+static bool _unmount_ecryptfs_( Function cmd )
+{
+	auto s = siritask::unmountVolume( cmd(),QString(),true ) ;
 
 	if( s && s.value().success() ){
 
 		return true ;
-	}else{
-		if( not_set && s.value().stdError().contains( "error: failed to set gid" ) ){
-
-			not_set = false ;
-
-			if( utility::enablePolkit() ){
-
-				auto s = siritask::unmountVolume( cmd(),mountPoint,true ) ;
-				return s && s.value().success() ;
-			}
-		}
-
+	}else{		
 		return false ;
 	}
 }
 
-bool ecryptfs::unmount( const QString& cipherFolder,
-			const QString& mountPoint,
-			int maxCount ) const
+engines::engine::status ecryptfs::unmount( const QString& cipherFolder,
+					   const QString& mountPoint,
+					   int maxCount ) const
 {
-	bool not_set = true ;
+	Q_UNUSED( mountPoint )
 
 	auto cmd = [ & ](){
 
@@ -138,25 +130,25 @@ bool ecryptfs::unmount( const QString& cipherFolder,
 		}
 	} ;
 
-	if( _unmount_ecryptfs_( cmd,mountPoint,not_set ) ){
+	if( _unmount_ecryptfs_( cmd ) ){
 
-		return true ;
+		return engines::engine::status::success ;
 	}else{
 		for( int i = 1 ; i < maxCount ; i++ ){
 
 			utility::Task::waitForOneSecond() ;
 
-			if( _unmount_ecryptfs_( cmd,mountPoint,not_set ) ){
+			if( _unmount_ecryptfs_( cmd ) ){
 
-				return true ;
+				return engines::engine::status::success ;
 			}
 		}
 
-		return false ;
+		return engines::engine::status::failedToUnMount ;
 	}
 }
 
-engines::engine::args ecryptfs::command( const QString& password,
+engines::engine::args ecryptfs::command( const QByteArray& password,
 					 const engines::engine::cmdArgsList& args ) const
 {
 	Q_UNUSED( password )
@@ -209,7 +201,7 @@ engines::engine::status ecryptfs::errorCode( const QString& e,int s ) const
 
 	if( e.contains( "Operation not permitted" ) ){
 
-		return engines::engine::status::ecrypfsBadExePermissions ;
+		return engines::engine::status::failedToStartPolkit ;
 
 	}else if( e.contains( this->incorrectPasswordText() ) ){
 
@@ -219,9 +211,9 @@ engines::engine::status ecryptfs::errorCode( const QString& e,int s ) const
 	}
 }
 
-QString ecryptfs::installedVersionString() const
+const QString& ecryptfs::installedVersionString() const
 {
-	return this->baseInstalledVersionString( "--version",true,1,0 ) ;
+	return m_version.get() ;
 }
 
 void ecryptfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

@@ -37,15 +37,14 @@ namespace Windows{
 
 struct opts{
 
+	bool create ;
 	const engines::engine::args& args ;
 	const engines::engine::options& options ;
 	const engines::engine& engine ;
-	const QString& password ;
+	const QByteArray& password ;
 } ;
 
-Task::process::result mount( const SiriKali::Windows::opts& ) ;
-
-Task::process::result create( const SiriKali::Windows::opts& ) ;
+Task::process::result run( const SiriKali::Windows::opts& ) ;
 
 Task::process::result unmount( const QString& unMountCommand,const QString& mountPath ) ;
 
@@ -53,7 +52,7 @@ QString volumeProperties( const QString& mountPath ) ;
 
 int terminateProcess( unsigned long pid ) ;
 
-QString engineInstalledDir( const QString& ) ;
+QString engineInstalledDir( const engines::engine& ) ;
 QString engineInstalledDir( const QString& key,const QString& value ) ;
 
 QStringList engineInstalledDirs() ;

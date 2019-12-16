@@ -24,7 +24,8 @@
 #include "win.h"
 #include "settings.h"
 #include "engines.h"
-#include "engines/fscrypt.h"
+#include "crypto.h"
+
 #include <QMetaObject>
 #include <QtGlobal>
 
@@ -32,6 +33,14 @@
 
 #include <vector>
 #include <utility>
+
+QString mountinfo::mountProperties( const QString& mountPoint,
+				    const QString& mode,
+				    const QString& fileSystem,
+				    const QString& cipherPath )
+{
+	return QString( "x x x:x x %1 %2,x - %3 %4 x" ).arg( mountPoint,mode,fileSystem,cipherPath ) ;
+}
 
 QString mountinfo::encodeMountPath( const QString& e )
 {
@@ -82,7 +91,6 @@ static QStringList _macox_volumes()
 	QStringList s ;
 	QString mode ;
 	QString fs ;
-	const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
 
 	for( const auto& it : _macox_volumes_1() ){
 
@@ -99,7 +107,7 @@ static QStringList _macox_volumes()
 
 			fs = "fuse." + it.mid( 0,it.indexOf( '@' ) ) ;
 
-			s.append( w.arg( e.at( 2 ),mode,fs,e.at( 0 ) ) ) ;
+			s.append( mountinfo::mountProperties( e.at( 2 ),mode,fs,e.at( 0 ) ) ) ;
 		}
 	}
 
@@ -110,15 +118,13 @@ static QStringList _windows_volumes()
 {
 	QStringList s ;
 
-	const QString w = "x x x:x x %1 %2,x - %3 %4 x" ;
-
 	for( const auto& e : SiriKali::Windows::getMountOptions() ){
 
 		auto fs = "fuse." + e.subtype ;
 
 		auto m = e.subtype + "@" + e.cipherFolder ;
 
-		s.append( w.arg( e.mountPointPath,e.mode,fs,m ) ) ;
+		s.append( mountinfo::mountProperties( e.mountPointPath,e.mode,fs,m ) ) ;
 	}
 
 	return s ;
@@ -126,20 +132,21 @@ static QStringList _windows_volumes()
 
 static QStringList _unlocked_volumes()
 {
-	if( utility::platformIsLinux() ){
+	auto a = [](){
 
-		auto a = utility::split( utility::fileContents( "/proc/self/mountinfo" ) ) ;
+		if( utility::platformIsLinux() ){
 
-		auto b = utility::unwrap( fscrypt::fscryptVolumes( a ) ) ;
+			return utility::split( utility::fileContents( "/proc/self/mountinfo" ) ) ;
 
-		return b + a ;
+		}else if( utility::platformIsOSX() ){
 
-	}else if( utility::platformIsOSX() ){
+			return _macox_volumes() ;
+		}else{
+			return _windows_volumes() ;
+		}
+	}() ;
 
-		return _macox_volumes() ;
-	}else{
-		return _windows_volumes() ;
-	}
+	return a + engines::instance().mountInfo( a ) ;
 }
 
 mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& quit ) :
@@ -167,40 +174,6 @@ mountinfo::~mountinfo()
 Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 {
 	return Task::run( [](){
-
-		auto _hash = []( const QString& e ){
-
-			/*
-			 * jenkins one at a time hash function.
-			 *
-			 * https://en.wikipedia.org/wiki/Jenkins_hash_function
-			 */
-
-			uint32_t hash = 0 ;
-
-			auto p = e.toLatin1() ;
-
-			auto key = p.constData() ;
-
-			auto l = p.size() ;
-
-			for( decltype( l ) i = 0 ; i < l ; i++ ){
-
-				hash += static_cast< uint32_t>( *( key + i ) ) ;
-
-				hash += ( hash << 10 ) ;
-
-				hash ^= ( hash >> 6 ) ;
-			}
-
-			hash += ( hash << 3 ) ;
-
-			hash ^= ( hash >> 11 ) ;
-
-			hash += ( hash << 15 ) ;
-
-			return QString::number( hash ) ;
-		} ;
 
 		auto _decode = []( QString path,bool set_offset ){
 
@@ -250,7 +223,7 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 
 		for( const auto& it : _unlocked_volumes() ){
 
-			const auto& k = utility::split( it,' ' ) ;
+			const auto k = utility::split( it,' ' ) ;
 
 			const auto s = k.size() ;
 
@@ -269,11 +242,7 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 
 			if( engine.known() ){
 
-				if( engine.name() == "fscrypt" ){
-
-					info.volumePath = k.at( 8 ) ;
-
-				}else if( _starts_with( engine,cf ) ){
+				if( _starts_with( engine,cf ) ){
 
 					info.volumePath = _decode( cf,true ) ;
 
@@ -281,7 +250,7 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 
 					info.volumePath = _decode( cf,false ) ;
 				}else{
-					info.volumePath = _hash( m ) ;
+					info.volumePath = crypto::sha256( m ).mid( 0,20 ) ;
 				}
 
 				info.mountPoint   = _decode( m,false ) ;

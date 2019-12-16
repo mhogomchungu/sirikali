@@ -129,9 +129,7 @@ void plugin::pbSetKey()
 			}else{
 				exe = exe + " " + utility::Task::makePath( keyFile ) ;
 
-				auto env = QProcessEnvironment::systemEnvironment() ;
-
-				env.insert( "LANG","C" ) ;
+				auto env = utility::systemEnvironment() ;
 
 				env.insert( "PATH",utility::executableSearchPaths( env.value( "PATH" ) ) ) ;
 

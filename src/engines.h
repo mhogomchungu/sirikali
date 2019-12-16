@@ -43,6 +43,36 @@ public:
 	protected:
 		class commandOptions ;
 	public:
+		class Wrapper{
+		public:
+			Wrapper( const engines::engine& e ) :
+			        m_engine( std::addressof( e ) )
+			{
+			}
+			Wrapper() :
+			        m_engine( std::addressof( engines::instance().getUnKnown() ) )
+			{
+			}
+			const engines::engine& get() const
+			{
+				return *m_engine ;
+			}
+			const engines::engine& get()
+			{
+				return *m_engine ;
+			}
+			const engines::engine * operator->() const
+			{
+				return m_engine ;
+			}
+			const engines::engine * operator->()
+			{
+				return m_engine ;
+			}
+		private:
+			const engines::engine * m_engine ;
+		};
+
 		enum class error{ Success,Failed,Timeout,Continue } ;
 
 		enum class status
@@ -71,15 +101,14 @@ public:
 			customCommandNotFound,
                         customCommandBadPassword,
 
-			sshfsTooOld,
 			cryfsMigrateFileSystem,
-
-			failedToLoadWinfsp,
-
 			IllegalPath,
-			ecrypfsBadExePermissions,
 
+			fscryptPartialVolumeClose,
+			failedToLoadWinfsp,
+			backEndFailedToMeetMinimumRequirenment,
 			failedToStartPolkit,
+			failedToUnMount,
 			backEndDoesNotSupportCustomConfigPath,
 			failedToCreateMountPoint,
 			invalidConfigFileName,
@@ -91,24 +120,22 @@ public:
 		struct options
 		{
 			options( const favorites::entry& e,
-				 const QString& volumeKey = QString() ) ;
+				 const QByteArray& volumeKey = QByteArray() ) ;
 
 			options( const QString& cipher_folder,
 				 const QString& plain_folder,
-				 const QString& volume_key,
+				 const QByteArray& volume_key,
 				 const QString& idle_timeout,
 				 const QString& config_file_path,
-				 const QString& volume_type,
 				 bool unlock_in_read_only,
 				 bool unlock_in_reverse_mode,
 				 const QString& mount_options,
 				 const QString& create_options ) ;
 			QString cipherFolder ;
 			QString plainFolder ;
-			QString key ;
+			QByteArray key ;
 			QString idleTimeout ;
 			QString configFilePath ;
-			QString type ;
 			bool ro ;
 			bool reverseMode ;
 			QString mountOptions ;
@@ -129,22 +156,20 @@ public:
 		{
 		public:
 			cmdStatus() ;
-			cmdStatus( engines::engine::status s,int c,const QString& e = QString() ) ;
-			cmdStatus( engines::engine::status s,const QString& e = QString() ) ;
-			cmdStatus( engines::engine::status s,const QStringList& ) ;
-			cmdStatus( int s,const QString& e = QString() ) ;
+			cmdStatus( engines::engine::status s,
+				   const engines::engine&,
+				   const QString& e = QString() ) ;
 			engines::engine::status status() const ;
 			bool operator==( engines::engine::status s ) const ;
 			bool operator!=( engines::engine::status s ) const ;
 			QString toString() const ;
 			QString toMiniString() const ;
+			const engines::engine& engine() const ;
+			bool success() const ;
 		private:
-			void message( const QString& e ) ;
-
-			int m_exitCode = -1 ;
 			engines::engine::status m_status = engines::engine::status::backendFail ;
 			QString m_message ;
-			QStringList m_backendExtensionNames ;
+			engines::engine::Wrapper m_engine ;
 		} ;
 
 		struct Options
@@ -160,6 +185,7 @@ public:
 
 		struct BaseOptions
 		{
+			int  backendTimeout ;
 			bool hasConfigFile ;
 			bool setsCipherPath ;
 			bool autoMountsOnCreate ;
@@ -170,8 +196,10 @@ public:
 			bool requiresPolkit ;
 			bool autorefreshOnMountUnMount ;
 			bool backendRequireMountPath ;
+			bool takesTooLongToUnlock ;
 
-			QString passwordFormat ;
+			QByteArray passwordFormat ;
+			QString minimumVersion ;
 			QString reverseString ;
 			QString idleString ;
 			QString executableName ;
@@ -223,14 +251,19 @@ public:
 		bool autorefreshOnMountUnMount() const ;
 		bool backendRequireMountPath() const ;
 
+		bool versionIsLessOrEqualTo( const QString& ) const ;
+		bool versionGreaterOrEqualTo( const QString& ) const ;
+
 		engines::engine::status notFoundCode() const ;
 
+		int backendTimeout() const ;
 		const QStringList& names() const ;
 		const QStringList& fuseNames() const ;
 		const QStringList& configFileNames() const ;
 		const QStringList& fileExtensions() const ;
 		const QStringList& volumePropertiesCommands() const ;
 
+		const QString& minimumVersion() const ;
 		const QString& reverseString() const ;
 		const QString& idleString() const ;
 		const QString& executableName() const ;
@@ -244,29 +277,35 @@ public:
 		const QString& windowsInstallPathRegistryValue() const ;
 
 		engine::engine::error errorCode( const QString& ) const ;
-		engine::engine::status passMinimumVersion() const ;
 
 		QString setConfigFilePath( const QString& ) const ;
-		QString setPassword( const QString& ) const ;
+		QByteArray setPassword( const QByteArray& ) const ;
 
 		virtual ~engine() ;
+
+		virtual void updateVolumeList( const engines::engine::options& ) const ;
+
+		virtual QStringList mountInfo( const QStringList& ) const ;
 
 		virtual Task::future< QString >& volumeProperties( const QString& cipherFolder,
 								   const QString& mountPoint ) const ;
 
-		virtual bool unmount( const QString& cipherFolder,
-				      const QString& mountPoint,
-				      int maxCount ) const ;
+		virtual engines::engine::status unmount( const QString& cipherFolder,
+							 const QString& mountPoint,
+							 int maxCount ) const ;
+
+		virtual bool takesTooLongToUnlock() const ;
+
+		virtual engine::engine::status passMinimumVersion() const ;
 
 		virtual const engines::engine& proveEngine( const QString& cipherPath ) const ;
 
-		virtual void updateMountOptions( engines::engine::options&,
-						 QString& configFilePath ) const ;
+		virtual void updateOptions( engines::engine::options& ) const ;
 
 		virtual const QProcessEnvironment& getProcessEnvironment() const ;
 		virtual bool requiresPolkit() const ;
-		virtual QString installedVersionString() const = 0 ;
-		virtual args command( const QString& password,const engines::engine::cmdArgsList& args ) const = 0 ;
+		virtual const QString& installedVersionString() const = 0 ;
+		virtual args command( const QByteArray& password,const engines::engine::cmdArgsList& args ) const = 0 ;
 		virtual engines::engine::status errorCode( const QString& e,int s ) const = 0 ;
 		using function = std::function< void( const Options& ) > ;
 		virtual void GUICreateOptionsinstance( QWidget * parent,function ) const = 0 ;
@@ -306,6 +345,10 @@ public:
 				template< typename E >
 				void add( E&& e )
 				{
+					while( m_options.endsWith( "\n" ) ){
+
+						m_options = utility::removeLast( m_options,1 ) ;
+					}
 					if( m_options.isEmpty() ){
 
 						m_options = std::forward< E >( e ) ;
@@ -416,14 +459,55 @@ public:
 		QProcessEnvironment m_processEnvironment ;
 	} ;
 
+	class version{
+	public:
+		version( std::function< QString() > function ) : m_function( std::move( function ) )
+		{
+		}
+		version() : m_function( [](){ return QString() ; } )
+		{
+		}
+		const QString& get() const
+		{
+			if( m_version.isEmpty() ){
+
+				m_version = m_function() ;
+			}
+
+			return m_version ;
+		}
+	private:
+		std::function< QString() > m_function ;
+		mutable QString m_version ;
+	};
+
+	class exeFullPath{
+	public:
+		exeFullPath( const engines::engine& e ) : m_engine( e )
+		{
+		}
+		const QString& get() const
+		{
+			if( m_path.isEmpty() ){
+
+				m_path = m_engine->executableFullPath() ;
+			}
+
+			return m_path ;
+		}
+	private:
+		const engines::engine::Wrapper m_engine ;
+		mutable QString m_path ;
+	};
+
 	engines() ;
 	static const engines& instance() ;
 	bool atLeastOneDealsWithFiles() const ;
+	QStringList mountInfo( const QStringList& ) const ;
 	QStringList enginesWithNoConfigFile() const ;
 	QStringList enginesWithConfigFile() const ;
-	const QStringList& supported() const ;
+	const std::vector< engines::engine::Wrapper >& supportedEngines() const ;
 	const engine& getUnKnown() const ;
-	const engine& getByName( const engines::engine::options& e ) const ;
 	const engine& getByName( const QString& e ) const ;
 	const engine& getByFuseName( const QString& e ) const ;
 	const engine& getByFileExtension( const QString& e ) const ;
@@ -432,7 +516,7 @@ public:
 
 private:
 	std::vector< std::unique_ptr< engines::engine > > m_backends ;
-	QStringList m_supported ;
+	std::vector< engines::engine::Wrapper > m_backendWrappers ;
 };
 
 #endif

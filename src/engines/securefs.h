@@ -19,16 +19,19 @@
 
 #include "../engines.h"
 
-struct securefs : public engines::engine
+class securefs : public engines::engine
 {
+public:
 	securefs() ;
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 
-	engines::engine::args command( const QString& password,
+	engines::engine::args command( const QByteArray& password,
 				       const engines::engine::cmdArgsList& args ) const override ;
 
-	QString installedVersionString() const override ;
+	const QString& installedVersionString() const override ;
 
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
+private:
+	engines::version m_version ;
 } ;

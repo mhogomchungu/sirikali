@@ -41,27 +41,20 @@ namespace siritask
 			const QString& configFilePath ;
 			const QString& cipherFolder ;
 		};
-		Engine() : m_engine( std::addressof( engines::instance().getUnKnown() ) )
-		{
-		}
-		Engine( const engines::engine& engine,
-			const QString& cipherFolder,
-			const QString& configFilePath ) :
-			m_engine( std::addressof( engine ) ),
-			m_configFilePath( configFilePath ),
-			m_cipherFolder( cipherFolder )
+		Engine() :
+			m_engine( engines::instance().getUnKnown() )
 		{
 		}
 		Engine( const engines::engine& engine ) :
-			m_engine( std::addressof( engine ) )
+			m_engine( engine )
 		{
 		}
 		Engine( const QString& engine ) :
-			m_engine( std::addressof( engines::instance().getByName( engine ) ) )
+			m_engine( engines::instance().getByName( engine ) )
 		{
 		}
-		Engine( const opts& e ) :
-			m_engine( std::addressof( e.engine ) ),
+		Engine( const siritask::Engine::opts& e ) :
+			m_engine( e.engine ),
 			m_configFilePath( e.configFilePath ),
 			m_cipherFolder( e.cipherFolder )
 		{
@@ -74,81 +67,51 @@ namespace siritask
 		{
 			return m_configFilePath ;
 		}
-		const engines::engine& engine() const
+		const engines::engine& get() const
 		{
-			return *m_engine ;
+			return m_engine.get() ;
 		}
 	private:
-		const engines::engine * m_engine ;
+		engines::engine::Wrapper m_engine ;
 		QString m_configFilePath ;
 		QString m_cipherFolder ;
 	} ;
 
-	siritask::Engine mountEngine( const QString& cipherFolder,
-				      const QString& configFilePath,
-				      const siritask::Engine& engine = siritask::Engine() ) ;
+	struct mount{
+
+		const QString& cipherFolder ;
+		const QString& configFilePath ;
+		const siritask::Engine& engine ;
+	};
+
+	siritask::Engine mountEngine( const siritask::mount& ) ;
 
 	utility::result< utility::Task > unmountVolume( const QString& exe,
 							const QString& mountPoint,
 							bool usePolkit ) ;
 
-	bool unmountVolume( const QString& mountPoint,const QString& unMountCommand,int maxCount ) ;
+	engines::engine::status unmountVolume( const QString& mountPoint,
+					       const QString& unMountCommand,
+					       int maxCount ) ;
 
 	bool deleteMountFolder( const QString& ) ;
 
-	class taskResult{
-	public:
-		taskResult()
-		{
-		}
-		taskResult( bool s,const engines::engine& e ) :
-			m_success( s ),m_engine( std::addressof( e ) )
-		{
-		}
-		taskResult( engines::engine::cmdStatus c ) :
-			m_success( c == engines::engine::status::success ),
-			m_cmdStatus( c ),
-			m_engine( std::addressof( engines::instance().getUnKnown() ) )
-		{
-		}
-		taskResult( const engines::engine::cmdStatus& c,const engines::engine& e ) :
-			m_success( c == engines::engine::status::success ),
-			m_cmdStatus( c ),
-			m_engine( std::addressof( e ) )
-		{
-		}
-		bool backendDoesNotAutoRefresh() const
-		{
-			return !this->engine().autorefreshOnMountUnMount() ;
-		}
-		bool success() const
-		{
-			return m_success ;
-		}
-		const engines::engine::cmdStatus& cmdStatus() const
-		{
-			return m_cmdStatus ;
-		}
-		const engines::engine& engine() const
-		{
-			return *m_engine ;
-		}
-	private:
-		bool m_success ;
-		engines::engine::cmdStatus m_cmdStatus ;
-		const engines::engine * m_engine ;
-	} ;
+	struct unmount{
 
-	siritask::taskResult encryptedFolderUnMount( const QString& cipherFolder,
-						     const QString& mountPoint,
-						     const QString& fileSystem,
-						     int numberOfAttempts ) ;
+		const QString& cipherFolder ;
+		const QString& mountPoint ;
+		const QString& fileSystem ;
+		int numberOfAttempts ;
+	};
 
-	siritask::taskResult encryptedFolderMount( const engines::engine::options&,
-						   bool = false,
-						   const siritask::Engine& = siritask::Engine() ) ;
+	engines::engine::cmdStatus encryptedFolderUnMount( const siritask::unmount& ) ;
 
-	siritask::taskResult encryptedFolderCreate( const engines::engine::options& ) ;
+	engines::engine::cmdStatus encryptedFolderMount( const engines::engine::options&,
+							 bool = false,
+							 const siritask::Engine& = siritask::Engine() ) ;
+
+	engines::engine::cmdStatus encryptedFolderCreate( const engines::engine::options&,
+							  const engines::engine& ) ;
 }
 
 #endif // SIRITASK_H

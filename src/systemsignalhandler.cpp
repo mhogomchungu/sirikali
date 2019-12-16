@@ -40,11 +40,11 @@ static void setup_unix_signal_handlers()
 
 	hup.sa_handler = []( int q ){
 
-		Q_UNUSED( q ) ;
+		Q_UNUSED( q )
 
 		char a = 1 ;
 
-		::write( sighupFd[ 0 ],&a,sizeof( a ) ) ;
+		if( ::write( sighupFd[ 0 ],&a,sizeof( a ) ) ){}
 	} ;
 
 	sigemptyset( &hup.sa_mask ) ;
@@ -55,11 +55,11 @@ static void setup_unix_signal_handlers()
 
 	term.sa_handler = []( int q ){
 
-		Q_UNUSED( q ) ;
+		Q_UNUSED( q )
 
 		char a = 1 ;
 
-		::write( sigtermFd[ 0 ],&a,sizeof( a ) ) ;
+		if( ::write( sigtermFd[ 0 ],&a,sizeof( a ) ) ){}
 	} ;
 
 	sigemptyset( &term.sa_mask ) ;
@@ -146,8 +146,8 @@ public:
 	}
 	bool nativeEventFilter( const QByteArray& eventType,void * message,long * result )
 	{
-		Q_UNUSED( eventType ) ;
-		Q_UNUSED( result ) ;
+		Q_UNUSED( eventType )
+		Q_UNUSED( result )
 
 		MSG * msg = reinterpret_cast< MSG * >( message ) ;
 

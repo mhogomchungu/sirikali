@@ -25,6 +25,8 @@ static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
 
+	s.backendTimeout              = 0 ;
+	s.takesTooLongToUnlock        = false ;
 	s.supportsMountPathsOnWindows = false ;
 	s.autorefreshOnMountUnMount   = true ;
 	s.backendRequireMountPath     = true ;
@@ -54,7 +56,8 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
-gocryptfs::gocryptfs() : engines::engine( _setOptions() )
+gocryptfs::gocryptfs() : engines::engine( _setOptions() ),
+	m_version( [ this ]{ return this->baseInstalledVersionString( "--version",true,1,0 ) ; } )
 {
 }
 
@@ -75,12 +78,11 @@ static bool _set_if_found( const Function& function )
 	return false ;
 }
 
-void gocryptfs::updateMountOptions( engines::engine::options& opt,
-				    QString& configFilePath ) const
+void gocryptfs::updateOptions( engines::engine::options& opt ) const
 {
 	opt.reverseMode = [ & ](){
 
-		if( configFilePath.isEmpty() ){
+		if( opt.configFilePath.isEmpty() ){
 
 			return _set_if_found( [ & ]( const QString& e ){
 
@@ -89,13 +91,13 @@ void gocryptfs::updateMountOptions( engines::engine::options& opt,
 		}else{
 			return _set_if_found( [ & ]( const QString& e ){
 
-				return configFilePath.endsWith( e ) ;
+				return opt.configFilePath.endsWith( e ) ;
 			} ) ;
 		}
 	}() ;
 }
 
-engines::engine::args gocryptfs::command( const QString& password,
+engines::engine::args gocryptfs::command( const QByteArray& password,
 					  const engines::engine::cmdArgsList& args ) const
 {
 	Q_UNUSED( password )
@@ -162,9 +164,9 @@ engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const
 	}
 }
 
-QString gocryptfs::installedVersionString() const
+const QString& gocryptfs::installedVersionString() const
 {
-	return this->baseInstalledVersionString( "--version",true,1,0 ) ;
+	return m_version.get() ;
 }
 
 void gocryptfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

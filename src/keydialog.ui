@@ -433,15 +433,26 @@
   </widget>
  </widget>
  <tabstops>
-  <tabstop>lineEditKey</tabstop>
   <tabstop>lineEditMountPoint</tabstop>
+  <tabstop>pbMountPoint</tabstop>
+  <tabstop>pbMountPoint_1</tabstop>
+  <tabstop>checkBoxOpenReadOnly</tabstop>
+  <tabstop>lineEditFolderPath</tabstop>
   <tabstop>pbOpenFolderPath</tabstop>
   <tabstop>cbKeyType</tabstop>
+  <tabstop>lineEditKey</tabstop>
+  <tabstop>checkBoxVisibleKey</tabstop>
   <tabstop>pbkeyOption</tabstop>
-  <tabstop>checkBoxOpenReadOnly</tabstop>
   <tabstop>pbOptions</tabstop>
   <tabstop>pbOpen</tabstop>
   <tabstop>pbCancel</tabstop>
+  <tabstop>pbOK</tabstop>
+  <tabstop>textEdit</tabstop>
+  <tabstop>pbSetKey</tabstop>
+  <tabstop>pbSetKeyCancel</tabstop>
+  <tabstop>lineEditSetKeyKeyFile</tabstop>
+  <tabstop>lineEditSetKeyPassword</tabstop>
+  <tabstop>pbSetKeyKeyFile</tabstop>
  </tabstops>
  <resources/>
  <connections/>

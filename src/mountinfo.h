@@ -37,6 +37,11 @@ class mountinfo : private QObject
 {
 	Q_OBJECT
 public:
+	static QString mountProperties( const QString& mountPoint,
+					const QString& mode,
+					const QString& fileSystem,
+					const QString& cipherPath ) ;
+
 	static QString encodeMountPath( const QString& ) ;
 
 	static Task::future< std::vector< volumeInfo > >& unlockedVolumes() ;
@@ -60,7 +65,6 @@ private:
 	void pollForUpdates( void ) ;
 
 	QObject * m_parent ;
-	QProcess m_process ;
 
 	std::function< void() > m_stop = nullptr ;
 	std::function< void() > m_quit ;

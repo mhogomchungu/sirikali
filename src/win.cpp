@@ -43,12 +43,13 @@ public:
 		HKEY m ;
 		REGSAM wow64 = KEY_QUERY_VALUE | KEY_WOW64_64KEY ;
 		REGSAM wow32 = KEY_QUERY_VALUE | KEY_WOW64_32KEY ;
+		unsigned long x = 0 ;
 
-		if( this->success( RegOpenKeyExA,hkey,subKey,0,wow64,&m ) ){
+		if( this->success( RegOpenKeyExA,hkey,subKey,x,wow64,&m ) ){
 
 			m_hkey = m ;
 
-		}else if( this->success( RegOpenKeyExA,hkey,subKey,0,wow32,&m ) ){
+		}else if( this->success( RegOpenKeyExA,hkey,subKey,x,wow32,&m ) ){
 
 			m_hkey = m ;
 		}else{
@@ -142,7 +143,7 @@ static bool signalCtrl(DWORD dwProcessId, DWORD dwCtrlEvent)
 	// Create a new console if previous was deleted by OS
 	if (AttachConsole(thisConsoleId) == FALSE)
 	{
-	    int errorCode = GetLastError();
+	    auto errorCode = GetLastError();
 	    if (errorCode == 31) // 31=ERROR_GEN_FAILURE
 	    {
 		AllocConsole();
@@ -238,10 +239,8 @@ int SiriKali::Windows::terminateProcess( unsigned long pid )
 	return _terminateProcess( pid ) ;
 }
 
-QString SiriKali::Windows::engineInstalledDir( const QString& e )
+QString SiriKali::Windows::engineInstalledDir( const engines::engine& m )
 {
-	const auto& m = engines::instance().getByName( e ) ;
-
 	const auto& key   = m.windowsInstallPathRegistryKey() ;
 	const auto& value = m.windowsInstallPathRegistryValue() ;
 
@@ -262,9 +261,9 @@ QStringList SiriKali::Windows::engineInstalledDirs()
 {
 	QStringList s ;
 
-	for( const auto& it : engines::instance().supported() ){
+	for( const auto& it : engines::instance().supportedEngines() ){
 
-		auto a = SiriKali::Windows::engineInstalledDir( it ) ;
+		auto a = SiriKali::Windows::engineInstalledDir( it.get() ) ;
 
 		if( !a.isEmpty() ){
 
@@ -354,25 +353,22 @@ static SiriKali::Windows::result _read( QProcess& exe,Function function )
 		}
 	}
 
-	auto a = QString::number( counter ) ;
-
-	auto b = "Backend took " + a + " seconds to finish\nGenerated backend output:\n" ;
-
-	utility::debug() << b + m ;
+	utility::debug() << "Backend took " + QString::number( counter ) + " seconds to finish" ;
 
 	return { r,std::move( m ) } ;
 }
 
 static SiriKali::Windows::result _getProcessOutput( QProcess& exe,const engines::engine& engine )
 {
-	if( engine.name() == "sshfs" ){
+	int timeOut = engine.backendTimeout() ;
+
+	if( timeOut > 0 ){
 
 		int counter = 0 ;
-		int max = settings::instance().sshfsBackendTimeout() ;
 
 		return _read( exe,[ & ]( const QString& e ){
 
-			if( counter < max ){
+			if( counter < timeOut ){
 
 				counter++ ;
 				return engine.errorCode( e ) ;
@@ -388,62 +384,34 @@ static SiriKali::Windows::result _getProcessOutput( QProcess& exe,const engines:
 	}
 }
 
-static QProcessEnvironment _update_environment( const engines::engine& e )
-{
-	auto env = e.getProcessEnvironment() ;
+struct terminate_process{
 
-	auto s = SiriKali::Windows::engineInstalledDir( e.name() ) ;
+	QProcess& exe ;
+	const engines::engine& engine ;
+	const QString& mountPath ;
+	const QString& unMountCommand ;
+};
 
-	if( s.isEmpty() ){
-
-		return env ;
-	}else{
-		auto a = s + ";" ;
-		auto b = s + "\\bin;" ;
-		auto c = a + b + env.value( "PATH" ) ;
-
-		env.insert( "PATH",c ) ;
-		return env ;
-	}
-}
-
-Task::process::result SiriKali::Windows::create( const SiriKali::Windows::opts& opts )
-{
-	if( opts.engine.autoMountsOnCreate() ){
-
-		return SiriKali::Windows::mount( opts ) ;
-	}else{
-		auto s = utility::unwrap( Task::process::run( opts.args.cmd,opts.password.toLatin1() ) ) ;
-
-		utility::logCommandOutPut( s,opts.args.cmd ) ;
-
-		return s ;
-	}
-}
-
-static std::pair< Task::process::result,QString > _terminate_process( QProcess& e,
-								      const engines::engine& engine,
-								      const QString& mountPath = QString(),
-								      const QString& unMountCommand = QString() )
+static std::pair< Task::process::result,QString > _terminate_process( const terminate_process& e )
 {
 	QString exe ;
 
-	if( unMountCommand == "sirikali.exe -T" ){
+	if( e.unMountCommand == "sirikali.exe -T" ){
 
-		exe = unMountCommand + QString::number( e.processId() ) ;
+		exe = e.unMountCommand + QString::number( e.exe.processId() ) ;
 
-	}else if( unMountCommand.isEmpty() || mountPath.isEmpty() ){
+	}else if( e.unMountCommand.isEmpty() || e.mountPath.isEmpty() ){
 
-		exe = "taskkill /F /PID " + QString::number( e.processId() ) ;
+		exe = "taskkill /F /PID " + QString::number( e.exe.processId() ) ;
 	}else{
-		exe = utility::Task::makePath( unMountCommand ) + " " + mountPath ;
+		exe = utility::Task::makePath( e.unMountCommand ) + " " + e.mountPath ;
 	}
 
-	auto m = utility::unwrap( Task::process::run( exe,{},-1,"",_update_environment( engine ) ) ) ;
+	auto m = utility::unwrap( Task::process::run( exe,{},-1,"",e.engine.getProcessEnvironment() ) ) ;
 
 	if( m.success() ){
 
-		utility::waitForFinished( e ) ;
+		utility::waitForFinished( e.exe ) ;
 	}
 
 	return { std::move( m ),std::move( exe ) } ;
@@ -453,11 +421,11 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 {
 	auto exe = utility2::unique_qptr< QProcess >() ;
 
-	exe->setProcessEnvironment( _update_environment( opts.engine ) ) ;
+	exe->setProcessEnvironment( opts.engine.getProcessEnvironment() ) ;
 	exe->setProcessChannelMode( QProcess::MergedChannels ) ;
 	exe->start( opts.args.cmd ) ;
 	exe->waitForStarted() ;
-	exe->write( opts.password.toLatin1() + "\n" ) ;
+	exe->write( opts.password + "\n" ) ;
 	exe->closeWriteChannel() ;
 
 	auto m = _getProcessOutput( *exe,opts.engine ) ;
@@ -466,7 +434,7 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 
 		if( m.type == engines::engine::error::Timeout ){
 
-			_terminate_process( *exe,opts.engine ) ;
+			_terminate_process( { *exe,opts.engine,QString(),QString() } ) ;
 
 			return Task::process::result( SiriKali::Windows::_backEndTimedOut,
 						      QByteArray(),
@@ -487,18 +455,8 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 		}else{
 			utility::waitForFinished( *exe ) ;
 
-			QByteArray stdOut ;
-			QByteArray stdError ;
-
-			if( opts.options.type == "encfs" ){
-
-				stdOut = m.outPut ;
-			}else{
-				stdError = m.outPut ;
-			}
-
-			return Task::process::result( stdOut,
-						      stdError,
+			return Task::process::result( QByteArray(),
+						      m.outPut,
 						      exe->exitCode(),
 						      exe->exitStatus(),
 						      true ) ;
@@ -531,8 +489,8 @@ static QString _make_path( QString e,encode s )
 	}
 }
 
-Task::process::result SiriKali::Windows::volumes::remove( const QString& unMountCommand,
-							  const QString& mountPoint )
+Task::process::result
+SiriKali::Windows::volumes::remove( const QString& unMountCommand,const QString& mountPoint )
 {
 	for( auto it = m_instances.begin() ; it != m_instances.end() ; it++ ){
 
@@ -541,10 +499,9 @@ Task::process::result SiriKali::Windows::volumes::remove( const QString& unMount
 		if( s.args.mountPath == mountPoint ){
 
 			auto& p = s.instance ;
-			auto m = _terminate_process( *p,
-						     engines::instance().getByName( s.engineName ),
-						     s.args.mountPath,
-						     unMountCommand ) ;
+			const auto& eng = engines::instance().getByName( s.engineName ) ;
+
+			auto m = _terminate_process( { *p,eng,s.args.mountPath,unMountCommand } ) ;
 
 			auto r = [ & ](){
 
@@ -660,9 +617,23 @@ Task::process::result SiriKali::Windows::unmount( const QString& unMountCommand,
 	return volumes::get().remove( unMountCommand,m ) ;
 }
 
-Task::process::result SiriKali::Windows::mount( const SiriKali::Windows::opts& opts )
+Task::process::result SiriKali::Windows::run( const opts& s )
 {
-	return volumes::get().add( opts ) ;
+	if( s.create ){
+
+		if( s.engine.autoMountsOnCreate() ){
+
+			return SiriKali::Windows::volumes::get().add( s ) ;
+		}else{
+			auto m = utility::unwrap( Task::process::run( s.args.cmd,s.password ) ) ;
+
+			utility::logCommandOutPut( m,s.args.cmd ) ;
+
+			return m ;
+		}
+	}else{
+		return SiriKali::Windows::volumes::get().add( s ) ;
+	}
 }
 
 void SiriKali::Windows::updateVolumeList( std::function< void() > function )

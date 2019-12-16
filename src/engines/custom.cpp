@@ -26,56 +26,100 @@
 
 #include <QDir>
 
+static void _parse_v1( custom::opts& s,const SirikaliJson& json )
+{
+	s.baseOpts.requiresPolkit              = false ;
+	s.baseOpts.hasGUICreateOptions         = true ;
+	s.baseOpts.customBackend               = true ;
+	s.baseOpts.passwordFormat              = json.getByteArray( "passwordFormat" ) ;
+	s.baseOpts.requiresAPassword           = json.getBool( "requiresAPassword" ) ;
+	s.baseOpts.autoMountsOnCreate          = json.getBool( "autoMountsOnVolumeCreation" ) ;
+	s.baseOpts.supportsMountPathsOnWindows = json.getBool( "supportsMountPointPaths" ) ;
+	s.mountControlStructure                = json.getString( "mountControlStructure" ) ;
+	s.createControlStructure               = json.getString( "createControlStructure" ) ;
+	s.baseOpts.reverseString               = json.getString( "reverseString" ) ;
+	s.baseOpts.idleString                  = json.getString( "idleString" ) ;
+	s.baseOpts.executableName              = json.getString( "executableName" ) ;
+	s.baseOpts.incorrectPasswordText       = json.getString( "wrongPasswordText" ) ;
+	s.baseOpts.incorrectPassWordCode       = json.getString( "wrongPasswordErrorCode" ) ;
+	s.baseOpts.unMountCommand              = json.getString( "unMountCommand" ) ;
+	s.baseOpts.configFileArgument          = json.getString( "configFileArgument" ) ;
+	s.baseOpts.windowsUnMountCommand       = json.getString( "windowsUnMountCommand" ) ;
+	s.baseOpts.failedToMountList           = json.getStringList( "failedToMountTextList" ) ;
+	s.baseOpts.successfulMountedList       = json.getStringList( "successfullyMountedList" ) ;
+	s.baseOpts.configFileNames             = json.getStringList( "configFileNames" ) ;
+	s.baseOpts.names                       = json.getStringList( "names" ) ;
+	s.baseOpts.fuseNames                   = json.getStringList( "fuseNames" ) ;
+	s.baseOpts.fileExtensions              = json.getStringList( "fileExtensions" ) ;
+	s.baseOpts.volumePropertiesCommands    = json.getStringList( "volumePropertiesCommands" ) ;
+	s.baseOpts.windowsInstallPathRegistryKey   = json.getString( "windowsInstallPathRegistryKey" ) ;
+	s.baseOpts.windowsInstallPathRegistryValue = json.getString( "windowsInstallPathRegistryValue" ) ;
+	s.baseOpts.hasConfigFile                   = s.baseOpts.configFileNames.size() > 0 ;
+	s.baseOpts.notFoundCode                    = engines::engine::status::customCommandNotFound ;
+}
+
+static void _parse_v11( custom::opts& s,const SirikaliJson& json )
+{
+	s.baseOpts.backendRequireMountPath   = json.getBool( "backendRequireMountPath" ) ;
+	s.baseOpts.autorefreshOnMountUnMount = json.getBool( "autorefreshOnMountUnMount" ) ;
+	s.baseOpts.backendTimeout            = json.getInterger( "backendTimeout" ) ;
+	s.baseOpts.takesTooLongToUnlock      = json.getBool( "takesTooLongToUnlock" ) ;
+}
+
+static QString _getVersion( const SirikaliJson& json )
+{
+	try{
+		return json.getString( "versionNumber" ) ;
+
+	}catch( ... ){
+
+		return "1.0" ;
+	}
+}
+
 static utility::result< custom::opts > _getOptions( const QByteArray& e,const QString& s )
 {
+	auto _log_error = []( const QString& msg,const QString& path ){
+
+		auto a = "\nFailed to parse file for reading: " + path ;
+
+		utility::debug::showDebugWindow( msg + a ) ;
+	} ;
+
 	try{
 		custom::opts s ;
 
 		SirikaliJson json( e,SirikaliJson::type::CONTENTS ) ;
 
-		s.baseOpts.requiresPolkit              = false ;
-		s.baseOpts.autorefreshOnMountUnMount   = true ;
-		s.baseOpts.backendRequireMountPath     = true ;
-		s.baseOpts.hasGUICreateOptions         = true ;
-		s.baseOpts.customBackend               = true ;
-		s.baseOpts.requiresAPassword           = json.getBool( "requiresAPassword" ) ;
-		s.baseOpts.autoMountsOnCreate          = json.getBool( "autoMountsOnVolumeCreation" ) ;
-		s.baseOpts.supportsMountPathsOnWindows = json.getBool( "supportsMountPointPaths" ) ;
-		s.mountControlStructure                = json.getString( "mountControlStructure" ) ;
-		s.createControlStructure               = json.getString( "createControlStructure" ) ;
-		s.baseOpts.reverseString               = json.getString( "reverseString" ) ;
-		s.baseOpts.idleString                  = json.getString( "idleString" ) ;
-		s.baseOpts.executableName              = json.getString( "executableName" ) ;
-		s.baseOpts.incorrectPasswordText       = json.getString( "wrongPasswordText" ) ;
-		s.baseOpts.passwordFormat              = json.getString( "passwordFormat" ) ;
-		s.baseOpts.incorrectPassWordCode       = json.getString( "wrongPasswordErrorCode" ) ;
-		s.baseOpts.unMountCommand              = json.getString( "unMountCommand" ) ;
-		s.baseOpts.configFileArgument          = json.getString( "configFileArgument" ) ;
-		s.baseOpts.windowsUnMountCommand       = json.getString( "windowsUnMountCommand" ) ;
-		s.baseOpts.failedToMountList           = json.getStringList( "failedToMountTextList" ) ;
-		s.baseOpts.successfulMountedList       = json.getStringList( "successfullyMountedList" ) ;
-		s.baseOpts.configFileNames             = json.getStringList( "configFileNames" ) ;
-		s.baseOpts.names                       = json.getStringList( "names" ) ;
-		s.baseOpts.fuseNames                   = json.getStringList( "fuseNames" ) ;
-		s.baseOpts.fileExtensions              = json.getStringList( "fileExtensions" ) ;
-		s.baseOpts.volumePropertiesCommands    = json.getStringList( "volumePropertiesCommands" ) ;
-		s.baseOpts.windowsInstallPathRegistryKey   = json.getString( "windowsInstallPathRegistryKey" ) ;
-		s.baseOpts.windowsInstallPathRegistryValue = json.getString( "windowsInstallPathRegistryValue" ) ;
-		s.baseOpts.hasConfigFile                   = s.baseOpts.configFileNames.size() > 0 ;
-		s.baseOpts.notFoundCode                    = engines::engine::status::customCommandNotFound ;
+		auto a = _getVersion( json ) ;
+
+		if( a == "1.1" ){
+
+			_parse_v1( s,json ) ;
+			_parse_v11( s,json ) ;
+		}else{
+			_parse_v1( s,json ) ;
+		}
 
 		return s ;
 
 	}catch( const SirikaliJson::exception& e ){
 
-		utility::debug::cout() << "Failed to parse config file: " + s << e.what() ;
+		_log_error( e.what(),s ) ;
 
-		return {} ;
+	}catch( const std::exception& e ){
+
+		_log_error( e.what(),s ) ;
+
+	}catch( ... ){
+
+		_log_error( "Unknown error has occured",s ) ;
 	}
+
+	return {} ;
 }
 
-static void _add_engines( QStringList& list,
-			  const QString& path,
+static void _add_engines( const QString& path,
 			  std::vector< std::unique_ptr< engines::engine >>& engines )
 {
 	const auto s = QDir( path ).entryList( QDir::Filter::Files ) ;
@@ -101,11 +145,12 @@ static void _add_engines( QStringList& list,
 
 					if( n.size() > 0 ){
 
-						list.append( n.replace( 0,1,n.at( 0 ).toUpper() ) ) ;
 						engines.emplace_back( std::make_unique< custom >( m ) ) ;
 					}
 				}else{
-					utility::debug::cout() << "Name field/Fuse names not set in config file : " + path ;
+					auto a = "Name field/Fuse names not set in config file : " + path ;
+
+					utility::debug::showDebugWindow( a ) ;
 				}
 			}
 
@@ -114,20 +159,20 @@ static void _add_engines( QStringList& list,
 	}
 }
 
-void custom::addEngines( QStringList& list,std::vector< std::unique_ptr< engines::engine >>& engines )
+void custom::addEngines( std::vector< std::unique_ptr< engines::engine >>& engines )
 {
 	auto m = settings::instance().ConfigLocation() ;
 
 	if( !m.isEmpty() ){
 
-		_add_engines( list,m + "/backends/",engines ) ;
+		_add_engines( m + "/backends/",engines ) ;
 	}
 
 	if( utility::platformIsWindows() ){
 
-		_add_engines( list,QDir().currentPath() + "/backends/",engines ) ;
+		_add_engines( QDir().currentPath() + "/backends/",engines ) ;
 	}else{
-		_add_engines( list,INSTALL_PREFIX"/share/SiriKali/backends/",engines ) ;
+		_add_engines( INSTALL_PREFIX"/share/SiriKali/backends/",engines ) ;
 	}
 }
 
@@ -138,7 +183,7 @@ custom::custom( custom::opts s ) :
 {
 }
 
-engines::engine::args custom::command( const QString& password,
+engines::engine::args custom::command( const QByteArray& password,
 				       const engines::engine::cmdArgsList& args ) const
 {
 	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
@@ -224,9 +269,9 @@ engines::engine::status custom::errorCode( const QString& e,int s ) const
 	}
 }
 
-QString custom::installedVersionString() const
+const QString& custom::installedVersionString() const
 {
-	return QString() ;
+	return m_version.get() ;
 }
 
 void custom::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

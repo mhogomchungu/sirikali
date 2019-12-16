@@ -78,3 +78,13 @@ QByteArray crypto::hmac_key( const QString& keyFile,const QString& password )
 		return QByteArray() ;
 	} ) ;
 }
+
+QByteArray crypto::sha256( const QString& e )
+{
+	return QCryptographicHash::hash( e.toUtf8(),QCryptographicHash::Sha256 ).toHex() ;
+}
+
+QByteArray crypto::sha256( const QByteArray& e )
+{
+	return QCryptographicHash::hash( e,QCryptographicHash::Sha256 ).toHex() ;
+}

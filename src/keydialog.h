@@ -63,15 +63,15 @@ public:
 		m_label = l ;
 		m_label->setVisible( false ) ;
 	}
-	void showCreate( const QString& engine )
+	void showCreate( const QString& e )
 	{
-		m_warning = tr( "Please be patient because creating a CryFS volume may take a very long time.\n\n" ) ;
-		this->show( engine ) ;
+		m_warning = tr( "Please be patient because creating a \"%1\" volume may take a very long time.\n\n" ).arg( e ) ;
+		this->show() ;
 	}
-	void showUnlock( const QString& engine )
+	void showUnlock( const QString& e )
 	{
-		m_warning = tr( "Please be patient because unlocking a CryFS volume may take a very long time.\n\n" ) ;
-		this->show( engine ) ;
+		m_warning = tr( "Please be patient because unlocking a \"%1\" volume may take a very long time.\n\n" ).arg( e ) ;
+		this->show() ;
 	}
 	void hide()
 	{
@@ -81,19 +81,11 @@ public:
 		m_label->setText( m_warning + tr( "Elapsed time: 0 seconds" ) ) ;
 	}
 private:
-	void show( const QString& engine )
+	void show()
 	{
-		if( engine == "cryfs" ){
-
-			static bool displayWarning = utility::backendIsGreaterOrEqualTo( engine,"0.10.0" ).await().value() ;
-
-			if( displayWarning ){
-
-				m_label->setVisible( true ) ;
-				m_timer.start( 1000 * 1 ) ;
-				this->update() ;
-			}
-		}
+		m_label->setVisible( true ) ;
+		m_timer.start( 1000 * 1 ) ;
+		this->update() ;
 	}
 	void update()
 	{
@@ -315,7 +307,7 @@ private :
 
 	favorites::volumeList m_volumes ;
 
-	cryfsWarning m_cryfsWarning ;
+	cryfsWarning m_warningLabel ;
 
 	decltype( m_volumes.size() ) m_counter = 0 ;
 

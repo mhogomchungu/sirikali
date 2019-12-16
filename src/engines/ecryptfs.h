@@ -25,23 +25,22 @@ struct ecryptfs : public engines::engine
 
 	bool requiresPolkit() const override ;
 
-	void updateMountOptions( engines::engine::options&,
-				 QString& configFilePath ) const override ;
+	void updateOptions( engines::engine::options& ) const override ;
 
-	bool unmount( const QString& cipherFolder,
-		      const QString& mountPoint,
-		      int maxCount ) const override ;
+	engines::engine::status unmount( const QString& cipherFolder,
+					 const QString& mountPoint,
+					 int maxCount ) const override ;
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 
-	engines::engine::args command( const QString& password,
+	engines::engine::args command( const QByteArray& password,
 				       const engines::engine::cmdArgsList& args ) const override ;
 
-	QString installedVersionString() const override ;
+	const QString& installedVersionString() const override ;
 
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
 
 private:
-	mutable bool m_unset = true ;
-	mutable bool m_requirePolkit = true ;
+	bool m_requirePolkit ;
+	engines::version m_version ;
 } ;

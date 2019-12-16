@@ -754,7 +754,13 @@ void favorites2::ShowUI( favorites::type type )
 
 		m_ui->tabWidget->setCurrentIndex( 1 ) ;
 
-		m_ui->lineEditMountOptions->setText( "idmap=user,StrictHostKeyChecking=no" ) ;
+		if( utility::platformIsWindows() ){
+
+			m_ui->lineEditMountOptions->setText( "idmap=user,StrictHostKeyChecking=no,UseNetworkDrive=no" ) ;
+		}else{
+			m_ui->lineEditMountOptions->setText( "idmap=user,StrictHostKeyChecking=no" ) ;
+		}
+
 		m_ui->labelName ->setText( tr( "Remote Ssh Server Address\n(Example: woof@example.com:/remote/path)" ) ) ;
 		m_ui->labelCofigFilePath->setText( tr( "SSH_AUTH_SOCK Socket Path (Optional)" ) ) ;
 		m_ui->labelIdleTimeOut->setText( tr( "IdentityFile Path (Optional)" ) ) ;

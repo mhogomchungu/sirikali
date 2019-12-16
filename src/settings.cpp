@@ -407,16 +407,6 @@ bool settings::unMountVolumesOnLogout()
 	return m_settings.value( "UnMountVolumesOnLogout" ).toBool() ;
 }
 
-bool settings::requirePolkitOnFsCryptUnmount()
-{
-	if( !m_settings.contains( "RequirePolkitOnFsCryptUnmount" ) ){
-
-		m_settings.setValue( "RequirePolkitOnFsCryptUnmount",false ) ;
-	}
-
-	return m_settings.value( "RequirePolkitOnFsCryptUnmount" ).toBool() ;
-}
-
 bool settings::readFavorites( QMenu * m )
 {
 	m->clear() ;
@@ -580,6 +570,16 @@ bool settings::startMinimized()
 
 		return s ;
 	}
+}
+
+bool settings::passWordIsUTF8Encoded()
+{
+	if( !m_settings.contains( "PassWordIsUTF8Encoded" ) ){
+
+		m_settings.setValue( "PassWordIsUTF8Encoded",true ) ;
+	}
+
+	return m_settings.value( "PassWordIsUTF8Encoded" ).toBool() ;
 }
 
 void settings::setStartMinimized( bool e )
@@ -815,7 +815,7 @@ void settings::autoMountBackEnd( const settings::walletBackEnd& e )
 		}else{
 			return "none" ;
 		}
-			     }() ) ;
+	}() ) ;
 }
 
 QSettings &settings::backend()

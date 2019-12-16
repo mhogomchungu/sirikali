@@ -143,13 +143,20 @@ namespace utility
 	private:
 		bool m_valid = false ;
 		T m_value ;
-	} ;
+	} ;	
+
+	using qbytearray_result = result< QString > ;
+	using qstring_result    = result< QString > ;
+	using bool_result       = result< bool > ;
+	using int_result        = result< int > ;
 }
 
 namespace utility
 {
 	struct debug
 	{
+		static void showDebugWindow( const QString& ) ;
+
 		struct cout{
 
 			template< typename T >
@@ -256,7 +263,10 @@ namespace utility
 
 	QString cmdArgumentValue( const QStringList&,const QString& arg,const QString& defaulT = QString() ) ;
 
-	QString readPassword( bool = true ) ;
+	QByteArray readPassword( bool = true ) ;
+
+	QByteArray convertPassword( const QString& ) ;
+	QString convertPassword( const QByteArray& ) ;
 
 	QIcon getIcon() ;
 
@@ -353,9 +363,6 @@ namespace utility
 	void enableDebug( bool ) ;
 	bool debugEnabled( void ) ;
 
-	void enableFullDebug( bool ) ;
-	bool debugFullEnabled( void ) ;
-
 	const QProcessEnvironment& systemEnvironment() ;
 
 	QString userName() ;
@@ -365,9 +372,13 @@ namespace utility
 	QString policyString() ;
 	QString commentString() ;
 
+	QStringList split( const QString&,const QString& ) ;
 	QStringList split( const QString&,char = '\n' ) ;
 	QStringList executableSearchPaths( void ) ;
 	QString executableSearchPaths( const QString& ) ;
+
+	QString removeLast( const QString&,int lastChars ) ;
+	QString removeFirstAndLast( const QString&,int firstChars,int lastChars ) ;
 
 	void logCommandOutPut( const ::Task::process::result&,const QString& ) ;
 	void logCommandOutPut( const QString& ) ;
@@ -400,6 +411,11 @@ namespace utility
 	} ;
 
 	SocketPaths socketPath() ;
+
+	utility::result< bool > versionIsLessOrEqualTo( const QString& installedVersion,
+							const QString& checkedVersion ) ;
+	utility::result< bool > versionIsGreaterOrEqualTo( const QString& installedVersion,
+							   const QString& checkedVersion ) ;
 
 	::Task::future< utility::result< QString > >& backEndInstalledVersion( const QString& backend ) ;
 
@@ -641,6 +657,8 @@ namespace utility
 		int m_exitStatus = 255 ;
 		bool m_finished = false ;
 	};
+
+	using task_result = utility::result< utility::Task > ;
 }
 
 #endif // MISCFUNCTIONS_H

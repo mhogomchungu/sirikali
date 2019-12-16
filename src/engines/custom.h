@@ -27,7 +27,7 @@
 class custom : public engines::engine
 {
 public:
-	static void addEngines( QStringList&,std::vector< std::unique_ptr< engines::engine > >& ) ;
+	static void addEngines( std::vector< std::unique_ptr< engines::engine > >& ) ;
 
 	struct opts{
 		engines::engine::BaseOptions baseOpts ;
@@ -39,13 +39,14 @@ public:
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 
-	engines::engine::args command( const QString& password,
+	engines::engine::args command( const QByteArray& password,
 				       const engines::engine::cmdArgsList& args ) const override ;
 
-	QString installedVersionString() const override ;
+	const QString& installedVersionString() const override ;
 
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
 private:
 	const QString m_mountControlStructure ;
 	const QString m_createControlStructure ;
+	engines::version m_version ;
 } ;

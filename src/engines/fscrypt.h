@@ -23,28 +23,43 @@
 class fscrypt : public engines::engine
 {
 public:
-	static Task::future< QStringList >& fscryptVolumes( const QStringList& s ) ;
-
 	fscrypt() ;
 
-	bool unmount( const QString& cipherFolder,
-		      const QString& mountPoint,
-		      int maxCount ) const override ;
+	engines::engine::status unmount( const QString& cipherFolder,
+					 const QString& mountPoint,
+					 int maxCount ) const override ;
+
+	QStringList mountInfo( const QStringList& ) const override ;
 
 	const engines::engine& proveEngine( const QString& cipherPath ) const override ;
+
+	void updateVolumeList( const engines::engine::options& ) const override ;
 
 	Task::future< QString >& volumeProperties( const QString& cipherFolder,
 						   const QString& mountPoint ) const override ;
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 
-	engines::engine::args command( const QString& password,
+	engines::engine::args command( const QByteArray& password,
 				       const engines::engine::cmdArgsList& args ) const override ;
 
-	QString installedVersionString() const override ;
+	const QString& installedVersionString() const override ;
 
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
 private:
+	class unlockedVolumeList{
+	public:
+		unlockedVolumeList() ;
+		QStringList getList() const ;
+		void addEntry( const QString& ) ;
+		void removeEntry( const QString& ) ;
+	private:
+		void updateList( const QStringList& ) ;
+		const QString m_configFilePath ;
+		const char * m_keyName = "unlockedList" ;
+	} mutable m_unlockedVolumeManager ;
+
 	QString userOption() const ;
-	bool m_requirePolkitOnUnmount ;
+	engines::exeFullPath m_exeFullPath ;
+	engines::version m_version ;
 } ;

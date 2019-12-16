@@ -133,32 +133,61 @@ void createBackendWIndow::save()
 		}
 	} ;
 
-	config[ "version" ]                     = 1.0 ;
-	config[ "createControlStructure" ]      = "%{createOptions} %{cipherFolder} %{mountPoint}" ;
-	config[ "mountControlStructure" ]       = "%{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
-	config[ "idleString" ]                  = "" ;
-	config[ "reverseString" ]               = "" ;
-	config[ "unMountCommand" ]              = "" ;
-	config[ "windowsUnMountCommand" ]       = "" ;
-	config[ "passwordFormat" ]              = "%{password}" ;
-	config[ "windowsInstallPathRegistryKey" ]   = "" ;
-	config[ "windowsInstallPathRegistryValue" ] = "" ;
-	config[ "executableName" ]              = executable ;
-	config[ "configFileNames" ]             = _addList( configFileNames ) ;
-	config[ "fuseNames" ]                   = _addList( fusenames ) ;
-	config[ "names" ]                       = _addList( names ) ;
-	config[ "fileExtensions" ]              = QStringList() ;
-	config[ "volumePropertiesCommands" ]    = QStringList() ;
-	config[ "failedToMountTextList" ]       = _addList( m_ui->lineEditFailedToMountText->text() ) ;
-	config[ "successfullyMountedList" ]     = _addList( m_ui->lineEditSuccessfullyMountedText->text() ) ;
-	config[ "configFileArgument" ]          = m_ui->lineEditConfigFileArgument->text() ;
-	config[ "wrongPasswordText" ]           = password ;
-	config[ "wrongPasswordErrorCode" ]      = m_ui->lineEditWrongPasswordErrorCode->text() ;
-	config[ "requiresAPassword" ]           = m_ui->cbRequiresAPassword->isChecked() ;
-	config[ "supportsMountPointPaths" ]     = m_ui->cbSupportsMountPointPaths->isChecked() ;
-	config[ "autoMountsOnVolumeCreation" ]  = m_ui->cbAutoMountsOnVolumeCreation->isChecked() ;
+	auto _log_error = []( const QString& msg,const QString& path ){
 
-	config.toFile( path ) ;
+		auto a = "\nFailed to parse file for writing: " + path ;
+
+		utility::debug::showDebugWindow( msg + a ) ;
+	} ;
+
+	try {
+		config[ "versionNumber" ]               = "1.1" ;
+
+		//start of version 1.0
+		config[ "createControlStructure" ]      = "%{createOptions} %{cipherFolder} %{mountPoint}" ;
+		config[ "mountControlStructure" ]       = "%{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
+		config[ "idleString" ]                  = "" ;
+		config[ "reverseString" ]               = "" ;
+		config[ "unMountCommand" ]              = "" ;
+		config[ "windowsUnMountCommand" ]       = "" ;
+		config[ "passwordFormat" ]              = "%{password}" ;
+		config[ "windowsInstallPathRegistryKey" ]   = "" ;
+		config[ "windowsInstallPathRegistryValue" ] = "" ;
+		config[ "executableName" ]              = executable ;
+		config[ "configFileNames" ]             = _addList( configFileNames ) ;
+		config[ "fuseNames" ]                   = _addList( fusenames ) ;
+		config[ "names" ]                       = _addList( names ) ;
+		config[ "fileExtensions" ]              = QStringList() ;
+		config[ "volumePropertiesCommands" ]    = QStringList() ;
+		config[ "failedToMountTextList" ]       = _addList( m_ui->lineEditFailedToMountText->text() ) ;
+		config[ "successfullyMountedList" ]     = _addList( m_ui->lineEditSuccessfullyMountedText->text() ) ;
+		config[ "configFileArgument" ]          = m_ui->lineEditConfigFileArgument->text() ;
+		config[ "wrongPasswordText" ]           = password ;
+		config[ "wrongPasswordErrorCode" ]      = m_ui->lineEditWrongPasswordErrorCode->text() ;
+		config[ "requiresAPassword" ]           = m_ui->cbRequiresAPassword->isChecked() ;
+		config[ "supportsMountPointPaths" ]     = m_ui->cbSupportsMountPointPaths->isChecked() ;
+		config[ "autoMountsOnVolumeCreation" ]  = m_ui->cbAutoMountsOnVolumeCreation->isChecked() ;
+
+		//start of version 1.1
+		config[ "backendRequireMountPath" ]     = true ;
+		config[ "autorefreshOnMountUnMount" ]   = true ;
+		config[ "backendTimeout" ]              = 0 ;
+		config[ "takesTooLongToUnlock" ]        = false ;
+
+		config.toFile( path ) ;
+
+	}catch( const SirikaliJson::exception& e ){
+
+		_log_error( e.what(),path ) ;
+
+	}catch( const std::exception& e ){
+
+		_log_error( e.what(),path ) ;
+
+	}catch( ... ){
+
+		_log_error( "Unknown error has occured",path ) ;
+	}
 
 	this->Hide() ;
 }

@@ -24,17 +24,19 @@ class cryfs : public engines::engine
 public:
 	cryfs() ;
 
+	bool takesTooLongToUnlock() const override ;
+
 	const QProcessEnvironment& getProcessEnvironment() const override ;
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 
-	engines::engine::args command( const QString& password,
+	engines::engine::args command( const QByteArray& password,
 				       const engines::engine::cmdArgsList& args ) const override ;
 
-	QString installedVersionString() const override ;
+	const QString& installedVersionString() const override ;
 
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
-private:
+private:	
 	QProcessEnvironment m_env ;
-	mutable QString m_version ;
+	engines::version m_version ;
 } ;

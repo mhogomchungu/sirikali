@@ -305,7 +305,7 @@ void keyDialog::setUpInitUI()
 
 	if( !m_key.isEmpty() ){
 
-		m_ui->lineEditKey->setText( m_key ) ;
+		m_ui->lineEditKey->setText( utility::convertPassword( m_key ) ) ;
 		m_ui->pbOpen->setFocus() ;
 	}
 
@@ -367,7 +367,7 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 		m_ui->lineEditMountPoint->setFocus() ;
 	}else{
-		m_engine = siritask::mountEngine( m_path,m_configFile ) ;
+		m_engine = siritask::mountEngine( { m_path,m_configFile,siritask::Engine() } ) ;
 
 		auto m = m_ui->pbOptions->menu() ;
 
@@ -390,9 +390,9 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 		m->addSeparator() ;
 
-		if( m_engine.engine().known() ){
+		if( m_engine.get().known() ){
 
-			const auto& aa = m_engine.engine().name() ;
+			const auto& aa = m_engine.get().name() ;
 
 			_addAction( aa,aa,false ) ;
 		}else{
@@ -435,7 +435,7 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 	m_ui->lineEditMountPoint->setText( [ & ]()->QString{
 
-		const auto& engine = m_engine.engine() ;
+		const auto& engine = m_engine.get() ;
 
 		if( engine.known() && !engine.backendRequireMountPath() ){
 
@@ -899,14 +899,23 @@ void keyDialog::pbOpen()
 		auto internal = wallet == _internalWallet() ;
 		auto osx      = wallet == _OSXKeyChain() ;
 
-		/* Figure out which wallet is used. Defaults to 'internal' */
+		/*
+		 * Figure out which wallet is used. Defaults to 'internal'
+		 */
 		using bk = LXQt::Wallet::BackEnd ;
+
 		bk bkwallet = LXQt::Wallet::BackEnd::internal ;
+
 		if( wallet == _kwallet() ){
+
 			bkwallet = LXQt::Wallet::BackEnd::kwallet ;
+
 		}else if( wallet == _gnomeWallet() ){
+
 			bkwallet = LXQt::Wallet::BackEnd::libsecret ;
+
 		}else if( wallet == _OSXKeyChain() ){
+
 			bkwallet = LXQt::Wallet::BackEnd::osxkeychain ;
 		}
 
@@ -939,7 +948,7 @@ void keyDialog::pbOpen()
 
 				this->setKeyInWallet( wallet,s ) ;
 			}else{
-				m_key = w.key.toLatin1() ;
+				m_key = utility::convertPassword( w.key ) ;
 				this->openVolume() ;
 			}
 		}else{
@@ -1081,25 +1090,27 @@ void keyDialog::encryptedFolderCreate()
 				    m_key,
 				    m_idleTimeOut,
 				    m_configFile,
-				    m_exe.toLower(),
 				    false,
 				    m_reverseMode,
 				    m_mountOptions,
 				    m_createOptions ) ;
 
-	m_cryfsWarning.showCreate( m_exe.toLower() ) ;
+	const auto& engine = engines::instance().getByName( m_exe.toLower() ) ;
 
-	auto e = siritask::encryptedFolderCreate( s ) ;
+	if( engine.takesTooLongToUnlock() ){
 
-	const auto& cmdStatus = e.cmdStatus() ;
+		m_warningLabel.showCreate( engine.name() ) ;
+	}
 
-	m_cryfsWarning.hide() ;
+	auto e = siritask::encryptedFolderCreate( s,engine ) ;
+
+	m_warningLabel.hide() ;
 
 	m_working = false ;
 
-	if( cmdStatus == engines::engine::status::success ){
+	if( e == engines::engine::status::success ){
 
-		if( e.backendDoesNotAutoRefresh() ){
+		if( !e.engine().autorefreshOnMountUnMount() ){
 
 			m_updateVolumeList() ;
 		}
@@ -1109,9 +1120,9 @@ void keyDialog::encryptedFolderCreate()
 		this->openMountPoint( m ) ;
 		this->HideUI() ;
 	}else{
-		this->reportErrorMessage( cmdStatus ) ;
+		this->reportErrorMessage( e ) ;
 
-		if( cmdStatus == engines::engine::status::volumeCreatedSuccessfully ){
+		if( e == engines::engine::status::volumeCreatedSuccessfully ){
 
 			m_closeGUI = true ;
 		}else{
@@ -1297,7 +1308,7 @@ void keyDialog::pbSetKey()
 
 				const auto& env = utility::systemEnvironment() ;
 
-				return utility::Task( exe,20000,env,passphrase.toLatin1() ).stdOut() ;
+				return utility::Task( exe,20000,env,passphrase.toUtf8() ).stdOut() ;
 			}
 		}
 
@@ -1433,25 +1444,32 @@ void keyDialog::encryptedFolderMount()
 				    m_key,
 				    m_idleTimeOut,
 				    m_configFile,
-				    m_exe,
 				    ro,
 				    m_reverseMode,
 				    m_mountOptions,
 				    QString() } ;
 
-	m_cryfsWarning.showUnlock( m_engine.engine().name() ) ;
+	const auto& engine = m_engine.get() ;
+
+	if( engine.name().isEmpty() ){
+
+		m_engine = siritask::mountEngine( { m_path,m_configFile,siritask::Engine() } ) ;
+	}
+
+	if( engine.takesTooLongToUnlock() ){
+
+		m_warningLabel.showUnlock( engine.name() ) ;
+	}
 
 	auto e = siritask::encryptedFolderMount( s,false,m_engine ) ;
 
-	const auto& cmdStatus = e.cmdStatus() ;
-
-	m_cryfsWarning.hide() ;
+	m_warningLabel.hide() ;
 
 	m_working = false ;
 
-	if( cmdStatus == engines::engine::status::success ){
+	if( e == engines::engine::status::success ){
 
-		if( e.backendDoesNotAutoRefresh() ){
+		if( !e.engine().autorefreshOnMountUnMount() ){
 
 			m_updateVolumeList() ;
 		}
@@ -1461,7 +1479,7 @@ void keyDialog::encryptedFolderMount()
 		this->enableAll() ;
 		this->unlockVolume() ;
 	}else{
-		this->reportErrorMessage( cmdStatus ) ;
+		this->reportErrorMessage( e ) ;
 
 		m_ui->lineEditKey->clear() ;
 
@@ -1492,7 +1510,7 @@ void keyDialog::openVolume()
 
 	if( keyType == keyDialog::yubikey ){
 
-		auto s = m_ui->lineEditKey->text().toLatin1() ;
+		auto s = m_ui->lineEditKey->text().toUtf8() ;
 
 		if( s.isEmpty() ){
 
@@ -1513,7 +1531,7 @@ void keyDialog::openVolume()
 
 	}else if( keyType == keyDialog::Key ){
 
-		m_key = m_ui->lineEditKey->text().toLatin1() ;
+		m_key = utility::convertPassword( m_ui->lineEditKey->text() ) ;
 
 		_run() ;
 
@@ -1665,7 +1683,7 @@ void keyDialog::cbActicated( QString e )
 
 				m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
 
-				m_ui->lineEditKey->setText( m_key ) ;
+				m_ui->lineEditKey->setText( utility::convertPassword( m_key ) ) ;
 
 				if( m_keyStrength && m_create ){
 
@@ -1794,7 +1812,7 @@ void keyDialog::pbCancel()
 
 void keyDialog::ShowUI()
 {
-	m_cryfsWarning.setWarningLabel( m_ui->cryfsWarning ) ;
+	m_warningLabel.setWarningLabel( m_ui->cryfsWarning ) ;
 	this->show() ;
 	this->raise() ;
 	this->activateWindow() ;
