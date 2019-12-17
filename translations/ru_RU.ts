@@ -282,7 +282,7 @@ Not Supported Volume Encountered.</source>
     <message>
         <location filename="../src/engines.cpp" line="861"/>
         <source>Folder Not Fully Locked Because Some Files Are Still In Use.</source>
-        <translation type="unfinished"></translation>
+        <translation>Папка не полностью заблокирована, поскольку некоторые файлы все еще используются.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="865"/>
