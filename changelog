@@ -182,7 +182,7 @@ version 1.4.1(October 15,2019)
 -- Fix a bug with sshfs backend introduced in 1.4.0.
 -- Various changes and improvements.
 
-version 1.4.2(Unreleased)
+version 1.4.2(December 18,2019)
 -- Assume passwords are utf8 encoded instead of latin-1. This is a breaking change for those who were using a
    password that was not a valid latin-1 password.
 -- Fix a crash on windows when an sshfs favorite entry is created with a remote folder path of just ":/", example
