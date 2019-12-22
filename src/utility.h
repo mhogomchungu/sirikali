@@ -379,6 +379,7 @@ namespace utility
 
 	QString removeLast( const QString&,int lastChars ) ;
 	QString removeFirstAndLast( const QString&,int firstChars,int lastChars ) ;
+	QString removeLastPathComponent( const QString& path,char separator = '/' ) ;
 
 	void logCommandOutPut( const ::Task::process::result&,const QString& ) ;
 	void logCommandOutPut( const QString& ) ;

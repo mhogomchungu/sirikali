@@ -1149,6 +1149,8 @@ void sirikali::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 		connect( ac,SIGNAL( triggered() ),this,slot ) ;
 	} ;
 
+	_addAction( tr( "Open Parent Folder" ),SLOT( slotOpenParentFolder() ) ) ;
+
 	_addAction( tr( "Open Folder" ),SLOT( slotOpenFolder() ) ) ;
 
 	_addAction( tr( "Unmount" ),SLOT( pbUmount() ) ) ;
@@ -1227,6 +1229,24 @@ void sirikali::slotOpenFolder()
 		}
 
 		this->openMountPoint( path ) ;
+	}
+}
+
+void sirikali::slotOpenParentFolder()
+{
+	auto table = m_ui->tableWidget ;
+
+	if( table->rowCount() > 0 ){
+
+		auto item = table->currentItem() ;
+		auto path = table->item( item->row(),1 )->text() ;
+
+		if( utility::platformIsWindows() ){
+
+			path = path.replace( "/","\\" ) ;
+		}
+
+		this->openMountPoint( utility::removeLastPathComponent( path ) ) ;
 	}
 }
 

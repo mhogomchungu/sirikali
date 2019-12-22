@@ -1572,3 +1572,16 @@ QString utility::removeFirstAndLast( const QString& s,int first,int last )
 
 	return m ;
 }
+
+QString utility::removeLastPathComponent( const QString& e,char separator )
+{
+	auto s = utility::split( e,separator ) ;
+	s.removeLast() ;
+
+	if( utility::platformIsWindows() && utility::startsWithDriveLetter( e ) ){
+
+		return s.join( separator ) ;
+	}
+
+	return separator + s.join( separator ) ;
+}

@@ -96,6 +96,7 @@ private slots:
 	void slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ;
 	void enableAll( void ) ;
 	void slotOpenFolder( void ) ;
+	void slotOpenParentFolder( void ) ;
 	void slotOpenSharedFolder( void ) ;
 	void addEntryToTable( const QStringList& ) ;
 	void addEntryToTable( const volumeInfo& ) ;
