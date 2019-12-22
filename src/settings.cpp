@@ -301,7 +301,7 @@ QString settings::fileManager()
 
 			settings::setFileManager( QString() ) ;
 
-			return m_settings.value( "FileManagerOpener" ).toString() ; ;
+			return m_settings.value( "FileManagerOpener" ).toString() ;
 		}else{
 			return e ;
 		}

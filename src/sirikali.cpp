@@ -1149,7 +1149,7 @@ void sirikali::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 		connect( ac,SIGNAL( triggered() ),this,slot ) ;
 	} ;
 
-	_addAction( tr( "Open Parent Folder" ),SLOT( slotOpenParentFolder() ) ) ;
+	//_addAction( tr( "Open Parent Folder" ),SLOT( slotOpenParentFolder() ) ) ;
 
 	_addAction( tr( "Open Folder" ),SLOT( slotOpenFolder() ) ) ;
 
