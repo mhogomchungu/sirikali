@@ -188,14 +188,14 @@ static QString _readRegistry( const char * subKey,const char * key )
 struct Process
 {
 	template< typename T >
-	Process( const engines::engine::args& args,const QString& e,T x ) :
-		args( args ),engineName( e ),instance( std::move( x ) )
+	Process( const engines::engine::args& args,const engines::engine& e,T x ) :
+		args( args ),engine( e ),instance( std::move( x ) )
 	{
 	}
 	Process( Process&& ) = default ;
 	Process& operator=( Process&& ) = default ;
 	engines::engine::args args ;
-	QString engineName ;
+	engines::engine::Wrapper engine ;
 	std::unique_ptr< QProcess,void(*)( QProcess * ) > instance ;
 } ;
 
@@ -447,7 +447,7 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 			exe->closeReadChannel( QProcess::StandardError ) ;
 			exe->closeReadChannel( QProcess::StandardOutput ) ;
 
-			m_instances.emplace_back( opts.args,opts.engine.name(),std::move( exe ) ) ;
+			m_instances.emplace_back( opts.args,opts.engine,std::move( exe ) ) ;
 
 			m_updateVolumeList() ;
 
@@ -499,9 +499,8 @@ SiriKali::Windows::volumes::remove( const QString& unMountCommand,const QString&
 		if( s.args.mountPath == mountPoint ){
 
 			auto& p = s.instance ;
-			const auto& eng = engines::instance().getByName( s.engineName ) ;
 
-			auto m = _terminate_process( { *p,eng,s.args.mountPath,unMountCommand } ) ;
+			auto m = _terminate_process( { *p,s.engine.get(),s.args.mountPath,unMountCommand } ) ;
 
 			auto r = [ & ](){
 

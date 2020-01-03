@@ -397,7 +397,7 @@ const QString& engines::engine::name() const
 	if( m_Options.names.isEmpty() ){
 
 		static QString s ;
-		return  s ;
+		return s ;
 	}else{
 		return m_Options.names.first() ;
 	}
@@ -408,7 +408,7 @@ const QString& engines::engine::configFileName() const
 	if( m_Options.configFileNames.isEmpty() ){
 
 		static QString s ;
-		return  s ;
+		return s ;
 	}else{
 		return m_Options.configFileNames.first() ;
 	}
