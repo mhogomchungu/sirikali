@@ -185,18 +185,48 @@ static QString _readRegistry( const char * subKey,const char * key )
 
 #endif
 
-struct Process
+class Process
 {
+public:
 	template< typename T >
-	Process( const engines::engine::args& args,const engines::engine& e,T x ) :
-		args( args ),engine( e ),instance( std::move( x ) )
+	Process( const SiriKali::Windows::opts opts,T x ) :
+		m_args( opts.args ),m_engine( opts.engine ),m_instance( std::move( x ) )
 	{
 	}
 	Process( Process&& ) = default ;
 	Process& operator=( Process&& ) = default ;
-	engines::engine::args args ;
-	engines::engine::Wrapper engine ;
-	std::unique_ptr< QProcess,void(*)( QProcess * ) > instance ;
+	const QString& mountPoint() const
+	{
+		return m_args.mountPath ;
+	}
+	const engines::engine& engine() const
+	{
+		return m_engine.get() ;
+	}
+	const engines::engine::args& args() const
+	{
+		return m_args ;
+	}
+	QProcess& exe() const
+	{
+		return *m_instance ;
+	}
+	QStringList arguments() const
+	{
+		return this->exe().arguments() ;
+	}
+	bool running() const
+	{
+		return this->exe().state() == QProcess::Running ;
+	}
+	bool notRunning() const
+	{
+		return this->exe().state() == QProcess::NotRunning ;
+	}
+private:
+	engines::engine::args m_args ;
+	engines::engine::Wrapper m_engine ;
+	std::unique_ptr< QProcess,void(*)( QProcess * ) > m_instance ;
 } ;
 
 struct result
@@ -280,7 +310,7 @@ std::vector< QStringList > SiriKali::Windows::volumes::commands() const
 
 	for( const auto& it : m_instances ){
 
-		auto e = it.instance->arguments() ;
+		auto e = it.arguments() ;
 
 		for( auto& m : e ){
 
@@ -447,7 +477,7 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 			exe->closeReadChannel( QProcess::StandardError ) ;
 			exe->closeReadChannel( QProcess::StandardOutput ) ;
 
-			m_instances.emplace_back( opts.args,opts.engine,std::move( exe ) ) ;
+			m_instances.emplace_back( opts,std::move( exe ) ) ;
 
 			m_updateVolumeList() ;
 
@@ -496,11 +526,9 @@ SiriKali::Windows::volumes::remove( const QString& unMountCommand,const QString&
 
 		const auto& s = *it ;
 
-		if( s.args.mountPath == mountPoint ){
+		if( s.mountPoint() == mountPoint ){
 
-			auto& p = s.instance ;
-
-			auto m = _terminate_process( { *p,s.engine.get(),s.args.mountPath,unMountCommand } ) ;
+			auto m = _terminate_process( { s.exe(),s.engine(),s.mountPoint(),unMountCommand } ) ;
 
 			auto r = [ & ](){
 
@@ -533,11 +561,11 @@ QString SiriKali::Windows::volumes::volumeProperties( const QString& mm )
 
 		const auto& e = m_instances[ i ] ;
 
-		if( mountPath == e.args.mountPath ){
+		if( mountPath == e.mountPoint() ){
 
 			auto m = QObject::tr( "Mount Options:\n\n" ) ;
 
-			for( const auto& it : e.instance->arguments() ){
+			for( const auto& it : e.arguments() ){
 
 				if( it != "-o" ){
 
@@ -560,7 +588,7 @@ std::vector< SiriKali::Windows::mountOptions > SiriKali::Windows::volumes::mount
 
 		for( auto it = m_instances.begin() ; it != m_instances.end() ; it++ ){
 
-			if( ( *it ).instance->state() == QProcess::NotRunning ){
+			if( ( *it ).notRunning() ){
 
 				m_instances.erase( it ) ;
 
@@ -575,7 +603,7 @@ std::vector< SiriKali::Windows::mountOptions > SiriKali::Windows::volumes::mount
 
 	for( const auto& it : m_instances ){
 
-		const auto& m = it.args ;
+		const auto& m = it.args() ;
 
 		auto a = _make_path( m.cipherPath,encode::True ) ;
 		auto b = _make_path( m.mountPath,encode::True ) ;
@@ -592,7 +620,7 @@ bool SiriKali::Windows::volumes::mountPointTaken( const QString& ee )
 
 	for( const auto& it : m_instances ){
 
-		if( QDir::toNativeSeparators( it.args.mountPath ) == e ){
+		if( QDir::toNativeSeparators( it.mountPoint() ) == e ){
 
 			return true ;
 		}
