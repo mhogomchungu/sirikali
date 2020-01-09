@@ -960,6 +960,12 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 						 const QString& f,
 						 const QString& subtype )
 {
+	auto cipherFolder = [ & ]( QString s ){
+
+		s.replace( ",","SiriKaliSpecialCharacter001" ) ;
+		return s ;
+	} ;
+
 	for( const auto& it : utility::split( e.opt.mountOptions,',' ) ) {
 
 		if( it.startsWith( '-' ) ){
@@ -988,7 +994,7 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 
 			s = utility::split( e.opt.plainFolder,'/' ).last() ;
 		}else{
-			s = utility::split( e.opt.cipherFolder,'/' ).last() ;
+			s = utility::split( cipherFolder( e.opt.cipherFolder ),'/' ).last() ;
 		}
 
 		if( !s.isEmpty() ){
@@ -1018,10 +1024,12 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 
 	QString stype = subtype.isEmpty() ? "" : ",subtype=" + subtype ;
 
+	auto ss = cipherFolder( e.cipherFolder ) ;
+
 	if( m_fuseOptions.isEmpty() ){
 
-		m_fuseOptions = s.arg( f,e.cipherFolder,stype ) ;
+		m_fuseOptions = s.arg( f,ss,stype ) ;
 	}else{
-		m_fuseOptions = s.arg( f,e.cipherFolder,stype ) + "," + m_fuseOptions ;
+		m_fuseOptions = s.arg( f,ss,stype ) + "," + m_fuseOptions ;
 	}
 }

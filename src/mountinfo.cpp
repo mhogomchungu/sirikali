@@ -181,6 +181,7 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 			path.replace( "\\040"," " ) ;
 			path.replace( "\\134","\\" ) ;
 			path.replace( "\\011","\\t" ) ;
+			path.replace( "SiriKaliSpecialCharacter001","," ) ;
 
 			if( set_offset ){
 
