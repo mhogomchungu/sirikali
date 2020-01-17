@@ -81,6 +81,7 @@ private:
 		folderMountEvents( std::function< void( const QString& ) > ) ;
 		void start() ;
 		void stop() ;
+		bool monitor() ;
 	private:
 		std::vector< std::pair< int,QString > > m_fds ;
 		int m_inotify_fd ;

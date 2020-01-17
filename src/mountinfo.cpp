@@ -338,17 +338,6 @@ void mountinfo::announceEvents( bool s )
 
 void mountinfo::linuxMonitor()
 {
-	auto e = std::addressof( Task::run( [ & ](){
-
-		m_folderMountEvents.start() ;
-	} ) ) ;
-
-	e->then( [ & ](){
-
-		m_folderMountEvents.stop() ;
-		m_quit() ;
-	} ) ;
-
 	auto s = std::addressof( Task::run( [ this ](){
 
 		QFile s( "/proc/self/mountinfo" ) ;
@@ -368,10 +357,26 @@ void mountinfo::linuxMonitor()
 
 	m_stop = [ s ](){ s->first_thread()->terminate() ; } ;
 
-	s->then( [ = ](){
+	if( m_folderMountEvents.monitor() ){
 
-		e->first_thread()->terminate() ;
-	} ) ;
+		auto e = std::addressof( Task::run( [ & ](){
+
+			m_folderMountEvents.start() ;
+		} ) ) ;
+
+		e->then( [ & ](){
+
+			m_folderMountEvents.stop() ;
+			m_quit() ;
+		} ) ;
+
+		s->then( [ = ](){
+
+			e->first_thread()->terminate() ;
+		} ) ;
+	}else{
+		s->then( std::move( m_quit ) ) ;
+	}
 }
 
 void mountinfo::pollForUpdates()
@@ -450,28 +455,29 @@ void mountinfo::windowsMonitor()
 #include <sys/inotify.h>
 
 mountinfo::folderMountEvents::folderMountEvents( std::function< void( const QString& ) > function ) :
-	m_update( std::move( function ) )
+	m_inotify_fd( inotify_init() ),m_update( std::move( function ) )
 {
-	m_inotify_fd = inotify_init() ;
+	if( m_inotify_fd != -1 ){
 
-	for( const auto& it : settings::instance().mountMonitorFolderPaths() ){
+		for( const auto& it : settings::instance().mountMonitorFolderPaths() ){
 
-		int e = inotify_add_watch( m_inotify_fd,it.toLatin1(),IN_CREATE|IN_DELETE ) ;
+			int e = inotify_add_watch( m_inotify_fd,it.toLatin1(),IN_CREATE|IN_DELETE ) ;
 
-		if( e != -1 ){
+			if( e != -1 ){
 
-			if( it.endsWith( "/" ) ){
+				if( it.endsWith( "/" ) ){
 
-				auto s = it ;
+					auto s = it ;
 
-				while( s.endsWith( "/" ) ){
+					while( s.endsWith( "/" ) ){
 
-					s = utility::removeLast( s,1 ) ;
+						s = utility::removeLast( s,1 ) ;
+					}
+
+					m_fds.emplace_back( e,s ) ;
+				}else{
+					m_fds.emplace_back( e,it ) ;
 				}
-
-				m_fds.emplace_back( e,s ) ;
-			}else{
-				m_fds.emplace_back( e,it ) ;
 			}
 		}
 	}
@@ -552,6 +558,11 @@ void mountinfo::folderMountEvents::stop()
 	}
 }
 
+bool mountinfo::folderMountEvents::monitor()
+{
+	return m_inotify_fd != -1 && m_fds.size() > 0 ;
+}
+
 #else
 
 mountinfo::folderMountEvents::folderMountEvents( std::function< void( const QString& ) > e )
@@ -563,6 +574,10 @@ void mountinfo::folderMountEvents::start()
 }
 void mountinfo::folderMountEvents::stop()
 {
+}
+bool mountinfo::folderMountEvents::monitor()
+{
+	return false ;
 }
 
 #endif
