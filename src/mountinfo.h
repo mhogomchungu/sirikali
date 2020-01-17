@@ -74,6 +74,18 @@ private:
 
 	QStringList m_oldMountList ;
 	QStringList m_newMountList ;
+
+	class folderMountEvents{
+
+	public:
+		folderMountEvents( std::function< void( const QString& ) > ) ;
+		void start() ;
+		void stop() ;
+	private:
+		std::vector< std::pair< int,QString > > m_fds ;
+		int m_inotify_fd ;
+		std::function< void( const QString& ) > m_update ;
+	} m_folderMountEvents ;
 };
 
 #endif // MONITOR_MOUNTINFO_H

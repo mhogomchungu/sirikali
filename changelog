@@ -192,3 +192,8 @@ version 1.4.2(December 18,2019)
 -- Inforce a requirenment that says Sshfs-win should be atleast version 3.4.0.
 -- Add support for "lock" command in fscrypt backend. This option is used for locking directories that use V2
    encryption policies.
+
+   version 1.4.3(unreleased)
+-- Add ability to set arbitrary folder paths to monitor for mount events. SiriKali monitors "/proc/self/mountinfo" for
+   mount events and this feature is useful for programs like gvfs that create mount points without adding their entries
+   to "/proc/self/mountinfo".

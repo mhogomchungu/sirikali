@@ -153,7 +153,8 @@ mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& quit ) :
 	m_parent( parent ),
 	m_quit( std::move( quit ) ),
 	m_announceEvents( e ),
-	m_oldMountList( _unlocked_volumes() )
+	m_oldMountList( _unlocked_volumes() ),
+	m_folderMountEvents( [ this ]( const QString& e ){ this->autoMount( e ) ; } )
 {
 	if( utility::platformIsLinux() ){
 
@@ -337,6 +338,17 @@ void mountinfo::announceEvents( bool s )
 
 void mountinfo::linuxMonitor()
 {
+	auto e = std::addressof( Task::run( [ & ](){
+
+		m_folderMountEvents.start() ;
+	} ) ) ;
+
+	e->then( [ & ](){
+
+		m_folderMountEvents.stop() ;
+		m_quit() ;
+	} ) ;
+
 	auto s = std::addressof( Task::run( [ this ](){
 
 		QFile s( "/proc/self/mountinfo" ) ;
@@ -356,7 +368,10 @@ void mountinfo::linuxMonitor()
 
 	m_stop = [ s ](){ s->first_thread()->terminate() ; } ;
 
-	s->then( std::move( m_quit ) ) ;
+	s->then( [ = ](){
+
+		e->first_thread()->terminate() ;
+	} ) ;
 }
 
 void mountinfo::pollForUpdates()
@@ -429,3 +444,125 @@ void mountinfo::windowsMonitor()
 {
 	SiriKali::Windows::updateVolumeList( [ this ]{ this->updateVolume() ; } ) ;
 }
+
+#ifdef Q_OS_LINUX
+
+#include <sys/inotify.h>
+
+mountinfo::folderMountEvents::folderMountEvents( std::function< void( const QString& ) > function ) :
+	m_update( std::move( function ) )
+{
+	m_inotify_fd = inotify_init() ;
+
+	for( const auto& it : settings::instance().mountMonitorFolderPaths() ){
+
+		int e = inotify_add_watch( m_inotify_fd,it.toLatin1(),IN_CREATE|IN_DELETE ) ;
+
+		if( e != -1 ){
+
+			if( it.endsWith( "/" ) ){
+
+				auto s = it ;
+
+				while( s.endsWith( "/" ) ){
+
+					s = utility::removeLast( s,1 ) ;
+				}
+
+				m_fds.emplace_back( e,s ) ;
+			}else{
+				m_fds.emplace_back( e,it ) ;
+			}
+		}
+	}
+}
+
+void mountinfo::folderMountEvents::start()
+{
+	const char * currentEvent ;
+	const char * end ;
+
+	constexpr int BUFF_SIZE = 4096 ;
+	char buffer[ BUFF_SIZE ] ;
+
+	fd_set rfds ;
+
+	FD_ZERO( &rfds ) ;
+
+	int select_fd = m_inotify_fd + 1 ;
+
+	auto _eventsReceived = [ & ](){
+
+		FD_SET( m_inotify_fd,&rfds ) ;
+
+		if( select( select_fd,&rfds,nullptr,nullptr,nullptr ) > 0 ){
+
+			auto s = read( m_inotify_fd,buffer,BUFF_SIZE ) ;
+
+			if( s > 0 ){
+
+				end          = buffer + s ;
+				currentEvent = buffer ;
+
+				return true ;
+			}
+		}
+
+		return false ;
+	} ;
+
+	auto _processEvent = [ & ]( const struct inotify_event * event ){
+
+		if( event->mask & IN_CREATE ){
+
+			for( const auto& it : m_fds ){
+
+				if( it.first == event->wd ){
+
+					m_update( it.second + "/" + event->name ) ;
+
+					break ;
+				}
+			}
+		}
+	} ;
+
+	while( true ){
+
+		if( _eventsReceived() ){
+
+			while( currentEvent < end ){
+
+				auto event = reinterpret_cast< const struct inotify_event * >( currentEvent ) ;
+
+				_processEvent( event ) ;
+				currentEvent += sizeof( struct inotify_event ) + event->len ;
+			}
+		}
+	}
+}
+
+void mountinfo::folderMountEvents::stop()
+{
+	close( m_inotify_fd ) ;
+
+	for( const auto& it : m_fds ){
+
+		close( it.first ) ;
+	}
+}
+
+#else
+
+mountinfo::folderMountEvents::folderMountEvents( std::function< void( const QString& ) > e )
+{
+	Q_UNUSED( e )
+}
+void mountinfo::folderMountEvents::start()
+{
+}
+void mountinfo::folderMountEvents::stop()
+{
+}
+
+#endif

@@ -407,6 +407,16 @@ bool settings::unMountVolumesOnLogout()
 	return m_settings.value( "UnMountVolumesOnLogout" ).toBool() ;
 }
 
+QStringList settings::mountMonitorFolderPaths()
+{
+	if( !m_settings.contains( "MountMonitorFolderPaths" ) ){
+
+		m_settings.setValue( "MountMonitorFolderPaths",QStringList() ) ;
+	}
+
+	return m_settings.value( "MountMonitorFolderPaths" ).toStringList() ;
+}
+
 bool settings::readFavorites( QMenu * m )
 {
 	m->clear() ;
