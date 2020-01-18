@@ -929,6 +929,8 @@ void sirikali::autoMountFavoritesOnAvailable( QString m )
 
 			if( it.first.volumePath.startsWith( m ) && it.first.autoMount.True() ){
 
+				utility::debug::cout() << "Automount Favorites Detected: " + it.first.volumePath ;
+
 				e.emplace_back( std::move( it ) ) ;
 			}
 		}
