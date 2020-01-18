@@ -541,6 +541,8 @@ void mountinfo::folderMountEvents::start()
 
 	auto _processTimeout = [ & ](){
 
+		utility::debug::cout() << "Timeout Event Noticed" ;
+
 		for( auto& it : m_fds ){
 
 			it.contentCountChanged( m_update ) ;

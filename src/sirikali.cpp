@@ -919,6 +919,8 @@ void sirikali::mountMultipleVolumes( favorites::volumeList e )
 
 void sirikali::autoMountFavoritesOnAvailable( QString m )
 {
+	utility::debug::cout() << "New Mount Point Detected: " + m ;
+
 	if( settings::instance().autoMountFavoritesOnAvailable() ){
 
 		favorites::volumeList e ;
