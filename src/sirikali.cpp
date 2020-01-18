@@ -919,8 +919,6 @@ void sirikali::mountMultipleVolumes( favorites::volumeList e )
 
 void sirikali::autoMountFavoritesOnAvailable( QString m )
 {
-	utility::debug::cout() << "New Mount Point Detected: " + m ;
-
 	if( settings::instance().autoMountFavoritesOnAvailable() ){
 
 		favorites::volumeList e ;
@@ -928,8 +926,6 @@ void sirikali::autoMountFavoritesOnAvailable( QString m )
 		for( auto&& it : _readFavorites() ){
 
 			if( it.first.volumePath.startsWith( m ) && it.first.autoMount.True() ){
-
-				utility::debug::cout() << "Automount Favorites Detected: " + it.first.volumePath ;
 
 				e.emplace_back( std::move( it ) ) ;
 			}
