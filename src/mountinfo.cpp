@@ -416,33 +416,7 @@ void mountinfo::pollForUpdates()
 
 void mountinfo::osxMonitor()
 {
-#if 1
 	this->pollForUpdates() ;
-#else
-	m_stop = [ this ](){ m_process.terminate() ; } ;
-
-	auto s = static_cast< void( QProcess::* )( int,QProcess::ExitStatus ) >( &QProcess::finished ) ;
-
-	connect( &m_process,s,[ this ]( int e,QProcess::ExitStatus s ){ Q_UNUSED( e ) ; Q_UNUSED( s ) ; m_quit() ; } ) ;
-
-	connect( &m_process,&QProcess::readyReadStandardOutput,[ & ](){
-
-		/*
-		 * Clear the buffer,not sure if its necessary.
-		 *
-		 * In the future,we will examine the output and call this->updateVolume()
-		 * only when we notice a volumes was mounted/unmounted to reduce noise if
-		 * "diskutil activity" is too chatty.
-		 */
-		m_process.readAllStandardOutput() ;
-
-		this->updateVolume() ;
-	} ) ;
-
-	m_process.setProcessChannelMode( QProcess::MergedChannels ) ;
-
-	m_process.start( "diskutil activity" ) ;
-#endif
 }
 
 void mountinfo::windowsMonitor()
@@ -453,6 +427,7 @@ void mountinfo::windowsMonitor()
 #ifdef Q_OS_LINUX
 
 #include <sys/inotify.h>
+#include <sys/select.h>
 
 mountinfo::folderMountEvents::folderMountEvents( std::function< void( const QString& ) > function ) :
 	m_inotify_fd( inotify_init() ),m_update( std::move( function ) )
@@ -566,7 +541,7 @@ void mountinfo::folderMountEvents::start()
 
 	auto _processTimeout = [ & ](){
 
-		for( const auto& it : m_fds ){
+		for( auto& it : m_fds ){
 
 			it.contentCountChanged( m_update ) ;
 		}
@@ -626,32 +601,3 @@ bool mountinfo::folderMountEvents::monitor()
 }
 
 #endif
-
-mountinfo::folderMountEvents::entry::entry( int fd,const QString& path ) :
-	m_path( path ),m_fd( fd ),m_folderList( this->folderList() )
-{
-}
-
-void mountinfo::folderMountEvents::entry::contentCountChanged( std::function< void( const QString& ) >& function ) const
-{
-	auto s = this->folderList() ;
-
-	auto e = s ;
-
-	for( const auto& it : m_folderList ){
-
-		s.removeOne( it ) ;
-	}
-
-	for( const auto& it : s ){
-
-		function( m_path + "/" + it ) ;
-	}
-
-	m_folderList = e ;
-}
-
-QStringList mountinfo::folderMountEvents::entry::folderList() const
-{
-	return QDir( m_path ).entryList( QDir::NoDotAndDotDot | QDir::Dirs ) ;
-}

@@ -85,7 +85,10 @@ private:
 	private:
 		class entry{
 		public:
-			entry( int fd,const QString& path ) ;
+			entry( int fd,const QString& path ) :
+			m_path( path ),m_fd( fd ),m_folderList( this->folderList() )
+			{
+			}
 			const QString& path() const
 			{
 				return m_path ;
@@ -94,14 +97,38 @@ private:
 			{
 				return m_fd ;
 			}
-			void contentCountChanged( std::function< void( const QString& ) >& ) const ;
+			template< typename Function >
+			void contentCountChanged( Function& function )
+			{
+				auto s = this->folderList() ;
+
+				if( s != m_folderList ){
+
+					auto e = s ;
+
+					for( const auto& it : m_folderList ){
+
+						s.removeOne( it ) ;
+					}
+
+					for( const auto& it : s ){
+
+						function( m_path + "/" + it ) ;
+					}
+
+					m_folderList = e ;
+				}
+			}
 		private:
-			QStringList folderList() const ;
+			QStringList folderList() const
+			{
+				return QDir( m_path ).entryList( QDir::NoDotAndDotDot | QDir::Dirs ) ;
+			}
 			QString m_path ;
 			int m_fd ;
-			mutable QStringList m_folderList ;
+			QStringList m_folderList ;
 		} ;
-		std::vector< entry > m_fds ;
+		std::vector< mountinfo::folderMountEvents::entry > m_fds ;
 		int m_inotify_fd ;
 		std::function< void( const QString& ) > m_update ;
 	} m_folderMountEvents ;
