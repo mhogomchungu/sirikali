@@ -495,13 +495,44 @@ void mountinfo::folderMountEvents::start()
 
 	FD_ZERO( &rfds ) ;
 
+	struct timeval tv ;
+
 	int select_fd = m_inotify_fd + 1 ;
 
-	auto _eventsReceived = [ & ](){
+	int interval = settings::instance().mountMonitorFolderPollingInterval() ;
+
+	auto _reset_variables = [ & ](){
 
 		FD_SET( m_inotify_fd,&rfds ) ;
 
-		if( select( select_fd,&rfds,nullptr,nullptr,nullptr ) > 0 ){
+		tv.tv_sec = interval ;
+		tv.tv_usec = 0 ;
+	} ;
+
+	struct event{
+		bool eventReceived ;
+		bool timeout ;
+	} ;
+
+	auto _eventsReceived = [ & ]()->event{
+
+		_reset_variables() ;
+
+		int r = [ & ](){
+
+			if( tv.tv_sec > 0 ){
+
+				return select( select_fd,&rfds,nullptr,nullptr,&tv ) ;
+			}else{
+				return select( select_fd,&rfds,nullptr,nullptr,nullptr ) ;
+			}
+		}() ;
+
+		if( r == 0 ){
+
+			return { false,true } ;
+
+		}else if( r > 0 ){
 
 			auto s = read( m_inotify_fd,buffer,BUFF_SIZE ) ;
 
@@ -510,11 +541,11 @@ void mountinfo::folderMountEvents::start()
 				end          = buffer + s ;
 				currentEvent = buffer ;
 
-				return true ;
+				return { true,false } ;
 			}
 		}
 
-		return false ;
+		return { false,false } ;
 	} ;
 
 	auto _processEvent = [ & ]( const struct inotify_event * event ){
@@ -523,9 +554,9 @@ void mountinfo::folderMountEvents::start()
 
 			for( const auto& it : m_fds ){
 
-				if( it.first == event->wd ){
+				if( it.fd() == event->wd ){
 
-					m_update( it.second + "/" + event->name ) ;
+					m_update( it.path() + "/" + event->name ) ;
 
 					break ;
 				}
@@ -533,9 +564,19 @@ void mountinfo::folderMountEvents::start()
 		}
 	} ;
 
+	auto _processTimeout = [ & ](){
+
+		for( const auto& it : m_fds ){
+
+			it.contentCountChanged( m_update ) ;
+		}
+	} ;
+
 	while( true ){
 
-		if( _eventsReceived() ){
+		auto e = _eventsReceived() ;
+
+		if( e.eventReceived ){
 
 			while( currentEvent < end ){
 
@@ -544,6 +585,10 @@ void mountinfo::folderMountEvents::start()
 				_processEvent( event ) ;
 				currentEvent += sizeof( struct inotify_event ) + event->len ;
 			}
+
+		}else if( e.timeout ){
+
+			_processTimeout() ;
 		}
 	}
 }
@@ -554,7 +599,7 @@ void mountinfo::folderMountEvents::stop()
 
 	for( const auto& it : m_fds ){
 
-		close( it.first ) ;
+		close( it.fd() ) ;
 	}
 }
 
@@ -581,3 +626,32 @@ bool mountinfo::folderMountEvents::monitor()
 }
 
 #endif
+
+mountinfo::folderMountEvents::entry::entry( int fd,const QString& path ) :
+	m_path( path ),m_fd( fd ),m_folderList( this->folderList() )
+{
+}
+
+void mountinfo::folderMountEvents::entry::contentCountChanged( std::function< void( const QString& ) >& function ) const
+{
+	auto s = this->folderList() ;
+
+	auto e = s ;
+
+	for( const auto& it : m_folderList ){
+
+		s.removeOne( it ) ;
+	}
+
+	for( const auto& it : s ){
+
+		function( m_path + "/" + it ) ;
+	}
+
+	m_folderList = e ;
+}
+
+QStringList mountinfo::folderMountEvents::entry::folderList() const
+{
+	return QDir( m_path ).entryList( QDir::NoDotAndDotDot | QDir::Dirs ) ;
+}

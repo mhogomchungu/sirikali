@@ -417,6 +417,16 @@ QStringList settings::mountMonitorFolderPaths()
 	return m_settings.value( "MountMonitorFolderPaths" ).toStringList() ;
 }
 
+int settings::mountMonitorFolderPollingInterval()
+{
+	if( !m_settings.contains( "MountMonitorFolderPollingInterval" ) ){
+
+		m_settings.setValue( "MountMonitorFolderPollingInterval",0 ) ;
+	}
+
+	return m_settings.value( "MountMonitorFolderPollingInterval" ).toInt() ;
+}
+
 bool settings::readFavorites( QMenu * m )
 {
 	m->clear() ;

@@ -83,7 +83,25 @@ private:
 		void stop() ;
 		bool monitor() ;
 	private:
-		std::vector< std::pair< int,QString > > m_fds ;
+		class entry{
+		public:
+			entry( int fd,const QString& path ) ;
+			const QString& path() const
+			{
+				return m_path ;
+			}
+			int fd() const
+			{
+				return m_fd ;
+			}
+			void contentCountChanged( std::function< void( const QString& ) >& ) const ;
+		private:
+			QStringList folderList() const ;
+			QString m_path ;
+			int m_fd ;
+			mutable QStringList m_folderList ;
+		} ;
+		std::vector< entry > m_fds ;
 		int m_inotify_fd ;
 		std::function< void( const QString& ) > m_update ;
 	} m_folderMountEvents ;
