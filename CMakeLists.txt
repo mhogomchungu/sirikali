@@ -121,10 +121,12 @@ endif()
 find_package( Qt5Widgets REQUIRED )
 find_package( Qt5Core REQUIRED )
 find_package( Qt5Network REQUIRED )
+#find_package( Qt5DBus REQUIRED )
 
 message( STATUS "Found Qt5Widgets, version  ${Qt5Widgets_VERSION}" )
 message( STATUS "Found Qt5Core, version  ${Qt5Core_VERSION}" )
 message( STATUS "Found Qt5Network, version  ${Qt5Network_VERSION}" )
+#message( STATUS "Found Qt5DBus, version  ${Qt5DBus_VERSION}" )
 
 pkg_check_modules( MCHUNGU_NETWORK mhogomchungu_network )
 pkg_check_modules( MCHUNGU_TASK mhogomchungu_task )
