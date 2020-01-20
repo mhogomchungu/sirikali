@@ -436,7 +436,7 @@ mountinfo::folderMountEvents::folderMountEvents( std::function< void( const QStr
 
 		for( const auto& it : settings::instance().mountMonitorFolderPaths() ){
 
-			int e = inotify_add_watch( m_inotify_fd,it.toLatin1(),IN_CREATE|IN_DELETE ) ;
+			int e = inotify_add_watch( m_inotify_fd,it.toLatin1(),IN_CREATE ) ;
 
 			if( e != -1 ){
 
@@ -463,8 +463,7 @@ void mountinfo::folderMountEvents::start()
 	const char * currentEvent ;
 	const char * end ;
 
-	constexpr int BUFF_SIZE = 4096 ;
-	char buffer[ BUFF_SIZE ] ;
+	std::vector< char > buffer( 10485760 ) ;
 
 	fd_set rfds ;
 
@@ -509,12 +508,12 @@ void mountinfo::folderMountEvents::start()
 
 		}else if( r > 0 ){
 
-			auto s = read( m_inotify_fd,buffer,BUFF_SIZE ) ;
+			auto s = read( m_inotify_fd,buffer.data(),buffer.size() ) ;
 
 			if( s > 0 ){
 
-				end          = buffer + s ;
-				currentEvent = buffer ;
+				end          = buffer.data() + s ;
+				currentEvent = buffer.data() ;
 
 				return { true,false } ;
 			}

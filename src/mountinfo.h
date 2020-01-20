@@ -116,7 +116,7 @@ private:
 						function( m_path + "/" + it ) ;
 					}
 
-					m_folderList = e ;
+					m_folderList = std::move( e ) ;
 				}
 			}
 		private:
