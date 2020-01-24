@@ -72,6 +72,16 @@ QStringList engines::executableSearchPaths()
 	}
 }
 
+bool engines::exeFullPath::isEmpty( const QString& e ) const
+{
+	return e.isEmpty() ;
+}
+
+bool engines::version::isEmpty( const QString& e ) const
+{
+	return e.isEmpty() ;
+}
+
 static bool _has_no_extension( const QString& e )
 {
 	return !e.contains( '.' ) ;

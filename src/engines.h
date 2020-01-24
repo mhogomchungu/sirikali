@@ -459,45 +459,54 @@ public:
 		QProcessEnvironment m_processEnvironment ;
 	} ;
 
-	class version{
+	template< typename Type >
+	class cache{
 	public:
-		version( std::function< QString() > function ) : m_function( std::move( function ) )
+		cache( std::function< Type() > function ) : m_function( std::move( function ) )
 		{
 		}
-		version() : m_function( [](){ return QString() ; } )
+		cache() : m_function( [](){ return Type() ; } )
 		{
 		}
-		const QString& get() const
+		const Type& get() const
 		{
-			if( m_version.isEmpty() ){
+			if( this->isEmpty( m_variable ) ){
 
-				m_version = m_function() ;
+				m_variable = m_function() ;
 			}
 
-			return m_version ;
+			return m_variable ;
 		}
+		virtual ~cache()
+		{
+		}
+		virtual bool isEmpty( const Type& ) const = 0 ;
 	private:
-		std::function< QString() > m_function ;
-		mutable QString m_version ;
+		std::function< Type() > m_function ;
+		mutable Type m_variable ;
 	};
 
-	class exeFullPath{
+	class version : public cache< QString >{
 	public:
-		exeFullPath( const engines::engine& e ) : m_engine( e )
+		version( std::function< QString() > s ) : cache( std::move( s ) )
 		{
 		}
-		const QString& get() const
+		version()
 		{
-			if( m_path.isEmpty() ){
-
-				m_path = m_engine->executableFullPath() ;
-			}
-
-			return m_path ;
 		}
+		bool isEmpty( const QString& e ) const override ;
+	};
+
+	class exeFullPath : public cache< QString >{
+	public:
+		exeFullPath( const engines::engine& e ) :
+			cache( [ this ](){ return m_engine->executableFullPath() ; } ),
+			m_engine( e )
+		{
+		}
+		bool isEmpty( const QString& e ) const override ;
 	private:
 		const engines::engine::Wrapper m_engine ;
-		mutable QString m_path ;
 	};
 
 	engines() ;
