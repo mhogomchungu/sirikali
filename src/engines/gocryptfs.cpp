@@ -37,6 +37,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = false ;
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = true ;
+	s.releaseURL            = "https://api.github.com/repos/rfjakob/gocryptfs/releases" ;
 	s.passwordFormat        = "%{password}" ;
 	s.volumePropertiesCommands = QStringList{ "gocryptfs -info %{cipherFolder}",
 						  "gocryptfs -info %{plainFolder}" } ;

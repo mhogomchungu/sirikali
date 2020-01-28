@@ -37,6 +37,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = true ;
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = false ;
+	s.releaseURL            = "https://api.github.com/repos/vgough/encfs/releases" ;
 	s.passwordFormat        = "%{password}\n%{password}" ;
 	s.reverseString         = "--reverse" ;
 	s.idleString            = "-i" ;

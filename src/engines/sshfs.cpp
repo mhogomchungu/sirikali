@@ -45,6 +45,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.hasGUICreateOptions   = false ;
 	s.setsCipherPath        = true ;
 	s.executableName        = "sshfs" ;
+	s.releaseURL            = "https://api.github.com/repos/libfuse/sshfs/releases" ;
 	s.windowsInstallPathRegistryKey = "SOFTWARE\\SSHFS-Win" ;
 	s.windowsInstallPathRegistryValue = "InstallDir" ;
 	s.failedToMountList     = QStringList{ "ssh:","read:","Cannot create WinFsp-FUSE file system" } ;

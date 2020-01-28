@@ -397,6 +397,11 @@ const QString& engines::engine::idleString() const
 	return m_Options.idleString ;
 }
 
+const QString& engines::engine::releaseURL() const
+{
+	return m_Options.releaseURL ;
+}
+
 const QString& engines::engine::executableName() const
 {
 	return m_Options.executableName ;

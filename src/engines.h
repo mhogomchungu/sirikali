@@ -199,6 +199,7 @@ public:
 			bool takesTooLongToUnlock ;
 
 			QByteArray passwordFormat ;
+			QString releaseURL ;
 			QString minimumVersion ;
 			QString reverseString ;
 			QString idleString ;
@@ -266,6 +267,7 @@ public:
 		const QString& minimumVersion() const ;
 		const QString& reverseString() const ;
 		const QString& idleString() const ;
+		const QString& releaseURL() const ;
 		const QString& executableName() const ;
 		const QString& name() const ;
 		const QString& configFileName() const ;

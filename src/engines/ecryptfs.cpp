@@ -37,6 +37,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = true ;
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = true ;
+	s.releaseURL            = "https://api.github.com/repos/mhogomchungu/ecryptfs-simple/releases" ;
 	s.passwordFormat        = "%{password}" ;
 	s.executableName        = "ecryptfs-simple" ;
 	s.incorrectPasswordText = "error: mount failed" ;

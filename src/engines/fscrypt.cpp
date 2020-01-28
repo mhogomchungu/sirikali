@@ -237,6 +237,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = true ;
 	s.hasGUICreateOptions   = false ;
 	s.setsCipherPath        = true ;
+	s.releaseURL            = "https://api.github.com/repos/google/fscrypt/releases" ;
 	s.passwordFormat        = "%{password}" ;
 	s.executableName        = "fscrypt" ;
 	s.incorrectPasswordText = "incorrect key provided" ;

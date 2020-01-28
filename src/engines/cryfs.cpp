@@ -45,6 +45,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.executableName        = "cryfs" ;
 	s.incorrectPasswordText = "Could not load config file. Did you enter the correct password?" ;
 	s.configFileArgument    = "--config" ;
+	s.releaseURL            = "https://api.github.com/repos/cryfs/cryfs/releases" ;
 	s.windowsInstallPathRegistryKey   = a ;
 	s.windowsInstallPathRegistryValue = b ;
 	s.windowsUnMountCommand = SiriKali::Windows::engineInstalledDir( a,b ) + "\\bin\\cryfs-unmount.exe" ;

@@ -37,6 +37,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = false ;
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = false ;
+	s.releaseURL            = "https://api.github.com/repos/netheril96/securefs/releases" ;
 	s.passwordFormat        = "%{password}\n%{password}" ;
 	s.executableName        = "securefs" ;
 	s.incorrectPasswordText = "Invalid password" ;

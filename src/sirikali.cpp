@@ -83,7 +83,7 @@ static favorites::volumeList _readFavorites()
 sirikali::sirikali() :
 	m_secrets( this ),
 	m_mountInfo( this,true,[ & ](){ QCoreApplication::exit( m_exitStatus ) ; } ),
-	m_checkUpdates( this ),
+	m_checkUpdates( this,{ [ this ](){ this->disableAll() ; },[ this ](){ this->enableAll() ; } } ),
 	m_configOptions( this,m_secrets,&m_language_menu,this->configOption() ),
 	m_debugWindow(),
 	m_signalHandler( this,this->getEmergencyShutDown() )
@@ -528,7 +528,11 @@ void sirikali::favoriteClicked( QAction * ac )
 
 	if( e == "Manage Favorites" ){
 
+		this->disableAll() ;
+
 		favorites2::instance( this,favorites::type::others,[ this ](){
+
+			this->enableAll() ;
 
 			this->updateFavoritesInContextMenu() ;
 		} ) ;

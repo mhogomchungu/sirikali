@@ -20,12 +20,28 @@
 #include "checkforupdates.h"
 #include "settings.h"
 #include "json_parser.hpp"
+#include "engines.h"
 
-checkUpdates::checkUpdates( QWidget * widget ) : m_widget( widget ),
-	m_timeOut( settings::instance().networkTimeOut() ),m_running( false )
+checkUpdates::checkUpdates( QWidget * widget,checkforupdateswindow::functions ff ) :
+	m_widget( widget ),
+	m_timeOut( settings::instance().networkTimeOut() ),
+	m_running( false ),
+	m_functions( std::move( ff ) )
 {
 	m_networkRequest.setRawHeader( "Host","api.github.com" ) ;
 	m_networkRequest.setRawHeader( "Accept-Encoding","text/plain" ) ;
+
+	m_backends.emplace_back( "sirikali","https://api.github.com/repos/mhogomchungu/sirikali/releases" ) ;
+
+	for( const auto& it : engines::instance().supportedEngines() ){
+
+		const auto& e = it->releaseURL() ;
+
+		if( !e.isEmpty() ){
+
+			m_backends.emplace_back( it->name().toLower(),e ) ;
+		}
+	}
 }
 
 void checkUpdates::check( bool e )
@@ -60,17 +76,20 @@ void checkUpdates::showResult()
 	m_running = false ;
 
 	bool show = false ;
-	QString e = "\n" ;
 
 	auto _tr = []( const QStringList& l ){
 
-		auto e = QObject::tr( "%1\"%2\" Installed Version Is : %3.\nLatest Version Is : %4." ) ;
-		return e.arg( "",l.at( 0 ),l.at( 1 ),l.at( 2 ) ) ;
+		auto s = QObject::tr( "\"%1\" Installed Version Is : %2.<br>Latest Version Is : %3.<br>" ) ;
+		return s.arg( l.at( 0 ),l.at( 1 ),l.at( 2 ) ) ;
 	} ;
 
-	for( const auto& it : m_results ){
+	auto e = "<!DOCTYPE html><html><body><center>" + _tr( m_results.at( 0 ) ) ;
 
-		e += _tr( it ) + "\n\n" ;
+	for( int i = 1 ; i < m_results.size() ; i++ ){
+
+		const auto& it = m_results.at( i ) ;
+
+		e += "<br>" + _tr( it ) ;
 
 		const auto& a = it.at( 1 ) ;
 
@@ -85,14 +104,20 @@ void checkUpdates::showResult()
 		}
 	}
 
+	e += "</center></body></html>" ;
+
 	if( m_autocheck ){
 
 		if( show ){
 
-			DialogMsg( m_widget ).ShowUIInfo( tr( "Version Info" ),true,e + "\n" ) ;
+			m_functions.first() ;
+
+			checkforupdateswindow::instance( m_widget,m_functions ).ShowUI( e ) ;
 		}
 	}else{
-		DialogMsg( m_widget ).ShowUIInfo( tr( "Version Info" ),true,e + "\n" ) ;
+		m_functions.first() ;
+
+		checkforupdateswindow::instance( m_widget,m_functions ).ShowUI( e ) ;
 	}
 }
 
@@ -140,7 +165,10 @@ QString checkUpdates::latestVersion( const QByteArray& data )
 
 	for( auto& it : json.getTags( "tag_name" ) ){
 
-		if( _found_release( it.remove( 'v' ) ) ){
+		it.remove( 'v' ) ;
+		it.remove( "sshfs-" ) ;
+
+		if( _found_release( it ) ){
 
 			return it ;
 		}
@@ -149,7 +177,7 @@ QString checkUpdates::latestVersion( const QByteArray& data )
 	return "N/A" ;
 }
 
-void checkUpdates::checkForUpdate( backends_t::size_type position )
+void checkUpdates::checkForUpdate( size_t position )
 {
 	if( position == m_backends.size() ){
 
@@ -161,15 +189,12 @@ void checkUpdates::checkForUpdate( backends_t::size_type position )
 
 		auto exe = e.first ;
 
-		auto f = [ & ](){
+		auto f = this->InstalledVersion( exe ) ;
 
-			if( QString( exe ) == "ecryptfs-simple" ){
+		if( exe == "ecryptfs" ){
 
-				return this->InstalledVersion( "ecryptfs" ) ;
-			}else{
-				return this->InstalledVersion( exe ) ;
-			}
-		}() ;
+			exe = "ecryptfs-simple" ;
+		}
 
 		if( f == "N/A" ){
 
