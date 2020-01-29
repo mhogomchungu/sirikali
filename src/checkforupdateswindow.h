@@ -24,6 +24,9 @@
 #include <QString>
 #include <QCloseEvent>
 
+#include <utility>
+#include <functional>
+
 namespace Ui {
 class checkforupdateswindow;
 }
