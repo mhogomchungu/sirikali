@@ -189,8 +189,11 @@ class Process
 {
 public:
 	template< typename T >
-	Process( const SiriKali::Windows::opts opts,T x ) :
-		m_args( opts.args ),m_engine( opts.engine ),m_instance( std::move( x ) )
+	Process( const SiriKali::Windows::opts& opts,T x ) :
+		m_args( opts.args ),
+		m_engine( opts.engine ),
+		m_environment( m_engine->getProcessEnvironment() ), //we get this variable now because sshfs backend can change it under us.
+		m_instance( std::move( x ) )
 	{
 	}
 	Process( Process&& ) = default ;
@@ -199,10 +202,14 @@ public:
 	{
 		return m_args.mountPath ;
 	}
-	const engines::engine& engine() const
+	const QProcessEnvironment& env() const
 	{
-		return m_engine.get() ;
+		return m_environment ;
 	}
+	//const engines::engine& engine() const
+	//{
+	//	return m_engine.get() ;
+	//}
 	const engines::engine::args& args() const
 	{
 		return m_args ;
@@ -226,6 +233,7 @@ public:
 private:
 	engines::engine::args m_args ;
 	engines::engine::Wrapper m_engine ;
+	QProcessEnvironment m_environment ;
 	std::unique_ptr< QProcess,void(*)( QProcess * ) > m_instance ;
 } ;
 
@@ -383,7 +391,7 @@ static SiriKali::Windows::result _read( QProcess& exe,Function function )
 		}
 	}
 
-	utility::debug() << "Backend took " + QString::number( counter ) + " seconds to finish" ;
+	utility::debug() << "Backend took " + QString::number( counter ) + " seconds to unlock a volume" ;
 
 	return { r,std::move( m ) } ;
 }
@@ -417,7 +425,7 @@ static SiriKali::Windows::result _getProcessOutput( QProcess& exe,const engines:
 struct terminate_process{
 
 	QProcess& exe ;
-	const engines::engine& engine ;
+	const QProcessEnvironment& env ;
 	const QString& mountPath ;
 	const QString& unMountCommand ;
 };
@@ -437,7 +445,7 @@ static std::pair< Task::process::result,QString > _terminate_process( const term
 		exe = utility::Task::makePath( e.unMountCommand ) + " " + e.mountPath ;
 	}
 
-	auto m = utility::unwrap( Task::process::run( exe,{},-1,"",e.engine.getProcessEnvironment() ) ) ;
+	auto m = utility::unwrap( Task::process::run( exe,{},-1,"",e.env ) ) ;
 
 	if( m.success() ){
 
@@ -464,7 +472,7 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 
 		if( m.type == engines::engine::error::Timeout ){
 
-			_terminate_process( { *exe,opts.engine,QString(),QString() } ) ;
+			_terminate_process( { *exe,opts.engine.getProcessEnvironment(),QString(),QString() } ) ;
 
 			return Task::process::result( SiriKali::Windows::_backEndTimedOut,
 						      QByteArray(),
@@ -528,7 +536,7 @@ SiriKali::Windows::volumes::remove( const QString& unMountCommand,const QString&
 
 		if( s.mountPoint() == mountPoint ){
 
-			auto m = _terminate_process( { s.exe(),s.engine(),s.mountPoint(),unMountCommand } ) ;
+			auto m = _terminate_process( { s.exe(),s.env(),s.mountPoint(),unMountCommand } ) ;
 
 			auto r = [ & ](){
 
