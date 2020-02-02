@@ -121,12 +121,12 @@ endif()
 find_package( Qt5Widgets REQUIRED )
 find_package( Qt5Core REQUIRED )
 find_package( Qt5Network REQUIRED )
-#find_package( Qt5DBus REQUIRED )
+find_package( Qt5DBus REQUIRED )
 
 message( STATUS "Found Qt5Widgets, version  ${Qt5Widgets_VERSION}" )
 message( STATUS "Found Qt5Core, version  ${Qt5Core_VERSION}" )
 message( STATUS "Found Qt5Network, version  ${Qt5Network_VERSION}" )
-#message( STATUS "Found Qt5DBus, version  ${Qt5DBus_VERSION}" )
+message( STATUS "Found Qt5DBus, version  ${Qt5DBus_VERSION}" )
 
 pkg_check_modules( MCHUNGU_NETWORK mhogomchungu_network )
 pkg_check_modules( MCHUNGU_TASK mhogomchungu_task )
@@ -376,10 +376,10 @@ link_directories( ${GCRYPT_LIBRARY_PATH} )
 
 if( WIN32 )
     #TARGET_LINK_LIBRARIES( sirikali winfsp-x86 ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task mhogomchungu_network -L${GCRYPT_LIBRARY_PATH})
-    TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} lxqt-wallet mhogomchungu_task mhogomchungu_network)
+    TARGET_LINK_LIBRARIES( sirikali ${Qt5DBus_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} lxqt-wallet mhogomchungu_task mhogomchungu_network)
 
 else()
-    TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task mhogomchungu_network -L${GCRYPT_LIBRARY_PATH})
+    TARGET_LINK_LIBRARIES( sirikali ${Qt5DBus_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task mhogomchungu_network -L${GCRYPT_LIBRARY_PATH})
 endif()
 
 message( STATUS "---------------------------------------------------------------------------" )

@@ -417,6 +417,16 @@ QStringList settings::mountMonitorFolderPaths()
 	return m_settings.value( "MountMonitorFolderPaths" ).toStringList() ;
 }
 
+QString settings::gvfsFuseMonitorPath()
+{
+	if( !m_settings.contains( "GvfsFuseMonitorPath" ) ){
+
+		m_settings.setValue( "GvfsFuseMonitorPath",QString() ) ;
+	}
+
+	return m_settings.value( "GvfsFuseMonitorPath" ).toString() ;
+}
+
 int settings::mountMonitorFolderPollingInterval()
 {
 	if( !m_settings.contains( "MountMonitorFolderPollingInterval" ) ){

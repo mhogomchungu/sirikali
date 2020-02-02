@@ -153,7 +153,8 @@ mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& quit ) :
 	m_parent( parent ),
 	m_quit( std::move( quit ) ),
 	m_announceEvents( e ),
-	m_oldMountList( _unlocked_volumes() ),
+	m_oldMountList( _unlocked_volumes() ),	
+	m_dbusMonitor( [ this ]( const QString& e ){ this->autoMount( e ) ; } ),
 	m_folderMountEvents( [ this ]( const QString& e ){ this->autoMount( e ) ; } )
 {
 	if( utility::platformIsLinux() ){
@@ -600,3 +601,137 @@ bool mountinfo::folderMountEvents::monitor()
 }
 
 #endif
+
+dbusMonitor::dbusMonitor( folderMonitor::function function) :
+	m_dbus( QDBusConnection ::sessionBus() ),
+	m_folderMonitor( true,settings::instance().gvfsFuseMonitorPath() ),
+	m_function( std::move( function ) )
+{
+	if( !m_folderMonitor.path().isEmpty() ){
+
+		auto a = "org.gtk.vfs.Daemon" ;
+		auto b = "/org/gtk/vfs/mounttracker" ;
+		auto c = "org.gtk.vfs.MountTracker" ;
+
+		m_dbus.connect( a,b,c,"Mounted",this,SLOT( volumeAdded() ) ) ;
+
+		m_dbus.connect( a,b,c,"Unmounted",this,SLOT( volumeRemoved() ) ) ;
+
+		utility::debug::cout() << "listening for gvfs fuse mount events at: " + m_folderMonitor.path() ;
+	}
+}
+
+void dbusMonitor::volumeRemoved()
+{
+	static folderMonitor::function ss = []( const QString& e ){
+
+		utility::debug() << "gvfs fuse unmount: " + e ;
+	} ;
+
+	m_folderMonitor.contentCountDecreased( ss ) ;
+}
+
+void dbusMonitor::volumeAdded()
+{
+	static folderMonitor::function ss = [ & ]( const QString& e ){
+
+		utility::debug() << "gvfs fuse mount: " + e ;
+
+		m_function( e ) ;
+	} ;
+
+	m_folderMonitor.contentCountIncreased( ss ) ;
+}
+
+folderMonitor::folderMonitor( bool e,const QString& path ) :
+	m_path( path ),m_folderList( this->folderList() ),m_waitForSynced( e )
+{
+	while( m_path.endsWith( "/" ) ){
+
+		m_path = utility::removeLast( m_path,1 ) ;
+	}
+}
+
+const QString& folderMonitor::path() const
+{
+	return m_path ;
+}
+
+void folderMonitor::contentCountIncreased( folderMonitor::function& function )
+{
+	auto ss = this->folderListSynced() ;
+
+	if( ss.has_value() && ss.value() != m_folderList ){
+
+		auto s = ss.value() ;
+
+		auto e = s ;
+
+		for( const auto& it : m_folderList ){
+
+			s.removeOne( it ) ;
+		}
+
+		for( const auto& it : s ){
+
+			function( m_path + "/" + it ) ;
+		}
+
+		m_folderList = std::move( e ) ;
+	}
+}
+
+void folderMonitor::contentCountDecreased( folderMonitor::function& function )
+{
+	auto s = this->folderListSynced() ;
+
+	if( s.has_value() && s.value() != m_folderList ){
+
+		auto e = s.value() ;
+
+		for( const auto& it : s.value() ){
+
+			m_folderList.removeOne( it ) ;
+		}
+
+		for( const auto& it : m_folderList ){
+
+			function( m_path + "/" + it ) ;
+		}
+
+		m_folderList = std::move( e ) ;
+	}
+}
+
+QStringList folderMonitor::folderList() const
+{
+	return QDir( m_path ).entryList( QDir::NoDotAndDotDot | QDir::Dirs ) ;
+}
+
+utility::result< QStringList > folderMonitor::folderListSynced() const
+{
+	if( m_waitForSynced ){
+
+		for( int i = 0 ; i < 6 ; i++ ){
+
+			auto a = this->folderList() ;
+
+			if( a != m_folderList ){
+
+				utility::debug() << "gvfs folder is up to date" ;
+
+				return a ;
+			}else{
+				utility::debug() << "Waiting for gvfs folder to update" ;
+
+				utility::Task::suspendForOneSecond() ;
+			}
+		}
+
+		utility::debug() << "Timed out waiting for gvfs folder to update" ;
+
+		return {} ;
+	}else{
+		return this->folderList() ;
+	}
+}

@@ -26,12 +26,42 @@
 #include <QObject>
 #include <QProcess>
 #include <QVector>
+#include <QtDBus>
 
 #include <functional>
 #include <memory>
 #include <vector>
 
 #include "volumeinfo.h"
+
+class folderMonitor{
+public:
+	using function = std::function< void( const QString& ) > ;
+	folderMonitor( bool wait,const QString& path = QString() ) ;
+	const QString& path() const ;
+	void contentCountIncreased( folderMonitor::function& function ) ;
+	void contentCountDecreased( folderMonitor::function& function ) ;
+private:
+	QStringList folderList() const ;
+	utility::result< QStringList > folderListSynced() const ;
+	QString m_path ;
+	QStringList m_folderList ;
+	bool m_waitForSynced ;
+} ;
+
+class dbusMonitor : private QObject
+{
+	Q_OBJECT
+public:
+	dbusMonitor( folderMonitor::function function ) ;
+private slots:
+	void volumeAdded() ;
+	void volumeRemoved() ;
+private:
+	QDBusConnection m_dbus ;
+	folderMonitor m_folderMonitor ;
+	folderMonitor::function m_function ;
+} ;
 
 class mountinfo : private QObject
 {
@@ -70,10 +100,13 @@ private:
 	std::function< void() > m_quit ;
 
 	bool m_announceEvents ;
+
 	std::atomic_bool m_exit ;
 
 	QStringList m_oldMountList ;
 	QStringList m_newMountList ;
+
+	dbusMonitor m_dbusMonitor ;
 
 	class folderMountEvents{
 
@@ -82,16 +115,16 @@ private:
 		void start() ;
 		void stop() ;
 		bool monitor() ;
-	private:
+	private:		
 		class entry{
 		public:
 			entry( int fd,const QString& path ) :
-			m_path( path ),m_fd( fd ),m_folderList( this->folderList() )
+				m_folderMonitor( false,path ),m_fd( fd )
 			{
 			}
 			const QString& path() const
 			{
-				return m_path ;
+				return m_folderMonitor.path() ;
 			}
 			int fd() const
 			{
@@ -100,37 +133,16 @@ private:
 			template< typename Function >
 			void contentCountChanged( Function& function )
 			{
-				auto s = this->folderList() ;
-
-				if( s != m_folderList ){
-
-					auto e = s ;
-
-					for( const auto& it : m_folderList ){
-
-						s.removeOne( it ) ;
-					}
-
-					for( const auto& it : s ){
-
-						function( m_path + "/" + it ) ;
-					}
-
-					m_folderList = std::move( e ) ;
-				}
+				m_folderMonitor.contentCountIncreased( function ) ;
 			}
 		private:
-			QStringList folderList() const
-			{
-				return QDir( m_path ).entryList( QDir::NoDotAndDotDot | QDir::Dirs ) ;
-			}
-			QString m_path ;
+			folderMonitor m_folderMonitor ;
 			int m_fd ;
-			QStringList m_folderList ;
 		} ;
 		std::vector< mountinfo::folderMountEvents::entry > m_fds ;
 		int m_inotify_fd ;
 		std::function< void( const QString& ) > m_update ;
+
 	} m_folderMountEvents ;
 };
 
