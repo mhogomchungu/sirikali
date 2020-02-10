@@ -572,21 +572,24 @@ siritask::Engine siritask::mountEngine( const siritask::mount& e )
 	}
 }
 
+/*
+ * Opts is taken by value instead of const reference on purpose.
+ */
 static engines::engine::cmdStatus _mount( Opts opt,bool reUseMP,const siritask::Engine& eng )
 {
 	auto Engine = siritask::mountEngine( { opt.cipherFolder,opt.configFilePath,eng } ) ;
 
 	const auto& engine  = Engine.get() ;
 
-	opt.configFilePath  = Engine.configFilePath() ;
-	opt.cipherFolder    = Engine.cipherFolder() ;
-
-	engine.updateOptions( opt ) ;
-
 	if( engine.unknown() ){
 
 		return { engines::engine::status::unknown,engine } ;
 	}
+
+	opt.configFilePath  = Engine.configFilePath() ;
+	opt.cipherFolder    = Engine.cipherFolder() ;
+
+	engine.updateOptions( opt ) ;
 
 	auto mm = engine.passMinimumVersion() ;
 
