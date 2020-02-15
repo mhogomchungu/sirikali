@@ -971,13 +971,51 @@ engines::engine::args::args()
 {
 }
 
+void engines::engine::encodeSpecialCharacters( QString& e )
+{
+	struct args{
+
+		const char * first ;
+		const char * second ;
+	} ;
+
+	static std::vector< args > s{ { ",","SiriKaliSpecialCharacter001" } } ;
+
+	for( const auto& it : s ){
+
+		e.replace( it.first,it.second ) ;
+	}
+}
+
+
+void engines::engine::decodeSpecialCharacters( QString& e )
+{
+	struct args{
+
+		const char * first ;
+		const char * second ;
+	} ;
+
+	static std::vector< args > s{ { "SiriKaliSpecialCharacter001","," },
+				      { "\\012","\n" },
+				      { "\\040"," " },
+				      { "\\134","\\" },
+				      { "\\011","\\t" } } ;
+
+	for( const auto& it : s ){
+
+		e.replace( it.first,it.second ) ;
+	}
+}
+
 engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsList& e,
 						 const QString& f,
 						 const QString& subtype )
 {
 	auto cipherFolder = [ & ]( QString s ){
 
-		s.replace( ",","SiriKaliSpecialCharacter001" ) ;
+		engines::engine::encodeSpecialCharacters( s ) ;
+
 		return s ;
 	} ;
 

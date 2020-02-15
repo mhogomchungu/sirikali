@@ -236,6 +236,9 @@ public:
 			QString subtype ;
 		} ;
 
+		static void encodeSpecialCharacters( QString& ) ;
+		static void decodeSpecialCharacters( QString& ) ;
+
 		QString executableFullPath() const ;
 
 		bool isInstalled() const ;

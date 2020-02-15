@@ -179,11 +179,7 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 
 		auto _decode = []( QString path,bool set_offset ){
 
-			path.replace( "\\012","\n" ) ;
-			path.replace( "\\040"," " ) ;
-			path.replace( "\\134","\\" ) ;
-			path.replace( "\\011","\\t" ) ;
-			path.replace( "SiriKaliSpecialCharacter001","," ) ;
+			engines::engine::decodeSpecialCharacters( path ) ;
 
 			if( set_offset ){
 
