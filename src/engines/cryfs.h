@@ -37,6 +37,10 @@ public:
 
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
 private:	
-	QProcessEnvironment m_env ;
-	engines::version m_version ;
+	QProcessEnvironment setEnv() ;
+	const QProcessEnvironment m_env ;
+	const engines::version m_version ;
+	const bool m_takes_too_long_to_unlock ;
+	const bool m_need_no_separator ;
+	const bool m_use_error_codes ;
 } ;

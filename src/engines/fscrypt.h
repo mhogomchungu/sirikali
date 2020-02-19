@@ -60,6 +60,6 @@ private:
 	} mutable m_unlockedVolumeManager ;
 
 	QString userOption() const ;
-	engines::exeFullPath m_exeFullPath ;
-	engines::version m_version ;
+	const engines::exeFullPath m_exeFullPath ;
+	const engines::version m_version ;
 } ;

@@ -32,5 +32,5 @@ public:
 
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
 private:
-	engines::version m_version ;
+	const engines::version m_version ;
 } ;

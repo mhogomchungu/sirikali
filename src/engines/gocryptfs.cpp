@@ -58,7 +58,8 @@ static engines::engine::BaseOptions _setOptions()
 }
 
 gocryptfs::gocryptfs() : engines::engine( _setOptions() ),
-	m_version( [ this ]{ return this->baseInstalledVersionString( "--version",true,1,0 ) ; } )
+	m_version( [ this ]{ return this->baseInstalledVersionString( "--version",true,1,0 ) ; } ),
+	m_version_has_error_codes( this->versionGreaterOrEqualTo( "1.2.1" ) )
 {
 }
 
@@ -154,15 +155,24 @@ engines::engine::args gocryptfs::command( const QByteArray& password,
 
 engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const
 {
-	/*
-	 * This error code was added in gocryptfs 1.2.1
-	 */
-	if( s == 12 || e.contains( this->incorrectPasswordText() ) ){
+	if( m_version_has_error_codes ){
 
-		return engines::engine::status::gocryptfsBadPassword ;
+		/*
+		 * This error code was added in gocryptfs 1.2.1
+		 */
+
+		if( s == 12 ){
+
+			return engines::engine::status::gocryptfsBadPassword ;
+		}
 	}else{
-		return engines::engine::status::backendFail ;
+		if( e.contains( this->incorrectPasswordText() ) ){
+
+			return engines::engine::status::gocryptfsBadPassword ;
+		}
 	}
+
+	return engines::engine::status::backendFail ;
 }
 
 const QString& gocryptfs::installedVersionString() const

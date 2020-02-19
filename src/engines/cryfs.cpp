@@ -59,18 +59,29 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
+QProcessEnvironment cryfs::setEnv()
+{
+	auto s = engines::engine::getProcessEnvironment() ;
+
+	s.insert( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
+	s.insert( "CRYFS_FRONTEND","noninteractive" ) ;
+
+	return s ;
+}
+
 cryfs::cryfs() :
 	engines::engine( _setOptions() ),
-	m_env( engines::engine::getProcessEnvironment() ),
-	m_version( [ this ]{ return this->baseInstalledVersionString( "--version",true,2,0 ) ; } )
+	m_env( this->setEnv() ),
+	m_version( [ this ]{ return this->baseInstalledVersionString( "--version",true,2,0 ) ; } ),
+	m_takes_too_long_to_unlock( this->versionGreaterOrEqualTo( "0.10.0" ) ),
+	m_need_no_separator( this->versionGreaterOrEqualTo( "0.10.0" ) ),
+	m_use_error_codes( utility::platformIsWindows() ? false : this->versionGreaterOrEqualTo( "0.9.9" ) )
 {
-	m_env.insert( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
-	m_env.insert( "CRYFS_FRONTEND","noninteractive" ) ;
 }
 
 bool cryfs::takesTooLongToUnlock() const
 {
-	return this->versionGreaterOrEqualTo( "0.10.0" ) ;
+	return m_takes_too_long_to_unlock ;
 }
 
 const QProcessEnvironment& cryfs::getProcessEnvironment() const
@@ -85,7 +96,7 @@ engines::engine::args cryfs::command( const QByteArray& password,
 
 	auto separator = [ & ](){
 
-		if( this->versionGreaterOrEqualTo( "0.10.0" ) ){
+		if( m_need_no_separator ){
 
 			return "" ;
 		}else{
@@ -131,17 +142,7 @@ engines::engine::args cryfs::command( const QByteArray& password,
 
 engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 {
-	auto m = [ & ](){
-
-		if( utility::platformIsWindows() ){
-
-			return false ;
-		}else{
-			return this->versionGreaterOrEqualTo( "0.9.9" ) ;
-		}
-	}() ;
-
-	if( m ){
+	if( m_use_error_codes ){
 
 		/*
 		 * Error codes are here: https://github.com/cryfs/cryfs/blob/develop/src/cryfs/ErrorCodes.h
