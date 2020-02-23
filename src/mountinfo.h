@@ -52,6 +52,41 @@ private:
 
 #include <QtDBus>
 
+class siriDBus{
+public:
+	siriDBus( QObject * obj ) : m_qObject( obj ),m_dbus( QDBusConnection ::sessionBus() )
+	{
+	}
+	void connect()
+	{
+		auto a = "org.gtk.vfs.Daemon" ;
+		auto b = "/org/gtk/vfs/mounttracker" ;
+		auto c = "org.gtk.vfs.MountTracker" ;
+
+		m_dbus.connect( a,b,c,"Mounted",m_qObject,SLOT( volumeAdded() ) ) ;
+
+		m_dbus.connect( a,b,c,"Unmounted",m_qObject,SLOT( volumeRemoved() ) ) ;
+	}
+private:
+	QObject * m_qObject ;
+	QDBusConnection m_dbus ;
+};
+
+#else
+
+class siriDBus{
+public:
+	siriDBus( QObject * obj )
+	{
+		Q_UNUSED( obj )
+	}
+	void connect()
+	{
+	}
+};
+
+#endif
+
 class dbusMonitor : public QObject
 {
 	Q_OBJECT
@@ -61,20 +96,10 @@ private slots:
 	void volumeAdded() ;
 	void volumeRemoved() ;
 private:
-	QDBusConnection m_dbus ;
+	siriDBus m_dbus ;
 	folderMonitor m_folderMonitor ;
 	folderMonitor::function m_function ;
 } ;
-
-#else
-
-class dbusMonitor
-{
-public:
-	dbusMonitor( folderMonitor::function function ) ;
-} ;
-
-#endif
 
 class mountinfo : private QObject
 {
@@ -128,7 +153,7 @@ private:
 		void start() ;
 		void stop() ;
 		bool monitor() ;
-	private:		
+	private:
 		class entry{
 		public:
 			entry( int fd,const QString& path ) :
