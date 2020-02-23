@@ -36,121 +36,21 @@ static const char * _backEndTimedOut = "SiriKali::Windows::BackendTimedOut" ;
 
 #include <windows.h>
 
-class regOpenKey{
-public:
-	regOpenKey( const char * subKey,HKEY hkey = HKEY_LOCAL_MACHINE )
-	{
-		HKEY m ;
-		REGSAM wow64 = KEY_QUERY_VALUE | KEY_WOW64_64KEY ;
-		REGSAM wow32 = KEY_QUERY_VALUE | KEY_WOW64_32KEY ;
-		unsigned long x = 0 ;
-
-		if( this->success( RegOpenKeyExA,hkey,subKey,x,wow64,&m ) ){
-
-			m_hkey = m ;
-
-		}else if( this->success( RegOpenKeyExA,hkey,subKey,x,wow32,&m ) ){
-
-			m_hkey = m ;
-		}else{
-			m_hkey = nullptr ;
-		}
-	}
-	regOpenKey( const regOpenKey& ) = delete ;
-	regOpenKey& operator=( const regOpenKey& ) = delete ;
-	regOpenKey( regOpenKey&& other )
-	{
-		this->closeKey() ;
-		m_hkey = other.m_hkey ;
-		other.m_hkey = nullptr ;
-	}
-	regOpenKey& operator=( regOpenKey&& other )
-	{
-		this->closeKey() ;
-		m_hkey = other.m_hkey ;
-		other.m_hkey = nullptr ;
-		return *this ;
-	}
-	operator bool()
-	{
-		return m_hkey != nullptr ;
-	}
-	QByteArray getValue( const char * key )
-	{
-		if( m_hkey != nullptr ){
-
-			DWORD dwType = REG_SZ ;
-
-			std::array< char,4096 > buffer ;
-
-			std::fill( buffer.begin(),buffer.end(),'\0' ) ;
-
-			auto e = reinterpret_cast< BYTE * >( buffer.data() ) ;
-			auto m = static_cast< DWORD >( buffer.size() ) ;
-
-			if( this->success( RegQueryValueEx,m_hkey,key,nullptr,&dwType,e,&m ) ){
-
-				return { buffer.data(),static_cast< int >( m ) } ;
-			}
-		}
-
-		return {} ;
-	}
-	HKEY handle()
-	{
-		return m_hkey ;
-	}
-	~regOpenKey()
-	{
-		this->closeKey() ;
-	}
-private:
-	template< typename Function,typename ... Args >
-	bool success( Function&& function,Args&& ... args )
-	{
-		return function( std::forward< Args >( args ) ... ) == ERROR_SUCCESS ;
-	}
-	void closeKey()
-	{
-		RegCloseKey( m_hkey ) ;
-	}
-	HKEY m_hkey ;
-};
-
-// SiriKali took below code from "https://stackoverflow.com/questions/813086/can-i-send-a-ctrl-c-sigint-to-an-application-on-windows"
-
-// Inspired from http://stackoverflow.com/a/15281070/1529139
-// and http://stackoverflow.com/q/40059902/1529139
-static bool signalCtrl(DWORD dwProcessId, DWORD dwCtrlEvent)
+static bool signalCtrl( DWORD dwProcessId,DWORD dwCtrlEvent )
 {
-    bool success = false;
-    DWORD thisConsoleId = GetCurrentProcessId();
-    // Leave current console if it exists
-    // (otherwise AttachConsole will return ERROR_ACCESS_DENIED)
-    bool consoleDetached = (FreeConsole() != FALSE);
+	FreeConsole() ;
 
-    if (AttachConsole(dwProcessId) != FALSE)
-    {
-	// Add a fake Ctrl-C handler for avoid instant kill is this console
-	// WARNING: do not revert it or current program will be also killed
-	SetConsoleCtrlHandler(nullptr, true);
-	success = (GenerateConsoleCtrlEvent(dwCtrlEvent, 0) != FALSE);
-	FreeConsole();
-    }
+	if( AttachConsole( dwProcessId ) == TRUE ) {
 
-    if (consoleDetached)
-    {
-	// Create a new console if previous was deleted by OS
-	if (AttachConsole(thisConsoleId) == FALSE)
-	{
-	    auto errorCode = GetLastError();
-	    if (errorCode == 31) // 31=ERROR_GEN_FAILURE
-	    {
-		AllocConsole();
-	    }
+		// Add a fake Ctrl-C handler for avoid instant kill is this console
+		// WARNING: do not revert it or current program will be also killed
+
+		SetConsoleCtrlHandler( nullptr,true ) ;
+
+		return GenerateConsoleCtrlEvent( dwCtrlEvent,0 ) ;
 	}
-    }
-    return success;
+
+	return false ;
 }
 
 static int _terminateProcess( unsigned long pid )
@@ -163,9 +63,58 @@ static int _terminateProcess( unsigned long pid )
 	}
 }
 
+static HKEY _reg_open_key( const char * subKey )
+{
+	HKEY hkey = HKEY_LOCAL_MACHINE ;
+	HKEY m ;
+	REGSAM wow64 = KEY_QUERY_VALUE | KEY_WOW64_64KEY ;
+	REGSAM wow32 = KEY_QUERY_VALUE | KEY_WOW64_32KEY ;
+	unsigned long x = 0 ;
+
+	if( RegOpenKeyExA( hkey,subKey,x,wow64,&m ) == ERROR_SUCCESS ){
+
+		return m ;
+
+	}else if( RegOpenKeyExA( hkey,subKey,x,wow32,&m ) == ERROR_SUCCESS ){
+
+		return m ;
+	}else{
+		return nullptr ;
+	}
+}
+
+static void _reg_close_key( HKEY hkey )
+{
+	RegCloseKey( hkey ) ;
+}
+
+static QByteArray _reg_get_value( HKEY hkey,const char * key )
+{
+	if( hkey != nullptr ){
+
+		DWORD dwType = REG_SZ ;
+
+		std::array< char,4096 > buffer ;
+
+		std::fill( buffer.begin(),buffer.end(),'\0' ) ;
+
+		auto e = reinterpret_cast< BYTE * >( buffer.data() ) ;
+		auto m = static_cast< DWORD >( buffer.size() ) ;
+
+		if( RegQueryValueEx( hkey,key,nullptr,&dwType,e,&m ) == ERROR_SUCCESS ){
+
+			return { buffer.data(),static_cast< int >( m ) } ;
+		}
+	}
+
+	return {} ;
+}
+
 static QString _readRegistry( const char * subKey,const char * key )
 {
-	return regOpenKey( subKey ).getValue( key ) ;
+	auto s = utility2::unique_rsc( _reg_open_key,_reg_close_key,subKey ) ;
+
+	return _reg_get_value( s.get(),key ) ;
 }
 
 #else

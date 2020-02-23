@@ -26,7 +26,6 @@
 #include <QObject>
 #include <QProcess>
 #include <QVector>
-#include <QtDBus>
 
 #include <functional>
 #include <memory>
@@ -49,7 +48,11 @@ private:
 	bool m_waitForSynced ;
 } ;
 
-class dbusMonitor : private QObject
+#ifdef Q_OS_LINUX
+
+#include <QtDBus>
+
+class dbusMonitor : public QObject
 {
 	Q_OBJECT
 public:
@@ -62,6 +65,16 @@ private:
 	folderMonitor m_folderMonitor ;
 	folderMonitor::function m_function ;
 } ;
+
+#else
+
+class dbusMonitor
+{
+public:
+	dbusMonitor( folderMonitor::function function ) ;
+} ;
+
+#endif
 
 class mountinfo : private QObject
 {
@@ -130,8 +143,7 @@ private:
 			{
 				return m_fd ;
 			}
-			template< typename Function >
-			void contentCountChanged( Function& function )
+			void contentCountChanged( folderMonitor::function& function )
 			{
 				m_folderMonitor.contentCountIncreased( function ) ;
 			}

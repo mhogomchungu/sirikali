@@ -40,7 +40,6 @@ private:
 	QProcessEnvironment setEnv() ;
 	const QProcessEnvironment m_env ;
 	const engines::version m_version ;
-	const bool m_takes_too_long_to_unlock ;
-	const bool m_need_no_separator ;
-	const bool m_use_error_codes ;
+	const engines::booleanCache m_version_greater_or_equal_0_10_0 ;
+	const engines::booleanCache m_use_error_codes ;
 } ;

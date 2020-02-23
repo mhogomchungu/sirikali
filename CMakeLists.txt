@@ -118,15 +118,26 @@ else()
     endif()
 endif()
 
-find_package( Qt5Widgets REQUIRED )
-find_package( Qt5Core REQUIRED )
-find_package( Qt5Network REQUIRED )
-find_package( Qt5DBus REQUIRED )
+if( UNIX AND NOT APPLE )
 
-message( STATUS "Found Qt5Widgets, version  ${Qt5Widgets_VERSION}" )
-message( STATUS "Found Qt5Core, version  ${Qt5Core_VERSION}" )
-message( STATUS "Found Qt5Network, version  ${Qt5Network_VERSION}" )
-message( STATUS "Found Qt5DBus, version  ${Qt5DBus_VERSION}" )
+	find_package( Qt5Widgets REQUIRED )
+	find_package( Qt5Core REQUIRED )
+	find_package( Qt5Network REQUIRED )
+	find_package( Qt5DBus REQUIRED )
+
+	message( STATUS "Found Qt5Widgets, version  ${Qt5Widgets_VERSION}" )
+	message( STATUS "Found Qt5Core, version  ${Qt5Core_VERSION}" )
+	message( STATUS "Found Qt5Network, version  ${Qt5Network_VERSION}" )
+	message( STATUS "Found Qt5DBus, version  ${Qt5DBus_VERSION}" )
+else()
+	find_package( Qt5Widgets REQUIRED )
+	find_package( Qt5Core REQUIRED )
+	find_package( Qt5Network REQUIRED )
+
+	message( STATUS "Found Qt5Widgets, version  ${Qt5Widgets_VERSION}" )
+	message( STATUS "Found Qt5Core, version  ${Qt5Core_VERSION}" )
+	message( STATUS "Found Qt5Network, version  ${Qt5Network_VERSION}" )
+endif()
 
 pkg_check_modules( MCHUNGU_NETWORK mhogomchungu_network )
 pkg_check_modules( MCHUNGU_TASK mhogomchungu_task )
@@ -375,11 +386,20 @@ endif()
 link_directories( ${GCRYPT_LIBRARY_PATH} )
 
 if( WIN32 )
-    #TARGET_LINK_LIBRARIES( sirikali winfsp-x86 ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task mhogomchungu_network -L${GCRYPT_LIBRARY_PATH})
-    TARGET_LINK_LIBRARIES( sirikali ${Qt5DBus_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} lxqt-wallet mhogomchungu_task mhogomchungu_network)
 
-else()
+    TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} lxqt-wallet mhogomchungu_task mhogomchungu_network)
+endif()
+
+if( APPLE )
+
+    TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task mhogomchungu_network -L${GCRYPT_LIBRARY_PATH})
+endif()
+
+if( UNIX AND NOT APPLE )
+
     TARGET_LINK_LIBRARIES( sirikali ${Qt5DBus_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task mhogomchungu_network -L${GCRYPT_LIBRARY_PATH})
+else()
+
 endif()
 
 message( STATUS "---------------------------------------------------------------------------" )

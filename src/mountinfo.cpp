@@ -153,7 +153,7 @@ mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& quit ) :
 	m_parent( parent ),
 	m_quit( std::move( quit ) ),
 	m_announceEvents( e ),
-	m_oldMountList( _unlocked_volumes() ),	
+	m_oldMountList( _unlocked_volumes() ),
 	m_dbusMonitor( [ this ]( const QString& e ){ this->autoMount( e ) ; } ),
 	m_folderMountEvents( [ this ]( const QString& e ){ this->autoMount( e ) ; } )
 {
@@ -579,26 +579,7 @@ bool mountinfo::folderMountEvents::monitor()
 	return m_inotify_fd != -1 && m_fds.size() > 0 ;
 }
 
-#else
-
-mountinfo::folderMountEvents::folderMountEvents( std::function< void( const QString& ) > e )
-{
-	Q_UNUSED( e )
-}
-void mountinfo::folderMountEvents::start()
-{
-}
-void mountinfo::folderMountEvents::stop()
-{
-}
-bool mountinfo::folderMountEvents::monitor()
-{
-	return false ;
-}
-
-#endif
-
-dbusMonitor::dbusMonitor( folderMonitor::function function) :
+dbusMonitor::dbusMonitor( folderMonitor::function function ) :
 	m_dbus( QDBusConnection ::sessionBus() ),
 	m_folderMonitor( true,settings::instance().gvfsFuseMonitorPath() ),
 	m_function( std::move( function ) )
@@ -613,7 +594,7 @@ dbusMonitor::dbusMonitor( folderMonitor::function function) :
 
 		m_dbus.connect( a,b,c,"Unmounted",this,SLOT( volumeRemoved() ) ) ;
 
-		utility::debug::cout() << "listening for gvfs fuse mount events at: " + m_folderMonitor.path() ;
+		//utility::debug::cout() << "listening for gvfs fuse mount events at: " + m_folderMonitor.path() ;
 	}
 }
 
@@ -638,6 +619,30 @@ void dbusMonitor::volumeAdded()
 
 	m_folderMonitor.contentCountIncreased( ss ) ;
 }
+
+#else
+
+mountinfo::folderMountEvents::folderMountEvents( std::function< void( const QString& ) > e )
+{
+	Q_UNUSED( e )
+}
+void mountinfo::folderMountEvents::start()
+{
+}
+void mountinfo::folderMountEvents::stop()
+{
+}
+bool mountinfo::folderMountEvents::monitor()
+{
+	return false ;
+}
+
+dbusMonitor::dbusMonitor( folderMonitor::function function )
+{
+	Q_UNUSED( function )
+}
+
+#endif
 
 folderMonitor::folderMonitor( bool e,const QString& path ) :
 	m_path( path ),m_folderList( this->folderList() ),m_waitForSynced( e )

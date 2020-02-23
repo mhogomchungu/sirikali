@@ -73,15 +73,14 @@ cryfs::cryfs() :
 	engines::engine( _setOptions() ),
 	m_env( this->setEnv() ),
 	m_version( [ this ]{ return this->baseInstalledVersionString( "--version",true,2,0 ) ; } ),
-	m_takes_too_long_to_unlock( this->versionGreaterOrEqualTo( "0.10.0" ) ),
-	m_need_no_separator( this->versionGreaterOrEqualTo( "0.10.0" ) ),
-	m_use_error_codes( utility::platformIsWindows() ? false : this->versionGreaterOrEqualTo( "0.9.9" ) )
+	m_version_greater_or_equal_0_10_0( [ this ](){ return this->versionGreaterOrEqualTo( "0.10.0" ) ; } ),
+	m_use_error_codes( [ this ](){ return utility::platformIsWindows() ? false : this->versionGreaterOrEqualTo( "0.9.9" ) ; } )
 {
 }
 
 bool cryfs::takesTooLongToUnlock() const
 {
-	return m_takes_too_long_to_unlock ;
+	return m_version_greater_or_equal_0_10_0 ;
 }
 
 const QProcessEnvironment& cryfs::getProcessEnvironment() const
@@ -96,7 +95,7 @@ engines::engine::args cryfs::command( const QByteArray& password,
 
 	auto separator = [ & ](){
 
-		if( m_need_no_separator ){
+		if( m_version_greater_or_equal_0_10_0 ){
 
 			return "" ;
 		}else{

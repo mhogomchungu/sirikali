@@ -514,6 +514,19 @@ public:
 		const engines::engine::Wrapper m_engine ;
 	};
 
+	class booleanCache : public cache< utility::result< bool > >{
+	public:
+		booleanCache( std::function< utility::result< bool >() > s ) :
+		        cache( std::move( s ) )
+		{
+		}
+		operator bool() const
+		{
+			return this->get().value() ;
+		}
+		bool isEmpty( const utility::result< bool >& e ) const override ;
+	};
+
 	engines() ;
 	static const engines& instance() ;
 	bool atLeastOneDealsWithFiles() const ;

@@ -1086,3 +1086,8 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 		m_fuseOptions = s.arg( f,ss,stype ) + "," + m_fuseOptions ;
 	}
 }
+
+bool engines::booleanCache::isEmpty( const utility::result<bool>& e ) const
+{
+	return !e.has_value() ;
+}

@@ -59,7 +59,7 @@ static engines::engine::BaseOptions _setOptions()
 
 gocryptfs::gocryptfs() : engines::engine( _setOptions() ),
 	m_version( [ this ]{ return this->baseInstalledVersionString( "--version",true,1,0 ) ; } ),
-	m_version_has_error_codes( this->versionGreaterOrEqualTo( "1.2.1" ) )
+	m_version_has_error_codes( [ this ](){ return this->versionGreaterOrEqualTo( "1.2.1" ) ; } )
 {
 }
 
