@@ -36,31 +36,26 @@ static const char * _backEndTimedOut = "SiriKali::Windows::BackendTimedOut" ;
 
 #include <windows.h>
 
-static bool signalCtrl( DWORD dwProcessId,DWORD dwCtrlEvent )
+static int _terminateProcess( unsigned long pid )
 {
 	FreeConsole() ;
 
-	if( AttachConsole( dwProcessId ) == TRUE ) {
+	if( AttachConsole( pid ) == TRUE ) {
 
-		// Add a fake Ctrl-C handler for avoid instant kill is this console
-		// WARNING: do not revert it or current program will be also killed
+		/*
+		 * Add a fake Ctrl-C handler for avoid instant kill in this console
+		 * WARNING: do not revert it or current program will also killed
+		 */
 
 		SetConsoleCtrlHandler( nullptr,true ) ;
 
-		return GenerateConsoleCtrlEvent( dwCtrlEvent,0 ) ;
+		if( GenerateConsoleCtrlEvent( CTRL_C_EVENT,0 ) == TRUE ){
+
+			return 0 ;
+		}
 	}
 
-	return false ;
-}
-
-static int _terminateProcess( unsigned long pid )
-{
-	if( signalCtrl( pid,CTRL_C_EVENT ) ){
-
-		return 0 ;
-	}else{
-		return 1 ;
-	}
+	return 1 ;
 }
 
 static HKEY _reg_open_key( const char * subKey )
@@ -85,7 +80,10 @@ static HKEY _reg_open_key( const char * subKey )
 
 static void _reg_close_key( HKEY hkey )
 {
-	RegCloseKey( hkey ) ;
+	if( hkey != nullptr ){
+
+		RegCloseKey( hkey ) ;
+	}
 }
 
 static QByteArray _reg_get_value( HKEY hkey,const char * key )
