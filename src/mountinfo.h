@@ -54,22 +54,24 @@ private:
 
 class siriDBus{
 public:
-	siriDBus( QObject * obj ) : m_qObject( obj ),m_dbus( QDBusConnection ::sessionBus() )
+	siriDBus( QObject * obj ) : m_qObject( obj )
 	{
 	}
 	void connect()
 	{
+		m_dbus.reset( new QDBusConnection( QDBusConnection::sessionBus() ) ) ;
+
 		auto a = "org.gtk.vfs.Daemon" ;
 		auto b = "/org/gtk/vfs/mounttracker" ;
 		auto c = "org.gtk.vfs.MountTracker" ;
 
-		m_dbus.connect( a,b,c,"Mounted",m_qObject,SLOT( volumeAdded() ) ) ;
+		m_dbus->connect( a,b,c,"Mounted",m_qObject,SLOT( volumeAdded() ) ) ;
 
-		m_dbus.connect( a,b,c,"Unmounted",m_qObject,SLOT( volumeRemoved() ) ) ;
+		m_dbus->connect( a,b,c,"Unmounted",m_qObject,SLOT( volumeRemoved() ) ) ;
 	}
 private:
+	std::unique_ptr< QDBusConnection > m_dbus ;
 	QObject * m_qObject ;
-	QDBusConnection m_dbus ;
 };
 
 #else
