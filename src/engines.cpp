@@ -82,6 +82,11 @@ bool engines::version::isEmpty( const QString& e ) const
 	return e.isEmpty() ;
 }
 
+bool engines::booleanCache::isEmpty( const utility::result< bool >& e ) const
+{
+	return !e.has_value() ;
+}
+
 static bool _has_no_extension( const QString& e )
 {
 	return !e.contains( '.' ) ;
@@ -1085,9 +1090,4 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 	}else{
 		m_fuseOptions = s.arg( f,ss,stype ) + "," + m_fuseOptions ;
 	}
-}
-
-bool engines::booleanCache::isEmpty( const utility::result<bool>& e ) const
-{
-	return !e.has_value() ;
 }
