@@ -255,9 +255,6 @@ public:
 		bool autorefreshOnMountUnMount() const ;
 		bool backendRequireMountPath() const ;
 
-		bool versionIsLessOrEqualTo( const QString& ) const ;
-		bool versionGreaterOrEqualTo( const QString& ) const ;
-
 		engines::engine::status notFoundCode() const ;
 
 		int backendTimeout() const ;
@@ -477,7 +474,7 @@ public:
 		{
 			if( this->isEmpty( m_variable ) ){
 
-				m_variable = m_function() ;
+				m_variable = utility::unwrap( Task::run( [ this ]{ return m_function() ; } ) ) ;
 			}
 
 			return m_variable ;
@@ -493,6 +490,8 @@ public:
 
 	class version : public cache< QString >{
 	public:
+		enum class Operator{ less,lessOrEqual,equal,notEqual,greater,greaterOrEqual } ;
+
 		version( std::function< QString() > s ) : cache( std::move( s ) )
 		{
 		}
@@ -500,6 +499,66 @@ public:
 		{
 		}
 		bool isEmpty( const QString& e ) const override ;
+
+		utility::result< bool > compare( const QString& v,engines::version::Operator op ) const
+		{
+			internalVersion a( this->get() ) ;
+			internalVersion b( v ) ;
+
+			if( a.valid() && b.valid() ){
+
+				switch( op ) {
+
+					case engines::version::Operator::less :           return a < b ;
+					case engines::version::Operator::lessOrEqual :    return a <= b ;
+					case engines::version::Operator::equal :          return a == b ;
+					case engines::version::Operator::notEqual :       return a != b ;
+					case engines::version::Operator::greater :        return a > b ;
+					case engines::version::Operator::greaterOrEqual : return a >= b ;
+				}
+			}
+
+			return {} ;
+		}
+		utility::result< bool > greaterOrEqual( const QString& v ) const
+		{
+			return this->compare( v,engines::version::Operator::greaterOrEqual ) ;
+		}
+	private:
+		class internalVersion{
+		public:
+			internalVersion( const QString& e ) ;
+			bool valid() const ;
+			bool operator==( const internalVersion& other ) const ;
+			bool operator<( const internalVersion& other ) const ;
+			/*
+			 * a != b equal to !(a == b)
+			 * a <= b equal to (a < b) || (a == b)
+			 * a >= b equal to !(a < b)
+			 * a > b  equal to !(a <= b)
+			 */
+			bool operator>=( const internalVersion& other ) const
+			{
+				return !( *this < other ) ;
+			}
+			bool operator<=( const internalVersion& other ) const
+			{
+				return ( *this < other ) || ( *this == other ) ;
+			}
+			bool operator!=( const internalVersion& other ) const
+			{
+				return !( *this == other ) ;
+			}
+			bool operator>( const internalVersion& other ) const
+			{
+				return !( *this <= other ) ;
+			}
+		private:
+			bool m_valid = false ;
+			int m_major = 0 ;
+			int m_minor = 0 ;
+			int m_patch = 0 ;
+		};
 	};
 
 	class exeFullPath : public cache< QString >{

@@ -413,18 +413,7 @@ namespace utility
 
 	SocketPaths socketPath() ;
 
-	utility::result< bool > versionIsLessOrEqualTo( const QString& installedVersion,
-							const QString& checkedVersion ) ;
-	utility::result< bool > versionIsGreaterOrEqualTo( const QString& installedVersion,
-							   const QString& checkedVersion ) ;
-
 	::Task::future< utility::result< QString > >& backEndInstalledVersion( const QString& backend ) ;
-
-	::Task::future< utility::result< bool > >& backendIsLessThan( const QString& backend,
-								      const QString& version ) ;
-
-	::Task::future< utility::result< bool > >& backendIsGreaterOrEqualTo( const QString& backend,
-									      const QString& version ) ;
 
 	::Task::future< bool >& openPath( const QString& path,const QString& opener ) ;
 

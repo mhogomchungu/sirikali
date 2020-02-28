@@ -69,12 +69,27 @@ QProcessEnvironment cryfs::setEnv()
 	return s ;
 }
 
+static bool _version( const engines::version& version,const QString& v )
+{
+	auto s = version.greaterOrEqual( v ) ;
+
+	if( s ){
+
+		return s.value() ;
+	}else{
+		/*
+		 * What should be return here??
+		 */
+		return true ;
+	}
+}
+
 cryfs::cryfs() :
 	engines::engine( _setOptions() ),
 	m_env( this->setEnv() ),
 	m_version( [ this ]{ return this->baseInstalledVersionString( "--version",true,2,0 ) ; } ),
-	m_version_greater_or_equal_0_10_0( [ this ](){ return this->versionGreaterOrEqualTo( "0.10.0" ) ; } ),
-	m_use_error_codes( [ this ](){ return utility::platformIsWindows() ? false : this->versionGreaterOrEqualTo( "0.9.9" ) ; } )
+	m_version_greater_or_equal_0_10_0( [ this ](){ return _version( m_version,"0.10.0" ) ; } ),
+	m_use_error_codes( [ this ](){ return utility::platformIsWindows() ? false : _version( m_version,"0.9.9" ) ; } )
 {
 }
 

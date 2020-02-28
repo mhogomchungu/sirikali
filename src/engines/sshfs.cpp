@@ -56,7 +56,7 @@ static engines::engine::BaseOptions _setOptions()
 
 	if( utility::platformIsWindows() ){
 
-		s.minimumVersion = "3.4.0" ;
+		s.minimumVersion = "3.5.2" ;
 	}
 
 	return s ;
@@ -73,15 +73,15 @@ engines::engine::status sshfs::passMinimumVersion() const
 {
 	if( utility::platformIsWindows() ){
 
-		static auto m = utility::unwrap( utility::backendIsLessThan( "sshfs",this->minimumVersion() ) ) ;
+		auto m = m_version.greaterOrEqual( this->minimumVersion() ) ;
 
 		if( m && m.value() ){
 
-			return engines::engine::status::backEndFailedToMeetMinimumRequirenment ;
+			 return engines::engine::status::success ;
 		}
 	}
 
-	return engines::engine::status::success ;
+	return engines::engine::status::backEndFailedToMeetMinimumRequirenment ;
 }
 
 const QProcessEnvironment& sshfs::getProcessEnvironment() const

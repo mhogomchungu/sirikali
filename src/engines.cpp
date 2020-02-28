@@ -348,20 +348,6 @@ bool engines::engine::backendRequireMountPath() const
 	return m_Options.backendRequireMountPath ;
 }
 
-bool engines::engine::versionIsLessOrEqualTo( const QString& e ) const
-{
-	auto a = utility::versionIsLessOrEqualTo( this->installedVersionString(),e ) ;
-
-	return a.has_value() && a.value() ;
-}
-
-bool engines::engine::versionGreaterOrEqualTo( const QString& e ) const
-{
-	auto a = utility::versionIsGreaterOrEqualTo( this->installedVersionString(),e ) ;
-
-	return a.has_value() && a.value() ;
-}
-
 bool engines::engine::takesTooLongToUnlock() const
 {
 	return m_Options.takesTooLongToUnlock ;
@@ -1090,4 +1076,69 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 	}else{
 		m_fuseOptions = s.arg( f,ss,stype ) + "," + m_fuseOptions ;
 	}
+}
+
+engines::version::internalVersion::internalVersion(const QString & e)
+{
+	auto s = utility::split( e,'.' ) ;
+
+	int m = s.size() ;
+
+	if( m == 1 ){
+
+		m_major = s.at( 0 ).toInt( &m_valid ) ;
+
+	}else if( m == 2 ){
+
+		m_major = s.at( 0 ).toInt( &m_valid ) ;
+
+		if( m_valid ){
+
+			m_minor = s.at( 1 ).toInt( &m_valid ) ;
+		}
+
+	}else if( m >= 3 ) {
+
+		m_major = s.at( 0 ).toInt( &m_valid ) ;
+
+		if( m_valid ){
+
+			m_minor = s.at( 1 ).toInt( &m_valid ) ;
+
+			if( m_valid ){
+
+				m_patch = s.at( 2 ).toInt( &m_valid ) ;
+			}
+		}
+	}
+}
+
+bool engines::version::internalVersion::valid() const
+{
+	return m_valid ;
+}
+
+bool engines::version::internalVersion::operator==( const engines::version::internalVersion& other ) const
+{
+	return  m_major == other.m_major && m_minor == other.m_minor &&	m_patch == other.m_patch ;
+}
+
+bool engines::version::internalVersion::operator<( const engines::version::internalVersion& other ) const
+{
+	if( m_major < other.m_major ){
+
+		return true ;
+	}
+
+	if( m_minor < other.m_minor ){
+
+		return true ;
+	}
+
+	if( m_patch < other.m_patch ){
+
+		return true ;
+	}
+
+	return false ;
 }
