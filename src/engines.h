@@ -472,7 +472,9 @@ public:
 		}
 		const Type& get() const
 		{
-			if( this->isEmpty( m_variable ) ){
+			if( m_unset ){
+
+				m_unset = false ;
 
 				m_variable = utility::unwrap( Task::run( [ this ]{ return m_function() ; } ) ) ;
 			}
@@ -482,10 +484,10 @@ public:
 		virtual ~cache()
 		{
 		}
-		virtual bool isEmpty( const Type& ) const = 0 ;
 	private:
 		std::function< Type() > m_function ;
 		mutable Type m_variable ;
+		mutable bool m_unset = true ;
 	};
 
 	class version : public cache< QString >{
@@ -498,8 +500,6 @@ public:
 		version()
 		{
 		}
-		bool isEmpty( const QString& e ) const override ;
-
 		utility::result< bool > compare( const QString& v,engines::version::Operator op ) const
 		{
 			internalVersion a( this->get() ) ;
@@ -524,7 +524,7 @@ public:
 		{
 			return this->compare( v,engines::version::Operator::greaterOrEqual ) ;
 		}
-		void logError( const engines::engine& ) const ;
+		virtual void logError( const engines::engine& ) const ;
 	private:
 		class internalVersion{
 		public:
@@ -569,8 +569,8 @@ public:
 			m_engine( e )
 		{
 		}
-		bool isEmpty( const QString& e ) const override ;
 	private:
+		virtual void silenceWarning() ;
 		const engines::engine::Wrapper m_engine ;
 	};
 
@@ -584,7 +584,8 @@ public:
 		{
 			return this->get().value() ;
 		}
-		bool isEmpty( const utility::result< bool >& e ) const override ;
+	private:
+		virtual void silenceWarning() ;
 	};
 
 	engines() ;

@@ -72,25 +72,10 @@ QStringList engines::executableSearchPaths()
 	}
 }
 
-bool engines::exeFullPath::isEmpty( const QString& e ) const
-{
-	return e.isEmpty() ;
-}
-
-bool engines::version::isEmpty( const QString& e ) const
-{
-	return e.isEmpty() ;
-}
-
 void engines::version::logError( const engines::engine& e ) const
 {
 	auto a = QString( "%1 backend has an invalid version string (%2)" ) ;
 	utility::debug() << a.arg( e.name(),this->get() ) ;
-}
-
-bool engines::booleanCache::isEmpty( const utility::result< bool >& e ) const
-{
-	return !e.has_value() ;
 }
 
 static bool _has_no_extension( const QString& e )
@@ -1147,4 +1132,13 @@ bool engines::version::internalVersion::operator<( const engines::version::inter
 	}
 
 	return false ;
+}
+
+void engines::booleanCache::silenceWarning()
+{
+}
+
+void engines::exeFullPath::silenceWarning()
+{
+
 }
