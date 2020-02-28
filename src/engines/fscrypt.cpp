@@ -273,15 +273,26 @@ engines::engine::status fscrypt::unmount( const QString& cipherFolder,
 
 	auto ss = m_version.greaterOrEqual( "0.2.6" ) ;
 
-	if( ss.has_value() && ss.value() ){
+	auto umount = [ & ](){
 
-		exe += " lock " + mountPoint + " " + this->userOption() ;
-	}else{
 		auto mp = utility::removeFirstAndLast( mountPoint,1,1 ) ;
 
 		auto m = utility::Task::makePath( _mount_point( mp,m_exeFullPath.get() ) ) ;
 
-		exe += " purge " + m + " --force --drop-caches=false " + this->userOption() ;
+		return exe + " purge " + m + " --force --drop-caches=false " + this->userOption() ;
+	} ;
+
+	if( ss.has_value() ){
+
+		if( ss.value() ){
+
+			exe += " lock " + mountPoint + " " + this->userOption() ;
+		}else{
+			exe = umount() ;
+		}
+	}else{
+		m_version.logError( *this ) ;
+		exe = umount() ;
 	}
 
 	for( int i = 0 ; i < maxCount ; i++ ){

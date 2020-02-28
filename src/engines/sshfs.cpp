@@ -75,9 +75,14 @@ engines::engine::status sshfs::passMinimumVersion() const
 
 		auto m = m_version.greaterOrEqual( this->minimumVersion() ) ;
 
-		if( m && m.value() ){
+		if( m.has_value() ){
 
-			 return engines::engine::status::success ;
+			if( m.value() ){
+
+				return engines::engine::status::success ;
+			}
+		}else{
+			m_version.logError( *this ) ;
 		}
 	}
 

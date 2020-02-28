@@ -524,6 +524,7 @@ public:
 		{
 			return this->compare( v,engines::version::Operator::greaterOrEqual ) ;
 		}
+		void logError( const engines::engine& ) const ;
 	private:
 		class internalVersion{
 		public:

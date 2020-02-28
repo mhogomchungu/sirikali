@@ -57,7 +57,9 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
-static bool _version( const engines::version& version,const QString& v )
+static bool _version( const engines::engine& engine,
+		      const engines::version& version,
+		      const QString& v )
 {
 	auto s = version.greaterOrEqual( v ) ;
 
@@ -65,16 +67,14 @@ static bool _version( const engines::version& version,const QString& v )
 
 		return s.value() ;
 	}else{
-		/*
-		 * What should be return here??
-		 */
+		version.logError( engine ) ;
 		return true ;
 	}
 }
 
 gocryptfs::gocryptfs() : engines::engine( _setOptions() ),
 	m_version( [ this ]{ return this->baseInstalledVersionString( "--version",true,1,0 ) ; } ),
-	m_version_has_error_codes( [ this ](){ return _version( m_version,"1.2.1" ) ; } )
+	m_version_has_error_codes( [ this ](){ return _version( *this,m_version,"1.2.1" ) ; } )
 {
 }
 

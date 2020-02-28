@@ -82,6 +82,12 @@ bool engines::version::isEmpty( const QString& e ) const
 	return e.isEmpty() ;
 }
 
+void engines::version::logError( const engines::engine& e ) const
+{
+	auto a = QString( "%1 backend has an invalid version string (%2)" ) ;
+	utility::debug() << a.arg( e.name(),this->get() ) ;
+}
+
 bool engines::booleanCache::isEmpty( const utility::result< bool >& e ) const
 {
 	return !e.has_value() ;
