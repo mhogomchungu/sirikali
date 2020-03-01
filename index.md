@@ -74,7 +74,7 @@ Arch Linux users can get SiriKali from <a href="https://aur.archlinux.org/packag
 <a href="http://macdownload.informer.com/sirikali/" target="_blank"><img border="0" src="http://img.informer.com/awards/mi-award-epick4.png" alt="Mac Informer Editor's pick award" height="129" width="130" /></a>
 
 ## Where did the name come from?
-"SiriKali" name is a combination of two Swahili words, "siri" means <a href="https://translate.google.com/#view=home&op=translate&sl=sw&tl=en&text=siri">"secret"</a> and "kali" means <a href="https://translate.google.com/#view=home&op=translate&sl=sw&tl=en&text=kali">"severe".</a>. "SiriKali" can loosely be translated to "top secret".
+"SiriKali" name is a combination of two Swahili words, "siri" and "kali".In Swahili, "Siri" means <a href="https://translate.google.com/#view=home&op=translate&sl=sw&tl=en&text=siri">"secret"</a> and "kali" means <a href="https://translate.google.com/#view=home&op=translate&sl=sw&tl=en&text=kali">"severe".</a> "SiriKali" can therefore loosely be translated to "top secret".
 
 ## Screenshots
 
