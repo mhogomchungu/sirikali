@@ -39,5 +39,7 @@ struct ecryptfs : public engines::engine
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
 
 private:
+	QString wrapSU( const QString& s ) const ;
 	const bool m_requirePolkit ;
+	const engines::exeFullPath m_exeSUFullPath ;
 } ;

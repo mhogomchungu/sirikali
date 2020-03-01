@@ -58,5 +58,4 @@ private:
 	} mutable m_unlockedVolumeManager ;
 
 	QString userOption() const ;
-	const engines::exeFullPath m_exeFullPath ;
 } ;

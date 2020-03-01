@@ -151,7 +151,7 @@ Task::future< QString >& engines::engine::volumeProperties( const QString& ciphe
 		for( const auto& it : this->volumePropertiesCommands() ){
 
 			auto a = utility::split( it,' ' ) ;
-			auto b = utility::executableFullPath( a.first() ) ;
+			auto b = engines::executableFullPath( a.first() ) ;
 			a.removeFirst() ;
 			auto c = a.join( " " ) ;
 
@@ -272,13 +272,14 @@ static QProcessEnvironment _set_env( const engines::engine::BaseOptions& s )
 engines::engine::engine( engines::engine::BaseOptions o ) :
 	m_Options( std::move( o ) ),
 	m_processEnvironment( _set_env( m_Options ) ),
-	m_version( [ this ]{ return _installedVersion( *this,m_Options.versionInfo ) ; } )
+	m_version( [ this ](){ return _installedVersion( *this,m_Options.versionInfo ) ; } ),
+	m_exeFullPath( [ this ](){ return engines::executableFullPath( this->name() ) ; } )
 {
 }
 
-QString engines::engine::executableFullPath() const
+const QString& engines::engine::executableFullPath() const
 {
-	return engines::executableFullPath( this->executableName() ) ;
+	return m_exeFullPath.get() ;
 }
 
 bool engines::engine::isInstalled() const
@@ -1170,6 +1171,5 @@ void engines::booleanCache::silenceWarning()
 }
 
 void engines::exeFullPath::silenceWarning()
-{
-
+{	
 }

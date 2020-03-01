@@ -157,6 +157,15 @@ public:
 		virtual void silenceWarning() ;
 	};
 
+	class exeFullPath : public cache< QString >{
+	public:
+	        exeFullPath( std::function< QString() > s ) : cache( std::move( s ) )
+		{
+		}
+	private:
+		virtual void silenceWarning() ;
+	};
+
 	class engine
 	{
 	protected:
@@ -366,8 +375,6 @@ public:
 		static void encodeSpecialCharacters( QString& ) ;
 		static void decodeSpecialCharacters( QString& ) ;
 
-		QString executableFullPath() const ;
-
 		bool isInstalled() const ;
 		bool isNotInstalled() const ;
 		bool unknown() const ;
@@ -392,6 +399,8 @@ public:
 		const QStringList& volumePropertiesCommands() const ;
 
 		const engines::version& installedVersion() const ;
+
+		const QString& executableFullPath() const ;
 		const QString& minimumVersion() const ;
 		const QString& reverseString() const ;
 		const QString& idleString() const ;
@@ -582,19 +591,8 @@ public:
 		const BaseOptions m_Options ;
 		const QProcessEnvironment m_processEnvironment ;
 		const engines::version m_version ;
+		const engines::exeFullPath m_exeFullPath ;
 	} ;
-
-	class exeFullPath : public cache< QString >{
-	public:
-		exeFullPath( const engines::engine& e ) :
-			cache( [ this ](){ return m_engine->executableFullPath() ; } ),
-			m_engine( e )
-		{
-		}
-	private:
-		virtual void silenceWarning() ;
-		const engines::engine::Wrapper m_engine ;
-	};
 
 	engines() ;
 	static const engines& instance() ;

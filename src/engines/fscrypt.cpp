@@ -251,8 +251,7 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
-fscrypt::fscrypt() : engines::engine( _setOptions() ),
-	m_exeFullPath( *this )
+fscrypt::fscrypt() : engines::engine( _setOptions() )
 {
 }
 
@@ -262,7 +261,7 @@ engines::engine::status fscrypt::unmount( const QString& cipherFolder,
 {
 	Q_UNUSED( cipherFolder )
 
-	const auto& e = m_exeFullPath.get() ;
+	const auto& e = this->executableFullPath() ;
 
 	if( e.isEmpty() ){
 
@@ -275,7 +274,7 @@ engines::engine::status fscrypt::unmount( const QString& cipherFolder,
 
 		auto mp = utility::removeFirstAndLast( mountPoint,1,1 ) ;
 
-		auto m = utility::Task::makePath( _mount_point( mp,m_exeFullPath.get() ) ) ;
+		auto m = utility::Task::makePath( _mount_point( mp,exe ) ) ;
 
 		return exe + " purge " + m + " --force --drop-caches=false " + this->userOption() ;
 	} ;
@@ -318,7 +317,7 @@ engines::engine::status fscrypt::unmount( const QString& cipherFolder,
 
 QStringList fscrypt::mountInfo( const QStringList& a ) const
 {
-	const auto& exe = m_exeFullPath.get() ;
+	const auto& exe = this->executableFullPath() ;
 
 	if( exe.isEmpty() ){
 
@@ -339,7 +338,7 @@ QStringList fscrypt::mountInfo( const QStringList& a ) const
 
 bool fscrypt::ownsCipherPath( const QString& cipherPath ) const
 {
-	const auto& exe = m_exeFullPath.get() ;
+	const auto& exe = this->executableFullPath() ;
 
 	if( exe.isEmpty() ){
 
@@ -363,7 +362,7 @@ Task::future< QString >& fscrypt::volumeProperties( const QString& cipherFolder,
 {
 	return Task::run( [ = ](){
 
-		return _volume_properties( cipherFolder,mountPoint,m_exeFullPath.get() ) ;
+		return _volume_properties( cipherFolder,mountPoint,this->executableFullPath() ) ;
 	} ) ;
 }
 

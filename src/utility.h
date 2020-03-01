@@ -272,8 +272,6 @@ namespace utility
 
 	QStringList directoryList( const QString& e ) ;
 
-	QString executableFullPath( const QString& ) ;
-
 	QString freeWindowsDriveLetter() ;
 	bool isDriveLetter( const QString& ) ;
 	bool startsWithDriveLetter( const QString& ) ;
@@ -390,8 +388,6 @@ namespace utility
 	void quitHelper() ;
 	void initGlobals() ;
 	QString helperSocketPath() ;
-
-	QString wrap_su( const QString& ) ;
 
 	QString getVolumeID( const QString&,bool = false ) ;
 	bool eventFilter( QObject * gui,QObject * watched,QEvent * event,std::function< void() > ) ;

@@ -56,9 +56,9 @@ static engines::engine::BaseOptions _setOptions()
 
 #include <sys/stat.h>
 
-static bool _requiresPolkit()
+static bool _requiresPolkit( const engines::engine& engine )
 {
-	auto e = utility::executableFullPath( "ecryptfs-simple" ) ;
+	auto e = engine.executableFullPath() ;
 
 	struct stat st ;
 
@@ -72,8 +72,9 @@ static bool _requiresPolkit()
 
 #else
 
-static bool _requiresPolkit()
+static bool _requiresPolkit( const engines::engine& engine )
 {
+	Q_UNUSED( engine )
 	return false ;
 }
 
@@ -81,7 +82,8 @@ static bool _requiresPolkit()
 
 ecryptfs::ecryptfs() :
 	engines::engine( _setOptions() ),
-	m_requirePolkit( _requiresPolkit() )
+	m_requirePolkit( _requiresPolkit( *this ) ),
+	m_exeSUFullPath( [](){ return engines::executableFullPath( "su" ) ; } )
 {
 }
 
@@ -111,6 +113,18 @@ static bool _unmount_ecryptfs_( Function cmd )
 	}
 }
 
+QString ecryptfs::wrapSU( const QString& s ) const
+{
+	const auto& su = m_exeSUFullPath.get() ;
+
+	if( su.isEmpty() ){
+
+		return s ;
+	}else{
+		return QString( "%1 - -c \"%2\"" ).arg( su,QString( s ).replace( "\"","'" ) ) ;
+	}
+}
+
 engines::engine::status ecryptfs::unmount( const QString& cipherFolder,
 					   const QString& mountPoint,
 					   int maxCount ) const
@@ -119,13 +133,13 @@ engines::engine::status ecryptfs::unmount( const QString& cipherFolder,
 
 	auto cmd = [ & ](){
 
-		auto exe = utility::executableFullPath( "ecryptfs-simple" ) ;
+		auto exe = this->executableFullPath() ;
 
 		auto s = exe + " -k " + cipherFolder ;
 
 		if( utility::useSiriPolkit() ){
 
-			return utility::wrap_su( s ) ;
+			return this->wrapSU( s ) ;
 		}else{
 			return s ;
 		}
@@ -190,7 +204,7 @@ engines::engine::args ecryptfs::command( const QByteArray& password,
 
 	if( utility::useSiriPolkit() ){
 
-		return { args,m,utility::wrap_su( s ) } ;
+		return { args,m,this->wrapSU( s ) } ;
 	}else{
 		return { args,m,s } ;
 	}
@@ -216,4 +230,3 @@ void ecryptfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::funct
 {
 	ecryptfscreateoptions::instance( parent,std::move( function ) ) ;
 }
-

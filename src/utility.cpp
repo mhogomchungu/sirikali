@@ -396,7 +396,7 @@ void utility::logCommandOutPut( const ::Task::process::result& m,const QString& 
 
 static QString siriPolkitExe()
 {
-	auto exe = utility::executableFullPath( "pkexec" ) ;
+	auto exe = engines::executableFullPath( "pkexec" ) ;
 
 	if( exe.isEmpty() ){
 
@@ -750,18 +750,13 @@ QString utility::executableSearchPaths( const QString& e )
 	}
 }
 
-QString utility::executableFullPath( const QString& e )
-{
-	return engines::executableFullPath( e ) ;
-}
-
 QString utility::cmdArgumentValue( const QStringList& l,const QString& arg,const QString& defaulT )
 {
 	int j = l.size() ;
 
 	auto _absolute_exe_path = []( const QString& exe ){
 
-		auto e = utility::executableFullPath( exe ) ;
+		auto e = engines::executableFullPath( exe ) ;
 
 		if( e.isEmpty() ){
 
@@ -1296,18 +1291,6 @@ void utility::setWindowsMountPointOptions( QWidget * obj,QLineEdit * e,QPushButt
 	} ) ;
 }
 
-QString utility::wrap_su( const QString& s )
-{
-	auto su = utility::executableFullPath( "su" ) ;
-
-	if( su.isEmpty() ){
-
-		return s ;
-	}else{
-		return QString( "%1 - -c \"%2\"" ).arg( su,QString( s ).replace( "\"","'" ) ) ;
-	}
-}
-
 void utility::setGUIThread()
 {
 	_main_gui_thread = QThread::currentThread() ;
@@ -1358,7 +1341,7 @@ void utility::waitForFinished( QProcess& e )
 
 static QString _ykchalresp_path()
 {
-	static QString m = utility::executableFullPath( "ykchalresp" ) ;
+	static QString m = engines::executableFullPath( "ykchalresp" ) ;
 	return m ;
 }
 

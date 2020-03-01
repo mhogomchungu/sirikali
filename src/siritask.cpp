@@ -99,7 +99,7 @@ static QString _cmd_args_1( QString e )
 
 			auto a = e.mid( 0,i ) ;
 
-			auto b = utility::executableFullPath( a ) ;
+			auto b = engines::executableFullPath( a ) ;
 
 			if( !b.isEmpty() ){
 
@@ -124,7 +124,7 @@ static QString _cmd_args( const QString& e )
 	}
 
 	auto a = utility::split( e,' ' ) ;
-	auto b = utility::executableFullPath( a.at( 0 ) ) ;
+	auto b = engines::executableFullPath( a.at( 0 ) ) ;
 
 	if( b.isEmpty() ){
 

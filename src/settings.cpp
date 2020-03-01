@@ -238,12 +238,12 @@ static QString _file_manager()
 	if( utility::platformIsLinux() ){
 
 		s = "xdg-open" ;
-		e = utility::executableFullPath( s ) ;
+		e = engines::executableFullPath( s ) ;
 
 	}else if( utility::platformIsOSX() ){
 
 		s = "open" ;
-		e = utility::executableFullPath( s ) ;
+		e = engines::executableFullPath( s ) ;
 	}else{
 		s = "explorer.exe" ;
 	}
