@@ -38,6 +38,125 @@ public:
 	static QString executableFullPath( const QString& ) ;
 	static QStringList executableSearchPaths() ;
 
+	template< typename Type >
+	class cache{
+	public:
+	        cache( std::function< Type() > function ) : m_function( std::move( function ) )
+		{
+		}
+		cache() : m_function( [](){ return Type() ; } )
+		{
+		}
+		const Type& get() const
+		{
+		        if( m_unset ){
+
+			        m_unset = false ;
+
+				m_variable = utility::unwrap( Task::run( [ this ]{ return m_function() ; } ) ) ;
+			}
+
+			return m_variable ;
+		}
+		virtual ~cache()
+		{
+		}
+	private:
+		std::function< Type() > m_function ;
+		mutable Type m_variable ;
+		mutable bool m_unset = true ;
+	};
+
+	class version : public cache< QString >{
+	public:
+	        enum class Operator{ less,lessOrEqual,equal,notEqual,greater,greaterOrEqual } ;
+
+		version( std::function< QString() > s ) : cache( std::move( s ) )
+		{
+		}
+		version()
+		{
+		}
+		utility::result< bool > compare( const QString& v,engines::version::Operator op ) const
+		{
+		        internalVersion a( this->string() ) ;
+			internalVersion b( v ) ;
+
+			if( a.valid() && b.valid() ){
+
+			        switch( op ) {
+
+				        case engines::version::Operator::less :           return a < b ;
+				        case engines::version::Operator::lessOrEqual :    return a <= b ;
+				        case engines::version::Operator::equal :          return a == b ;
+				        case engines::version::Operator::notEqual :       return a != b ;
+				        case engines::version::Operator::greater :        return a > b ;
+				        case engines::version::Operator::greaterOrEqual : return a >= b ;
+				}
+			}
+
+			return {} ;
+		}
+		const QString& string() const
+		{
+		        return this->get() ;
+		}
+		utility::result< bool > greaterOrEqual( const QString& v ) const
+		{
+		        return this->compare( v,engines::version::Operator::greaterOrEqual ) ;
+		}
+		virtual void logError( const QString& ) const ;
+	private:
+		class internalVersion{
+		public:
+		        internalVersion( const QString& e ) ;
+			bool valid() const ;
+			bool operator==( const internalVersion& other ) const ;
+			bool operator<( const internalVersion& other ) const ;
+			/*
+			 * a != b equal to !(a == b)
+			 * a <= b equal to (a < b) || (a == b)
+			 * a >= b equal to !(a < b)
+			 * a > b  equal to !(a <= b)
+			 */
+			bool operator>=( const internalVersion& other ) const
+			{
+			        return !( *this < other ) ;
+			}
+			bool operator<=( const internalVersion& other ) const
+			{
+			        return ( *this < other ) || ( *this == other ) ;
+			}
+			bool operator!=( const internalVersion& other ) const
+			{
+			        return !( *this == other ) ;
+			}
+			bool operator>( const internalVersion& other ) const
+			{
+			        return !( *this <= other ) ;
+			}
+		private:
+			bool m_valid = false ;
+			int m_major = 0 ;
+			int m_minor = 0 ;
+			int m_patch = 0 ;
+		};
+	};
+
+	class booleanCache : public cache< utility::result< bool > >{
+	public:
+	        booleanCache( std::function< utility::result< bool >() > s ) :
+		        cache( std::move( s ) )
+		{
+		}
+		operator bool() const
+		{
+		        return this->get().value() ;
+		}
+	private:
+		virtual void silenceWarning() ;
+	};
+
 	class engine
 	{
 	protected:
@@ -185,6 +304,14 @@ public:
 
 		struct BaseOptions
 		{
+		        struct vInfo{
+
+			        QString versionArgument ;
+				bool readFromStdOut ;
+				int argumentNumber ;
+				int argumentLine ;
+			} versionInfo ;
+
 			int  backendTimeout ;
 			bool hasConfigFile ;
 			bool setsCipherPath ;
@@ -264,6 +391,7 @@ public:
 		const QStringList& fileExtensions() const ;
 		const QStringList& volumePropertiesCommands() const ;
 
+		const engines::version& installedVersion() const ;
 		const QString& minimumVersion() const ;
 		const QString& reverseString() const ;
 		const QString& idleString() const ;
@@ -282,6 +410,8 @@ public:
 
 		QString setConfigFilePath( const QString& ) const ;
 		QByteArray setPassword( const QByteArray& ) const ;
+
+		engine( BaseOptions ) ;
 
 		virtual ~engine() ;
 
@@ -305,18 +435,12 @@ public:
 		virtual void updateOptions( engines::engine::options& ) const ;
 
 		virtual const QProcessEnvironment& getProcessEnvironment() const ;
-		virtual bool requiresPolkit() const ;
-		virtual const QString& installedVersionString() const = 0 ;
+		virtual bool requiresPolkit() const ;		
 		virtual args command( const QByteArray& password,const engines::engine::cmdArgsList& args ) const = 0 ;
 		virtual engines::engine::status errorCode( const QString& e,int s ) const = 0 ;
 		using function = std::function< void( const Options& ) > ;
 		virtual void GUICreateOptionsinstance( QWidget * parent,function ) const = 0 ;
 	protected:
-		virtual QString sanitizeVersionString( const QString& ) const ;
-		QString baseInstalledVersionString( const QString& versionArgument,
-						    bool readFromStdOut,
-                                                    int argumentNumber,
-                                                    int argumentLine ) const ;
 		class commandOptions{
 		public:
 			enum class separator{ space,equal_sign } ;
@@ -454,113 +578,11 @@ public:
 			QString m_subtype ;
 			QString m_mode ;
 		};
-
-		engine( BaseOptions ) ;
 	private:
-		BaseOptions m_Options ;
-		QProcessEnvironment m_processEnvironment ;
+		const BaseOptions m_Options ;
+		const QProcessEnvironment m_processEnvironment ;
+		const engines::version m_version ;
 	} ;
-
-	template< typename Type >
-	class cache{
-	public:
-		cache( std::function< Type() > function ) : m_function( std::move( function ) )
-		{
-		}
-		cache() : m_function( [](){ return Type() ; } )
-		{
-		}
-		const Type& get() const
-		{
-			if( m_unset ){
-
-				m_unset = false ;
-
-				m_variable = utility::unwrap( Task::run( [ this ]{ return m_function() ; } ) ) ;
-			}
-
-			return m_variable ;
-		}
-		virtual ~cache()
-		{
-		}
-	private:
-		std::function< Type() > m_function ;
-		mutable Type m_variable ;
-		mutable bool m_unset = true ;
-	};
-
-	class version : public cache< QString >{
-	public:
-		enum class Operator{ less,lessOrEqual,equal,notEqual,greater,greaterOrEqual } ;
-
-		version( std::function< QString() > s ) : cache( std::move( s ) )
-		{
-		}
-		version()
-		{
-		}
-		utility::result< bool > compare( const QString& v,engines::version::Operator op ) const
-		{
-			internalVersion a( this->get() ) ;
-			internalVersion b( v ) ;
-
-			if( a.valid() && b.valid() ){
-
-				switch( op ) {
-
-					case engines::version::Operator::less :           return a < b ;
-					case engines::version::Operator::lessOrEqual :    return a <= b ;
-					case engines::version::Operator::equal :          return a == b ;
-					case engines::version::Operator::notEqual :       return a != b ;
-					case engines::version::Operator::greater :        return a > b ;
-					case engines::version::Operator::greaterOrEqual : return a >= b ;
-				}
-			}
-
-			return {} ;
-		}
-		utility::result< bool > greaterOrEqual( const QString& v ) const
-		{
-			return this->compare( v,engines::version::Operator::greaterOrEqual ) ;
-		}
-		virtual void logError( const engines::engine& ) const ;
-	private:
-		class internalVersion{
-		public:
-			internalVersion( const QString& e ) ;
-			bool valid() const ;
-			bool operator==( const internalVersion& other ) const ;
-			bool operator<( const internalVersion& other ) const ;
-			/*
-			 * a != b equal to !(a == b)
-			 * a <= b equal to (a < b) || (a == b)
-			 * a >= b equal to !(a < b)
-			 * a > b  equal to !(a <= b)
-			 */
-			bool operator>=( const internalVersion& other ) const
-			{
-				return !( *this < other ) ;
-			}
-			bool operator<=( const internalVersion& other ) const
-			{
-				return ( *this < other ) || ( *this == other ) ;
-			}
-			bool operator!=( const internalVersion& other ) const
-			{
-				return !( *this == other ) ;
-			}
-			bool operator>( const internalVersion& other ) const
-			{
-				return !( *this <= other ) ;
-			}
-		private:
-			bool m_valid = false ;
-			int m_major = 0 ;
-			int m_minor = 0 ;
-			int m_patch = 0 ;
-		};
-	};
 
 	class exeFullPath : public cache< QString >{
 	public:
@@ -572,20 +594,6 @@ public:
 	private:
 		virtual void silenceWarning() ;
 		const engines::engine::Wrapper m_engine ;
-	};
-
-	class booleanCache : public cache< utility::result< bool > >{
-	public:
-		booleanCache( std::function< utility::result< bool >() > s ) :
-		        cache( std::move( s ) )
-		{
-		}
-		operator bool() const
-		{
-			return this->get().value() ;
-		}
-	private:
-		virtual void silenceWarning() ;
 	};
 
 	engines() ;

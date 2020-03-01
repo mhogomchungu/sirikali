@@ -53,12 +53,12 @@ static engines::engine::BaseOptions _setOptions()
 	s.failedToMountList     = QStringList{ "Error" } ;
 	s.successfulMountedList = QStringList{ "has been started" } ;
 	s.notFoundCode          = engines::engine::status::encfsNotFound ;
+	s.versionInfo           = { "--version",false,2,0 } ;
 
 	return s ;
 }
 
-encfs::encfs() : engines::engine( _setOptions() ),
-      m_version( [ this ]{ return this->baseInstalledVersionString( "--version",false,2,0 ) ; } )
+encfs::encfs() : engines::engine( _setOptions() )
 {
 }
 
@@ -135,11 +135,6 @@ engines::engine::status encfs::errorCode( const QString& e,int s ) const
 	}else{
 		return engines::engine::status::backendFail ;
 	}
-}
-
-const QString& encfs::installedVersionString() const
-{
-	return m_version.get() ;
 }
 
 void encfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

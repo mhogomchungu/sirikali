@@ -53,28 +53,28 @@ static engines::engine::BaseOptions _setOptions()
 	s.fuseNames             = QStringList{ "fuse.gocryptfs","fuse.gocryptfs-reverse" } ;
 	s.names                 = QStringList{ "gocryptfs","gocryptfs.reverse","gocryptfs-reverse" } ;
 	s.notFoundCode          = engines::engine::status::gocryptfsNotFound ;
+	s.versionInfo           = { "--version",true,1,0 } ;
 
 	return s ;
 }
 
-static bool _version( const engines::engine& engine,
-		      const engines::version& version,
-		      const QString& v )
+static bool _version( const engines::engine& engine,const QString& v )
 {
-	auto s = version.greaterOrEqual( v ) ;
+	const auto& installedVersion = engine.installedVersion() ;
 
-	if( s ){
+	auto s = installedVersion.greaterOrEqual( v ) ;
+
+	if( s.has_value() ){
 
 		return s.value() ;
 	}else{
-		version.logError( engine ) ;
+		installedVersion.logError( engine.name() ) ;
 		return true ;
 	}
 }
 
 gocryptfs::gocryptfs() : engines::engine( _setOptions() ),
-	m_version( [ this ]{ return this->baseInstalledVersionString( "--version",true,1,0 ) ; } ),
-	m_version_has_error_codes( [ this ](){ return _version( *this,m_version,"1.2.1" ) ; } )
+	m_version_has_error_codes( [ this ](){ return _version( *this,"1.2.1" ) ; } )
 {
 }
 
@@ -188,11 +188,6 @@ engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const
 	}
 
 	return engines::engine::status::backendFail ;
-}
-
-const QString& gocryptfs::installedVersionString() const
-{
-	return m_version.get() ;
 }
 
 void gocryptfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

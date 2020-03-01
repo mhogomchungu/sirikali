@@ -53,6 +53,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.fuseNames             = QStringList{ "fuse.sshfs" } ;
 	s.names                 = QStringList{ "sshfs" } ;
 	s.notFoundCode          = engines::engine::status::sshfsNotFound ;
+	s.versionInfo           = { "--version",true,2,0 } ;
 
 	if( utility::platformIsWindows() ){
 
@@ -64,8 +65,7 @@ static engines::engine::BaseOptions _setOptions()
 
 sshfs::sshfs() :
 	engines::engine( _setOptions() ),
-	m_environment( engines::engine::getProcessEnvironment() ),
-	m_version( [ this ]{ return this->baseInstalledVersionString( "--version",true,2,0 ) ; } )
+	m_environment( engines::engine::getProcessEnvironment() )
 {
 }
 
@@ -73,7 +73,9 @@ engines::engine::status sshfs::passMinimumVersion() const
 {
 	if( utility::platformIsWindows() ){
 
-		auto m = m_version.greaterOrEqual( this->minimumVersion() ) ;
+		const auto& installedVersion = this->installedVersion() ;
+
+		auto m = installedVersion.greaterOrEqual( this->minimumVersion() ) ;
 
 		if( m.has_value() ){
 
@@ -82,7 +84,7 @@ engines::engine::status sshfs::passMinimumVersion() const
 				return engines::engine::status::success ;
 			}
 		}else{
-			m_version.logError( *this ) ;
+			installedVersion.logError( this->name() ) ;
 		}
 	}
 
@@ -182,11 +184,6 @@ engines::engine::status sshfs::errorCode( const QString& e,int s ) const
 	}else{
 		return engines::engine::status::backendFail ;
 	}
-}
-
-const QString& sshfs::installedVersionString() const
-{
-	return m_version.get() ;
 }
 
 void sshfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

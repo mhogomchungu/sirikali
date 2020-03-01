@@ -269,11 +269,6 @@ engines::engine::status custom::errorCode( const QString& e,int s ) const
 	}
 }
 
-const QString& custom::installedVersionString() const
-{
-	return m_version.get() ;
-}
-
 void custom::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
 {
 	customcreateoptions::instance( parent,std::move( function ) ) ;

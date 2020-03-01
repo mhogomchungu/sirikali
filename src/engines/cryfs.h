@@ -33,13 +33,10 @@ public:
 	engines::engine::args command( const QByteArray& password,
 				       const engines::engine::cmdArgsList& args ) const override ;
 
-	const QString& installedVersionString() const override ;
-
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
 private:	
-	QProcessEnvironment setEnv() ;
+	QProcessEnvironment setEnv() const ;
 	const QProcessEnvironment m_env ;
-	const engines::version m_version ;
 	const engines::booleanCache m_version_greater_or_equal_0_10_0 ;
 	const engines::booleanCache m_use_error_codes ;
 } ;

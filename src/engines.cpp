@@ -72,10 +72,10 @@ QStringList engines::executableSearchPaths()
 	}
 }
 
-void engines::version::logError( const engines::engine& e ) const
+void engines::version::logError( const QString& e ) const
 {
 	auto a = QString( "%1 backend has an invalid version string (%2)" ) ;
-	utility::debug() << a.arg( e.name(),this->get() ) ;
+	utility::debug() << a.arg( e,this->get() ) ;
 }
 
 static bool _has_no_extension( const QString& e )
@@ -198,7 +198,7 @@ const QProcessEnvironment& engines::engine::getProcessEnvironment() const
 	return m_processEnvironment ;
 }
 
-QString engines::engine::sanitizeVersionString( const QString& s ) const
+static QString _sanitizeVersionString( const QString& s )
 {
 	auto e = s ;
 
@@ -221,40 +221,38 @@ QString engines::engine::sanitizeVersionString( const QString& s ) const
 	return m ;
 }
 
-QString engines::engine::baseInstalledVersionString( const QString& versionArgument,
-						     bool readFromStdOut,
-						     int argumentNumber,
-						     int argumentLine ) const
+static QString _installedVersion( const engines::engine& e,
+				  const engines::engine::BaseOptions::vInfo& v )
 {
 	const auto& s = utility::systemEnvironment() ;
 
-	const auto cmd = utility::Task::makePath( this->executableFullPath() ) + " " + versionArgument ;
+	const auto cmd = utility::Task::makePath( e.executableFullPath() ) + " " + v.versionArgument ;
 
 	const auto r = utility::unwrap( ::Task::process::run( cmd,{},-1,{},s ) ) ;
 
-	const auto m = utility::split( readFromStdOut ? r.std_out() : r.std_error(),'\n' ) ;
+	const auto m = utility::split( v.readFromStdOut ? r.std_out() : r.std_error(),'\n' ) ;
 
-	if( m.size() > argumentLine ){
+	if( m.size() > v.argumentLine ){
 
-		const auto e = utility::split( m.at( argumentLine ),' ' ) ;
+		const auto e = utility::split( m.at( v.argumentLine ),' ' ) ;
 
-		if( e.size() > argumentNumber ){
+		if( e.size() > v.argumentNumber ){
 
-			return this->sanitizeVersionString( e.at( argumentNumber ) ) ;
+			return _sanitizeVersionString( e.at( v.argumentNumber ) ) ;
 		}
 	}
 
 	return {} ;
 }
 
-engines::engine::engine( engines::engine::BaseOptions o ) :
-	m_Options( std::move( o ) ),
-	m_processEnvironment( utility::systemEnvironment() )
+static QProcessEnvironment _set_env( const engines::engine::BaseOptions& s )
 {
+	auto m = utility::systemEnvironment() ;
+
 	if( utility::platformIsWindows() ){
 
-		const auto& a = m_Options.windowsInstallPathRegistryKey ;
-		const auto& b = m_Options.windowsInstallPathRegistryValue ;
+		const auto& a = s.windowsInstallPathRegistryKey ;
+		const auto& b = s.windowsInstallPathRegistryValue ;
 
 		auto s = SiriKali::Windows::engineInstalledDir( a,b ) ;
 
@@ -262,11 +260,20 @@ engines::engine::engine( engines::engine::BaseOptions o ) :
 
 			auto a = s + ";" ;
 			auto b = s + "\\bin;" ;
-			auto c = a + b + m_processEnvironment.value( "PATH" ) ;
+			auto c = a + b + m.value( "PATH" ) ;
 
-			m_processEnvironment.insert( "PATH",c ) ;
+			m.insert( "PATH",c ) ;
 		}
 	}
+
+	return m ;
+}
+
+engines::engine::engine( engines::engine::BaseOptions o ) :
+	m_Options( std::move( o ) ),
+	m_processEnvironment( _set_env( m_Options ) ),
+	m_version( [ this ]{ return _installedVersion( *this,m_Options.versionInfo ) ; } )
+{
 }
 
 QString engines::engine::executableFullPath() const
@@ -444,6 +451,11 @@ const QString& engines::engine::windowsInstallPathRegistryValue() const
 const QStringList& engines::engine::volumePropertiesCommands() const
 {
 	return m_Options.volumePropertiesCommands ;
+}
+
+const engines::version& engines::engine::installedVersion() const
+{
+	return m_version ;
 }
 
 const QString& engines::engine::minimumVersion() const

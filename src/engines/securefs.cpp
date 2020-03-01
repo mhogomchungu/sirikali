@@ -50,12 +50,12 @@ static engines::engine::BaseOptions _setOptions()
 	s.failedToMountList     = QStringList{ "Error","init" } ;
 	s.successfulMountedList = QStringList{ "has been started","init" } ;
 	s.notFoundCode          = engines::engine::status::securefsNotFound ;
+	s.versionInfo           = { "version",true,1,0 } ;
 
 	return s ;
 }
 
-securefs::securefs() : engines::engine( _setOptions() ),
-	m_version( [ this ]{ return this->baseInstalledVersionString( "version",true,1,0 ) ; } )
+securefs::securefs() : engines::engine( _setOptions() )
 {
 }
 
@@ -115,11 +115,6 @@ engines::engine::status securefs::errorCode( const QString& e,int s ) const
 	}else{
 		return engines::engine::status::backendFail ;
 	}
-}
-
-const QString& securefs::installedVersionString() const
-{
-	return m_version.get() ;
 }
 
 void securefs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

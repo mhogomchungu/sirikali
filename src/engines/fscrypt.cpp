@@ -246,13 +246,13 @@ static engines::engine::BaseOptions _setOptions()
 	s.names                 = QStringList{ "fscrypt","fscrypt*" } ;
 	s.volumePropertiesCommands = QStringList{ "fscrypt status %{plainFolder}" } ;
 	s.notFoundCode             = engines::engine::status::fscryptNotFound ;
+	s.versionInfo              = { "--version",true,0,2 } ;
 
 	return s ;
 }
 
 fscrypt::fscrypt() : engines::engine( _setOptions() ),
-	m_exeFullPath( *this ),
-	m_version( [ this ]{ return this->baseInstalledVersionString( "--version",true,0,2 ) ; } )
+	m_exeFullPath( *this )
 {
 }
 
@@ -271,8 +271,6 @@ engines::engine::status fscrypt::unmount( const QString& cipherFolder,
 
 	auto exe = utility::Task::makePath( e ) ;
 
-	auto ss = m_version.greaterOrEqual( "0.2.6" ) ;
-
 	auto umount = [ & ](){
 
 		auto mp = utility::removeFirstAndLast( mountPoint,1,1 ) ;
@@ -281,6 +279,10 @@ engines::engine::status fscrypt::unmount( const QString& cipherFolder,
 
 		return exe + " purge " + m + " --force --drop-caches=false " + this->userOption() ;
 	} ;
+
+	const auto& installedVersion = this->installedVersion() ;
+
+	auto ss = installedVersion.greaterOrEqual( "0.2.6" ) ;
 
 	if( ss.has_value() ){
 
@@ -291,7 +293,7 @@ engines::engine::status fscrypt::unmount( const QString& cipherFolder,
 			exe = umount() ;
 		}
 	}else{
-		m_version.logError( *this ) ;
+		installedVersion.logError( this->name() ) ;
 		exe = umount() ;
 	}
 
@@ -423,11 +425,6 @@ engines::engine::status fscrypt::errorCode( const QString& e,int s ) const
 	}else{
 		return engines::engine::status::backendFail ;
 	}
-}
-
-const QString& fscrypt::installedVersionString() const
-{
-	return m_version.get() ;
 }
 
 void fscrypt::GUICreateOptionsinstance( QWidget *,engines::engine::function ) const

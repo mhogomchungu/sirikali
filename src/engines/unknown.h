@@ -19,9 +19,8 @@
 
 #include "../engines.h"
 
-class unknown : public engines::engine
+struct unknown : public engines::engine
 {
-public:
 	unknown() ;
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
@@ -29,9 +28,5 @@ public:
 	engines::engine::args command( const QByteArray& password,
 				       const engines::engine::cmdArgsList& args ) const override ;
 
-	const QString& installedVersionString() const override ;
-
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
-private:
-	engines::version m_version ;
 } ;

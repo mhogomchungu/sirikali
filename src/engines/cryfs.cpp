@@ -28,6 +28,10 @@ static engines::engine::BaseOptions _setOptions()
 	auto a = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{26116061-4F99-4C44-A178-2153FA396308}" ;
 	auto b = "InstallLocation" ;
 
+	s.windowsInstallPathRegistryKey   = a ;
+	s.windowsInstallPathRegistryValue = b ;
+	s.windowsUnMountCommand           = SiriKali::Windows::engineInstalledDir( a,b ) + "\\bin\\cryfs-unmount.exe" ;
+
 	s.backendTimeout              = 0 ;
 	s.takesTooLongToUnlock        = false ;
 	s.supportsMountPathsOnWindows = true ;
@@ -46,20 +50,18 @@ static engines::engine::BaseOptions _setOptions()
 	s.incorrectPasswordText = "Could not load config file. Did you enter the correct password?" ;
 	s.configFileArgument    = "--config" ;
 	s.releaseURL            = "https://api.github.com/repos/cryfs/cryfs/releases" ;
-	s.windowsInstallPathRegistryKey   = a ;
-	s.windowsInstallPathRegistryValue = b ;
-	s.windowsUnMountCommand = SiriKali::Windows::engineInstalledDir( a,b ) + "\\bin\\cryfs-unmount.exe" ;
 	s.successfulMountedList = QStringList{ "Mounting filesystem." } ;
 	s.configFileNames       = QStringList{ "cryfs.config",".cryfs.config" } ;
 	s.fuseNames             = QStringList{ "fuse.cryfs" } ;
 	s.failedToMountList     = QStringList{ "Error" } ;
 	s.names                 = QStringList{ "cryfs" } ;
 	s.notFoundCode          = engines::engine::status::cryfsNotFound ;
+	s.versionInfo           = { "--version",true,2,0 } ;
 
 	return s ;
 }
 
-QProcessEnvironment cryfs::setEnv()
+QProcessEnvironment cryfs::setEnv() const
 {
 	auto s = engines::engine::getProcessEnvironment() ;
 
@@ -69,17 +71,17 @@ QProcessEnvironment cryfs::setEnv()
 	return s ;
 }
 
-static bool _version( const engines::engine& engine,
-		      const engines::version& version,
-		      const QString& v )
+static bool _version( const engines::engine& engine,const QString& v )
 {
-	auto s = version.greaterOrEqual( v ) ;
+	const auto& e = engine.installedVersion() ;
+
+	auto s = e.greaterOrEqual( v ) ;
 
 	if( s.has_value() ){
 
 		return s.value() ;
 	}else{
-		version.logError( engine ) ;
+		e.logError( engine.name() ) ;
 
 		return true ;
 	}
@@ -88,9 +90,8 @@ static bool _version( const engines::engine& engine,
 cryfs::cryfs() :
 	engines::engine( _setOptions() ),
 	m_env( this->setEnv() ),
-	m_version( [ this ]{ return this->baseInstalledVersionString( "--version",true,2,0 ) ; } ),
-	m_version_greater_or_equal_0_10_0( [ this ](){ return _version( *this,m_version,"0.10.0" ) ; } ),
-	m_use_error_codes( [ this ](){ return utility::platformIsWindows() ? false : _version( *this,m_version,"0.9.9" ) ; } )
+	m_version_greater_or_equal_0_10_0( [ this ](){ return _version( *this,"0.10.0" ) ; } ),
+	m_use_error_codes( [ this ](){ return utility::platformIsWindows() ? false : _version( *this,"0.9.9" ) ; } )
 {
 }
 
@@ -189,11 +190,6 @@ engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 	}
 
 	return engines::engine::status::backendFail ;
-}
-
-const QString& cryfs::installedVersionString() const
-{	
-	return m_version.get() ;
 }
 
 void cryfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

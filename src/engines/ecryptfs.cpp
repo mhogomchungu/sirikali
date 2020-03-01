@@ -45,6 +45,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.configFileNames       = QStringList{ ".ecryptfs.config","ecryptfs.config" } ;
 	s.fuseNames             = QStringList{ "ecryptfs" } ;
 	s.names                 = QStringList{ "ecryptfs" } ;
+	s.versionInfo           = { "--version",true,1,0 } ;
 
 	s.notFoundCode = engines::engine::status::ecryptfs_simpleNotFound ;
 
@@ -80,8 +81,7 @@ static bool _requiresPolkit()
 
 ecryptfs::ecryptfs() :
 	engines::engine( _setOptions() ),
-	m_requirePolkit( _requiresPolkit() ),
-	m_version( [ this ]{ return this->baseInstalledVersionString( "--version",true,1,0 ) ; } )
+	m_requirePolkit( _requiresPolkit() )
 {
 }
 
@@ -210,11 +210,6 @@ engines::engine::status ecryptfs::errorCode( const QString& e,int s ) const
 	}else{
 		return engines::engine::status::backendFail ;
 	}
-}
-
-const QString& ecryptfs::installedVersionString() const
-{
-	return m_version.get() ;
 }
 
 void ecryptfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
