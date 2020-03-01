@@ -31,7 +31,7 @@ public:
 
 	QStringList mountInfo( const QStringList& ) const override ;
 
-	const engines::engine& proveEngine( const QString& cipherPath ) const override ;
+	bool ownsCipherPath( const QString& cipherPath ) const override ;
 
 	void updateVolumeList( const engines::engine::options& ) const override ;
 

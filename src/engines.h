@@ -430,7 +430,7 @@ public:
 
 		virtual engine::engine::status passMinimumVersion() const ;
 
-		virtual const engines::engine& proveEngine( const QString& cipherPath ) const ;
+		virtual bool ownsCipherPath( const QString& cipherPath ) const ;
 
 		virtual void updateOptions( engines::engine::options& ) const ;
 
@@ -605,11 +605,10 @@ public:
 	const std::vector< engines::engine::Wrapper >& supportedEngines() const ;
 	const engine& getUnKnown() const ;
 	const engine& getByName( const QString& e ) const ;
+	const engine& getByCipherFolderPath( const QString& e ) const ;
 	const engine& getByFuseName( const QString& e ) const ;
 	const engine& getByFileExtension( const QString& e ) const ;
-	std::pair< const engines::engine&,QString >
-	getByConfigFileNames( std::function< bool( const QString& ) > function ) const ;
-
+	const engine& getByConfigFileNames( std::function< bool( const QString& ) > function ) const ;
 private:
 	std::vector< std::unique_ptr< engines::engine > > m_backends ;
 	std::vector< engines::engine::Wrapper > m_backendWrappers ;

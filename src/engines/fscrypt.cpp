@@ -337,31 +337,19 @@ QStringList fscrypt::mountInfo( const QStringList& a ) const
 	} ) ;
 }
 
-const engines::engine& fscrypt::proveEngine( const QString& cipherPath ) const
+bool fscrypt::ownsCipherPath( const QString& cipherPath ) const
 {
-	if( !utility::platformIsLinux() ){
-
-		return engines::instance().getUnKnown() ;
-	}
-
 	const auto& exe = m_exeFullPath.get() ;
 
 	if( exe.isEmpty() ){
 
-		return engines::instance().getUnKnown() ;
+		return false ;
 	}else{
 		auto m = utility::Task::makePath( cipherPath ) ;
 
-		auto ee = utility::Task::makePath( exe ) ;
+		auto e = utility::Task::makePath( exe ) ;
 
-		auto s = _run( ee + " status " + m ).success() ;
-
-		if( s ){
-
-			return *this ;
-		}else{
-			return engines::instance().getUnKnown() ;
-		}
+		return _run( e + " status " + m ).success() ;
 	}
 }
 

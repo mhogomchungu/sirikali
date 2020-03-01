@@ -186,11 +186,11 @@ engines::engine::status engines::engine::unmount( const QString& cipherFolder,
 	return siritask::unmountVolume( mountPoint,this->unMountCommand(),maxCount ) ;
 }
 
-const engines::engine& engines::engine::proveEngine( const QString& cipherPath ) const
+bool engines::engine::ownsCipherPath( const QString& cipherPath ) const
 {
 	Q_UNUSED( cipherPath )
 
-	return engines::instance().getUnKnown() ;
+	return false ;
 }
 
 const QProcessEnvironment& engines::engine::getProcessEnvironment() const
@@ -634,9 +634,9 @@ engines::engines()
 }
 
 template< typename Engines,typename Compare,typename listSource >
-static std::pair< const engines::engine&,QString > _get_engine( const Engines& engines,
-								Compare compareFunction,
-								listSource listSourceFunction )
+const engines::engine& _get_engine( const Engines& engines,
+				    const Compare& found,
+				    const listSource& getList )
 {
 	const auto data = engines.data() ;
 
@@ -644,48 +644,67 @@ static std::pair< const engines::engine&,QString > _get_engine( const Engines& e
 
 		const auto& s = **( data + i ) ;
 
-		for( const auto& xt : listSourceFunction( s ) ){
+		for( const auto& xt : getList( s ) ){
 
-			if( compareFunction( xt ) ){
+			if( found( xt ) ){
 
-				return { s,xt } ;
+				return s ;
 			}
 		}
 	}
 
-	return { **data,QString() } ;
+	return **data ;
 }
 
-std::pair< const engines::engine&,QString >
-engines::getByConfigFileNames( std::function< bool( const QString& ) > function ) const
+const engines::engine& engines::getByConfigFileNames( std::function< bool( const QString& ) > function ) const
 {
-	return _get_engine( m_backends,
-			    std::move( function ),
-			    []( const engines::engine& s ){ return s.configFileNames() ; } ) ;
+	auto list = []( const engines::engine& s ){ return s.configFileNames() ; } ;
+
+	return _get_engine( m_backends,std::move( function ),list ) ;
 }
 
 const engines::engine& engines::getByFuseName( const QString& e ) const
 {
-	auto m = _get_engine( m_backends,
-			      [ & ]( const QString& s ){ return !e.compare( s,Qt::CaseInsensitive ) ; },
-			      []( const engines::engine& s ){ return s.fuseNames() ; } ) ;
-	return m.first ;
+	auto cmp = [ & ]( const QString& s ){ return !e.compare( s,Qt::CaseInsensitive ) ; } ;
+	auto list = []( const engines::engine& s ){ return s.fuseNames() ; } ;
+
+	return _get_engine( m_backends,cmp,list ) ;
 }
 
 const engines::engine& engines::getByFileExtension( const QString& e ) const
 {
-	auto m = _get_engine( m_backends,
-			      [ & ]( const QString& s ){ return e.endsWith( s,Qt::CaseInsensitive ) ; },
-			      []( const engines::engine& s ){ return s.fileExtensions() ; } ) ;
-	return m.first ;
+	auto cmp = [ & ]( const QString& s ){ return e.endsWith( s,Qt::CaseInsensitive ) ; } ;
+	auto list = []( const engines::engine& s ){ return s.fileExtensions() ; } ;
+
+	return _get_engine( m_backends,cmp,list ) ;
 }
 
 const engines::engine& engines::getByName( const QString& e ) const
 {
-	auto m = _get_engine( m_backends,
-			      [ & ]( const QString& s ){ return !e.compare( s,Qt::CaseInsensitive ) ; },
-			      []( const engines::engine& s ){ return s.names() ; } ) ;
-	return m.first ;
+	auto cmp = [ & ]( const QString& s ){ return !e.compare( s,Qt::CaseInsensitive ) ; } ;
+	auto list = []( const engines::engine& s ){ return s.names() ; } ;
+
+	return _get_engine( m_backends,cmp,list ) ;
+}
+
+const engines::engine& engines::getByCipherFolderPath( const QString& e ) const
+{
+	auto list = []( const engines::engine& s )->std::array< engines::engine::Wrapper,1 >{
+
+		if( !s.hasConfigFile() ){
+
+			return { s } ;
+		}
+
+		return {} ;
+	} ;
+
+	auto cmp = [ & ]( const engines::engine::Wrapper& s ){
+
+		return s->ownsCipherPath( e ) ;
+	} ;
+
+	return _get_engine( m_backends,cmp,list ) ;
 }
 
 engines::engine::cmdStatus::cmdStatus()

@@ -525,28 +525,26 @@ siritask::Engine siritask::mountEngine( const siritask::mount& e )
 
 	if( configFilePath.isEmpty() ){
 
-		auto m = engines.getByConfigFileNames( [ & ]( const QString& e ){
+		const auto& m = engines.getByConfigFileNames( [ & ]( const QString& e ){
 
 			return utility::pathExists( cipherFolder + "/" + e ) ;
 		} ) ;
 
-		if( m.first.known() ){
+		if( m.known() ){
 
-			return { { m.first,"",cipherFolder } } ;
+			return { { m,"",cipherFolder } } ;
 		}else{
-			const auto& engine = engines.getByName( "fscrypt" ) ;
-
-			return { { engine.proveEngine( cipherFolder ),"",cipherFolder } } ;
+			return { { engines.getByCipherFolderPath( cipherFolder ),"",cipherFolder } } ;
 		}
 
 	}else if( utility::pathExists( configFilePath ) ){
 
-		auto m = engines.getByConfigFileNames( [ & ]( const QString& e ){
+		const auto& m = engines.getByConfigFileNames( [ & ]( const QString& e ){
 
 			return configFilePath.endsWith( e ) ;
 		} ) ;
 
-		return { { m.first,configFilePath,cipherFolder } } ;
+		return { { m,configFilePath,cipherFolder } } ;
 	}else{
 		for( const auto& it : engines.supportedEngines() ){
 
