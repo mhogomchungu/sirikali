@@ -312,6 +312,11 @@ static void _build_debug_msg( const QString& b )
 	QString a = "***************************\n" ;
 	QString c = "\n***************************" ;
 
+	if( utility::debugEnabled() ){
+
+		utility::debug::cout() << b ;
+	}
+
 	_set_debug_window_text( a + b + c ) ;
 }
 
@@ -454,26 +459,26 @@ void utility::initGlobals()
 
 	utility::setGUIThread() ;
 
-#ifdef Q_OS_LINUX
+	if( utility::platformIsLinux() ){
 
-	auto uid = getuid() ;
+		auto uid = getuid() ;
 
-	QString a = "/tmp/SiriKali-" + QString::number( uid ) ;
+		QString a = "/tmp/SiriKali-" + QString::number( uid ) ;
 
-	_polkit_socket_path = a + "/siriPolkit.socket" ;
+		_polkit_socket_path = a + "/siriPolkit.socket" ;
 
-	QDir e ;
+		QDir e ;
 
-	e.remove( a ) ;
-	e.rmdir( _polkit_socket_path ) ;
+		e.remove( a ) ;
+		e.rmdir( _polkit_socket_path ) ;
 
-	e.mkpath( a ) ;
+		e.mkpath( a ) ;
 
-	auto s = a.toLatin1() ;
+		auto s = a.toLatin1() ;
 
-	if( chown( s.constData(),uid,uid ) ){}
-	if( chmod( s.constData(),0700 ) ){}
-#endif
+		if( chown( s.constData(),uid,uid ) ){}
+		if( chmod( s.constData(),0700 ) ){}
+	}
 }
 
 QString utility::helperSocketPath()
@@ -488,38 +493,39 @@ bool utility::useSiriPolkit()
 
 void utility::quitHelper()
 {
-#ifdef Q_OS_LINUX
-	auto e = utility::helperSocketPath() ;
+	if( utility::platformIsLinux() ){
 
-	if( utility::pathExists( e ) ){
+		auto e = utility::helperSocketPath() ;
 
-		QLocalSocket s ;
+		if( utility::pathExists( e ) ){
 
-		s.connectToServer( e ) ;
+			QLocalSocket s ;
 
-		if( s.waitForConnected() ){
+			s.connectToServer( e ) ;
 
-			s.write( [ & ]()->QByteArray{
+			if( s.waitForConnected() ){
 
-				SirikaliJson json ;
+				s.write( [ & ]()->QByteArray{
 
-				json[ "cookie" ]   = _cookie ;
-				json[ "password" ] = "" ;
-				json[ "command" ]  = "exit" ;
+					SirikaliJson json ;
 
-				return json.structure() ;
-			}() ) ;
+					json[ "cookie" ]   = _cookie ;
+					json[ "password" ] = "" ;
+					json[ "command" ]  = "exit" ;
 
-			s.waitForBytesWritten() ;
+					return json.structure() ;
+				}() ) ;
+
+				s.waitForBytesWritten() ;
+			}
 		}
+
+		auto a = "/tmp/SiriKali-" + QString::number( getuid() ) ;
+
+		QDir m ;
+		m.remove( a ) ;
+		m.rmdir( _polkit_socket_path ) ;
 	}
-
-	auto a = "/tmp/SiriKali-" + QString::number( getuid() ) ;
-
-	QDir m ;
-	m.remove( a ) ;
-	m.rmdir( _polkit_socket_path ) ;
-#endif
 }
 
 ::Task::future<bool>& utility::openPath( const QString& path,const QString& opener )

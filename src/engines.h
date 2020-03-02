@@ -227,7 +227,7 @@ public:
 			ecryptfs_simpleNotFound,
 
 			customCommandNotFound,
-                        customCommandBadPassword,
+			customCommandBadPassword,
 
 			cryfsMigrateFileSystem,
 			IllegalPath,
@@ -315,7 +315,7 @@ public:
 		{
 		        struct vInfo{
 
-			        QString versionArgument ;
+				QString versionArgument ;
 				bool readFromStdOut ;
 				int argumentNumber ;
 				int argumentLine ;

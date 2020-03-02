@@ -23,10 +23,6 @@
 #include "../mountinfo.h"
 #include "../json_parser.hpp"
 
-#include <vector>
-
-static const char * _spaceToken = " " ;
-
 struct mountInfo{
 	const QStringList& mountInfo ;
 	const QStringList& mountedVolumes ;
@@ -48,7 +44,7 @@ static QStringList _encrypted_volumes( const QString& list )
 
 			break ;
 		}else{
-			auto a = utility::split( x,_spaceToken ) ;
+			auto a = utility::split( x," " ) ;
 
 			if( a.size() > 4 ){
 

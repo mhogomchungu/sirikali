@@ -598,14 +598,39 @@ bool mountinfo::folderMountEvents::monitor()
 
 #endif
 
+static QString _gvfs_fuse_path()
+{
+	auto s = settings::instance().gvfsFuseMonitorPath() ;
+
+	if( s.isEmpty() ){
+
+		for( const auto& it : _unlocked_volumes() ){
+
+			if( it.contains( " fuse.gvfsd-fuse " ) ){
+
+				auto m = utility::split( it," " ) ;
+
+				if( m.size() > 5 ){
+
+					return m.at( 4 ) ;
+				}
+			}
+		}
+	}
+
+	return s ;
+}
+
 dbusMonitor::dbusMonitor( folderMonitor::function function ) :
 	m_dbus( this ),
-	m_folderMonitor( true,settings::instance().gvfsFuseMonitorPath() ),
+	m_folderMonitor( true,_gvfs_fuse_path() ),
 	m_function( std::move( function ) )
 {
+	utility::debug() << "gvfs fuse path: " + m_folderMonitor.path() ;
+
 	if( !m_folderMonitor.path().isEmpty() ){
 
-		m_dbus.connect() ;
+		m_dbus.monitor() ;
 	}
 }
 

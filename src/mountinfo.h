@@ -57,7 +57,7 @@ public:
 	siriDBus( QObject * obj ) : m_qObject( obj )
 	{
 	}
-	void connect()
+	void monitor()
 	{
 		m_dbus.reset( new QDBusConnection( QDBusConnection::sessionBus() ) ) ;
 
@@ -82,7 +82,7 @@ public:
 	{
 		Q_UNUSED( obj )
 	}
-	void connect()
+	void monitor()
 	{
 	}
 };

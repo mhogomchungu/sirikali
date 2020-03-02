@@ -57,7 +57,7 @@ class sirikali : public QWidget
 {
 	Q_OBJECT
 public:
-	sirikali() ;
+	sirikali( const QStringList& ) ;
 	int start( QApplication& ) ;
 	~sirikali() ;
 private slots:
@@ -70,7 +70,7 @@ private slots:
 	void polkitFailedWarning( void ) ;
 	void hideWindow( void ) ;
 	void setUpApp( const QString& ) ;
-	void start( const QStringList& ) ;
+	void start() ;
 	void autoUpdateCheck( void ) ;
 	void volumeProperties() ;
 	void genericVolumeProperties( void ) ;
@@ -188,6 +188,8 @@ private:
 	debugWindow m_debugWindow ;
 
 	systemSignalHandler m_signalHandler ;
+
+	const QStringList& m_argumentList ;
 };
 
 #endif // MAINWINDOW_H
