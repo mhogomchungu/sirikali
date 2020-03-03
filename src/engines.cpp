@@ -151,8 +151,19 @@ Task::future< QString >& engines::engine::volumeProperties( const QString& ciphe
 		for( const auto& it : this->volumePropertiesCommands() ){
 
 			auto a = utility::split( it,' ' ) ;
-			auto b = engines::executableFullPath( a.first() ) ;
+
+			auto b = [ & ](){
+
+				if( a.at( 0 ) == this->executableName() ){
+
+					return this->executableFullPath() ;
+				}else{
+					return engines::executableFullPath( a.at( 0 ) ) ;
+				}
+			}() ;
+
 			a.removeFirst() ;
+
 			auto c = a.join( " " ) ;
 
 			if( !b.isEmpty() ){

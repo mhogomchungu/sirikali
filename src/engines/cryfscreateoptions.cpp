@@ -62,7 +62,7 @@ cryfscreateoptions::cryfscreateoptions( QWidget * parent,
 		return m ;
 	}() ) ;
 
-	auto exe = engines::executableFullPath( "cryfs" ) + " --show-ciphers" ;
+	auto exe = engines::instance().getByName( "cryfs" ).executableFullPath() + " --show-ciphers" ;
 
 	utility::Task::run( exe ).then( [ this ]( const utility::Task& e ){
 
