@@ -344,7 +344,14 @@ bool fscrypt::ownsCipherPath( const QString& cipherPath ) const
 
 		auto e = utility::Task::makePath( exe ) ;
 
-		return _run( e + " status " + m ).success() ;
+		auto s = _run( e + " status " + m ) ;
+
+		if( s.success() ){
+
+			return s.stdOut().contains( "is encrypted with fscrypt" ) ;
+		}else{
+			return false ;
+		}
 	}
 }
 

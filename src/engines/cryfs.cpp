@@ -61,16 +61,6 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
-QProcessEnvironment cryfs::setEnv() const
-{
-	auto s = engines::engine::getProcessEnvironment() ;
-
-	s.insert( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
-	s.insert( "CRYFS_FRONTEND","noninteractive" ) ;
-
-	return s ;
-}
-
 static bool _version( const engines::engine& engine,const QString& v )
 {
 	const auto& e = engine.installedVersion() ;
@@ -93,6 +83,16 @@ cryfs::cryfs() :
 	m_version_greater_or_equal_0_10_0( [ this ](){ return _version( *this,"0.10.0" ) ; } ),
 	m_use_error_codes( [ this ](){ return utility::platformIsWindows() ? false : _version( *this,"0.9.9" ) ; } )
 {
+}
+
+QProcessEnvironment cryfs::setEnv() const
+{
+	auto s = engines::engine::getProcessEnvironment() ;
+
+	s.insert( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
+	s.insert( "CRYFS_FRONTEND","noninteractive" ) ;
+
+	return s ;
 }
 
 bool cryfs::takesTooLongToUnlock() const
