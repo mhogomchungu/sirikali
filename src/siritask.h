@@ -71,6 +71,14 @@ namespace siritask
 		{
 			return m_engine.get() ;
 		}
+		const engines::engine * operator->() const
+		{
+			return m_engine.operator->() ;
+		}
+		const engines::engine * operator->()
+		{
+			return m_engine.operator->() ;
+		}
 	private:
 		engines::engine::Wrapper m_engine ;
 		QString m_configFilePath ;

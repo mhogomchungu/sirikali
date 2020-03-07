@@ -117,6 +117,12 @@ void cryfscreateoptions::pbOK()
 		}
 	}() ;
 
+
+	if( m_ui->cbAllowReplacedFileSystem ){
+
+		e += " --allow-replaced-filesystem" ;
+	}
+
 	this->HideUI( { { e,m_ui->lineEdit_2->text() } } ) ;
 }
 

@@ -481,7 +481,7 @@ siritask::Engine siritask::mountEngine( const siritask::mount& e )
 	const QString& configFilePath  = e.configFilePath ;
 	const siritask::Engine& Engine = e.engine ;
 
-	if( Engine.get().known() ){
+	if( Engine->known() ){
 
 		const auto& engine = Engine.get() ;
 
@@ -825,7 +825,7 @@ siritask::encryptedFolderMount( const Opts& opt,bool m,const siritask::Engine& e
 
 	if( s == engines::engine::status::success ){
 
-		_run_command_on_mount( opt,engine.get().name() ) ;
+		_run_command_on_mount( opt,engine->name() ) ;
 	}
 
 	return s ;

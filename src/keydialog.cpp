@@ -390,9 +390,9 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 		m->addSeparator() ;
 
-		if( m_engine.get().known() ){
+		if( m_engine->known() ){
 
-			const auto& aa = m_engine.get().name() ;
+			const auto& aa = m_engine->name() ;
 
 			_addAction( aa,aa,false ) ;
 		}else{
@@ -602,15 +602,13 @@ void keyDialog::pbOptions()
 			}
 		}
 
-		options::Options e{ { m_idleTimeOut,m_configFile,m_mountOptions,m_exe },m_reverseMode } ;
+		options::Options e{ { m_idleTimeOut,m_configFile,m_mountOptions,m_engine->name() },m_reverseMode } ;
 
 		this->hide() ;
 
 		options::instance( m_parentWidget,m_create,e,[ this ]( const options::Options& e ){
 
 			if( e.success ){
-
-				m_reverseMode = e.reverseMode ;
 
 				utility2::stringListToStrings( e.options,m_idleTimeOut,m_configFile,m_mountOptions ) ;
 
@@ -620,6 +618,8 @@ void keyDialog::pbOptions()
 				}else{
 					m_ui->pbOpen->setFocus() ;
 				}
+
+				m_reverseMode = e.checkBoxChecked ;
 			}
 
 			this->ShowUI() ;

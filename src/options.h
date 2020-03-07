@@ -43,14 +43,14 @@ class options : public QDialog
 public:
 	struct Options{
 		Options( const QStringList& e,bool r ) :
-			options( e ),reverseMode( r ),success( true )
+			options( e ),checkBoxChecked( r ),success( true )
 		{
 		}
 		Options() : success( false )
 		{
 		}
 		QStringList options ;
-		bool reverseMode ;
+		bool checkBoxChecked ;
 		bool success ;
 	} ;
 	static void instance( QWidget * parent,bool r,const Options& l,
@@ -70,7 +70,6 @@ private:
 	void closeEvent( QCloseEvent * ) ;
 	Ui::options * m_ui ;
 	bool m_create ;
-	QString m_type ;
 	std::function< void( const Options& ) > m_setOptions ;
 	QWidget * m_parentWidget ;
 };
