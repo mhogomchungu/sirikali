@@ -97,7 +97,7 @@ static bool _set_if_found( const Function& function )
 
 void gocryptfs::updateOptions( engines::engine::options& opt ) const
 {
-	opt.reverseMode = [ & ](){
+	opt.boolOptions.unlockInReverseMode = [ & ](){
 
 		if( opt.configFilePath.isEmpty() ){
 
@@ -126,7 +126,7 @@ engines::engine::args gocryptfs::command( const QByteArray& password,
 
 	exeOptions.add( "-q" ) ;
 
-	if( args.opt.reverseMode ){
+	if( args.opt.boolOptions.unlockInReverseMode ){
 
 		exeOptions.add( this->reverseString() ) ;
 	}

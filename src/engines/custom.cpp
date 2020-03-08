@@ -217,7 +217,7 @@ engines::engine::args custom::command( const QByteArray& password,
 			exeOptions.add( args.configFilePath ) ;
 		}
 
-		if( args.opt.reverseMode ){
+		if( args.opt.boolOptions.unlockInReverseMode ){
 
 			exeOptions.add( this->reverseString() ) ;
 		}

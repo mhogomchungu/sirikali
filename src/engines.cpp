@@ -927,18 +927,18 @@ QString engines::engine::cmdStatus::toString() const
 	return e + "\n----------------------------------------\n" + m_message ;
 }
 
-engines::engine::Options::Options( QStringList s,bool r ) :
-	options( std::move( s ) ),reverseMode( r ),success( true )
+engines::engine::Options::Options( QStringList s,const options::booleanOptions& r ) :
+	options( std::move( s ) ),opts( r ),success( true )
 {
 }
 
 engines::engine::Options::Options( QStringList s ) :
-	options( std::move( s ) ),reverseMode( false ),success( true )
+	options( std::move( s ) ),success( true )
 {
 }
 
-engines::engine::Options::Options( bool r ) :
-	reverseMode( r ),success( true )
+engines::engine::Options::Options( const options::booleanOptions& r ) :
+	opts( r ),success( true )
 {
 }
 
@@ -952,9 +952,8 @@ engines::engine::options::options( const favorites::entry& e,const QByteArray& v
 	key( volumeKey ),
 	idleTimeout( e.idleTimeOut ),
 	configFilePath( e.configFilePath ),
-	ro( e.readOnlyMode.defined() ? e.readOnlyMode.True() : false ),
-	reverseMode( e.reverseMode ),
-	mountOptions( e.mountOptions )
+	mountOptions( e.mountOptions ),
+	boolOptions{ e.readOnlyMode.defined() ? e.readOnlyMode.True() : false,e.reverseMode,false,false }
 {
 }
 
@@ -963,8 +962,7 @@ engines::engine::options::options( const QString& cipher_folder,
 				   const QByteArray& volume_key,
 				   const QString& idle_timeout,
 				   const QString& config_file_path,
-				   bool unlock_in_read_only,
-				   bool unlock_in_reverse_mode,
+				   const booleanOptions& bOpts,
 				   const QString& mount_options,
 				   const QString& create_options ) :
 	cipherFolder( cipher_folder ),
@@ -972,10 +970,9 @@ engines::engine::options::options( const QString& cipher_folder,
 	key( volume_key ),
 	idleTimeout( idle_timeout ),
 	configFilePath( config_file_path ),
-	ro( unlock_in_read_only ),
-	reverseMode( unlock_in_reverse_mode ),
 	mountOptions( mount_options ),
-	createOptions( create_options )
+	createOptions( create_options ),
+	boolOptions( bOpts )
 {
 }
 
@@ -1086,17 +1083,18 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 		}
 	}
 
-	QString s = [ & ](){
+	QString s ;
 
-		if( e.opt.ro ){
+	if( e.opt.boolOptions.unlockInReadOnly ){
 
-			return " -o ro,fsname=%1@%2%3" ;
-		}else{
-			return " -o rw,fsname=%1@%2%3" ;
-		}
-	}() ;
+		m_mode = "ro" ;
 
-	m_mode = e.opt.ro ? "ro" : "rw" ;
+		s = " -o ro,fsname=%1@%2%3" ;
+	}else{
+		m_mode = "rw" ;
+
+		s = " -o rw,fsname=%1@%2%3" ;
+	}
 
 	m_subtype = subtype ;
 

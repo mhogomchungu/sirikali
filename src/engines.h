@@ -247,6 +247,12 @@ public:
 
 		struct options
 		{
+		        struct booleanOptions{
+			        bool unlockInReadOnly = false ;
+				bool unlockInReverseMode = false ;
+				bool allowReplacedFileSystem = false ;
+				bool allowUpgradeFileSystem = false ;
+			} ;
 			options( const favorites::entry& e,
 				 const QByteArray& volumeKey = QByteArray() ) ;
 
@@ -255,8 +261,7 @@ public:
 				 const QByteArray& volume_key,
 				 const QString& idle_timeout,
 				 const QString& config_file_path,
-				 bool unlock_in_read_only,
-				 bool unlock_in_reverse_mode,
+			         const booleanOptions& boolOpts,
 				 const QString& mount_options,
 				 const QString& create_options ) ;
 			QString cipherFolder ;
@@ -264,10 +269,9 @@ public:
 			QByteArray key ;
 			QString idleTimeout ;
 			QString configFilePath ;
-			bool ro ;
-			bool reverseMode ;
 			QString mountOptions ;
 			QString createOptions ;
+			booleanOptions boolOptions ;
 		} ;
 
 		struct cmdArgsList
@@ -302,12 +306,12 @@ public:
 
 		struct Options
 		{
-			Options( QStringList s,bool r ) ;
+		        Options( QStringList s,const options::booleanOptions& r ) ;
 			Options( QStringList s ) ;
-			Options( bool r ) ;
+			Options( const options::booleanOptions& r ) ;
 			Options() ;
 			QStringList options ;
-			bool reverseMode ;
+			options::booleanOptions opts ;
 			bool success ;
 		} ;
 

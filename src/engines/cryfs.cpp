@@ -146,9 +146,14 @@ engines::engine::args cryfs::command( const QByteArray& password,
 		exeOptions.add( args.configFilePath ) ;
 	}
 
-	if( args.opt.reverseMode ){
+	if( args.opt.boolOptions.allowReplacedFileSystem ){
 
 		exeOptions.add( "--allow-replaced-filesystem" ) ;
+	}
+
+	if( args.opt.boolOptions.allowUpgradeFileSystem ){
+
+		exeOptions.add( "--allow-filesystem-upgrade" ) ;
 	}
 
 	auto cmd = e.arg( args.exe,

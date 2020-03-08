@@ -802,7 +802,13 @@ void sirikali::unlockVolume( const QStringList& l )
 
 			m_mountInfo.announceEvents( false ) ;
 
-			engines::engine::options s( volume,m,key,idleTime,cPath,mode,reverse,mOpt,QString() ) ;
+			engines::engine::options s( volume,
+						    m,key,
+						    idleTime,
+						    cPath,
+						    { mode,reverse,false,false },
+						    mOpt,
+						    QString() ) ;
 
 			auto e = siritask::encryptedFolderMount( s ) ;
 

@@ -23,6 +23,8 @@
 #include "../utility.h"
 #include "task.hpp"
 
+#include "../engines.h"
+
 cryfscreateoptions::cryfscreateoptions( QWidget * parent,
 					std::function< void( const engines::engine::Options& ) > function ) :
 	QDialog( parent ),
@@ -36,6 +38,8 @@ cryfscreateoptions::cryfscreateoptions( QWidget * parent,
 	connect( m_ui->pbOK,SIGNAL( clicked() ),this,SLOT( pbOK() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbConfigPath,SIGNAL( clicked() ),this,SLOT( pbSelectConfigPath() ) ) ;
+
+	m_ui->cbAllowReplacedFileSystem->setChecked( true ) ;
 
 	m_ui->pbConfigPath->setIcon( QIcon( ":/folder.png" ) ) ;
 
@@ -117,13 +121,11 @@ void cryfscreateoptions::pbOK()
 		}
 	}() ;
 
+	engines::engine::options::booleanOptions opts ;
 
-	if( m_ui->cbAllowReplacedFileSystem ){
+	opts.allowReplacedFileSystem = m_ui->cbAllowReplacedFileSystem->isChecked() ;
 
-		e += " --allow-replaced-filesystem" ;
-	}
-
-	this->HideUI( { { e,m_ui->lineEdit_2->text() } } ) ;
+	this->HideUI( { { e,m_ui->lineEdit_2->text() },opts } ) ;
 }
 
 void cryfscreateoptions::pbCancel()

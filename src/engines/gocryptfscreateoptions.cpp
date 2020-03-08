@@ -22,6 +22,7 @@
 
 #include "../utility.h"
 #include "task.hpp"
+#include "../engines.h"
 
 gocryptfscreateoptions::gocryptfscreateoptions( QWidget * parent,
 					std::function< void( const engines::engine::Options& ) > function ) :
@@ -82,9 +83,11 @@ void gocryptfscreateoptions::pbOK()
 
 	auto c = { QString( "%1 %2" ).arg( a,b ),m_ui->lineEdit_2->text() } ;
 
-	auto d = m_ui->checkBox->isChecked() ;
+	engines::engine::options::booleanOptions opts ;
 
-	this->HideUI( { { c },d } ) ;
+	opts.unlockInReverseMode = m_ui->checkBox->isChecked() ;
+
+	this->HideUI( { { c },opts } ) ;
 }
 
 void gocryptfscreateoptions::pbCancel()

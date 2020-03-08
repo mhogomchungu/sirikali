@@ -33,6 +33,8 @@
 
 #include <functional>
 
+#include "engines.h"
+
 namespace Ui {
 class options;
 }
@@ -42,15 +44,15 @@ class options : public QDialog
 	Q_OBJECT
 public:
 	struct Options{
-		Options( const QStringList& e,bool r ) :
-			options( e ),checkBoxChecked( r ),success( true )
+		Options( const QStringList& e,const engines::engine::options::booleanOptions& r ) :
+			options( e ),opts( r ),success( true )
 		{
 		}
 		Options() : success( false )
 		{
 		}
 		QStringList options ;
-		bool checkBoxChecked ;
+		engines::engine::options::booleanOptions opts ;
 		bool success ;
 	} ;
 	static void instance( QWidget * parent,bool r,const Options& l,
@@ -70,6 +72,7 @@ private:
 	void closeEvent( QCloseEvent * ) ;
 	Ui::options * m_ui ;
 	bool m_create ;
+	QString m_type ;
 	std::function< void( const Options& ) > m_setOptions ;
 	QWidget * m_parentWidget ;
 };

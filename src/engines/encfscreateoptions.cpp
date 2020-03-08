@@ -23,6 +23,8 @@
 #include "../utility.h"
 #include "task.hpp"
 
+#include "../engines.h"
+
 encfscreateoptions::encfscreateoptions( QWidget * parent,
 					std::function< void( const engines::engine::Options& ) > function ) :
 	QDialog( parent ),
@@ -52,7 +54,11 @@ void encfscreateoptions::pbSelectConfigPath()
 
 void encfscreateoptions::pbOK()
 {
-	this->HideUI( { m_ui->checkBox->isChecked() } ) ;
+	engines::engine::options::booleanOptions opts ;
+
+	opts.unlockInReverseMode = m_ui->checkBox->isChecked() ;
+
+	this->HideUI( { opts } ) ;
 }
 
 void encfscreateoptions::pbCancel()

@@ -174,7 +174,7 @@ engines::engine::args ecryptfs::command( const QByteArray& password,
 
 	auto exeOptions = m.exeOptions() ;
 
-	if( args.opt.ro ){
+	if( args.opt.boolOptions.unlockInReadOnly ){
 
 		exeOptions.add( "--readonly" ) ;
 	}

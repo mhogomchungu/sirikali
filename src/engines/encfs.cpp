@@ -80,7 +80,7 @@ engines::engine::args encfs::command( const QByteArray& password,
 		exeOptions.add( "--stdinpass" ) ;
 	}
 
-	if( args.opt.reverseMode ){
+	if( args.opt.boolOptions.unlockInReverseMode ){
 
 		exeOptions.add( this->reverseString() ) ;
 	}

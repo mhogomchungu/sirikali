@@ -284,7 +284,9 @@ private :
 	bool m_checked = false ;
 	bool m_hmac ;
 	bool m_closeGUI = false ;
-	bool m_reverseMode = false ;
+	bool m_allowReplaceFileSystemSet = false ;
+
+	engines::engine::options::booleanOptions m_boolOpts ;
 
 	favorites::triState m_favoriteReadOnly ;
 

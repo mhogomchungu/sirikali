@@ -334,7 +334,7 @@ void keyDialog::setVolumeToUnlock()
 void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key )
 {
 	m_path         = e.volumePath() ;
-	m_reverseMode  = e.reverseMode() ;
+	m_boolOpts     = { false,e.reverseMode(),false } ;
 	m_configFile   = e.configFilePath() ;
 	m_idleTimeOut  = e.idleTimeOut() ;
 	m_mountOptions = e.mountOptions() ;
@@ -570,15 +570,22 @@ void keyDialog::pbOptions()
 {
 	if( m_create ){
 
-		auto& e = engines::instance().getByName( m_exe ) ;
+		auto& s = engines::instance().getByName( m_exe ) ;
+
+		bool CryFS = s.name() == "cryfs" ;
 
 		this->hide() ;
 
-		e.GUICreateOptionsinstance( m_parentWidget,[ this ]( const engines::engine::Options& e ){
+		s.GUICreateOptionsinstance( m_parentWidget,[ = ]( const engines::engine::Options& e ){
 
 			if( e.success ){
 
-				m_reverseMode = e.reverseMode ;
+				m_boolOpts = e.opts ;
+
+				if( CryFS ){
+
+					m_allowReplaceFileSystemSet = true ;
+				}
 
 				utility2::stringListToStrings( e.options,m_createOptions,m_configFile ) ;
 			}
@@ -598,11 +605,11 @@ void keyDialog::pbOptions()
 				m_idleTimeOut  = e.idleTimeOut ;
 				m_configFile   = e.configFilePath ;
 				m_mountOptions = e.mountOptions ;
-				m_reverseMode  = e.reverseMode ;
+				m_boolOpts     = { false,e.reverseMode,false } ;
 			}
 		}
 
-		options::Options e{ { m_idleTimeOut,m_configFile,m_mountOptions,m_engine->name() },m_reverseMode } ;
+		options::Options e{ { m_idleTimeOut,m_configFile,m_mountOptions,m_engine->name() },m_boolOpts } ;
 
 		this->hide() ;
 
@@ -619,7 +626,7 @@ void keyDialog::pbOptions()
 					m_ui->pbOpen->setFocus() ;
 				}
 
-				m_reverseMode = e.checkBoxChecked ;
+				m_boolOpts = e.opts ;
 			}
 
 			this->ShowUI() ;
@@ -1085,13 +1092,17 @@ void keyDialog::encryptedFolderCreate()
 
 	m_working = true ;
 
+	if( !m_allowReplaceFileSystemSet ){
+
+		m_boolOpts.allowReplacedFileSystem = true ;
+	}
+
 	engines::engine::options s( path,
 				    m,
 				    m_key,
 				    m_idleTimeOut,
 				    m_configFile,
-				    false,
-				    m_reverseMode,
+				    m_boolOpts,
 				    m_mountOptions,
 				    m_createOptions ) ;
 
@@ -1379,8 +1390,6 @@ void keyDialog::SetUISetKey( bool e )
 
 void keyDialog::encryptedFolderMount()
 {
-	auto ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
-
 	auto m = m_ui->lineEditMountPoint->text() ;
 
 	if( m.isEmpty() ){
@@ -1424,17 +1433,13 @@ void keyDialog::encryptedFolderMount()
 		}
 	}
 
+	auto boolOpts = m_boolOpts ;
+
+	boolOpts.unlockInReadOnly = m_ui->checkBoxOpenReadOnly->isChecked() ;
+
 	if( this->upgradingFileSystem() ){
 
-		if( m_ui->checkBoxOpenReadOnly->isChecked() ){
-
-			if( m_mountOptions.isEmpty() ){
-
-				m_mountOptions = "--allow-filesystem-upgrade" ;
-			}else{
-				m_mountOptions += ",--allow-filesystem-upgrade" ;
-			}
-		}
+		boolOpts.allowUpgradeFileSystem = m_ui->checkBoxOpenReadOnly->isChecked() ;
 	}
 
 	m_working = true ;
@@ -1444,8 +1449,7 @@ void keyDialog::encryptedFolderMount()
 				    m_key,
 				    m_idleTimeOut,
 				    m_configFile,
-				    ro,
-				    m_reverseMode,
+				    boolOpts,
 				    m_mountOptions,
 				    QString() } ;
 
