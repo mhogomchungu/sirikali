@@ -60,7 +60,6 @@ options::options( QWidget * parent,bool r,const Options& l,
 	if( type == "cryfs" ){
 
 		m_ui->checkBox->setText( tr( "Allow Replaced File System" ) ) ;
-
 	}else{
 		m_ui->checkBox->setEnabled( utility::equalsAtleastOne( type,"gocryptfs","encfs" ) ) ;
 	}

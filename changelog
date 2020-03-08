@@ -198,4 +198,4 @@ version 1.4.2(December 18,2019)
 -- Add ability to monitor gvfs mount events.
 -- Fix a bug that prevented unlocking volumes with a path that contains "," character. The bug was due to fuse
    using the character as an option separator.
-
+-- Add a GUI option to "allow replaced file system" when creating/unlocking CryFS volume.
