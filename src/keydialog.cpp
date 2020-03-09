@@ -976,9 +976,15 @@ void keyDialog::openMountPoint( const QString& m )
 
 void keyDialog::reportErrorMessage( const engines::engine::cmdStatus& s )
 {
-	if( s == engines::engine::status::cryfsMigrateFileSystem ){
+	m_status = s.status() ;
+
+	if( m_status == engines::engine::status::cryfsMigrateFileSystem ){
 
 		m_ui->checkBoxOpenReadOnly->setText( tr( "Upgrade File System" ) ) ;
+
+	}else if( m_status == engines::engine::status::cryfsReplaceFileSystem ){
+
+		m_ui->checkBoxOpenReadOnly->setText( tr( "Replace File System" ) ) ;
 	}else{
 		m_ui->checkBoxOpenReadOnly->setText( m_checkBoxOriginalText ) ;
 	}	
@@ -1442,6 +1448,11 @@ void keyDialog::encryptedFolderMount()
 		boolOpts.allowUpgradeFileSystem = m_ui->checkBoxOpenReadOnly->isChecked() ;
 	}
 
+	if( this->replaceFileSystem() ){
+
+		boolOpts.allowReplacedFileSystem = m_ui->checkBoxOpenReadOnly->isChecked() ;
+	}
+
 	m_working = true ;
 
 	engines::engine::options s{ m_path,
@@ -1495,7 +1506,12 @@ void keyDialog::encryptedFolderMount()
 
 bool keyDialog::upgradingFileSystem()
 {
-	return m_ui->checkBoxOpenReadOnly->text().remove( "&" ) == tr( "Upgrade File System" ).remove( "&" ) ;
+	return m_status == engines::engine::status::cryfsMigrateFileSystem ;
+}
+
+bool keyDialog::replaceFileSystem()
+{
+	return m_status == engines::engine::status::cryfsReplaceFileSystem ;
 }
 
 void keyDialog::openVolume()

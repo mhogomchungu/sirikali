@@ -857,6 +857,10 @@ QString engines::engine::cmdStatus::toString() const
 
 		return QObject::tr( "This Volume Of Cryfs Needs To Be Upgraded To Work With The Version Of Cryfs You Are Using.\n\nThe Upgrade is IRREVERSIBLE And The Volume Will No Longer Work With Older Versions of Cryfs.\n\nTo Do The Upgrade, Check The \"Upgrade File System\" Option And Unlock The Volume Again." ) ;
 
+	case engines::engine::status::cryfsReplaceFileSystem :
+
+		return QObject::tr( "This Volume Of Cryfs Is Different From The Known One.\n\nCheck The \"Replace File System\" Option And Unlock The Volume Again To Replace The Previous File System." ) ;
+
 	case engines::engine::status::encfsNotFound :
 
 		return QObject::tr( "Failed To Complete The Request.\nEncfs Executable Could Not Be Found." ) ;
@@ -1083,17 +1087,11 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 		}
 	}
 
-	QString s ;
-
 	if( e.opt.boolOptions.unlockInReadOnly ){
 
 		m_mode = "ro" ;
-
-		s = " -o ro,fsname=%1@%2%3" ;
 	}else{
 		m_mode = "rw" ;
-
-		s = " -o rw,fsname=%1@%2%3" ;
 	}
 
 	m_subtype = subtype ;
@@ -1102,11 +1100,13 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 
 	auto ss = cipherFolder( e.cipherFolder ) ;
 
+	QString s = " -o %1,fsname=%2@%3%4" ;
+
 	if( m_fuseOptions.isEmpty() ){
 
-		m_fuseOptions = s.arg( f,ss,stype ) ;
+		m_fuseOptions = s.arg( m_mode,f,ss,stype ) ;
 	}else{
-		m_fuseOptions = s.arg( f,ss,stype ) + "," + m_fuseOptions ;
+		m_fuseOptions = s.arg( m_mode,f,ss,stype ) + "," + m_fuseOptions ;
 	}
 }
 

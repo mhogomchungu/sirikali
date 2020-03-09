@@ -183,6 +183,10 @@ engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 		}else if( s == 14 ){
 
 			return engines::engine::status::cryfsMigrateFileSystem ;
+
+		}else if( s == 20 ){
+
+			return engines::engine::status::cryfsReplaceFileSystem ;
 		}
 	}else{
 		/*
@@ -196,6 +200,10 @@ engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 			  e.contains( "It has to be migrated" ) ){
 
 			return engines::engine::status::cryfsMigrateFileSystem ;
+
+		}else if( e.contains( "The filesystem id in the config file is different to the last time we loaded a filesystem from this basedir" ) ){
+
+			return engines::engine::status::cryfsReplaceFileSystem ;
 		}
 	}
 

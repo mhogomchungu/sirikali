@@ -230,6 +230,7 @@ public:
 			customCommandBadPassword,
 
 			cryfsMigrateFileSystem,
+			cryfsReplaceFileSystem,
 			IllegalPath,
 
 			fscryptPartialVolumeClose,
