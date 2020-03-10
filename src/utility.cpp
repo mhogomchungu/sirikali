@@ -459,7 +459,7 @@ void utility::initGlobals()
 
 	utility::setGUIThread() ;
 
-	if( utility::platformIsLinux() ){
+	#ifdef Q_OS_LINUX
 
 		auto uid = getuid() ;
 
@@ -478,7 +478,7 @@ void utility::initGlobals()
 
 		if( chown( s.constData(),uid,uid ) ){}
 		if( chmod( s.constData(),0700 ) ){}
-	}
+	#endif
 }
 
 QString utility::helperSocketPath()
@@ -493,7 +493,7 @@ bool utility::useSiriPolkit()
 
 void utility::quitHelper()
 {
-	if( utility::platformIsLinux() ){
+	#ifdef Q_OS_LINUX
 
 		auto e = utility::helperSocketPath() ;
 
@@ -525,7 +525,7 @@ void utility::quitHelper()
 		QDir m ;
 		m.remove( a ) ;
 		m.rmdir( _polkit_socket_path ) ;
-	}
+	#endif
 }
 
 ::Task::future<bool>& utility::openPath( const QString& path,const QString& opener )

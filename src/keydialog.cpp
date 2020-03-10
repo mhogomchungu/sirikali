@@ -974,6 +974,8 @@ void keyDialog::reportErrorMessage( const engines::engine::cmdStatus& s )
 {
 	m_status = s.status() ;
 
+	m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
+
 	if( m_status == engines::engine::status::cryfsMigrateFileSystem ){
 
 		m_ui->checkBoxOpenReadOnly->setText( tr( "Upgrade File System" ) ) ;
@@ -983,6 +985,13 @@ void keyDialog::reportErrorMessage( const engines::engine::cmdStatus& s )
 		m_ui->checkBoxOpenReadOnly->setText( tr( "Replace File System" ) ) ;
 	}else{
 		m_ui->checkBoxOpenReadOnly->setText( m_checkBoxOriginalText ) ;
+
+		if( utility::platformIsWindows() ){
+
+			m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
+
+			m_ui->checkBoxOpenReadOnly->setChecked( false ) ;
+		}
 	}	
 
 	this->showErrorMessage( s ) ;
