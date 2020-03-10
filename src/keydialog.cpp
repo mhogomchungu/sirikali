@@ -1204,16 +1204,14 @@ void keyDialog::encryptedFolderMount()
 				    m_mountOptions,
 				    QString() } ;
 
-	const auto& engine = m_engine.get() ;
-
-	if( engine.name().isEmpty() ){
+	if( m_engine->unknown() ){
 
 		m_engine = siritask::mountEngine( { m_path,m_configFile,siritask::Engine() } ) ;
 	}
 
-	if( engine.takesTooLongToUnlock() ){
+	if( m_engine->takesTooLongToUnlock() ){
 
-		m_warningLabel.showUnlock( engine.name() ) ;
+		m_warningLabel.showUnlock( m_engine->name() ) ;
 	}
 
 	this->disableAll() ;
