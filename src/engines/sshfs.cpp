@@ -86,9 +86,11 @@ engines::engine::status sshfs::passMinimumVersion() const
 		}else{
 			installedVersion.logError( this->name() ) ;
 		}
-	}
 
-	return engines::engine::status::backEndFailedToMeetMinimumRequirenment ;
+		return engines::engine::status::backEndFailedToMeetMinimumRequirenment ;
+	}else{
+		return engines::engine::status::success ;
+	}
 }
 
 const QProcessEnvironment& sshfs::getProcessEnvironment() const
