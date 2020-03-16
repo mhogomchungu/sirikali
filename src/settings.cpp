@@ -974,6 +974,16 @@ QString settings::ykchalrespArguments()
 	return m_settings.value( "YkchalrespArguments" ).toString() ;
 }
 
+bool settings::yubikeyRemoveNewLine()
+{
+	if( !m_settings.contains( "yubikeyRemoveNewLine" ) ){
+
+		m_settings.setValue( "yubikeyRemoveNewLine",true ) ;
+	}
+
+	return m_settings.value( "yubikeyRemoveNewLine" ).toBool() ;
+}
+
 QString settings::localizationLanguage()
 {
 	if( m_settings.contains( "Language" ) ){

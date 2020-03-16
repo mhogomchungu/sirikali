@@ -110,16 +110,6 @@ engines::engine::args cryfs::command( const QByteArray& password,
 {
 	Q_UNUSED( password )
 
-	auto separator = [ & ](){
-
-		if( m_version_greater_or_equal_0_10_0 ){
-
-			return "" ;
-		}else{
-			return "--" ;
-		}
-	}() ;
-
 	auto e = QString( "%1 %2 %3 %4 %5 %6" ) ;
 
 	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
@@ -160,7 +150,7 @@ engines::engine::args cryfs::command( const QByteArray& password,
 			  exeOptions.get(),
 			  args.cipherFolder,
 			  args.mountPoint,
-			  separator,
+			  m_version_greater_or_equal_0_10_0 ? "" : "--",
 			  m.fuseOpts().get() ) ;
 
 	return { args,m,cmd } ;

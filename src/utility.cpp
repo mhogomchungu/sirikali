@@ -1351,7 +1351,13 @@ static QString _ykchalresp_path()
 	return m ;
 }
 
-utility::result< QByteArray > utility::yubiKey( const QString& challenge )
+static bool _yubikey_remove_newline()
+{
+	static bool m = settings::instance().yubikeyRemoveNewLine() ;
+	return m ;
+}
+
+utility::result< QByteArray > utility::yubiKey( const QByteArray& challenge )
 {
 	QString exe = _ykchalresp_path() ;
 
@@ -1359,7 +1365,7 @@ utility::result< QByteArray > utility::yubiKey( const QString& challenge )
 
 		exe = exe + " " + settings::instance().ykchalrespArguments() ;
 
-		auto s = utility::unwrap( ::Task::process::run( exe,challenge.toLatin1() ) ) ;
+		auto s = utility::unwrap( ::Task::process::run( exe,challenge ) ) ;
 
 		utility::logCommandOutPut( s,exe ) ;
 
@@ -1367,7 +1373,10 @@ utility::result< QByteArray > utility::yubiKey( const QString& challenge )
 
 			auto m = s.std_out() ;
 
-			m.replace( "\n","" ) ;
+			if( _yubikey_remove_newline() ){
+
+				m.replace( "\n","" ) ;
+			}
 
 			return m ;
 		}else{

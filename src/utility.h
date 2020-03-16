@@ -346,7 +346,7 @@ namespace utility
 
 	void setDefaultMountPointPrefix( const QString& path ) ;
 
-	utility::result< QByteArray > yubiKey( const QString& challenge ) ;
+	utility::result< QByteArray > yubiKey( const QByteArray& challenge ) ;
 
 	QString mountPathPostFix( const QString& path ) ;
 	QString mountPathPostFix( const QString& prefix,const QString& path ) ;

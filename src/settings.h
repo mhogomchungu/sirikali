@@ -132,6 +132,7 @@ public:
 	QString windowsExecutableSearchPath() ;
 	QString externalPluginExecutable() ;
 	QString ykchalrespArguments() ;
+	bool yubikeyRemoveNewLine() ;
 	void setExternalPluginExecutable( const QString& ) ;
 	bool enableRevealingPasswords() ;
 	void scaleGUI() ;
