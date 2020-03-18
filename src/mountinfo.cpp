@@ -74,8 +74,16 @@ static QStringList _macox_volumes()
 
 				return "fuse." + dev.mid( 0,ss ) ;
 			}else{
-				return "siri." + it.fileSystemType() ;
+				for( const auto& it: engines::instance().supportedEngines() ){
+
+					if( it->name() == dev ){
+
+						return "fuse." + dev ;
+					}
+				}
 			}
+
+			return "fuse." + dev ;
 		}() ;
 
 		s.append( mountinfo::mountProperties( mp,it.isReadOnly() ? "ro" : "rw",fs,dev ) ) ;
