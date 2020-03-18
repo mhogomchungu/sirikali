@@ -57,59 +57,31 @@ QString mountinfo::encodeMountPath( const QString& e )
 	return m ;
 }
 
-static QStringList _macox_volumes_1()
-{
-	QStringList m ;
-
-	// securefs@/Users/adam/woof on /Users/adam/.SiriKali/woof (osxfuse, nodev, nosuid, synchronous, mounted by adam)
-
-	const QString w = "%1 on %2 (%3%4)" ;
-
-	auto readOnly = []( const QStorageInfo& e ){
-
-		if( e.isReadOnly() ){
-
-			return ",read-only" ;
-		}else{
-			return "" ;
-		}
-	} ;
-
-	for( const auto& it : QStorageInfo::mountedVolumes() ){
-
-		m.append( w.arg( mountinfo::encodeMountPath( it.device() ),
-				 mountinfo::encodeMountPath( it.rootPath() ),
-				 it.fileSystemType(),
-				 readOnly( it ) ) ) ;
-	}
-
-	return m ;
-}
-
 static QStringList _macox_volumes()
 {
 	QStringList s ;
-	QString mode ;
-	QString fs ;
 
-	for( const auto& it : _macox_volumes_1() ){
+	for( const auto& it : QStorageInfo::mountedVolumes() ){
 
-		auto e = utility::split( it,' ' ) ;
+		auto mp = mountinfo::encodeMountPath( it.rootPath() ) ;
+		auto dev = mountinfo::encodeMountPath( it.device() ) ;
 
-		if( e.size() > 2 ){
+		auto fs = [ & ]()->QString{
 
-			if( e.at( 3 ).contains( "read-only" ) ){
+			auto ss = dev.indexOf( "@" ) ;
 
-				mode = "ro" ;
+			if( ss != -1 ){
+
+				return "fuse." + dev.mid( 0,ss ) ;
 			}else{
-				mode = "rw" ;
+				return "siri." + it.fileSystemType() ;
 			}
+		}() ;
 
-			fs = "fuse." + it.mid( 0,it.indexOf( '@' ) ) ;
-
-			s.append( mountinfo::mountProperties( e.at( 2 ),mode,fs,e.at( 0 ) ) ) ;
-		}
+		s.append( mountinfo::mountProperties( mp,it.isReadOnly() ? "ro" : "rw",fs,dev ) ) ;
 	}
+
+	utility::debug() << s ;
 
 	return s ;
 }
