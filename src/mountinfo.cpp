@@ -63,19 +63,34 @@ static QStringList _macox_volumes()
 
 	for( const auto& it : QStorageInfo::mountedVolumes() ){
 
-		auto mp = mountinfo::encodeMountPath( it.rootPath() ) ;
 		auto dev = mountinfo::encodeMountPath( it.device() ) ;
 
 		auto fs = [ & ]()->QString{
-
+			/*
+			 * We expect "dev" to have a value that looks like
+			 *
+			 * securefs@/path/cipher/path
+			 *
+			 * We get the backend end name now and cipher path will be taken
+			 * later on in this source file.
+			 */
 			auto ss = dev.indexOf( "@" ) ;
 
 			if( ss != -1 ){
-
+				/*
+				 * "dev" is in the expected format and all is well
+				 */
 				return "fuse." + dev.mid( 0,ss ) ;
 			}else{
-				for( const auto& it: engines::instance().supportedEngines() ){
-
+				/*
+				 * we will get here if "dev" has only something like "securefs" and
+				 * this means we just lost the path to cipher path and this is probably
+				 * a backend bug because it didnt set "fsname" fuse option we gave it.
+				 */
+				for( const auto& it : engines::instance().supportedEngines() ){
+					/*
+					 * "dev" has a name of a backend we support, return it.
+					 */
 					if( it->name() == dev ){
 
 						return "fuse." + dev ;
@@ -83,8 +98,13 @@ static QStringList _macox_volumes()
 				}
 			}
 
+			/*
+			 * We have no idea what is in "dev", lets return it and hope for the best.
+			 */
 			return "fuse." + dev ;
 		}() ;
+
+		auto mp = mountinfo::encodeMountPath( it.rootPath() ) ;
 
 		s.append( mountinfo::mountProperties( mp,it.isReadOnly() ? "ro" : "rw",fs,dev ) ) ;
 	}
