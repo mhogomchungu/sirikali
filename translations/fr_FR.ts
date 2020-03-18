@@ -154,7 +154,7 @@ Options:
     <message>
         <location filename="../src/checkforupdates.cpp" line="82"/>
         <source>&quot;%1&quot; Installed Version Is : %2.&lt;br&gt;Latest Version Is : %3.&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&quot;%1&quot; version installée : %2.&lt;br&gt;Dernière version disponible : %3.&lt;br&gt;</translation>
     </message>
     <message>
         <location filename="../src/checkforupdates.cpp" line="222"/>

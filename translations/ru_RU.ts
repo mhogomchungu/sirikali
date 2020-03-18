@@ -81,7 +81,7 @@
     <message>
         <location filename="../src/checkforupdates.cpp" line="82"/>
         <source>&quot;%1&quot; Installed Version Is : %2.&lt;br&gt;Latest Version Is : %3.&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&quot;%1&quot; Установленная версия : %2.&lt;br&gt;Последняя версия : %3.&lt;br&gt;</translation>
     </message>
     <message>
         <location filename="../src/checkforupdates.cpp" line="222"/>
