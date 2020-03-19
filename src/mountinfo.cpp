@@ -60,6 +60,9 @@ QString mountinfo::encodeMountPath( const QString& e )
 static QStringList _macox_volumes()
 {
 	QStringList s ;
+	QStringList m ;
+
+	QString e = "(mp:%1)(dev:%2)(fs:%3)(dn:%4)(nm:%5)" ;
 
 	for( const auto& it : QStorageInfo::mountedVolumes() ){
 
@@ -107,9 +110,13 @@ static QStringList _macox_volumes()
 		auto mp = mountinfo::encodeMountPath( it.rootPath() ) ;
 
 		s.append( mountinfo::mountProperties( mp,it.isReadOnly() ? "ro" : "rw",fs,dev ) ) ;
+
+		m.append( e.arg( it.rootPath(),it.device(),it.fileSystemType(),it.displayName(),it.name() ) ) ;
 	}
 
 	utility::debug() << s ;
+
+	utility::debug() << m ;
 
 	return s ;
 }

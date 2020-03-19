@@ -36,6 +36,8 @@ int main( int argc,char * argv[] )
 		if( it.contains( "--debug" ) ){
 
 			utility::enableDebug( true ) ;
+
+			break ;
 		}
 	}
 
