@@ -299,7 +299,7 @@ void mountinfo::volumeUpdate()
 
 				const auto e = utility::split( it,' ' ) ;
 
-				if( _mountedVolume( it ) && e.size() > 3 ){
+				if( _mountedVolume( it ) && e.size() > 4 ){
 
 					this->autoMount( e.at( 4 ) ) ;
 				}
@@ -610,7 +610,7 @@ static QString _gvfs_fuse_path()
 
 				auto m = utility::split( it," " ) ;
 
-				if( m.size() > 5 ){
+				if( m.size() > 4 ){
 
 					return m.at( 4 ) ;
 				}
