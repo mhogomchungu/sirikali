@@ -69,7 +69,7 @@ static QStringList _macox_volumes()
 			/*
 			 * We expect "dev" to have a value that looks like
 			 *
-			 * securefs@/path/cipher/path
+			 * securefs@/path/to/cipher/folder
 			 *
 			 * We get the backend end name now and cipher path will be taken
 			 * later on in this source file.
