@@ -57,6 +57,45 @@ QString mountinfo::encodeMountPath( const QString& e )
 	return m ;
 }
 
+static QString _getFileSystem( const QString& dev,const QString& fs )
+{
+	/*
+	 * We expect "dev" to have a value that looks like
+	 *
+	 * securefs@/path/to/cipher/folder
+	 *
+	 * We get the backend end name now and cipher path will be taken
+	 * later on in this source file.
+	 */
+	auto ss = dev.indexOf( "@" ) ;
+
+	if( ss != -1 ){
+		/*
+		 * "dev" is in the expected format and all is well
+		 */
+		return "fuse." + dev.mid( 0,ss ) ;
+	}else{
+		/*
+		 * we will get here if "dev" has only something like "securefs" and
+		 * this means we just lost the path to cipher path and this is probably
+		 * a backend bug because it didn't set "fsname" fuse option we gave it.
+		 */
+		for( const auto& it : engines::instance().supportedEngines() ){
+
+			if( it->name() == dev ){
+				/*
+				 * "dev" has a name of a backend we support, return it.
+				 */
+				return "fuse." + dev ;
+			}
+		}
+	}
+	/*
+	 * We have no idea what is in "dev", return the value reported by Qt.
+	 */
+	return fs ;
+}
+
 static QStringList _macox_volumes()
 {
 	QStringList s ;
@@ -68,46 +107,9 @@ static QStringList _macox_volumes()
 
 		auto dev = mountinfo::encodeMountPath( it.device() ) ;
 
-		auto fs = [ & ]()->QString{
-			/*
-			 * We expect "dev" to have a value that looks like
-			 *
-			 * securefs@/path/to/cipher/folder
-			 *
-			 * We get the backend end name now and cipher path will be taken
-			 * later on in this source file.
-			 */
-			auto ss = dev.indexOf( "@" ) ;
-
-			if( ss != -1 ){
-				/*
-				 * "dev" is in the expected format and all is well
-				 */
-				return "fuse." + dev.mid( 0,ss ) ;
-			}else{
-				/*
-				 * we will get here if "dev" has only something like "securefs" and
-				 * this means we just lost the path to cipher path and this is probably
-				 * a backend bug because it didnt set "fsname" fuse option we gave it.
-				 */
-				for( const auto& it : engines::instance().supportedEngines() ){
-					/*
-					 * "dev" has a name of a backend we support, return it.
-					 */
-					if( it->name() == dev ){
-
-						return "fuse." + dev ;
-					}
-				}
-			}
-
-			/*
-			 * We have no idea what is in "dev", lets return it and hope for the best.
-			 */
-			return "fuse." + dev ;
-		}() ;
-
 		auto mp = mountinfo::encodeMountPath( it.rootPath() ) ;
+
+		auto fs = _getFileSystem( dev,it.fileSystemType() ) ;
 
 		s.append( mountinfo::mountProperties( mp,it.isReadOnly() ? "ro" : "rw",fs,dev ) ) ;
 
