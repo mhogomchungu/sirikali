@@ -56,7 +56,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.failedToMountList     = QStringList{ "Error" } ;
 	s.names                 = QStringList{ "cryfs" } ;
 	s.notFoundCode          = engines::engine::status::cryfsNotFound ;
-	s.versionInfo           = { "--version",true,2,0 } ;
+	s.versionInfo           = { { "--version",true,2,0 } } ;
 
 	return s ;
 }

@@ -53,7 +53,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.failedToMountList     = QStringList{ "Error" } ;
 	s.successfulMountedList = QStringList{ "has been started" } ;
 	s.notFoundCode          = engines::engine::status::encfsNotFound ;
-	s.versionInfo           = { "--version",false,2,0 } ;
+	s.versionInfo           = { { "--version",false,2,0 } } ;
 
 	return s ;
 }

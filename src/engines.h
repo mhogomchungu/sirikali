@@ -106,6 +106,11 @@ public:
 		        return this->compare( v,engines::version::Operator::greaterOrEqual ) ;
 		}
 		virtual void logError( const QString& ) const ;
+
+		static bool valid( const QString& e )
+		{
+		    return internalVersion( e ).valid() ;
+		}
 	private:
 		class internalVersion{
 		public:
@@ -324,8 +329,9 @@ public:
 				bool readFromStdOut ;
 				int argumentNumber ;
 				int argumentLine ;
-			} versionInfo ;
+			};
 
+			std::vector< vInfo >versionInfo ;
 			int  backendTimeout ;
 			bool hasConfigFile ;
 			bool setsCipherPath ;

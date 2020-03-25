@@ -53,7 +53,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.fuseNames             = QStringList{ "fuse.sshfs" } ;
 	s.names                 = QStringList{ "sshfs" } ;
 	s.notFoundCode          = engines::engine::status::sshfsNotFound ;
-	s.versionInfo           = { "--version",true,2,0 } ;
+	s.versionInfo           = { { "--version",true,2,0 } } ;
 
 	if( utility::platformIsWindows() ){
 

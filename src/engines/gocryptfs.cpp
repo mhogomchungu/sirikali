@@ -53,7 +53,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.fuseNames             = QStringList{ "fuse.gocryptfs","fuse.gocryptfs-reverse" } ;
 	s.names                 = QStringList{ "gocryptfs","gocryptfs.reverse","gocryptfs-reverse" } ;
 	s.notFoundCode          = engines::engine::status::gocryptfsNotFound ;
-	s.versionInfo           = { "--version",true,1,0 } ;
+	s.versionInfo           = { { "--version",true,1,0 } } ;
 
 	return s ;
 }

@@ -45,7 +45,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.configFileNames       = QStringList{ ".ecryptfs.config","ecryptfs.config" } ;
 	s.fuseNames             = QStringList{ "ecryptfs" } ;
 	s.names                 = QStringList{ "ecryptfs" } ;
-	s.versionInfo           = { "--version",true,1,0 } ;
+	s.versionInfo           = { { "--version",true,1,0 } } ;
 
 	s.notFoundCode = engines::engine::status::ecryptfs_simpleNotFound ;
 

@@ -50,7 +50,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.failedToMountList     = QStringList{ "Error","init" } ;
 	s.successfulMountedList = QStringList{ "has been started","init" } ;
 	s.notFoundCode          = engines::engine::status::securefsNotFound ;
-	s.versionInfo           = { "version",true,1,0 } ;
+	s.versionInfo           = { { "version",true,1,0 } } ;
 
 	return s ;
 }

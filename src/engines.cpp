@@ -256,6 +256,24 @@ static QString _installedVersion( const engines::engine& e,
 	return {} ;
 }
 
+static QString _installedVersion( const engines::engine& e,
+				  const std::vector< engines::engine::BaseOptions::vInfo >& v )
+{
+	for( const auto& it : v ){
+
+		auto m = _installedVersion( e,it ) ;
+
+		if( engines::version::valid( m ) ){
+
+			return m ;
+		}else{
+			utility::debug() << e.name() + ": Failed to get version info" ;
+		}
+	}
+
+	return {} ;
+}
+
 static QProcessEnvironment _set_env( const engines::engine::BaseOptions& s )
 {
 	auto m = utility::systemEnvironment() ;
@@ -284,7 +302,7 @@ engines::engine::engine( engines::engine::BaseOptions o ) :
 	m_Options( std::move( o ) ),
 	m_processEnvironment( _set_env( m_Options ) ),
 	m_version( [ this ](){ return _installedVersion( *this,m_Options.versionInfo ) ; } ),
-	m_exeFullPath( [ this ](){ return engines::executableFullPath( this->name() ) ; } )
+	m_exeFullPath( [ this ](){ return engines::executableFullPath( this->executableName() ) ; } )
 {
 }
 
