@@ -1293,7 +1293,7 @@ void utility::setWindowsMountPointOptions( QWidget * obj,QLineEdit * e,QPushButt
 {
 	return ::Task::run( [ = ]()->utility::result< QString >{
 
-		return engines::instance().getByName( backend ).installedVersion().string() ;
+		return engines::instance().getByName( backend ).installedVersion().toString() ;
 	} ) ;
 }
 

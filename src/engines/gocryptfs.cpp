@@ -62,7 +62,7 @@ static bool _version( const engines::engine& engine )
 {
 	const auto& installedVersion = engine.installedVersion() ;
 
-	auto s = installedVersion.greaterOrEqual( "1.2.1" ) ;
+	auto s = installedVersion.greaterOrEqual( 1,2,1 ) ;
 
 	if( s.has_value() ){
 

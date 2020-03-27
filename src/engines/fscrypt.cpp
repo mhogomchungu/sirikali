@@ -278,7 +278,7 @@ engines::engine::status fscrypt::unmount( const QString& cipherFolder,
 
 	const auto& installedVersion = this->installedVersion() ;
 
-	auto ss = installedVersion.greaterOrEqual( "0.2.6" ) ;
+	auto ss = installedVersion.greaterOrEqual( 0,2,6 ) ;
 
 	if( ss.has_value() ){
 

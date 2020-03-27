@@ -38,6 +38,44 @@ public:
 	static QString executableFullPath( const QString& ) ;
 	static QStringList executableSearchPaths() ;
 
+	class engineVersion{
+	public:
+		engineVersion() ;
+		engineVersion( int major,int minor,int patch ) ;
+		engineVersion( const QString& e ) ;
+		bool valid() const ;
+		bool operator==( const engineVersion& other ) const ;
+		bool operator<( const engineVersion& other ) const ;
+		/*
+		 * a != b equal to !(a == b)
+		 * a <= b equal to (a < b) || (a == b)
+		 * a >= b equal to !(a < b)
+		 * a > b  equal to !(a <= b)
+		 */
+		bool operator>=( const engineVersion& other ) const
+		{
+			return !( *this < other ) ;
+		}
+		bool operator<=( const engineVersion& other ) const
+		{
+			return ( *this < other ) || ( *this == other ) ;
+		}
+		bool operator!=( const engineVersion& other ) const
+		{
+			return !( *this == other ) ;
+		}
+		bool operator>( const engineVersion& other ) const
+		{
+			return !( *this <= other ) ;
+		}
+		QString toString() const ;
+	private:
+		bool m_valid = false ;
+		int m_major = 0 ;
+		int m_minor = 0 ;
+		int m_patch = 0 ;
+	};
+
 	template< typename Type >
 	class cache{
 	public:
@@ -67,20 +105,20 @@ public:
 		mutable bool m_unset = true ;
 	};
 
-	class version : public cache< QString >{
+	class version : public cache< engines::engineVersion >{
 	public:
 	        enum class Operator{ less,lessOrEqual,equal,notEqual,greater,greaterOrEqual } ;
 
-		version( std::function< QString() > s ) : cache( std::move( s ) )
+		version( std::function< engines::engineVersion() > s ) : cache( std::move( s ) )
 		{
 		}
 		version()
 		{
 		}
-		utility::result< bool > compare( const QString& v,engines::version::Operator op ) const
+		utility::result< bool > compare( const engines::engineVersion& b,
+						 engines::version::Operator op ) const
 		{
-		        internalVersion a( this->string() ) ;
-			internalVersion b( v ) ;
+			const auto& a = this->get() ;
 
 			if( a.valid() && b.valid() ){
 
@@ -97,55 +135,19 @@ public:
 
 			return {} ;
 		}
-		const QString& string() const
+		QString toString() const
 		{
-		        return this->get() ;
+			return this->get().toString() ;
+		}
+		utility::result< bool > greaterOrEqual( int major,int minor,int patch ) const
+		{
+			return this->compare( { major,minor,patch },engines::version::Operator::greaterOrEqual ) ;
 		}
 		utility::result< bool > greaterOrEqual( const QString& v ) const
 		{
 		        return this->compare( v,engines::version::Operator::greaterOrEqual ) ;
 		}
 		virtual void logError( const QString& ) const ;
-
-		static bool valid( const QString& e )
-		{
-		    return internalVersion( e ).valid() ;
-		}
-	private:
-		class internalVersion{
-		public:
-		        internalVersion( const QString& e ) ;
-			bool valid() const ;
-			bool operator==( const internalVersion& other ) const ;
-			bool operator<( const internalVersion& other ) const ;
-			/*
-			 * a != b equal to !(a == b)
-			 * a <= b equal to (a < b) || (a == b)
-			 * a >= b equal to !(a < b)
-			 * a > b  equal to !(a <= b)
-			 */
-			bool operator>=( const internalVersion& other ) const
-			{
-			        return !( *this < other ) ;
-			}
-			bool operator<=( const internalVersion& other ) const
-			{
-			        return ( *this < other ) || ( *this == other ) ;
-			}
-			bool operator!=( const internalVersion& other ) const
-			{
-			        return !( *this == other ) ;
-			}
-			bool operator>( const internalVersion& other ) const
-			{
-			        return !( *this <= other ) ;
-			}
-		private:
-			bool m_valid = false ;
-			int m_major = 0 ;
-			int m_minor = 0 ;
-			int m_patch = 0 ;
-		};
 	};
 
 	class booleanCache : public cache< utility::result< bool > >{

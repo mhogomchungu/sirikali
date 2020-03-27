@@ -61,11 +61,11 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
-static bool _version( const engines::engine& engine,const QString& v )
+static bool _version( const engines::engine& engine,int major,int minor,int patch )
 {
 	const auto& e = engine.installedVersion() ;
 
-	auto s = e.greaterOrEqual( v ) ;
+	auto s = e.greaterOrEqual( major,minor,patch ) ;
 
 	if( s.has_value() ){
 
@@ -80,8 +80,8 @@ static bool _version( const engines::engine& engine,const QString& v )
 cryfs::cryfs() :
 	engines::engine( _setOptions() ),
 	m_env( this->setEnv() ),
-	m_version_greater_or_equal_0_10_0( [ this ](){ return _version( *this,"0.10.0" ) ; } ),
-	m_use_error_codes( [ this ](){ return utility::platformIsWindows() ? false : _version( *this,"0.9.9" ) ; } )
+	m_version_greater_or_equal_0_10_0( [ this ](){ return _version( *this,0,10,0 ) ; } ),
+	m_use_error_codes( [ this ](){ return utility::platformIsWindows() ? false : _version( *this,0,9,9 ) ; } )
 {
 }
 

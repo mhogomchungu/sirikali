@@ -75,7 +75,7 @@ QStringList engines::executableSearchPaths()
 void engines::version::logError( const QString& e ) const
 {
 	auto a = QString( "%1 backend has an invalid version string (%2)" ) ;
-	utility::debug() << a.arg( e,this->get() ) ;
+	utility::debug() << a.arg( e,this->toString() ) ;
 }
 
 static bool _has_no_extension( const QString& e )
@@ -232,8 +232,8 @@ static QString _sanitizeVersionString( const QString& s )
 	return m ;
 }
 
-static QString _installedVersion( const engines::engine& e,
-				  const engines::engine::BaseOptions::vInfo& v )
+static engines::engineVersion _installedVersion( const engines::engine& e,
+						 const engines::engine::BaseOptions::vInfo& v )
 {
 	const auto& s = utility::systemEnvironment() ;
 
@@ -256,14 +256,14 @@ static QString _installedVersion( const engines::engine& e,
 	return {} ;
 }
 
-static QString _installedVersion( const engines::engine& e,
-				  const std::vector< engines::engine::BaseOptions::vInfo >& v )
+static engines::engineVersion _installedVersion( const engines::engine& e,
+						 const std::vector< engines::engine::BaseOptions::vInfo >& v )
 {
 	for( const auto& it : v ){
 
 		auto m = _installedVersion( e,it ) ;
 
-		if( engines::version::valid( m ) ){
+		if( m.valid() ){
 
 			return m ;
 		}else{
@@ -1128,7 +1128,16 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 	}
 }
 
-engines::version::internalVersion::internalVersion(const QString & e)
+engines::engineVersion::engineVersion() : m_valid( false )
+{
+}
+
+engines::engineVersion::engineVersion( int major,int minor,int patch ) :
+	m_valid( true ),m_major( major ),m_minor( minor ),m_patch( patch )
+{
+}
+
+engines::engineVersion::engineVersion( const QString& e )
 {
 	auto s = utility::split( e,'.' ) ;
 
@@ -1163,17 +1172,17 @@ engines::version::internalVersion::internalVersion(const QString & e)
 	}
 }
 
-bool engines::version::internalVersion::valid() const
+bool engines::engineVersion::valid() const
 {
 	return m_valid ;
 }
 
-bool engines::version::internalVersion::operator==( const engines::version::internalVersion& other ) const
+bool engines::engineVersion::operator==( const engines::engineVersion& other ) const
 {
 	return  m_major == other.m_major && m_minor == other.m_minor &&	m_patch == other.m_patch ;
 }
 
-bool engines::version::internalVersion::operator<( const engines::version::internalVersion& other ) const
+bool engines::engineVersion::operator<( const engines::engineVersion& other ) const
 {
 	if( m_major < other.m_major ){
 
@@ -1191,6 +1200,15 @@ bool engines::version::internalVersion::operator<( const engines::version::inter
 	}
 
 	return false ;
+}
+
+QString engines::engineVersion::toString() const
+{
+	auto a = QString::number( m_major ) ;
+	auto b = QString::number( m_minor ) ;
+	auto c = QString::number( m_patch ) ;
+
+	return a + "." + b + "." + c ;
 }
 
 void engines::booleanCache::silenceWarning()
