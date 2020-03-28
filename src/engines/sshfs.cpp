@@ -69,8 +69,10 @@ sshfs::sshfs() :
 {
 }
 
-engines::engine::status sshfs::passMinimumVersion() const
+engines::engine::status sshfs::passAllRequirenments( const engines::engine::options& opt ) const
 {
+	Q_UNUSED( opt )
+
 	if( utility::platformIsWindows() ){
 
 		const auto& installedVersion = this->installedVersion() ;

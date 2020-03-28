@@ -85,6 +85,51 @@ cryfs::cryfs() :
 {
 }
 
+static bool _supported( const QString& exe,const QString& path,bool checkDrive )
+{
+	if( checkDrive && utility::isDriveLetter( path ) ){
+
+		/*
+		 * Drive letters are supported
+		 */
+		return true ;
+
+	}else if( exe.startsWith( path.midRef( 0,2 ) ) ){
+
+		/*
+		 * Folder path is on the same drive as the executable
+		 */
+		return true ;
+	}else{
+		/*
+		 * Folder path is on a different drive as the executable
+		 */
+		return false ;
+	}
+}
+
+engines::engine::status cryfs::passAllRequirenments( const engines::engine::options& opt ) const
+{
+	if( utility::platformIsWindows() ){
+
+		/*
+		 * We do not support paths are that are on in the same drive as the
+		 * executable(usually drive C:)
+		 * to work around this bug: https://github.com/cryfs/cryfs/issues/319
+		 */
+		const auto& e = this->executableFullPath() ;
+
+		if( _supported( e,opt.plainFolder,true ) && _supported( e,opt.cipherFolder,false ) ){
+
+			return engines::engine::status::success ;
+		}else{
+			return engines::engine::status::cryfsNotSupportedFolderPath ;
+		}
+	}else{
+		return engines::engine::status::success ;
+	}
+}
+
 QProcessEnvironment cryfs::setEnv() const
 {
 	auto s = engines::engine::getProcessEnvironment() ;

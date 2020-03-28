@@ -238,6 +238,7 @@ public:
 
 			cryfsMigrateFileSystem,
 			cryfsReplaceFileSystem,
+			cryfsNotSupportedFolderPath,
 			IllegalPath,
 
 			fscryptPartialVolumeClose,
@@ -450,7 +451,7 @@ public:
 
 		virtual bool takesTooLongToUnlock() const ;
 
-		virtual engine::engine::status passMinimumVersion() const ;
+		virtual engine::engine::status passAllRequirenments( const engines::engine::options& ) const ;
 
 		virtual bool ownsCipherPath( const QString& cipherPath ) const ;
 

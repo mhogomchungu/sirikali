@@ -589,7 +589,7 @@ static engines::engine::cmdStatus _mount( Opts opt,bool reUseMP,const siritask::
 
 	engine.updateOptions( opt ) ;
 
-	auto mm = engine.passMinimumVersion() ;
+	auto mm = engine.passAllRequirenments( opt ) ;
 
 	if( mm != engines::engine::status::success ){
 
@@ -660,7 +660,7 @@ static engines::engine::cmdStatus _create( const Opts& opt,const Engs& engine )
 		return { engines::engine::status::unknown,engine } ;
 	}
 
-	auto mm = engine.passMinimumVersion() ;
+	auto mm = engine.passAllRequirenments( opt ) ;
 
 	if( mm != engines::engine::status::success ){
 

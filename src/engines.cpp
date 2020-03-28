@@ -520,8 +520,10 @@ engines::engine::error engines::engine::errorCode( const QString& e ) const
 	}
 }
 
-engines::engine::status engines::engine::passMinimumVersion() const
+engines::engine::status engines::engine::passAllRequirenments( const engines::engine::options& opts ) const
 {
+	Q_UNUSED( opts )
+
 	return engines::engine::status::success ;
 }
 
@@ -878,6 +880,10 @@ QString engines::engine::cmdStatus::toString() const
 	case engines::engine::status::cryfsReplaceFileSystem :
 
 		return QObject::tr( "This Volume Of Cryfs Is Different From The Known One.\n\nCheck The \"Replace File System\" Option And Unlock The Volume Again To Replace The Previous File System." ) ;
+
+	case engines::engine::status::cryfsNotSupportedFolderPath :
+
+		return QObject::tr( "Cipher Path and Mount Path Must Be On Drive \"%1\"" ).arg( m_engine->executableFullPath().midRef( 0,2 ) ) ;
 
 	case engines::engine::status::encfsNotFound :
 
