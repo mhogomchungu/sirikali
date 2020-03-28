@@ -113,7 +113,7 @@ engines::engine::status cryfs::passAllRequirenments( const engines::engine::opti
 	if( utility::platformIsWindows() ){
 
 		/*
-		 * We do not support paths are that are on in the same drive as the
+		 * We do not support paths that are not in the same drive as the
 		 * executable(usually drive C:)
 		 * to work around this bug: https://github.com/cryfs/cryfs/issues/319
 		 */

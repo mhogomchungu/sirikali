@@ -201,3 +201,5 @@ version 1.4.2(December 18,2019)
 -- Fix a bug that prevented unlocked volumes from showing up in the GUI in MACOS.
 -- Add a GUI option to "allow replaced file system" when creating/unlocking CryFS volume.
 -- Set the option "--allow-replaced-filesystem" by default when creating a CryFS volume.
+-- When dealing with CryFs volume, do not support paths that are not in drive C to work around
+    this bug: https://github.com/cryfs/cryfs/issues/319
