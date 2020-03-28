@@ -55,7 +55,26 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
-securefs::securefs() : engines::engine( _setOptions() )
+static bool _version( const engines::engine& engine )
+{
+	const auto& e = engine.installedVersion() ;
+
+	auto s = e.greaterOrEqual( 0,11,1 ) ;
+
+	if( s.has_value() ){
+
+		return s.value() ;
+	}else{
+		e.logError( engine.name() ) ;
+
+		return true ;
+	}
+}
+
+securefs::securefs() :
+	engines::engine( _setOptions() ),
+	m_version_greater_or_equal_0_11_1( [ this ](){ return _version( *this ) ; } )
+
 {
 }
 
@@ -79,11 +98,25 @@ engines::engine::args securefs::command( const QByteArray& password,
 	}else{
 		QString exe = "%1 mount %2 %3 %4 %5" ;
 
-		auto exeOptions = m.exeOptions() ;
+		auto exeOptions  = m.exeOptions() ;
+		auto fuseOptions = m.fuseOpts() ;
 
 		if( utility::platformIsNOTWindows() ){
 
 			exeOptions.add( "-b" ) ;
+		}
+
+		if( m_version_greater_or_equal_0_11_1 ){
+
+			/*
+			 * This version going forward takes fsname and fssubtype options
+			 * through exe options and not fuse options
+			 */
+			auto fsname     = fuseOptions.extractStartsWith( "fsname=" ).mid( 7 ) ;
+			auto ffssubtype = fuseOptions.extractStartsWith( "subtype=" ).mid( 8 ) ;
+
+			exeOptions.addPair( "--fsname",fsname ) ;
+			exeOptions.addPair( "--fssubtype",ffssubtype ) ;
 		}
 
 		if( !args.configFilePath.isEmpty() ){
@@ -95,7 +128,7 @@ engines::engine::args securefs::command( const QByteArray& password,
 				    exeOptions.get(),
 				    args.cipherFolder,
 				    args.mountPoint,
-				    m.fuseOpts().get() ) ;
+				    fuseOptions.get() ) ;
 
 		return { args,m,cmd } ;
 	}
