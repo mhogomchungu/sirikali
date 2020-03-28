@@ -65,7 +65,7 @@ static bool _version( const engines::engine& engine )
 
 		return s.value() ;
 	}else{
-		e.logError( engine.name() ) ;
+		e.logError() ;
 
 		return true ;
 	}
@@ -74,7 +74,6 @@ static bool _version( const engines::engine& engine )
 securefs::securefs() :
 	engines::engine( _setOptions() ),
 	m_version_greater_or_equal_0_11_1( [ this ](){ return _version( *this ) ; } )
-
 {
 }
 
@@ -112,11 +111,11 @@ engines::engine::args securefs::command( const QByteArray& password,
 			 * This version going forward takes fsname and fssubtype options
 			 * through exe options and not fuse options
 			 */
-			auto fsname     = fuseOptions.extractStartsWith( "fsname=" ).mid( 7 ) ;
-			auto ffssubtype = fuseOptions.extractStartsWith( "subtype=" ).mid( 8 ) ;
+			auto fsname    = fuseOptions.extractStartsWith( "fsname=" ).mid( 7 ) ;
+			auto fssubtype = fuseOptions.extractStartsWith( "subtype=" ).mid( 8 ) ;
 
 			exeOptions.addPair( "--fsname",fsname ) ;
-			exeOptions.addPair( "--fssubtype",ffssubtype ) ;
+			exeOptions.addPair( "--fssubtype",fssubtype ) ;
 		}
 
 		if( !args.configFilePath.isEmpty() ){

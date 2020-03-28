@@ -71,7 +71,7 @@ static bool _version( const engines::engine& engine,int major,int minor,int patc
 
 		return s.value() ;
 	}else{
-		e.logError( engine.name() ) ;
+		e.logError() ;
 
 		return true ;
 	}

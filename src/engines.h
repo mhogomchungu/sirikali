@@ -109,7 +109,9 @@ public:
 	public:
 	        enum class Operator{ less,lessOrEqual,equal,notEqual,greater,greaterOrEqual } ;
 
-		version( std::function< engines::engineVersion() > s ) : cache( std::move( s ) )
+		version( const QString& e,std::function< engines::engineVersion() > s ) :
+			cache( std::move( s ) ),
+			m_engineName( e )
 		{
 		}
 		version()
@@ -147,7 +149,9 @@ public:
 		{
 		        return this->compare( v,engines::version::Operator::greaterOrEqual ) ;
 		}
-		virtual void logError( const QString& ) const ;
+		virtual void logError() const ;
+	private:
+		QString m_engineName ;
 	};
 
 	class booleanCache : public cache< utility::result< bool > >{

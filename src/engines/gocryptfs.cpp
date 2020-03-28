@@ -68,7 +68,7 @@ static bool _version( const engines::engine& engine )
 
 		return s.value() ;
 	}else{
-		installedVersion.logError( engine.name() ) ;
+		installedVersion.logError() ;
 		return true ;
 	}
 }

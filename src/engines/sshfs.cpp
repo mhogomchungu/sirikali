@@ -86,7 +86,7 @@ engines::engine::status sshfs::passAllRequirenments( const engines::engine::opti
 				return engines::engine::status::success ;
 			}
 		}else{
-			installedVersion.logError( this->name() ) ;
+			installedVersion.logError() ;
 		}
 
 		return engines::engine::status::backEndFailedToMeetMinimumRequirenment ;

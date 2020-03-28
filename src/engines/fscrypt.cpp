@@ -289,7 +289,7 @@ engines::engine::status fscrypt::unmount( const QString& cipherFolder,
 			exe = umount() ;
 		}
 	}else{
-		installedVersion.logError( this->name() ) ;
+		installedVersion.logError() ;
 		exe = umount() ;
 	}
 

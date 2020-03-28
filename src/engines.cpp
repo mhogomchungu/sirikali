@@ -72,10 +72,10 @@ QStringList engines::executableSearchPaths()
 	}
 }
 
-void engines::version::logError( const QString& e ) const
+void engines::version::logError() const
 {
 	auto a = QString( "%1 backend has an invalid version string (%2)" ) ;
-	utility::debug() << a.arg( e,this->toString() ) ;
+	utility::debug() << a.arg( m_engineName,this->toString() ) ;
 }
 
 static bool _has_no_extension( const QString& e )
@@ -301,7 +301,7 @@ static QProcessEnvironment _set_env( const engines::engine::BaseOptions& s )
 engines::engine::engine( engines::engine::BaseOptions o ) :
 	m_Options( std::move( o ) ),
 	m_processEnvironment( _set_env( m_Options ) ),
-	m_version( [ this ](){ return _installedVersion( *this,m_Options.versionInfo ) ; } ),
+	m_version( this->name(),[ this ](){ return _installedVersion( *this,m_Options.versionInfo ) ; } ),
 	m_exeFullPath( [ this ](){ return engines::executableFullPath( this->executableName() ) ; } )
 {
 }
