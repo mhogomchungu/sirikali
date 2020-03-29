@@ -35,10 +35,12 @@
 class engines
 {
 public:
-	static QString executableFullPath( const QString& ) ;
-	static QStringList executableSearchPaths() ;
-
 	class engine ;
+
+	static QString executableFullPath( const QString& ) ;
+	static QString executableFullPath( const QString&,const engines::engine& ) ;
+
+	static QStringList executableSearchPaths() ;
 
 	class engineVersion{
 	public:
@@ -629,8 +631,8 @@ public:
 	private:
 		const BaseOptions m_Options ;
 		const QProcessEnvironment m_processEnvironment ;
-		const engines::version m_version ;
 		const engines::exeFullPath m_exeFullPath ;
+		const engines::version m_version ;
 	} ;
 
 	engines() ;

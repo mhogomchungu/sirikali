@@ -33,7 +33,7 @@
 #include "settings.h"
 #include "win.h"
 
-QStringList engines::executableSearchPaths()
+static QStringList _executableSearchPaths( const QStringList& m )
 {
 	const auto a = QDir::homePath().toLatin1() ;
 
@@ -44,7 +44,7 @@ QStringList engines::executableSearchPaths()
 				  a + "\\.bin\\",
 				  settings::instance().windowsExecutableSearchPath() + "\\" } ;
 
-		for( const auto& it : SiriKali::Windows::engineInstalledDirs() ){
+		for( const auto& it : m ){
 
 			if( !it.isEmpty() ){
 
@@ -72,6 +72,21 @@ QStringList engines::executableSearchPaths()
 	}
 }
 
+QStringList engines::executableSearchPaths()
+{
+	return _executableSearchPaths( SiriKali::Windows::engineInstalledDirs() ) ;
+}
+
+static QStringList _executableSearchPaths()
+{
+	return engines::executableSearchPaths() ;
+}
+
+static QStringList _executableSearchPaths( const engines::engine& engine )
+{
+	return _executableSearchPaths( { SiriKali::Windows::engineInstalledDir( engine ) } ) ;
+}
+
 void engines::version::logError() const
 {
 	auto a = QString( "%1 backend has an invalid version string (%2)" ) ;
@@ -83,7 +98,8 @@ static bool _has_no_extension( const QString& e )
 	return !e.contains( '.' ) ;
 }
 
-QString engines::executableFullPath( const QString& f )
+template< typename ... T >
+static QString _executableFullPath( const QString& f,T&& ... t )
 {
 	if( utility::platformIsWindows() ){
 
@@ -112,7 +128,7 @@ QString engines::executableFullPath( const QString& f )
 
 	QString exe ;
 
-	for( const auto& it : engines::executableSearchPaths() ){
+	for( const auto& it : _executableSearchPaths( std::forward< T >( t ) ... ) ){
 
 		if( !it.isEmpty() ){
 
@@ -126,6 +142,16 @@ QString engines::executableFullPath( const QString& f )
 	}
 
 	return QString() ;
+}
+
+QString engines::executableFullPath( const QString& f )
+{
+	return _executableFullPath( f ) ;
+}
+
+QString engines::executableFullPath( const QString& f,const engines::engine& engine )
+{
+	return _executableFullPath( f,engine ) ;
 }
 
 engines::engine::~engine()
@@ -301,8 +327,8 @@ static QProcessEnvironment _set_env( const engines::engine::BaseOptions& s )
 engines::engine::engine( engines::engine::BaseOptions o ) :
 	m_Options( std::move( o ) ),
 	m_processEnvironment( _set_env( m_Options ) ),
-	m_version( this->name(),[ this ](){ return _installedVersion( *this,m_Options.versionInfo ) ; } ),
-	m_exeFullPath( [ this ](){ return engines::executableFullPath( this->executableName() ) ; } )
+	m_exeFullPath( [ this ](){ return engines::executableFullPath( this->executableName(),*this ) ; } ),
+	m_version( this->name(),[ this ](){ return _installedVersion( *this,m_Options.versionInfo ) ; } )
 {
 }
 

@@ -57,7 +57,7 @@ static engines::engine::BaseOptions _setOptions()
 
 securefs::securefs() :
 	engines::engine( _setOptions() ),
-	m_version_greater_or_equal_0_11_1( true,*this,0,11,1 )
+	m_version_greater_or_equal_0_11_1( true,*this,0,11,0 )
 {
 }
 
