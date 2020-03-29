@@ -80,13 +80,14 @@ static favorites::volumeList _readFavorites()
 	return e ;
 }
 
-sirikali::sirikali() :
+sirikali::sirikali( const QStringList& l ) :
 	m_secrets( this ),
 	m_mountInfo( this,true,[ & ](){ QCoreApplication::exit( m_exitStatus ) ; } ),
-	m_checkUpdates( this ),
+	m_checkUpdates( this,{ [ this ](){ this->disableAll() ; },[ this ](){ this->enableAll() ; } } ),
 	m_configOptions( this,m_secrets,&m_language_menu,this->configOption() ),
 	m_debugWindow(),
-	m_signalHandler( this,this->getEmergencyShutDown() )
+	m_signalHandler( this,this->getEmergencyShutDown() ),
+	m_argumentList( l )
 {
 	utility::setMainQWidget( this ) ;
 	favorites::instance().updateFavorites() ;
@@ -528,7 +529,11 @@ void sirikali::favoriteClicked( QAction * ac )
 
 	if( e == "Manage Favorites" ){
 
+		this->disableAll() ;
+
 		favorites2::instance( this,favorites::type::others,[ this ](){
+
+			this->enableAll() ;
 
 			this->updateFavoritesInContextMenu() ;
 		} ) ;
@@ -560,7 +565,7 @@ void sirikali::favoriteClicked( QAction * ac )
 
 					siritask::mount m{ it.first.volumePath,QString(),siritask::Engine() } ;
 
-					auto s = siritask::mountEngine( m ).get().name() ;
+					auto s = siritask::mountEngine( m )->name() ;
 
 					if( it.first.volumeNeedNoPassword && s == "sshfs" ){
 
@@ -621,15 +626,11 @@ void sirikali::raiseWindow( const QString& volume )
 
 int sirikali::start( QApplication& e )
 {
-	QCoreApplication::setApplicationName( "SiriKali" ) ;
-
-	const auto l = QCoreApplication::arguments() ;
-
 	if( utility::platformIsWindows() ){
 
-		if( l.size() > 1 && l.at( 1 ).startsWith( "-T" ) ){
+		if( m_argumentList.size() > 1 && m_argumentList.at( 1 ).startsWith( "-T" ) ){
 
-			auto s = l.at( 1 ) ;
+			auto s = m_argumentList.at( 1 ) ;
 
 			s.replace( "-T","" ) ;
 
@@ -637,14 +638,13 @@ int sirikali::start( QApplication& e )
 		}
 	}
 
-	if( utility::printVersionOrHelpInfo( l ) ){
+	if( utility::printVersionOrHelpInfo( m_argumentList ) ){
 
 		return 0 ;
 	}else{
 		QMetaObject::invokeMethod( this,
 					   "start",
-					   Qt::QueuedConnection,
-					   Q_ARG( QStringList,l ) ) ;
+					   Qt::QueuedConnection ) ;
 		return e.exec() ;
 	}
 }
@@ -654,31 +654,28 @@ void sirikali::polkitFailedWarning()
 	DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "SiriKali Failed To Connect To siriPolkit.\nPlease Report This Serious Bug." ) ) ;
 }
 
-void sirikali::start( const QStringList& l )
+void sirikali::start()
 {
-	utility::enableDebug( l.contains( "--debug" ) ) ;	
-	utility::enableDebug( l.contains( "--debug-full" ) ) ;
-
-	m_startHidden  = l.contains( "-e" ) ;
+	m_startHidden  = m_argumentList.contains( "-e" ) ;
 
 	if( !m_startHidden ){
 
 		m_startHidden = settings::instance().startMinimized() ;
 	}
 
-	m_folderOpener = utility::cmdArgumentValue( l,"-m",settings::instance().fileManager() ) ;
+	m_folderOpener = utility::cmdArgumentValue( m_argumentList,"-m",settings::instance().fileManager() ) ;
 
 	auto _cliCommand = [ & ](){
 
-		return l.contains( "-s" ) ||
-		       l.contains( "-u" ) ||
-		       l.contains( "-p" ) ||
-		       !utility::cmdArgumentValue( l,"-b" ).isEmpty() ;
+		return m_argumentList.contains( "-s" ) ||
+		       m_argumentList.contains( "-u" ) ||
+		       m_argumentList.contains( "-p" ) ||
+		       !utility::cmdArgumentValue( m_argumentList,"-b" ).isEmpty() ;
 	}() ;
 
 	if( _cliCommand ){
 
-		this->cliCommand( l ) ;
+		this->cliCommand( m_argumentList ) ;
 	}else{
 		utility::polkitFailedWarning( [ this ](){
 
@@ -706,7 +703,7 @@ void sirikali::start( const QStringList& l )
 			[ this ]( const QString& e ){ this->raiseWindow( e ) ; },
 		} ;
 
-		auto x = utility::cmdArgumentValue( l,"-d" ) ;
+		auto x = utility::cmdArgumentValue( m_argumentList,"-d" ) ;
 
 		oneinstance::instance( this,s.socketFullPath,x,std::move( cb ) ) ;
 	}
@@ -805,7 +802,13 @@ void sirikali::unlockVolume( const QStringList& l )
 
 			m_mountInfo.announceEvents( false ) ;
 
-			engines::engine::options s( volume,m,key,idleTime,cPath,mode,reverse,mOpt,QString() ) ;
+			engines::engine::options s( volume,
+						    m,key,
+						    idleTime,
+						    cPath,
+						    { mode,reverse,false,false },
+						    mOpt,
+						    QString() ) ;
 
 			auto e = siritask::encryptedFolderMount( s ) ;
 
@@ -1149,6 +1152,8 @@ void sirikali::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 		connect( ac,SIGNAL( triggered() ),this,slot ) ;
 	} ;
 
+	//_addAction( tr( "Open Parent Folder" ),SLOT( slotOpenParentFolder() ) ) ;
+
 	_addAction( tr( "Open Folder" ),SLOT( slotOpenFolder() ) ) ;
 
 	_addAction( tr( "Unmount" ),SLOT( pbUmount() ) ) ;
@@ -1227,6 +1232,24 @@ void sirikali::slotOpenFolder()
 		}
 
 		this->openMountPoint( path ) ;
+	}
+}
+
+void sirikali::slotOpenParentFolder()
+{
+	auto table = m_ui->tableWidget ;
+
+	if( table->rowCount() > 0 ){
+
+		auto item = table->currentItem() ;
+		auto path = table->item( item->row(),1 )->text() ;
+
+		if( utility::platformIsWindows() ){
+
+			path = path.replace( "/","\\" ) ;
+		}
+
+		this->openMountPoint( utility::removeLastPathComponent( path ) ) ;
 	}
 }
 

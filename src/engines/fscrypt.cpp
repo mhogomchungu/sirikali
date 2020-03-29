@@ -23,10 +23,6 @@
 #include "../mountinfo.h"
 #include "../json_parser.hpp"
 
-#include <vector>
-
-static const char * _spaceToken = " " ;
-
 struct mountInfo{
 	const QStringList& mountInfo ;
 	const QStringList& mountedVolumes ;
@@ -48,7 +44,7 @@ static QStringList _encrypted_volumes( const QString& list )
 
 			break ;
 		}else{
-			auto a = utility::split( x,_spaceToken ) ;
+			auto a = utility::split( x," " ) ;
 
 			if( a.size() > 4 ){
 
@@ -237,6 +233,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = true ;
 	s.hasGUICreateOptions   = false ;
 	s.setsCipherPath        = true ;
+	s.releaseURL            = "https://api.github.com/repos/google/fscrypt/releases" ;
 	s.passwordFormat        = "%{password}" ;
 	s.executableName        = "fscrypt" ;
 	s.incorrectPasswordText = "incorrect key provided" ;
@@ -245,13 +242,15 @@ static engines::engine::BaseOptions _setOptions()
 	s.names                 = QStringList{ "fscrypt","fscrypt*" } ;
 	s.volumePropertiesCommands = QStringList{ "fscrypt status %{plainFolder}" } ;
 	s.notFoundCode             = engines::engine::status::fscryptNotFound ;
+	s.versionInfo              = { { "--version",true,0,2 },    // for fscrypt < 0.2.7
+				       { "--version",true,2,0 } } ; // for fscrypt >= 0.2.7
 
 	return s ;
 }
 
-fscrypt::fscrypt() : engines::engine( _setOptions() ),
-	m_exeFullPath( *this ),
-	m_version( [ this ]{ return this->baseInstalledVersionString( "--version",true,0,2 ) ; } )
+fscrypt::fscrypt() :
+	engines::engine( _setOptions() ),
+	m_versionGreatorOrEqual_0_2_6( true,*this,0,2,6 )
 {
 }
 
@@ -261,7 +260,7 @@ engines::engine::status fscrypt::unmount( const QString& cipherFolder,
 {
 	Q_UNUSED( cipherFolder )
 
-	const auto& e = m_exeFullPath.get() ;
+	const auto& e = this->executableFullPath() ;
 
 	if( e.isEmpty() ){
 
@@ -270,15 +269,15 @@ engines::engine::status fscrypt::unmount( const QString& cipherFolder,
 
 	auto exe = utility::Task::makePath( e ) ;
 
-	if( this->versionIsLessOrEqualTo( "0.2.5" ) ){
+	if( m_versionGreatorOrEqual_0_2_6 ){
 
+		exe += " lock " + mountPoint + " " + this->userOption() ;
+	}else{
 		auto mp = utility::removeFirstAndLast( mountPoint,1,1 ) ;
 
-		auto m = utility::Task::makePath( _mount_point( mp,m_exeFullPath.get() ) ) ;
+		auto m = utility::Task::makePath( _mount_point( mp,exe ) ) ;
 
 		exe += " purge " + m + " --force --drop-caches=false " + this->userOption() ;
-	}else{
-		exe += " lock " + mountPoint + " " + this->userOption() ;
 	}
 
 	for( int i = 0 ; i < maxCount ; i++ ){
@@ -302,7 +301,7 @@ engines::engine::status fscrypt::unmount( const QString& cipherFolder,
 
 QStringList fscrypt::mountInfo( const QStringList& a ) const
 {
-	const auto& exe = m_exeFullPath.get() ;
+	const auto& exe = this->executableFullPath() ;
 
 	if( exe.isEmpty() ){
 
@@ -321,30 +320,25 @@ QStringList fscrypt::mountInfo( const QStringList& a ) const
 	} ) ;
 }
 
-const engines::engine& fscrypt::proveEngine( const QString& cipherPath ) const
+bool fscrypt::ownsCipherPath( const QString& cipherPath ) const
 {
-	if( !utility::platformIsLinux() ){
-
-		return engines::instance().getUnKnown() ;
-	}
-
-	const auto& exe = m_exeFullPath.get() ;
+	const auto& exe = this->executableFullPath() ;
 
 	if( exe.isEmpty() ){
 
-		return engines::instance().getUnKnown() ;
+		return false ;
 	}else{
 		auto m = utility::Task::makePath( cipherPath ) ;
 
-		auto ee = utility::Task::makePath( exe ) ;
+		auto e = utility::Task::makePath( exe ) ;
 
-		auto s = _run( ee + " status " + m ).success() ;
+		auto s = _run( e + " status " + m ) ;
 
-		if( s ){
+		if( s.success() ){
 
-			return *this ;
+			return s.stdOut().contains( "is encrypted with fscrypt" ) ;
 		}else{
-			return engines::instance().getUnKnown() ;
+			return false ;
 		}
 	}
 }
@@ -359,7 +353,7 @@ Task::future< QString >& fscrypt::volumeProperties( const QString& cipherFolder,
 {
 	return Task::run( [ = ](){
 
-		return _volume_properties( cipherFolder,mountPoint,m_exeFullPath.get() ) ;
+		return _volume_properties( cipherFolder,mountPoint,this->executableFullPath() ) ;
 	} ) ;
 }
 
@@ -411,30 +405,25 @@ engines::engine::status fscrypt::errorCode( const QString& e,int s ) const
 	}
 }
 
-const QString& fscrypt::installedVersionString() const
-{
-	return m_version.get() ;
-}
-
 void fscrypt::GUICreateOptionsinstance( QWidget *,engines::engine::function ) const
 {
 	//fscryptcreateoptions::instance( parent,std::move( function ) ) ;
 }
 
-#ifdef Q_OS_WIN
-
-QString fscrypt::userOption() const
-{
-	return QString() ;
-}
-
-#else
+#ifdef Q_OS_LINUX
 
 #include <pwd.h>
 
 QString fscrypt::userOption() const
 {
 	return QString( "--user=\"%1\"" ).arg( getpwuid( getuid() )->pw_name ) ;
+}
+
+#else
+
+QString fscrypt::userOption() const
+{
+	return QString() ;
 }
 
 #endif

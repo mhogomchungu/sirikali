@@ -334,7 +334,7 @@ void keyDialog::setVolumeToUnlock()
 void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key )
 {
 	m_path         = e.volumePath() ;
-	m_reverseMode  = e.reverseMode() ;
+	m_boolOpts     = { false,e.reverseMode(),false } ;
 	m_configFile   = e.configFilePath() ;
 	m_idleTimeOut  = e.idleTimeOut() ;
 	m_mountOptions = e.mountOptions() ;
@@ -390,9 +390,9 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 		m->addSeparator() ;
 
-		if( m_engine.get().known() ){
+		if( m_engine->known() ){
 
-			const auto& aa = m_engine.get().name() ;
+			const auto& aa = m_engine->name() ;
 
 			_addAction( aa,aa,false ) ;
 		}else{
@@ -570,15 +570,22 @@ void keyDialog::pbOptions()
 {
 	if( m_create ){
 
-		auto& e = engines::instance().getByName( m_exe ) ;
+		auto& s = engines::instance().getByName( m_exe ) ;
+
+		bool CryFS = s.name() == "cryfs" ;
 
 		this->hide() ;
 
-		e.GUICreateOptionsinstance( m_parentWidget,[ this ]( const engines::engine::Options& e ){
+		s.GUICreateOptionsinstance( m_parentWidget,[ = ]( const engines::engine::Options& e ){
 
 			if( e.success ){
 
-				m_reverseMode = e.reverseMode ;
+				m_boolOpts = e.opts ;
+
+				if( CryFS ){
+
+					m_allowReplaceFileSystemSet = true ;
+				}
 
 				utility2::stringListToStrings( e.options,m_createOptions,m_configFile ) ;
 			}
@@ -598,19 +605,17 @@ void keyDialog::pbOptions()
 				m_idleTimeOut  = e.idleTimeOut ;
 				m_configFile   = e.configFilePath ;
 				m_mountOptions = e.mountOptions ;
-				m_reverseMode  = e.reverseMode ;
+				m_boolOpts     = { false,e.reverseMode,false } ;
 			}
 		}
 
-		options::Options e{ { m_idleTimeOut,m_configFile,m_mountOptions,m_exe },m_reverseMode } ;
+		options::Options e{ { m_idleTimeOut,m_configFile,m_mountOptions,m_engine->name() },m_boolOpts } ;
 
 		this->hide() ;
 
 		options::instance( m_parentWidget,m_create,e,[ this ]( const options::Options& e ){
 
 			if( e.success ){
-
-				m_reverseMode = e.reverseMode ;
 
 				utility2::stringListToStrings( e.options,m_idleTimeOut,m_configFile,m_mountOptions ) ;
 
@@ -620,6 +625,8 @@ void keyDialog::pbOptions()
 				}else{
 					m_ui->pbOpen->setFocus() ;
 				}
+
+				m_boolOpts = e.opts ;
 			}
 
 			this->ShowUI() ;
@@ -886,8 +893,6 @@ void keyDialog::pbOpen()
 		}
 	}
 
-	this->disableAll() ;
-
 	if( m_ui->cbKeyType->currentIndex() > keyDialog::keyKeyFile ){
 
 		utility::wallet w ;
@@ -932,7 +937,7 @@ void keyDialog::pbOpen()
 			if( w.notConfigured ){
 
 				this->showErrorMessage( tr( "Internal Wallet Is Not Configured." ) ) ;
-				return this->enableAll() ;
+				return ;
 			}
 		}else{
 			return this->openVolume() ;
@@ -951,8 +956,6 @@ void keyDialog::pbOpen()
 				m_key = utility::convertPassword( w.key ) ;
 				this->openVolume() ;
 			}
-		}else{
-			this->enableAll() ;
 		}
 	}else{
 		this->openVolume() ;
@@ -969,11 +972,26 @@ void keyDialog::openMountPoint( const QString& m )
 
 void keyDialog::reportErrorMessage( const engines::engine::cmdStatus& s )
 {
-	if( s == engines::engine::status::cryfsMigrateFileSystem ){
+	m_status = s.status() ;
+
+	m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
+
+	if( m_status == engines::engine::status::cryfsMigrateFileSystem ){
 
 		m_ui->checkBoxOpenReadOnly->setText( tr( "Upgrade File System" ) ) ;
+
+	}else if( m_status == engines::engine::status::cryfsReplaceFileSystem ){
+
+		m_ui->checkBoxOpenReadOnly->setText( tr( "Replace File System" ) ) ;
 	}else{
 		m_ui->checkBoxOpenReadOnly->setText( m_checkBoxOriginalText ) ;
+
+		if( utility::platformIsWindows() ){
+
+			m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
+
+			m_ui->checkBoxOpenReadOnly->setChecked( false ) ;
+		}
 	}	
 
 	this->showErrorMessage( s ) ;
@@ -1037,9 +1055,7 @@ void keyDialog::encryptedFolderCreate()
 
 	if( utility::pathExists( path ) ){
 
-		this->showErrorMessage( tr( "Encrypted Folder Path Is Already Taken." ) ) ;
-
-		return this->enableAll() ;
+		return this->showErrorMessage( tr( "Encrypted Folder Path Is Already Taken." ) ) ;
 	}
 
 	if( utility::platformIsWindows() ){
@@ -1050,48 +1066,43 @@ void keyDialog::encryptedFolderCreate()
 
 			if( SiriKali::Windows::mountPointTaken( m ) ){
 
-				this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
-
-				return this->enableAll() ;
+				return this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
 			}
 
 			if( utility::pathExists( m ) && utility::folderNotEmpty( m ) ){
 
-				this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
-
-				return this->enableAll() ;
+				return this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
 			}
 		}else{
 			m = utility::freeWindowsDriveLetter() ;
 
 			if( utility::pathExists( m ) ){
 
-				this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
-
-				return this->enableAll() ;
+				return this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
 			}
 		}
-
 	}else{
 		m = m_settings.mountPath( utility::mountPathPostFix( m ) ) ;
 
 		if( utility::pathExists( m ) && !m_reUseMountPoint ){
 
-			this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
-
-			return this->enableAll() ;
+			return this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
 		}
 	}
 
-	m_working = true ;
+	auto boolOpts = m_boolOpts ;
+
+	if( !m_allowReplaceFileSystemSet ){
+
+		boolOpts.allowReplacedFileSystem = true ;
+	}
 
 	engines::engine::options s( path,
 				    m,
 				    m_key,
 				    m_idleTimeOut,
 				    m_configFile,
-				    false,
-				    m_reverseMode,
+				    boolOpts,
 				    m_mountOptions,
 				    m_createOptions ) ;
 
@@ -1101,6 +1112,10 @@ void keyDialog::encryptedFolderCreate()
 
 		m_warningLabel.showCreate( engine.name() ) ;
 	}
+
+	this->disableAll() ;
+
+	m_working = true ;
 
 	auto e = siritask::encryptedFolderCreate( s,engine ) ;
 
@@ -1135,6 +1150,106 @@ void keyDialog::encryptedFolderCreate()
 
 			m_ui->lineEditKey->setFocus() ;
 		}
+	}
+}
+
+void keyDialog::encryptedFolderMount()
+{
+	auto m = m_ui->lineEditMountPoint->text() ;
+
+	if( m.isEmpty() ){
+
+		this->showErrorMessage( tr( "Atleast One Required Field Is Empty." ) ) ;
+
+		return m_ui->lineEditMountPoint->setFocus() ;
+	}
+
+	if( utility::pathExists( m ) && !m_reUseMountPoint ){
+
+		if( utility::platformIsWindows() ){
+
+			m_settings.reUseMountPoint( true ) ;
+			m_reUseMountPoint = true ;
+		}else{
+			return this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
+		}
+	}
+
+	if( utility::platformIsWindows() ){
+
+		if( SiriKali::Windows::mountPointTaken( m ) ){
+
+			return this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
+		}
+
+		if( !utility::isDriveLetter( m ) && utility::folderNotEmpty( m ) ){
+
+			return this->showErrorMessage( tr( "Mount Point Path Is Not Empty." ) ) ;
+		}
+	}
+
+	auto boolOpts = m_boolOpts ;
+
+	boolOpts.unlockInReadOnly = m_ui->checkBoxOpenReadOnly->isChecked() ;
+
+	if( this->upgradingFileSystem() ){
+
+		boolOpts.allowUpgradeFileSystem = m_ui->checkBoxOpenReadOnly->isChecked() ;
+	}
+
+	if( this->replaceFileSystem() ){
+
+		boolOpts.allowReplacedFileSystem = m_ui->checkBoxOpenReadOnly->isChecked() ;
+	}
+
+	m_working = true ;
+
+	engines::engine::options s{ m_path,
+				    m,
+				    m_key,
+				    m_idleTimeOut,
+				    m_configFile,
+				    boolOpts,
+				    m_mountOptions,
+				    QString() } ;
+
+	if( m_engine->unknown() ){
+
+		m_engine = siritask::mountEngine( { m_path,m_configFile,siritask::Engine() } ) ;
+	}
+
+	if( m_engine->takesTooLongToUnlock() ){
+
+		m_warningLabel.showUnlock( m_engine->name() ) ;
+	}
+
+	this->disableAll() ;
+
+	auto e = siritask::encryptedFolderMount( s,false,m_engine ) ;
+
+	m_warningLabel.hide() ;
+
+	m_working = false ;
+
+	if( e == engines::engine::status::success ){
+
+		if( !e.engine().autorefreshOnMountUnMount() ){
+
+			m_updateVolumeList() ;
+		}
+
+		this->openMountPoint( m ) ;
+
+		this->enableAll() ;
+		this->unlockVolume() ;
+	}else{
+		this->reportErrorMessage( e ) ;
+
+		m_ui->lineEditKey->clear() ;
+
+		this->enableAll() ;
+
+		m_ui->lineEditKey->setFocus() ;
 	}
 }
 
@@ -1377,121 +1492,14 @@ void keyDialog::SetUISetKey( bool e )
 	}
 }
 
-void keyDialog::encryptedFolderMount()
-{
-	auto ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
-
-	auto m = m_ui->lineEditMountPoint->text() ;
-
-	if( m.isEmpty() ){
-
-		this->showErrorMessage( tr( "Atleast One Required Field Is Empty." ) ) ;
-
-		this->enableAll() ;
-
-		m_ui->lineEditMountPoint->setFocus() ;
-
-		return ;
-	}
-
-	if( utility::pathExists( m ) && !m_reUseMountPoint ){
-
-		if( utility::platformIsWindows() ){
-
-			m_settings.reUseMountPoint( true ) ;
-			m_reUseMountPoint = true ;
-		}else{
-			this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
-
-			return this->enableAll() ;
-		}
-	}
-
-	if( utility::platformIsWindows() ){
-
-		if( SiriKali::Windows::mountPointTaken( m ) ){
-
-			this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
-
-			return this->enableAll() ;
-		}
-
-		if( !utility::isDriveLetter( m ) && utility::folderNotEmpty( m ) ){
-
-			this->showErrorMessage( tr( "Mount Point Path Is Not Empty." ) ) ;
-
-			return this->enableAll() ;
-		}
-	}
-
-	if( this->upgradingFileSystem() ){
-
-		if( m_ui->checkBoxOpenReadOnly->isChecked() ){
-
-			if( m_mountOptions.isEmpty() ){
-
-				m_mountOptions = "--allow-filesystem-upgrade" ;
-			}else{
-				m_mountOptions += ",--allow-filesystem-upgrade" ;
-			}
-		}
-	}
-
-	m_working = true ;
-
-	engines::engine::options s{ m_path,
-				    m,
-				    m_key,
-				    m_idleTimeOut,
-				    m_configFile,
-				    ro,
-				    m_reverseMode,
-				    m_mountOptions,
-				    QString() } ;
-
-	const auto& engine = m_engine.get() ;
-
-	if( engine.name().isEmpty() ){
-
-		m_engine = siritask::mountEngine( { m_path,m_configFile,siritask::Engine() } ) ;
-	}
-
-	if( engine.takesTooLongToUnlock() ){
-
-		m_warningLabel.showUnlock( engine.name() ) ;
-	}
-
-	auto e = siritask::encryptedFolderMount( s,false,m_engine ) ;
-
-	m_warningLabel.hide() ;
-
-	m_working = false ;
-
-	if( e == engines::engine::status::success ){
-
-		if( !e.engine().autorefreshOnMountUnMount() ){
-
-			m_updateVolumeList() ;
-		}
-
-		this->openMountPoint( m ) ;
-
-		this->enableAll() ;
-		this->unlockVolume() ;
-	}else{
-		this->reportErrorMessage( e ) ;
-
-		m_ui->lineEditKey->clear() ;
-
-		this->enableAll() ;
-
-		m_ui->lineEditKey->setFocus() ;
-	}
-}
-
 bool keyDialog::upgradingFileSystem()
 {
-	return m_ui->checkBoxOpenReadOnly->text().remove( "&" ) == tr( "Upgrade File System" ).remove( "&" ) ;
+	return m_status == engines::engine::status::cryfsMigrateFileSystem ;
+}
+
+bool keyDialog::replaceFileSystem()
+{
+	return m_status == engines::engine::status::cryfsReplaceFileSystem ;
 }
 
 void keyDialog::openVolume()
@@ -1526,7 +1534,7 @@ void keyDialog::openVolume()
 			_run() ;
 		}else{
 			this->showErrorMessage( tr( "Failed To Locate Or Run Yubikey's \"ykchalresp\" Program." ) ) ;
-			return this->enableAll() ;
+			return ;
 		}
 
 	}else if( keyType == keyDialog::Key ){
@@ -1560,7 +1568,6 @@ void keyDialog::openVolume()
 			if( utility::containsAtleastOne( m_key,'\n','\0','\r' ) ){
 
 				this->showErrorMessage( keyDialog::keyFileError() ) ;
-				this->enableAll() ;
 			}else{
 				_run() ;
 			}

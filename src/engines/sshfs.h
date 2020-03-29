@@ -24,7 +24,7 @@ class sshfs : public engines::engine
 public:
 	sshfs() ;
 
-	engine::engine::status passMinimumVersion() const override ;
+	engine::engine::status passAllRequirenments( const engines::engine::options& opt ) const override ;
 
 	const QProcessEnvironment& getProcessEnvironment() const override ;
 
@@ -33,10 +33,8 @@ public:
 	engines::engine::args command( const QByteArray& password,
 				       const engines::engine::cmdArgsList& args ) const override ;
 
-	const QString& installedVersionString() const override ;
-
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
 private:
 	mutable QProcessEnvironment m_environment ;
-	engines::version m_version ;
+	const engines::versionGreaterOrEqual m_version_greater_or_equal_minimum ;
 } ;

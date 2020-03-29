@@ -21,7 +21,6 @@
 #define CHECKFORUPDATES_H
 
 #include <QFile>
-#include <QVector>
 #include <QObject>
 #include <QWidget>
 #include <QTimer>
@@ -32,9 +31,10 @@
 #include "siritask.h"
 #include "version.h"
 #include "json.h"
+#include "checkforupdateswindow.h"
 
 #include <utility>
-#include <array>
+#include <vector>
 
 class checkUpdates : public QObject
 {
@@ -42,7 +42,7 @@ class checkUpdates : public QObject
 public:
 	void run( bool e ) ;
 
-	checkUpdates( QWidget * widget ) ;
+	checkUpdates( QWidget * widget,checkforupdateswindow::functions ) ;
 private:
 	void check( bool ) ;
 
@@ -51,9 +51,7 @@ private:
 	QString InstalledVersion( const QString& ) ;
 	QString latestVersion( const QByteArray& data ) ;
 
-	using backends_t = std::array< std::pair< const char *,const char * >,6 > ;
-
-	void checkForUpdate( backends_t::size_type position = 0 ) ;
+	void checkForUpdate( size_t position = 0 ) ;
 
 	QWidget * m_widget ;
 
@@ -69,15 +67,8 @@ private:
 
 	bool m_running ;
 
-	backends_t m_backends = { {
-
-		{ "sirikali","https://api.github.com/repos/mhogomchungu/sirikali/releases" },
-		{ "cryfs","https://api.github.com/repos/cryfs/cryfs/releases" },
-		{ "gocryptfs","https://api.github.com/repos/rfjakob/gocryptfs/releases" },
-		{ "securefs","https://api.github.com/repos/netheril96/securefs/releases" },
-		{ "encfs","https://api.github.com/repos/vgough/encfs/releases" },
-		{ "ecryptfs-simple","https://api.github.com/repos/mhogomchungu/ecryptfs-simple/releases" }
-	} } ;
+	std::vector< std::pair< QString,QString > > m_backends ;
+	checkforupdateswindow::functions m_functions ;
 } ;
 
 #endif // CHECKFORUPDATES_H

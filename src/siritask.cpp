@@ -99,7 +99,7 @@ static QString _cmd_args_1( QString e )
 
 			auto a = e.mid( 0,i ) ;
 
-			auto b = utility::executableFullPath( a ) ;
+			auto b = engines::executableFullPath( a ) ;
 
 			if( !b.isEmpty() ){
 
@@ -124,7 +124,7 @@ static QString _cmd_args( const QString& e )
 	}
 
 	auto a = utility::split( e,' ' ) ;
-	auto b = utility::executableFullPath( a.at( 0 ) ) ;
+	auto b = engines::executableFullPath( a.at( 0 ) ) ;
 
 	if( b.isEmpty() ){
 
@@ -481,7 +481,7 @@ siritask::Engine siritask::mountEngine( const siritask::mount& e )
 	const QString& configFilePath  = e.configFilePath ;
 	const siritask::Engine& Engine = e.engine ;
 
-	if( Engine.get().known() ){
+	if( Engine->known() ){
 
 		const auto& engine = Engine.get() ;
 
@@ -525,28 +525,26 @@ siritask::Engine siritask::mountEngine( const siritask::mount& e )
 
 	if( configFilePath.isEmpty() ){
 
-		auto m = engines.getByConfigFileNames( [ & ]( const QString& e ){
+		const auto& m = engines.getByConfigFileNames( [ & ]( const QString& e ){
 
 			return utility::pathExists( cipherFolder + "/" + e ) ;
 		} ) ;
 
-		if( m.first.known() ){
+		if( m.known() ){
 
-			return { { m.first,"",cipherFolder } } ;
+			return { { m,"",cipherFolder } } ;
 		}else{
-			const auto& engine = engines.getByName( "fscrypt" ) ;
-
-			return { { engine.proveEngine( cipherFolder ),"",cipherFolder } } ;
+			return { { engines.getByCipherFolderPath( cipherFolder ),"",cipherFolder } } ;
 		}
 
 	}else if( utility::pathExists( configFilePath ) ){
 
-		auto m = engines.getByConfigFileNames( [ & ]( const QString& e ){
+		const auto& m = engines.getByConfigFileNames( [ & ]( const QString& e ){
 
 			return configFilePath.endsWith( e ) ;
 		} ) ;
 
-		return { { m.first,configFilePath,cipherFolder } } ;
+		return { { m,configFilePath,cipherFolder } } ;
 	}else{
 		for( const auto& it : engines.supportedEngines() ){
 
@@ -572,23 +570,26 @@ siritask::Engine siritask::mountEngine( const siritask::mount& e )
 	}
 }
 
+/*
+ * Opts is taken by value instead of const reference on purpose.
+ */
 static engines::engine::cmdStatus _mount( Opts opt,bool reUseMP,const siritask::Engine& eng )
 {
 	auto Engine = siritask::mountEngine( { opt.cipherFolder,opt.configFilePath,eng } ) ;
 
 	const auto& engine  = Engine.get() ;
 
-	opt.configFilePath  = Engine.configFilePath() ;
-	opt.cipherFolder    = Engine.cipherFolder() ;
-
-	engine.updateOptions( opt ) ;
-
 	if( engine.unknown() ){
 
 		return { engines::engine::status::unknown,engine } ;
 	}
 
-	auto mm = engine.passMinimumVersion() ;
+	opt.configFilePath  = Engine.configFilePath() ;
+	opt.cipherFolder    = Engine.cipherFolder() ;
+
+	engine.updateOptions( opt ) ;
+
+	auto mm = engine.passAllRequirenments( opt ) ;
 
 	if( mm != engines::engine::status::success ){
 
@@ -659,7 +660,7 @@ static engines::engine::cmdStatus _create( const Opts& opt,const Engs& engine )
 		return { engines::engine::status::unknown,engine } ;
 	}
 
-	auto mm = engine.passMinimumVersion() ;
+	auto mm = engine.passAllRequirenments( opt ) ;
 
 	if( mm != engines::engine::status::success ){
 
@@ -824,7 +825,7 @@ siritask::encryptedFolderMount( const Opts& opt,bool m,const siritask::Engine& e
 
 	if( s == engines::engine::status::success ){
 
-		_run_command_on_mount( opt,engine.get().name() ) ;
+		_run_command_on_mount( opt,engine->name() ) ;
 	}
 
 	return s ;

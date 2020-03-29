@@ -4,8 +4,8 @@ set_property( GLOBAL PROPERTY ALLOW_DUPLICATE_CUSTOM_TARGETS ON )
 
 project( sirikali )
 
-set( PGR_VERSION "1.4.1" )
-set( COPYRIGHT_YEARS "2016-2019" )
+set( PGR_VERSION "1.4.2" )
+set( COPYRIGHT_YEARS "2016-2020" )
 
 add_definitions( -Wextra -Wall -pedantic )
 
@@ -118,13 +118,26 @@ else()
     endif()
 endif()
 
-find_package( Qt5Widgets REQUIRED )
-find_package( Qt5Core REQUIRED )
-find_package( Qt5Network REQUIRED )
+if( UNIX AND NOT APPLE )
 
-message( STATUS "Found Qt5Widgets, version  ${Qt5Widgets_VERSION}" )
-message( STATUS "Found Qt5Core, version  ${Qt5Core_VERSION}" )
-message( STATUS "Found Qt5Network, version  ${Qt5Network_VERSION}" )
+	find_package( Qt5Widgets REQUIRED )
+	find_package( Qt5Core REQUIRED )
+	find_package( Qt5Network REQUIRED )
+	find_package( Qt5DBus REQUIRED )
+
+	message( STATUS "Found Qt5Widgets, version  ${Qt5Widgets_VERSION}" )
+	message( STATUS "Found Qt5Core, version  ${Qt5Core_VERSION}" )
+	message( STATUS "Found Qt5Network, version  ${Qt5Network_VERSION}" )
+	message( STATUS "Found Qt5DBus, version  ${Qt5DBus_VERSION}" )
+else()
+	find_package( Qt5Widgets REQUIRED )
+	find_package( Qt5Core REQUIRED )
+	find_package( Qt5Network REQUIRED )
+
+	message( STATUS "Found Qt5Widgets, version  ${Qt5Widgets_VERSION}" )
+	message( STATUS "Found Qt5Core, version  ${Qt5Core_VERSION}" )
+	message( STATUS "Found Qt5Network, version  ${Qt5Network_VERSION}" )
+endif()
 
 pkg_check_modules( MCHUNGU_NETWORK mhogomchungu_network )
 pkg_check_modules( MCHUNGU_TASK mhogomchungu_task )
@@ -241,6 +254,7 @@ set( UI_FILES 	src/sirikali.ui
 		src/debugwindow.ui
 		src/configfileoption.ui
 		src/configoptions.ui
+		src/checkforupdateswindow.ui
 		src/engines/customcreateoptions.ui
 		src/engines/gocryptfscreateoptions.ui
 		src/engines/ecryptfscreateoptions.ui
@@ -270,6 +284,7 @@ set( MOC_FILES
 		src/mountinfo.h
 		src/debugwindow.h
 		src/runinthread.h
+		src/checkforupdateswindow.h
 		src/engines/customcreateoptions.h
 		src/engines/gocryptfscreateoptions.h
 		src/engines/ecryptfscreateoptions.h
@@ -287,6 +302,7 @@ set( SRC 	src/dialogok.cpp
 		src/configoptions.cpp
 		src/configfileoption.cpp
 		src/sirikali.cpp
+		src/checkforupdateswindow.cpp
 		src/keydialog.cpp
 		src/siritask.cpp
 		src/help.cpp
@@ -370,11 +386,20 @@ endif()
 link_directories( ${GCRYPT_LIBRARY_PATH} )
 
 if( WIN32 )
-    #TARGET_LINK_LIBRARIES( sirikali winfsp-x86 ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task mhogomchungu_network -L${GCRYPT_LIBRARY_PATH})
-    TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} lxqt-wallet mhogomchungu_task mhogomchungu_network)
 
-else()
+    TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} lxqt-wallet mhogomchungu_task mhogomchungu_network)
+endif()
+
+if( APPLE )
+
     TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task mhogomchungu_network -L${GCRYPT_LIBRARY_PATH})
+endif()
+
+if( UNIX AND NOT APPLE )
+
+    TARGET_LINK_LIBRARIES( sirikali ${Qt5DBus_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task mhogomchungu_network -L${GCRYPT_LIBRARY_PATH})
+else()
+
 endif()
 
 message( STATUS "---------------------------------------------------------------------------" )

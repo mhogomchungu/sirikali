@@ -132,6 +132,7 @@ public:
 	QString windowsExecutableSearchPath() ;
 	QString externalPluginExecutable() ;
 	QString ykchalrespArguments() ;
+	bool yubikeyRemoveNewLine() ;
 	void setExternalPluginExecutable( const QString& ) ;
 	bool enableRevealingPasswords() ;
 	void scaleGUI() ;
@@ -204,6 +205,9 @@ public:
 	QString applicationName( void ) ;
 	int readPasswordMaximumLength() ;
 	bool unMountVolumesOnLogout( void ) ;
+	QStringList mountMonitorFolderPaths( void ) ;
+	QString gvfsFuseMonitorPath( void ) ;
+	int mountMonitorFolderPollingInterval( void ) ;
 private:
 	QSettings m_settings ;
 };

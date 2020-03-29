@@ -31,9 +31,7 @@ public:
 	engines::engine::args command( const QByteArray& password,
 				       const engines::engine::cmdArgsList& args ) const override ;
 
-	const QString& installedVersionString() const override ;
-
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
 private:
-	engines::version m_version ;
+	const engines::versionGreaterOrEqual m_version_has_error_codes ;
 } ;

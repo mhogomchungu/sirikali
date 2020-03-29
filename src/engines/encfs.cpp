@@ -37,6 +37,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = true ;
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = false ;
+	s.releaseURL            = "https://api.github.com/repos/vgough/encfs/releases" ;
 	s.passwordFormat        = "%{password}\n%{password}" ;
 	s.reverseString         = "--reverse" ;
 	s.idleString            = "-i" ;
@@ -52,12 +53,12 @@ static engines::engine::BaseOptions _setOptions()
 	s.failedToMountList     = QStringList{ "Error" } ;
 	s.successfulMountedList = QStringList{ "has been started" } ;
 	s.notFoundCode          = engines::engine::status::encfsNotFound ;
+	s.versionInfo           = { { "--version",false,2,0 } } ;
 
 	return s ;
 }
 
-encfs::encfs() : engines::engine( _setOptions() ),
-      m_version( [ this ]{ return this->baseInstalledVersionString( "--version",false,2,0 ) ; } )
+encfs::encfs() : engines::engine( _setOptions() )
 {
 }
 
@@ -79,7 +80,7 @@ engines::engine::args encfs::command( const QByteArray& password,
 		exeOptions.add( "--stdinpass" ) ;
 	}
 
-	if( args.opt.reverseMode ){
+	if( args.opt.boolOptions.unlockInReverseMode ){
 
 		exeOptions.add( this->reverseString() ) ;
 	}
@@ -134,11 +135,6 @@ engines::engine::status encfs::errorCode( const QString& e,int s ) const
 	}else{
 		return engines::engine::status::backendFail ;
 	}
-}
-
-const QString& encfs::installedVersionString() const
-{
-	return m_version.get() ;
 }
 
 void encfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

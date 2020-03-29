@@ -38,6 +38,166 @@ public:
 	static QString executableFullPath( const QString& ) ;
 	static QStringList executableSearchPaths() ;
 
+	class engine ;
+
+	class engineVersion{
+	public:
+		engineVersion() ;
+		engineVersion( int major,int minor,int patch ) ;
+		engineVersion( const QString& e ) ;
+		bool valid() const ;
+		bool operator==( const engineVersion& other ) const ;
+		bool operator<( const engineVersion& other ) const ;
+		/*
+		 * a != b equal to !(a == b)
+		 * a <= b equal to (a < b) || (a == b)
+		 * a >= b equal to !(a < b)
+		 * a > b  equal to !(a <= b)
+		 */
+		bool operator>=( const engineVersion& other ) const
+		{
+			return !( *this < other ) ;
+		}
+		bool operator<=( const engineVersion& other ) const
+		{
+			return ( *this < other ) || ( *this == other ) ;
+		}
+		bool operator!=( const engineVersion& other ) const
+		{
+			return !( *this == other ) ;
+		}
+		bool operator>( const engineVersion& other ) const
+		{
+			return !( *this <= other ) ;
+		}
+		QString toString() const ;
+	private:
+		bool m_valid = false ;
+		int m_major = 0 ;
+		int m_minor = 0 ;
+		int m_patch = 0 ;
+	};
+
+	template< typename Type >
+	class cache{
+	public:
+	        cache( std::function< Type() > function ) : m_function( std::move( function ) )
+		{
+		}
+		cache() : m_function( [](){ return Type() ; } )
+		{
+		}
+		const Type& get() const
+		{
+		        if( m_unset ){
+
+			        m_unset = false ;
+
+				m_variable = utility::unwrap( Task::run( [ this ]{ return m_function() ; } ) ) ;
+			}
+
+			return m_variable ;
+		}
+		virtual ~cache()
+		{
+		}
+	private:
+		std::function< Type() > m_function ;
+		mutable Type m_variable ;
+		mutable bool m_unset = true ;
+	};
+
+	class version : public cache< engines::engineVersion >{
+	public:
+	        enum class Operator{ less,lessOrEqual,equal,notEqual,greater,greaterOrEqual } ;
+
+		version( const QString& e,std::function< engines::engineVersion() > s ) :
+			cache( std::move( s ) ),
+			m_engineName( e )
+		{
+		}
+		version()
+		{
+		}
+		utility::result< bool > compare( const engines::engineVersion& b,
+						 engines::version::Operator op ) const
+		{
+			const auto& a = this->get() ;
+
+			if( a.valid() && b.valid() ){
+
+			        switch( op ) {
+
+				        case engines::version::Operator::less :           return a < b ;
+				        case engines::version::Operator::lessOrEqual :    return a <= b ;
+				        case engines::version::Operator::equal :          return a == b ;
+				        case engines::version::Operator::notEqual :       return a != b ;
+				        case engines::version::Operator::greater :        return a > b ;
+				        case engines::version::Operator::greaterOrEqual : return a >= b ;
+				}
+			}
+
+			return {} ;
+		}
+		QString toString() const
+		{
+			return this->get().toString() ;
+		}
+		utility::result< bool > greaterOrEqual( int major,int minor,int patch ) const
+		{
+			return this->compare( { major,minor,patch },engines::version::Operator::greaterOrEqual ) ;
+		}
+		utility::result< bool > greaterOrEqual( const QString& v ) const
+		{
+		        return this->compare( v,engines::version::Operator::greaterOrEqual ) ;
+		}
+		virtual void logError() const ;
+	private:
+		QString m_engineName ;
+	};
+
+	class booleanCache : public cache< utility::result< bool > >{
+	public:
+	        booleanCache( std::function< utility::result< bool >() > s ) :
+		        cache( std::move( s ) )
+		{
+		}
+		operator bool() const
+		{
+		        return this->get().value() ;
+		}
+	private:
+		virtual void silenceWarning() ;
+	};
+
+	class versionGreaterOrEqual : public cache< utility::result< bool > >{
+	public:
+	        versionGreaterOrEqual( bool m,const engines::engine& engine,int major,int minor,int patch ) :
+		        cache( [ =,&engine ](){ return this->setCallback( m,engine,major,minor,patch ) ; } )
+		{
+		}
+		versionGreaterOrEqual( bool m,const engines::engine& engine,const QString& e ) :
+		        cache( [ =,&engine ](){ return this->setCallback( m,engine,e ) ; } )
+		{
+		}
+		operator bool() const
+		{
+		        return this->get().value() ;
+		}
+	private:
+		virtual bool setCallback( bool m,const engines::engine& engine,int major,int minor,int patch ) ;
+		virtual bool setCallback( bool m,const engines::engine& engine,const QString& ) ;
+	} ;
+
+	class exeFullPath : public cache< QString >{
+	public:
+	        exeFullPath( std::function< QString() > s ) : cache( std::move( s ) )
+		{
+		}
+	private:
+		virtual void silenceWarning() ;
+	};
+
 	class engine
 	{
 	protected:
@@ -99,9 +259,11 @@ public:
 			ecryptfs_simpleNotFound,
 
 			customCommandNotFound,
-                        customCommandBadPassword,
+			customCommandBadPassword,
 
 			cryfsMigrateFileSystem,
+			cryfsReplaceFileSystem,
+			cryfsNotSupportedFolderPath,
 			IllegalPath,
 
 			fscryptPartialVolumeClose,
@@ -119,6 +281,12 @@ public:
 
 		struct options
 		{
+		        struct booleanOptions{
+			        bool unlockInReadOnly = false ;
+				bool unlockInReverseMode = false ;
+				bool allowReplacedFileSystem = false ;
+				bool allowUpgradeFileSystem = false ;
+			} ;
 			options( const favorites::entry& e,
 				 const QByteArray& volumeKey = QByteArray() ) ;
 
@@ -127,8 +295,7 @@ public:
 				 const QByteArray& volume_key,
 				 const QString& idle_timeout,
 				 const QString& config_file_path,
-				 bool unlock_in_read_only,
-				 bool unlock_in_reverse_mode,
+			         const booleanOptions& boolOpts,
 				 const QString& mount_options,
 				 const QString& create_options ) ;
 			QString cipherFolder ;
@@ -136,10 +303,9 @@ public:
 			QByteArray key ;
 			QString idleTimeout ;
 			QString configFilePath ;
-			bool ro ;
-			bool reverseMode ;
 			QString mountOptions ;
 			QString createOptions ;
+			booleanOptions boolOptions ;
 		} ;
 
 		struct cmdArgsList
@@ -174,17 +340,26 @@ public:
 
 		struct Options
 		{
-			Options( QStringList s,bool r ) ;
+		        Options( QStringList s,const options::booleanOptions& r ) ;
 			Options( QStringList s ) ;
-			Options( bool r ) ;
+			Options( const options::booleanOptions& r ) ;
 			Options() ;
 			QStringList options ;
-			bool reverseMode ;
+			options::booleanOptions opts ;
 			bool success ;
 		} ;
 
 		struct BaseOptions
 		{
+		        struct vInfo{
+
+				QString versionArgument ;
+				bool readFromStdOut ;
+				int argumentNumber ;
+				int argumentLine ;
+			};
+
+			std::vector< vInfo >versionInfo ;
 			int  backendTimeout ;
 			bool hasConfigFile ;
 			bool setsCipherPath ;
@@ -199,6 +374,7 @@ public:
 			bool takesTooLongToUnlock ;
 
 			QByteArray passwordFormat ;
+			QString releaseURL ;
 			QString minimumVersion ;
 			QString reverseString ;
 			QString idleString ;
@@ -235,7 +411,8 @@ public:
 			QString subtype ;
 		} ;
 
-		QString executableFullPath() const ;
+		static void encodeSpecialCharacters( QString& ) ;
+		static void decodeSpecialCharacters( QString& ) ;
 
 		bool isInstalled() const ;
 		bool isNotInstalled() const ;
@@ -251,9 +428,6 @@ public:
 		bool autorefreshOnMountUnMount() const ;
 		bool backendRequireMountPath() const ;
 
-		bool versionIsLessOrEqualTo( const QString& ) const ;
-		bool versionGreaterOrEqualTo( const QString& ) const ;
-
 		engines::engine::status notFoundCode() const ;
 
 		int backendTimeout() const ;
@@ -263,9 +437,13 @@ public:
 		const QStringList& fileExtensions() const ;
 		const QStringList& volumePropertiesCommands() const ;
 
+		const engines::version& installedVersion() const ;
+
+		const QString& executableFullPath() const ;
 		const QString& minimumVersion() const ;
 		const QString& reverseString() const ;
 		const QString& idleString() const ;
+		const QString& releaseURL() const ;
 		const QString& executableName() const ;
 		const QString& name() const ;
 		const QString& configFileName() const ;
@@ -280,6 +458,8 @@ public:
 
 		QString setConfigFilePath( const QString& ) const ;
 		QByteArray setPassword( const QByteArray& ) const ;
+
+		engine( BaseOptions ) ;
 
 		virtual ~engine() ;
 
@@ -296,25 +476,19 @@ public:
 
 		virtual bool takesTooLongToUnlock() const ;
 
-		virtual engine::engine::status passMinimumVersion() const ;
+		virtual engine::engine::status passAllRequirenments( const engines::engine::options& ) const ;
 
-		virtual const engines::engine& proveEngine( const QString& cipherPath ) const ;
+		virtual bool ownsCipherPath( const QString& cipherPath ) const ;
 
 		virtual void updateOptions( engines::engine::options& ) const ;
 
 		virtual const QProcessEnvironment& getProcessEnvironment() const ;
-		virtual bool requiresPolkit() const ;
-		virtual const QString& installedVersionString() const = 0 ;
+		virtual bool requiresPolkit() const ;		
 		virtual args command( const QByteArray& password,const engines::engine::cmdArgsList& args ) const = 0 ;
 		virtual engines::engine::status errorCode( const QString& e,int s ) const = 0 ;
 		using function = std::function< void( const Options& ) > ;
 		virtual void GUICreateOptionsinstance( QWidget * parent,function ) const = 0 ;
 	protected:
-		virtual QString sanitizeVersionString( const QString& ) const ;
-		QString baseInstalledVersionString( const QString& versionArgument,
-						    bool readFromStdOut,
-                                                    int argumentNumber,
-                                                    int argumentLine ) const ;
 		class commandOptions{
 		public:
 			enum class separator{ space,equal_sign } ;
@@ -452,53 +626,12 @@ public:
 			QString m_subtype ;
 			QString m_mode ;
 		};
-
-		engine( BaseOptions ) ;
 	private:
-		BaseOptions m_Options ;
-		QProcessEnvironment m_processEnvironment ;
+		const BaseOptions m_Options ;
+		const QProcessEnvironment m_processEnvironment ;
+		const engines::version m_version ;
+		const engines::exeFullPath m_exeFullPath ;
 	} ;
-
-	class version{
-	public:
-		version( std::function< QString() > function ) : m_function( std::move( function ) )
-		{
-		}
-		version() : m_function( [](){ return QString() ; } )
-		{
-		}
-		const QString& get() const
-		{
-			if( m_version.isEmpty() ){
-
-				m_version = m_function() ;
-			}
-
-			return m_version ;
-		}
-	private:
-		std::function< QString() > m_function ;
-		mutable QString m_version ;
-	};
-
-	class exeFullPath{
-	public:
-		exeFullPath( const engines::engine& e ) : m_engine( e )
-		{
-		}
-		const QString& get() const
-		{
-			if( m_path.isEmpty() ){
-
-				m_path = m_engine->executableFullPath() ;
-			}
-
-			return m_path ;
-		}
-	private:
-		const engines::engine::Wrapper m_engine ;
-		mutable QString m_path ;
-	};
 
 	engines() ;
 	static const engines& instance() ;
@@ -509,11 +642,10 @@ public:
 	const std::vector< engines::engine::Wrapper >& supportedEngines() const ;
 	const engine& getUnKnown() const ;
 	const engine& getByName( const QString& e ) const ;
+	const engine& getByCipherFolderPath( const QString& e ) const ;
 	const engine& getByFuseName( const QString& e ) const ;
 	const engine& getByFileExtension( const QString& e ) const ;
-	std::pair< const engines::engine&,QString >
-	getByConfigFileNames( std::function< bool( const QString& ) > function ) const ;
-
+	const engine& getByConfigFileNames( std::function< bool( const QString& ) > function ) const ;
 private:
 	std::vector< std::unique_ptr< engines::engine > > m_backends ;
 	std::vector< engines::engine::Wrapper > m_backendWrappers ;

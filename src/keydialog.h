@@ -255,6 +255,8 @@ private :
 	void closeEvent( QCloseEvent * ) ;
 
 	bool upgradingFileSystem( void ) ;
+	bool replaceFileSystem( void ) ;
+
 	bool mountedAll() ;
 	bool completed( const engines::engine::cmdStatus&,const QString& m ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
@@ -284,7 +286,11 @@ private :
 	bool m_checked = false ;
 	bool m_hmac ;
 	bool m_closeGUI = false ;
-	bool m_reverseMode = false ;
+	bool m_allowReplaceFileSystemSet = false ;
+
+	engines::engine::options::booleanOptions m_boolOpts ;
+
+	engines::engine::status m_status ;
 
 	favorites::triState m_favoriteReadOnly ;
 

@@ -37,6 +37,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = true ;
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = true ;
+	s.releaseURL            = "https://api.github.com/repos/mhogomchungu/ecryptfs-simple/releases" ;
 	s.passwordFormat        = "%{password}" ;
 	s.executableName        = "ecryptfs-simple" ;
 	s.incorrectPasswordText = "error: mount failed" ;
@@ -44,6 +45,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.configFileNames       = QStringList{ ".ecryptfs.config","ecryptfs.config" } ;
 	s.fuseNames             = QStringList{ "ecryptfs" } ;
 	s.names                 = QStringList{ "ecryptfs" } ;
+	s.versionInfo           = { { "--version",true,1,0 } } ;
 
 	s.notFoundCode = engines::engine::status::ecryptfs_simpleNotFound ;
 
@@ -54,9 +56,9 @@ static engines::engine::BaseOptions _setOptions()
 
 #include <sys/stat.h>
 
-static bool _requiresPolkit()
+static bool _requiresPolkit( const engines::engine& engine )
 {
-	auto e = utility::executableFullPath( "ecryptfs-simple" ) ;
+	auto e = engine.executableFullPath() ;
 
 	struct stat st ;
 
@@ -70,8 +72,9 @@ static bool _requiresPolkit()
 
 #else
 
-static bool _requiresPolkit()
+static bool _requiresPolkit( const engines::engine& engine )
 {
+	Q_UNUSED( engine )
 	return false ;
 }
 
@@ -79,8 +82,8 @@ static bool _requiresPolkit()
 
 ecryptfs::ecryptfs() :
 	engines::engine( _setOptions() ),
-	m_requirePolkit( _requiresPolkit() ),
-	m_version( [ this ]{ return this->baseInstalledVersionString( "--version",true,1,0 ) ; } )
+	m_requirePolkit( _requiresPolkit( *this ) ),
+	m_exeSUFullPath( [](){ return engines::executableFullPath( "su" ) ; } )
 {
 }
 
@@ -110,6 +113,18 @@ static bool _unmount_ecryptfs_( Function cmd )
 	}
 }
 
+QString ecryptfs::wrapSU( const QString& s ) const
+{
+	const auto& su = m_exeSUFullPath.get() ;
+
+	if( su.isEmpty() ){
+
+		return s ;
+	}else{
+		return QString( "%1 - -c \"%2\"" ).arg( su,QString( s ).replace( "\"","'" ) ) ;
+	}
+}
+
 engines::engine::status ecryptfs::unmount( const QString& cipherFolder,
 					   const QString& mountPoint,
 					   int maxCount ) const
@@ -118,13 +133,13 @@ engines::engine::status ecryptfs::unmount( const QString& cipherFolder,
 
 	auto cmd = [ & ](){
 
-		auto exe = utility::executableFullPath( "ecryptfs-simple" ) ;
+		auto exe = this->executableFullPath() ;
 
 		auto s = exe + " -k " + cipherFolder ;
 
 		if( utility::useSiriPolkit() ){
 
-			return utility::wrap_su( s ) ;
+			return this->wrapSU( s ) ;
 		}else{
 			return s ;
 		}
@@ -159,7 +174,7 @@ engines::engine::args ecryptfs::command( const QByteArray& password,
 
 	auto exeOptions = m.exeOptions() ;
 
-	if( args.opt.ro ){
+	if( args.opt.boolOptions.unlockInReadOnly ){
 
 		exeOptions.add( "--readonly" ) ;
 	}
@@ -189,7 +204,7 @@ engines::engine::args ecryptfs::command( const QByteArray& password,
 
 	if( utility::useSiriPolkit() ){
 
-		return { args,m,utility::wrap_su( s ) } ;
+		return { args,m,this->wrapSU( s ) } ;
 	}else{
 		return { args,m,s } ;
 	}
@@ -211,13 +226,7 @@ engines::engine::status ecryptfs::errorCode( const QString& e,int s ) const
 	}
 }
 
-const QString& ecryptfs::installedVersionString() const
-{
-	return m_version.get() ;
-}
-
 void ecryptfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
 {
 	ecryptfscreateoptions::instance( parent,std::move( function ) ) ;
 }
-

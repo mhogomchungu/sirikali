@@ -238,12 +238,12 @@ static QString _file_manager()
 	if( utility::platformIsLinux() ){
 
 		s = "xdg-open" ;
-		e = utility::executableFullPath( s ) ;
+		e = engines::executableFullPath( s ) ;
 
 	}else if( utility::platformIsOSX() ){
 
 		s = "open" ;
-		e = utility::executableFullPath( s ) ;
+		e = engines::executableFullPath( s ) ;
 	}else{
 		s = "explorer.exe" ;
 	}
@@ -301,7 +301,7 @@ QString settings::fileManager()
 
 			settings::setFileManager( QString() ) ;
 
-			return m_settings.value( "FileManagerOpener" ).toString() ; ;
+			return m_settings.value( "FileManagerOpener" ).toString() ;
 		}else{
 			return e ;
 		}
@@ -405,6 +405,36 @@ bool settings::unMountVolumesOnLogout()
 	}
 
 	return m_settings.value( "UnMountVolumesOnLogout" ).toBool() ;
+}
+
+QStringList settings::mountMonitorFolderPaths()
+{
+	if( !m_settings.contains( "MountMonitorFolderPaths" ) ){
+
+		m_settings.setValue( "MountMonitorFolderPaths",QStringList() ) ;
+	}
+
+	return m_settings.value( "MountMonitorFolderPaths" ).toStringList() ;
+}
+
+QString settings::gvfsFuseMonitorPath()
+{
+	if( !m_settings.contains( "GvfsFuseMonitorPath" ) ){
+
+		m_settings.setValue( "GvfsFuseMonitorPath",QString() ) ;
+	}
+
+	return m_settings.value( "GvfsFuseMonitorPath" ).toString() ;
+}
+
+int settings::mountMonitorFolderPollingInterval()
+{
+	if( !m_settings.contains( "MountMonitorFolderPollingInterval" ) ){
+
+		m_settings.setValue( "MountMonitorFolderPollingInterval",0 ) ;
+	}
+
+	return m_settings.value( "MountMonitorFolderPollingInterval" ).toInt() ;
 }
 
 bool settings::readFavorites( QMenu * m )
@@ -942,6 +972,16 @@ QString settings::ykchalrespArguments()
 	}
 
 	return m_settings.value( "YkchalrespArguments" ).toString() ;
+}
+
+bool settings::yubikeyRemoveNewLine()
+{
+	if( !m_settings.contains( "yubikeyRemoveNewLine" ) ){
+
+		m_settings.setValue( "yubikeyRemoveNewLine",true ) ;
+	}
+
+	return m_settings.value( "yubikeyRemoveNewLine" ).toBool() ;
 }
 
 QString settings::localizationLanguage()

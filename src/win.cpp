@@ -36,136 +36,83 @@ static const char * _backEndTimedOut = "SiriKali::Windows::BackendTimedOut" ;
 
 #include <windows.h>
 
-class regOpenKey{
-public:
-	regOpenKey( const char * subKey,HKEY hkey = HKEY_LOCAL_MACHINE )
-	{
-		HKEY m ;
-		REGSAM wow64 = KEY_QUERY_VALUE | KEY_WOW64_64KEY ;
-		REGSAM wow32 = KEY_QUERY_VALUE | KEY_WOW64_32KEY ;
-		unsigned long x = 0 ;
-
-		if( this->success( RegOpenKeyExA,hkey,subKey,x,wow64,&m ) ){
-
-			m_hkey = m ;
-
-		}else if( this->success( RegOpenKeyExA,hkey,subKey,x,wow32,&m ) ){
-
-			m_hkey = m ;
-		}else{
-			m_hkey = nullptr ;
-		}
-	}
-	regOpenKey( const regOpenKey& ) = delete ;
-	regOpenKey& operator=( const regOpenKey& ) = delete ;
-	regOpenKey( regOpenKey&& other )
-	{
-		this->closeKey() ;
-		m_hkey = other.m_hkey ;
-		other.m_hkey = nullptr ;
-	}
-	regOpenKey& operator=( regOpenKey&& other )
-	{
-		this->closeKey() ;
-		m_hkey = other.m_hkey ;
-		other.m_hkey = nullptr ;
-		return *this ;
-	}
-	operator bool()
-	{
-		return m_hkey != nullptr ;
-	}
-	QByteArray getValue( const char * key )
-	{
-		if( m_hkey != nullptr ){
-
-			DWORD dwType = REG_SZ ;
-
-			std::array< char,4096 > buffer ;
-
-			std::fill( buffer.begin(),buffer.end(),'\0' ) ;
-
-			auto e = reinterpret_cast< BYTE * >( buffer.data() ) ;
-			auto m = static_cast< DWORD >( buffer.size() ) ;
-
-			if( this->success( RegQueryValueEx,m_hkey,key,nullptr,&dwType,e,&m ) ){
-
-				return { buffer.data(),static_cast< int >( m ) } ;
-			}
-		}
-
-		return {} ;
-	}
-	HKEY handle()
-	{
-		return m_hkey ;
-	}
-	~regOpenKey()
-	{
-		this->closeKey() ;
-	}
-private:
-	template< typename Function,typename ... Args >
-	bool success( Function&& function,Args&& ... args )
-	{
-		return function( std::forward< Args >( args ) ... ) == ERROR_SUCCESS ;
-	}
-	void closeKey()
-	{
-		RegCloseKey( m_hkey ) ;
-	}
-	HKEY m_hkey ;
-};
-
-// SiriKali took below code from "https://stackoverflow.com/questions/813086/can-i-send-a-ctrl-c-sigint-to-an-application-on-windows"
-
-// Inspired from http://stackoverflow.com/a/15281070/1529139
-// and http://stackoverflow.com/q/40059902/1529139
-static bool signalCtrl(DWORD dwProcessId, DWORD dwCtrlEvent)
-{
-    bool success = false;
-    DWORD thisConsoleId = GetCurrentProcessId();
-    // Leave current console if it exists
-    // (otherwise AttachConsole will return ERROR_ACCESS_DENIED)
-    bool consoleDetached = (FreeConsole() != FALSE);
-
-    if (AttachConsole(dwProcessId) != FALSE)
-    {
-	// Add a fake Ctrl-C handler for avoid instant kill is this console
-	// WARNING: do not revert it or current program will be also killed
-	SetConsoleCtrlHandler(nullptr, true);
-	success = (GenerateConsoleCtrlEvent(dwCtrlEvent, 0) != FALSE);
-	FreeConsole();
-    }
-
-    if (consoleDetached)
-    {
-	// Create a new console if previous was deleted by OS
-	if (AttachConsole(thisConsoleId) == FALSE)
-	{
-	    auto errorCode = GetLastError();
-	    if (errorCode == 31) // 31=ERROR_GEN_FAILURE
-	    {
-		AllocConsole();
-	    }
-	}
-    }
-    return success;
-}
-
 static int _terminateProcess( unsigned long pid )
 {
-	if( signalCtrl( pid,CTRL_C_EVENT ) ){
+	FreeConsole() ;
 
-		return 0 ;
-	}else{
-		return 1 ;
+	if( AttachConsole( pid ) == TRUE ) {
+
+		/*
+		 * Add a fake Ctrl-C handler for avoid instant kill in this console
+		 * WARNING: do not revert it or current program will also killed
+		 */
+
+		SetConsoleCtrlHandler( nullptr,true ) ;
+
+		if( GenerateConsoleCtrlEvent( CTRL_C_EVENT,0 ) == TRUE ){
+
+			return 0 ;
+		}
 	}
+
+	return 1 ;
+}
+
+static HKEY _reg_open_key( const char * subKey )
+{
+	HKEY hkey = HKEY_LOCAL_MACHINE ;
+	HKEY m ;
+	REGSAM wow64 = KEY_QUERY_VALUE | KEY_WOW64_64KEY ;
+	REGSAM wow32 = KEY_QUERY_VALUE | KEY_WOW64_32KEY ;
+	unsigned long x = 0 ;
+
+	if( RegOpenKeyExA( hkey,subKey,x,wow64,&m ) == ERROR_SUCCESS ){
+
+		return m ;
+
+	}else if( RegOpenKeyExA( hkey,subKey,x,wow32,&m ) == ERROR_SUCCESS ){
+
+		return m ;
+	}else{
+		return nullptr ;
+	}
+}
+
+static void _reg_close_key( HKEY hkey )
+{
+	if( hkey != nullptr ){
+
+		RegCloseKey( hkey ) ;
+	}
+}
+
+static QByteArray _reg_get_value( HKEY hkey,const char * key )
+{
+	if( hkey != nullptr ){
+
+		DWORD dwType = REG_SZ ;
+
+		std::array< char,4096 > buffer ;
+
+		std::fill( buffer.begin(),buffer.end(),'\0' ) ;
+
+		auto e = reinterpret_cast< BYTE * >( buffer.data() ) ;
+		auto m = static_cast< DWORD >( buffer.size() ) ;
+
+		if( RegQueryValueEx( hkey,key,nullptr,&dwType,e,&m ) == ERROR_SUCCESS ){
+
+			return { buffer.data(),static_cast< int >( m ) } ;
+		}
+	}
+
+	return {} ;
 }
 
 static QString _readRegistry( const char * subKey,const char * key )
 {
-	return regOpenKey( subKey ).getValue( key ) ;
+	auto s = utility2::unique_rsc( _reg_open_key,_reg_close_key,subKey ) ;
+
+	return _reg_get_value( s.get(),key ) ;
 }
 
 #else
@@ -185,18 +132,56 @@ static QString _readRegistry( const char * subKey,const char * key )
 
 #endif
 
-struct Process
+class Process
 {
+public:
 	template< typename T >
-	Process( const engines::engine::args& args,const QString& e,T x ) :
-		args( args ),engineName( e ),instance( std::move( x ) )
+	Process( const SiriKali::Windows::opts& opts,T x ) :
+		m_args( opts.args ),
+		m_engine( opts.engine ),
+		m_environment( m_engine->getProcessEnvironment() ), //we get this variable now because sshfs backend can change it under us.
+		m_instance( std::move( x ) )
 	{
 	}
 	Process( Process&& ) = default ;
 	Process& operator=( Process&& ) = default ;
-	engines::engine::args args ;
-	QString engineName ;
-	std::unique_ptr< QProcess,void(*)( QProcess * ) > instance ;
+	const QString& mountPoint() const
+	{
+		return m_args.mountPath ;
+	}
+	const QProcessEnvironment& env() const
+	{
+		return m_environment ;
+	}
+	//const engines::engine& engine() const
+	//{
+	//	return m_engine.get() ;
+	//}
+	const engines::engine::args& args() const
+	{
+		return m_args ;
+	}
+	QProcess& exe() const
+	{
+		return *m_instance ;
+	}
+	QStringList arguments() const
+	{
+		return this->exe().arguments() ;
+	}
+	bool running() const
+	{
+		return this->exe().state() == QProcess::Running ;
+	}
+	bool notRunning() const
+	{
+		return this->exe().state() == QProcess::NotRunning ;
+	}
+private:
+	engines::engine::args m_args ;
+	engines::engine::Wrapper m_engine ;
+	QProcessEnvironment m_environment ;
+	std::unique_ptr< QProcess,void(*)( QProcess * ) > m_instance ;
 } ;
 
 struct result
@@ -280,7 +265,7 @@ std::vector< QStringList > SiriKali::Windows::volumes::commands() const
 
 	for( const auto& it : m_instances ){
 
-		auto e = it.instance->arguments() ;
+		auto e = it.arguments() ;
 
 		for( auto& m : e ){
 
@@ -353,7 +338,7 @@ static SiriKali::Windows::result _read( QProcess& exe,Function function )
 		}
 	}
 
-	utility::debug() << "Backend took " + QString::number( counter ) + " seconds to finish" ;
+	utility::debug() << "Backend took " + QString::number( counter ) + " seconds to unlock a volume" ;
 
 	return { r,std::move( m ) } ;
 }
@@ -387,7 +372,7 @@ static SiriKali::Windows::result _getProcessOutput( QProcess& exe,const engines:
 struct terminate_process{
 
 	QProcess& exe ;
-	const engines::engine& engine ;
+	const QProcessEnvironment& env ;
 	const QString& mountPath ;
 	const QString& unMountCommand ;
 };
@@ -407,7 +392,7 @@ static std::pair< Task::process::result,QString > _terminate_process( const term
 		exe = utility::Task::makePath( e.unMountCommand ) + " " + e.mountPath ;
 	}
 
-	auto m = utility::unwrap( Task::process::run( exe,{},-1,"",e.engine.getProcessEnvironment() ) ) ;
+	auto m = utility::unwrap( Task::process::run( exe,{},-1,"",e.env ) ) ;
 
 	if( m.success() ){
 
@@ -434,7 +419,7 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 
 		if( m.type == engines::engine::error::Timeout ){
 
-			_terminate_process( { *exe,opts.engine,QString(),QString() } ) ;
+			_terminate_process( { *exe,opts.engine.getProcessEnvironment(),QString(),QString() } ) ;
 
 			return Task::process::result( SiriKali::Windows::_backEndTimedOut,
 						      QByteArray(),
@@ -447,7 +432,7 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 			exe->closeReadChannel( QProcess::StandardError ) ;
 			exe->closeReadChannel( QProcess::StandardOutput ) ;
 
-			m_instances.emplace_back( opts.args,opts.engine.name(),std::move( exe ) ) ;
+			m_instances.emplace_back( opts,std::move( exe ) ) ;
 
 			m_updateVolumeList() ;
 
@@ -496,12 +481,9 @@ SiriKali::Windows::volumes::remove( const QString& unMountCommand,const QString&
 
 		const auto& s = *it ;
 
-		if( s.args.mountPath == mountPoint ){
+		if( s.mountPoint() == mountPoint ){
 
-			auto& p = s.instance ;
-			const auto& eng = engines::instance().getByName( s.engineName ) ;
-
-			auto m = _terminate_process( { *p,eng,s.args.mountPath,unMountCommand } ) ;
+			auto m = _terminate_process( { s.exe(),s.env(),s.mountPoint(),unMountCommand } ) ;
 
 			auto r = [ & ](){
 
@@ -534,11 +516,11 @@ QString SiriKali::Windows::volumes::volumeProperties( const QString& mm )
 
 		const auto& e = m_instances[ i ] ;
 
-		if( mountPath == e.args.mountPath ){
+		if( mountPath == e.mountPoint() ){
 
 			auto m = QObject::tr( "Mount Options:\n\n" ) ;
 
-			for( const auto& it : e.instance->arguments() ){
+			for( const auto& it : e.arguments() ){
 
 				if( it != "-o" ){
 
@@ -561,7 +543,7 @@ std::vector< SiriKali::Windows::mountOptions > SiriKali::Windows::volumes::mount
 
 		for( auto it = m_instances.begin() ; it != m_instances.end() ; it++ ){
 
-			if( ( *it ).instance->state() == QProcess::NotRunning ){
+			if( ( *it ).notRunning() ){
 
 				m_instances.erase( it ) ;
 
@@ -576,7 +558,7 @@ std::vector< SiriKali::Windows::mountOptions > SiriKali::Windows::volumes::mount
 
 	for( const auto& it : m_instances ){
 
-		const auto& m = it.args ;
+		const auto& m = it.args() ;
 
 		auto a = _make_path( m.cipherPath,encode::True ) ;
 		auto b = _make_path( m.mountPath,encode::True ) ;
@@ -593,7 +575,7 @@ bool SiriKali::Windows::volumes::mountPointTaken( const QString& ee )
 
 	for( const auto& it : m_instances ){
 
-		if( QDir::toNativeSeparators( it.args.mountPath ) == e ){
+		if( QDir::toNativeSeparators( it.mountPoint() ) == e ){
 
 			return true ;
 		}

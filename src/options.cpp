@@ -51,13 +51,21 @@ options::options( QWidget * parent,bool r,const Options& l,
 	QString idleTimeOut ;
 	QString configFilePath ;
 	QString mountOptions ;
-	QString type ;
 
-	utility2::stringListToStrings( l.options,idleTimeOut,configFilePath,mountOptions,type ) ;
+	utility2::stringListToStrings( l.options,idleTimeOut,configFilePath,mountOptions,m_type ) ;
 
-	m_ui->checkBox->setChecked( l.reverseMode ) ;
+	if( m_type == "cryfs" ){
 
-	m_type = type.toLower() ;
+		m_ui->checkBox->setChecked( l.opts.allowReplacedFileSystem ) ;
+
+		m_ui->checkBox->setText( tr( "Allow Replaced File System" ) ) ;
+
+	}else if( utility::equalsAtleastOne( m_type,"gocryptfs","encfs" ) ){
+
+		m_ui->checkBox->setChecked( l.opts.unlockInReverseMode ) ;
+	}else{
+		m_ui->checkBox->setEnabled( false ) ;
+	}
 
 	m_ui->lineEditIdleTime->setText( idleTimeOut ) ;
 	m_ui->lineConfigFilePath->setText( configFilePath ) ;
@@ -90,58 +98,9 @@ void options::pushButton()
 {
 	auto e = [ this ](){
 
-		if( m_create ){
-
-			QFileDialog dialog( this ) ;
-
-			dialog.setFileMode( QFileDialog::AnyFile ) ;
-
-			dialog.setDirectory( settings::instance().homePath() ) ;
-
-			dialog.setAcceptMode( QFileDialog::AcceptSave ) ;
-
-			dialog.selectFile( [ this ](){
-
-				if( m_type == "cryfs" ){
-
-					return "cryfs.config" ;
-
-				}else if( m_type == "encfs" ){
-
-					return "encfs6.xml" ;
-
-				}else if( m_type == "gocryptfs" ){
-
-					return "gocryptfs.conf" ;
-
-				}else if( m_type == "securefs" ){
-
-					return "securefs.json" ;
-
-				}else if( m_type == "ecryptfs" ){
-
-					return "ecryptfs.config" ;
-				}else{
-					return "" ;
-				}
-			}() ) ;
-
-			if( dialog.exec() ){
-
-				auto q = dialog.selectedFiles() ;
-
-				if( !q.isEmpty() ){
-
-					return q.first() ;
-				}
-			}
-
-			return QString() ;
-		}else{
-			return QFileDialog::getOpenFileName( this,
-							     tr( "Select Cryfs/Gocryptfs Configuration File" ),
-							     settings::instance().homePath() ) ;
-		}
+		return QFileDialog::getOpenFileName( this,
+						     tr( "Select Cryfs/Gocryptfs Configuration File" ),
+						     settings::instance().homePath() ) ;
 	}() ;
 
         if( !e.isEmpty() ){
@@ -162,7 +121,18 @@ void options::pbSet()
 
 	auto m = m_ui->lineEditMountOptions->text() ;
 
-	this->Hide( { { e,m_ui->lineConfigFilePath->text(),m },m_ui->checkBox->isChecked() } ) ;
+	engines::engine::options::booleanOptions opts ;
+
+	if( m_type == "cryfs" ){
+
+		opts.allowReplacedFileSystem = m_ui->checkBox->isChecked() ;
+
+	}else if( utility::equalsAtleastOne( m_type,"gocryptfs","encfs" ) ){
+
+		opts.unlockInReverseMode = m_ui->checkBox->isChecked() ;
+	}
+
+	this->Hide( { { e,m_ui->lineConfigFilePath->text(),m },opts } ) ;
 }
 
 void options::pbCancel()

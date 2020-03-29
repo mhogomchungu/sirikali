@@ -37,6 +37,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = false ;
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = false ;
+	s.releaseURL            = "https://api.github.com/repos/netheril96/securefs/releases" ;
 	s.passwordFormat        = "%{password}\n%{password}" ;
 	s.executableName        = "securefs" ;
 	s.incorrectPasswordText = "Invalid password" ;
@@ -49,12 +50,14 @@ static engines::engine::BaseOptions _setOptions()
 	s.failedToMountList     = QStringList{ "Error","init" } ;
 	s.successfulMountedList = QStringList{ "has been started","init" } ;
 	s.notFoundCode          = engines::engine::status::securefsNotFound ;
+	s.versionInfo           = { { "version",true,1,0 } } ;
 
 	return s ;
 }
 
-securefs::securefs() : engines::engine( _setOptions() ),
-	m_version( [ this ]{ return this->baseInstalledVersionString( "version",true,1,0 ) ; } )
+securefs::securefs() :
+	engines::engine( _setOptions() ),
+	m_version_greater_or_equal_0_11_1( true,*this,0,11,1 )
 {
 }
 
@@ -78,11 +81,25 @@ engines::engine::args securefs::command( const QByteArray& password,
 	}else{
 		QString exe = "%1 mount %2 %3 %4 %5" ;
 
-		auto exeOptions = m.exeOptions() ;
+		auto exeOptions  = m.exeOptions() ;
+		auto fuseOptions = m.fuseOpts() ;
 
 		if( utility::platformIsNOTWindows() ){
 
 			exeOptions.add( "-b" ) ;
+		}
+
+		if( m_version_greater_or_equal_0_11_1 ){
+
+			/*
+			 * This version going forward takes fsname and fssubtype options
+			 * through exe options and not fuse options
+			 */
+			auto fsname    = fuseOptions.extractStartsWith( "fsname=" ).mid( 7 ) ;
+			auto fssubtype = fuseOptions.extractStartsWith( "subtype=" ).mid( 8 ) ;
+
+			exeOptions.addPair( "--fsname",fsname ) ;
+			exeOptions.addPair( "--fssubtype",fssubtype ) ;
 		}
 
 		if( !args.configFilePath.isEmpty() ){
@@ -94,7 +111,7 @@ engines::engine::args securefs::command( const QByteArray& password,
 				    exeOptions.get(),
 				    args.cipherFolder,
 				    args.mountPoint,
-				    m.fuseOpts().get() ) ;
+				    fuseOptions.get() ) ;
 
 		return { args,m,cmd } ;
 	}
@@ -114,11 +131,6 @@ engines::engine::status securefs::errorCode( const QString& e,int s ) const
 	}else{
 		return engines::engine::status::backendFail ;
 	}
-}
-
-const QString& securefs::installedVersionString() const
-{
-	return m_version.get() ;
 }
 
 void securefs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

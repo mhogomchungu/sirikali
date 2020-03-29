@@ -312,6 +312,11 @@ static void _build_debug_msg( const QString& b )
 	QString a = "***************************\n" ;
 	QString c = "\n***************************" ;
 
+	if( utility::debugEnabled() ){
+
+		utility::debug::cout() << b ;
+	}
+
 	_set_debug_window_text( a + b + c ) ;
 }
 
@@ -396,7 +401,7 @@ void utility::logCommandOutPut( const ::Task::process::result& m,const QString& 
 
 static QString siriPolkitExe()
 {
-	auto exe = utility::executableFullPath( "pkexec" ) ;
+	auto exe = engines::executableFullPath( "pkexec" ) ;
 
 	if( exe.isEmpty() ){
 
@@ -454,26 +459,26 @@ void utility::initGlobals()
 
 	utility::setGUIThread() ;
 
-#ifdef Q_OS_LINUX
+	#ifdef Q_OS_LINUX
 
-	auto uid = getuid() ;
+		auto uid = getuid() ;
 
-	QString a = "/tmp/SiriKali-" + QString::number( uid ) ;
+		QString a = "/tmp/SiriKali-" + QString::number( uid ) ;
 
-	_polkit_socket_path = a + "/siriPolkit.socket" ;
+		_polkit_socket_path = a + "/siriPolkit.socket" ;
 
-	QDir e ;
+		QDir e ;
 
-	e.remove( a ) ;
-	e.rmdir( _polkit_socket_path ) ;
+		e.remove( a ) ;
+		e.rmdir( _polkit_socket_path ) ;
 
-	e.mkpath( a ) ;
+		e.mkpath( a ) ;
 
-	auto s = a.toLatin1() ;
+		auto s = a.toLatin1() ;
 
-	if( chown( s.constData(),uid,uid ) ){}
-	if( chmod( s.constData(),0700 ) ){}
-#endif
+		if( chown( s.constData(),uid,uid ) ){}
+		if( chmod( s.constData(),0700 ) ){}
+	#endif
 }
 
 QString utility::helperSocketPath()
@@ -488,38 +493,39 @@ bool utility::useSiriPolkit()
 
 void utility::quitHelper()
 {
-#ifdef Q_OS_LINUX
-	auto e = utility::helperSocketPath() ;
+	#ifdef Q_OS_LINUX
 
-	if( utility::pathExists( e ) ){
+		auto e = utility::helperSocketPath() ;
 
-		QLocalSocket s ;
+		if( utility::pathExists( e ) ){
 
-		s.connectToServer( e ) ;
+			QLocalSocket s ;
 
-		if( s.waitForConnected() ){
+			s.connectToServer( e ) ;
 
-			s.write( [ & ]()->QByteArray{
+			if( s.waitForConnected() ){
 
-				SirikaliJson json ;
+				s.write( [ & ]()->QByteArray{
 
-				json[ "cookie" ]   = _cookie ;
-				json[ "password" ] = "" ;
-				json[ "command" ]  = "exit" ;
+					SirikaliJson json ;
 
-				return json.structure() ;
-			}() ) ;
+					json[ "cookie" ]   = _cookie ;
+					json[ "password" ] = "" ;
+					json[ "command" ]  = "exit" ;
 
-			s.waitForBytesWritten() ;
+					return json.structure() ;
+				}() ) ;
+
+				s.waitForBytesWritten() ;
+			}
 		}
-	}
 
-	auto a = "/tmp/SiriKali-" + QString::number( getuid() ) ;
+		auto a = "/tmp/SiriKali-" + QString::number( getuid() ) ;
 
-	QDir m ;
-	m.remove( a ) ;
-	m.rmdir( _polkit_socket_path ) ;
-#endif
+		QDir m ;
+		m.remove( a ) ;
+		m.rmdir( _polkit_socket_path ) ;
+	#endif
 }
 
 ::Task::future<bool>& utility::openPath( const QString& path,const QString& opener )
@@ -750,18 +756,13 @@ QString utility::executableSearchPaths( const QString& e )
 	}
 }
 
-QString utility::executableFullPath( const QString& e )
-{
-	return engines::executableFullPath( e ) ;
-}
-
 QString utility::cmdArgumentValue( const QStringList& l,const QString& arg,const QString& defaulT )
 {
 	int j = l.size() ;
 
 	auto _absolute_exe_path = []( const QString& exe ){
 
-		auto e = utility::executableFullPath( exe ) ;
+		auto e = engines::executableFullPath( exe ) ;
 
 		if( e.isEmpty() ){
 
@@ -1288,153 +1289,12 @@ void utility::setWindowsMountPointOptions( QWidget * obj,QLineEdit * e,QPushButt
 	_setWindowsMountMountOptions( obj,e,s ) ;
 }
 
-static utility::result< quint64 > _convert_string_to_version( const QString& e )
-{
-	auto _convert = []( const QString& e )->utility::result< quint64 >{
-
-		bool ok ;
-
-		quint64 s = quint64( e.toInt( &ok ) ) ;
-
-		if( ok ){
-
-			return s  ;
-		}else{
-			return {} ;
-		}
-	} ;
-
-	auto s = utility::split( e,'.' ) ;
-
-	auto components = s.size() ;
-
-	quint64 major = 100000000 ;
-	quint64 minor = 10000 ;
-	quint64 patch = 1 ;
-
-	if( components == 1 ){
-
-		auto a = _convert( s.first() ) ;
-
-		if( a ){
-
-			return major * a.value() ;
-		}
-
-	}else if( components == 2 ){
-
-		auto a = _convert( s.at( 0 ) ) ;
-		auto b = _convert( s.at( 1 ) ) ;
-
-		if( a && b ){
-
-			return major * a.value() + minor * b.value() ;
-		}
-
-	}else if( components == 3 ){
-
-		auto a = _convert( s.at( 0 ) ) ;
-		auto b = _convert( s.at( 1 ) ) ;
-		auto c = _convert( s.at( 2 ) ) ;
-
-		if( a && b && c ){
-
-			return major * a.value() + minor * b.value() + patch * c.value() ;
-		}
-	}
-
-	return {} ;
-}
-
 ::Task::future< utility::result< QString > >& utility::backEndInstalledVersion( const QString& backend )
 {
 	return ::Task::run( [ = ]()->utility::result< QString >{
 
-		return engines::instance().getByName( backend ).installedVersionString() ;
+		return engines::instance().getByName( backend ).installedVersion().toString() ;
 	} ) ;
-}
-
-static utility::result< quint64 > _installedVersion( const QString& backend )
-{
-	auto s = utility::unwrap( utility::backEndInstalledVersion( backend ) ) ;
-
-	if( s && !s.value().isEmpty() ){
-
-		return _convert_string_to_version( s.value() ) ;
-	}else{
-		return {} ;
-	}
-}
-
-template< typename Function >
-::Task::future< utility::result< bool > >& _compare_versions( const QString& backend,
-							     const QString& version,
-							     Function compare )
-{
-	return ::Task::run( [ = ]()->utility::result< bool >{
-
-		auto installed = _installedVersion( backend ) ;
-		auto guard_version = _convert_string_to_version( version ) ;
-
-		if( installed && guard_version ){
-
-			return compare( installed.value(),guard_version.value() ) ;
-		}else{
-			return {} ;
-		}
-	} ) ;
-}
-
-utility::result< bool > utility::versionIsLessOrEqualTo( const QString& installedVersion,
-							 const QString& checkedVersion )
-{
-	auto a = _convert_string_to_version( installedVersion ) ;
-	auto b = _convert_string_to_version( checkedVersion ) ;
-
-	if( a && b ){
-
-		return a.value() <= b.value() ;
-	}else{
-		return {} ;
-	}
-}
-
-utility::result< bool > utility::versionIsGreaterOrEqualTo( const QString& installedVersion,
-							    const QString& checkedVersion )
-{
-	auto a = _convert_string_to_version( installedVersion ) ;
-	auto b = _convert_string_to_version( checkedVersion ) ;
-
-	if( a && b ){
-
-		return a.value() >= b.value() ;
-	}else{
-		return {} ;
-	}
-}
-
-::Task::future< utility::result< bool > >& utility::backendIsGreaterOrEqualTo( const QString& backend,
-									       const QString& version )
-{
-	return _compare_versions( backend,version,std::greater_equal<quint64>() ) ;
-}
-
-::Task::future< utility::result< bool > >& utility::backendIsLessThan( const QString& backend,
-								       const QString& version )
-{
-	return _compare_versions( backend,version,std::less<quint64>() ) ;
-}
-
-QString utility::wrap_su( const QString& s )
-{
-	auto su = utility::executableFullPath( "su" ) ;
-
-	if( su.isEmpty() ){
-
-		return s ;
-	}else{
-		return QString( "%1 - -c \"%2\"" ).arg( su,QString( s ).replace( "\"","'" ) ) ;
-	}
 }
 
 void utility::setGUIThread()
@@ -1487,11 +1347,17 @@ void utility::waitForFinished( QProcess& e )
 
 static QString _ykchalresp_path()
 {
-	static QString m = utility::executableFullPath( "ykchalresp" ) ;
+	static QString m = engines::executableFullPath( "ykchalresp" ) ;
 	return m ;
 }
 
-utility::result< QByteArray > utility::yubiKey( const QString& challenge )
+static bool _yubikey_remove_newline()
+{
+	static bool m = settings::instance().yubikeyRemoveNewLine() ;
+	return m ;
+}
+
+utility::result< QByteArray > utility::yubiKey( const QByteArray& challenge )
 {
 	QString exe = _ykchalresp_path() ;
 
@@ -1499,7 +1365,7 @@ utility::result< QByteArray > utility::yubiKey( const QString& challenge )
 
 		exe = exe + " " + settings::instance().ykchalrespArguments() ;
 
-		auto s = utility::unwrap( ::Task::process::run( exe,challenge.toLatin1() ) ) ;
+		auto s = utility::unwrap( ::Task::process::run( exe,challenge ) ) ;
 
 		utility::logCommandOutPut( s,exe ) ;
 
@@ -1507,7 +1373,10 @@ utility::result< QByteArray > utility::yubiKey( const QString& challenge )
 
 			auto m = s.std_out() ;
 
-			m.replace( "\n","" ) ;
+			if( _yubikey_remove_newline() ){
+
+				m.replace( "\n","" ) ;
+			}
 
 			return m ;
 		}else{
@@ -1571,4 +1440,17 @@ QString utility::removeFirstAndLast( const QString& s,int first,int last )
 	_remove_last( m,last ) ;
 
 	return m ;
+}
+
+QString utility::removeLastPathComponent( const QString& e,char separator )
+{
+	auto s = utility::split( e,separator ) ;
+	s.removeLast() ;
+
+	if( utility::platformIsWindows() && utility::startsWithDriveLetter( e ) ){
+
+		return s.join( separator ) ;
+	}
+
+	return separator + s.join( separator ) ;
 }

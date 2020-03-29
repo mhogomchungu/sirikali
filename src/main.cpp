@@ -25,7 +25,21 @@ int main( int argc,char * argv[] )
 {
 	utility::initGlobals() ;
 
-	QApplication SiriKali( argc,argv ) ;
+	QApplication srk( argc,argv ) ;
 
-	return sirikali().start( SiriKali ) ;
+	QCoreApplication::setApplicationName( "SiriKali" ) ;
+
+	auto m = QCoreApplication::arguments() ;
+
+	for( const auto& it : m ){
+
+		if( it.contains( "--debug" ) ){
+
+			utility::enableDebug( true ) ;
+
+			break ;
+		}
+	}
+
+	return sirikali( m ).start( srk ) ;
 }

@@ -19,29 +19,7 @@
 
 #include "unknown.h"
 
-static engines::engine::BaseOptions _setOptions()
-{
-	engines::engine::BaseOptions s ;
-
-	s.hasConfigFile       = false ;
-	s.autoMountsOnCreate  = false ;
-	s.hasGUICreateOptions = true ;
-	s.setsCipherPath      = false ;
-	s.supportsMountPathsOnWindows = false ;
-
-	s.configFileArgument = QString() ;
-
-	s.configFileNames = QStringList{} ;
-
-	s.fuseNames = QStringList{} ;
-	s.names     = QStringList{} ;
-
-	s.notFoundCode = engines::engine::status::unknown ;
-
-	return s ;
-}
-
-unknown::unknown() : engines::engine( _setOptions() )
+unknown::unknown() : engines::engine( engines::engine::BaseOptions() )
 {
 }
 
@@ -58,11 +36,6 @@ engines::engine::status unknown::errorCode( const QString& e,int s ) const
 	Q_UNUSED( e )
 	Q_UNUSED( s )
 	return engines::engine::status::backendFail ;
-}
-
-const QString& unknown::installedVersionString() const
-{
-	return m_version.get() ;
 }
 
 void unknown::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

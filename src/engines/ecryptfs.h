@@ -36,11 +36,10 @@ struct ecryptfs : public engines::engine
 	engines::engine::args command( const QByteArray& password,
 				       const engines::engine::cmdArgsList& args ) const override ;
 
-	const QString& installedVersionString() const override ;
-
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
 
 private:
-	bool m_requirePolkit ;
-	engines::version m_version ;
+	QString wrapSU( const QString& s ) const ;
+	const bool m_requirePolkit ;
+	const engines::exeFullPath m_exeSUFullPath ;
 } ;

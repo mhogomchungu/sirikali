@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>502</width>
-    <height>253</height>
+    <height>290</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -75,7 +75,7 @@
    <property name="geometry">
     <rect>
      <x>150</x>
-     <y>220</y>
+     <y>260</y>
      <width>101</width>
      <height>31</height>
     </rect>
@@ -88,7 +88,7 @@
    <property name="geometry">
     <rect>
      <x>250</x>
-     <y>220</y>
+     <y>260</y>
      <width>101</width>
      <height>31</height>
     </rect>
@@ -156,6 +156,19 @@
    </property>
    <property name="text">
     <string/>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="cbAllowReplacedFileSystem">
+   <property name="geometry">
+    <rect>
+     <x>90</x>
+     <y>230</y>
+     <width>321</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Allow Replaced File System</string>
    </property>
   </widget>
  </widget>

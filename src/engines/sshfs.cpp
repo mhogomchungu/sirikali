@@ -45,6 +45,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.hasGUICreateOptions   = false ;
 	s.setsCipherPath        = true ;
 	s.executableName        = "sshfs" ;
+	s.releaseURL            = "https://api.github.com/repos/libfuse/sshfs/releases" ;
 	s.windowsInstallPathRegistryKey = "SOFTWARE\\SSHFS-Win" ;
 	s.windowsInstallPathRegistryValue = "InstallDir" ;
 	s.failedToMountList     = QStringList{ "ssh:","read:","Cannot create WinFsp-FUSE file system" } ;
@@ -52,10 +53,11 @@ static engines::engine::BaseOptions _setOptions()
 	s.fuseNames             = QStringList{ "fuse.sshfs" } ;
 	s.names                 = QStringList{ "sshfs" } ;
 	s.notFoundCode          = engines::engine::status::sshfsNotFound ;
+	s.versionInfo           = { { "--version",true,2,0 } } ;
 
 	if( utility::platformIsWindows() ){
 
-		s.minimumVersion = "3.4.0" ;
+		s.minimumVersion = "3.5.2" ;
 	}
 
 	return s ;
@@ -64,23 +66,25 @@ static engines::engine::BaseOptions _setOptions()
 sshfs::sshfs() :
 	engines::engine( _setOptions() ),
 	m_environment( engines::engine::getProcessEnvironment() ),
-	m_version( [ this ]{ return this->baseInstalledVersionString( "--version",true,2,0 ) ; } )
+	m_version_greater_or_equal_minimum( false,*this,this->minimumVersion() )
 {
 }
 
-engines::engine::status sshfs::passMinimumVersion() const
+engines::engine::status sshfs::passAllRequirenments( const engines::engine::options& opt ) const
 {
+	Q_UNUSED( opt )
+
 	if( utility::platformIsWindows() ){
 
-		static auto m = utility::unwrap( utility::backendIsLessThan( "sshfs",this->minimumVersion() ) ) ;
+		if( m_version_greater_or_equal_minimum ){
 
-		if( m && m.value() ){
-
+			return engines::engine::status::success ;
+		}else{
 			return engines::engine::status::backEndFailedToMeetMinimumRequirenment ;
 		}
+	}else{
+		return engines::engine::status::success ;
 	}
-
-	return engines::engine::status::success ;
 }
 
 const QProcessEnvironment& sshfs::getProcessEnvironment() const
@@ -176,11 +180,6 @@ engines::engine::status sshfs::errorCode( const QString& e,int s ) const
 	}else{
 		return engines::engine::status::backendFail ;
 	}
-}
-
-const QString& sshfs::installedVersionString() const
-{
-	return m_version.get() ;
 }
 
 void sshfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

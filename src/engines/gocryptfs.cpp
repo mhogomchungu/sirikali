@@ -37,6 +37,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = false ;
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = true ;
+	s.releaseURL            = "https://api.github.com/repos/rfjakob/gocryptfs/releases" ;
 	s.passwordFormat        = "%{password}" ;
 	s.volumePropertiesCommands = QStringList{ "gocryptfs -info %{cipherFolder}",
 						  "gocryptfs -info %{plainFolder}" } ;
@@ -52,12 +53,13 @@ static engines::engine::BaseOptions _setOptions()
 	s.fuseNames             = QStringList{ "fuse.gocryptfs","fuse.gocryptfs-reverse" } ;
 	s.names                 = QStringList{ "gocryptfs","gocryptfs.reverse","gocryptfs-reverse" } ;
 	s.notFoundCode          = engines::engine::status::gocryptfsNotFound ;
+	s.versionInfo           = { { "--version",true,1,0 } } ;
 
 	return s ;
 }
 
 gocryptfs::gocryptfs() : engines::engine( _setOptions() ),
-	m_version( [ this ]{ return this->baseInstalledVersionString( "--version",true,1,0 ) ; } )
+	m_version_has_error_codes( true,*this,1,2,1 )
 {
 }
 
@@ -80,7 +82,7 @@ static bool _set_if_found( const Function& function )
 
 void gocryptfs::updateOptions( engines::engine::options& opt ) const
 {
-	opt.reverseMode = [ & ](){
+	opt.boolOptions.unlockInReverseMode = [ & ](){
 
 		if( opt.configFilePath.isEmpty() ){
 
@@ -109,7 +111,7 @@ engines::engine::args gocryptfs::command( const QByteArray& password,
 
 	exeOptions.add( "-q" ) ;
 
-	if( args.opt.reverseMode ){
+	if( args.opt.boolOptions.unlockInReverseMode ){
 
 		exeOptions.add( this->reverseString() ) ;
 	}
@@ -153,20 +155,24 @@ engines::engine::args gocryptfs::command( const QByteArray& password,
 
 engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const
 {
-	/*
-	 * This error code was added in gocryptfs 1.2.1
-	 */
-	if( s == 12 || e.contains( this->incorrectPasswordText() ) ){
+	if( m_version_has_error_codes ){
 
-		return engines::engine::status::gocryptfsBadPassword ;
+		/*
+		 * This error code was added in gocryptfs 1.2.1
+		 */
+
+		if( s == 12 ){
+
+			return engines::engine::status::gocryptfsBadPassword ;
+		}
 	}else{
-		return engines::engine::status::backendFail ;
-	}
-}
+		if( e.contains( this->incorrectPasswordText() ) ){
 
-const QString& gocryptfs::installedVersionString() const
-{
-	return m_version.get() ;
+			return engines::engine::status::gocryptfsBadPassword ;
+		}
+	}
+
+	return engines::engine::status::backendFail ;
 }
 
 void gocryptfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const

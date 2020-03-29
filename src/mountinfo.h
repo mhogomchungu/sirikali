@@ -33,6 +33,76 @@
 
 #include "volumeinfo.h"
 
+class folderMonitor{
+public:
+	using function = std::function< void( const QString& ) > ;
+	folderMonitor( bool wait,const QString& path = QString() ) ;
+	const QString& path() const ;
+	void contentCountIncreased( folderMonitor::function& function ) ;
+	void contentCountDecreased( folderMonitor::function& function ) ;
+private:
+	QStringList folderList() const ;
+	utility::result< QStringList > folderListSynced() const ;
+	QString m_path ;
+	QStringList m_folderList ;
+	bool m_waitForSynced ;
+} ;
+
+#ifdef Q_OS_LINUX
+
+#include <QtDBus>
+
+class siriDBus{
+public:
+	siriDBus( QObject * obj ) : m_qObject( obj )
+	{
+	}
+	void monitor()
+	{
+		m_dbus.reset( new QDBusConnection( QDBusConnection::sessionBus() ) ) ;
+
+		auto a = "org.gtk.vfs.Daemon" ;
+		auto b = "/org/gtk/vfs/mounttracker" ;
+		auto c = "org.gtk.vfs.MountTracker" ;
+
+		m_dbus->connect( a,b,c,"Mounted",m_qObject,SLOT( volumeAdded() ) ) ;
+
+		m_dbus->connect( a,b,c,"Unmounted",m_qObject,SLOT( volumeRemoved() ) ) ;
+	}
+private:
+	std::unique_ptr< QDBusConnection > m_dbus ;
+	QObject * m_qObject ;
+};
+
+#else
+
+class siriDBus{
+public:
+	siriDBus( QObject * obj )
+	{
+		Q_UNUSED( obj )
+	}
+	void monitor()
+	{
+	}
+};
+
+#endif
+
+class dbusMonitor : public QObject
+{
+	Q_OBJECT
+public:
+	dbusMonitor( folderMonitor::function function ) ;
+private slots:
+	void volumeAdded() ;
+	void volumeRemoved() ;
+private:
+	siriDBus m_dbus ;
+	folderMonitor m_folderMonitor ;
+	folderMonitor::function m_function ;
+} ;
+
 class mountinfo : private QObject
 {
 	Q_OBJECT
@@ -70,10 +140,49 @@ private:
 	std::function< void() > m_quit ;
 
 	bool m_announceEvents ;
+
 	std::atomic_bool m_exit ;
 
 	QStringList m_oldMountList ;
 	QStringList m_newMountList ;
+
+	dbusMonitor m_dbusMonitor ;
+
+	class folderMountEvents{
+
+	public:
+		folderMountEvents( std::function< void( const QString& ) > ) ;
+		void start() ;
+		void stop() ;
+		bool monitor() ;
+	private:
+		class entry{
+		public:
+			entry( int fd,const QString& path ) :
+				m_folderMonitor( false,path ),m_fd( fd )
+			{
+			}
+			const QString& path() const
+			{
+				return m_folderMonitor.path() ;
+			}
+			int fd() const
+			{
+				return m_fd ;
+			}
+			void contentCountChanged( folderMonitor::function& function )
+			{
+				m_folderMonitor.contentCountIncreased( function ) ;
+			}
+		private:
+			folderMonitor m_folderMonitor ;
+			int m_fd ;
+		} ;
+		std::vector< mountinfo::folderMountEvents::entry > m_fds ;
+		int m_inotify_fd ;
+		std::function< void( const QString& ) > m_update ;
+
+	} m_folderMountEvents ;
 };
 
 #endif // MONITOR_MOUNTINFO_H

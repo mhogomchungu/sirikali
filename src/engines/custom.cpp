@@ -217,7 +217,7 @@ engines::engine::args custom::command( const QByteArray& password,
 			exeOptions.add( args.configFilePath ) ;
 		}
 
-		if( args.opt.reverseMode ){
+		if( args.opt.boolOptions.unlockInReverseMode ){
 
 			exeOptions.add( this->reverseString() ) ;
 		}
@@ -267,11 +267,6 @@ engines::engine::status custom::errorCode( const QString& e,int s ) const
 			return engines::engine::status::backendFail ;
 		}
 	}
-}
-
-const QString& custom::installedVersionString() const
-{
-	return m_version.get() ;
 }
 
 void custom::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
