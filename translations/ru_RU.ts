@@ -226,12 +226,14 @@ To Do The Upgrade, Check The &quot;Upgrade File System&quot; Option And Unlock T
         <source>This Volume Of Cryfs Is Different From The Known One.
 
 Check The &quot;Replace File System&quot; Option And Unlock The Volume Again To Replace The Previous File System.</source>
-        <translation type="unfinished"></translation>
+        <translation>Этот Том Cryfs отличается от известного.
+
+Установите флажок «Заменить файловую систему» ​​и снова разблокируйте том, чтобы заменить предыдущую файловую систему.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="886"/>
         <source>Cipher Path and Mount Path Must Be On Drive &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Путь шифра и путь монтирования должны быть на диске &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="890"/>
@@ -868,7 +870,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/engines/cryfscreateoptions.ui" line="171"/>
         <source>Allow Replaced File System</source>
-        <translation type="unfinished"></translation>
+        <translation>Разрешить изменение файловой системы</translation>
     </message>
 </context>
 <context>
@@ -1579,7 +1581,7 @@ Set The Volume Key To Add It To The Wallet Before Mounting.</source>
     <message>
         <location filename="../src/keydialog.cpp" line="985"/>
         <source>Replace File System</source>
-        <translation type="unfinished"></translation>
+        <translation>Заменить файловую систему</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1281"/>
@@ -1713,7 +1715,7 @@ Set The Volume Key To Add It To The Wallet Before Mounting.</source>
     <message>
         <location filename="../src/options.cpp" line="61"/>
         <source>Allow Replaced File System</source>
-        <translation type="unfinished"></translation>
+        <translation>Разрешить изменение файловой системы</translation>
     </message>
     <message>
         <location filename="../src/options.cpp" line="102"/>
