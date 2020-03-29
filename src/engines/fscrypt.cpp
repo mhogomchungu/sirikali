@@ -248,7 +248,9 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
-fscrypt::fscrypt() : engines::engine( _setOptions() )
+fscrypt::fscrypt() :
+	engines::engine( _setOptions() ),
+	m_versionGreatorOrEqual_0_2_6( true,*this,0,2,6 )
 {
 }
 
@@ -267,30 +269,15 @@ engines::engine::status fscrypt::unmount( const QString& cipherFolder,
 
 	auto exe = utility::Task::makePath( e ) ;
 
-	auto umount = [ & ](){
+	if( m_versionGreatorOrEqual_0_2_6 ){
 
+		exe += " lock " + mountPoint + " " + this->userOption() ;
+	}else{
 		auto mp = utility::removeFirstAndLast( mountPoint,1,1 ) ;
 
 		auto m = utility::Task::makePath( _mount_point( mp,exe ) ) ;
 
-		return exe + " purge " + m + " --force --drop-caches=false " + this->userOption() ;
-	} ;
-
-	const auto& installedVersion = this->installedVersion() ;
-
-	auto ss = installedVersion.greaterOrEqual( 0,2,6 ) ;
-
-	if( ss.has_value() ){
-
-		if( ss.value() ){
-
-			exe += " lock " + mountPoint + " " + this->userOption() ;
-		}else{
-			exe = umount() ;
-		}
-	}else{
-		installedVersion.logError() ;
-		exe = umount() ;
+		exe += " purge " + m + " --force --drop-caches=false " + this->userOption() ;
 	}
 
 	for( int i = 0 ; i < maxCount ; i++ ){

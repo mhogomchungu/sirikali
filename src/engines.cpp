@@ -1224,3 +1224,32 @@ void engines::booleanCache::silenceWarning()
 void engines::exeFullPath::silenceWarning()
 {	
 }
+
+template< typename ... T >
+static bool _result( bool m,const engines::engine& engine,T&& ... t )
+{
+	const auto& e = engine.installedVersion() ;
+
+	auto s = e.greaterOrEqual( std::forward< T >( t ) ... ) ;
+
+	if( s.has_value() ){
+
+		return s.value() ;
+	}else{
+		e.logError() ;
+
+		return m ;
+	}
+}
+
+bool engines::versionGreaterOrEqual::setCallback( bool m,const engines::engine& engine,
+						  int major,int minor,int patch )
+{
+	return _result( m,engine,major,minor,patch ) ;
+}
+
+bool engines::versionGreaterOrEqual::setCallback( bool m,const engines::engine& engine,
+						  const QString& u )
+{
+	return _result( m,engine,u ) ;
+}

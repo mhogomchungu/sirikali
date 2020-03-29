@@ -36,4 +36,5 @@ public:
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
 private:
 	mutable QProcessEnvironment m_environment ;
+	const engines::versionGreaterOrEqual m_version_greater_or_equal_minimum ;
 } ;

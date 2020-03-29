@@ -58,4 +58,6 @@ private:
 	} mutable m_unlockedVolumeManager ;
 
 	QString userOption() const ;
+
+	engines::versionGreaterOrEqual m_versionGreatorOrEqual_0_2_6 ;
 } ;

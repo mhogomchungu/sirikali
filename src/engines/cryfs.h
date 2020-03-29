@@ -39,6 +39,6 @@ public:
 private:	
 	QProcessEnvironment setEnv() const ;
 	const QProcessEnvironment m_env ;
-	const engines::booleanCache m_version_greater_or_equal_0_10_0 ;
-	const engines::booleanCache m_use_error_codes ;
+	const engines::versionGreaterOrEqual m_version_greater_or_equal_0_10_0 ;
+	const engines::versionGreaterOrEqual m_use_error_codes ;
 } ;

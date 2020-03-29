@@ -58,23 +58,8 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
-static bool _version( const engines::engine& engine )
-{
-	const auto& installedVersion = engine.installedVersion() ;
-
-	auto s = installedVersion.greaterOrEqual( 1,2,1 ) ;
-
-	if( s.has_value() ){
-
-		return s.value() ;
-	}else{
-		installedVersion.logError() ;
-		return true ;
-	}
-}
-
 gocryptfs::gocryptfs() : engines::engine( _setOptions() ),
-	m_version_has_error_codes( [ this ](){ return _version( *this ) ; } )
+	m_version_has_error_codes( true,*this,1,2,1 )
 {
 }
 

@@ -38,6 +38,8 @@ public:
 	static QString executableFullPath( const QString& ) ;
 	static QStringList executableSearchPaths() ;
 
+	class engine ;
+
 	class engineVersion{
 	public:
 		engineVersion() ;
@@ -167,6 +169,25 @@ public:
 	private:
 		virtual void silenceWarning() ;
 	};
+
+	class versionGreaterOrEqual : public cache< utility::result< bool > >{
+	public:
+	        versionGreaterOrEqual( bool m,const engines::engine& engine,int major,int minor,int patch ) :
+		        cache( [ =,&engine ](){ return this->setCallback( m,engine,major,minor,patch ) ; } )
+		{
+		}
+		versionGreaterOrEqual( bool m,const engines::engine& engine,const QString& e ) :
+		        cache( [ =,&engine ](){ return this->setCallback( m,engine,e ) ; } )
+		{
+		}
+		operator bool() const
+		{
+		        return this->get().value() ;
+		}
+	private:
+		virtual bool setCallback( bool m,const engines::engine& engine,int major,int minor,int patch ) ;
+		virtual bool setCallback( bool m,const engines::engine& engine,const QString& ) ;
+	} ;
 
 	class exeFullPath : public cache< QString >{
 	public:

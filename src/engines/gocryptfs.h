@@ -33,5 +33,5 @@ public:
 
 	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
 private:
-	const engines::booleanCache m_version_has_error_codes ;
+	const engines::versionGreaterOrEqual m_version_has_error_codes ;
 } ;

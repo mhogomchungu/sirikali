@@ -55,25 +55,9 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
-static bool _version( const engines::engine& engine )
-{
-	const auto& e = engine.installedVersion() ;
-
-	auto s = e.greaterOrEqual( 0,11,1 ) ;
-
-	if( s.has_value() ){
-
-		return s.value() ;
-	}else{
-		e.logError() ;
-
-		return true ;
-	}
-}
-
 securefs::securefs() :
 	engines::engine( _setOptions() ),
-	m_version_greater_or_equal_0_11_1( [ this ](){ return _version( *this ) ; } )
+	m_version_greater_or_equal_0_11_1( true,*this,0,11,1 )
 {
 }
 

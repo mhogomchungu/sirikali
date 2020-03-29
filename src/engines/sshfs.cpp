@@ -65,7 +65,8 @@ static engines::engine::BaseOptions _setOptions()
 
 sshfs::sshfs() :
 	engines::engine( _setOptions() ),
-	m_environment( engines::engine::getProcessEnvironment() )
+	m_environment( engines::engine::getProcessEnvironment() ),
+	m_version_greater_or_equal_minimum( false,*this,this->minimumVersion() )
 {
 }
 
@@ -75,21 +76,12 @@ engines::engine::status sshfs::passAllRequirenments( const engines::engine::opti
 
 	if( utility::platformIsWindows() ){
 
-		const auto& installedVersion = this->installedVersion() ;
+		if( m_version_greater_or_equal_minimum ){
 
-		auto m = installedVersion.greaterOrEqual( this->minimumVersion() ) ;
-
-		if( m.has_value() ){
-
-			if( m.value() ){
-
-				return engines::engine::status::success ;
-			}
+			return engines::engine::status::success ;
 		}else{
-			installedVersion.logError() ;
+			return engines::engine::status::backEndFailedToMeetMinimumRequirenment ;
 		}
-
-		return engines::engine::status::backEndFailedToMeetMinimumRequirenment ;
 	}else{
 		return engines::engine::status::success ;
 	}
