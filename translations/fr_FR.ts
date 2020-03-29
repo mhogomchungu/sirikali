@@ -337,12 +337,14 @@ Pour réaliser la mise à jour, cochez l&apos;option &quot;Mettre à jour le sys
         <source>This Volume Of Cryfs Is Different From The Known One.
 
 Check The &quot;Replace File System&quot; Option And Unlock The Volume Again To Replace The Previous File System.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ce volume Cryfs est différent de celui qui est connu
+
+Testez l&apos;option &quot;Remplacer le système de fichiers&quot; et déchiffrez à nouveau le volume pour remplacer l&apos;ancien système de fichiers.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="886"/>
         <source>Cipher Path and Mount Path Must Be On Drive &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Le chemin du chiffrement et le chemin du montage doivent être sur le même disque &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="890"/>
@@ -868,7 +870,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/engines/cryfscreateoptions.ui" line="171"/>
         <source>Allow Replaced File System</source>
-        <translation type="unfinished"></translation>
+        <translation>Autoriser le remplacement du système de fichiers</translation>
     </message>
 </context>
 <context>
@@ -1545,7 +1547,7 @@ Mettre la clé de volume à ajouter dans le trousseau avant le montage.</transla
     <message>
         <location filename="../src/keydialog.cpp" line="985"/>
         <source>Replace File System</source>
-        <translation type="unfinished"></translation>
+        <translation>Remplacer le système de fichiers</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1281"/>
@@ -1679,7 +1681,7 @@ Mettre la clé de volume à ajouter dans le trousseau avant le montage.</transla
     <message>
         <location filename="../src/options.cpp" line="61"/>
         <source>Allow Replaced File System</source>
-        <translation type="unfinished"></translation>
+        <translation>Autoriser le remplacement du système de fichiers</translation>
     </message>
     <message>
         <location filename="../src/options.cpp" line="102"/>
