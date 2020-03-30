@@ -33,7 +33,7 @@
 #include "settings.h"
 #include "win.h"
 
-static QStringList _executableSearchPaths( const QStringList& m )
+static QStringList _search_path( const QStringList& m )
 {
 	const auto a = QDir::homePath().toLatin1() ;
 
@@ -72,34 +72,13 @@ static QStringList _executableSearchPaths( const QStringList& m )
 	}
 }
 
-QStringList engines::executableSearchPaths()
-{
-	return _executableSearchPaths( SiriKali::Windows::engineInstalledDirs() ) ;
-}
-
-static QStringList _executableSearchPaths()
-{
-	return engines::executableSearchPaths() ;
-}
-
-static QStringList _executableSearchPaths( const engines::engine& engine )
-{
-	return _executableSearchPaths( { SiriKali::Windows::engineInstalledDir( engine ) } ) ;
-}
-
-void engines::version::logError() const
-{
-	auto a = QString( "%1 backend has an invalid version string (%2)" ) ;
-	utility::debug() << a.arg( m_engineName,this->toString() ) ;
-}
-
 static bool _has_no_extension( const QString& e )
 {
 	return !e.contains( '.' ) ;
 }
 
-template< typename ... T >
-static QString _executableFullPath( const QString& f,T&& ... t )
+template< typename Function >
+static QString _executableFullPath( const QString& f,Function function )
 {
 	if( utility::platformIsWindows() ){
 
@@ -128,7 +107,7 @@ static QString _executableFullPath( const QString& f,T&& ... t )
 
 	QString exe ;
 
-	for( const auto& it : _executableSearchPaths( std::forward< T >( t ) ... ) ){
+	for( const auto& it : function() ){
 
 		if( !it.isEmpty() ){
 
@@ -146,12 +125,25 @@ static QString _executableFullPath( const QString& f,T&& ... t )
 
 QString engines::executableFullPath( const QString& f )
 {
-	return _executableFullPath( f ) ;
+	return _executableFullPath( f,[](){ return engines::executableSearchPaths() ; } ) ;
 }
 
 QString engines::executableFullPath( const QString& f,const engines::engine& engine )
 {
-	return _executableFullPath( f,engine ) ;
+	auto m = SiriKali::Windows::engineInstalledDir( engine ) ;
+
+	return _executableFullPath( f,[ m ](){ return _search_path( { m } ) ; } ) ;
+}
+
+QStringList engines::executableSearchPaths()
+{
+	return _search_path( SiriKali::Windows::engineInstalledDirs() ) ;
+}
+
+void engines::version::logError() const
+{
+	auto a = QString( "%1 backend has an invalid version string (%2)" ) ;
+	utility::debug() << a.arg( m_engineName,this->toString() ) ;
 }
 
 engines::engine::~engine()
