@@ -282,8 +282,8 @@ static engines::engineVersion _installedVersion( const engines::engine& e,
 	return {} ;
 }
 
-static engines::engineVersion _installedVersion( const engines::engine& e,
-						 const std::vector< engines::engine::BaseOptions::vInfo >& v )
+template< typename T >
+static engines::engineVersion _installedVersion( const engines::engine& e,const T& v )
 {
 	for( const auto& it : v ){
 
