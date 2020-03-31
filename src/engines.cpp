@@ -901,7 +901,7 @@ QString engines::engine::cmdStatus::toString() const
 
 	case engines::engine::status::cryfsNotSupportedFolderPath :
 
-		return QObject::tr( "Cipher Path and Mount Path Must Be On Drive \"%1\"" ).arg( m_engine->executableFullPath().midRef( 0,2 ) ) ;
+		return QObject::tr( "Cipher Path and Mount Path Must Be On Drive \"%1\"" ).arg( m_engine->executableFullPath().mid( 0,2 ) ) ;
 
 	case engines::engine::status::encfsNotFound :
 
