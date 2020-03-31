@@ -78,7 +78,7 @@ static bool _supported( const QString& exe,const QString& path,bool checkDrive )
 		 */
 		return true ;
 
-	}else if( exe.startsWith( path.midRef( 0,2 ) ) ){
+	}else if( exe.startsWith( path.mid( 0,2 ) ) ){
 
 		/*
 		 * Folder path is on the same drive as the executable
