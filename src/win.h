@@ -109,9 +109,19 @@ struct QStorageInfo
 		return QString() ;
 	}
 
+	QString displayName() const
+	{
+		return QString() ;
+	}
+
 	QByteArray device() const
 	{
 		return QByteArray() ;
+	}
+
+	QString name() const
+	{
+		return QString() ;
 	}
 
 	QByteArray fileSystemType() const

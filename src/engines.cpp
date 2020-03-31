@@ -746,7 +746,7 @@ const engines::engine& engines::getByCipherFolderPath( const QString& e ) const
 			return { s } ;
 		}
 
-		return {} ;
+		return { engines::engine::Wrapper() } ;
 	} ;
 
 	auto cmp = [ & ]( const engines::engine::Wrapper& s ){
