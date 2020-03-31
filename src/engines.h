@@ -284,6 +284,18 @@ public:
 		struct options
 		{
 		        struct booleanOptions{
+				booleanOptions() = default ;
+
+				booleanOptions( const booleanOptions& other ) = default ;
+
+				booleanOptions( bool ro,bool rm,bool ar,bool au ) :
+					unlockInReadOnly( ro ),
+					unlockInReverseMode( rm ),
+					allowReplacedFileSystem( ar ),
+					allowUpgradeFileSystem( au )
+				{
+				}
+				booleanOptions& operator=( const booleanOptions& other ) = default ;
 			        bool unlockInReadOnly = false ;
 				bool unlockInReverseMode = false ;
 				bool allowReplacedFileSystem = false ;

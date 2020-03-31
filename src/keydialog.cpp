@@ -334,7 +334,7 @@ void keyDialog::setVolumeToUnlock()
 void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key )
 {
 	m_path         = e.volumePath() ;
-	m_boolOpts     = { false,e.reverseMode(),false } ;
+	m_boolOpts     = { false,e.reverseMode(),false,false } ;
 	m_configFile   = e.configFilePath() ;
 	m_idleTimeOut  = e.idleTimeOut() ;
 	m_mountOptions = e.mountOptions() ;
@@ -605,7 +605,7 @@ void keyDialog::pbOptions()
 				m_idleTimeOut  = e.idleTimeOut ;
 				m_configFile   = e.configFilePath ;
 				m_mountOptions = e.mountOptions ;
-				m_boolOpts     = { false,e.reverseMode,false } ;
+				m_boolOpts     = { false,e.reverseMode,false,false } ;
 			}
 		}
 

@@ -123,6 +123,11 @@ static QString _executableFullPath( const QString& f,Function function )
 	return QString() ;
 }
 
+QStringList engines::executableSearchPaths()
+{
+	return _search_path( SiriKali::Windows::engineInstalledDirs() ) ;
+}
+
 QString engines::executableFullPath( const QString& f )
 {
 	return _executableFullPath( f,[](){ return engines::executableSearchPaths() ; } ) ;
@@ -133,11 +138,6 @@ QString engines::executableFullPath( const QString& f,const engines::engine& eng
 	auto m = SiriKali::Windows::engineInstalledDir( engine ) ;
 
 	return _executableFullPath( f,[ m ](){ return _search_path( { m } ) ; } ) ;
-}
-
-QStringList engines::executableSearchPaths()
-{
-	return _search_path( SiriKali::Windows::engineInstalledDirs() ) ;
 }
 
 void engines::version::logError() const
@@ -901,7 +901,7 @@ QString engines::engine::cmdStatus::toString() const
 
 	case engines::engine::status::cryfsNotSupportedFolderPath :
 
-		return QObject::tr( "Cipher Path and Mount Path Must Be On Drive \"%1\"" ).arg( m_engine->executableFullPath().mid( 0,2 ) ) ;
+		return QObject::tr( "Cipher Path and Mount Path Must Be On Drive \"%1\"" ).arg( m_engine->executableFullPath().midRef( 0,2 ) ) ;
 
 	case engines::engine::status::encfsNotFound :
 
