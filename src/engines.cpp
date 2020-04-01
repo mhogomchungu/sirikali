@@ -1271,3 +1271,7 @@ bool engines::versionGreaterOrEqual::setCallback( bool m,const engines::engine& 
 {
 	return _result( m,engine,u ) ;
 }
+
+void engines::versionGreaterOrEqual::silenceWarning()
+{
+}

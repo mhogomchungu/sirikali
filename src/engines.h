@@ -187,8 +187,9 @@ public:
 		        return this->get().value() ;
 		}
 	private:
-		virtual bool setCallback( bool m,const engines::engine& engine,int major,int minor,int patch ) ;
-		virtual bool setCallback( bool m,const engines::engine& engine,const QString& ) ;
+		bool setCallback( bool m,const engines::engine& engine,int major,int minor,int patch ) ;
+		bool setCallback( bool m,const engines::engine& engine,const QString& ) ;
+		virtual void silenceWarning() ;
 	} ;
 
 	class exeFullPath : public cache< QString >{
@@ -296,7 +297,7 @@ public:
 				{
 				}
 				booleanOptions& operator=( const booleanOptions& other ) = default ;
-			        bool unlockInReadOnly = false ;
+				bool unlockInReadOnly = false ;
 				bool unlockInReverseMode = false ;
 				bool allowReplacedFileSystem = false ;
 				bool allowUpgradeFileSystem = false ;
