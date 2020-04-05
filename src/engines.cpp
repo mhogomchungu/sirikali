@@ -301,7 +301,7 @@ static QProcessEnvironment _set_env( const engines::engine& engine )
 
 	if( utility::platformIsWindows() ){
 
-		auto e = engines::executableSearchPaths( engine ).join( ";" ) ;
+		auto e = engines::executableSearchPaths( engine ).join( ';' ) ;
 
 		m.insert( "PATH",e + ";" + m.value( "PATH" ) ) ;
 	}
