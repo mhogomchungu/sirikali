@@ -128,6 +128,11 @@ QStringList engines::executableSearchPaths()
 	return _search_path( SiriKali::Windows::engineInstalledDirs() ) ;
 }
 
+QStringList engines::executableSearchPaths( const engines::engine& engine )
+{
+	return _search_path( { SiriKali::Windows::engineInstalledDir( engine ) } ) ;
+}
+
 QString engines::executableFullPath( const QString& f )
 {
 	return _executableFullPath( f,[](){ return engines::executableSearchPaths() ; } ) ;
@@ -135,9 +140,7 @@ QString engines::executableFullPath( const QString& f )
 
 QString engines::executableFullPath( const QString& f,const engines::engine& engine )
 {
-	auto m = SiriKali::Windows::engineInstalledDir( engine ) ;
-
-	return _executableFullPath( f,[ m ](){ return _search_path( { m } ) ; } ) ;
+	return _executableFullPath( f,[ &engine ](){ return engines::executableSearchPaths( engine ) ; } ) ;
 }
 
 void engines::version::logError() const
@@ -292,25 +295,15 @@ static engines::engineVersion _installedVersion( const engines::engine& e,const 
 	return {} ;
 }
 
-static QProcessEnvironment _set_env( const engines::engine::BaseOptions& s )
+static QProcessEnvironment _set_env( const engines::engine& engine )
 {
 	auto m = utility::systemEnvironment() ;
 
 	if( utility::platformIsWindows() ){
 
-		const auto& a = s.windowsInstallPathRegistryKey ;
-		const auto& b = s.windowsInstallPathRegistryValue ;
+		auto e = engines::executableSearchPaths( engine ).join( ";" ) ;
 
-		auto s = SiriKali::Windows::engineInstalledDir( a,b ) ;
-
-		if( !s.isEmpty() ){
-
-			auto a = s + ";" ;
-			auto b = s + "\\bin;" ;
-			auto c = a + b + m.value( "PATH" ) ;
-
-			m.insert( "PATH",c ) ;
-		}
+		m.insert( "PATH",e + ";" + m.value( "PATH" ) ) ;
 	}
 
 	return m ;
@@ -318,7 +311,7 @@ static QProcessEnvironment _set_env( const engines::engine::BaseOptions& s )
 
 engines::engine::engine( engines::engine::BaseOptions o ) :
 	m_Options( std::move( o ) ),
-	m_processEnvironment( _set_env( m_Options ) ),
+	m_processEnvironment( _set_env( *this ) ),
 	m_exeFullPath( [ this ](){ return engines::executableFullPath( this->executableName(),*this ) ; } ),
 	m_version( this->name(),[ this ](){ return _installedVersion( *this,m_Options.versionInfo ) ; } )
 {
