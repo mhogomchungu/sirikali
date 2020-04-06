@@ -929,8 +929,8 @@ QString engines::engine::cmdStatus::toString() const
 	{
 		const auto& s = m_engine.get() ;
 
-		auto a = s.name() ;
-		auto b = s.minimumVersion() ;
+		const auto& a = s.name() ;
+		const auto& b = s.minimumVersion() ;
 
 		return QObject::tr( "Installed \"%1\" Version Is Too Old.\n Please Update To Atleast Version %2." ).arg( a,b ) ;
 	}
@@ -950,7 +950,7 @@ QString engines::engine::cmdStatus::toString() const
 
 		if( e.size() == 1 ){
 
-			auto s = e.first() ;
+			const auto& s = e.first() ;
 			return QObject::tr( "Invalid Config File Name.\nIts Name Must End With \"%1\"" ).arg( s ) ;
 		}else{
 			auto s = e.join( ", " ) ;
@@ -1067,6 +1067,15 @@ void engines::engine::decodeSpecialCharacters( QString& e )
 
 		e.replace( it.first,it.second ) ;
 	}
+}
+
+QString engines::engine::decodeSpecialCharactersConst( const QString& e )
+{
+	auto m = e ;
+
+	engines::engine::decodeSpecialCharacters( m ) ;
+
+	return m ;
 }
 
 engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsList& e,

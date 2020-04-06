@@ -204,3 +204,8 @@ version 1.4.2(December 18,2019)
 -- When dealing with CryFs volume, do not support paths that are not in drive C to work around
     this bug: https://github.com/cryfs/cryfs/issues/319
 -- Fix a breaking change in how fscrypt 0.2.7 reported its version info.
+
+    version 1.4.4(unreleased)
+-- Fix a bug that causes fscrypt folders paths that contain a space character from showing up in the GUI.
+-- Prevent fscrypt error when creating a new volume with an already taken protector name by making sure
+    we are using a unique protector name.

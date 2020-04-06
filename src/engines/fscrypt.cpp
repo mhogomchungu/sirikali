@@ -79,6 +79,8 @@ static QString _get_fs_mode( const QStringList& s,const QString& m )
 
 static utility::Task _run( const QString& cmd )
 {
+	utility::debug() << cmd ;
+
 	return utility::unwrap( utility::Task::run( cmd ) ) ;
 }
 
@@ -126,7 +128,7 @@ static QString _sanitize( const QStringList& m )
 
 static QString _property( const QString& exe,const QString& m,const QString& opt )
 {
-	auto s = _run( exe + " status " + m ) ;
+	auto s = _run( exe + " status " + utility::Task::makePath( m ) ) ;
 
 	if( s.success() ){
 
@@ -154,7 +156,9 @@ static QStringList _mountInfo( const mountInfo& e,Function removeEntry )
 
 	for( const auto& it : e.mountedVolumes ){
 
-		auto s = _property( e.exe,it,"Unlocked:" ) ;
+		auto tt = engines::engine::decodeSpecialCharactersConst( it ) ;
+
+		auto s = _property( e.exe,tt,"Unlocked:" ) ;
 
 		if( !s.isEmpty() ){
 
@@ -215,6 +219,71 @@ static QString _volume_properties( const QString& cipherFolder,
 	}else{
 		return QString() ;
 	}
+}
+
+static QStringList _get_protector_names( const QString& exe,const QString& mountPoint )
+{
+	auto r = utility::split( _run( exe + " status " + mountPoint ).stdOut() ) ;
+
+	QStringList l ;
+
+	for( int i = 0 ; i < r.size() ; i++ ){
+
+		if( r.at( i ).startsWith( "PROTECTOR" ) ){
+
+			for( int j = i + 1 ; j < r.size() ; j++ ){
+
+				const auto& m = r.at( j ) ;
+
+				if( m.startsWith( "POLICY" ) ){
+
+					break ;
+				}else{
+					auto mm = utility::split( m,' ' ) ;
+
+					if( !mm.isEmpty() ){
+
+						l.append( mm.last() ) ;
+					}
+				}
+			}
+
+			break ;
+		}
+	}
+
+	return l ;
+}
+
+static QString _name( const QString& cipherPath,QString e,const QString& exe )
+{
+	auto ee = utility::Task::makePath( exe ) ;
+
+	auto mp = utility::Task::makePath( _mount_point( cipherPath,ee ) ) ;
+
+	auto mm = _get_protector_names( exe,mp ) ;
+
+	e.replace( " ","_" ) ;
+
+	auto _contains = [ & ]( const QString& e ){
+
+		return mm.contains( "\"" + e + "\"",Qt::CaseInsensitive ) ;
+	} ;
+
+	if( _contains( e ) ){
+
+		for( int i = 0 ; i < 1000 ; i++ ){
+
+			auto s = e + "_" + QString::number( i ) ;
+
+			if( !_contains( s ) ){
+
+				return s ;
+			}
+		}
+	}
+
+	return e ;
 }
 
 static engines::engine::BaseOptions _setOptions()
@@ -286,7 +355,7 @@ engines::engine::status fscrypt::unmount( const QString& cipherFolder,
 
 		if( s.success() ){
 
-			m_unlockedVolumeManager.removeEntry( mountPoint ) ;
+			m_unlockedVolumeManager.removeEntry( mountinfo::encodeMountPath( mountPoint ) ) ;
 
 			return engines::engine::status::success ;
 
@@ -308,15 +377,12 @@ QStringList fscrypt::mountInfo( const QStringList& a ) const
 		return {} ;
 	}
 
-	return Task::await( [ & ](){
+	auto list = m_unlockedVolumeManager.getList() ;
+	const auto& names = this->fuseNames() ;
 
-		auto list = m_unlockedVolumeManager.getList() ;
-		const auto& names = this->fuseNames() ;
+	return _mountInfo( { a,list,names,exe },[ this ]( const QString& e ){
 
-		return _mountInfo( { a,list,names,exe },[ this ]( const QString& e ){
-
-			m_unlockedVolumeManager.removeEntry( e ) ;
-		} ) ;
+		m_unlockedVolumeManager.removeEntry( e ) ;
 	} ) ;
 }
 
@@ -370,7 +436,7 @@ engines::engine::args fscrypt::command( const QByteArray& password,
 
 	if( args.create ){
 
-		auto m = "encrypt --source=custom_passphrase --name=%1 --quiet %2" ;
+		auto m = "encrypt --source=custom_passphrase --name=\"%1\" --quiet %2" ;
 
 		auto n = utility::split( args.opt.cipherFolder,'/' ).last() ;
 
@@ -378,6 +444,8 @@ engines::engine::args fscrypt::command( const QByteArray& password,
 
 			n = "root" ;
 		}
+
+		n = _name( args.opt.cipherFolder,n,this->executableFullPath() ) ;
 
 		auto s = QString( m ).arg( n,this->userOption() ) ;
 
@@ -498,7 +566,7 @@ void fscrypt::unlockedVolumeList::addEntry( const QString& e )
 {
 	auto a = this->getList() ;
 
-	a.append( e ) ;
+	a.append( mountinfo::encodeMountPath( e ) ) ;
 
 	this->updateList( a ) ;
 }
@@ -507,7 +575,7 @@ void fscrypt::unlockedVolumeList::removeEntry( const QString& e )
 {
 	auto a = this->getList() ;
 
-	if( a.removeAll( utility::removeFirstAndLast( e,1,1 ) ) ){
+	if( a.removeAll( e ) ){
 
 		this->updateList( a ) ;
 	}

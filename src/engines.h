@@ -430,6 +430,8 @@ public:
 		static void encodeSpecialCharacters( QString& ) ;
 		static void decodeSpecialCharacters( QString& ) ;
 
+		static QString decodeSpecialCharactersConst( const QString& ) ;
+
 		bool isInstalled() const ;
 		bool isNotInstalled() const ;
 		bool unknown() const ;
