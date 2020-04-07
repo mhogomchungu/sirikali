@@ -24,8 +24,7 @@
 #include "task.hpp"
 #include "../engines.h"
 
-gocryptfscreateoptions::gocryptfscreateoptions( QWidget * parent,
-					std::function< void( const engines::engine::Options& ) > function ) :
+gocryptfscreateoptions::gocryptfscreateoptions( QWidget * parent,engines::engine::functionOptions function ) :
 	QDialog( parent ),
 	m_ui( new Ui::gocryptfscreateoptions ),
 	m_function( std::move( function ) )

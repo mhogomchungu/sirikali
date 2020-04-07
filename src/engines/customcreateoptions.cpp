@@ -1,8 +1,7 @@
 #include "customcreateoptions.h"
 #include "ui_customcreateoptions.h"
 
-customcreateoptions::customcreateoptions( QWidget * parent,
-					std::function< void( const engines::engine::Options& ) > function ) :
+customcreateoptions::customcreateoptions( QWidget * parent,engines::engine::functionOptions function ) :
 	QDialog( parent ),
 	m_ui( new Ui::customcreateoptions ),
 	m_function( std::move( function ) )

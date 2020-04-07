@@ -23,7 +23,7 @@
 #include "../utility.h"
 
 securefscreateoptions::securefscreateoptions( QWidget * parent,
-					      std::function< void( const engines::engine::Options& ) > function ) :
+					      engines::engine::functionOptions function ) :
 	QDialog( parent ),
 	m_ui( new Ui::securefscreateoptions ),
 	m_function( std::move( function ) )

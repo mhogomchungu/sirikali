@@ -25,8 +25,7 @@
 
 #include "../settings.h"
 
-ecryptfscreateoptions::ecryptfscreateoptions( QWidget * parent,
-					std::function< void( const engines::engine::Options& ) > function ) :
+ecryptfscreateoptions::ecryptfscreateoptions( QWidget * parent,engines::engine::functionOptions function ) :
 	QDialog( parent ),
 	m_ui( new Ui::ecryptfscreateoptions ),
 	m_function( std::move( function ) )

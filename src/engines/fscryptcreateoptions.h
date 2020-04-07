@@ -1,6 +1,11 @@
+#ifndef FSCRYPTCREATEOPTIONS_H
+#define FSCRYPTCREATEOPTIONS_H
+
+#include <functional>
+#include <utility>
 /*
  *
- *  Copyright (c) 2017
+ *  Copyright (c) 2020
  *  name : Francis Banyikwa
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -17,49 +22,35 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ECRYPTFSCREATEOPTIONS_H
-#define ECRYPTFSCREATEOPTIONS_H
-
-#include <functional>
-#include <utility>
-
 #include <QCloseEvent>
 #include <QString>
 #include <QDialog>
+#include <QStringList>
 
 #include "../engines.h"
 
 namespace Ui {
-class ecryptfscreateoptions;
+class fscryptcreateoptions;
 }
 
-class ecryptfscreateoptions : public QDialog
+class fscryptcreateoptions : public QDialog
 {
 	Q_OBJECT
 public:
-	static QString defaultCreateOptions()
+	static void instance( QWidget * parent,
+			      engines::engine::functionOptions function,
+			      const QStringList& list )
 	{
-		return "-o key=passphrase,ecryptfs_key_bytes=32,ecryptfs_cipher=aes,ecryptfs_passthrough=n,ecryptfs_enable_filename_crypto=y" ;
+		new fscryptcreateoptions( parent,std::move( function ),list ) ;
 	}
-	static QString defaultMiniCreateOptions()
-	{
-		return "-o key=passphrase,ecryptfs_key_bytes=32,ecryptfs_cipher=aes" ;
-	}
-	static void instance( QWidget * parent,engines::engine::functionOptions function )
-	{
-                new ecryptfscreateoptions( parent,std::move( function ) ) ;
-	}
-	ecryptfscreateoptions( QWidget * parent,engines::engine::functionOptions ) ;
-        ~ecryptfscreateoptions() ;
-private slots:
-	void pbSelectConfigPath() ;
-	void pbOK() ;
-	void pbCancel() ;
+	fscryptcreateoptions( QWidget * parent,engines::engine::functionOptions,const QStringList& ) ;
+	~fscryptcreateoptions() ;
 private:
+	Ui::fscryptcreateoptions * m_ui ;
 	void HideUI( const engines::engine::Options& = engines::engine::Options() ) ;
 	void closeEvent( QCloseEvent * ) ;
-        Ui::ecryptfscreateoptions * m_ui ;
 	engines::engine::functionOptions m_function ;
+	QStringList m_protectorNames ;
 };
 
-#endif // ECRYPTFSCREATEOPTIONS_H
+#endif // FSCRYPTCREATEOPTIONS_H

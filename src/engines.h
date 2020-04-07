@@ -365,6 +365,8 @@ public:
 			bool success ;
 		} ;
 
+		using functionOptions = std::function< void( const engines::engine::Options& ) > ;
+
 		struct BaseOptions
 		{
 		        struct vInfo{

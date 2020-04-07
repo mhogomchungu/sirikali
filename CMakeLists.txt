@@ -261,6 +261,7 @@ set( UI_FILES 	src/sirikali.ui
 		src/engines/securefscreateoptions.ui
 		src/engines/encfscreateoptions.ui
 		src/engines/cryfscreateoptions.ui
+		src/engines/fscryptcreateoptions.ui
 )
 
 set( MOC_FILES
@@ -291,6 +292,7 @@ set( MOC_FILES
 		src/engines/securefscreateoptions.h
 		src/engines/encfscreateoptions.h
 		src/engines/cryfscreateoptions.h
+		src/engines/fscryptcreateoptions.h
  )
 
 set( SRC 	src/dialogok.cpp
@@ -341,6 +343,7 @@ set( SRC 	src/dialogok.cpp
 		src/engines/encfscreateoptions.cpp
 		src/engines/cryfscreateoptions.cpp
 		src/engines/fscrypt.cpp
+		src/engines/fscryptcreateoptions.cpp
 )
 
 if( APPLE )

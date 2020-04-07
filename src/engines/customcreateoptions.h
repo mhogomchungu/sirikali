@@ -13,17 +13,17 @@ class customcreateoptions : public QDialog
 {
 	Q_OBJECT
 public:
-	static void instance( QWidget * parent,std::function< void( const engines::engine::Options& ) > function )
+	static void instance( QWidget * parent,engines::engine::functionOptions function )
 	{
 		new customcreateoptions( parent,std::move( function ) ) ;
 	}
-	customcreateoptions( QWidget * parent,std::function< void( const engines::engine::Options& ) > ) ;
+	customcreateoptions( QWidget * parent,engines::engine::functionOptions ) ;
 	~customcreateoptions() ;
 private:
 	Ui::customcreateoptions * m_ui ;
 	void HideUI( const engines::engine::Options& = engines::engine::Options() ) ;
 	void closeEvent( QCloseEvent * ) ;
-	std::function< void( const engines::engine::Options& ) > m_function ;
+	engines::engine::functionOptions m_function ;
 };
 
 #endif // CUSTOMCREATEOPTIONS_H

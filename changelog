@@ -209,3 +209,6 @@ version 1.4.2(December 18,2019)
 -- Fix a bug that causes fscrypt folders paths that contain a space character from showing up in the GUI.
 -- Prevent fscrypt error when creating a new volume with an already taken protector name by making sure
     we are using a unique protector name.
+-- Add a GUI option to set protector's name  when creating fscrypt volume.
+-- Add a GUI option to choose between using a custom passphrase or login passphrase when creating
+   fscrypt volume.

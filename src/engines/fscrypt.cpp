@@ -22,6 +22,7 @@
 #include "../settings.h"
 #include "../mountinfo.h"
 #include "../json_parser.hpp"
+#include "fscryptcreateoptions.h"
 
 struct mountInfo{
 	const QStringList& mountInfo ;
@@ -299,7 +300,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.requiresAPassword     = true ;
 	s.hasConfigFile         = false ;
 	s.autoMountsOnCreate    = true ;
-	s.hasGUICreateOptions   = false ;
+	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = true ;
 	s.releaseURL            = "https://api.github.com/repos/google/fscrypt/releases" ;
 	s.passwordFormat        = "%{password}" ;
@@ -435,18 +436,44 @@ engines::engine::args fscrypt::command( const QByteArray& password,
 
 	if( args.create ){
 
-		auto m = "encrypt --source=custom_passphrase --name=\"%1\" --quiet %2" ;
+		QString n ;
 
-		auto n = utility::split( args.opt.cipherFolder,'/' ).last() ;
+		QString ss = "--source=custom_passphrase" ;
 
-		if( n.isEmpty() ){
+		for(const auto& it : utility::split( args.opt.createOptions,',' ) ){
 
-			n = "root" ;
+			if( it.startsWith( "--name=" ) ){
+
+				n = it.mid( 7 ) ;
+
+			}else if( it.startsWith( "--source=" ) ){
+
+				ss = it ;
+			}
 		}
 
-		n = _name( args.opt.cipherFolder,n,this->executableFullPath() ) ;
+		QString name ;
 
-		auto s = QString( m ).arg( n,this->userOption() ) ;
+		if( ss != "--source=pam_passphrase" ){
+
+			if( n.isEmpty() ){
+
+				n = utility::split( args.opt.cipherFolder,'/' ).last() ;
+
+				if( n.isEmpty() ){
+
+					n = "root" ;
+				}
+			}
+
+			auto nn = _name( args.opt.cipherFolder,n,this->executableFullPath() ) ;
+
+			name = "--name=\"" + nn + "\"" ;
+		}
+
+		auto m = "encrypt %1 %2 --quiet %3" ;
+
+		auto s = QString( m ).arg( ss,name,this->userOption() ) ;
 
 		exeOptions.add( s ) ;
 	}else{
@@ -472,9 +499,9 @@ engines::engine::status fscrypt::errorCode( const QString& e,int s ) const
 	}
 }
 
-void fscrypt::GUICreateOptionsinstance( QWidget *,engines::engine::function ) const
+void fscrypt::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
 {
-	//fscryptcreateoptions::instance( parent,std::move( function ) ) ;
+	fscryptcreateoptions::instance( parent,std::move( function ),{} ) ;
 }
 
 #ifdef Q_OS_LINUX

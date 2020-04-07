@@ -25,8 +25,7 @@
 
 #include "../engines.h"
 
-encfscreateoptions::encfscreateoptions( QWidget * parent,
-					std::function< void( const engines::engine::Options& ) > function ) :
+encfscreateoptions::encfscreateoptions( QWidget * parent,engines::engine::functionOptions function ) :
 	QDialog( parent ),
 	m_ui( new Ui::encfscreateoptions ),
 	m_function( std::move( function ) )
