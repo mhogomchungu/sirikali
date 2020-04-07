@@ -239,11 +239,12 @@ static QStringList _get_protector_names( const QString& exe,const QString& mount
 
 					break ;
 				}else{
-					auto mm = utility::split( m,' ' ) ;
+					auto a = m.indexOf( '"' ) ;
+					auto b = m.lastIndexOf( '"' ) ;
 
-					if( !mm.isEmpty() ){
+					if( a != -1 && b != -1 && a != b ){
 
-						l.append( mm.last() ) ;
+						l.append( m.mid( a + 1,b - a - 1 ) ) ;
 					}
 				}
 			}
@@ -255,7 +256,7 @@ static QStringList _get_protector_names( const QString& exe,const QString& mount
 	return l ;
 }
 
-static QString _name( const QString& cipherPath,QString e,const QString& exe )
+static QString _name( const QString& cipherPath,const QString& e,const QString& exe )
 {
 	auto ee = utility::Task::makePath( exe ) ;
 
@@ -263,11 +264,9 @@ static QString _name( const QString& cipherPath,QString e,const QString& exe )
 
 	auto mm = _get_protector_names( exe,mp ) ;
 
-	e.replace( " ","_" ) ;
-
 	auto _contains = [ & ]( const QString& e ){
 
-		return mm.contains( "\"" + e + "\"",Qt::CaseInsensitive ) ;
+		return mm.contains( e,Qt::CaseInsensitive ) ;
 	} ;
 
 	if( _contains( e ) ){
