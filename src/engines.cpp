@@ -293,6 +293,8 @@ static engines::engineVersion _installedVersion( const engines::engine& e,const 
 		}
 	}
 
+	utility::debug() << QString( "Failed to get version info for backend \"%2\"." ).arg( e.name() ) ;
+
 	return {} ;
 }
 
