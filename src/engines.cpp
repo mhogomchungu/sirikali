@@ -254,13 +254,12 @@ static QString _sanitizeVersionString( const QString& s )
 }
 
 static engines::engineVersion _installedVersion( const engines::engine& e,
+						 const QProcessEnvironment env,
 						 const engines::engine::BaseOptions::vInfo& v )
 {
-	const auto& s = utility::systemEnvironment() ;
-
 	const auto cmd = utility::Task::makePath( e.executableFullPath() ) + " " + v.versionArgument ;
 
-	const auto r = utility::unwrap( ::Task::process::run( cmd,{},-1,{},s ) ) ;
+	const auto r = utility::unwrap( ::Task::process::run( cmd,{},-1,{},env ) ) ;
 
 	const auto m = utility::split( v.readFromStdOut ? r.std_out() : r.std_error(),'\n' ) ;
 
@@ -278,11 +277,13 @@ static engines::engineVersion _installedVersion( const engines::engine& e,
 }
 
 template< typename T >
-static engines::engineVersion _installedVersion( const engines::engine& e,const T& v )
+static engines::engineVersion _installedVersion( const engines::engine& e,
+						 const QProcessEnvironment env,
+						 const T& v )
 {
 	for( const auto& it : v ){
 
-		auto m = _installedVersion( e,it ) ;
+		auto m = _installedVersion( e,env,it ) ;
 
 		if( m.valid() ){
 
@@ -316,7 +317,7 @@ engines::engine::engine( engines::engine::BaseOptions o ) :
 	m_Options( std::move( o ) ),
 	m_processEnvironment( _set_env( *this ) ),
 	m_exeFullPath( [ this ](){ return engines::executableFullPath( this->executableName(),*this ) ; } ),
-	m_version( this->name(),[ this ](){ return _installedVersion( *this,m_Options.versionInfo ) ; } )
+	m_version( this->name(),[ this ](){ return _installedVersion( *this,m_processEnvironment,m_Options.versionInfo ) ; } )
 {
 }
 
