@@ -288,7 +288,8 @@ static engines::engineVersion _installedVersion( const engines::engine& e,const 
 
 			return m ;
 		}else{
-			utility::debug() << e.name() + ": Failed to get version info" ;
+			QString s = "Attempt to get version info for backend \"%2\" failed, retrying..." ;
+			utility::debug() << s.arg( e.name() ) ;
 		}
 	}
 
