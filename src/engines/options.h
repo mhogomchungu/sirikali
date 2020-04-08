@@ -33,7 +33,7 @@
 
 #include <functional>
 
-#include "engines.h"
+#include "../engines.h"
 
 namespace Ui {
 class options;
@@ -43,37 +43,29 @@ class options : public QDialog
 {
 	Q_OBJECT
 public:
-	struct Options{
-		Options( const QStringList& e,const engines::engine::options::booleanOptions& r ) :
-			options( e ),opts( r ),success( true )
-		{
-		}
-		Options() : success( false )
-		{
-		}
-		QStringList options ;
-		engines::engine::options::booleanOptions opts ;
-		bool success ;
-	} ;
-	static void instance( QWidget * parent,bool r,const Options& l,
-			      std::function< void( const Options& ) >&& e )
+	static void instance( QWidget * parent,
+			      bool r,
+			      const engines::engine::mountOptions& l,
+			      engines::engine::fMountOptions e )
 	{
 		new options( parent,r,l,std::move( e ) ) ;
 	}
 
-	options( QWidget * parent,bool,const Options&,std::function< void( const Options& ) >&& ) ;
+	options( QWidget * parent,
+		 bool,
+		 const engines::engine::mountOptions&,engines::engine::fMountOptions ) ;
 	~options() ;
 private slots:
         void pushButton( void ) ;
 	void pbSet( void ) ;
 	void pbCancel( void ) ;
 private:
-	void Hide( const Options& = Options() ) ;
+	void Hide( const engines::engine::mountOptions& = engines::engine::mountOptions() ) ;
 	void closeEvent( QCloseEvent * ) ;
 	Ui::options * m_ui ;
 	bool m_create ;
 	QString m_type ;
-	std::function< void( const Options& ) > m_setOptions ;
+	std::function< void( const engines::engine::mountOptions& ) > m_setOptions ;
 	QWidget * m_parentWidget ;
 };
 

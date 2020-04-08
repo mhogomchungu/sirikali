@@ -90,27 +90,27 @@
         <translation>Netzwerkanfrage konnte nicht innerhalb von %1 Sekunden beantwortet werden.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="45"/>
+        <location filename="../src/keydialog.cpp" line="44"/>
         <source>Kde Wallet</source>
         <translation>KDE-Brieftasche</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="50"/>
+        <location filename="../src/keydialog.cpp" line="49"/>
         <source>Internal Wallet</source>
         <translation>Interne Brieftasche</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="55"/>
+        <location filename="../src/keydialog.cpp" line="54"/>
         <source>Gnome Wallet</source>
         <translation>Gnome Brieftasche</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="60"/>
+        <location filename="../src/keydialog.cpp" line="59"/>
         <source>OSX KeyChain</source>
         <translation>OSX-Schlüsselring</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1589"/>
+        <location filename="../src/keydialog.cpp" line="1586"/>
         <source>Not Supported KeyFile Encountered Since It Contains AtLeast One Illegal Character(&apos;\n&apos;,&apos;\0&apos;,&apos;\r&apos;).
 
 Please Use a Hash Of The KeyFile Through &quot;HMAC+KeyFile&quot; Option.</source>
@@ -119,7 +119,7 @@ Please Use a Hash Of The KeyFile Through &quot;HMAC+KeyFile&quot; Option.</sourc
 Bitte nutzen Sie einen Hash durch die &quot;HMAC+KeyFile&quot; Option.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1649"/>
+        <location filename="../src/keydialog.cpp" line="1646"/>
         <source>Effective Key Is Generated With Below Formula:
 
 key = hmac_sha256(password,keyfile contents)</source>
@@ -129,7 +129,7 @@ key = hmac_sha256(password,keyfile contents)</source>
 key = hmac_sha256(password,keyfile contents)</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1653"/>
+        <location filename="../src/keydialog.cpp" line="1650"/>
         <source>This plugin delegates key generation to an external application</source>
         <translation>Diese Erweiterung überträgt die Generierung des Schlüssels an ein externes Programm</translation>
     </message>
@@ -141,86 +141,86 @@ key = hmac_sha256(password,keyfile contents)</translation>
         <translation>FEHLER</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="810"/>
+        <location filename="../src/engines.cpp" line="858"/>
         <source>Volume Created Successfully.</source>
         <translation>Datenträger erfolgreich erstellt.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="814"/>
+        <location filename="../src/engines.cpp" line="862"/>
         <source>Backend Requires A Password.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="818"/>
+        <location filename="../src/engines.cpp" line="866"/>
         <source>Failed To Unlock A Cryfs Volume.
 Wrong Password Entered.</source>
         <translation>Aufschließen eines Cryfs-Datenträgers fehlgeschlagen.
 Falsche Passphrase eingegeben.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="822"/>
+        <location filename="../src/engines.cpp" line="870"/>
         <source>Failed To Connect To The Remote Computer.
 Wrong Password Entered.</source>
         <translation>Die Verbindung zum entfernten Computer konnte nicht hergestellt werden.
 Falsche Passphrase eingegeben.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="826"/>
+        <location filename="../src/engines.cpp" line="874"/>
         <source>Failed To Unlock An Encfs Volume.
 Wrong Password Entered.</source>
         <translation>Aufschließen eines Encfs-Datenträgers fehlgeschlagen.
 Falsche Passphrase eingegeben.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="830"/>
+        <location filename="../src/engines.cpp" line="878"/>
         <source>Failed To Unlock A Gocryptfs Volume.
 Wrong Password Entered.</source>
         <translation>Aufschließen eines Gocryptfs-Datenträgers fehlgeschlagen.
 Falsche Passphrase eingegeben.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="834"/>
+        <location filename="../src/engines.cpp" line="882"/>
         <source>Failed To Unlock An Ecryptfs Volume.
 Wrong Password Entered.</source>
         <translation>Aufschließen eines Ecryptfs-Datenträgers fehlgeschlagen.
 Falsche Passphrase eingegeben.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="838"/>
+        <location filename="../src/engines.cpp" line="886"/>
         <source>Failed To Unlock An fscrypt Volume.
 Wrong Password Entered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="842"/>
+        <location filename="../src/engines.cpp" line="890"/>
         <source>Backend Requires Polkit Support and SiriKali Failed To Start It.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="846"/>
+        <location filename="../src/engines.cpp" line="894"/>
         <source>A Space Character Is Not Allowed In Paths When Using Ecryptfs Backend And Polkit.</source>
         <translation>Bei Nutzung des Ecryptfs-Backends und Poolkit sind Leerzeichen in Pfaden nicht erlaubt.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="806"/>
+        <location filename="../src/engines.cpp" line="854"/>
         <source>Failed To Unmount %1 Volume</source>
         <translation>Aushängen des %1-Datenträgers fehlgeschlagen</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="850"/>
+        <location filename="../src/engines.cpp" line="898"/>
         <source>Failed To Unlock A Securefs Volume.
 Wrong Password Entered.</source>
         <translation>Aufschließen eines Securefs-Datenträgers fehlgeschlagen.
 Falsche Passphrase eingegeben.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="854"/>
+        <location filename="../src/engines.cpp" line="902"/>
         <source>Failed To Unlock A Custom Volume.
 Wrong Password Entered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="858"/>
+        <location filename="../src/engines.cpp" line="906"/>
         <location filename="../src/sirikali.cpp" line="512"/>
         <source>Failed To Complete The Request.
 Sshfs Executable Could Not Be Found.</source>
@@ -228,30 +228,30 @@ Sshfs Executable Could Not Be Found.</source>
 Die ausführbare Datei von sshfs konnte nicht gefunden werden.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="862"/>
+        <location filename="../src/engines.cpp" line="910"/>
         <source>Failed To Complete The Request.
 Fscrypt Executable Could Not Be Found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="866"/>
+        <location filename="../src/engines.cpp" line="914"/>
         <source>Backend Does Not Support Custom Configuration File Path.</source>
         <translation>Backend unterstützt keine benutzerdefinierten Konfigurationsdateipfade.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="870"/>
+        <location filename="../src/engines.cpp" line="918"/>
         <source>Failed To Complete The Request.
 Cryfs Executable Could Not Be Found.</source>
         <translation>Das Abschließen der Anfrage ist fehlgeschlagen.
 Die ausführbare Datei von Cryfs konnte nicht gefunden werden.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="874"/>
+        <location filename="../src/engines.cpp" line="922"/>
         <source>Something Is Wrong With The Backend And It Took Too Long To Respond.</source>
         <translation>Etwas stimmt nicht mit dem Backend und es dauerte zu lange, bis es reagierte.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="878"/>
+        <location filename="../src/engines.cpp" line="926"/>
         <source>This Volume Of Cryfs Needs To Be Upgraded To Work With The Version Of Cryfs You Are Using.
 
 The Upgrade is IRREVERSIBLE And The Volume Will No Longer Work With Older Versions of Cryfs.
@@ -264,89 +264,89 @@ Die Nachrüstung ist UNUMKEHRBAR und das Dateisystem wird NICHT mehr unter älte
 Um die Nachrüstung durchzuführen, markiere die Option &quot;Dateisystem nachrüsten&quot; und schließe das Dateisystem erneut auf.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="882"/>
+        <location filename="../src/engines.cpp" line="930"/>
         <source>This Volume Of Cryfs Is Different From The Known One.
 
 Check The &quot;Replace File System&quot; Option And Unlock The Volume Again To Replace The Previous File System.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="886"/>
+        <location filename="../src/engines.cpp" line="934"/>
         <source>Cipher Path and Mount Path Must Be On Drive &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="890"/>
+        <location filename="../src/engines.cpp" line="938"/>
         <source>Failed To Complete The Request.
 Encfs Executable Could Not Be Found.</source>
         <translation>Das Abschließen der Anfrage ist fehlgeschlagen.
 Die ausführbare Datei von Encfs konnte nicht gefunden werden.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="894"/>
+        <location filename="../src/engines.cpp" line="942"/>
         <source>Failed To Complete The Request.
 Ecryptfs-simple Executable Could Not Be Found.</source>
         <translation>Das Abschließen der Anfrage ist fehlgeschlagen.
 Die ausführbare Datei von Ecryptfs konnte nicht gefunden werden.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="898"/>
+        <location filename="../src/engines.cpp" line="946"/>
         <source>Failed To Complete The Request.
 Gocryptfs Executable Could Not Be Found.</source>
         <translation>Das Abschließen der Anfrage ist fehlgeschlagen.
 Die ausführbare Datei von Gocryptfs konnte nicht gefunden werden.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="902"/>
+        <location filename="../src/engines.cpp" line="950"/>
         <source>Failed To Complete The Request.
 Securefs Executable Could Not Be Found.</source>
         <translation>Das Abschließen der Anfrage ist fehlgeschlagen.
 Die ausführbare Datei von Securefs konnte nicht gefunden werden.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="906"/>
+        <location filename="../src/engines.cpp" line="954"/>
         <source>Failed To Create Mount Point.</source>
         <translation>Erzeugen des Einhängepunkts fehlgeschlagen.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="910"/>
+        <location filename="../src/engines.cpp" line="958"/>
         <source>Backend Could Not Load WinFsp. Please Make Sure You Have WinFsp Properly Installed.</source>
         <translation>Das Backend konnte WinFsp nicht laden. Bitte stellen Sie sicher, dass Sie WinFsp ordnungsgemäß installiert haben.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="914"/>
+        <location filename="../src/engines.cpp" line="962"/>
         <source>Failed To Unlock The Volume.
 Not Supported Volume Encountered.</source>
         <translation>Aufschließen des Datenträgers fehlgeschlagen.
 Nicht unterstützter Datenträger gefunden.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="924"/>
+        <location filename="../src/engines.cpp" line="972"/>
         <source>Installed &quot;%1&quot; Version Is Too Old.
  Please Update To Atleast Version %2.</source>
         <translation>Installierte Version &quot;%1&quot; ist zu alt.
  Bitte aktualisieren Sie mindestens auf die Version %2.</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="929"/>
+        <location filename="../src/engines.cpp" line="977"/>
         <source>Folder Not Fully Locked Because Some Files Are Still In Use.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="933"/>
+        <location filename="../src/engines.cpp" line="981"/>
         <source>Failed To Complete The Request.
 The Executable For This Backend Could Not Be Found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="943"/>
+        <location filename="../src/engines.cpp" line="991"/>
         <source>Invalid Config File Name.
 Its Name Must End With &quot;%1&quot;</source>
         <translation>Ungültiger Name der Konfigurationsdatei.
 Ihr Name muss mit &quot;%1&quot; enden</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="946"/>
+        <location filename="../src/engines.cpp" line="994"/>
         <source>Invalid Config File Name.
 It Must End With One Of The Following:
 &quot;%1&quot;</source>
@@ -355,7 +355,7 @@ Sie muss mit einem der folgenden enden:
 &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="954"/>
+        <location filename="../src/engines.cpp" line="1002"/>
         <source>Failed To Complete The Task And Below Log was Generated By The Backend.
 </source>
         <translation>Das Abschließen des Auftrags fehlgeschlagen und unten stehendes Protokoll wurde vom Backend generiert.
@@ -954,7 +954,7 @@ p, li { white-space: pre-wrap; }
         <translation>&amp;OK</translation>
     </message>
     <message>
-        <location filename="../src/engines/encfscreateoptions.cpp" line="41"/>
+        <location filename="../src/engines/encfscreateoptions.cpp" line="40"/>
         <source>Normally EncFS provides a plaintext view of data on demand: it stores enciphered data and displays plaintext data.  With this option set, it takes as source plaintext data and produces enciphered data on-demand. This can be useful for creating remote encrypted backups, where you do not wish to keep the local files unencrypted.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1226,6 +1226,59 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>fscryptcreateoptions</name>
+    <message>
+        <location filename="../src/engines/fscryptcreateoptions.ui" line="14"/>
+        <source>Select Volume Creation Options </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/engines/fscryptcreateoptions.ui" line="26"/>
+        <source>&amp;Cancel</source>
+        <translation type="unfinished">Abbre&amp;chen</translation>
+    </message>
+    <message>
+        <location filename="../src/engines/fscryptcreateoptions.ui" line="39"/>
+        <source>&amp;Ok</source>
+        <translation type="unfinished">&amp;OK</translation>
+    </message>
+    <message>
+        <location filename="../src/engines/fscryptcreateoptions.ui" line="62"/>
+        <source>Enter Volume&apos;s Protector Name Below(Optional)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/engines/fscryptcreateoptions.ui" line="81"/>
+        <source>Key Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/engines/fscryptcreateoptions.ui" line="93"/>
+        <source>A Custom Passphrase</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/engines/fscryptcreateoptions.ui" line="106"/>
+        <source>Your Login Passphrase</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/engines/fscryptcreateoptions.ui" line="119"/>
+        <source>A Raw 256-Bit Key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/engines/fscryptcreateoptions.ui" line="143"/>
+        <source>Enter A Path To A Raw 256 Bit Key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/engines/fscryptcreateoptions.cpp" line="47"/>
+        <source>Select A 32 Byte KeyFile</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>gocryptfscreateoptions</name>
     <message>
         <location filename="../src/engines/gocryptfscreateoptions.ui" line="14"/>
@@ -1268,7 +1321,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines/gocryptfscreateoptions.cpp" line="47"/>
+        <location filename="../src/engines/gocryptfscreateoptions.cpp" line="46"/>
         <source>Normally Gocryptfs provides a plaintext view of data on demand.
 It stores enciphered data and displays plaintext data.
 With this option set, it takes as source plaintext data and produces enciphered data on-demand.
@@ -1376,15 +1429,15 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/keydialog.ui" line="58"/>
-        <location filename="../src/keydialog.cpp" line="264"/>
-        <location filename="../src/keydialog.cpp" line="1629"/>
-        <location filename="../src/keydialog.cpp" line="1788"/>
+        <location filename="../src/keydialog.cpp" line="263"/>
+        <location filename="../src/keydialog.cpp" line="1626"/>
+        <location filename="../src/keydialog.cpp" line="1785"/>
         <source>Key</source>
         <translation>Schlüssel</translation>
     </message>
     <message>
         <location filename="../src/keydialog.ui" line="100"/>
-        <location filename="../src/keydialog.cpp" line="221"/>
+        <location filename="../src/keydialog.cpp" line="220"/>
         <source>Volume Name</source>
         <translation>Name des Datenträgers</translation>
     </message>
@@ -1420,10 +1473,10 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/keydialog.ui" line="352"/>
-        <location filename="../src/keydialog.cpp" line="265"/>
-        <location filename="../src/keydialog.cpp" line="1259"/>
-        <location filename="../src/keydialog.cpp" line="1635"/>
-        <location filename="../src/keydialog.cpp" line="1753"/>
+        <location filename="../src/keydialog.cpp" line="264"/>
+        <location filename="../src/keydialog.cpp" line="1256"/>
+        <location filename="../src/keydialog.cpp" line="1632"/>
+        <location filename="../src/keydialog.cpp" line="1750"/>
         <source>KeyFile</source>
         <translation>Schlüsseldatei</translation>
     </message>
@@ -1439,208 +1492,208 @@ p, li { white-space: pre-wrap; }
         <translation>Textmarkierung</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="219"/>
+        <location filename="../src/keydialog.cpp" line="218"/>
         <source>&amp;Create</source>
         <translation>Er&amp;zeugen</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="239"/>
-        <location filename="../src/keydialog.cpp" line="534"/>
+        <location filename="../src/keydialog.cpp" line="238"/>
+        <location filename="../src/keydialog.cpp" line="533"/>
         <source>Unlocking &quot;%1&quot;</source>
         <translation>&quot;%1&quot; wird aufgeschlossen</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="243"/>
+        <location filename="../src/keydialog.cpp" line="242"/>
         <source>Mount Path</source>
         <translation>Einhängepfad</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="266"/>
-        <location filename="../src/keydialog.cpp" line="1643"/>
-        <location filename="../src/keydialog.cpp" line="1647"/>
-        <location filename="../src/keydialog.cpp" line="1767"/>
+        <location filename="../src/keydialog.cpp" line="265"/>
+        <location filename="../src/keydialog.cpp" line="1640"/>
+        <location filename="../src/keydialog.cpp" line="1644"/>
+        <location filename="../src/keydialog.cpp" line="1764"/>
         <source>Key+KeyFile</source>
         <translation>Schlüssel+Schlüsseldatei</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="267"/>
-        <location filename="../src/keydialog.cpp" line="1670"/>
+        <location filename="../src/keydialog.cpp" line="266"/>
+        <location filename="../src/keydialog.cpp" line="1667"/>
         <source>HMAC+KeyFile</source>
         <translation>HMAC+Schlüsseldatei</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="268"/>
-        <location filename="../src/keydialog.cpp" line="1643"/>
+        <location filename="../src/keydialog.cpp" line="267"/>
+        <location filename="../src/keydialog.cpp" line="1640"/>
         <source>ExternalExecutable</source>
         <translation>Extern-Ausführbare Datei</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="269"/>
-        <location filename="../src/keydialog.cpp" line="1629"/>
+        <location filename="../src/keydialog.cpp" line="268"/>
+        <location filename="../src/keydialog.cpp" line="1626"/>
         <source>YubiKey Challenge/Response</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="312"/>
+        <location filename="../src/keydialog.cpp" line="311"/>
         <source>Check This Box To Make Password Visible</source>
         <translation>Aktivieren Sie dieses Kontrollkästchen, um die Passphrase sichtbar zu machen</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="330"/>
+        <location filename="../src/keydialog.cpp" line="329"/>
         <source>(%1/%2) Unlocking &quot;%3&quot;</source>
         <translation>(%1/%2) &quot;%3&quot; wird aufgeschlossen</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="389"/>
+        <location filename="../src/keydialog.cpp" line="388"/>
         <source>Select Volume Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="414"/>
+        <location filename="../src/keydialog.cpp" line="413"/>
         <source>Options</source>
         <translation type="unfinished">Optionen</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="442"/>
+        <location filename="../src/keydialog.cpp" line="441"/>
         <source>Not Used</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="558"/>
+        <location filename="../src/keydialog.cpp" line="557"/>
         <source>Create A New &quot;%1&quot; Volume</source>
         <translation>Einen neuen &quot;%1&quot;-Datenräger erzeugen</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="645"/>
+        <location filename="../src/keydialog.cpp" line="642"/>
         <source>Passphrase Quality: 0%</source>
         <translation>Passphrasenqualität: 0%</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="647"/>
+        <location filename="../src/keydialog.cpp" line="644"/>
         <source>Passphrase Quality: %1%</source>
         <translation>Passphrasenqualität: %1%</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="654"/>
-        <location filename="../src/keydialog.cpp" line="1697"/>
+        <location filename="../src/keydialog.cpp" line="651"/>
+        <location filename="../src/keydialog.cpp" line="1694"/>
         <source>Passphrase Quality: 100%</source>
         <translation>Passphrasenqualität: 100%</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="952"/>
+        <location filename="../src/keydialog.cpp" line="949"/>
         <source>Volume Not Found in &quot;%1&quot;.
 
 Set The Volume Key To Add It To The Wallet Before Mounting.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="985"/>
+        <location filename="../src/keydialog.cpp" line="982"/>
         <source>Replace File System</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1281"/>
+        <location filename="../src/keydialog.cpp" line="1278"/>
         <source>Volume Key Can Not Be Empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1335"/>
+        <location filename="../src/keydialog.cpp" line="1332"/>
         <source>Failed To Add A Volume To The A Wallet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1338"/>
+        <location filename="../src/keydialog.cpp" line="1335"/>
         <source>Volume Already Exists In The Wallet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1374"/>
+        <location filename="../src/keydialog.cpp" line="1371"/>
         <source>Failed To Open Wallet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1536"/>
+        <location filename="../src/keydialog.cpp" line="1533"/>
         <source>Failed To Locate Or Run Yubikey&apos;s &quot;ykchalresp&quot; Program.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="198"/>
-        <location filename="../src/keydialog.cpp" line="719"/>
-        <location filename="../src/keydialog.cpp" line="732"/>
+        <location filename="../src/keydialog.cpp" line="197"/>
+        <location filename="../src/keydialog.cpp" line="716"/>
+        <location filename="../src/keydialog.cpp" line="729"/>
         <source>Select A Folder To Create A Mount Point In.</source>
         <translation>Wählen Sie einen Ordner aus, um darin einen Einhängepunkt zu erstellen.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="846"/>
-        <location filename="../src/keydialog.cpp" line="860"/>
+        <location filename="../src/keydialog.cpp" line="843"/>
+        <location filename="../src/keydialog.cpp" line="857"/>
         <source>Select A File To Be Used As A Keyfile.</source>
         <translation>Wählen Sie eine Datei aus, die als Schlüsseldatei verwendet werden soll.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="886"/>
-        <location filename="../src/keydialog.cpp" line="1712"/>
+        <location filename="../src/keydialog.cpp" line="883"/>
+        <location filename="../src/keydialog.cpp" line="1709"/>
         <source>Volume Name Field Is Empty.</source>
         <translation>Feld mit Namen des Datenträgers ist leer.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="939"/>
+        <location filename="../src/keydialog.cpp" line="936"/>
         <source>Internal Wallet Is Not Configured.</source>
         <translation>Interne Brieftasche ist nicht konfiguriert.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="981"/>
+        <location filename="../src/keydialog.cpp" line="978"/>
         <source>Upgrade File System</source>
         <translation>Dateisystem nachrüsten</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1058"/>
+        <location filename="../src/keydialog.cpp" line="1055"/>
         <source>Encrypted Folder Path Is Already Taken.</source>
         <translation>Pfad des verschlüsselten Ordners ist bereits belegt.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1069"/>
-        <location filename="../src/keydialog.cpp" line="1074"/>
-        <location filename="../src/keydialog.cpp" line="1081"/>
-        <location filename="../src/keydialog.cpp" line="1089"/>
-        <location filename="../src/keydialog.cpp" line="1174"/>
-        <location filename="../src/keydialog.cpp" line="1182"/>
+        <location filename="../src/keydialog.cpp" line="1066"/>
+        <location filename="../src/keydialog.cpp" line="1071"/>
+        <location filename="../src/keydialog.cpp" line="1078"/>
+        <location filename="../src/keydialog.cpp" line="1086"/>
+        <location filename="../src/keydialog.cpp" line="1171"/>
+        <location filename="../src/keydialog.cpp" line="1179"/>
         <source>Mount Point Path Already Taken.</source>
         <translation>Pfad des Einhängepunkts ist bereits belegt.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1162"/>
+        <location filename="../src/keydialog.cpp" line="1159"/>
         <source>Atleast One Required Field Is Empty.</source>
         <translation>Mindestens ein benötigtes Feld ist leer.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1436"/>
+        <location filename="../src/keydialog.cpp" line="1433"/>
         <source>Failed To Generate Key.</source>
         <translation>Generierung des Schlüssels fehlgeschlagen.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1187"/>
+        <location filename="../src/keydialog.cpp" line="1184"/>
         <source>Mount Point Path Is Not Empty.</source>
         <translation>Pfad des Einhängepunktes ist nicht leer.</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1674"/>
+        <location filename="../src/keydialog.cpp" line="1671"/>
         <source>Select A KeyFile</source>
         <translation>Wählen Sie eine Schlüsseldatei aus</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1719"/>
+        <location filename="../src/keydialog.cpp" line="1716"/>
         <source>Create A Volume With Specified Key And Then Add The Key In 
 &quot;%1&quot;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1765"/>
-        <location filename="../src/keydialog.cpp" line="1777"/>
+        <location filename="../src/keydialog.cpp" line="1762"/>
+        <location filename="../src/keydialog.cpp" line="1774"/>
         <source>Plugin name</source>
         <translation>Name des Plugins</translation>
     </message>
     <message>
-        <location filename="../src/keydialog.cpp" line="1802"/>
+        <location filename="../src/keydialog.cpp" line="1799"/>
         <source>Keyfile path</source>
         <translation>Pfad der Schlüsseldatei</translation>
     </message>
@@ -1661,47 +1714,47 @@ Set The Volume Key To Add It To The Wallet Before Mounting.</source>
 <context>
     <name>options</name>
     <message>
-        <location filename="../src/options.ui" line="17"/>
+        <location filename="../src/engines/options.ui" line="17"/>
         <source>Set Mount Options</source>
         <translation>Einhängeoptionen festlegen</translation>
     </message>
     <message>
-        <location filename="../src/options.ui" line="80"/>
+        <location filename="../src/engines/options.ui" line="80"/>
         <source>Unlock A Cryfs/Gocryptfs/Securefs Volume With Specified Configuration File.</source>
         <translation>Einen Cryfs/Gocryptfs/Securefs-Datenträger mit angegebener Konfigurationsdatei aufschließen.</translation>
     </message>
     <message>
-        <location filename="../src/options.ui" line="109"/>
+        <location filename="../src/engines/options.ui" line="109"/>
         <source>Automatically Unmount After Specified Minutes of Inactivity Is Reached.</source>
         <translation>Bei Inaktivität nach den angegebenen Minuten automatisch aushängen.</translation>
     </message>
     <message>
-        <location filename="../src/options.ui" line="138"/>
+        <location filename="../src/engines/options.ui" line="138"/>
         <source>Mount The Volume With Below Mount Options.</source>
         <translation>Datenträger mit unten stehenden Einhängeoptionen einhängen.</translation>
     </message>
     <message>
-        <location filename="../src/options.ui" line="157"/>
+        <location filename="../src/engines/options.ui" line="157"/>
         <source>Reverse Mode (Gocryptfs and Encfs Only).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/options.ui" line="171"/>
+        <location filename="../src/engines/options.ui" line="171"/>
         <source>&amp;Set</source>
         <translation>Fe&amp;stlegen</translation>
     </message>
     <message>
-        <location filename="../src/options.ui" line="184"/>
+        <location filename="../src/engines/options.ui" line="184"/>
         <source>&amp;Cancel</source>
         <translation>Abbre&amp;chen</translation>
     </message>
     <message>
-        <location filename="../src/options.cpp" line="61"/>
+        <location filename="../src/engines/options.cpp" line="61"/>
         <source>Allow Replaced File System</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/options.cpp" line="102"/>
+        <location filename="../src/engines/options.cpp" line="102"/>
         <source>Select Cryfs/Gocryptfs Configuration File</source>
         <translation>Konfigurationsdatei für Cryfs/Gocryptfs auswählen</translation>
     </message>

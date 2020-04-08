@@ -26,12 +26,12 @@ SOURCES += \
     engines/gocryptfscreateoptions.cpp \
     monitor_mountinfo.cpp \
     tablewidget.cpp \
-    options.cpp \
     engines/securefscreateoptions.cpp \
     engines/cryfscreateoptions.cpp \
     configfileoption.cpp \
     help.cpp \
     configoptions.cpp \
+    engines/options.cpp \
     engines/ecryptfscreateoptions.cpp \
     engines/encfscreateoptions.cpp \
     engines/customcreateoptions.cpp \
@@ -45,6 +45,7 @@ HEADERS += \
     engines/cryfscreateoptions.h \
     engines/customcreateoptions,h \
     engines/fscryptcreateoptions.h \
+    engines/options.h \
     dialogok.h \
     configoptions.h \
     engines/gocryptfscreateoptions.h \
@@ -67,7 +68,6 @@ HEADERS += \
     dialogmsg.h \
     monitor_mountinfo.h \
     tablewidget.h \
-    options.h \
     3rdParty/lxqt_wallet/backend/lxqtwallet.h \
     3rdParty/lxqt_wallet/frontend/password_dialog.h \
     3rdParty/lxqt_wallet/frontend/task.h \
@@ -83,6 +83,7 @@ FORMS += \
     engines/cryfscreateoptions.ui \
     engines/customcreateoptions,ui \
     engines/fscryptcreateoptions.ui \
+    engines/options.ui \
     dialogok.ui \
     sirikali.ui \
     engines/gocryptfscreateoptions.ui \
@@ -99,7 +100,6 @@ FORMS += \
     keydialog.ui \
     readonlywarning.ui \
     walletconfig.ui \
-    options.ui \
     3rdParty/lxqt_wallet/frontend/password_dialog.ui \
     3rdParty/lxqt_wallet/frontend/changepassworddialog.ui
 

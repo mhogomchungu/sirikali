@@ -175,7 +175,7 @@ engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const
 	return engines::engine::status::backendFail ;
 }
 
-void gocryptfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
+void gocryptfs::GUICreateOptionsInstance( QWidget * parent,engine::engine::fCreateOptions function ) const
 {
 	gocryptfscreateoptions::instance( parent,std::move( function ) ) ;
 }

@@ -247,7 +247,6 @@ set( UI_FILES 	src/sirikali.ui
 		src/readonlywarning.ui
 		src/walletconfig.ui
 		src/walletconfiginput.ui
-		src/options.ui
 		src/dialogok.ui
 		src/help.ui
 		src/filemanager.ui
@@ -255,6 +254,7 @@ set( UI_FILES 	src/sirikali.ui
 		src/configfileoption.ui
 		src/configoptions.ui
 		src/checkforupdateswindow.ui
+		src/engines/options.ui
 		src/engines/customcreateoptions.ui
 		src/engines/gocryptfscreateoptions.ui
 		src/engines/ecryptfscreateoptions.ui
@@ -280,12 +280,12 @@ set( MOC_FILES
 		src/readonlywarning.h
 		src/walletconfig.h
 		src/walletconfiginput.h
-		src/options.h
 		src/filemanager.h
 		src/mountinfo.h
 		src/debugwindow.h
 		src/runinthread.h
 		src/checkforupdateswindow.h
+		src/engines/options.h
 		src/engines/customcreateoptions.h
 		src/engines/gocryptfscreateoptions.h
 		src/engines/ecryptfscreateoptions.h
@@ -322,12 +322,12 @@ set( SRC 	src/dialogok.cpp
 		src/readonlywarning.cpp
 		src/walletconfig.cpp
 		src/walletconfiginput.cpp
-		src/options.cpp
 		src/secrets.cpp
 		src/filemanager.cpp
 		src/utility2.cpp
                 src/win.cpp
 		src/settings.cpp
+		src/engines/options.cpp
 		src/engines/cryfs.cpp
 		src/engines/ecryptfs.cpp
 		src/engines/gocryptfs.cpp

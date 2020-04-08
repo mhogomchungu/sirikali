@@ -45,21 +45,21 @@ public:
 	{
 		return "-o key=passphrase,ecryptfs_key_bytes=32,ecryptfs_cipher=aes" ;
 	}
-	static void instance( QWidget * parent,engines::engine::functionOptions function )
+	static void instance( QWidget * parent,engines::engine::fCreateOptions function )
 	{
                 new ecryptfscreateoptions( parent,std::move( function ) ) ;
 	}
-	ecryptfscreateoptions( QWidget * parent,engines::engine::functionOptions ) ;
+	ecryptfscreateoptions( QWidget * parent,engines::engine::fCreateOptions ) ;
         ~ecryptfscreateoptions() ;
 private slots:
 	void pbSelectConfigPath() ;
 	void pbOK() ;
 	void pbCancel() ;
 private:
-	void HideUI( const engines::engine::Options& = engines::engine::Options() ) ;
+	void HideUI( const engines::engine::createOptions& = engines::engine::createOptions() ) ;
 	void closeEvent( QCloseEvent * ) ;
         Ui::ecryptfscreateoptions * m_ui ;
-	engines::engine::functionOptions m_function ;
+	engines::engine::fCreateOptions m_function ;
 };
 
 #endif // ECRYPTFSCREATEOPTIONS_H

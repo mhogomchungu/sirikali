@@ -59,7 +59,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Enter Volume's Protector Name Below</string>
+    <string>Enter Volume's Protector Name Below(Optional)</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>

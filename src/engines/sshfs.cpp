@@ -181,9 +181,3 @@ engines::engine::status sshfs::errorCode( const QString& e,int s ) const
 		return engines::engine::status::backendFail ;
 	}
 }
-
-void sshfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
-{
-	Q_UNUSED( parent )
-	Q_UNUSED( function )
-}

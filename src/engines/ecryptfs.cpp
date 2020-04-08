@@ -226,7 +226,7 @@ engines::engine::status ecryptfs::errorCode( const QString& e,int s ) const
 	}
 }
 
-void ecryptfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
+void ecryptfs::GUICreateOptionsInstance( QWidget * parent,engine::engine::fCreateOptions function ) const
 {
 	ecryptfscreateoptions::instance( parent,std::move( function ) ) ;
 }

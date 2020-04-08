@@ -38,18 +38,18 @@ class fscryptcreateoptions : public QDialog
 	Q_OBJECT
 public:
 	static void instance( QWidget * parent,
-			      engines::engine::functionOptions function,
+			      engines::engine::fCreateOptions function,
 			      const QStringList& list )
 	{
 		new fscryptcreateoptions( parent,std::move( function ),list ) ;
 	}
-	fscryptcreateoptions( QWidget * parent,engines::engine::functionOptions,const QStringList& ) ;
+	fscryptcreateoptions( QWidget * parent,engines::engine::fCreateOptions,const QStringList& ) ;
 	~fscryptcreateoptions() ;
 private:
 	Ui::fscryptcreateoptions * m_ui ;
-	void HideUI( const engines::engine::Options& = engines::engine::Options() ) ;
+	void HideUI( const engines::engine::createOptions& = engines::engine::createOptions() ) ;
 	void closeEvent( QCloseEvent * ) ;
-	engines::engine::functionOptions m_function ;
+	engines::engine::fCreateOptions m_function ;
 	QStringList m_protectorNames ;
 };
 

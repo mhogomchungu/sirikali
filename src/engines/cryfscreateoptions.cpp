@@ -26,7 +26,7 @@
 #include "../engines.h"
 
 cryfscreateoptions::cryfscreateoptions( QWidget * parent,
-					std::function< void( const engines::engine::Options& ) > function ) :
+					std::function< void( const engines::engine::createOptions& ) > function ) :
 	QDialog( parent ),
 	m_ui( new Ui::cryfscreateoptions ),
 	m_function( std::move( function ) )
@@ -133,7 +133,7 @@ void cryfscreateoptions::pbCancel()
 	this->HideUI() ;
 }
 
-void cryfscreateoptions::HideUI( const engines::engine::Options& opts )
+void cryfscreateoptions::HideUI( const engines::engine::createOptions& opts )
 {
 	this->hide() ;
 	m_function( opts ) ;

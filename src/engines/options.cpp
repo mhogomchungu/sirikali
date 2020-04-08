@@ -19,16 +19,16 @@
 
 #include "options.h"
 #include "ui_options.h"
-#include "dialogmsg.h"
+#include "../dialogmsg.h"
 
-#include "utility.h"
-#include "utility2.h"
-#include "settings.h"
+#include "../utility.h"
+#include "../utility2.h"
+#include "../settings.h"
 
 #include <QFileDialog>
 
-options::options( QWidget * parent,bool r,const Options& l,
-		  std::function< void( const Options& ) >&& e ) :
+options::options( QWidget * parent,bool r,const engines::engine::mountOptions& l,
+		  engines::engine::fMountOptions e ) :
 	QDialog( parent ),
 	m_ui( new Ui::options ),
 	m_create( r ),
@@ -39,11 +39,11 @@ options::options( QWidget * parent,bool r,const Options& l,
 
 	this->setFixedSize( this->size() ) ;
 
-        m_ui->pushButton->setIcon( QIcon( ":/file.png" ) ) ;
+	m_ui->pushButton->setIcon( QIcon( ":/file.png" ) ) ;
 
 	this->setWindowIcon( QIcon( ":/sirikali.png" ) ) ;
 
-        connect( m_ui->pushButton,SIGNAL( clicked() ),this,SLOT( pushButton() ) ) ;
+	connect( m_ui->pushButton,SIGNAL( clicked() ),this,SLOT( pushButton() ) ) ;
 
 	connect( m_ui->pbOK,SIGNAL( clicked() ),this,SLOT( pbSet() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
@@ -140,7 +140,7 @@ void options::pbCancel()
 	this->Hide() ;
 }
 
-void options::Hide( const Options& e )
+void options::Hide( const engines::engine::mountOptions& e )
 {
 	this->hide() ;
 	m_setOptions( e ) ;

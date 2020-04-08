@@ -509,7 +509,7 @@ engines::engine::status fscrypt::errorCode( const QString& e,int s ) const
 	}
 }
 
-void fscrypt::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
+void fscrypt::GUICreateOptionsInstance( QWidget * parent,engine::engine::fCreateOptions function ) const
 {
 	fscryptcreateoptions::instance( parent,std::move( function ),{} ) ;
 }

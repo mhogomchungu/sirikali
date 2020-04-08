@@ -29,7 +29,6 @@
 #include <QMessageBox>
 
 #include "win.h"
-#include "options.h"
 #include "dialogmsg.h"
 #include "task.hpp"
 #include "utility.h"
@@ -568,21 +567,19 @@ void keyDialog::windowSetTitle( const QString& s )
 
 void keyDialog::pbOptions()
 {
+	const auto& engine = engines::instance().getByName( m_exe ) ;
+
 	if( m_create ){
-
-		auto& s = engines::instance().getByName( m_exe ) ;
-
-		bool CryFS = s.name() == "cryfs" ;
 
 		this->hide() ;
 
-		s.GUICreateOptionsinstance( m_parentWidget,[ = ]( const engines::engine::Options& e ){
+		engine.GUICreateOptionsInstance( m_parentWidget,[ =,&engine ]( const engines::engine::createOptions& e ){
 
 			if( e.success ){
 
 				m_boolOpts = e.opts ;
 
-				if( CryFS ){
+				if( engine.name() == "cryfs" ){
 
 					m_allowReplaceFileSystemSet = true ;
 				}
@@ -609,11 +606,11 @@ void keyDialog::pbOptions()
 			}
 		}
 
-		options::Options e{ { m_idleTimeOut,m_configFile,m_mountOptions,m_engine->name() },m_boolOpts } ;
-
 		this->hide() ;
 
-		options::instance( m_parentWidget,m_create,e,[ this ]( const options::Options& e ){
+		engines::engine::mountOptions e{ { m_idleTimeOut,m_configFile,m_mountOptions,m_engine->name() },m_boolOpts } ;
+
+		engine.GUIMountOptionsInstance( m_parentWidget,m_create,e,[ this ]( const engines::engine::mountOptions& e ){
 
 			if( e.success ){
 

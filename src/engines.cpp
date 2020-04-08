@@ -32,6 +32,7 @@
 #include "utility.h"
 #include "settings.h"
 #include "win.h"
+#include "engines/options.h"
 
 static QStringList _search_path( const QStringList& m )
 {
@@ -151,6 +152,21 @@ void engines::version::logError() const
 
 engines::engine::~engine()
 {
+}
+
+engines::engine::args engines::engine::command( const QByteArray& password,
+						const engines::engine::cmdArgsList& args ) const
+{
+	Q_UNUSED( password )
+	Q_UNUSED( args )
+	return {} ;
+}
+
+engines::engine::status engines::engine::errorCode( const QString& e,int s ) const
+{
+	Q_UNUSED( e )
+	Q_UNUSED( s )
+	return engines::engine::status::backendFail ;
 }
 
 void engines::engine::updateVolumeList( const engines::engine::options& e ) const
@@ -401,6 +417,21 @@ bool engines::engine::takesTooLongToUnlock() const
 bool engines::engine::requiresPolkit() const
 {
 	return m_Options.requiresPolkit ;
+}
+
+void engines::engine::GUICreateOptionsInstance( QWidget * parent,
+						engine::engine::fCreateOptions function ) const
+{
+	Q_UNUSED( parent )
+	function( {} ) ;
+}
+
+void engines::engine::GUIMountOptionsInstance( QWidget * parent,
+					       bool r,
+					       const engines::engine::mountOptions& e,
+					       std::function< void( const engines::engine::mountOptions& ) > f ) const
+{
+	::options::instance( parent,r,e,std::move( f ) ) ;
 }
 
 const QStringList& engines::engine::names() const
@@ -972,22 +1003,32 @@ QString engines::engine::cmdStatus::toString() const
 	return e + "\n----------------------------------------\n" + m_message ;
 }
 
-engines::engine::Options::Options( QStringList s,const options::booleanOptions& r ) :
+engines::engine::createOptions::createOptions( QStringList s,const options::booleanOptions& r ) :
 	options( std::move( s ) ),opts( r ),success( true )
 {
 }
 
-engines::engine::Options::Options( QStringList s ) :
+engines::engine::createOptions::createOptions( QStringList s ) :
 	options( std::move( s ) ),success( true )
 {
 }
 
-engines::engine::Options::Options( const options::booleanOptions& r ) :
+engines::engine::createOptions::createOptions( const options::booleanOptions& r ) :
 	opts( r ),success( true )
 {
 }
 
-engines::engine::Options::Options() : success( false )
+engines::engine::createOptions::createOptions() : success( false )
+{
+}
+
+engines::engine::mountOptions::mountOptions( const QStringList& e,
+					     const engines::engine::options::booleanOptions& r ) :
+	options( e ),opts( r ),success( true )
+{
+}
+
+engines::engine::mountOptions::mountOptions() : success( false )
 {
 }
 

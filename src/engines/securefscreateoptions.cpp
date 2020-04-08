@@ -23,7 +23,7 @@
 #include "../utility.h"
 
 securefscreateoptions::securefscreateoptions( QWidget * parent,
-					      engines::engine::functionOptions function ) :
+					      engines::engine::fCreateOptions function ) :
 	QDialog( parent ),
 	m_ui( new Ui::securefscreateoptions ),
 	m_function( std::move( function ) )
@@ -81,7 +81,7 @@ void securefscreateoptions::pbConfigFilePath()
 	m_ui->lineEdit->setText( utility::configFilePath( this,"securefs" ) ) ;
 }
 
-void securefscreateoptions::HideUI( const engines::engine::Options& opts )
+void securefscreateoptions::HideUI( const engines::engine::createOptions& opts )
 {
 	this->hide() ;
 	m_function( opts ) ;

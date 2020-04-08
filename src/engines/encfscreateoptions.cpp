@@ -25,7 +25,7 @@
 
 #include "../engines.h"
 
-encfscreateoptions::encfscreateoptions( QWidget * parent,engines::engine::functionOptions function ) :
+encfscreateoptions::encfscreateoptions( QWidget * parent,engines::engine::fCreateOptions function ) :
 	QDialog( parent ),
 	m_ui( new Ui::encfscreateoptions ),
 	m_function( std::move( function ) )
@@ -65,7 +65,7 @@ void encfscreateoptions::pbCancel()
 	this->HideUI() ;
 }
 
-void encfscreateoptions::HideUI( const engines::engine::Options& opts )
+void encfscreateoptions::HideUI( const engines::engine::createOptions& opts )
 {
 	this->hide() ;
 	m_function( opts ) ;

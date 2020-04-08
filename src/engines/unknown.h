@@ -22,11 +22,4 @@
 struct unknown : public engines::engine
 {
 	unknown() ;
-
-	engines::engine::status errorCode( const QString& e,int s ) const override ;
-
-	engines::engine::args command( const QByteArray& password,
-				       const engines::engine::cmdArgsList& args ) const override ;
-
-	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
 } ;

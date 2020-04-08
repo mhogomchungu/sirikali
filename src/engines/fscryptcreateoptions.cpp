@@ -26,7 +26,7 @@
 #include <QDir>
 
 fscryptcreateoptions::fscryptcreateoptions( QWidget * parent,
-					    engines::engine::functionOptions function,
+					    engines::engine::fCreateOptions function,
 					    const QStringList& list ) :
 	QDialog( parent ),
 	m_ui( new Ui::fscryptcreateoptions ),
@@ -138,7 +138,7 @@ fscryptcreateoptions::~fscryptcreateoptions()
 	delete m_ui ;
 }
 
-void fscryptcreateoptions::HideUI( const engines::engine::Options& opt )
+void fscryptcreateoptions::HideUI( const engines::engine::createOptions& opt )
 {
 	this->hide() ;
 

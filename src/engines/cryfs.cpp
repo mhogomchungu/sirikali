@@ -229,7 +229,7 @@ engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 	return engines::engine::status::backendFail ;
 }
 
-void cryfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
+void cryfs::GUICreateOptionsInstance( QWidget * parent,engine::engine::fCreateOptions function ) const
 {
 	cryfscreateoptions::instance( parent,std::move( function ) ) ;
 }

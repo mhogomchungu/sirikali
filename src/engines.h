@@ -354,18 +354,27 @@ public:
 			engines::engine::Wrapper m_engine ;
 		} ;
 
-		struct Options
+		struct createOptions
 		{
-		        Options( QStringList s,const options::booleanOptions& r ) ;
-			Options( QStringList s ) ;
-			Options( const options::booleanOptions& r ) ;
-			Options() ;
+			createOptions( QStringList s,const options::booleanOptions& r ) ;
+			createOptions( QStringList s ) ;
+			createOptions( const options::booleanOptions& r ) ;
+			createOptions() ;
 			QStringList options ;
 			options::booleanOptions opts ;
 			bool success ;
 		} ;
 
-		using functionOptions = std::function< void( const engines::engine::Options& ) > ;
+		struct mountOptions{
+			mountOptions( const QStringList& e,const engines::engine::options::booleanOptions& r );
+			mountOptions();
+			QStringList options ;
+			engines::engine::options::booleanOptions opts ;
+			bool success ;
+		} ;
+
+		using fCreateOptions = std::function< void( const engines::engine::createOptions& ) > ;
+		using fMountOptions = std::function< void( const engines::engine::mountOptions& ) > ;
 
 		struct BaseOptions
 		{
@@ -505,10 +514,13 @@ public:
 
 		virtual const QProcessEnvironment& getProcessEnvironment() const ;
 		virtual bool requiresPolkit() const ;		
-		virtual args command( const QByteArray& password,const engines::engine::cmdArgsList& args ) const = 0 ;
-		virtual engines::engine::status errorCode( const QString& e,int s ) const = 0 ;
-		using function = std::function< void( const Options& ) > ;
-		virtual void GUICreateOptionsinstance( QWidget * parent,function ) const = 0 ;
+		virtual args command( const QByteArray& password,const engines::engine::cmdArgsList& args ) const ;
+		virtual engines::engine::status errorCode( const QString& e,int s ) const ;
+		virtual void GUICreateOptionsInstance( QWidget * parent,engine::engine::fCreateOptions ) const ;
+		virtual void GUIMountOptionsInstance( QWidget * parent,
+						      bool r,
+						      const engines::engine::mountOptions& l,
+						      engines::engine::fMountOptions ) const ;
 	protected:
 		class commandOptions{
 		public:

@@ -137,7 +137,7 @@ engines::engine::status encfs::errorCode( const QString& e,int s ) const
 	}
 }
 
-void encfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
+void encfs::GUICreateOptionsInstance( QWidget * parent,engine::engine::fCreateOptions function ) const
 {
 	encfscreateoptions::instance( parent,std::move( function ) ) ;
 }
