@@ -30,6 +30,11 @@ public:
 				       const engines::engine::cmdArgsList& args ) const override ;
 
 	void GUICreateOptionsInstance( QWidget * parent,engine::engine::fCreateOptions ) const override ;
+
+	void GUIMountOptionsInstance( QWidget * parent,
+				      bool r,
+				      const engines::engine::mountOptions& l,
+				      engines::engine::fMountOptions ) const override ;
 private:
 	const engines::versionGreaterOrEqual m_version_greater_or_equal_0_11_1 ;
 } ;

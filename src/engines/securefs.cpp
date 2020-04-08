@@ -133,7 +133,16 @@ engines::engine::status securefs::errorCode( const QString& e,int s ) const
 	}
 }
 
-void securefs::GUICreateOptionsInstance( QWidget * parent,engine::engine::fCreateOptions function ) const
+void securefs::GUICreateOptionsInstance( QWidget * parent,
+					 engine::engine::fCreateOptions function ) const
 {
 	securefscreateoptions::instance( parent,std::move( function ) ) ;
+}
+
+void securefs::GUIMountOptionsInstance( QWidget * parent,
+					bool r,
+					const engines::engine::mountOptions& l,
+					engines::engine::fMountOptions f ) const
+{
+	engines::engine::GUIMountOptionsInstance( parent,r,l,std::move( f ) ) ;
 }

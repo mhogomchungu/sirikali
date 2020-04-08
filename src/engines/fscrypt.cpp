@@ -444,7 +444,7 @@ engines::engine::args fscrypt::command( const QByteArray& password,
 
 	auto exeOptions = m.exeOptions() ;
 
-	QString cc ;
+	exeOptions.add( "--quiet " + this->userOption() ) ;
 
 	if( args.create ){
 
@@ -485,16 +485,14 @@ engines::engine::args fscrypt::command( const QByteArray& password,
 			exeOptions.add( "--name=\"" + nn + "\"" ) ;
 		}
 
-		cc = " encrypt " ;
+		auto cmd = e.arg( args.exe + " encrypt",exeOptions.get(),args.cipherFolder ) ;
+
+		return { args,m,cmd } ;
 	}else{
-		cc = " unlock " ;
+		auto cmd = e.arg( args.exe + " unlock",exeOptions.get(),args.cipherFolder ) ;
+
+		return { args,m,cmd } ;
 	}
-
-	exeOptions.add( "--quiet " + this->userOption() ) ;
-
-	auto cmd = e.arg( args.exe + cc,exeOptions.get(),args.cipherFolder ) ;
-
-	return { args,m,cmd } ;
 }
 
 engines::engine::status fscrypt::errorCode( const QString& e,int s ) const
@@ -509,9 +507,18 @@ engines::engine::status fscrypt::errorCode( const QString& e,int s ) const
 	}
 }
 
-void fscrypt::GUICreateOptionsInstance( QWidget * parent,engine::engine::fCreateOptions function ) const
+void fscrypt::GUICreateOptionsInstance( QWidget * parent,
+					engine::engine::fCreateOptions function ) const
 {
 	fscryptcreateoptions::instance( parent,std::move( function ),{} ) ;
+}
+
+void fscrypt::GUIMountOptionsInstance( QWidget * parent,
+				       bool r,
+				       const engines::engine::mountOptions& l,
+				       engines::engine::fMountOptions f ) const
+{
+	engines::engine::GUIMountOptionsInstance( parent,r,l,std::move( f ) ) ;
 }
 
 #ifdef Q_OS_LINUX

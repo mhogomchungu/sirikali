@@ -124,6 +124,7 @@ keyDialog::keyDialog( QWidget * parent,
 	m_create( e.isNotValid() ),
 	m_secrets( s ),
 	m_settings( settings::instance() ),
+	m_engine( engines::instance().getByName( m_exe ) ),
 	m_cancel( std::move( p ) ),
 	m_updateVolumeList( std::move( l ) ),
 	m_walletKey( s )
@@ -567,19 +568,17 @@ void keyDialog::windowSetTitle( const QString& s )
 
 void keyDialog::pbOptions()
 {
-	const auto& engine = engines::instance().getByName( m_exe ) ;
-
 	if( m_create ){
 
 		this->hide() ;
 
-		engine.GUICreateOptionsInstance( m_parentWidget,[ =,&engine ]( const engines::engine::createOptions& e ){
+		m_engine->GUICreateOptionsInstance( m_parentWidget,[ = ]( const engines::engine::createOptions& e ){
 
 			if( e.success ){
 
 				m_boolOpts = e.opts ;
 
-				if( engine.name() == "cryfs" ){
+				if( m_engine->name() == "cryfs" ){
 
 					m_allowReplaceFileSystemSet = true ;
 				}
@@ -610,7 +609,7 @@ void keyDialog::pbOptions()
 
 		engines::engine::mountOptions e{ { m_idleTimeOut,m_configFile,m_mountOptions,m_engine->name() },m_boolOpts } ;
 
-		engine.GUIMountOptionsInstance( m_parentWidget,m_create,e,[ this ]( const engines::engine::mountOptions& e ){
+		m_engine->GUIMountOptionsInstance( m_parentWidget,m_create,e,[ this ]( const engines::engine::mountOptions& e ){
 
 			if( e.success ){
 
