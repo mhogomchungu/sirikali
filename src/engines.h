@@ -443,7 +443,6 @@ public:
 		bool hasGUICreateOptions() const ;
 		bool hasConfigFile() const ;
 		bool supportsMountPathsOnWindows() const ;
-		bool requiresAPassword() const ;
 		bool customBackend() const ;
 		bool autorefreshOnMountUnMount() const ;
 		bool backendRequireMountPath() const ;
@@ -493,6 +492,8 @@ public:
 		virtual engines::engine::status unmount( const QString& cipherFolder,
 							 const QString& mountPoint,
 							 int maxCount ) const ;
+
+		virtual bool requiresAPassword( const engines::engine::options& ) const ;
 
 		virtual bool takesTooLongToUnlock() const ;
 

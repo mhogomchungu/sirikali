@@ -20,6 +20,11 @@
 #include "fscryptcreateoptions.h"
 #include "ui_fscryptcreateoptions.h"
 
+#include "../utility.h"
+
+#include <QFileDialog>
+#include <QDir>
+
 fscryptcreateoptions::fscryptcreateoptions( QWidget * parent,
 					    engines::engine::functionOptions function,
 					    const QStringList& list ) :
@@ -32,23 +37,47 @@ fscryptcreateoptions::fscryptcreateoptions( QWidget * parent,
 
 	m_ui->rbCustomKey->setChecked( true ) ;
 
-	m_ui->rbRawKey->setEnabled( false ) ;
+	m_ui->lineEditKeyFile->setEnabled( false ) ;
+	m_ui->pbKeyFile->setEnabled( false ) ;
+
+	m_ui->pbKeyFile->setIcon( QIcon( ":/file.png" ) ) ;
+
+	connect( m_ui->pbKeyFile,&QPushButton::clicked,[ this ](){
+
+		auto e = QFileDialog::getOpenFileName( this,tr( "Select A 32 Byte KeyFile" ),QDir::homePath() ) ;
+
+		if( !e.isEmpty() ){
+
+			m_ui->lineEditKeyFile->setText( e ) ;
+		}
+	} ) ;
 
 	connect( m_ui->rbLoginPassPhrase,&QRadioButton::toggled,[ this ]( bool e ){
 
 		if( !e ){
 
-			m_ui->lineEdit->clear() ;
+			m_ui->lineEditProtectorName->clear() ;
 		}
 
-		m_ui->lineEdit->setEnabled( !e ) ;
+		m_ui->lineEditProtectorName ->setEnabled( !e ) ;
+	} ) ;
+
+	connect( m_ui->rbRawKey,&QRadioButton::toggled,[ this ]( bool e ){
+
+		if( !e ){
+
+			m_ui->lineEditKeyFile->clear() ;
+		}
+
+		m_ui->lineEditKeyFile->setEnabled( e ) ;
+		m_ui->pbKeyFile->setEnabled( e ) ;
 	} ) ;
 
 	connect( m_ui->rbCustomKey,&QRadioButton::toggled,[ this ]( bool e ){
 
 		if( e ){
 
-			m_ui->lineEdit->setFocus() ;
+			m_ui->lineEditProtectorName->setFocus() ;
 		}
 	} ) ;
 
@@ -59,7 +88,9 @@ fscryptcreateoptions::fscryptcreateoptions( QWidget * parent,
 
 	connect( m_ui->pbOK,&QPushButton::pressed,[ this ](){
 
-		auto m = m_ui->lineEdit->text() ;
+		auto m = m_ui->lineEditProtectorName->text() ;
+
+		auto mm = m_ui->lineEditKeyFile->text() ;
 
 		auto _add = [ & ]( const QString& opt ){
 
@@ -67,7 +98,7 @@ fscryptcreateoptions::fscryptcreateoptions( QWidget * parent,
 
 				m = opt ;
 			}else{
-				m += "," + opt ;
+				m += "\\040" + opt ;
 			}
 		} ;
 
@@ -89,10 +120,15 @@ fscryptcreateoptions::fscryptcreateoptions( QWidget * parent,
 			_add( "--source=raw_key" ) ;
 		}
 
+		if( !mm.isEmpty() ){
+
+			_add( "--key=" + utility::Task::makePath( mm ) ) ;
+		}
+
 		this->HideUI( QStringList{ m } ) ;
 	} ) ;
 
-	m_ui->lineEdit->setFocus() ;
+	m_ui->lineEditProtectorName->setFocus() ;
 
 	this->show() ;
 }

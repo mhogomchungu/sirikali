@@ -33,6 +33,8 @@ public:
 
 	bool ownsCipherPath( const QString& cipherPath ) const override ;
 
+	bool requiresAPassword( const engines::engine::options& ) const override ;
+
 	void updateVolumeList( const engines::engine::options& ) const override ;
 
 	Task::future< QString >& volumeProperties( const QString& cipherFolder,

@@ -409,6 +409,16 @@ bool fscrypt::ownsCipherPath( const QString& cipherPath ) const
 	}
 }
 
+bool fscrypt::requiresAPassword( const engines::engine::options& opt ) const
+{
+	if( opt.mountOptions.contains( "--key=" ) || opt.createOptions.contains( "--key=" ) ){
+
+		return false ;
+	}else{
+		return engines::engine::requiresAPassword( opt ) ;
+	}
+}
+
 void fscrypt::updateVolumeList( const engines::engine::options& e ) const
 {
 	m_unlockedVolumeManager.addEntry( e.cipherFolder ) ;
@@ -434,13 +444,15 @@ engines::engine::args fscrypt::command( const QByteArray& password,
 
 	auto exeOptions = m.exeOptions() ;
 
+	QString cc ;
+
 	if( args.create ){
 
 		QString n ;
 
 		QString ss = "--source=custom_passphrase" ;
 
-		for(const auto& it : utility::split( args.opt.createOptions,',' ) ){
+		for( const auto& it : utility::split( args.opt.createOptions,"\\040" ) ){
 
 			if( it.startsWith( "--name=" ) ){
 
@@ -449,10 +461,12 @@ engines::engine::args fscrypt::command( const QByteArray& password,
 			}else if( it.startsWith( "--source=" ) ){
 
 				ss = it ;
+			}else{
+				exeOptions.add( it ) ;
 			}
 		}
 
-		QString name ;
+		exeOptions.add( ss ) ;
 
 		if( ss != "--source=pam_passphrase" ){
 
@@ -468,21 +482,17 @@ engines::engine::args fscrypt::command( const QByteArray& password,
 
 			auto nn = _name( args.opt.cipherFolder,n,this->executableFullPath() ) ;
 
-			name = "--name=\"" + nn + "\"" ;
+			exeOptions.add( "--name=\"" + nn + "\"" ) ;
 		}
 
-		auto m = "encrypt %1 %2 --quiet %3" ;
-
-		auto s = QString( m ).arg( ss,name,this->userOption() ) ;
-
-		exeOptions.add( s ) ;
+		cc = " encrypt " ;
 	}else{
-		exeOptions.add( QString( "unlock --quiet %1" ).arg( this->userOption() ) ) ;
+		cc = " unlock " ;
 	}
 
-	auto cmd = e.arg( args.exe,
-			  exeOptions.get(),
-			  args.cipherFolder ) ;
+	exeOptions.add( "--quiet " + this->userOption() ) ;
+
+	auto cmd = e.arg( args.exe + cc,exeOptions.get(),args.cipherFolder ) ;
 
 	return { args,m,cmd } ;
 }

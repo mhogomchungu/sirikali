@@ -596,7 +596,7 @@ static engines::engine::cmdStatus _mount( Opts opt,bool reUseMP,const siritask::
 		return { mm,engine } ;
 	}
 
-	if( opt.key.isEmpty() && engine.requiresAPassword() ){
+	if( opt.key.isEmpty() && engine.requiresAPassword( opt ) ){
 
 		return { engines::engine::status::backendRequiresPassword,engine } ;
 	}
@@ -672,7 +672,7 @@ static engines::engine::cmdStatus _create( const Opts& opt,const Engs& engine )
 		return { engines::engine::status::IllegalPath,engine } ;
 	}
 
-	if( opt.key.isEmpty() && engine.requiresAPassword() ){
+	if( opt.key.isEmpty() && engine.requiresAPassword( opt ) ){
 
 		return { engines::engine::status::backendRequiresPassword,engine } ;
 	}

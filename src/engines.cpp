@@ -371,8 +371,10 @@ bool engines::engine::supportsMountPathsOnWindows() const
 	return m_Options.supportsMountPathsOnWindows ;
 }
 
-bool engines::engine::requiresAPassword() const
+bool engines::engine::requiresAPassword( const engines::engine::options& opts ) const
 {
+	Q_UNUSED( opts )
+
 	return m_Options.requiresAPassword ;
 }
 
