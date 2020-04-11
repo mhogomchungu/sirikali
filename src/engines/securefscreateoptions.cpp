@@ -22,7 +22,10 @@
 
 #include "../utility.h"
 
+#include <QFileDialog>
+
 securefscreateoptions::securefscreateoptions( QWidget * parent,
+					      bool e,
 					      engines::engine::fCreateOptions function ) :
 	QDialog( parent ),
 	m_ui( new Ui::securefscreateoptions ),
@@ -30,13 +33,20 @@ securefscreateoptions::securefscreateoptions( QWidget * parent,
 {
 	m_ui->setupUi( this ) ;
 
+	m_ui->pbConfigFile_2->setEnabled( e ) ;
+	m_ui->lineEdit_2->setEnabled( e ) ;
+	m_ui->label->setEnabled( e ) ;
+
 	this->setFixedSize( this->window()->size() ) ;
 
 	connect( m_ui->pbOK,SIGNAL( clicked() ),this,SLOT( pbOK() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbConfigFile,SIGNAL( clicked() ),this,SLOT( pbConfigFilePath() ) ) ;
+	connect( m_ui->pbConfigFile_2,SIGNAL( clicked() ),this,SLOT( pbKeyFilePath() ) ) ;
 
 	m_ui->pbConfigFile->setIcon( QIcon( ":/folder.png" ) ) ;
+
+	m_ui->pbConfigFile_2->setIcon( QIcon( ":/file.png" ) ) ;
 
 	m_ui->comboBox->setFocus() ;
 
@@ -56,18 +66,11 @@ void securefscreateoptions::pbOK()
 {
 	this->hide() ;
 
-	auto e = m_ui->lineEdit->text() ;
-
-	if( !e.isEmpty() ){
-
-		e = "--config " + e ;
-	}
-
 	if( m_ui->comboBox->currentIndex() == 1 ){
 
-		this->HideUI( { { "--format 2",m_ui->lineEdit->text() } } ) ;
+		this->HideUI( { { "--format 2",m_ui->lineEdit->text(),m_ui->lineEdit_2->text() } } ) ;
 	}else{
-		this->HideUI( { { "--format 4",m_ui->lineEdit->text() } } ) ;
+		this->HideUI( { { "--format 4",m_ui->lineEdit->text(),m_ui->lineEdit_2->text() } } ) ;
 	}
 }
 
@@ -79,6 +82,16 @@ void securefscreateoptions::pbCancel()
 void securefscreateoptions::pbConfigFilePath()
 {
 	m_ui->lineEdit->setText( utility::configFilePath( this,"securefs" ) ) ;
+}
+
+void securefscreateoptions::pbKeyFilePath()
+{
+	auto e = QFileDialog::getOpenFileName( this,tr( "Select A 32 Byte KeyFile" ),QDir::homePath() ) ;
+
+	if( !e.isEmpty() ){
+
+		m_ui->lineEdit_2->setText( e ) ;
+	}
 }
 
 void securefscreateoptions::HideUI( const engines::engine::createOptions& opts )

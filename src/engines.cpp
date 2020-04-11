@@ -305,7 +305,7 @@ static engines::engineVersion _installedVersion( const engines::engine& e,
 
 			return m ;
 		}else{
-			QString s = "Attempt to get version info for backend \"%2\" failed, retrying..." ;
+			QString s = "An attempt to get version info for backend \"%2\" has failed, retrying..." ;
 			utility::debug() << s.arg( e.name() ) ;
 		}
 	}
@@ -419,19 +419,19 @@ bool engines::engine::requiresPolkit() const
 	return m_Options.requiresPolkit ;
 }
 
-void engines::engine::GUICreateOptionsInstance( QWidget * parent,
-						engine::engine::fCreateOptions function ) const
+void engines::engine::GUICreateOptions( QWidget * parent,
+					engine::engine::fCreateOptions function ) const
 {
 	Q_UNUSED( parent )
 	function( {} ) ;
 }
 
-void engines::engine::GUIMountOptionsInstance( QWidget * parent,
-					       bool r,
-					       const engines::engine::mountOptions& e,
-					       std::function< void( const engines::engine::mountOptions& ) > f ) const
+void engines::engine::GUIMountOptions( QWidget * parent,
+				       bool r,
+				       const engines::engine::mountOptions& e,
+				       engines::engine::fMountOptions f ) const
 {
-	::options::instance( parent,r,e,std::move( f ) ) ;
+	::options::instance( parent,*this,r,e,std::move( f ) ).ShowUI() ;
 }
 
 const QStringList& engines::engine::names() const
@@ -883,7 +883,11 @@ QString engines::engine::cmdStatus::toString() const
 
 	case engines::engine::status::fscryptBadPassword :
 
-		return QObject::tr( "Failed To Unlock An fscrypt Volume.\nWrong Password Entered." ) ;
+		return QObject::tr( "Failed To Unlock An Fscrypt Volume.\nWrong Password Entered." ) ;
+
+	case engines::engine::status::fscryptKeyFileRequired :
+
+		return QObject::tr( "This Fscrypt Volume Requires A KeyFile." ) ;
 
 	case engines::engine::status::failedToStartPolkit :
 
@@ -1048,6 +1052,7 @@ engines::engine::options::options( const QString& cipher_folder,
 				   const QByteArray& volume_key,
 				   const QString& idle_timeout,
 				   const QString& config_file_path,
+				   const QString& key_file,
 				   const booleanOptions& bOpts,
 				   const QString& mount_options,
 				   const QString& create_options ) :
@@ -1058,6 +1063,7 @@ engines::engine::options::options( const QString& cipher_folder,
 	configFilePath( config_file_path ),
 	mountOptions( mount_options ),
 	createOptions( create_options ),
+	keyFile( key_file ),
 	boolOptions( bOpts )
 {
 }

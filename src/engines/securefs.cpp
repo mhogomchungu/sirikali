@@ -21,6 +21,8 @@
 
 #include "securefscreateoptions.h"
 
+#include "options.h"
+
 static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
@@ -70,10 +72,27 @@ engines::engine::args securefs::command( const QByteArray& password,
 
 	if( args.create ){
 
+		auto exeOptions  = m.exeOptions() ;
+
+		exeOptions.add( args.opt.createOptions ) ;
+
+		if( m_version_greater_or_equal_0_11_1 ){
+
+			if( !args.opt.keyFile.isEmpty() ){
+
+				exeOptions.addPair( "--keyfile",utility::Task::makePath( args.opt.keyFile ) ) ;
+
+				if( !args.opt.key.isEmpty() ){
+
+					exeOptions.add( "--askpass" ) ;
+				}
+			}
+		}
+
 		QString e = "%1 create %2 %3 %4" ;
 
 		auto cmd = e.arg( args.exe,
-				  args.opt.createOptions,
+				  exeOptions.get(),
 				  args.configFilePath,
 				  args.cipherFolder ) ;
 
@@ -100,6 +119,16 @@ engines::engine::args securefs::command( const QByteArray& password,
 
 			exeOptions.addPair( "--fsname",fsname ) ;
 			exeOptions.addPair( "--fssubtype",fssubtype ) ;
+
+			if( !args.opt.keyFile.isEmpty() ){
+
+				exeOptions.addPair( "--keyfile",utility::Task::makePath( args.opt.keyFile ) ) ;
+
+				if( !args.opt.key.isEmpty()){
+
+					exeOptions.add( "--askpass" ) ;
+				}
+			}
 		}
 
 		if( !args.configFilePath.isEmpty() ){
@@ -133,16 +162,50 @@ engines::engine::status securefs::errorCode( const QString& e,int s ) const
 	}
 }
 
-void securefs::GUICreateOptionsInstance( QWidget * parent,
-					 engine::engine::fCreateOptions function ) const
+bool securefs::requiresAPassword( const engines::engine::options& opt ) const
 {
-	securefscreateoptions::instance( parent,std::move( function ) ) ;
+	if( opt.mountOptions.contains( "--keyfile" ) || !opt.keyFile.isEmpty() ){
+
+		return false ;
+	}else{
+		return engines::engine::requiresAPassword( opt ) ;
+	}
 }
 
-void securefs::GUIMountOptionsInstance( QWidget * parent,
-					bool r,
-					const engines::engine::mountOptions& l,
-					engines::engine::fMountOptions f ) const
+void securefs::GUICreateOptions( QWidget * parent,
+				 engine::engine::fCreateOptions function ) const
 {
-	engines::engine::GUIMountOptionsInstance( parent,r,l,std::move( f ) ) ;
+	securefscreateoptions::instance( parent,
+					 m_version_greater_or_equal_0_11_1,
+					 std::move( function ) ) ;
+}
+
+void securefs::GUIMountOptions( QWidget * parent,
+				bool r,
+				const engines::engine::mountOptions& l,
+				engines::engine::fMountOptions f ) const
+{
+	auto& e = ::options::instance( parent,*this,r,l,std::move( f ) ) ;
+
+	auto& ee = e.GUIOptions() ;
+
+	ee.enableIdleTime = false ;
+	ee.enableCheckBox = false ;
+
+	ee.enableIdleTime = true ;
+
+	ee.fileDialogText = QObject::tr( "Select A Securefs KeyFile" ) ;
+
+	ee.idleTitle = QObject::tr( "Enter A Securefs KeyFile" ) ;
+
+	ee.setVisiblePushButton_2 = true ;
+
+	if( m_version_greater_or_equal_0_11_1 ){
+
+		ee.fileType = ::options::Options::KEY::USES_KEYFILE_AND_CONFIG_FILE ;
+	}else{
+		ee.fileType = ::options::Options::KEY::USES_CONFIG_FILE_ONLY ;
+	}
+
+	e.ShowUI() ;
 }

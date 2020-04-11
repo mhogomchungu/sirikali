@@ -20,6 +20,7 @@
 #include "encfs.h"
 
 #include "encfscreateoptions.h"
+#include "options.h"
 
 static engines::engine::BaseOptions _setOptions()
 {
@@ -137,7 +138,27 @@ engines::engine::status encfs::errorCode( const QString& e,int s ) const
 	}
 }
 
-void encfs::GUICreateOptionsInstance( QWidget * parent,engine::engine::fCreateOptions function ) const
+void encfs::GUICreateOptions( QWidget * parent,engine::engine::fCreateOptions function ) const
 {
 	encfscreateoptions::instance( parent,std::move( function ) ) ;
+}
+
+void encfs::GUIMountOptions( QWidget * parent,
+			     bool r,
+			     const engines::engine::mountOptions& l,
+			     engines::engine::fMountOptions f ) const
+{
+	auto& e = ::options::instance( parent,*this,r,l,std::move( f ) ) ;
+
+	auto& ee = e.GUIOptions() ;
+
+	ee.enableCheckBox = true ;
+	ee.checkBoxChecked = l.opts.unlockInReverseMode ;
+
+	ee.updateOptions = []( engines::engine::options::booleanOptions& e,const ::options::Options& s ){
+
+		e.unlockInReverseMode = s.checkBoxChecked ;
+	} ;
+
+	e.ShowUI() ;
 }

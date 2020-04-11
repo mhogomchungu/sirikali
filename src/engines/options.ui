@@ -157,6 +157,19 @@
      <string>Reverse Mode (Gocryptfs and Encfs Only).</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="pushButton_2">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>50</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
   </widget>
   <widget class="QPushButton" name="pbOK">
    <property name="geometry">

@@ -30,6 +30,7 @@
 #include <QDir>
 #include <QAction>
 #include <QCloseEvent>
+#include <QCheckBox>
 
 #include <functional>
 
@@ -43,30 +44,68 @@ class options : public QDialog
 {
 	Q_OBJECT
 public:
-	static void instance( QWidget * parent,
-			      bool r,
-			      const engines::engine::mountOptions& l,
-			      engines::engine::fMountOptions e )
+	struct Options{
+
+		QString fileDialogText ;
+		QString checkBoxText    = QObject::tr( "Reverse Mode (Gocryptfs and Encfs Only)." ) ;
+		QString configFileTitle = QObject::tr( "Unlock A Cryfs/Gocryptfs/Securefs Volume With Specified Configuration File." ) ;
+		QString idleTitle       = QObject::tr( "Automatically Unmount After Specified Minutes of Inactivity Is Reached." ) ;
+
+		enum class KEY{
+			USES_KEYFILE_ONLY,
+			USES_KEYFILE_AND_CONFIG_FILE,
+			USES_CONFIG_FILE_ONLY
+		} ;
+
+		options::Options::KEY fileType = options::Options::KEY::USES_CONFIG_FILE_ONLY ;
+
+		bool enableCheckBox = false ;
+		bool checkBoxChecked = false ;
+		bool enableIdleTime = true ;
+		bool enableMountOptions = true ;
+		bool enableConfigFile = true ;
+		bool setVisiblePushButton_2 = false ;
+
+		using function = std::function< void( engines::engine::options::booleanOptions&,const options::Options& ) > ;
+
+		function updateOptions = []( engines::engine::options::booleanOptions& e,const options::Options& s ){
+
+			Q_UNUSED( e )
+			Q_UNUSED( s )
+		} ;
+	};
+
+	static options& instance( QWidget * parent,
+				  const engines::engine& engine,
+				  bool r,
+				  const engines::engine::mountOptions& l,
+				  engines::engine::fMountOptions e )
 	{
-		new options( parent,r,l,std::move( e ) ) ;
+		return *( new options( parent,engine,r,l,std::move( e ) ) ) ;
 	}
 
 	options( QWidget * parent,
+		 const engines::engine&,
 		 bool,
-		 const engines::engine::mountOptions&,engines::engine::fMountOptions ) ;
+		 const engines::engine::mountOptions&,
+		 engines::engine::fMountOptions ) ;
 	~options() ;
+	void ShowUI() ;
+	Options& GUIOptions() ;
 private slots:
         void pushButton( void ) ;
+	void pushButton_2( void ) ;
 	void pbSet( void ) ;
 	void pbCancel( void ) ;
 private:
 	void Hide( const engines::engine::mountOptions& = engines::engine::mountOptions() ) ;
 	void closeEvent( QCloseEvent * ) ;
 	Ui::options * m_ui ;
+	const engines::engine& m_engine ;
 	bool m_create ;
-	QString m_type ;
 	std::function< void( const engines::engine::mountOptions& ) > m_setOptions ;
 	QWidget * m_parentWidget ;
+	Options m_setGUIOptions ;
 };
 
 #endif // OPTIONS_H

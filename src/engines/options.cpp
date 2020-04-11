@@ -27,10 +27,14 @@
 
 #include <QFileDialog>
 
-options::options( QWidget * parent,bool r,const engines::engine::mountOptions& l,
+options::options( QWidget * parent,
+		  const engines::engine& engine,
+		  bool r,
+		  const engines::engine::mountOptions& l,
 		  engines::engine::fMountOptions e ) :
 	QDialog( parent ),
 	m_ui( new Ui::options ),
+	m_engine( engine ),
 	m_create( r ),
 	m_setOptions( std::move( e ) ),
 	m_parentWidget( parent )
@@ -41,42 +45,43 @@ options::options( QWidget * parent,bool r,const engines::engine::mountOptions& l
 
 	m_ui->pushButton->setIcon( QIcon( ":/file.png" ) ) ;
 
+	m_ui->pushButton_2->setIcon( QIcon( ":/file.png" ) ) ;
+
 	this->setWindowIcon( QIcon( ":/sirikali.png" ) ) ;
 
 	connect( m_ui->pushButton,SIGNAL( clicked() ),this,SLOT( pushButton() ) ) ;
 
+	connect( m_ui->pushButton_2,SIGNAL( clicked() ),this,SLOT( pushButton_2() ) ) ;
+
 	connect( m_ui->pbOK,SIGNAL( clicked() ),this,SLOT( pbSet() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
+
+	connect( m_ui->checkBox,&QCheckBox::stateChanged,[ this ]( bool e ){
+
+		m_setGUIOptions.checkBoxChecked = e ;
+	} ) ;
+
+	m_setGUIOptions.configFileTitle = QObject::tr( "Unlock A %1 Volume With Specified Configuration File." ).arg( engine.name() ) ;
+	m_setGUIOptions.fileDialogText  = QObject::tr( "Select %1 Configuration File." ).arg( engine.name() ) ;
 
 	QString idleTimeOut ;
 	QString configFilePath ;
 	QString mountOptions ;
+	QString keyFile ;
 
-	utility2::stringListToStrings( l.options,idleTimeOut,configFilePath,mountOptions,m_type ) ;
-
-	if( m_type == "cryfs" ){
-
-		m_ui->checkBox->setChecked( l.opts.allowReplacedFileSystem ) ;
-
-		m_ui->checkBox->setText( tr( "Allow Replaced File System" ) ) ;
-
-	}else if( utility::equalsAtleastOne( m_type,"gocryptfs","encfs" ) ){
-
-		m_ui->checkBox->setChecked( l.opts.unlockInReverseMode ) ;
-	}else{
-		m_ui->checkBox->setEnabled( false ) ;
-	}
+	utility2::stringListToStrings( l.options,idleTimeOut,configFilePath,mountOptions,keyFile ) ;
 
 	m_ui->lineEditIdleTime->setText( idleTimeOut ) ;
 	m_ui->lineConfigFilePath->setText( configFilePath ) ;
 	m_ui->lineEditMountOptions->setText( mountOptions ) ;
 
+	if( !keyFile.isEmpty() ){
+
+		m_ui->lineEditIdleTime->setText( keyFile ) ;
+	}
+
 	utility::setWindowOptions( this ) ;
 	settings::instance().setParent( parent,&m_parentWidget,this ) ;
-
-	this->show() ;
-	this->raise() ;
-	this->activateWindow() ;
 
 	if( m_ui->lineEditIdleTime->text().isEmpty() ){
 
@@ -99,14 +104,29 @@ void options::pushButton()
 	auto e = [ this ](){
 
 		return QFileDialog::getOpenFileName( this,
-						     tr( "Select Cryfs/Gocryptfs Configuration File" ),
+						     m_setGUIOptions.fileDialogText,
 						     settings::instance().homePath() ) ;
 	}() ;
 
         if( !e.isEmpty() ){
 
 		m_ui->lineConfigFilePath->setText( e ) ;
-        }
+	}
+}
+
+void options::pushButton_2()
+{
+	auto e = [ this ](){
+
+		return QFileDialog::getOpenFileName( this,
+						     m_setGUIOptions.fileDialogText,
+						     settings::instance().homePath() ) ;
+	}() ;
+
+	if( !e.isEmpty() ){
+
+		m_ui->lineEditIdleTime->setText( e ) ;
+	}
 }
 
 void options::closeEvent( QCloseEvent * e )
@@ -117,22 +137,33 @@ void options::closeEvent( QCloseEvent * e )
 
 void options::pbSet()
 {
-	auto e = m_ui->lineEditIdleTime->text() ;
+	auto idle = m_ui->lineEditIdleTime->text() ;
 
-	auto m = m_ui->lineEditMountOptions->text() ;
+	auto mountOpts = m_ui->lineEditMountOptions->text() ;
 
 	engines::engine::options::booleanOptions opts ;
 
-	if( m_type == "cryfs" ){
+	m_setGUIOptions.updateOptions( opts,m_setGUIOptions ) ;
 
-		opts.allowReplacedFileSystem = m_ui->checkBox->isChecked() ;
+	auto filePath = m_ui->lineConfigFilePath->text() ;
 
-	}else if( utility::equalsAtleastOne( m_type,"gocryptfs","encfs" ) ){
+	/*
+	 * idleTimeOut,configFile,mountOptions and keyFile
+	 */
+	if( m_setGUIOptions.fileType == options::Options::KEY::USES_KEYFILE_ONLY ){
 
-		opts.unlockInReverseMode = m_ui->checkBox->isChecked() ;
+		this->Hide( { { idle,QString(),mountOpts,filePath },opts } ) ;
+
+	}else if( m_setGUIOptions.fileType == options::Options::KEY::USES_CONFIG_FILE_ONLY ){
+
+		this->Hide( { { idle,filePath,mountOpts,QString() },opts } ) ;
+
+	}else if( m_setGUIOptions.fileType == options::Options::KEY::USES_KEYFILE_AND_CONFIG_FILE ){
+
+		this->Hide( { { QString(),filePath,mountOpts,idle },opts } ) ;
+	}else{
+		this->Hide( { { idle,filePath,mountOpts,QString() },opts } ) ;
 	}
-
-	this->Hide( { { e,m_ui->lineConfigFilePath->text(),m },opts } ) ;
 }
 
 void options::pbCancel()
@@ -150,4 +181,36 @@ void options::Hide( const engines::engine::mountOptions& e )
 options::~options()
 {
 	delete m_ui ;
+}
+
+void options::ShowUI()
+{
+	m_ui->label->setText( m_setGUIOptions.configFileTitle ) ;
+
+	m_ui->label->setEnabled( m_setGUIOptions.enableConfigFile ) ;
+	m_ui->label_3->setEnabled( m_setGUIOptions.enableIdleTime ) ;
+	m_ui->label_4->setEnabled( m_setGUIOptions.enableMountOptions ) ;
+
+	m_ui->lineEditIdleTime->setEnabled( m_setGUIOptions.enableIdleTime ) ;
+	m_ui->lineEditMountOptions->setEnabled( m_setGUIOptions.enableMountOptions ) ;
+
+	m_ui->pushButton->setEnabled( m_setGUIOptions.enableConfigFile ) ;
+	m_ui->lineConfigFilePath->setEnabled( m_setGUIOptions.enableConfigFile ) ;
+
+	m_ui->checkBox->setEnabled( m_setGUIOptions.enableCheckBox ) ;
+	m_ui->checkBox->setText( m_setGUIOptions.checkBoxText ) ;
+	m_ui->checkBox->setChecked( m_setGUIOptions.checkBoxChecked ) ;
+
+	m_ui->pushButton_2->setVisible( m_setGUIOptions.setVisiblePushButton_2 ) ;
+
+	m_ui->label_3->setText( m_setGUIOptions.idleTitle ) ;
+
+	this->show() ;
+	this->raise() ;
+	this->activateWindow() ;
+}
+
+options::Options& options::GUIOptions()
+{
+	return m_setGUIOptions ;
 }

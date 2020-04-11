@@ -36,6 +36,13 @@ SOURCES += \
     engines/encfscreateoptions.cpp \
     engines/customcreateoptions.cpp \
     engines/fscryptcreateoptions.cpp \
+    engines/cryfs.cpp \
+    engines/fscrypt.cpp \
+    engines/securefs.cpp \
+    engines/sshfs.cpp \
+    engines/gocryptfs.cpp \
+    engines/ecryptfs.cpp \
+    engines/encfs.cpp \
     settings.cpp \
     engines.cpp
 

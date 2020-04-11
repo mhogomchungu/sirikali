@@ -20,6 +20,7 @@
 #include "cryfs.h"
 #include "cryfscreateoptions.h"
 #include "../win.h"
+#include "options.h"
 
 static engines::engine::BaseOptions _setOptions()
 {
@@ -229,7 +230,28 @@ engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 	return engines::engine::status::backendFail ;
 }
 
-void cryfs::GUICreateOptionsInstance( QWidget * parent,engine::engine::fCreateOptions function ) const
+void cryfs::GUICreateOptions( QWidget * parent,engine::engine::fCreateOptions function ) const
 {
 	cryfscreateoptions::instance( parent,std::move( function ) ) ;
+}
+
+void cryfs::GUIMountOptions( QWidget * parent,
+			     bool r,
+			     const engines::engine::mountOptions& l,
+			     engines::engine::fMountOptions f ) const
+{
+	auto& e = ::options::instance( parent,*this,r,l,std::move( f ) ) ;
+
+	auto& ee = e.GUIOptions() ;
+
+	ee.checkBoxChecked = l.opts.allowReplacedFileSystem ;
+	ee.checkBoxText = QObject::tr( "Allow Replaced File System" ) ;
+	ee.enableCheckBox = true ;
+
+	ee.updateOptions = []( engines::engine::options::booleanOptions& e,const ::options::Options& s ){
+
+		e.allowReplacedFileSystem = s.checkBoxChecked ;
+	} ;
+
+	e.ShowUI() ;
 }

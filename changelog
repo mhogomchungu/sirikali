@@ -210,5 +210,7 @@ version 1.4.2(December 18,2019)
 -- Prevent fscrypt error when creating a new volume with an already taken protector name by making sure
     we are using a unique protector name.
 -- Add a GUI option to set protector's name  when creating fscrypt volume.
--- Add a GUI option to choose between using a custom passphrase or login passphrase when creating
-   fscrypt volume.
+-- Add a GUI option to choose between using a custom passphrase,login passphrase or a key file
+   when creating fscrypt volume.
+-- Add support for securefs key file(introduced in securefs version 0.11.1).
+-- Add support for fscrypt keyfile.

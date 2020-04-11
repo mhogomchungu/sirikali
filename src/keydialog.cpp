@@ -435,9 +435,7 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 	m_ui->lineEditMountPoint->setText( [ & ]()->QString{
 
-		const auto& engine = m_engine.get() ;
-
-		if( engine.known() && !engine.backendRequireMountPath() ){
+		if( m_engine->known() && !m_engine->backendRequireMountPath() ){
 
 			return tr( "Not Used" ) ;
 		}
@@ -452,7 +450,7 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 			if( m.isEmpty() ){
 
-				if( m_settings.windowsUseMountPointPath( engine.name() ) ){
+				if( m_settings.windowsUseMountPointPath( m_engine->name() ) ){
 
 					auto mm = m_settings.windowsMountPointPath() ;
 
@@ -572,7 +570,7 @@ void keyDialog::pbOptions()
 
 		this->hide() ;
 
-		m_engine->GUICreateOptionsInstance( m_parentWidget,[ = ]( const engines::engine::createOptions& e ){
+		m_engine->GUICreateOptions( m_parentWidget,[ & ]( const engines::engine::createOptions& e ){
 
 			if( e.success ){
 
@@ -580,10 +578,13 @@ void keyDialog::pbOptions()
 
 				if( m_engine->name() == "cryfs" ){
 
+					/*
+					 * Setting the default option.
+					 */
 					m_allowReplaceFileSystemSet = true ;
 				}
 
-				utility2::stringListToStrings( e.options,m_createOptions,m_configFile ) ;
+				utility2::stringListToStrings( e.options,m_createOptions,m_configFile,m_keyFile ) ;
 			}
 
 			this->ShowUI() ;
@@ -605,15 +606,25 @@ void keyDialog::pbOptions()
 			}
 		}
 
+		if( m_allowReplaceFileSystemInitiallyNotSet ){
+
+			/*
+			 * Setting the default option.
+			 */
+			m_boolOpts.allowReplacedFileSystem = true ;
+
+			m_allowReplaceFileSystemInitiallyNotSet = false ;
+		}
+
+		engines::engine::mountOptions e{ { m_idleTimeOut,m_configFile,m_mountOptions,m_keyFile },m_boolOpts } ;
+
 		this->hide() ;
 
-		engines::engine::mountOptions e{ { m_idleTimeOut,m_configFile,m_mountOptions,m_engine->name() },m_boolOpts } ;
-
-		m_engine->GUIMountOptionsInstance( m_parentWidget,m_create,e,[ this ]( const engines::engine::mountOptions& e ){
+		m_engine->GUIMountOptions( m_parentWidget,m_create,e,[ this ]( const engines::engine::mountOptions& e ){
 
 			if( e.success ){
 
-				utility2::stringListToStrings( e.options,m_idleTimeOut,m_configFile,m_mountOptions ) ;
+				utility2::stringListToStrings( e.options,m_idleTimeOut,m_configFile,m_mountOptions,m_keyFile ) ;
 
 				if( m_ui->lineEditKey->text().isEmpty() ){
 
@@ -1098,6 +1109,7 @@ void keyDialog::encryptedFolderCreate()
 				    m_key,
 				    m_idleTimeOut,
 				    m_configFile,
+				    m_keyFile,
 				    boolOpts,
 				    m_mountOptions,
 				    m_createOptions ) ;
@@ -1205,6 +1217,7 @@ void keyDialog::encryptedFolderMount()
 				    m_key,
 				    m_idleTimeOut,
 				    m_configFile,
+				    m_keyFile,
 				    boolOpts,
 				    m_mountOptions,
 				    QString() } ;

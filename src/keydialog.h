@@ -273,11 +273,11 @@ private :
 	QString m_deviceOffSet ;
 	QString m_idleTimeOut ;
 	QString m_configFile ;
+	QString m_keyFile ;
 	QString m_exe ;
 	QString m_mountOptions ;
 	QString m_createOptions ;
 	QString m_fileManagerOpen ;
-	QStringList m_keyFiles ;
 
 	bool m_autoOpenMountPoint ;
 	bool m_working ;
@@ -287,6 +287,7 @@ private :
 	bool m_hmac ;
 	bool m_closeGUI = false ;
 	bool m_allowReplaceFileSystemSet = false ;
+	bool m_allowReplaceFileSystemInitiallyNotSet = true ;
 
 	engines::engine::options::booleanOptions m_boolOpts ;
 

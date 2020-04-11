@@ -20,6 +20,7 @@
 #include "ecryptfs.h"
 #include "ecryptfscreateoptions.h"
 #include "../siritask.h"
+#include "options.h"
 
 static engines::engine::BaseOptions _setOptions()
 {
@@ -226,7 +227,24 @@ engines::engine::status ecryptfs::errorCode( const QString& e,int s ) const
 	}
 }
 
-void ecryptfs::GUICreateOptionsInstance( QWidget * parent,engine::engine::fCreateOptions function ) const
+void ecryptfs::GUICreateOptions( QWidget * parent,engine::engine::fCreateOptions function ) const
 {
 	ecryptfscreateoptions::instance( parent,std::move( function ) ) ;
+}
+
+void ecryptfs::GUIMountOptions( QWidget * parent,
+				bool r,
+				const engines::engine::mountOptions& l,
+				engines::engine::fMountOptions f ) const
+{
+	auto& e = ::options::instance( parent,*this,r,l,std::move( f ) ) ;
+
+	auto& ee = e.GUIOptions() ;
+
+	ee.enableCheckBox = false ;
+	ee.enableConfigFile = false ;
+	ee.enableIdleTime = false ;
+	ee.enableMountOptions = false ;
+
+	e.ShowUI() ;
 }

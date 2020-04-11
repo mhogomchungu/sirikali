@@ -806,6 +806,7 @@ void sirikali::unlockVolume( const QStringList& l )
 						    m,key,
 						    idleTime,
 						    cPath,
+						    QString(),
 						    { mode,reverse,false,false },
 						    mOpt,
 						    QString() ) ;

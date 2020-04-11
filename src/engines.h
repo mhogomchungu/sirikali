@@ -272,6 +272,7 @@ public:
 
 			fscryptPartialVolumeClose,
 			failedToLoadWinfsp,
+			fscryptKeyFileRequired,
 			backEndFailedToMeetMinimumRequirenment,
 			failedToStartPolkit,
 			failedToUnMount,
@@ -311,6 +312,7 @@ public:
 				 const QByteArray& volume_key,
 				 const QString& idle_timeout,
 				 const QString& config_file_path,
+				 const QString& keyFile,
 			         const booleanOptions& boolOpts,
 				 const QString& mount_options,
 				 const QString& create_options ) ;
@@ -321,6 +323,7 @@ public:
 			QString configFilePath ;
 			QString mountOptions ;
 			QString createOptions ;
+			QString keyFile ;
 			booleanOptions boolOptions ;
 		} ;
 
@@ -516,11 +519,11 @@ public:
 		virtual bool requiresPolkit() const ;		
 		virtual args command( const QByteArray& password,const engines::engine::cmdArgsList& args ) const ;
 		virtual engines::engine::status errorCode( const QString& e,int s ) const ;
-		virtual void GUICreateOptionsInstance( QWidget * parent,engine::engine::fCreateOptions ) const ;
-		virtual void GUIMountOptionsInstance( QWidget * parent,
-						      bool r,
-						      const engines::engine::mountOptions& l,
-						      engines::engine::fMountOptions ) const ;
+		virtual void GUICreateOptions( QWidget * parent,engine::engine::fCreateOptions ) const ;
+		virtual void GUIMountOptions( QWidget * parent,
+					      bool r,
+					      const engines::engine::mountOptions& l,
+					      engines::engine::fMountOptions ) const ;
 	protected:
 		class commandOptions{
 		public:

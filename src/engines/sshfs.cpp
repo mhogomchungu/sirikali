@@ -19,6 +19,7 @@
 
 #include "sshfs.h"
 #include "../settings.h"
+#include "options.h"
 
 static engines::engine::BaseOptions _setOptions()
 {
@@ -180,4 +181,21 @@ engines::engine::status sshfs::errorCode( const QString& e,int s ) const
 	}else{
 		return engines::engine::status::backendFail ;
 	}
+}
+
+void sshfs::GUIMountOptions( QWidget * parent,
+			     bool r,
+			     const engines::engine::mountOptions& l,
+			     engines::engine::fMountOptions f ) const
+{
+	auto& e = ::options::instance( parent,*this,r,l,std::move( f ) ) ;
+
+	auto& ee = e.GUIOptions() ;
+
+	ee.enableCheckBox  = false ;
+	ee.checkBoxChecked = false ;
+	ee.enableIdleTime  = false ;
+	ee.enableConfigFile = false ;
+
+	e.ShowUI() ;
 }

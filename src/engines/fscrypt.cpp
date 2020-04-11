@@ -23,6 +23,7 @@
 #include "../mountinfo.h"
 #include "../json_parser.hpp"
 #include "fscryptcreateoptions.h"
+#include "options.h"
 
 struct mountInfo{
 	const QStringList& mountInfo ;
@@ -411,7 +412,8 @@ bool fscrypt::ownsCipherPath( const QString& cipherPath ) const
 
 bool fscrypt::requiresAPassword( const engines::engine::options& opt ) const
 {
-	if( opt.mountOptions.contains( "--key=" ) || opt.createOptions.contains( "--key=" ) ){
+	if( opt.mountOptions.contains( "--key=" ) ||
+	    opt.createOptions.contains( "--key=" ) || !opt.keyFile.isEmpty() ){
 
 		return false ;
 	}else{
@@ -445,6 +447,11 @@ engines::engine::args fscrypt::command( const QByteArray& password,
 	auto exeOptions = m.exeOptions() ;
 
 	exeOptions.add( "--quiet " + this->userOption() ) ;
+
+	if( !args.opt.keyFile.isEmpty() ){
+
+		exeOptions.add( "--key=" + utility::Task::makePath( args.opt.keyFile ) ) ;
+	}
 
 	if( args.create ){
 
@@ -502,24 +509,44 @@ engines::engine::status fscrypt::errorCode( const QString& e,int s ) const
 	if( e.contains( this->incorrectPasswordText() ) ){
 
 		return engines::engine::status::fscryptBadPassword ;
+
+	}else if( e.contains( "fscrypt unlock: no key file specified" ) ){
+
+		return engines::engine::status::fscryptKeyFileRequired ;
 	}else{
 		return engines::engine::status::backendFail ;
 	}
 }
 
-void fscrypt::GUICreateOptionsInstance( QWidget * parent,
-					engine::engine::fCreateOptions function ) const
+void fscrypt::GUICreateOptions( QWidget * parent,
+				engine::engine::fCreateOptions function ) const
 {
 	fscryptcreateoptions::instance( parent,std::move( function ),{} ) ;
 }
 
-void fscrypt::GUIMountOptionsInstance( QWidget * parent,
-				       bool r,
-				       const engines::engine::mountOptions& l,
-				       engines::engine::fMountOptions f ) const
+void fscrypt::GUIMountOptions( QWidget * parent,
+			       bool r,
+			       const engines::engine::mountOptions& l,
+			       engines::engine::fMountOptions f ) const
 {
-	engines::engine::GUIMountOptionsInstance( parent,r,l,std::move( f ) ) ;
+	auto& e = ::options::instance( parent,*this,r,l,std::move( f ) ) ;
+
+	auto& ee = e.GUIOptions() ;
+
+	ee.checkBoxChecked    = false ;
+	ee.enableCheckBox     = false ;
+	ee.enableIdleTime     = false ;
+	ee.enableMountOptions = false ;
+
+	ee.configFileTitle = QObject::tr( "Unlock An Fscrypt Volume With A Specified 32 Byte(256-Bit) KeyFile" ) ;
+
+	ee.fileDialogText = QObject::tr( "Select An Fscrypt KeyFile" ) ;
+
+	ee.fileType = ::options::Options::KEY::USES_KEYFILE_ONLY ;
+
+	e.ShowUI() ;
 }
+
 
 #ifdef Q_OS_LINUX
 
