@@ -506,17 +506,17 @@ Il doit se terminer avec un des termes suivants : &quot;%1&quot;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines/options.h" line="50"/>
+        <location filename="../src/engines/options.h" line="52"/>
         <source>Reverse Mode (Gocryptfs and Encfs Only).</source>
         <translation>Mode Inversé (Gocryptfs and Encfs seulement).</translation>
     </message>
     <message>
-        <location filename="../src/engines/options.h" line="51"/>
+        <location filename="../src/engines/options.h" line="53"/>
         <source>Unlock A Cryfs/Gocryptfs/Securefs Volume With Specified Configuration File.</source>
         <translation>Déverrouiller un volume Cryfs/Gocryptfs/Securefs avec le fichier de configuration proposé.</translation>
     </message>
     <message>
-        <location filename="../src/engines/options.h" line="52"/>
+        <location filename="../src/engines/options.h" line="54"/>
         <source>Automatically Unmount After Specified Minutes of Inactivity Is Reached.</source>
         <translation>Démonter automatiquement lorsque que le délai d&apos;inactivité spécifié -en minutes- est atteint.</translation>
     </message>
@@ -537,11 +537,16 @@ Il doit se terminer avec un des termes suivants : &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../src/engines/securefs.cpp" line="197"/>
-        <source>Select A Securefs KeyFile</source>
+        <source>Select A Securefs Config File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/engines/securefs.cpp" line="199"/>
+        <source>Select A Securefs KeyFile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/engines/securefs.cpp" line="201"/>
         <source>Enter A Securefs KeyFile</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1955,8 +1960,8 @@ Le &quot;format allégé&quot; est devenu le mode par défaut des systèmes bas�
     </message>
     <message>
         <location filename="../src/engines/securefscreateoptions.cpp" line="89"/>
-        <source>Select A 32 Byte KeyFile</source>
-        <translation type="unfinished"></translation>
+        <source>Select A KeyFile</source>
+        <translation type="unfinished">Sélectionner un fichier de clé</translation>
     </message>
     <message>
         <location filename="../src/engines/securefscreateoptions.ui" line="27"/>

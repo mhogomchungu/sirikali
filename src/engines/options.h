@@ -47,6 +47,8 @@ public:
 	struct Options{
 
 		QString fileDialogText ;
+		QString fileDialogText_2 ;
+
 		QString checkBoxText    = QObject::tr( "Reverse Mode (Gocryptfs and Encfs Only)." ) ;
 		QString configFileTitle = QObject::tr( "Unlock A Cryfs/Gocryptfs/Securefs Volume With Specified Configuration File." ) ;
 		QString idleTitle       = QObject::tr( "Automatically Unmount After Specified Minutes of Inactivity Is Reached." ) ;

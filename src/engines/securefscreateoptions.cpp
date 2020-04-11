@@ -86,7 +86,7 @@ void securefscreateoptions::pbConfigFilePath()
 
 void securefscreateoptions::pbKeyFilePath()
 {
-	auto e = QFileDialog::getOpenFileName( this,tr( "Select A 32 Byte KeyFile" ),QDir::homePath() ) ;
+	auto e = QFileDialog::getOpenFileName( this,tr( "Select A KeyFile" ),QDir::homePath() ) ;
 
 	if( !e.isEmpty() ){
 

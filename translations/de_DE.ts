@@ -497,17 +497,17 @@ options:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines/options.h" line="50"/>
+        <location filename="../src/engines/options.h" line="52"/>
         <source>Reverse Mode (Gocryptfs and Encfs Only).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines/options.h" line="51"/>
+        <location filename="../src/engines/options.h" line="53"/>
         <source>Unlock A Cryfs/Gocryptfs/Securefs Volume With Specified Configuration File.</source>
         <translation type="unfinished">Einen Cryfs/Gocryptfs/Securefs-Datenträger mit angegebener Konfigurationsdatei aufschließen.</translation>
     </message>
     <message>
-        <location filename="../src/engines/options.h" line="52"/>
+        <location filename="../src/engines/options.h" line="54"/>
         <source>Automatically Unmount After Specified Minutes of Inactivity Is Reached.</source>
         <translation type="unfinished">Bei Inaktivität nach den angegebenen Minuten automatisch aushängen.</translation>
     </message>
@@ -528,11 +528,16 @@ options:
     </message>
     <message>
         <location filename="../src/engines/securefs.cpp" line="197"/>
-        <source>Select A Securefs KeyFile</source>
+        <source>Select A Securefs Config File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/engines/securefs.cpp" line="199"/>
+        <source>Select A Securefs KeyFile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/engines/securefs.cpp" line="201"/>
         <source>Enter A Securefs KeyFile</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1962,8 +1967,8 @@ Der &quot;Lite&quot;-Formattyp ist auf unix-ähnlichen Betriebssystemen Standard
     </message>
     <message>
         <location filename="../src/engines/securefscreateoptions.cpp" line="89"/>
-        <source>Select A 32 Byte KeyFile</source>
-        <translation type="unfinished"></translation>
+        <source>Select A KeyFile</source>
+        <translation type="unfinished">Wählen Sie eine Schlüsseldatei aus</translation>
     </message>
     <message>
         <location filename="../src/engines/securefscreateoptions.ui" line="27"/>

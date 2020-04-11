@@ -119,7 +119,7 @@ void options::pushButton_2()
 	auto e = [ this ](){
 
 		return QFileDialog::getOpenFileName( this,
-						     m_setGUIOptions.fileDialogText,
+						     m_setGUIOptions.fileDialogText_2,
 						     settings::instance().homePath() ) ;
 	}() ;
 
