@@ -336,6 +336,7 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 	m_path         = e.volumePath() ;
 	m_boolOpts     = { false,e.reverseMode(),false,false } ;
 	m_configFile   = e.configFilePath() ;
+	m_keyFile      = e.keyFile() ;
 	m_idleTimeOut  = e.idleTimeOut() ;
 	m_mountOptions = e.mountOptions() ;
 	m_working      = false ;

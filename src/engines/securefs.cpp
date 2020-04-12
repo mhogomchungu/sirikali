@@ -194,11 +194,17 @@ void securefs::GUIMountOptions( QWidget * parent,
 
 	ee.enableIdleTime = true ;
 
+	/*
+	 * Below two lines are intentional, this backend uses the idle
+	 * timeout text field for its keyfile
+	 */
+	ee.setIdleTimeout( ee.keyFile ) ;
+
+	ee.idleTitle = QObject::tr( "Enter A Securefs KeyFile" ) ;
+
 	ee.fileDialogText = QObject::tr( "Select A Securefs Config File" ) ;
 
 	ee.fileDialogText_2 = QObject::tr( "Select A Securefs KeyFile" ) ;
-
-	ee.idleTitle = QObject::tr( "Enter A Securefs KeyFile" ) ;
 
 	ee.setVisiblePushButton_2 = true ;
 

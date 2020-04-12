@@ -46,6 +46,11 @@ class options : public QDialog
 public:
 	struct Options{
 
+		QString keyFile ;
+		QString idle ;
+		QString configFilePath ;
+		QString mountOptions ;
+
 		QString fileDialogText ;
 		QString fileDialogText_2 ;
 
@@ -68,13 +73,20 @@ public:
 		bool enableConfigFile = true ;
 		bool setVisiblePushButton_2 = false ;
 
-		using function = std::function< void( engines::engine::options::booleanOptions&,const options::Options& ) > ;
+		using boolOpts = engines::engine::options::booleanOptions ;
 
-		function updateOptions = []( engines::engine::options::booleanOptions& e,const options::Options& s ){
+		using function = std::function< boolOpts( const options::Options& ) > ;
 
-			Q_UNUSED( e )
+		function updateOptions = []( const options::Options& s ){
+
 			Q_UNUSED( s )
+
+			return boolOpts() ;
 		} ;
+
+		std::function< void( const QString& ) > setIdleTimeout ;
+		std::function< void( const QString& ) > setConfigFilePath ;
+		std::function< void( const QString& ) > setMountOptions ;
 	};
 
 	static options& instance( QWidget * parent,

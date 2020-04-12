@@ -113,6 +113,7 @@ public:
 		QString volumePath ;
 		QString mountPointPath ;
 		QString configFilePath ;
+		QString keyFile ;
 		QString idleTimeOut ;
 		QString mountOptions ;
 		QString preMountCommand ;

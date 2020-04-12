@@ -1441,7 +1441,7 @@ void sirikali::showMoungDialog( const QString& volume,const QString& m_point )
 {
 	if( !volume.isEmpty() ){
 
-		this->mount( { volume,m_point } ) ;
+		this->mount( { { volume,m_point } } ) ;
 	}
 }
 

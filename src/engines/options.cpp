@@ -59,44 +59,38 @@ options::options( QWidget * parent,
 	connect( m_ui->checkBox,&QCheckBox::stateChanged,[ this ]( bool e ){
 
 		m_setGUIOptions.checkBoxChecked = e ;
-	} ) ;
+	} ) ;	
+
+	m_setGUIOptions.setIdleTimeout = [ this ]( const QString& e ){
+
+		m_ui->lineEditIdleTime->setText( e ) ;
+	} ;
+
+	m_setGUIOptions.setConfigFilePath = [ this ]( const QString& e ){
+
+		m_ui->lineConfigFilePath->setText( e ) ;
+	} ;
+
+	m_setGUIOptions.setMountOptions = [ this ]( const QString& e ){
+
+		m_ui->lineEditMountOptions->setText( e ) ;
+	} ;
+
+	utility2::stringListToStrings( l.options,
+				       m_setGUIOptions.idle,
+				       m_setGUIOptions.configFilePath,
+				       m_setGUIOptions.mountOptions,
+				       m_setGUIOptions.keyFile ) ;
+
+	m_ui->lineEditIdleTime->setText( m_setGUIOptions.idle ) ;
+	m_ui->lineConfigFilePath->setText( m_setGUIOptions.configFilePath ) ;
+	m_ui->lineEditMountOptions->setText( m_setGUIOptions.mountOptions ) ;
 
 	m_setGUIOptions.configFileTitle = QObject::tr( "Unlock A %1 Volume With Specified Configuration File." ).arg( engine.name() ) ;
 	m_setGUIOptions.fileDialogText  = QObject::tr( "Select %1 Configuration File." ).arg( engine.name() ) ;
 
-	QString idleTimeOut ;
-	QString configFilePath ;
-	QString mountOptions ;
-	QString keyFile ;
-
-	utility2::stringListToStrings( l.options,idleTimeOut,configFilePath,mountOptions,keyFile ) ;
-
-	m_ui->lineEditIdleTime->setText( idleTimeOut ) ;
-	m_ui->lineConfigFilePath->setText( configFilePath ) ;
-	m_ui->lineEditMountOptions->setText( mountOptions ) ;
-
-	if( !keyFile.isEmpty() ){
-
-		m_ui->lineEditIdleTime->setText( keyFile ) ;
-	}
-
 	utility::setWindowOptions( this ) ;
 	settings::instance().setParent( parent,&m_parentWidget,this ) ;
-
-	if( m_ui->lineEditIdleTime->text().isEmpty() ){
-
-		m_ui->lineEditIdleTime->setFocus() ;
-
-	}else if( m_ui->lineConfigFilePath->text().isEmpty() ){
-
-		m_ui->lineConfigFilePath->setFocus() ;
-
-	}else if( m_ui->lineEditMountOptions->text().isEmpty() ){
-
-		m_ui->lineEditMountOptions->setFocus() ;
-	}else{
-		m_ui->pbOK->setFocus() ;
-	}
 }
 
 void options::pushButton()
@@ -141,9 +135,7 @@ void options::pbSet()
 
 	auto mountOpts = m_ui->lineEditMountOptions->text() ;
 
-	engines::engine::options::booleanOptions opts ;
-
-	m_setGUIOptions.updateOptions( opts,m_setGUIOptions ) ;
+	auto opts = m_setGUIOptions.updateOptions( m_setGUIOptions ) ;
 
 	auto filePath = m_ui->lineConfigFilePath->text() ;
 
@@ -204,6 +196,21 @@ void options::ShowUI()
 	m_ui->pushButton_2->setVisible( m_setGUIOptions.setVisiblePushButton_2 ) ;
 
 	m_ui->label_3->setText( m_setGUIOptions.idleTitle ) ;
+
+	if( m_ui->lineEditIdleTime->isEnabled() && m_ui->lineEditIdleTime->text().isEmpty() ){
+
+		m_ui->lineEditIdleTime->setFocus() ;
+
+	}else if( m_ui->lineConfigFilePath->isEnabled() && m_ui->lineConfigFilePath->text().isEmpty() ){
+
+		m_ui->lineConfigFilePath->setFocus() ;
+
+	}else if( m_ui->lineEditMountOptions->isEnabled() && m_ui->lineEditMountOptions->text().isEmpty() ){
+
+		m_ui->lineEditMountOptions->setFocus() ;
+	}else{
+		m_ui->pbOK->setFocus() ;
+	}
 
 	this->show() ;
 	this->raise() ;

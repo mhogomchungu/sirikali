@@ -149,6 +149,13 @@ static void _add_entries( std::vector< favorites::entry >& e,const QString& path
 		m.reverseMode          = json.getBool( "reverseMode" ) ;
 		m.volumeNeedNoPassword = json.getBool( "volumeNeedNoPassword" ) ;
 
+		try {
+			m.keyFile      = json.getString( "keyFilePath" ) ;
+
+		}catch( ... ) {
+
+		}
+
 		favorites::triState::readTriState( json,m.readOnlyMode,"mountReadOnly" ) ;
 		favorites::triState::readTriState( json,m.autoMount,"autoMountVolume" ) ;
 
@@ -249,6 +256,7 @@ favorites::error favorites::add( const favorites::entry& e )
 		json[ "volumePath" ]           = e.volumePath ;
 		json[ "mountPointPath" ]       = e.mountPointPath ;
 		json[ "configFilePath" ]       = e.configFilePath ;
+		json[ "keyFilePath" ]          = e.keyFile ;
 		json[ "idleTimeOut" ]          = e.idleTimeOut ;
 		json[ "mountOptions" ]         = e.mountOptions ;
 		json[ "preMountCommand" ]      = e.preMountCommand ;

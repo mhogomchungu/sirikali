@@ -155,9 +155,13 @@ void encfs::GUIMountOptions( QWidget * parent,
 	ee.enableCheckBox = true ;
 	ee.checkBoxChecked = l.opts.unlockInReverseMode ;
 
-	ee.updateOptions = []( engines::engine::options::booleanOptions& e,const ::options::Options& s ){
+	ee.updateOptions = []( const ::options::Options& s ){
+
+		engines::engine::options::booleanOptions e ;
 
 		e.unlockInReverseMode = s.checkBoxChecked ;
+
+		return e ;
 	} ;
 
 	e.ShowUI() ;

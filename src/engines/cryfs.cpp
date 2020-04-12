@@ -248,9 +248,13 @@ void cryfs::GUIMountOptions( QWidget * parent,
 	ee.checkBoxText = QObject::tr( "Allow Replaced File System" ) ;
 	ee.enableCheckBox = true ;
 
-	ee.updateOptions = []( engines::engine::options::booleanOptions& e,const ::options::Options& s ){
+	ee.updateOptions = []( const ::options::Options& s ){
+
+		engines::engine::options::booleanOptions e ;
 
 		e.allowReplacedFileSystem = s.checkBoxChecked ;
+
+		return e ;
 	} ;
 
 	e.ShowUI() ;

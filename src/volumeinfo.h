@@ -44,7 +44,8 @@ public:
 						      fileSystem,
 						      mode,
 						      idleTimeout,
-						      mountOptions ) ;
+						      mountOptions,
+						      keyFile ) ;
 		}
 		QStringList minimalList() const
 		{
@@ -54,7 +55,7 @@ public:
 		QStringList fullList() const
 		{
 			return { volumePath,mountPoint,
-				 fileSystem,mode,idleTimeout,mountOptions,configPath } ;
+				 fileSystem,mode,idleTimeout,mountOptions,configPath,keyFile } ;
 		}
 		QString volumePath ;
 		QString mountPoint ;
@@ -63,11 +64,9 @@ public:
 		QString idleTimeout ;
 		QString mountOptions ;
 		QString configPath ;
+		QString keyFile ;
 	};
 	volumeInfo()
-	{
-	}
-	volumeInfo( const std::initializer_list< QString >& e ) : m_mountinfo( e )
 	{
 	}
 	volumeInfo( const QStringList& e ) : m_mountinfo( e )
@@ -86,6 +85,11 @@ public:
 		if( e.configFilePath != "N/A" ){
 
 			m_mountinfo.configPath = e.configFilePath ;
+		}
+
+		if( e.keyFile != "N/A" ){
+
+			m_mountinfo.keyFile = e.keyFile ;
 		}
 
 		if( e.idleTimeOut != "N/A" ){
@@ -121,6 +125,10 @@ public:
 	const QString& configFilePath() const
 	{
 		return m_mountinfo.configPath ;
+	}
+	const QString& keyFile() const
+	{
+		return m_mountinfo.keyFile ;
 	}
 	const QString& idleTimeOut() const
 	{
