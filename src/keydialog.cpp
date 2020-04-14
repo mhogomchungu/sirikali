@@ -97,6 +97,23 @@ keyDialog::keyDialog( QWidget * parent,
 	}
 }
 
+void keyDialog::autoMount( const favorites::entry& e )
+{
+	if( e.volumeNeedNoPassword ){
+
+		if( !this->isVisible() ){
+
+			this->ShowUI() ;
+		}
+
+		this->disableAll() ;
+
+		utility::Task::suspendForOneSecond() ;
+
+		this->openVolume() ;
+	}
+}
+
 void keyDialog::unlockVolume()
 {
 	if( this->mountedAll() ){
@@ -329,6 +346,8 @@ void keyDialog::setVolumeToUnlock()
 
 		this->windowSetTitle( tr( "(%1/%2) Unlocking \"%3\"" ).arg( a,b,m_path ) ) ;
 	}
+
+	this->autoMount( m.first ) ;
 }
 
 void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key )

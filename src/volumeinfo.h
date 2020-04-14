@@ -81,6 +81,7 @@ public:
 		m_mountinfo.mountPoint = e.mountPointPath ;
 		m_reverseMode          = e.reverseMode ;
 		m_readOnlyMode         = e.readOnlyMode ;
+		m_volumeNeedNoPassword = e.volumeNeedNoPassword ;
 
 		if( e.configFilePath != "N/A" ){
 
@@ -109,6 +110,10 @@ public:
 	bool reverseMode() const
 	{
 		return m_reverseMode ;
+	}
+	bool volumeNeedNoPassword() const
+	{
+		return m_volumeNeedNoPassword ;
 	}
 	const QString& volumePath() const
 	{
@@ -161,6 +166,7 @@ public:
 private:
 	volumeInfo::mountinfo m_mountinfo ;
 	bool m_reverseMode = false ;
+	bool m_volumeNeedNoPassword = false ;
 	favorites::triState m_readOnlyMode ;
 };
 
