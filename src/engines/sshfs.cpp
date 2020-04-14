@@ -193,9 +193,9 @@ void sshfs::GUIMountOptions( QWidget * parent,
 	auto& ee = e.GUIOptions() ;
 
 	ee.enableCheckBox  = false ;
-	ee.checkBoxChecked = false ;
 	ee.enableIdleTime  = false ;
 	ee.enableConfigFile = false ;
+	ee.enableKeyFile = false ;
 
 	e.ShowUI() ;
 }

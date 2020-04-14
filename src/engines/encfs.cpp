@@ -152,7 +152,8 @@ void encfs::GUIMountOptions( QWidget * parent,
 
 	auto& ee = e.GUIOptions() ;
 
-	ee.enableCheckBox = true ;
+	ee.enableKeyFile = false ;
+
 	ee.checkBoxChecked = l.opts.unlockInReverseMode ;
 
 	ee.updateOptions = []( const ::options::Options& s ){

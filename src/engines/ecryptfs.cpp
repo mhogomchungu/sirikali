@@ -245,6 +245,7 @@ void ecryptfs::GUIMountOptions( QWidget * parent,
 	ee.enableConfigFile = false ;
 	ee.enableIdleTime = false ;
 	ee.enableMountOptions = false ;
+	ee.enableKeyFile = false ;
 
 	e.ShowUI() ;
 }

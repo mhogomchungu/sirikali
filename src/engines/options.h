@@ -49,29 +49,17 @@ public:
 		QString keyFile ;
 		QString idle ;
 		QString configFilePath ;
-		QString mountOptions ;
+		QString mountOptions ;		
 
-		QString fileDialogText ;
-		QString fileDialogText_2 ;
-
-		QString checkBoxText    = QObject::tr( "Reverse Mode (Gocryptfs and Encfs Only)." ) ;
-		QString configFileTitle = QObject::tr( "Unlock A Cryfs/Gocryptfs/Securefs Volume With Specified Configuration File." ) ;
-		QString idleTitle       = QObject::tr( "Automatically Unmount After Specified Minutes of Inactivity Is Reached." ) ;
-
-		enum class KEY{
-			USES_KEYFILE_ONLY,
-			USES_KEYFILE_AND_CONFIG_FILE,
-			USES_CONFIG_FILE_ONLY
-		} ;
-
-		options::Options::KEY fileType = options::Options::KEY::USES_CONFIG_FILE_ONLY ;
-
-		bool enableCheckBox = false ;
-		bool checkBoxChecked = false ;
+		bool enableCheckBox = true ;
+		bool checkBoxChecked = true ;
 		bool enableIdleTime = true ;
 		bool enableMountOptions = true ;
 		bool enableConfigFile = true ;
-		bool setVisiblePushButton_2 = false ;
+		bool enableKeyFile = true ;
+
+		QString checkBoxText ;
+		QString keyFileTitle ;
 
 		using boolOpts = engines::engine::options::booleanOptions ;
 
@@ -83,10 +71,6 @@ public:
 
 			return boolOpts() ;
 		} ;
-
-		std::function< void( const QString& ) > setIdleTimeout ;
-		std::function< void( const QString& ) > setConfigFilePath ;
-		std::function< void( const QString& ) > setMountOptions ;
 	};
 
 	static options& instance( QWidget * parent,

@@ -431,7 +431,17 @@ void engines::engine::GUIMountOptions( QWidget * parent,
 				       const engines::engine::mountOptions& e,
 				       engines::engine::fMountOptions f ) const
 {
-	::options::instance( parent,*this,r,e,std::move( f ) ).ShowUI() ;
+	auto& m = ::options::instance( parent,*this,r,e,std::move( f ) ) ;
+
+	auto& mm = m.GUIOptions() ;
+
+	mm.enableKeyFile = false ;
+	mm.enableCheckBox = false ;
+	mm.enableIdleTime = false ;
+	mm.enableConfigFile = false ;
+	mm.enableMountOptions = false ;
+
+	m.ShowUI() ;
 }
 
 const QStringList& engines::engine::names() const

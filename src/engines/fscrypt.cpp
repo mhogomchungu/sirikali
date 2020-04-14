@@ -533,22 +533,12 @@ void fscrypt::GUIMountOptions( QWidget * parent,
 
 	auto& ee = e.GUIOptions() ;
 
-	ee.checkBoxChecked    = false ;
 	ee.enableCheckBox     = false ;
 	ee.enableIdleTime     = false ;
 	ee.enableMountOptions = false ;
+	ee.enableConfigFile   = false ;
 
-	/*
-	 * Below two lines are intentional, this backend uses the
-	 * config file text field for its keyfile
-	 */
-	ee.setConfigFilePath( ee.keyFile ) ;
-
-	ee.configFileTitle = QObject::tr( "Unlock An Fscrypt Volume With A Specified 32 Byte(256-Bit) KeyFile" ) ;
-
-	ee.fileDialogText = QObject::tr( "Select An Fscrypt KeyFile" ) ;
-
-	ee.fileType = ::options::Options::KEY::USES_KEYFILE_ONLY ;
+	ee.keyFileTitle = QObject::tr( "Unlock Fscrypt Volume With A Specified 32 Byte(256-Bit) KeyFile." ) ;
 
 	e.ShowUI() ;
 }
