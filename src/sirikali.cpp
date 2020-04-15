@@ -1335,6 +1335,10 @@ void sirikali::dropEvent( QDropEvent * e )
 		return path ;
 	} ;
 
+	QFileInfo fileInfo ;
+
+	const auto& ff = favorites::instance() ;
+
 	for( const auto& it : e->mimeData()->urls() ){
 
 		auto m = it.path() ;
@@ -1352,7 +1356,21 @@ void sirikali::dropEvent( QDropEvent * e )
 			}
 		}
 
-		s.emplace_back( _favorite_entry( m ),QByteArray() ) ;
+		fileInfo.setFile( m ) ;
+
+		if( fileInfo.isDir() ){
+
+			s.emplace_back( _favorite_entry( m ),QByteArray() ) ;
+
+		}else if( fileInfo.isFile() ){
+
+			auto ss = ff.readFavoriteByPath( m ) ;
+
+			if( ss ){
+
+				s.emplace_back( ss.RValue(),QByteArray() ) ;
+			}
+		}
 	}
 
 	this->mountMultipleVolumes( std::move( s ) ) ;

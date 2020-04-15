@@ -130,7 +130,7 @@ static void _log_error( const QString& msg,const QString& path )
 	utility::debug::showDebugWindow( msg + a ) ;
 }
 
-static void _add_entries( std::vector< favorites::entry >& e,const QString& path )
+utility::result< favorites::entry > favorites::readFavoriteByPath( const QString& path ) const
 {
 	try {
 		SirikaliJson json( path,SirikaliJson::type::PATH ) ;
@@ -159,7 +159,7 @@ static void _add_entries( std::vector< favorites::entry >& e,const QString& path
 		favorites::triState::readTriState( json,m.readOnlyMode,"mountReadOnly" ) ;
 		favorites::triState::readTriState( json,m.autoMount,"autoMountVolume" ) ;
 
-		e.emplace_back( std::move( m ) ) ;
+		return m ;
 
 	}catch( const SirikaliJson::exception& e ){
 
@@ -173,6 +173,8 @@ static void _add_entries( std::vector< favorites::entry >& e,const QString& path
 
 		_log_error( "Unknown error has occured",path ) ;
 	}
+
+	return {} ;
 }
 
 std::vector<favorites::entry> favorites::readFavorites() const
@@ -188,11 +190,16 @@ std::vector<favorites::entry> favorites::readFavorites() const
 
 	const auto s = QDir( a ).entryList( QDir::Filter::Files | QDir::Filter::Hidden ) ;
 
-	std::vector<favorites::entry> e ;
+	std::vector< favorites::entry > e ;
 
 	for( const auto& it : s ){
 
-		_add_entries( e,a + it ) ;
+		auto mm = this->readFavoriteByPath( a + it ) ;
+
+		if( mm ){
+
+			e.emplace_back( mm.RValue() ) ;
+		}
 	}
 
 	return e ;

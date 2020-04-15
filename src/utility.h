@@ -135,6 +135,10 @@ namespace utility
 		{
 			return m_value ;
 		}
+		T&& RValue()
+		{
+			return std::move( m_value ) ;
+		}
 		void set( T value )
 		{
 			m_value = std::move( value ) ;

@@ -147,6 +147,9 @@ public:
 
 	utility::result< favorites::entry > readFavorite( const QString&,const QString& = QString() ) const ;
 
+	utility::result< favorites::entry > readFavoriteByPath( const QString& ) const ;
+
+
 	void updateFavorites() ;
 };
 

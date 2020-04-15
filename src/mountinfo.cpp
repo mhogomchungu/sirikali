@@ -709,9 +709,9 @@ void folderMonitor::contentCountDecreased( folderMonitor::function& function )
 
 	if( s.has_value() && s.value() != m_folderList ){
 
-		auto e = s.value() ;
+		auto e = s.RValue() ;
 
-		for( const auto& it : s.value() ){
+		for( const auto& it : e ){
 
 			m_folderList.removeOne( it ) ;
 		}
