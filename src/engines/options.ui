@@ -58,7 +58,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Unlock A Volume With Specified Configuration File.</string>
+     <string>Unlock A Volume With Below Configuration File.</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -87,7 +87,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Unlock A Volume With Specified KeyFile.</string>
+     <string>Unlock A Volume With Below KeyFile.</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
