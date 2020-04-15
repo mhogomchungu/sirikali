@@ -176,20 +176,23 @@ void options::ShowUI()
 
 	m_ui->checkBox->setText( e.checkBoxText ) ;
 
-	if( m_ui->lineEditIdleTime->isEnabled() && m_ui->lineEditIdleTime->text().isEmpty() ){
+	[ this ](){
 
-		m_ui->lineEditIdleTime->setFocus() ;
+		std::array< QLineEdit *,4 > lineEdits = { m_ui->lineEditKeyFile,
+							  m_ui->lineEditConfigFilePath,
+							  m_ui->lineEditMountOptions,
+							  m_ui->lineEditIdleTime } ;
 
-	}else if( m_ui->lineEditConfigFilePath->isEnabled() && m_ui->lineEditConfigFilePath->text().isEmpty() ){
+		for( const auto it : lineEdits ){
 
-		m_ui->lineEditConfigFilePath->setFocus() ;
+			if( it->isEnabled() && it->text().isEmpty() ){
 
-	}else if( m_ui->lineEditMountOptions->isEnabled() && m_ui->lineEditMountOptions->text().isEmpty() ){
+				return it->setFocus() ;
+			}
+		}
 
-		m_ui->lineEditMountOptions->setFocus() ;
-	}else{
-		m_ui->pbOK->setFocus() ;
-	}
+		m_ui->pbCancel->setFocus() ;
+	}() ;
 
 	this->show() ;
 	this->raise() ;
