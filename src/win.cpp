@@ -138,7 +138,7 @@ static LPTSTR _msg( bool * success,DWORD err )
 	return s ;
 }
 
-static QString _errorMsg( DWORD err )
+static QString _errorMsg( DWORD err,const QString& path )
 {
 	bool success ;
 
@@ -146,14 +146,19 @@ static QString _errorMsg( DWORD err )
 
 	if( success ){
 
-		return QString::fromLatin1( a.get() ) ;
+		return "SiriKali::Error: Error On Path \"" + path + "\" : " + QString::fromLatin1( a.get() ) ;
 	}else{
-		return "Unknown error has occurred." ;
+		return "SiriKali::Error: Unknown Error Has Occurred On Path \"" + path + "\"" ;
 	}
 }
 
 std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path,const QStringList& l )
 {
+	if( utility::isDriveLetter( path ) ){
+
+		return { true,QString() } ;
+	}
+
 	auto a = path.mid( 0,1 ).toStdWString()[ 0 ] ;
 
 	WCHAR rpath[ 4 ] = { a,':','\\','\0' } ;
@@ -172,9 +177,9 @@ std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path,const
 			}
 		}
 
-		return { false,QString( "SiriKali::Error: \"%1\" File System on Path \"%2\" Is Not Supported." ).arg( m,path ) } ;
+		return { false,QString( "SiriKali::Error: \"%1\" File System On Path \"%2\" Is Not Supported." ).arg( m,path ) } ;
 	}else{
-		return { false,_errorMsg( GetLastError() ) } ;
+		return { false,_errorMsg( GetLastError(),path ) } ;
 	}
 }
 
@@ -195,6 +200,9 @@ static QString _readRegistry( const char * subKey,const char * key )
 
 std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path,const QStringList& l )
 {
+	Q_UNUSED( path )
+	Q_UNUSED( l )
+
 	return { false,QString() } ;
 }
 
