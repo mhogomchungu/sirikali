@@ -429,14 +429,26 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 
 		}else if( m.type == engines::engine::error::Success ){
 
-			exe->closeReadChannel( QProcess::StandardError ) ;
-			exe->closeReadChannel( QProcess::StandardOutput ) ;
+			if( exe->state() == QProcess::Running ){
 
-			m_instances.emplace_back( opts,std::move( exe ) ) ;
+				exe->closeReadChannel( QProcess::StandardError ) ;
+				exe->closeReadChannel( QProcess::StandardOutput ) ;
 
-			m_updateVolumeList() ;
+				m_instances.emplace_back( opts,std::move( exe ) ) ;
 
-			return Task::process::result( 0 ) ;
+				m_updateVolumeList() ;
+
+				return Task::process::result( 0 ) ;
+			}else{
+				utility::waitForFinished( *exe ) ;
+
+				return Task::process::result( "SiriKali::Error Backend Disappeared For Some Reason (It Probably Crashed).",
+							      QByteArray(),
+							      -1,
+							      0,
+							      true ) ;
+			}
+
 		}else{
 			utility::waitForFinished( *exe ) ;
 

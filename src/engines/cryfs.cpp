@@ -70,26 +70,17 @@ cryfs::cryfs() :
 {
 }
 
-static bool _supported( const QString& exe,const QString& path,bool checkDrive )
+static bool _supported( const QString& path )
 {
-	if( checkDrive && utility::isDriveLetter( path ) ){
+	if( utility::isDriveLetter( path ) ){
 
-		/*
-		 * Drive letters are supported
-		 */
-		return true ;
-
-	}else if( exe.startsWith( path.mid( 0,2 ) ) ){
-
-		/*
-		 * Folder path is on the same drive as the executable
-		 */
 		return true ;
 	}else{
 		/*
-		 * Folder path is on a different drive as the executable
+		 * We do not support folder paths that are not in drive C:
+		 * to work around this bug: https://github.com/cryfs/cryfs/issues/319
 		 */
-		return false ;
+		return path.startsWith( "C:" ) ;
 	}
 }
 
@@ -97,14 +88,7 @@ engines::engine::status cryfs::passAllRequirenments( const engines::engine::opti
 {
 	if( utility::platformIsWindows() ){
 
-		/*
-		 * We do not support paths that are not in the same drive as the
-		 * executable(usually drive C:)
-		 * to work around this bug: https://github.com/cryfs/cryfs/issues/319
-		 */
-		const auto& e = this->executableFullPath() ;
-
-		if( _supported( e,opt.plainFolder,true ) && _supported( e,opt.cipherFolder,false ) ){
+		if( _supported( opt.plainFolder ) && _supported( opt.cipherFolder ) ){
 
 			return engines::engine::status::success ;
 		}else{
