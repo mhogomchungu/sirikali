@@ -33,6 +33,7 @@
 
 #include "lxqt_wallet.h"
 #include "favorites.h"
+#include "engines.h"
 #include <vector>
 #include <array>
 #include <functional>
@@ -185,7 +186,7 @@ public:
 	bool ecryptfsAllowNotEncryptingFileNames() ;
 	QString homePath() ;
 	QString windowsMountPointPath() ;
-	bool windowsUseMountPointPath( const QString& ) ;
+	bool windowsUseMountPointPath( const engines::engine& ) ;
 	void clearFavorites() ;
 	void showMountDialogWhenAutoMounting( bool ) ;
 	int favoritesEntrySize() ;

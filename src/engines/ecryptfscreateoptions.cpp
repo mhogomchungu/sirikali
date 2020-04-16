@@ -25,9 +25,12 @@
 
 #include "../settings.h"
 
-ecryptfscreateoptions::ecryptfscreateoptions( QWidget * parent,engines::engine::fCreateOptions function ) :
+ecryptfscreateoptions::ecryptfscreateoptions( QWidget * parent,
+					      const engines::engine& engine,
+					      engines::engine::fCreateOptions function ) :
 	QDialog( parent ),
 	m_ui( new Ui::ecryptfscreateoptions ),
+	m_configFileName( engine.configFileName() ),
 	m_function( std::move( function ) )
 {
 	m_ui->setupUi( this ) ;
@@ -55,7 +58,7 @@ ecryptfscreateoptions::~ecryptfscreateoptions()
 
 void ecryptfscreateoptions::pbSelectConfigPath()
 {
-	m_ui->lineEdit_2->setText( utility::configFilePath( this,"ecryptfs" ) ) ;
+	m_ui->lineEdit_2->setText( utility::configFilePath( this,m_configFileName ) ) ;
 }
 
 void ecryptfscreateoptions::pbOK()

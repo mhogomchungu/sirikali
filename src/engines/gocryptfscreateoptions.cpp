@@ -24,9 +24,12 @@
 #include "task.hpp"
 #include "../engines.h"
 
-gocryptfscreateoptions::gocryptfscreateoptions( QWidget * parent,engines::engine::fCreateOptions function ) :
+gocryptfscreateoptions::gocryptfscreateoptions( QWidget * parent,
+						const engines::engine& engine,
+						engines::engine::fCreateOptions function ) :
 	QDialog( parent ),
 	m_ui( new Ui::gocryptfscreateoptions ),
+	m_configFileName( engine.configFileName() ),
 	m_function( std::move( function ) )
 {
 	m_ui->setupUi( this ) ;
@@ -55,7 +58,7 @@ gocryptfscreateoptions::~gocryptfscreateoptions()
 
 void gocryptfscreateoptions::pbSelectConfigPath()
 {
-	m_ui->lineEdit_2->setText( utility::configFilePath( this,"gocryptfs" ) ) ;
+	m_ui->lineEdit_2->setText( utility::configFilePath( this,m_configFileName ) ) ;
 }
 
 void gocryptfscreateoptions::pbOK()

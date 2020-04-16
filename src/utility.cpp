@@ -327,11 +327,33 @@ utility::debug utility::debug::operator<<( const QString& e )
 	return utility::debug() ;
 }
 
+static QString _has_early_error_log ;
+
+void utility::applicationStarted()
+{
+	if( !_has_early_error_log.isEmpty() ){
+
+		utility::enableDebug( true ) ;
+
+		QString a = "***********Start early logs************" ;
+		QString b = "\n\n***********End early logs*****************" ;
+
+		_set_debug_window_text( a + _has_early_error_log + b ) ;
+
+		_show_debug_window() ;
+	}
+}
+
 void utility::debug::showDebugWindow( const QString& e )
 {
 	utility::enableDebug( true ) ;
 	_build_debug_msg( e ) ;
 	_show_debug_window() ;
+}
+
+void utility::debug::logErrorWhileStarting( const QString& e )
+{
+	_has_early_error_log += "\n\n" + e ;
 }
 
 utility::debug utility::debug::operator<<( int e )
@@ -1157,10 +1179,7 @@ QString utility::configFilePath( QWidget * s,const QString& e )
 
 	dialog.setAcceptMode( QFileDialog::AcceptSave ) ;
 
-	dialog.selectFile( [ = ](){
-
-		return engines::instance().getByName( e ).configFileName() ;
-	}() ) ;
+	dialog.selectFile( e ) ;
 
 	if( dialog.exec() ){
 
@@ -1287,14 +1306,6 @@ void utility::setWindowsMountPointOptions( QWidget * obj,QTextEdit * e,QPushButt
 void utility::setWindowsMountPointOptions( QWidget * obj,QLineEdit * e,QPushButton * s )
 {
 	_setWindowsMountMountOptions( obj,e,s ) ;
-}
-
-::Task::future< utility::result< QString > >& utility::backEndInstalledVersion( const QString& backend )
-{
-	return ::Task::run( [ = ]()->utility::result< QString >{
-
-		return engines::instance().getByName( backend ).installedVersion().toString() ;
-	} ) ;
 }
 
 void utility::setGUIThread()

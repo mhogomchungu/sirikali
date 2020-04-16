@@ -91,9 +91,9 @@ QString settings::windowsMountPointPath()
 	return m + "/" ;
 }
 
-bool settings::windowsUseMountPointPath( const QString& e )
+bool settings::windowsUseMountPointPath( const engines::engine& e )
 {
-	if( engines::instance().getByName( e ).supportsMountPathsOnWindows() ){
+	if( e.supportsMountPathsOnWindows() ){
 
 		if( !m_settings.contains( "WindowsUseMountPointPath" ) ){
 

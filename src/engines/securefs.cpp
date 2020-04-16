@@ -176,6 +176,7 @@ void securefs::GUICreateOptions( QWidget * parent,
 				 engine::engine::fCreateOptions function ) const
 {
 	securefscreateoptions::instance( parent,
+					 *this,
 					 m_version_greater_or_equal_0_11_1,
 					 std::move( function ) ) ;
 }

@@ -125,7 +125,7 @@
     <rect>
      <x>70</x>
      <y>200</y>
-     <width>381</width>
+     <width>421</width>
      <height>31</height>
     </rect>
    </property>
@@ -152,9 +152,9 @@
   <widget class="QPushButton" name="pbKeyFile">
    <property name="geometry">
     <rect>
-     <x>450</x>
+     <x>490</x>
      <y>200</y>
-     <width>41</width>
+     <width>31</width>
      <height>31</height>
     </rect>
    </property>

@@ -463,18 +463,6 @@ static engines::engine::cmdStatus _cmd( const cmd_args& e )
 	}
 }
 
-static utility::qstring_result _path_exist( QString e,const QString& m )
-{
-	e.remove( 0,m.size() ) ;
-
-	if( utility::pathExists( e ) ){
-
-		return e ;
-	}else{
-		return {} ;
-	}
-}
-
 siritask::Engine siritask::mountEngine( const siritask::mount& e )
 {
 	const QString& cipherFolder    = e.cipherFolder ;
@@ -499,74 +487,10 @@ siritask::Engine siritask::mountEngine( const siritask::mount& e )
 		}else{
 			return { { engine,configFilePath,cipherFolder } } ;
 		}
-	}
-
-	const auto& engines = engines::instance() ;
-
-	if( utility::pathIsFile( cipherFolder ) ){
-
-		const auto& engine = engines.getByFileExtension( cipherFolder ) ;
-
-		return { { engine,configFilePath,cipherFolder } } ;
-	}
-
-	for( const auto& it : engines.supportedEngines() ){
-
-		if( cipherFolder.startsWith( it->name() + " ",Qt::CaseInsensitive ) ){
-
-			const auto& engine = it.get() ;
-
-			if( engine.known() ){
-
-				return { { engine,configFilePath,cipherFolder.mid( it->name().size() + 1 ) } } ;
-			}
-		}
-	}
-
-	if( configFilePath.isEmpty() ){
-
-		const auto& m = engines.getByConfigFileNames( [ & ]( const QString& e ){
-
-			return utility::pathExists( cipherFolder + "/" + e ) ;
-		} ) ;
-
-		if( m.known() ){
-
-			return { { m,"",cipherFolder } } ;
-		}else{
-			return { { engines.getByCipherFolderPath( cipherFolder ),"",cipherFolder } } ;
-		}
-
-	}else if( utility::pathExists( configFilePath ) ){
-
-		const auto& m = engines.getByConfigFileNames( [ & ]( const QString& e ){
-
-			return configFilePath.endsWith( e ) ;
-		} ) ;
-
-		return { { m,configFilePath,cipherFolder } } ;
 	}else{
-		for( const auto& it : engines.supportedEngines() ){
+		const auto& e = engines::instance().getByPaths( cipherFolder,configFilePath ) ;
 
-			const auto& engine = it.get() ;
-
-			for( const auto& xt: engine.names() ){
-
-				auto s = "[[[" + xt + "]]]" ;
-
-				if( configFilePath.startsWith( s ) ){
-
-					auto m = _path_exist( configFilePath,s ) ;
-
-					if( m ){
-
-						return { { engine,m.value(),cipherFolder } } ;
-					}
-				}
-			}
-		}
-
-		return {} ;
+		return { { e,configFilePath,cipherFolder } } ;
 	}
 }
 

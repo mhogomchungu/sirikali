@@ -23,12 +23,12 @@
 #include "utility.h"
 
 configFileOption::configFileOption( QWidget * parent,
-				    const QString& app,
+				    const engines::engine& engine,
 				    std::function< void( const QStringList& ) > s ) :
 	QDialog( parent ),
 	m_ui( new Ui::configFileOption ),
-	m_function( std::move( s ) ),
-	m_app( app.toLower() )
+	m_configFileName( engine.configFileName() ),
+	m_function( std::move( s ) )
 {
 	m_ui->setupUi( this ) ;
 
@@ -64,7 +64,7 @@ void configFileOption::pbSet()
 
 void configFileOption::pbSetConfigFile()
 {
-	m_ui->lineEdit->setText( utility::configFilePath( this,m_app ) ) ;
+	m_ui->lineEdit->setText( utility::configFilePath( this,m_configFileName ) ) ;
 }
 
 void configFileOption::closeEvent( QCloseEvent * e )

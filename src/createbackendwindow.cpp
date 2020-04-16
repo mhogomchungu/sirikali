@@ -137,7 +137,7 @@ void createBackendWIndow::save()
 
 		auto a = "\nFailed to parse file for writing: " + path ;
 
-		utility::debug::showDebugWindow( msg + a ) ;
+		utility::debug::logErrorWhileStarting( msg + a ) ;
 	} ;
 
 	try {

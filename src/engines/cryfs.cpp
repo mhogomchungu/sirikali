@@ -232,7 +232,7 @@ engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 
 void cryfs::GUICreateOptions( QWidget * parent,engine::engine::fCreateOptions function ) const
 {
-	cryfscreateoptions::instance( parent,std::move( function ) ) ;
+	cryfscreateoptions::instance( parent,*this,std::move( function ) ) ;
 }
 
 void cryfs::GUIMountOptions( QWidget * parent,

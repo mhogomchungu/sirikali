@@ -91,8 +91,8 @@ public:
 	void ShowUI() ;
 	Options& GUIOptions() ;
 private slots:
-        void pushButton( void ) ;
-	void pushButton_2( void ) ;
+        void pbConfigFile( void ) ;
+	void pbKeyFile( void ) ;
 	void pbSet( void ) ;
 	void pbCancel( void ) ;
 private:

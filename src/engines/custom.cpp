@@ -28,6 +28,13 @@
 
 static void _parse_v1( custom::opts& s,const SirikaliJson& json )
 {
+	s.baseOpts.backendTimeout            = 0 ;
+	s.baseOpts.backendRequireMountPath   = true ;
+	s.baseOpts.autorefreshOnMountUnMount = true ;
+	s.baseOpts.takesTooLongToUnlock      = false ;
+	/*
+	 * Above options are are for v1.1 and are autoset here to be overridden later
+	 */
 	s.baseOpts.requiresPolkit              = false ;
 	s.baseOpts.hasGUICreateOptions         = true ;
 	s.baseOpts.customBackend               = true ;
@@ -60,9 +67,9 @@ static void _parse_v1( custom::opts& s,const SirikaliJson& json )
 
 static void _parse_v11( custom::opts& s,const SirikaliJson& json )
 {
+	s.baseOpts.backendTimeout            = json.getInterger( "backendTimeout" ) ;
 	s.baseOpts.backendRequireMountPath   = json.getBool( "backendRequireMountPath" ) ;
 	s.baseOpts.autorefreshOnMountUnMount = json.getBool( "autorefreshOnMountUnMount" ) ;
-	s.baseOpts.backendTimeout            = json.getInterger( "backendTimeout" ) ;
 	s.baseOpts.takesTooLongToUnlock      = json.getBool( "takesTooLongToUnlock" ) ;
 }
 
@@ -83,7 +90,7 @@ static utility::result< custom::opts > _getOptions( const QByteArray& e,const QS
 
 		auto a = "\nFailed to parse file for reading: " + path ;
 
-		utility::debug::showDebugWindow( msg + a ) ;
+		utility::debug::logErrorWhileStarting( msg + a ) ;
 	} ;
 
 	try{
@@ -150,7 +157,7 @@ static void _add_engines( const QString& path,
 				}else{
 					auto a = "Name field/Fuse names not set in config file : " + path ;
 
-					utility::debug::showDebugWindow( a ) ;
+					utility::debug::logErrorWhileStarting( a ) ;
 				}
 			}
 

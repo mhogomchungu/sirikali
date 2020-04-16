@@ -31,7 +31,8 @@ public:
 
 	QStringList mountInfo( const QStringList& ) const override ;
 
-	bool ownsCipherPath( const QString& cipherPath ) const override ;
+	bool ownsCipherPath( const QString& cipherPath,
+			     const QString& configPath ) const override ;
 
 	bool requiresAPassword( const engines::engine::options& ) const override ;
 

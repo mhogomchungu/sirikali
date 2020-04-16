@@ -25,10 +25,12 @@
 #include <QFileDialog>
 
 securefscreateoptions::securefscreateoptions( QWidget * parent,
+					      const engines::engine& engine,
 					      bool e,
 					      engines::engine::fCreateOptions function ) :
 	QDialog( parent ),
 	m_ui( new Ui::securefscreateoptions ),
+	m_configFileName( engine.configFileName() ),
 	m_function( std::move( function ) )
 {
 	m_ui->setupUi( this ) ;
@@ -81,7 +83,7 @@ void securefscreateoptions::pbCancel()
 
 void securefscreateoptions::pbConfigFilePath()
 {
-	m_ui->lineEdit->setText( utility::configFilePath( this,"securefs" ) ) ;
+	m_ui->lineEdit->setText( utility::configFilePath( this,m_configFileName ) ) ;
 }
 
 void securefscreateoptions::pbKeyFilePath()

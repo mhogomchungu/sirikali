@@ -49,9 +49,9 @@ options::options( QWidget * parent,
 
 	this->setWindowIcon( QIcon( ":/sirikali.png" ) ) ;
 
-	connect( m_ui->pbConfigFile,SIGNAL( clicked() ),this,SLOT( pushButton() ) ) ;
+	connect( m_ui->pbConfigFile,SIGNAL( clicked() ),this,SLOT( pbConfigFile() ) ) ;
 
-	connect( m_ui->pbKeyFile,SIGNAL( clicked() ),this,SLOT( pushButton_2() ) ) ;
+	connect( m_ui->pbKeyFile,SIGNAL( clicked() ),this,SLOT( pbKeyFile() ) ) ;
 
 	connect( m_ui->pbOK,SIGNAL( clicked() ),this,SLOT( pbSet() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
@@ -84,7 +84,7 @@ options::options( QWidget * parent,
 	settings::instance().setParent( parent,&m_parentWidget,this ) ;
 }
 
-void options::pushButton()
+void options::pbConfigFile()
 {
 	auto e = [ this ](){
 
@@ -99,7 +99,7 @@ void options::pushButton()
 	}
 }
 
-void options::pushButton_2()
+void options::pbKeyFile()
 {
 	auto e = [ this ](){
 
@@ -110,7 +110,7 @@ void options::pushButton_2()
 
 	if( !e.isEmpty() ){
 
-		m_ui->lineEditIdleTime->setText( e ) ;
+		m_ui->lineEditKeyFile->setText( e ) ;
 	}
 }
 

@@ -161,6 +161,8 @@ namespace utility
 	{
 		static void showDebugWindow( const QString& ) ;
 
+		static void logErrorWhileStarting( const QString& ) ;
+
 		struct cout{
 
 			template< typename T >
@@ -397,6 +399,8 @@ namespace utility
 	bool eventFilter( QObject * gui,QObject * watched,QEvent * event,std::function< void() > ) ;
 	void licenseInfo( QWidget * ) ;
 
+	void applicationStarted() ;
+
 	QString removeOption( const QStringList&,const QString& option ) ;
 	QString removeOption( const QString& commaSeparatedString,const QString& option ) ;
 
@@ -412,8 +416,6 @@ namespace utility
 	} ;
 
 	SocketPaths socketPath() ;
-
-	::Task::future< utility::result< QString > >& backEndInstalledVersion( const QString& backend ) ;
 
 	::Task::future< bool >& openPath( const QString& path,const QString& opener ) ;
 

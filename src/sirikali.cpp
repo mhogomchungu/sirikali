@@ -574,6 +574,8 @@ void sirikali::startGUI( const std::vector< volumeInfo >& m )
 
 		this->autoUnlockVolumes( m ) ;
 	}
+
+	utility::applicationStarted() ;
 }
 
 void sirikali::createbackendwindow()
@@ -1362,13 +1364,18 @@ void sirikali::dropEvent( QDropEvent * e )
 
 			s.emplace_back( _favorite_entry( m ),QByteArray() ) ;
 
-		}else if( fileInfo.isFile() ){
+		}else if( fileInfo.isFile() && !m.endsWith( ".json" ) ){
 
-			auto ss = ff.readFavoriteByPath( m ) ;
+			if( m.endsWith( ".json" ) ){
 
-			if( ss ){
+				auto ss = ff.readFavoriteByPath( m ) ;
 
-				s.emplace_back( ss.RValue(),QByteArray() ) ;
+				if( ss ){
+
+					s.emplace_back( ss.RValue(),QByteArray() ) ;
+				}
+			}else{
+				s.emplace_back( m,QByteArray() ) ;
 			}
 		}
 	}

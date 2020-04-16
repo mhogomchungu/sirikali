@@ -178,7 +178,7 @@ engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const
 
 void gocryptfs::GUICreateOptions( QWidget * parent,engine::engine::fCreateOptions function ) const
 {
-	gocryptfscreateoptions::instance( parent,std::move( function ) ) ;
+	gocryptfscreateoptions::instance( parent,*this,std::move( function ) ) ;
 }
 
 void gocryptfs::GUIMountOptions( QWidget * parent,

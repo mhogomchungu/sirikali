@@ -511,7 +511,7 @@ public:
 
 		virtual engine::engine::status passAllRequirenments( const engines::engine::options& ) const ;
 
-		virtual bool ownsCipherPath( const QString& cipherPath ) const ;
+		virtual bool ownsCipherPath( const QString& cipherPath,const QString& configPath ) const ;
 
 		virtual void updateOptions( engines::engine::options& ) const ;
 
@@ -677,11 +677,9 @@ public:
 	QStringList enginesWithConfigFile() const ;
 	const std::vector< engines::engine::Wrapper >& supportedEngines() const ;
 	const engine& getUnKnown() const ;
+	const engine& getByPaths( const QString& cipherPath,const QString& configPath = QString() ) const ;
 	const engine& getByName( const QString& e ) const ;
-	const engine& getByCipherFolderPath( const QString& e ) const ;
 	const engine& getByFuseName( const QString& e ) const ;
-	const engine& getByFileExtension( const QString& e ) const ;
-	const engine& getByConfigFileNames( std::function< bool( const QString& ) > function ) const ;
 private:
 	std::vector< std::unique_ptr< engines::engine > > m_backends ;
 	std::vector< engines::engine::Wrapper > m_backendWrappers ;

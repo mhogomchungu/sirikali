@@ -234,13 +234,6 @@ engines::engine::status engines::engine::unmount( const QString& cipherFolder,
 	return siritask::unmountVolume( mountPoint,this->unMountCommand(),maxCount ) ;
 }
 
-bool engines::engine::ownsCipherPath( const QString& cipherPath ) const
-{
-	Q_UNUSED( cipherPath )
-
-	return false ;
-}
-
 const QProcessEnvironment& engines::engine::getProcessEnvironment() const
 {
 	return m_processEnvironment ;
@@ -435,10 +428,10 @@ void engines::engine::GUIMountOptions( QWidget * parent,
 
 	auto& mm = m.GUIOptions() ;
 
-	mm.enableKeyFile = false ;
-	mm.enableCheckBox = false ;
-	mm.enableIdleTime = false ;
-	mm.enableConfigFile = false ;
+	mm.enableKeyFile      = false ;
+	mm.enableCheckBox     = false ;
+	mm.enableIdleTime     = false ;
+	mm.enableConfigFile   = true ;
 	mm.enableMountOptions = false ;
 
 	m.ShowUI() ;
@@ -723,78 +716,103 @@ engines::engines()
 	}
 }
 
-template< typename Engines,typename Compare,typename listSource >
-const engines::engine& _get_engine( const Engines& engines,
-				    const Compare& found,
-				    const listSource& getList )
+template< typename Compare,typename listSource >
+bool _found( const listSource& getList,const Compare& cmp )
 {
-	const auto data = engines.data() ;
+	for( const auto& xt : getList ){
 
-	for( size_t i = 1 ; i < engines.size() ; i++ ){
+		if( cmp( xt ) ){
 
-		const auto& s = **( data + i ) ;
-
-		for( const auto& xt : getList( s ) ){
-
-			if( found( xt ) ){
-
-				return s ;
-			}
+			return true ;
 		}
 	}
 
-	return **data ;
+	return false ;
 }
 
-const engines::engine& engines::getByConfigFileNames( std::function< bool( const QString& ) > function ) const
+bool engines::engine::ownsCipherPath( const QString& cipherPath,
+				      const QString& configFilePath ) const
 {
-	auto list = []( const engines::engine& s ){ return s.configFileNames() ; } ;
+	if( cipherPath.startsWith( this->name() + " ",Qt::CaseInsensitive ) ){
 
-	return _get_engine( m_backends,std::move( function ),list ) ;
+		return true ;
+
+	}else if( utility::pathIsFile( cipherPath ) ){
+
+		return _found( this->fileExtensions(),[ & ]( const QString& e ){
+
+			return cipherPath.endsWith( e ) ;
+		} ) ;
+
+	}else if( configFilePath.isEmpty() ){
+
+		return _found( this->configFileNames(),[ & ]( const QString& e ){
+
+			return utility::pathExists( cipherPath + "/" + e ) ;
+		} ) ;
+	}else{
+		auto ee = [ & ]( const QString& e ){
+
+			return configFilePath.endsWith( e ) ;
+		} ;
+
+		if( _found( this->configFileNames(),ee ) ){
+
+			return true ;
+		}else{
+			return configFilePath.startsWith( "[[[" + this->name() + "]]]" ) ;
+		}
+	}
+}
+
+const engines::engine& engines::getByPaths( const QString& cipherPath,
+					    const QString& configFilePath ) const
+{
+	for( size_t i = 1 ; i < m_backends.size() ; i++ ){
+
+		const auto& m = m_backends[ i ] ;
+
+		if( m->ownsCipherPath( cipherPath,configFilePath ) ){
+
+			return *m ;
+		}
+	}
+
+	return this->getUnKnown() ;
 }
 
 const engines::engine& engines::getByFuseName( const QString& e ) const
 {
 	auto cmp = [ & ]( const QString& s ){ return !e.compare( s,Qt::CaseInsensitive ) ; } ;
-	auto list = []( const engines::engine& s ){ return s.fuseNames() ; } ;
 
-	return _get_engine( m_backends,cmp,list ) ;
-}
+	for( size_t i = 1 ; i < m_backends.size() ; i++ ){
 
-const engines::engine& engines::getByFileExtension( const QString& e ) const
-{
-	auto cmp = [ & ]( const QString& s ){ return e.endsWith( s,Qt::CaseInsensitive ) ; } ;
-	auto list = []( const engines::engine& s ){ return s.fileExtensions() ; } ;
+		const auto& m = m_backends[ i ] ;
 
-	return _get_engine( m_backends,cmp,list ) ;
+		if( _found( m->fuseNames(),cmp ) ){
+
+			return *m ;
+		}
+	}
+
+	return this->getUnKnown() ;
 }
 
 const engines::engine& engines::getByName( const QString& e ) const
 {
 	auto cmp = [ & ]( const QString& s ){ return !e.compare( s,Qt::CaseInsensitive ) ; } ;
-	auto list = []( const engines::engine& s ){ return s.names() ; } ;
 
-	return _get_engine( m_backends,cmp,list ) ;
-}
+	for( size_t i = 1 ; i < m_backends.size() ; i++ ){
 
-const engines::engine& engines::getByCipherFolderPath( const QString& e ) const
-{
-	auto list = []( const engines::engine& s )->std::array< engines::engine::Wrapper,1 >{
+		const auto& m = m_backends[ i ] ;
 
-		if( !s.hasConfigFile() ){
+		if( _found( m->names(),cmp ) ){
 
-			return { s } ;
+			return *m ;
 		}
+	}
 
-		return { engines::engine::Wrapper() } ;
-	} ;
-
-	auto cmp = [ & ]( const engines::engine::Wrapper& s ){
-
-		return s->ownsCipherPath( e ) ;
-	} ;
-
-	return _get_engine( m_backends,cmp,list ) ;
+	return this->getUnKnown() ;
 }
 
 engines::engine::cmdStatus::cmdStatus()

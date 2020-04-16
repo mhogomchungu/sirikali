@@ -31,15 +31,15 @@ checkUpdates::checkUpdates( QWidget * widget,checkforupdateswindow::functions ff
 	m_networkRequest.setRawHeader( "Host","api.github.com" ) ;
 	m_networkRequest.setRawHeader( "Accept-Encoding","text/plain" ) ;
 
-	m_backends.emplace_back( "sirikali","https://api.github.com/repos/mhogomchungu/sirikali/releases" ) ;
+	const auto& engines = engines::instance() ;
 
-	for( const auto& it : engines::instance().supportedEngines() ){
+	m_backends.emplace_back( engines.getUnKnown() ) ;
 
-		const auto& e = it->releaseURL() ;
+	for( const auto& it : engines.supportedEngines() ){
 
-		if( !e.isEmpty() ){
+		if( !it->releaseURL().isEmpty() ){
 
-			m_backends.emplace_back( it->name().toLower(),e ) ;
+			m_backends.emplace_back( it ) ;
 		}
 	}
 }
@@ -121,17 +121,17 @@ void checkUpdates::showResult()
 	}
 }
 
-QString checkUpdates::InstalledVersion( const QString& e )
+QString checkUpdates::InstalledVersion( const engines::engine& e )
 {
-	if( e == "sirikali" ){
+	if( e.unknown() ){
 
 		return THIS_VERSION ;
 	}else{
-		auto s = utility::unwrap( utility::backEndInstalledVersion( e ) ) ;
+		auto s = e.installedVersion().get() ;
 
-		if( s ){
+		if( s.valid() ){
 
-			return s.value() ;
+			return s.toString() ;
 		}else{
 			return "N/A" ;
 		}
@@ -183,35 +183,35 @@ void checkUpdates::checkForUpdate( size_t position )
 
 		this->showResult() ;
 	}else{
-		const auto& e = m_backends[ position ] ;
+		const auto& s = m_backends[ position ] ;
 
 		position++ ;
 
-		auto exe = e.first ;
+		auto f = this->InstalledVersion( s.get() ) ;
 
-		auto f = this->InstalledVersion( exe ) ;
-
-		if( exe == "ecryptfs" ){
-
-			exe = "ecryptfs-simple" ;
-		}
+		auto exeName = s->known() ? s->executableName() : "sirikali" ;
 
 		if( f == "N/A" ){
 
-			m_results += { exe,"N/A","N/A" } ;
+			m_results += { exeName,"N/A","N/A" } ;
 
 			this->checkForUpdate( position ) ;
 		}else {
-			m_networkRequest.setUrl( QUrl( e.second ) ) ;
+			if( s->known() ){
+
+				m_networkRequest.setUrl( QUrl( s->releaseURL() ) ) ;
+			}else{
+				m_networkRequest.setUrl( QUrl( "https://api.github.com/repos/mhogomchungu/sirikali/releases" ) ) ;
+			}
 
 			m_network.get( m_timeOut,m_networkRequest,[ = ]( QNetworkReply& e ){
 
 				try{
-					m_results += { exe,f,this->latestVersion( e.readAll() ) } ;
+					m_results += { exeName,f,this->latestVersion( e.readAll() ) } ;
 
 				}catch( ... ){
 
-					m_results += { exe,f,"N/A" } ;
+					m_results += { exeName,f,"N/A" } ;
 				}
 
 				this->checkForUpdate( position ) ;

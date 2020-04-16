@@ -387,8 +387,16 @@ QStringList fscrypt::mountInfo( const QStringList& a ) const
 	} ) ;
 }
 
-bool fscrypt::ownsCipherPath( const QString& cipherPath ) const
+bool fscrypt::ownsCipherPath( const QString& cipherPath,
+			      const QString& configPath ) const
 {
+	Q_UNUSED( configPath )
+
+	if( QFileInfo( cipherPath ).isFile() ){
+
+		return false ;
+	}
+
 	const auto& exe = this->executableFullPath() ;
 
 	if( exe.isEmpty() ){

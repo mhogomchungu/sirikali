@@ -470,7 +470,7 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 			if( m.isEmpty() ){
 
-				if( m_settings.windowsUseMountPointPath( m_engine->name() ) ){
+				if( m_settings.windowsUseMountPointPath( m_engine.get() ) ){
 
 					auto mm = m_settings.windowsMountPointPath() ;
 
@@ -529,9 +529,7 @@ void keyDialog::setDefaultUI()
 {
 	if( m_create ){
 
-		auto e = engines::instance().getByName( m_exe ).hasGUICreateOptions() ;
-
-		m_ui->pbOptions->setEnabled( e ) ;
+		m_ui->pbOptions->setEnabled( m_engine->hasGUICreateOptions() ) ;
 
 		m_ui->label_3->setVisible( true ) ;
 
@@ -1087,7 +1085,7 @@ void keyDialog::encryptedFolderCreate()
 
 	if( utility::platformIsWindows() ){
 
-		if( m_settings.windowsUseMountPointPath( m_exe.toLower() ) ){
+		if( m_settings.windowsUseMountPointPath( m_engine.get() ) ){
 
 			m = m_settings.windowsMountPointPath() + m ;
 
@@ -1134,18 +1132,16 @@ void keyDialog::encryptedFolderCreate()
 				    m_mountOptions,
 				    m_createOptions ) ;
 
-	const auto& engine = engines::instance().getByName( m_exe.toLower() ) ;
+	if( m_engine->takesTooLongToUnlock() ){
 
-	if( engine.takesTooLongToUnlock() ){
-
-		m_warningLabel.showCreate( engine.name() ) ;
+		m_warningLabel.showCreate( m_engine->name() ) ;
 	}
 
 	this->disableAll() ;
 
 	m_working = true ;
 
-	auto e = siritask::encryptedFolderCreate( s,engine ) ;
+	auto e = siritask::encryptedFolderCreate( s,m_engine.get() ) ;
 
 	m_warningLabel.hide() ;
 

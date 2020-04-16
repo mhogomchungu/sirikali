@@ -27,6 +27,8 @@
 #include <functional>
 #include <utility>
 
+#include "engines.h"
+
 namespace Ui {
 class configFileOption;
 }
@@ -36,14 +38,14 @@ class configFileOption : public QDialog
 	Q_OBJECT
 public:
 	static void instance( QWidget * e,
-			      const QString& app,
+			      const engines::engine& engine,
 			      std::function< void( const QStringList& ) > s )
 	{
-		new configFileOption( e,app,std::move( s ) ) ;
+		new configFileOption( e,engine,std::move( s ) ) ;
 	}
 
 	explicit configFileOption( QWidget * parent,
-				   const QString&,
+				   const engines::engine&,
 				   std::function< void( const QStringList& ) > ) ;
 	~configFileOption() ;
 private slots:
@@ -53,8 +55,8 @@ private slots:
 private:
 	void closeEvent( QCloseEvent * e ) ;
 	Ui::configFileOption * m_ui ;
+	QString m_configFileName ;
 	std::function< void( const QStringList& ) > m_function ;
-	QString m_app ;
 };
 
 #endif // CONFIGFILEOPTION_H

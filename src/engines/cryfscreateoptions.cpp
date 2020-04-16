@@ -26,9 +26,11 @@
 #include "../engines.h"
 
 cryfscreateoptions::cryfscreateoptions( QWidget * parent,
+					const engines::engine& engine,
 					std::function< void( const engines::engine::createOptions& ) > function ) :
 	QDialog( parent ),
 	m_ui( new Ui::cryfscreateoptions ),
+	m_configFileName( engine.configFileName() ),
 	m_function( std::move( function ) )
 {
 	m_ui->setupUi( this ) ;
@@ -66,7 +68,7 @@ cryfscreateoptions::cryfscreateoptions( QWidget * parent,
 		return m ;
 	}() ) ;
 
-	auto exe = engines::instance().getByName( "cryfs" ).executableFullPath() + " --show-ciphers" ;
+	auto exe = engine.executableFullPath() + " --show-ciphers" ;
 
 	utility::Task::run( exe ).then( [ this ]( const utility::Task& e ){
 
@@ -97,7 +99,7 @@ cryfscreateoptions::~cryfscreateoptions()
 
 void cryfscreateoptions::pbSelectConfigPath()
 {
-	m_ui->lineEdit_2->setText( utility::configFilePath( this,"cryfs" ) ) ;
+	m_ui->lineEdit_2->setText( utility::configFilePath( this,m_configFileName ) ) ;
 }
 
 void cryfscreateoptions::pbOK()
