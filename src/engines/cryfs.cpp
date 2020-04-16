@@ -70,30 +70,27 @@ cryfs::cryfs() :
 {
 }
 
-static bool _supported( const QString& path )
-{
-	if( utility::isDriveLetter( path ) ){
-
-		return true ;
-	}else{
-		/*
-		 * We do not support folder paths that are not in drive C:
-		 * to work around this bug: https://github.com/cryfs/cryfs/issues/319
-		 */
-		return path.startsWith( "C:" ) ;
-	}
-}
-
 engines::engine::status cryfs::passAllRequirenments( const engines::engine::options& opt ) const
 {
 	if( utility::platformIsWindows() ){
 
-		if( _supported( opt.plainFolder ) && _supported( opt.cipherFolder ) ){
+		auto a = SiriKali::Windows::driveHasSupportedFileSystem( opt.plainFolder ) ;
 
-			return engines::engine::status::success ;
+		if( a.first ){
+
+			auto b = SiriKali::Windows::driveHasSupportedFileSystem( opt.cipherFolder ) ;
+
+			if( b.first ){
+
+				return engines::engine::status::success ;
+			}else{
+				utility::debug() << b.second ;
+			}
 		}else{
-			return engines::engine::status::cryfsNotSupportedFolderPath ;
+			utility::debug() << a.second ;
 		}
+
+		return engines::engine::status::notSupportedFolderPath ;
 	}else{
 		return engines::engine::status::success ;
 	}

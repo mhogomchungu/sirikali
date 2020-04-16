@@ -267,7 +267,8 @@ public:
 
 			cryfsMigrateFileSystem,
 			cryfsReplaceFileSystem,
-			cryfsNotSupportedFolderPath,
+			notSupportedFolderPath,
+			mountPointFolderNotEmpty,
 			IllegalPath,
 
 			fscryptPartialVolumeClose,

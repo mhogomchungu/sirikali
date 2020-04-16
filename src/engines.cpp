@@ -961,9 +961,13 @@ QString engines::engine::cmdStatus::toString() const
 
 		return QObject::tr( "This Volume Of Cryfs Is Different From The Known One.\n\nCheck The \"Replace File System\" Option And Unlock The Volume Again To Replace The Previous File System." ) ;
 
-	case engines::engine::status::cryfsNotSupportedFolderPath :
+	case engines::engine::status::notSupportedFolderPath :
 
-		return QObject::tr( "Cipher Path and Mount Path Must Be On Drive \"%1\"" ).arg( "C:" ) ;
+		return QObject::tr( "Cipher Folder Path and Mount Point Folder Path Must Reside In An NTFS FileSystem." ) ;
+
+	case engines::engine::status::mountPointFolderNotEmpty :
+
+		return QObject::tr( "Mount Point Folder Path Is Not Empty." ) ;
 
 	case engines::engine::status::encfsNotFound :
 

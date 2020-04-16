@@ -115,6 +115,69 @@ static QString _readRegistry( const char * subKey,const char * key )
 	return _reg_get_value( s.get(),key ) ;
 }
 
+static void _free_buffer( LPTSTR e )
+{
+	LocalFree( e ) ;
+}
+
+static LPTSTR _msg( bool * success,DWORD err )
+{
+	LPTSTR s = nullptr ;
+
+	DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_ALLOCATE_BUFFER ;
+
+	const DWORD m = FormatMessage( flags,
+				       nullptr,
+				       err,
+				       MAKELANGID( LANG_NEUTRAL,SUBLANG_DEFAULT ),
+				       reinterpret_cast< LPTSTR >( &s ),
+				       0,
+				       nullptr ) ;
+
+	*success = m > 0 ;
+	return s ;
+}
+
+static QString _errorMsg( DWORD err )
+{
+	bool success ;
+
+	auto a = utility2::unique_rsc( _msg,_free_buffer,&success,err ) ;
+
+	if( success ){
+
+		return QString::fromLatin1( a.get() ) ;
+	}else{
+		return "Unknown error has occurred." ;
+	}
+}
+
+std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path,const QStringList& l )
+{
+	auto a = path.mid( 0,1 ).toStdWString()[ 0 ] ;
+
+	WCHAR rpath[ 4 ] = { a,':','\\','\0' } ;
+
+	std::array< WCHAR,1024 > fsname ;
+
+	if( GetVolumeInformationW( rpath,nullptr,0,nullptr,nullptr,nullptr,fsname.data(),fsname.size() ) ) {
+
+		auto m = QString::fromWCharArray( fsname.data() ) ;
+
+		for( const auto& it : l ){
+
+			if( it == m ){
+
+				return { true,QString() } ;
+			}
+		}
+
+		return { false,QString( "SiriKali::Error: \"%1\" File System on Path \"%2\" Is Not Supported." ).arg( m,path ) } ;
+	}else{
+		return { false,_errorMsg( GetLastError() ) } ;
+	}
+}
+
 #else
 
 static int _terminateProcess( unsigned long pid )
@@ -128,6 +191,11 @@ static QString _readRegistry( const char * subKey,const char * key )
 	Q_UNUSED( subKey )
 	Q_UNUSED( key )
 	return QString() ;
+}
+
+std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path,const QStringList& l )
+{
+	return { false,QString() } ;
 }
 
 #endif
@@ -442,7 +510,7 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 			}else{
 				utility::waitForFinished( *exe ) ;
 
-				return Task::process::result( "SiriKali::Error Backend Disappeared For Some Reason (It Probably Crashed).",
+				return Task::process::result( "SiriKali::Error: Backend Disappeared For Some Reason (It Probably Crashed).",
 							      QByteArray(),
 							      -1,
 							      0,

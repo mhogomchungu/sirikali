@@ -57,6 +57,8 @@ QString engineInstalledDir( const QString& key,const QString& value ) ;
 
 QStringList engineInstalledDirs() ;
 
+std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path,const QStringList& = { "NTFS" } ) ;
+
 bool mountPointTaken( const QString& ) ;
 
 void updateVolumeList( std::function< void() > ) ;
