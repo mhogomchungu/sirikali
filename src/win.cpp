@@ -115,9 +115,9 @@ static QString _readRegistry( const char * subKey,const char * key )
 	return _reg_get_value( s.get(),key ) ;
 }
 
-static LPTSTR _msg( bool * success,DWORD err )
+static auto _msg( DWORD err )
 {
-	LPTSTR s = nullptr ;
+	TCHAR * s = nullptr ;
 
 	DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_ALLOCATE_BUFFER ;
 
@@ -125,23 +125,20 @@ static LPTSTR _msg( bool * success,DWORD err )
 				nullptr,
 				err,
 				MAKELANGID( LANG_NEUTRAL,SUBLANG_DEFAULT ),
-				reinterpret_cast< LPTSTR >( &s ),
+				reinterpret_cast< TCHAR * >( &s ),
 				0,
 				nullptr ) ;
 
-	*success = m > 0 ;
-	return s ;
+	return std::make_pair( m > 0,utility2::unique_ptr( s,[]( TCHAR * e ){ LocalFree( e ) ; } ) ) ;
 }
 
 static QString _errorMsg( DWORD err,const QString& path )
 {
-	bool success ;
+	auto a = _msg( err ) ;
 
-	auto a = utility2::unique_rsc( _msg,[]( LPTSTR e ){ LocalFree( e ) ; },&success,err ) ;
+	if( a.first ){
 
-	if( success ){
-
-		return "SiriKali::Error: Error On Path \"" + path + "\" : " + QString::fromLatin1( a.get() ) ;
+		return "SiriKali::Error: Error On Path \"" + path + "\" : " + QString::fromLatin1( a.second.get() ) ;
 	}else{
 		return "SiriKali::Error: Unknown Error Has Occurred On Path \"" + path + "\"" ;
 	}
@@ -151,11 +148,11 @@ std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path,const
 {
 	auto a = path.mid( 0,1 ).toStdWString()[ 0 ] ;
 
-	WCHAR rpath[ 4 ] = { a,':','\\','\0' } ;
+	std::array< WCHAR,4 >rpath = { a,':','\\','\0' } ;
 
 	std::array< WCHAR,1024 > fsname ;
 
-	if( GetVolumeInformationW( rpath,nullptr,0,nullptr,nullptr,nullptr,fsname.data(),fsname.size() ) ) {
+	if( GetVolumeInformationW( rpath.data(),nullptr,0,nullptr,nullptr,nullptr,fsname.data(),fsname.size() ) ) {
 
 		auto m = QString::fromWCharArray( fsname.data() ) ;
 
