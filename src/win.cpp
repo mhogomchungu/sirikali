@@ -115,24 +115,19 @@ static QString _readRegistry( const char * subKey,const char * key )
 	return _reg_get_value( s.get(),key ) ;
 }
 
-static void _free_buffer( LPTSTR e )
-{
-	LocalFree( e ) ;
-}
-
 static LPTSTR _msg( bool * success,DWORD err )
 {
 	LPTSTR s = nullptr ;
 
 	DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_ALLOCATE_BUFFER ;
 
-	const DWORD m = FormatMessage( flags,
-				       nullptr,
-				       err,
-				       MAKELANGID( LANG_NEUTRAL,SUBLANG_DEFAULT ),
-				       reinterpret_cast< LPTSTR >( &s ),
-				       0,
-				       nullptr ) ;
+	auto m = FormatMessage( flags,
+				nullptr,
+				err,
+				MAKELANGID( LANG_NEUTRAL,SUBLANG_DEFAULT ),
+				reinterpret_cast< LPTSTR >( &s ),
+				0,
+				nullptr ) ;
 
 	*success = m > 0 ;
 	return s ;
@@ -142,7 +137,7 @@ static QString _errorMsg( DWORD err,const QString& path )
 {
 	bool success ;
 
-	auto a = utility2::unique_rsc( _msg,_free_buffer,&success,err ) ;
+	auto a = utility2::unique_rsc( _msg,[]( LPTSTR e ){ LocalFree( e ) ; },&success,err ) ;
 
 	if( success ){
 
@@ -154,11 +149,6 @@ static QString _errorMsg( DWORD err,const QString& path )
 
 std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path,const QStringList& l )
 {
-	if( utility::isDriveLetter( path ) ){
-
-		return { true,QString() } ;
-	}
-
 	auto a = path.mid( 0,1 ).toStdWString()[ 0 ] ;
 
 	WCHAR rpath[ 4 ] = { a,':','\\','\0' } ;

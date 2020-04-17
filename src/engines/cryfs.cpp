@@ -70,32 +70,6 @@ cryfs::cryfs() :
 {
 }
 
-engines::engine::status cryfs::passAllRequirenments( const engines::engine::options& opt ) const
-{
-	if( utility::platformIsWindows() ){
-
-		auto a = SiriKali::Windows::driveHasSupportedFileSystem( opt.plainFolder ) ;
-
-		if( a.first ){
-
-			auto b = SiriKali::Windows::driveHasSupportedFileSystem( opt.cipherFolder ) ;
-
-			if( b.first ){
-
-				return engines::engine::status::success ;
-			}else{
-				utility::debug() << b.second ;
-			}
-		}else{
-			utility::debug() << a.second ;
-		}
-
-		return engines::engine::status::notSupportedFolderPath ;
-	}else{
-		return engines::engine::status::success ;
-	}
-}
-
 QProcessEnvironment cryfs::setEnv() const
 {
 	auto s = engines::engine::getProcessEnvironment() ;
@@ -226,9 +200,9 @@ void cryfs::GUIMountOptions( QWidget * parent,
 	auto& ee = e.GUIOptions() ;
 
 	ee.checkBoxChecked = l.opts.allowReplacedFileSystem ;
-	ee.checkBoxText = QObject::tr( "Allow Replaced File System" ) ;
-	ee.enableCheckBox = true ;
-	ee.enableKeyFile = false ;
+	ee.checkBoxText    = QObject::tr( "Allow Replaced File System" ) ;
+	ee.enableCheckBox  = true ;
+	ee.enableKeyFile   = false ;
 
 	ee.updateOptions = []( const ::options::Options& s ){
 

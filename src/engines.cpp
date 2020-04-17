@@ -571,11 +571,43 @@ engines::engine::error engines::engine::errorCode( const QString& e ) const
 	}
 }
 
-engines::engine::status engines::engine::passAllRequirenments( const engines::engine::options& opts ) const
+engines::engine::status engines::engine::passAllRequirenments( const engines::engine::options& opt ) const
 {
-	Q_UNUSED( opts )
+	if( utility::platformIsWindows() ){
 
-	return engines::engine::status::success ;
+		if( !utility::isDriveLetter( opt.plainFolder ) ){
+
+			if( utility::folderNotEmpty( opt.plainFolder ) ){
+
+				return engines::engine::status::mountPointFolderNotEmpty ;
+			}else{
+				auto a = SiriKali::Windows::driveHasSupportedFileSystem( opt.plainFolder ) ;
+
+				if( !a.first ){
+
+					utility::debug() << a.second ;
+					return engines::engine::status::notSupportedFolderPath ;
+				}
+			}
+		}
+
+		if( this->name() == "sshfs" ){
+
+			return engines::engine::status::success ;
+		}
+
+		auto b = SiriKali::Windows::driveHasSupportedFileSystem( opt.cipherFolder ) ;
+
+		if( b.first ){
+
+			return engines::engine::status::success ;
+		}else{
+			utility::debug() << b.second ;
+			return engines::engine::status::notSupportedFolderPath ;
+		}
+	}else{
+		return engines::engine::status::success ;
+	}
 }
 
 void engines::engine::updateOptions( engines::engine::options& e ) const

@@ -389,6 +389,8 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 	}else{
 		m_engine = siritask::mountEngine( { m_path,m_configFile,siritask::Engine() } ) ;
 
+		m_ui->pbMountPoint_1->setEnabled( m_engine->supportsMountPathsOnWindows() ) ;
+
 		auto m = m_ui->pbOptions->menu() ;
 
 		if( m ){
@@ -793,6 +795,8 @@ void keyDialog::enableAll()
 	if( utility::platformIsNOTWindows() ){
 
 		m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
+	}else{
+		m_ui->pbMountPoint_1->setEnabled( m_engine->supportsMountPathsOnWindows() ) ;
 	}
 
 	m_ui->lineEditFolderPath->setEnabled( false ) ;

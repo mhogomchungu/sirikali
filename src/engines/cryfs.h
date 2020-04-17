@@ -24,8 +24,6 @@ class cryfs : public engines::engine
 public:
 	cryfs() ;
 
-	engine::engine::status passAllRequirenments( const engines::engine::options& opt ) const override ;
-
 	bool takesTooLongToUnlock() const override ;
 
 	const QProcessEnvironment& getProcessEnvironment() const override ;

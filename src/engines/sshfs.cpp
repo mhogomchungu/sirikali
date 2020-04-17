@@ -77,7 +77,13 @@ engines::engine::status sshfs::passAllRequirenments( const engines::engine::opti
 
 	if( utility::platformIsWindows() ){
 
-		if( m_version_greater_or_equal_minimum ){
+		auto m = engines::engine::passAllRequirenments( opt ) ;
+
+		if( m != engines::engine::status::success ){
+
+			return m ;
+
+		}else if( m_version_greater_or_equal_minimum ){
 
 			return engines::engine::status::success ;
 		}else{
