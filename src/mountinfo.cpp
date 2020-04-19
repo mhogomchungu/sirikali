@@ -455,9 +455,9 @@ mountinfo::folderMountEvents::folderMountEvents( std::function< void( const QStr
 						s = utility::removeLast( s,1 ) ;
 					}
 
-					m_fds.emplace_back( e,s,m_update ) ;
+					m_fds.emplace_back( e,s ) ;
 				}else{
-					m_fds.emplace_back( e,it,m_update ) ;
+					m_fds.emplace_back( e,it ) ;
 				}
 			}
 		}
@@ -479,7 +479,8 @@ void mountinfo::folderMountEvents::start()
 
 	int select_fd = m_inotify_fd + 1 ;
 
-	int interval = settings::instance().mountMonitorFolderPollingInterval() ;
+	//int interval = settings::instance().mountMonitorFolderPollingInterval() ;
+	int interval = 0 ; //No longer listening for timeouts
 
 	auto _reset_variables = [ & ](){
 
@@ -536,19 +537,11 @@ void mountinfo::folderMountEvents::start()
 
 				if( it.fd() == event->wd ){
 
-					it.contentCountChanged() ;
+					m_update( it.path() + event->name ) ;
 
 					break ;
 				}
 			}
-		}
-	} ;
-
-	auto _processTimeout = [ & ](){
-
-		for( auto& it : m_fds ){
-
-			it.contentCountChanged() ;
 		}
 	} ;
 
@@ -568,7 +561,9 @@ void mountinfo::folderMountEvents::start()
 
 		}else if( e.timeout ){
 
-			_processTimeout() ;
+			/*
+			 * Not listening to timeouts
+			 */
 		}
 	}
 }

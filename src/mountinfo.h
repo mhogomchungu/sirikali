@@ -158,31 +158,23 @@ private:
 	private:
 		class entry{
 		public:
-			entry( int fd,
-			       const QString& path,
-			       std::function< void( const QString& ) >& update ) :
-				m_folderMonitor( false,path ),
-				m_fd( fd ),
-				m_update( &update )
+			entry( int fd,const QString& path ) :
+				m_path( path + "/" ),
+				m_fd( fd )
 			{
 			}
 			~entry() ;
-			const QString& path() const
+			const QString& path()
 			{
-				return m_folderMonitor.path() ;
+				return m_path ;
 			}
 			int fd() const
 			{
 				return m_fd ;
 			}
-			void contentCountChanged()
-			{
-				m_folderMonitor.contentCountIncreased( *m_update ) ;
-			}
 		private:
-			folderMonitor m_folderMonitor ;
+			QString m_path ;
 			int m_fd ;
-			std::function< void( const QString& ) > * m_update ;
 		} ;
 		std::vector< mountinfo::folderMountEvents::entry > m_fds ;
 		int m_inotify_fd ;
