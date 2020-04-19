@@ -455,9 +455,9 @@ mountinfo::folderMountEvents::folderMountEvents( std::function< void( const QStr
 						s = utility::removeLast( s,1 ) ;
 					}
 
-					m_fds.emplace_back( e,s ) ;
+					m_fds.emplace_back( e,s,m_update ) ;
 				}else{
-					m_fds.emplace_back( e,it ) ;
+					m_fds.emplace_back( e,it,m_update ) ;
 				}
 			}
 		}
@@ -532,11 +532,11 @@ void mountinfo::folderMountEvents::start()
 
 		if( event->mask & IN_CREATE ){
 
-			for( const auto& it : m_fds ){
+			for( auto& it : m_fds ){
 
 				if( it.fd() == event->wd ){
 
-					m_update( it.path() + "/" + event->name ) ;
+					it.contentCountChanged() ;
 
 					break ;
 				}
@@ -548,7 +548,7 @@ void mountinfo::folderMountEvents::start()
 
 		for( auto& it : m_fds ){
 
-			it.contentCountChanged( m_update ) ;
+			it.contentCountChanged() ;
 		}
 	} ;
 
@@ -576,11 +576,6 @@ void mountinfo::folderMountEvents::start()
 void mountinfo::folderMountEvents::stop()
 {
 	close( m_inotify_fd ) ;
-
-	for( const auto& it : m_fds ){
-
-		close( it.fd() ) ;
-	}
 }
 
 bool mountinfo::folderMountEvents::monitor()
@@ -588,7 +583,16 @@ bool mountinfo::folderMountEvents::monitor()
 	return m_inotify_fd != -1 && m_fds.size() > 0 ;
 }
 
+mountinfo::folderMountEvents::entry::~entry()
+{
+	close( m_fd ) ;
+}
+
 #else
+
+mountinfo::folderMountEvents::entry::~entry()
+{
+}
 
 mountinfo::folderMountEvents::folderMountEvents( std::function< void( const QString& ) > e )
 {
