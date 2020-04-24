@@ -57,7 +57,7 @@ QString engineInstalledDir( const QString& key,const QString& value ) ;
 
 QStringList engineInstalledDirs() ;
 
-std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path,const QStringList& = { "NTFS" } ) ;
+std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path ) ;
 
 bool mountPointTaken( const QString& ) ;
 

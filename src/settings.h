@@ -207,6 +207,7 @@ public:
 	int readPasswordMaximumLength() ;
 	bool unMountVolumesOnLogout( void ) ;
 	QStringList mountMonitorFolderPaths( void ) ;
+	QStringList supportedFileSystemsOnMountPaths( void ) ;
 	QString gvfsFuseMonitorPath( void ) ;
 	int mountMonitorFolderPollingInterval( void ) ;
 private:

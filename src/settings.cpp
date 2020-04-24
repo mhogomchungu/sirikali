@@ -417,6 +417,16 @@ QStringList settings::mountMonitorFolderPaths()
 	return m_settings.value( "MountMonitorFolderPaths" ).toStringList() ;
 }
 
+QStringList settings::supportedFileSystemsOnMountPaths()
+{
+	if( !m_settings.contains( "SupportedFileSystemsOnMountPaths" ) ){
+
+		m_settings.setValue( "SupportedFileSystemsOnMountPaths",QStringList( { "NTFS" } ) ) ;
+	}
+
+	return m_settings.value( "SupportedFileSystemsOnMountPaths" ).toStringList() ;
+}
+
 QString settings::gvfsFuseMonitorPath()
 {
 	if( !m_settings.contains( "GvfsFuseMonitorPath" ) ){

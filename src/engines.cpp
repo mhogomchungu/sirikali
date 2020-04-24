@@ -598,6 +598,14 @@ engines::engine::status engines::engine::passAllRequirenments( const engines::en
 
 				return engines::engine::status::mountPointFolderNotEmpty ;
 			}
+
+			auto a = SiriKali::Windows::driveHasSupportedFileSystem( opt.plainFolder ) ;
+
+			if( !a.first ){
+
+				utility::debug() << a.second ;
+				return engines::engine::status::notSupportedFolderPath ;
+			}
 		}
 
 		if( this->name() != "cryfs" ){
@@ -612,13 +620,6 @@ engines::engine::status engines::engine::passAllRequirenments( const engines::en
 		 *
 		 * [1] https://github.com/cryfs/cryfs/issues/319
 		 */
-		auto a = SiriKali::Windows::driveHasSupportedFileSystem( opt.plainFolder ) ;
-
-		if( !a.first ){
-
-			utility::debug() << a.second ;
-			return engines::engine::status::notSupportedFolderPath ;
-		}
 
 		auto b = SiriKali::Windows::driveHasSupportedFileSystem( opt.cipherFolder ) ;
 

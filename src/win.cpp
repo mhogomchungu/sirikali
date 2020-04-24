@@ -144,7 +144,7 @@ static QString _errorMsg( DWORD err,const QString& path )
 	}
 }
 
-std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path,const QStringList& l )
+std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path )
 {
 	auto a = path.mid( 0,1 ).toStdWString()[ 0 ] ;
 
@@ -156,7 +156,7 @@ std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path,const
 
 		auto m = QString::fromWCharArray( fsname.data() ) ;
 
-		for( const auto& it : l ){
+		for( const auto& it : settings::instance().supportedFileSystemsOnMountPaths() ){
 
 			if( it == m ){
 
@@ -185,10 +185,9 @@ static QString _readRegistry( const char * subKey,const char * key )
 	return QString() ;
 }
 
-std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path,const QStringList& l )
+std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path )
 {
 	Q_UNUSED( path )
-	Q_UNUSED( l )
 
 	return { false,QString() } ;
 }
