@@ -268,7 +268,7 @@ public:
 
 			cryfsMigrateFileSystem,
 			cryfsReplaceFileSystem,
-			notSupportedFolderPath,
+			notSupportedMountPointFolderPath,
 			mountPointFolderNotEmpty,
 			IllegalPath,
 

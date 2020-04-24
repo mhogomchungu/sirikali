@@ -185,6 +185,26 @@ engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 	return engines::engine::status::backendFail ;
 }
 
+engines::engine::status cryfs::passAllRequirenments( const engines::engine::cmdArgsList::options& opt ) const
+{
+	auto s = engines::engine::passAllRequirenments( opt ) ;
+
+	if( s == engines::engine::status::success ){
+
+		if( utility::platformIsWindows() ){
+
+			/*
+			 * Not sure how to work around this[1] bug report but it
+			 * should be handled here.
+			 *
+			 * [1] https://github.com/cryfs/cryfs/issues/319
+			 */
+		}
+	}
+
+	return s ;
+}
+
 void cryfs::GUICreateOptions( const engines::engine::createGUIOptions& s ) const
 {
 	cryfscreateoptions::instance( *this,s ) ;

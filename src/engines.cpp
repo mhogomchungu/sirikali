@@ -585,7 +585,7 @@ static bool _illegal_path( const engines::engine::cmdArgsList::options& opts,
 
 engines::engine::status engines::engine::passAllRequirenments( const engines::engine::cmdArgsList::options& opt ) const
 {
-	if( _illegal_path( opt,*this ) ){
+	if( utility::platformIsLinux() && _illegal_path( opt,*this ) ){
 
 		return engines::engine::status::IllegalPath ;
 	}
@@ -604,35 +604,12 @@ engines::engine::status engines::engine::passAllRequirenments( const engines::en
 			if( !a.first ){
 
 				utility::debug() << a.second ;
-				return engines::engine::status::notSupportedFolderPath ;
+				return engines::engine::status::notSupportedMountPointFolderPath ;
 			}
 		}
-
-		if( this->name() != "cryfs" ){
-
-			return engines::engine::status::success ;
-		}
-
-		/*
-		 * CryFS backend on Windows has issues as discussed here[1] and we are
-		 * trying to solve them here and current solution is to not allow
-		 * access to none NTFS file systems.
-		 *
-		 * [1] https://github.com/cryfs/cryfs/issues/319
-		 */
-
-		auto b = SiriKali::Windows::driveHasSupportedFileSystem( opt.cipherFolder ) ;
-
-		if( b.first ){
-
-			return engines::engine::status::success ;
-		}else{
-			utility::debug() << b.second ;
-			return engines::engine::status::notSupportedFolderPath ;
-		}
-	}else{
-		return engines::engine::status::success ;
 	}
+
+	return engines::engine::status::success ;
 }
 
 void engines::engine::updateOptions( engines::engine::cmdArgsList::options& e ) const
@@ -1018,9 +995,9 @@ QString engines::engine::cmdStatus::toString() const
 
 		return QObject::tr( "This Volume Of Cryfs Is Different From The Known One.\n\nCheck The \"Replace File System\" Option And Unlock The Volume Again To Replace The Previous File System." ) ;
 
-	case engines::engine::status::notSupportedFolderPath :
+	case engines::engine::status::notSupportedMountPointFolderPath :
 
-		return QObject::tr( "Cipher Folder Path and Mount Point Folder Path Must Reside In An NTFS FileSystem." ) ;
+		return QObject::tr( "Mount Point Folder Path Must Reside In An NTFS FileSystem." ) ;
 
 	case engines::engine::status::mountPointFolderNotEmpty :
 

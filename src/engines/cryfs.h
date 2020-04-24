@@ -30,6 +30,8 @@ public:
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 
+	engines::engine::status passAllRequirenments( const engines::engine::cmdArgsList::options& opt ) const override ;
+
 	engines::engine::args command( const QByteArray& password,
 				       const engines::engine::cmdArgsList& args ) const override ;
 
