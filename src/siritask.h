@@ -114,11 +114,11 @@ namespace siritask
 
 	engines::engine::cmdStatus encryptedFolderUnMount( const siritask::unmount& ) ;
 
-	engines::engine::cmdStatus encryptedFolderMount( const engines::engine::options&,
+	engines::engine::cmdStatus encryptedFolderMount( const engines::engine::cmdArgsList::options&,
 							 bool = false,
 							 const siritask::Engine& = siritask::Engine() ) ;
 
-	engines::engine::cmdStatus encryptedFolderCreate( const engines::engine::options&,
+	engines::engine::cmdStatus encryptedFolderCreate( const engines::engine::cmdArgsList::options&,
 							  const engines::engine& ) ;
 }
 

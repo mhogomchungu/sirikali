@@ -81,7 +81,7 @@ static bool _set_if_found( const Function& function )
 	return false ;
 }
 
-void gocryptfs::updateOptions( engines::engine::options& opt ) const
+void gocryptfs::updateOptions( engines::engine::cmdArgsList::options& opt ) const
 {
 	opt.boolOptions.unlockInReverseMode = [ & ](){
 
@@ -176,27 +176,24 @@ engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const
 	return engines::engine::status::backendFail ;
 }
 
-void gocryptfs::GUICreateOptions( QWidget * parent,engine::engine::fCreateOptions function ) const
+void gocryptfs::GUICreateOptions( const engines::engine::createGUIOptions& s ) const
 {
-	gocryptfscreateoptions::instance( parent,*this,std::move( function ) ) ;
+	gocryptfscreateoptions::instance( *this,s ) ;
 }
 
-void gocryptfs::GUIMountOptions( QWidget * parent,
-				 bool r,
-				 const engines::engine::mountOptions& l,
-				 engines::engine::fMountOptions f ) const
+void gocryptfs::GUIMountOptions( const engines::engine::mountGUIOptions& s ) const
 {
-	auto& e = ::options::instance( parent,*this,r,l,std::move( f ) ) ;
+	auto& e = options::instance( *this,s ) ;
 
 	auto& ee = e.GUIOptions() ;
 
 	ee.enableKeyFile = false ;
 
-	ee.checkBoxChecked = l.opts.unlockInReverseMode ;
+	ee.checkBoxChecked = s.mOpts.opts.unlockInReverseMode ;
 
 	ee.updateOptions = []( const ::options::Options& s ){
 
-		engines::engine::options::booleanOptions e ;
+		engines::engine::booleanOptions e ;
 
 		e.unlockInReverseMode = s.checkBoxChecked ;
 

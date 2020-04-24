@@ -24,14 +24,13 @@
 
 #include <QFileDialog>
 
-securefscreateoptions::securefscreateoptions( QWidget * parent,
-					      const engines::engine& engine,
-					      bool e,
-					      engines::engine::fCreateOptions function ) :
-	QDialog( parent ),
+securefscreateoptions::securefscreateoptions( const engines::engine& engine,
+					      const engines::engine::createGUIOptions& s,
+					      bool e ) :
+	QDialog( s.parent ),
 	m_ui( new Ui::securefscreateoptions ),
 	m_configFileName( engine.configFileName() ),
-	m_function( std::move( function ) )
+	m_function( s.fCreateOptions )
 {
 	m_ui->setupUi( this ) ;
 
@@ -52,9 +51,9 @@ securefscreateoptions::securefscreateoptions( QWidget * parent,
 
 	m_ui->comboBox->setFocus() ;
 
-	auto s = tr( "The \"lite format\" simply encrypts filenames and file contents separately, similar to how encfs operates, although with more security.\n\nThe \"full format\" maps files, directories and symlinks in the virtual filesystem all to regular files in the underlying filesystem. The directory structure is flattened and recorded as B-trees in files.\n\nThe lite format has become the default on Unix-like operating systems as it is much faster and features easier conflict resolution, especially when used with DropBox, Google Drive, etc. The full format, however, leaks fewer information about the filesystem hierarchy, runs relatively independent of the features of the underlying filesystem, and is in general more secure." ) ;
+	auto ss = tr( "The \"lite format\" simply encrypts filenames and file contents separately, similar to how encfs operates, although with more security.\n\nThe \"full format\" maps files, directories and symlinks in the virtual filesystem all to regular files in the underlying filesystem. The directory structure is flattened and recorded as B-trees in files.\n\nThe lite format has become the default on Unix-like operating systems as it is much faster and features easier conflict resolution, especially when used with DropBox, Google Drive, etc. The full format, however, leaks fewer information about the filesystem hierarchy, runs relatively independent of the features of the underlying filesystem, and is in general more secure." ) ;
 
-	m_ui->plainTextEdit->appendPlainText( s ) ;
+	m_ui->plainTextEdit->appendPlainText( ss ) ;
 
 	this->show() ;
 }
@@ -70,9 +69,9 @@ void securefscreateoptions::pbOK()
 
 	if( m_ui->comboBox->currentIndex() == 1 ){
 
-		this->HideUI( { { "--format 2",m_ui->lineEdit->text(),m_ui->lineEdit_2->text() } } ) ;
+		this->HideUI( { "--format 2",m_ui->lineEdit->text(),m_ui->lineEdit_2->text() } ) ;
 	}else{
-		this->HideUI( { { "--format 4",m_ui->lineEdit->text(),m_ui->lineEdit_2->text() } } ) ;
+		this->HideUI( { "--format 4",m_ui->lineEdit->text(),m_ui->lineEdit_2->text() } ) ;
 	}
 }
 
@@ -96,7 +95,7 @@ void securefscreateoptions::pbKeyFilePath()
 	}
 }
 
-void securefscreateoptions::HideUI( const engines::engine::createOptions& opts )
+void securefscreateoptions::HideUI( const engines::engine::cOpts& opts )
 {
 	this->hide() ;
 	m_function( opts ) ;

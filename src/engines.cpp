@@ -169,7 +169,7 @@ engines::engine::status engines::engine::errorCode( const QString& e,int s ) con
 	return engines::engine::status::backendFail ;
 }
 
-void engines::engine::updateVolumeList( const engines::engine::options& e ) const
+void engines::engine::updateVolumeList( const engines::engine::cmdArgsList::options& e ) const
 {
 	Q_UNUSED( e )
 }
@@ -380,7 +380,7 @@ bool engines::engine::supportsMountPathsOnWindows() const
 	return m_Options.supportsMountPathsOnWindows ;
 }
 
-bool engines::engine::requiresAPassword( const engines::engine::options& opts ) const
+bool engines::engine::requiresAPassword( const engines::engine::cmdArgsList::options& opts ) const
 {
 	Q_UNUSED( opts )
 
@@ -412,19 +412,15 @@ bool engines::engine::requiresPolkit() const
 	return m_Options.requiresPolkit ;
 }
 
-void engines::engine::GUICreateOptions( QWidget * parent,
-					engine::engine::fCreateOptions function ) const
+void engines::engine::GUICreateOptions( const engines::engine::createGUIOptions& e ) const
 {
-	Q_UNUSED( parent )
-	function( {} ) ;
+	Q_UNUSED( e )
+	e.fCreateOptions( {} ) ;
 }
 
-void engines::engine::GUIMountOptions( QWidget * parent,
-				       bool r,
-				       const engines::engine::mountOptions& e,
-				       engines::engine::fMountOptions f ) const
+void engines::engine::GUIMountOptions( const engines::engine::mountGUIOptions& s ) const
 {
-	auto& m = ::options::instance( parent,*this,r,e,std::move( f ) ) ;
+	auto& m = options::instance( *this,s ) ;
 
 	auto& mm = m.GUIOptions() ;
 
@@ -571,8 +567,29 @@ engines::engine::error engines::engine::errorCode( const QString& e ) const
 	}
 }
 
-engines::engine::status engines::engine::passAllRequirenments( const engines::engine::options& opt ) const
+static bool _illegal_path( const engines::engine::cmdArgsList::options& opts,
+			   const engines::engine& engine )
 {
+	if( engine.requiresPolkit() && utility::useSiriPolkit() ){
+
+		if( engine.backendRequireMountPath() ){
+
+			return opts.cipherFolder.contains( " " ) || opts.plainFolder.contains( " " ) ;
+		}else {
+			return opts.cipherFolder.contains( " " ) ;
+		}
+	}else{
+		return false ;
+	}
+}
+
+engines::engine::status engines::engine::passAllRequirenments( const engines::engine::cmdArgsList::options& opt ) const
+{
+	if( _illegal_path( opt,*this ) ){
+
+		return engines::engine::status::IllegalPath ;
+	}
+
 	if( utility::platformIsWindows() ){
 
 		if( !utility::isDriveLetter( opt.plainFolder ) ){
@@ -580,20 +597,27 @@ engines::engine::status engines::engine::passAllRequirenments( const engines::en
 			if( utility::folderNotEmpty( opt.plainFolder ) ){
 
 				return engines::engine::status::mountPointFolderNotEmpty ;
-			}else{
-				auto a = SiriKali::Windows::driveHasSupportedFileSystem( opt.plainFolder ) ;
-
-				if( !a.first ){
-
-					utility::debug() << a.second ;
-					return engines::engine::status::notSupportedFolderPath ;
-				}
 			}
 		}
 
-		if( this->name() == "sshfs" ){
+		if( this->name() != "cryfs" ){
 
 			return engines::engine::status::success ;
+		}
+
+		/*
+		 * CryFS backend on Windows has issues as discussed here[1] and we are
+		 * trying to solve them here and current solution is to not allow
+		 * access to none NTFS file systems.
+		 *
+		 * [1] https://github.com/cryfs/cryfs/issues/319
+		 */
+		auto a = SiriKali::Windows::driveHasSupportedFileSystem( opt.plainFolder ) ;
+
+		if( !a.first ){
+
+			utility::debug() << a.second ;
+			return engines::engine::status::notSupportedFolderPath ;
 		}
 
 		auto b = SiriKali::Windows::driveHasSupportedFileSystem( opt.cipherFolder ) ;
@@ -610,7 +634,7 @@ engines::engine::status engines::engine::passAllRequirenments( const engines::en
 	}
 }
 
-void engines::engine::updateOptions( engines::engine::options& e ) const
+void engines::engine::updateOptions( engines::engine::cmdArgsList::options& e ) const
 {
 	Q_UNUSED( e )
 }
@@ -1071,64 +1095,114 @@ QString engines::engine::cmdStatus::toString() const
 	return e + "\n----------------------------------------\n" + m_message ;
 }
 
-engines::engine::createOptions::createOptions( QStringList s,const options::booleanOptions& r ) :
-	options( std::move( s ) ),opts( r ),success( true )
+engines::engine::createGUIOptions::createOptions::createOptions( const QString& createOpts,
+								 const QString& configFile,
+								 const QString& keyFile,
+								 const engines::engine::booleanOptions& r ) :
+	createOpts( createOpts ),
+	configFile( configFile ),
+	keyFile( keyFile ),
+	opts( r ),
+	success( true )
 {
 }
 
-engines::engine::createOptions::createOptions( QStringList s ) :
-	options( std::move( s ) ),success( true )
+engines::engine::createGUIOptions::createOptions::createOptions( const QString& createOpts,
+								 const QString& configFile,
+								 const QString& keyFile ) :
+	createOpts( createOpts ),
+	configFile( configFile ),
+	keyFile( keyFile ),
+	success( true )
 {
 }
 
-engines::engine::createOptions::createOptions( const options::booleanOptions& r ) :
-	opts( r ),success( true )
+engines::engine::createGUIOptions::createOptions::createOptions( const engines::engine::booleanOptions& r ) :
+	opts( r )
 {
 }
 
-engines::engine::createOptions::createOptions() : success( false )
+engines::engine::createGUIOptions::createOptions::createOptions() : success( false )
 {
 }
 
-engines::engine::mountOptions::mountOptions( const QStringList& e,
-					     const engines::engine::options::booleanOptions& r ) :
-	options( e ),opts( r ),success( true )
+engines::engine::mountGUIOptions::mountOptions::mountOptions( const volumeInfo& e ) :
+	idleTimeOut( e.idleTimeOut() ),
+	configFile( e.configFilePath() ),
+	mountOpts( e.mountOptions() ),
+	keyFile( e.keyFile() )
+{
+	opts.unlockInReverseMode = e.reverseMode() ;
+}
+
+engines::engine::mountGUIOptions::mountOptions::mountOptions( const favorites::entry& e ) :
+	idleTimeOut( e.idleTimeOut ),
+	configFile( e.configFilePath ),
+	mountOpts( e.mountOptions ),
+	keyFile( e.keyFile )
+{
+	opts.unlockInReverseMode = e.reverseMode ;
+}
+
+engines::engine::mountGUIOptions::mountOptions::mountOptions( const QString& idleTimeOut,
+							      const QString& configFile,
+							      const QString& mountOptions,
+							      const QString& keyFile,
+							      const engines::engine::booleanOptions& r ) :
+	idleTimeOut( idleTimeOut ),
+	configFile( configFile ),
+	mountOpts( mountOptions ),
+	keyFile( keyFile ),
+	opts( r )
 {
 }
 
-engines::engine::mountOptions::mountOptions() : success( false )
+engines::engine::mountGUIOptions::mountOptions::mountOptions() : success( false )
 {
 }
 
-engines::engine::options::options( const favorites::entry& e,const QByteArray& volumeKey ) :
+engines::engine::cmdArgsList::options::options( const favorites::entry& e,
+						const QByteArray& volumeKey ) :
 	cipherFolder( e.volumePath ),
 	plainFolder( e.mountPointPath ),
 	key( volumeKey ),
 	idleTimeout( e.idleTimeOut ),
 	configFilePath( e.configFilePath ),
-	mountOptions( e.mountOptions ),
-	boolOptions{ e.readOnlyMode.defined() ? e.readOnlyMode.True() : false,e.reverseMode,false,false }
+	mountOptions( e.mountOptions )
 {
+	boolOptions.unlockInReadOnly    = e.readOnlyMode.defined() ? e.readOnlyMode.True() : false ;
+	boolOptions.unlockInReverseMode = e.reverseMode ;
 }
 
-engines::engine::options::options( const QString& cipher_folder,
-				   const QString& plain_folder,
-				   const QByteArray& volume_key,
-				   const QString& idle_timeout,
-				   const QString& config_file_path,
-				   const QString& key_file,
-				   const booleanOptions& bOpts,
-				   const QString& mount_options,
-				   const QString& create_options ) :
+engines::engine::cmdArgsList::options::options( const QString& cipher_folder,
+						const QString& plain_folder,
+						const QByteArray& volume_key,
+						const engines::engine::createGUIOptions::createOptions& e ) :
 	cipherFolder( cipher_folder ),
 	plainFolder( plain_folder ),
 	key( volume_key ),
-	idleTimeout( idle_timeout ),
-	configFilePath( config_file_path ),
-	mountOptions( mount_options ),
-	createOptions( create_options ),
-	keyFile( key_file ),
-	boolOptions( bOpts )
+	idleTimeout( e.idleTimeOut ),
+	configFilePath( e.configFile ),
+	mountOptions( QString() ),
+	createOptions( e.createOpts ),
+	keyFile( e.keyFile ),
+	boolOptions( e.opts )
+{
+}
+
+engines::engine::cmdArgsList::options::options( const QString& cipher_folder,
+						const QString& plain_folder,
+						const QByteArray& volume_key,
+						const engines::engine::mountGUIOptions::mountOptions& e ) :
+	cipherFolder( cipher_folder ),
+	plainFolder( plain_folder ),
+	key( volume_key ),
+	idleTimeout( e.idleTimeOut ),
+	configFilePath( e.configFile ),
+	mountOptions( e.mountOpts ),
+	createOptions( QString() ),
+	keyFile( e.keyFile ),
+	boolOptions( e.opts )
 {
 }
 

@@ -22,8 +22,6 @@
 #include <QString>
 #include <QStringList>
 
-#include <initializer_list>
-
 #include "utility2.h"
 #include "utility.h"
 #include "favorites.h"
@@ -49,13 +47,21 @@ public:
 		}
 		QStringList minimalList() const
 		{
-			return { volumePath,mountPoint,
-				 fileSystem,mode } ;
+			return { volumePath,
+				 mountPoint,
+				 fileSystem,
+				 mode } ;
 		}
 		QStringList fullList() const
 		{
-			return { volumePath,mountPoint,
-				 fileSystem,mode,idleTimeout,mountOptions,configPath,keyFile } ;
+			return { volumePath,
+				 mountPoint,
+				 fileSystem,
+				 mode,
+				 idleTimeout,
+				 mountOptions,
+				 configPath,
+				 keyFile } ;
 		}
 		QString volumePath ;
 		QString mountPoint ;

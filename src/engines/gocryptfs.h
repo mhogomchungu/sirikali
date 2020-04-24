@@ -24,19 +24,16 @@ class gocryptfs : public engines::engine
 public:
 	gocryptfs() ;
 
-	void updateOptions( engines::engine::options& ) const override ;
+	void updateOptions( engines::engine::cmdArgsList::options& ) const override ;
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 
 	engines::engine::args command( const QByteArray& password,
 				       const engines::engine::cmdArgsList& args ) const override ;
 
-	void GUICreateOptions( QWidget * parent,engine::engine::fCreateOptions ) const override ;
+	void GUICreateOptions( const engines::engine::createGUIOptions& ) const override ;
 
-	void GUIMountOptions( QWidget * parent,
-			      bool r,
-			      const engines::engine::mountOptions& l,
-			      engines::engine::fMountOptions ) const override ;
+	void GUIMountOptions( const engines::engine::mountGUIOptions& ) const override ;
 private:
 	const engines::versionGreaterOrEqual m_version_has_error_codes ;
 } ;

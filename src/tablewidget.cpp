@@ -28,9 +28,8 @@
 
 using count_t = decltype( QTableWidget().rowCount() ) ;
 
-using function_t = std::function< void( count_t,count_t ) > ;
-
-static void _for_each_column( QTableWidget * table,count_t row,function_t function )
+template< typename Function >
+static void _for_each_column( QTableWidget * table,count_t row,Function function )
 {
 	if( row >= 0 && row < table->rowCount() ){
 
@@ -45,7 +44,8 @@ static void _for_each_column( QTableWidget * table,count_t row,function_t functi
 	}
 }
 
-static void _for_each_row( QTableWidget * table,count_t col,function_t function )
+template< typename Function >
+static void _for_each_row( QTableWidget * table,count_t col,Function function )
 {
 	if( col >= 0 && col < table->columnCount() ){
 

@@ -71,10 +71,8 @@ sshfs::sshfs() :
 {
 }
 
-engines::engine::status sshfs::passAllRequirenments( const engines::engine::options& opt ) const
+engines::engine::status sshfs::passAllRequirenments( const engines::engine::cmdArgsList::options& opt ) const
 {
-	Q_UNUSED( opt )
-
 	if( utility::platformIsWindows() ){
 
 		auto m = engines::engine::passAllRequirenments( opt ) ;
@@ -189,12 +187,9 @@ engines::engine::status sshfs::errorCode( const QString& e,int s ) const
 	}
 }
 
-void sshfs::GUIMountOptions( QWidget * parent,
-			     bool r,
-			     const engines::engine::mountOptions& l,
-			     engines::engine::fMountOptions f ) const
+void sshfs::GUIMountOptions( const engines::engine::mountGUIOptions& s ) const
 {
-	auto& e = ::options::instance( parent,*this,r,l,std::move( f ) ) ;
+	auto& e = options::instance( *this,s ) ;
 
 	auto& ee = e.GUIOptions() ;
 

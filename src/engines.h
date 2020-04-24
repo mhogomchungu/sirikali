@@ -29,6 +29,7 @@
 #include <QStringList>
 #include <QWidget>
 
+#include "volumeinfo.h"
 #include "favorites.h"
 #include "utility.h"
 
@@ -285,59 +286,6 @@ public:
 			unknown
 		} ;
 
-		struct options
-		{
-		        struct booleanOptions{
-				booleanOptions() = default ;
-
-				booleanOptions( const booleanOptions& other ) = default ;
-
-				booleanOptions( bool ro,bool rm,bool ar,bool au ) :
-					unlockInReadOnly( ro ),
-					unlockInReverseMode( rm ),
-					allowReplacedFileSystem( ar ),
-					allowUpgradeFileSystem( au )
-				{
-				}
-				booleanOptions& operator=( const booleanOptions& other ) = default ;
-				bool unlockInReadOnly = false ;
-				bool unlockInReverseMode = false ;
-				bool allowReplacedFileSystem = false ;
-				bool allowUpgradeFileSystem = false ;
-			} ;
-			options( const favorites::entry& e,
-				 const QByteArray& volumeKey = QByteArray() ) ;
-
-			options( const QString& cipher_folder,
-				 const QString& plain_folder,
-				 const QByteArray& volume_key,
-				 const QString& idle_timeout,
-				 const QString& config_file_path,
-				 const QString& keyFile,
-			         const booleanOptions& boolOpts,
-				 const QString& mount_options,
-				 const QString& create_options ) ;
-			QString cipherFolder ;
-			QString plainFolder ;
-			QByteArray key ;
-			QString idleTimeout ;
-			QString configFilePath ;
-			QString mountOptions ;
-			QString createOptions ;
-			QString keyFile ;
-			booleanOptions boolOptions ;
-		} ;
-
-		struct cmdArgsList
-		{
-			const QString& exe ;
-			const engines::engine::options& opt ;
-			const QString& configFilePath ;
-			const QString& cipherFolder ;
-			const QString& mountPoint ;
-			const bool create ;
-		} ;
-
 		class cmdStatus
 		{
 		public:
@@ -358,27 +306,142 @@ public:
 			engines::engine::Wrapper m_engine ;
 		} ;
 
-		struct createOptions
+		struct booleanOptions{
+
+			booleanOptions() = default ;
+
+			booleanOptions( const booleanOptions& other ) = default ;
+
+			booleanOptions( bool ro,bool rm,bool ar,bool au ) :
+				unlockInReadOnly( ro ),
+				unlockInReverseMode( rm ),
+				allowReplacedFileSystem( ar ),
+				allowUpgradeFileSystem( au )
+			{
+			}
+			booleanOptions& operator=( const booleanOptions& other ) = default ;
+			bool unlockInReadOnly = false ;
+			bool unlockInReverseMode = false ;
+			bool allowReplacedFileSystem = true ;
+			bool allowUpgradeFileSystem = false ;
+		} ;
+
+		struct createGUIOptions{
+
+			struct createOptions
+			{
+				createOptions( const QString& createOpts,
+					       const QString& configFile,
+					       const QString& keyFile,
+					       const engines::engine::booleanOptions& r ) ;
+
+				createOptions( const QString& createOpts,
+					       const QString& configFile,
+					       const QString& keyFile ) ;
+
+				createOptions( const engines::engine::booleanOptions& r ) ;
+
+				createOptions() ;
+
+				QString idleTimeOut ;
+				QString createOpts ;
+				QString configFile ;
+				QString keyFile ;
+				engines::engine::booleanOptions opts ;
+				bool success = true ;
+			} ;
+
+			createGUIOptions( QWidget * w,
+					  const engines::engine::createGUIOptions::createOptions& s,
+					  std::function< void( const createGUIOptions::createOptions& ) > f ) :
+				parent( w ),
+				cOpts( s ),
+				fCreateOptions( std::move( f ) )
+			{
+			}
+			QWidget * parent ;
+			const engines::engine::createGUIOptions::createOptions& cOpts ;
+			std::function< void( const createGUIOptions::createOptions& ) > fCreateOptions ;
+		};
+
+		struct mountGUIOptions{
+
+			struct mountOptions{
+				mountOptions( const volumeInfo& ) ;
+
+				mountOptions( const favorites::entry& ) ;
+
+				mountOptions( const QString& idleTimeOut,
+					      const QString& configFile,
+					      const QString& mountOpes,
+					      const QString& keyFile,
+					      const engines::engine::booleanOptions& opts ) ;
+				mountOptions() ;
+				QString idleTimeOut ;
+				QString configFile ;
+				QString mountOpts ;
+				QString keyFile ;
+				engines::engine::booleanOptions opts ;
+				bool success = true ;
+			} ;
+
+			mountGUIOptions( QWidget * w,
+					 bool c,
+					 const engines::engine::mountGUIOptions::mountOptions& ll,
+					 std::function< void( const mountGUIOptions::mountOptions& ) > f ) :
+				parent( w ),
+				create( c ),
+				mOpts( ll ),
+				fMountOptions( std::move( f ) )
+			{
+			}
+			QWidget * parent ;
+			bool create ;
+			const engines::engine::mountGUIOptions::mountOptions& mOpts ;
+			std::function< void( const mountGUIOptions::mountOptions& ) > fMountOptions ;
+		} ;
+
+		using mOpts = engines::engine::mountGUIOptions::mountOptions ;
+		using cOpts = engines::engine::createGUIOptions::createOptions ;
+
+		using fcreate = std::function< void( const engines::engine::cOpts& ) > ;
+		using fmount = std::function< void( const engines::engine::mOpts& ) > ;
+
+		struct cmdArgsList
 		{
-			createOptions( QStringList s,const options::booleanOptions& r ) ;
-			createOptions( QStringList s ) ;
-			createOptions( const options::booleanOptions& r ) ;
-			createOptions() ;
-			QStringList options ;
-			options::booleanOptions opts ;
-			bool success ;
-		} ;
+			struct options
+			{
+				options( const favorites::entry& e,
+					 const QByteArray& volumeKey = QByteArray() ) ;
 
-		struct mountOptions{
-			mountOptions( const QStringList& e,const engines::engine::options::booleanOptions& r );
-			mountOptions();
-			QStringList options ;
-			engines::engine::options::booleanOptions opts ;
-			bool success ;
-		} ;
+				options( const QString& cipher_folder,
+					 const QString& plain_folder,
+					 const QByteArray& volume_key,
+					 const engines::engine::createGUIOptions::createOptions& ) ;
 
-		using fCreateOptions = std::function< void( const engines::engine::createOptions& ) > ;
-		using fMountOptions = std::function< void( const engines::engine::mountOptions& ) > ;
+				options( const QString& cipher_folder,
+					 const QString& plain_folder,
+					 const QByteArray& volume_key,
+					 const engines::engine::mountGUIOptions::mountOptions& ) ;
+
+				QString cipherFolder ;
+				QString plainFolder ;
+				QByteArray key ;
+				QString idleTimeout ;
+				QString configFilePath ;
+				QString mountOptions ;
+				QString createOptions ;
+				QString keyFile ;
+				booleanOptions boolOptions ;
+			} ;
+
+			const QString& exe ;
+			const engines::engine::cmdArgsList::options& opt ;
+			const QString& configFilePath ;
+			const QString& cipherFolder ;
+			const QString& mountPoint ;
+			const bool create ;
+		} ;
 
 		struct BaseOptions
 		{
@@ -495,7 +558,7 @@ public:
 
 		virtual ~engine() ;
 
-		virtual void updateVolumeList( const engines::engine::options& ) const ;
+		virtual void updateVolumeList( const engines::engine::cmdArgsList::options& ) const ;
 
 		virtual QStringList mountInfo( const QStringList& ) const ;
 
@@ -506,25 +569,25 @@ public:
 							 const QString& mountPoint,
 							 int maxCount ) const ;
 
-		virtual bool requiresAPassword( const engines::engine::options& ) const ;
+		virtual bool requiresAPassword( const engines::engine::cmdArgsList::options& ) const ;
 
 		virtual bool takesTooLongToUnlock() const ;
 
-		virtual engine::engine::status passAllRequirenments( const engines::engine::options& ) const ;
+		virtual engine::engine::status passAllRequirenments( const engines::engine::cmdArgsList::options& ) const ;
 
 		virtual bool ownsCipherPath( const QString& cipherPath,const QString& configPath ) const ;
 
-		virtual void updateOptions( engines::engine::options& ) const ;
+		virtual void updateOptions( engines::engine::cmdArgsList::options& ) const ;
 
 		virtual const QProcessEnvironment& getProcessEnvironment() const ;
 		virtual bool requiresPolkit() const ;		
-		virtual args command( const QByteArray& password,const engines::engine::cmdArgsList& args ) const ;
+		virtual args command( const QByteArray& password,
+				      const engines::engine::cmdArgsList& args ) const ;
 		virtual engines::engine::status errorCode( const QString& e,int s ) const ;
-		virtual void GUICreateOptions( QWidget * parent,engine::engine::fCreateOptions ) const ;
-		virtual void GUIMountOptions( QWidget * parent,
-					      bool r,
-					      const engines::engine::mountOptions& l,
-					      engines::engine::fMountOptions ) const ;
+
+		virtual void GUICreateOptions( const createGUIOptions& ) const ;
+
+		virtual void GUIMountOptions( const mountGUIOptions& ) const ;
 	protected:
 		class commandOptions{
 		public:

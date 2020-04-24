@@ -352,14 +352,9 @@ void keyDialog::setVolumeToUnlock()
 
 void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key )
 {
-	m_path         = e.volumePath() ;
-	m_boolOpts     = { false,e.reverseMode(),false,false } ;
-	m_configFile   = e.configFilePath() ;
-	m_keyFile      = e.keyFile() ;
-	m_idleTimeOut  = e.idleTimeOut() ;
-	m_mountOptions = e.mountOptions() ;
-	m_working      = false ;
-
+	m_path             = e.volumePath() ;
+	m_mountOptions     = e ;
+	m_working          = false ;
 	m_favoriteReadOnly = e.mountReadOnly() ;
 
 	if( m_favoriteReadOnly.defined() ){
@@ -387,7 +382,7 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 		m_ui->lineEditMountPoint->setFocus() ;
 	}else{
-		m_engine = siritask::mountEngine( { m_path,m_configFile,siritask::Engine() } ) ;
+		m_engine = siritask::mountEngine( { m_path,m_mountOptions.configFile,siritask::Engine() } ) ;
 
 		m_ui->pbMountPoint_1->setEnabled( m_engine->supportsMountPathsOnWindows() ) ;
 
@@ -590,25 +585,15 @@ void keyDialog::pbOptions()
 
 		this->hide() ;
 
-		m_engine->GUICreateOptions( m_parentWidget,[ & ]( const engines::engine::createOptions& e ){
+		m_engine->GUICreateOptions( { m_parentWidget,m_createOptions,[ & ]( const engines::engine::cOpts& e ){
 
 			if( e.success ){
 
-				m_boolOpts = e.opts ;
-
-				if( m_engine->name() == "cryfs" ){
-
-					/*
-					 * Setting the default option.
-					 */
-					m_allowReplaceFileSystemSet = true ;
-				}
-
-				utility2::stringListToStrings( e.options,m_createOptions,m_configFile,m_keyFile ) ;
+				m_createOptions = e ;
 			}
 
 			this->ShowUI() ;
-		} ) ;
+		} } ) ;
 	}else{
 		if( !m_checked ){
 
@@ -618,33 +603,17 @@ void keyDialog::pbOptions()
 
 			if( f.has_value() ){
 
-				const auto& e = f.value() ;
-				m_idleTimeOut  = e.idleTimeOut ;
-				m_configFile   = e.configFilePath ;
-				m_mountOptions = e.mountOptions ;
-				m_boolOpts     = { false,e.reverseMode,false,false } ;
+				m_mountOptions = f.value() ;
 			}
 		}
 
-		if( m_allowReplaceFileSystemInitiallyNotSet ){
-
-			/*
-			 * Setting the default option.
-			 */
-			m_boolOpts.allowReplacedFileSystem = true ;
-
-			m_allowReplaceFileSystemInitiallyNotSet = false ;
-		}
-
-		engines::engine::mountOptions e{ { m_idleTimeOut,m_configFile,m_mountOptions,m_keyFile },m_boolOpts } ;
-
 		this->hide() ;
 
-		m_engine->GUIMountOptions( m_parentWidget,m_create,e,[ this ]( const engines::engine::mountOptions& e ){
+		m_engine->GUIMountOptions( { m_parentWidget,m_create,m_mountOptions,[ this ]( const engines::engine::mOpts& e ){
 
 			if( e.success ){
 
-				utility2::stringListToStrings( e.options,m_idleTimeOut,m_configFile,m_mountOptions,m_keyFile ) ;
+				m_mountOptions = e ;
 
 				if( m_ui->lineEditKey->text().isEmpty() ){
 
@@ -652,12 +621,10 @@ void keyDialog::pbOptions()
 				}else{
 					m_ui->pbOpen->setFocus() ;
 				}
-
-				m_boolOpts = e.opts ;
 			}
 
 			this->ShowUI() ;
-		} ) ;
+		} } ) ;
 	}
 }
 
@@ -1119,23 +1086,6 @@ void keyDialog::encryptedFolderCreate()
 		}
 	}
 
-	auto boolOpts = m_boolOpts ;
-
-	if( !m_allowReplaceFileSystemSet ){
-
-		boolOpts.allowReplacedFileSystem = true ;
-	}
-
-	engines::engine::options s( path,
-				    m,
-				    m_key,
-				    m_idleTimeOut,
-				    m_configFile,
-				    m_keyFile,
-				    boolOpts,
-				    m_mountOptions,
-				    m_createOptions ) ;
-
 	if( m_engine->takesTooLongToUnlock() ){
 
 		m_warningLabel.showCreate( m_engine->name() ) ;
@@ -1145,7 +1095,7 @@ void keyDialog::encryptedFolderCreate()
 
 	m_working = true ;
 
-	auto e = siritask::encryptedFolderCreate( s,m_engine.get() ) ;
+	auto e = siritask::encryptedFolderCreate( { path,m,m_key,m_createOptions},m_engine.get() ) ;
 
 	m_warningLabel.hide() ;
 
@@ -1216,35 +1166,23 @@ void keyDialog::encryptedFolderMount()
 		}
 	}
 
-	auto boolOpts = m_boolOpts ;
-
-	boolOpts.unlockInReadOnly = m_ui->checkBoxOpenReadOnly->isChecked() ;
+	m_mountOptions.opts.unlockInReadOnly = m_ui->checkBoxOpenReadOnly->isChecked() ;
 
 	if( this->upgradingFileSystem() ){
 
-		boolOpts.allowUpgradeFileSystem = m_ui->checkBoxOpenReadOnly->isChecked() ;
+		m_mountOptions.opts.allowUpgradeFileSystem = m_ui->checkBoxOpenReadOnly->isChecked() ;
 	}
 
 	if( this->replaceFileSystem() ){
 
-		boolOpts.allowReplacedFileSystem = m_ui->checkBoxOpenReadOnly->isChecked() ;
+		m_mountOptions.opts.allowReplacedFileSystem = m_ui->checkBoxOpenReadOnly->isChecked() ;
 	}
 
 	m_working = true ;
 
-	engines::engine::options s{ m_path,
-				    m,
-				    m_key,
-				    m_idleTimeOut,
-				    m_configFile,
-				    m_keyFile,
-				    boolOpts,
-				    m_mountOptions,
-				    QString() } ;
-
 	if( m_engine->unknown() ){
 
-		m_engine = siritask::mountEngine( { m_path,m_configFile,siritask::Engine() } ) ;
+		m_engine = siritask::mountEngine( { m_path,m_mountOptions.configFile,siritask::Engine() } ) ;
 	}
 
 	if( m_engine->takesTooLongToUnlock() ){
@@ -1254,7 +1192,7 @@ void keyDialog::encryptedFolderMount()
 
 	this->disableAll() ;
 
-	auto e = siritask::encryptedFolderMount( s,false,m_engine ) ;
+	auto e = siritask::encryptedFolderMount( { m_path,m,m_key,m_mountOptions },false,m_engine ) ;
 
 	m_warningLabel.hide() ;
 

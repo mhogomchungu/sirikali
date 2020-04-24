@@ -29,14 +29,11 @@ public:
 	engines::engine::args command( const QByteArray& password,
 				       const engines::engine::cmdArgsList& args ) const override ;
 
-	bool requiresAPassword( const engines::engine::options& ) const override ;
+	bool requiresAPassword( const engines::engine::cmdArgsList::options& ) const override ;
 
-	void GUICreateOptions( QWidget * parent,engine::engine::fCreateOptions ) const override ;
+	void GUICreateOptions( const engines::engine::createGUIOptions& ) const override ;
 
-	void GUIMountOptions( QWidget * parent,
-			      bool r,
-			      const engines::engine::mountOptions& l,
-			      engines::engine::fMountOptions ) const override ;
+	void GUIMountOptions( const engines::engine::mountGUIOptions& ) const override ;
 private:
 	const engines::versionGreaterOrEqual m_version_greater_or_equal_0_11_1 ;
 } ;

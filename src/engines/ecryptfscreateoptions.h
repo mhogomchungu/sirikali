@@ -45,26 +45,22 @@ public:
 	{
 		return "-o key=passphrase,ecryptfs_key_bytes=32,ecryptfs_cipher=aes" ;
 	}
-	static void instance( QWidget * parent,
-			      const engines::engine& engine,
-			      engines::engine::fCreateOptions function )
+	static void instance( const engines::engine& e,const engines::engine::createGUIOptions& s )
 	{
-		new ecryptfscreateoptions( parent,engine,std::move( function ) ) ;
+		new ecryptfscreateoptions( e,s ) ;
 	}
-	ecryptfscreateoptions( QWidget * parent,
-			       const engines::engine&,
-			       engines::engine::fCreateOptions ) ;
+	ecryptfscreateoptions( const engines::engine& e,const engines::engine::createGUIOptions& ) ;
         ~ecryptfscreateoptions() ;
 private slots:
 	void pbSelectConfigPath() ;
 	void pbOK() ;
 	void pbCancel() ;
 private:
-	void HideUI( const engines::engine::createOptions& = engines::engine::createOptions() ) ;
+	void HideUI( const engines::engine::cOpts& = engines::engine::cOpts() ) ;
 	void closeEvent( QCloseEvent * ) ;
         Ui::ecryptfscreateoptions * m_ui ;
 	QString m_configFileName ;
-	engines::engine::fCreateOptions m_function ;
+	engines::engine::fcreate m_function ;
 };
 
 #endif // ECRYPTFSCREATEOPTIONS_H

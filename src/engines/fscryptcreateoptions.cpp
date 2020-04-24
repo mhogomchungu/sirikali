@@ -25,12 +25,11 @@
 #include <QFileDialog>
 #include <QDir>
 
-fscryptcreateoptions::fscryptcreateoptions( QWidget * parent,
-					    engines::engine::fCreateOptions function,
+fscryptcreateoptions::fscryptcreateoptions( const engines::engine::createGUIOptions& s,
 					    const QStringList& list ) :
-	QDialog( parent ),
+	QDialog( s.parent ),
 	m_ui( new Ui::fscryptcreateoptions ),
-	m_function( std::move( function ) ),
+	m_function( s.fCreateOptions ),
 	m_protectorNames( list )
 {
 	m_ui->setupUi( this ) ;
@@ -125,7 +124,7 @@ fscryptcreateoptions::fscryptcreateoptions( QWidget * parent,
 			_add( "--key=" + utility::Task::makePath( mm ) ) ;
 		}
 
-		this->HideUI( QStringList{ m } ) ;
+		this->HideUI( { m,QString(),QString() } ) ;
 	} ) ;
 
 	m_ui->lineEditProtectorName->setFocus() ;
@@ -138,7 +137,7 @@ fscryptcreateoptions::~fscryptcreateoptions()
 	delete m_ui ;
 }
 
-void fscryptcreateoptions::HideUI( const engines::engine::createOptions& opt )
+void fscryptcreateoptions::HideUI( const engines::engine::cOpts& opt )
 {
 	this->hide() ;
 

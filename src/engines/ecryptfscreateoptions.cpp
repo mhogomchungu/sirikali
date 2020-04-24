@@ -25,13 +25,12 @@
 
 #include "../settings.h"
 
-ecryptfscreateoptions::ecryptfscreateoptions( QWidget * parent,
-					      const engines::engine& engine,
-					      engines::engine::fCreateOptions function ) :
-	QDialog( parent ),
+ecryptfscreateoptions::ecryptfscreateoptions( const engines::engine& e,
+					      const engines::engine::createGUIOptions& s ) :
+	QDialog( s.parent ),
 	m_ui( new Ui::ecryptfscreateoptions ),
-	m_configFileName( engine.configFileName() ),
-	m_function( std::move( function ) )
+	m_configFileName( e.configFileName() ),
+	m_function( s.fCreateOptions )
 {
 	m_ui->setupUi( this ) ;
 
@@ -79,7 +78,7 @@ void ecryptfscreateoptions::pbOK()
 		e += ",ecryptfs_enable_filename_crypto=n" ;
 	}
 
-	this->HideUI( { { e,m_ui->lineEdit_2->text() } } ) ;
+	this->HideUI( { e,m_ui->lineEdit_2->text(),QString() } ) ;
 }
 
 void ecryptfscreateoptions::pbCancel()
@@ -87,7 +86,7 @@ void ecryptfscreateoptions::pbCancel()
 	this->HideUI() ;
 }
 
-void ecryptfscreateoptions::HideUI( const engines::engine::createOptions& opts )
+void ecryptfscreateoptions::HideUI( const engines::engine::cOpts& opts )
 {
 	this->hide() ;
 	m_function( opts ) ;

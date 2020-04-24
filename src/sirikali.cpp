@@ -770,16 +770,18 @@ void sirikali::unlockVolume( const QStringList& l )
 
 			m_mountInfo.announceEvents( false ) ;
 
-			engines::engine::options s( volume,
-						    m,key,
-						    idleTime,
-						    cPath,
-						    QString(),
-						    { mode,reverse,false,false },
-						    mOpt,
-						    QString() ) ;
+			engines::engine::booleanOptions mmm ;
 
-			auto e = siritask::encryptedFolderMount( s ) ;
+			mmm.unlockInReverseMode = reverse ;
+			mmm.unlockInReadOnly    = mode ;
+
+			engines::engine::mountGUIOptions::mountOptions mm( idleTime,
+									   cPath,
+									   mOpt,
+									   QString(),
+									   mmm ) ;
+
+			auto e = siritask::encryptedFolderMount( { volume,m,key,mm } ) ;
 
 			if( e == engines::engine::status::success ){
 
@@ -1364,7 +1366,7 @@ void sirikali::dropEvent( QDropEvent * e )
 
 			s.emplace_back( _favorite_entry( m ),QByteArray() ) ;
 
-		}else if( fileInfo.isFile() && !m.endsWith( ".json" ) ){
+		}else if( fileInfo.isFile() ){
 
 			if( m.endsWith( ".json" ) ){
 

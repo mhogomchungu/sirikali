@@ -28,10 +28,7 @@ public:
 	engines::engine::args command( const QByteArray& password,
 				       const engines::engine::cmdArgsList& args ) const override ;
 
-	void GUICreateOptions( QWidget * parent,engine::engine::fCreateOptions ) const override ;
+	void GUICreateOptions( const engines::engine::createGUIOptions& ) const override ;
 
-	void GUIMountOptions( QWidget * parent,
-			      bool r,
-			      const engines::engine::mountOptions& l,
-			      engines::engine::fMountOptions ) const override ;
+	void GUIMountOptions( const engines::engine::mountGUIOptions& ) const override ;
 } ;

@@ -272,12 +272,7 @@ private :
 	QString m_checkBoxOriginalText ;
 	QString m_path ;
 	QString m_deviceOffSet ;
-	QString m_idleTimeOut ;
-	QString m_configFile ;
-	QString m_keyFile ;
 	QString m_exe ;
-	QString m_mountOptions ;
-	QString m_createOptions ;
 	QString m_fileManagerOpen ;
 
 	bool m_autoOpenMountPoint ;
@@ -287,10 +282,9 @@ private :
 	bool m_checked = false ;
 	bool m_hmac ;
 	bool m_closeGUI = false ;
-	bool m_allowReplaceFileSystemSet = false ;
-	bool m_allowReplaceFileSystemInitiallyNotSet = true ;
 
-	engines::engine::options::booleanOptions m_boolOpts ;
+	engines::engine::mOpts m_mountOptions ;
+	engines::engine::cOpts m_createOptions ;
 
 	engines::engine::status m_status ;
 

@@ -37,26 +37,23 @@ class gocryptfscreateoptions : public QDialog
 {
 	Q_OBJECT
 public:
-	static void instance( QWidget * parent,
-			      const engines::engine& engine,
-			      engines::engine::fCreateOptions function )
+	static void instance( const engines::engine& engine,
+			      const engines::engine::createGUIOptions& s )
 	{
-		new gocryptfscreateoptions( parent,engine,std::move( function ) ) ;
+		new gocryptfscreateoptions( engine,s ) ;
 	}
-	gocryptfscreateoptions( QWidget * parent,
-				const engines::engine&,
-				engines::engine::fCreateOptions ) ;
+	gocryptfscreateoptions( const engines::engine&,const engines::engine::createGUIOptions& ) ;
         ~gocryptfscreateoptions() ;
 private slots:
 	void pbSelectConfigPath() ;
 	void pbOK() ;
 	void pbCancel() ;
 private:
-	void HideUI( const engines::engine::createOptions& = engines::engine::createOptions() ) ;
+	void HideUI( const engines::engine::cOpts& = engines::engine::cOpts() ) ;
 	void closeEvent( QCloseEvent * ) ;
         Ui::gocryptfscreateoptions * m_ui ;
 	QString m_configFileName ;
-	engines::engine::fCreateOptions m_function ;
+	engines::engine::fcreate m_function ;
 };
 
 #endif // GOCRYPTFSCREATEOPTIONS_H

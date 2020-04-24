@@ -34,9 +34,9 @@ public:
 	bool ownsCipherPath( const QString& cipherPath,
 			     const QString& configPath ) const override ;
 
-	bool requiresAPassword( const engines::engine::options& ) const override ;
+	bool requiresAPassword( const engines::engine::cmdArgsList::options& ) const override ;
 
-	void updateVolumeList( const engines::engine::options& ) const override ;
+	void updateVolumeList( const engines::engine::cmdArgsList::options& ) const override ;
 
 	Task::future< QString >& volumeProperties( const QString& cipherFolder,
 						   const QString& mountPoint ) const override ;
@@ -46,12 +46,9 @@ public:
 	engines::engine::args command( const QByteArray& password,
 				       const engines::engine::cmdArgsList& args ) const override ;
 
-	void GUICreateOptions( QWidget * parent,engine::engine::fCreateOptions ) const override ;
+	void GUICreateOptions( const engines::engine::createGUIOptions& ) const override ;
 
-	void GUIMountOptions( QWidget * parent,
-			      bool r,
-			      const engines::engine::mountOptions& l,
-			      engines::engine::fMountOptions ) const override ;
+	void GUIMountOptions( const engines::engine::mountGUIOptions& ) const override ;
 private:
 	class unlockedVolumeList{
 	public:
@@ -64,8 +61,6 @@ private:
 		const QString m_configFilePath ;
 		const char * m_keyName = "unlockedList" ;
 	} mutable m_unlockedVolumeManager ;
-
-	QString userOption() const ;
 
 	engines::versionGreaterOrEqual m_versionGreatorOrEqual_0_2_6 ;
 } ;

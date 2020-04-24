@@ -88,7 +88,7 @@ ecryptfs::ecryptfs() :
 {
 }
 
-void ecryptfs::updateOptions( engines::engine::options& opt ) const
+void ecryptfs::updateOptions( engines::engine::cmdArgsList::options& opt ) const
 {
 	if( opt.configFilePath.isEmpty() ){
 
@@ -227,17 +227,14 @@ engines::engine::status ecryptfs::errorCode( const QString& e,int s ) const
 	}
 }
 
-void ecryptfs::GUICreateOptions( QWidget * parent,engine::engine::fCreateOptions function ) const
+void ecryptfs::GUICreateOptions( const engines::engine::createGUIOptions& s ) const
 {
-	ecryptfscreateoptions::instance( parent,*this,std::move( function ) ) ;
+	ecryptfscreateoptions::instance( *this,s ) ;
 }
 
-void ecryptfs::GUIMountOptions( QWidget * parent,
-				bool r,
-				const engines::engine::mountOptions& l,
-				engines::engine::fMountOptions f ) const
+void ecryptfs::GUIMountOptions( const engines::engine::mountGUIOptions& s ) const
 {
-	auto& e = ::options::instance( parent,*this,r,l,std::move( f ) ) ;
+	auto& e = options::instance( *this,s ) ;
 
 	auto& ee = e.GUIOptions() ;
 

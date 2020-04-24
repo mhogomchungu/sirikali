@@ -162,7 +162,7 @@ engines::engine::status securefs::errorCode( const QString& e,int s ) const
 	}
 }
 
-bool securefs::requiresAPassword( const engines::engine::options& opt ) const
+bool securefs::requiresAPassword( const engines::engine::cmdArgsList::options& opt ) const
 {
 	if( opt.mountOptions.contains( "--keyfile" ) || !opt.keyFile.isEmpty() ){
 
@@ -172,21 +172,14 @@ bool securefs::requiresAPassword( const engines::engine::options& opt ) const
 	}
 }
 
-void securefs::GUICreateOptions( QWidget * parent,
-				 engine::engine::fCreateOptions function ) const
+void securefs::GUICreateOptions( const engines::engine::createGUIOptions& s ) const
 {
-	securefscreateoptions::instance( parent,
-					 *this,
-					 m_version_greater_or_equal_0_11_1,
-					 std::move( function ) ) ;
+	securefscreateoptions::instance( *this,s,m_version_greater_or_equal_0_11_1 ) ;
 }
 
-void securefs::GUIMountOptions( QWidget * parent,
-				bool r,
-				const engines::engine::mountOptions& l,
-				engines::engine::fMountOptions f ) const
+void securefs::GUIMountOptions( const engines::engine::mountGUIOptions& s ) const
 {
-	auto& e = ::options::instance( parent,*this,r,l,std::move( f ) ) ;
+	auto& e = options::instance( *this,s ) ;
 
 	auto& ee = e.GUIOptions() ;
 

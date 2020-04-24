@@ -341,13 +341,13 @@ engines::engine::status fscrypt::unmount( const QString& cipherFolder,
 
 	if( m_versionGreatorOrEqual_0_2_6 ){
 
-		exe += " lock " + mountPoint + " " + this->userOption() ;
+		exe += " lock " + mountPoint ;
 	}else{
 		auto mp = utility::removeFirstAndLast( mountPoint,1,1 ) ;
 
 		auto m = utility::Task::makePath( _mount_point( mp,exe ) ) ;
 
-		exe += " purge " + m + " --force --drop-caches=false " + this->userOption() ;
+		exe += " purge " + m + " --force --drop-caches=false" ;
 	}
 
 	for( int i = 0 ; i < maxCount ; i++ ){
@@ -418,7 +418,7 @@ bool fscrypt::ownsCipherPath( const QString& cipherPath,
 	}
 }
 
-bool fscrypt::requiresAPassword( const engines::engine::options& opt ) const
+bool fscrypt::requiresAPassword( const engines::engine::cmdArgsList::options& opt ) const
 {
 	if( opt.mountOptions.contains( "--key=" ) ||
 	    opt.createOptions.contains( "--key=" ) || !opt.keyFile.isEmpty() ){
@@ -429,7 +429,7 @@ bool fscrypt::requiresAPassword( const engines::engine::options& opt ) const
 	}
 }
 
-void fscrypt::updateVolumeList( const engines::engine::options& e ) const
+void fscrypt::updateVolumeList( const engines::engine::cmdArgsList::options& e ) const
 {
 	m_unlockedVolumeManager.addEntry( e.cipherFolder ) ;
 }
@@ -454,7 +454,7 @@ engines::engine::args fscrypt::command( const QByteArray& password,
 
 	auto exeOptions = m.exeOptions() ;
 
-	exeOptions.add( "--quiet " + this->userOption() ) ;
+	exeOptions.add( "--quiet" ) ;
 
 	if( !args.opt.keyFile.isEmpty() ){
 
@@ -526,18 +526,14 @@ engines::engine::status fscrypt::errorCode( const QString& e,int s ) const
 	}
 }
 
-void fscrypt::GUICreateOptions( QWidget * parent,
-				engine::engine::fCreateOptions function ) const
+void fscrypt::GUICreateOptions( const engines::engine::createGUIOptions& s ) const
 {
-	fscryptcreateoptions::instance( parent,std::move( function ),{} ) ;
+	fscryptcreateoptions::instance( s,{} ) ;
 }
 
-void fscrypt::GUIMountOptions( QWidget * parent,
-			       bool r,
-			       const engines::engine::mountOptions& l,
-			       engines::engine::fMountOptions f ) const
+void fscrypt::GUIMountOptions( const engines::engine::mountGUIOptions& s ) const
 {
-	auto& e = ::options::instance( parent,*this,r,l,std::move( f ) ) ;
+	auto& e = options::instance( *this,s ) ;
 
 	auto& ee = e.GUIOptions() ;
 
@@ -550,25 +546,6 @@ void fscrypt::GUIMountOptions( QWidget * parent,
 
 	e.ShowUI() ;
 }
-
-
-#ifdef Q_OS_LINUX
-
-#include <pwd.h>
-
-QString fscrypt::userOption() const
-{
-	return QString( "--user=\"%1\"" ).arg( getpwuid( getuid() )->pw_name ) ;
-}
-
-#else
-
-QString fscrypt::userOption() const
-{
-	return QString() ;
-}
-
-#endif
 
 static QString _setOption()
 {

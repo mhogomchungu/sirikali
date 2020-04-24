@@ -29,7 +29,7 @@
 #include <QDebug>
 #include <QFile>
 
-using Opts = engines::engine::options ;
+using Opts = engines::engine::cmdArgsList::options ;
 using Engs = engines::engine ;
 
 static bool _create_folder( const QString& m )
@@ -45,21 +45,6 @@ static bool _create_folder( const QString& m )
 static QString _makePath( const QString& e )
 {
 	return utility::Task::makePath( e ) ;
-}
-
-static bool _illegal_path( const Opts& opts,const engines::engine& engine )
-{
-	if( engine.requiresPolkit() && utility::useSiriPolkit() ){
-
-		if( engine.backendRequireMountPath() ){
-
-			return opts.cipherFolder.contains( " " ) || opts.plainFolder.contains( " " ) ;
-		}else {
-			return opts.cipherFolder.contains( " " ) ;
-		}
-	}else{
-		return false ;
-	}
 }
 
 template< typename ... T >
@@ -319,7 +304,7 @@ struct cmd_args{
 
 	const engines::engine& engine ;
 	bool create ;
-	const engines::engine::options& opts ;
+	const engines::engine::cmdArgsList::options& opts ;
 	const QByteArray& password ;
 	const QString& configFilePath ;
 };
@@ -334,7 +319,7 @@ struct run_task{
 	const engines::engine::args& args ;
 	const engines::engine& engine ;
 	const QByteArray& password ;
-	const engines::engine::options& opts ;
+	const engines::engine::cmdArgsList::options& opts ;
 	bool create ;
 };
 
@@ -409,11 +394,11 @@ static utility::qstring_result _build_config_file_path( const build_config_path&
 
 static engines::engine::cmdStatus _cmd( const cmd_args& e )
 {
-	const engines::engine& engine        = e.engine ;
-	const engines::engine::options& opts = e.opts ;
-	const QByteArray& password           = e.password ;
-	const QString& configFilePath        = e.configFilePath ;
-	bool create                          = e.create ;
+	const auto& engine         = e.engine ;
+	const auto& opts           = e.opts ;
+	const auto& password       = e.password ;
+	const auto& configFilePath = e.configFilePath ;
+	bool create                = e.create ;
 
 	auto exe = engine.executableFullPath() ;
 
@@ -434,8 +419,8 @@ static engines::engine::cmdStatus _cmd( const cmd_args& e )
 		return { engines::engine::status::backEndDoesNotSupportCustomConfigPath,engine } ;
 	}
 
-	auto cc = _makePath( opts.cipherFolder ) ;
-	auto mm = _makePath( opts.plainFolder ) ;
+	auto cc = _makePath( e.opts.cipherFolder ) ;
+	auto mm = _makePath( e.opts.plainFolder ) ;
 
 	exe = utility::Task::makePath( exe ) ;
 
@@ -525,11 +510,6 @@ static engines::engine::cmdStatus _mount( Opts opt,bool reUseMP,const siritask::
 		return { engines::engine::status::backendRequiresPassword,engine } ;
 	}
 
-	if( _illegal_path( opt,engine ) ){
-
-		return { engines::engine::status::IllegalPath,engine } ;
-	}
-
 	if( engine.backendRequireMountPath() ){
 
 		if( !( _create_folder( opt.plainFolder ) || reUseMP ) ){
@@ -589,11 +569,6 @@ static engines::engine::cmdStatus _create( const Opts& opt,const Engs& engine )
 	if( mm != engines::engine::status::success ){
 
 		return { mm,engine } ;
-	}
-
-	if( _illegal_path( opt,engine ) ){
-
-		return { engines::engine::status::IllegalPath,engine } ;
 	}
 
 	if( opt.key.isEmpty() && engine.requiresAPassword( opt ) ){

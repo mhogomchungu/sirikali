@@ -185,28 +185,25 @@ engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 	return engines::engine::status::backendFail ;
 }
 
-void cryfs::GUICreateOptions( QWidget * parent,engine::engine::fCreateOptions function ) const
+void cryfs::GUICreateOptions( const engines::engine::createGUIOptions& s ) const
 {
-	cryfscreateoptions::instance( parent,*this,std::move( function ) ) ;
+	cryfscreateoptions::instance( *this,s ) ;
 }
 
-void cryfs::GUIMountOptions( QWidget * parent,
-			     bool r,
-			     const engines::engine::mountOptions& l,
-			     engines::engine::fMountOptions f ) const
+void cryfs::GUIMountOptions( const engines::engine::mountGUIOptions& s ) const
 {
-	auto& e = ::options::instance( parent,*this,r,l,std::move( f ) ) ;
+	auto& e = options::instance( *this,s ) ;
 
 	auto& ee = e.GUIOptions() ;
 
-	ee.checkBoxChecked = l.opts.allowReplacedFileSystem ;
+	ee.checkBoxChecked = s.mOpts.opts.allowReplacedFileSystem ;
 	ee.checkBoxText    = QObject::tr( "Allow Replaced File System" ) ;
 	ee.enableCheckBox  = true ;
 	ee.enableKeyFile   = false ;
 
 	ee.updateOptions = []( const ::options::Options& s ){
 
-		engines::engine::options::booleanOptions e ;
+		engines::engine::booleanOptions e ;
 
 		e.allowReplacedFileSystem = s.checkBoxChecked ;
 

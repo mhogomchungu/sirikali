@@ -37,26 +37,24 @@ class cryfscreateoptions : public QDialog
 {
 	Q_OBJECT
 public:
-	static void instance( QWidget * parent,
-			      const engines::engine& engine,
-			      std::function< void( const engines::engine::createOptions& ) > function )
+	static void instance( const engines::engine& engine,
+			      const engines::engine::createGUIOptions& s )
 	{
-		new cryfscreateoptions( parent,engine,std::move( function ) ) ;
+		new cryfscreateoptions( engine,s ) ;
 	}
-	explicit cryfscreateoptions( QWidget * parent,
-				     const engines::engine& engine,
-				     std::function< void( const engines::engine::createOptions& ) > ) ;
+	explicit cryfscreateoptions( const engines::engine& engine,
+				     const engines::engine::createGUIOptions& s ) ;
 	~cryfscreateoptions() ;
 private slots:
 	void pbSelectConfigPath() ;
 	void pbOK() ;
 	void pbCancel() ;
 private:
-	void HideUI( const engines::engine::createOptions& = engines::engine::createOptions() ) ;
+	void HideUI( const engines::engine::cOpts& = engines::engine::cOpts() ) ;
 	void closeEvent( QCloseEvent * ) ;
 	Ui::cryfscreateoptions * m_ui ;
 	QString m_configFileName ;
-	std::function< void( const engines::engine::createOptions& ) > m_function ;
+	engines::engine::fcreate m_function ;
 };
 
 #endif // CRYFSCREATEOPTIONS_H

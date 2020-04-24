@@ -27,17 +27,13 @@
 
 #include <QFileDialog>
 
-options::options( QWidget * parent,
-		  const engines::engine& engine,
-		  bool r,
-		  const engines::engine::mountOptions& l,
-		  engines::engine::fMountOptions e ) :
-	QDialog( parent ),
+options::options( const engines::engine& engine,const engines::engine::mountGUIOptions& s ) :
+	QDialog( s.parent ),
 	m_ui( new Ui::options ),
 	m_engine( engine ),
-	m_create( r ),
-	m_setOptions( std::move( e ) ),
-	m_parentWidget( parent )
+	m_create( s.create ),
+	m_setOptions( s.fMountOptions ),
+	m_parentWidget( s.parent )
 {
 	m_ui->setupUi( this ) ;
 
@@ -61,16 +57,12 @@ options::options( QWidget * parent,
 		m_setGUIOptions.checkBoxChecked = e ;
 	} ) ;
 
-	utility2::stringListToStrings( l.options,
-				       m_setGUIOptions.idle,
-				       m_setGUIOptions.configFilePath,
-				       m_setGUIOptions.mountOptions,
-				       m_setGUIOptions.keyFile ) ;
+	m_setGUIOptions.mOpts = s.mOpts ;
 
-	m_ui->lineEditIdleTime->setText( m_setGUIOptions.idle ) ;
-	m_ui->lineEditConfigFilePath->setText( m_setGUIOptions.configFilePath ) ;
-	m_ui->lineEditMountOptions->setText( m_setGUIOptions.mountOptions ) ;
-	m_ui->lineEditKeyFile->setText( m_setGUIOptions.keyFile ) ;
+	m_ui->lineEditIdleTime->setText( m_setGUIOptions.mOpts.idleTimeOut ) ;
+	m_ui->lineEditConfigFilePath->setText( m_setGUIOptions.mOpts.configFile ) ;
+	m_ui->lineEditMountOptions->setText( m_setGUIOptions.mOpts.mountOpts ) ;
+	m_ui->lineEditKeyFile->setText( m_setGUIOptions.mOpts.keyFile ) ;
 
 	const auto& name = m_engine.name() ;
 
@@ -81,7 +73,7 @@ options::options( QWidget * parent,
 	m_ui->labelConfigFile->setText( tr( "Unlock %1 Volume With A Configuration File." ).arg( name ) ) ;
 
 	utility::setWindowOptions( this ) ;
-	settings::instance().setParent( parent,&m_parentWidget,this ) ;
+	settings::instance().setParent( s.parent,&m_parentWidget,this ) ;
 }
 
 void options::pbConfigFile()
@@ -132,7 +124,7 @@ void options::pbSet()
 
 	auto keyFile = m_ui->lineEditKeyFile->text() ;
 
-	this->Hide( { { idle,configFile,mountOpts,keyFile },opts } ) ;
+	this->Hide( { idle,configFile,mountOpts,keyFile,opts } ) ;
 }
 
 void options::pbCancel()
@@ -140,7 +132,7 @@ void options::pbCancel()
 	this->Hide() ;
 }
 
-void options::Hide( const engines::engine::mountOptions& e )
+void options::Hide( const engines::engine::mOpts& e )
 {
 	this->hide() ;
 	m_setOptions( e ) ;

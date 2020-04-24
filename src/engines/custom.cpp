@@ -276,7 +276,7 @@ engines::engine::status custom::errorCode( const QString& e,int s ) const
 	}
 }
 
-void custom::GUICreateOptions( QWidget * parent,engines::engine::fCreateOptions function ) const
+void custom::GUICreateOptions( const engines::engine::createGUIOptions& s ) const
 {
-	customcreateoptions::instance( parent,std::move( function ) ) ;
+	customcreateoptions::instance( s ) ;
 }

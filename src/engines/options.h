@@ -46,11 +46,7 @@ class options : public QDialog
 public:
 	struct Options{
 
-		QString keyFile ;
-		QString idle ;
-		QString configFilePath ;
-		QString mountOptions ;		
-
+		engines::engine::mOpts mOpts ;
 		bool enableCheckBox = true ;
 		bool checkBoxChecked = true ;
 		bool enableIdleTime = true ;
@@ -61,7 +57,7 @@ public:
 		QString checkBoxText ;
 		QString keyFileTitle ;
 
-		using boolOpts = engines::engine::options::booleanOptions ;
+		using boolOpts = engines::engine::booleanOptions ;
 
 		using function = std::function< boolOpts( const options::Options& ) > ;
 
@@ -73,20 +69,13 @@ public:
 		} ;
 	};
 
-	static options& instance( QWidget * parent,
-				  const engines::engine& engine,
-				  bool r,
-				  const engines::engine::mountOptions& l,
-				  engines::engine::fMountOptions e )
+	static options& instance( const engines::engine& engine,
+				  const engines::engine::mountGUIOptions& s )
 	{
-		return *( new options( parent,engine,r,l,std::move( e ) ) ) ;
+		return *( new options( engine,s ) ) ;
 	}
 
-	options( QWidget * parent,
-		 const engines::engine&,
-		 bool,
-		 const engines::engine::mountOptions&,
-		 engines::engine::fMountOptions ) ;
+	options( const engines::engine&,const engines::engine::mountGUIOptions& ) ;
 	~options() ;
 	void ShowUI() ;
 	Options& GUIOptions() ;
@@ -96,12 +85,12 @@ private slots:
 	void pbSet( void ) ;
 	void pbCancel( void ) ;
 private:
-	void Hide( const engines::engine::mountOptions& = engines::engine::mountOptions() ) ;
+	void Hide( const engines::engine::mOpts& = engines::engine::mOpts() ) ;
 	void closeEvent( QCloseEvent * ) ;
 	Ui::options * m_ui ;
 	const engines::engine& m_engine ;
 	bool m_create ;
-	std::function< void( const engines::engine::mountOptions& ) > m_setOptions ;
+	std::function< void( const engines::engine::mOpts& ) > m_setOptions ;
 	QWidget * m_parentWidget ;
 	Options m_setGUIOptions ;
 };

@@ -39,7 +39,7 @@ struct opts{
 
 	bool create ;
 	const engines::engine::args& args ;
-	const engines::engine::options& options ;
+	const engines::engine::cmdArgsList::options& options ;
 	const engines::engine& engine ;
 	const QByteArray& password ;
 } ;
