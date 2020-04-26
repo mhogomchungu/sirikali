@@ -407,11 +407,6 @@ static engines::engine::cmdStatus _cmd( const cmd_args& e )
 		return { engine.notFoundCode(),engine } ;
 	}
 
-	if( engine.requiresPolkit() && !utility::enablePolkit() ){
-
-		return { engines::engine::status::failedToStartPolkit,engine } ;
-	}
-
 	auto m = _build_config_file_path( { engine,configFilePath } ) ;
 
 	if( !m ){
@@ -505,11 +500,6 @@ static engines::engine::cmdStatus _mount( Opts opt,bool reUseMP,const siritask::
 		return { mm,engine } ;
 	}
 
-	if( opt.key.isEmpty() && engine.requiresAPassword( opt ) ){
-
-		return { engines::engine::status::backendRequiresPassword,engine } ;
-	}
-
 	if( engine.backendRequireMountPath() ){
 
 		if( !( _create_folder( opt.plainFolder ) || reUseMP ) ){
@@ -569,11 +559,6 @@ static engines::engine::cmdStatus _create( const Opts& opt,const Engs& engine )
 	if( mm != engines::engine::status::success ){
 
 		return { mm,engine } ;
-	}
-
-	if( opt.key.isEmpty() && engine.requiresAPassword( opt ) ){
-
-		return { engines::engine::status::backendRequiresPassword,engine } ;
 	}
 
 	auto configPath = _configFilePath( engine,opt ) ;

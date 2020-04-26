@@ -590,6 +590,16 @@ engines::engine::status engines::engine::passAllRequirenments( const engines::en
 		return engines::engine::status::IllegalPath ;
 	}
 
+	if( opt.key.isEmpty() && this->requiresAPassword( opt ) ){
+
+		return engines::engine::status::backendRequiresPassword ;
+	}
+
+	if( this->requiresPolkit() && !utility::enablePolkit() ){
+
+		return engines::engine::status::failedToStartPolkit ;
+	}
+
 	if( utility::platformIsWindows() ){
 
 		if( !utility::isDriveLetter( opt.plainFolder ) ){
