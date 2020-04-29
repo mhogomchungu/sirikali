@@ -33,67 +33,6 @@
 
 namespace siritask
 {
-	class Engine
-	{
-	public:
-		struct opts{
-			const engines::engine& engine ;
-			const QString& configFilePath ;
-			const QString& cipherFolder ;
-		};
-		Engine() :
-			m_engine( engines::instance().getUnKnown() )
-		{
-		}
-		Engine( const engines::engine& engine ) :
-			m_engine( engine )
-		{
-		}
-		Engine( const QString& engine ) :
-			m_engine( engines::instance().getByName( engine ) )
-		{
-		}
-		Engine( const siritask::Engine::opts& e ) :
-			m_engine( e.engine ),
-			m_configFilePath( e.configFilePath ),
-			m_cipherFolder( e.cipherFolder )
-		{
-		}
-		const QString& cipherFolder() const
-		{
-			return m_cipherFolder ;
-		}
-		const QString& configFilePath() const
-		{
-			return m_configFilePath ;
-		}
-		const engines::engine& get() const
-		{
-			return m_engine.get() ;
-		}
-		const engines::engine * operator->() const
-		{
-			return m_engine.operator->() ;
-		}
-		const engines::engine * operator->()
-		{
-			return m_engine.operator->() ;
-		}
-	private:
-		engines::engine::Wrapper m_engine ;
-		QString m_configFilePath ;
-		QString m_cipherFolder ;
-	} ;
-
-	struct mount{
-
-		const QString& cipherFolder ;
-		const QString& configFilePath ;
-		const siritask::Engine& engine ;
-	};
-
-	siritask::Engine mountEngine( const siritask::mount& ) ;
-
 	utility::result< utility::Task > unmountVolume( const QString& exe,
 							const QString& mountPoint,
 							bool usePolkit ) ;
@@ -110,16 +49,28 @@ namespace siritask
 		const QString& mountPoint ;
 		const QString& fileSystem ;
 		int numberOfAttempts ;
-	};
+	} ;
+
+	struct mount{
+
+		const engines::engine::cmdArgsList::options& options ;
+		bool reUseMP ;
+		const engines::engineWithPaths& engine ;
+	} ;
+
+	struct create{
+
+		const engines::engine::cmdArgsList::options& options ;
+		const engines::engine& engine ;
+	} ;
 
 	engines::engine::cmdStatus encryptedFolderUnMount( const siritask::unmount& ) ;
 
-	engines::engine::cmdStatus encryptedFolderMount( const engines::engine::cmdArgsList::options&,
-							 bool = false,
-							 const siritask::Engine& = siritask::Engine() ) ;
+	engines::engine::cmdStatus encryptedFolderMount( const siritask::mount& ) ;
 
-	engines::engine::cmdStatus encryptedFolderCreate( const engines::engine::cmdArgsList::options&,
-							  const engines::engine& ) ;
+	engines::engine::cmdStatus encryptedFolderMount( const engines::engine::cmdArgsList::options& s ) ;
+
+	engines::engine::cmdStatus encryptedFolderCreate( const siritask::create& ) ;
 }
 
 #endif // SIRITASK_H

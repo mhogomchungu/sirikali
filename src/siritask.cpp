@@ -29,9 +29,6 @@
 #include <QDebug>
 #include <QFile>
 
-using Opts = engines::engine::cmdArgsList::options ;
-using Engs = engines::engine ;
-
 static bool _create_folder( const QString& m )
 {
 	if( utility::pathExists( m ) ){
@@ -443,53 +440,20 @@ static engines::engine::cmdStatus _cmd( const cmd_args& e )
 	}
 }
 
-siritask::Engine siritask::mountEngine( const siritask::mount& e )
+static engines::engine::cmdStatus _mount( const siritask::mount& s )
 {
-	const QString& cipherFolder    = e.cipherFolder ;
-	const QString& configFilePath  = e.configFilePath ;
-	const siritask::Engine& Engine = e.engine ;
-
-	if( Engine->known() ){
-
-		const auto& engine = Engine.get() ;
-
-		auto a = "[[[" + engine.name() + "]]]" ;
-
-		auto b = engine.name() + " " ;
-
-		if( configFilePath.startsWith( a ) ){
-
-			return { { engine,configFilePath.mid( a.size() ),cipherFolder } } ;
-
-		}else if( cipherFolder.startsWith( b,Qt::CaseInsensitive ) ){
-
-			return { { engine,configFilePath,cipherFolder.mid( b.size() ) } } ;
-		}else{
-			return { { engine,configFilePath,cipherFolder } } ;
-		}
-	}else{
-		const auto& e = engines::instance().getByPaths( cipherFolder,configFilePath ) ;
-
-		return { { e,configFilePath,cipherFolder } } ;
-	}
-}
-
-/*
- * Opts is taken by value instead of const reference on purpose.
- */
-static engines::engine::cmdStatus _mount( Opts opt,bool reUseMP,const siritask::Engine& eng )
-{
-	auto Engine = siritask::mountEngine( { opt.cipherFolder,opt.configFilePath,eng } ) ;
-
-	const auto& engine  = Engine.get() ;
+	const auto& Engine = s.engine ;
+	const auto& engine = Engine.get() ;
 
 	if( engine.unknown() ){
 
 		return { engines::engine::status::unknown,engine } ;
 	}
 
-	opt.configFilePath  = Engine.configFilePath() ;
-	opt.cipherFolder    = Engine.cipherFolder() ;
+	auto opt = s.options ;
+
+	opt.configFilePath = Engine.configFilePath() ;
+	opt.cipherFolder   = Engine.cipherFolder() ;
 
 	engine.updateOptions( opt ) ;
 
@@ -502,7 +466,7 @@ static engines::engine::cmdStatus _mount( Opts opt,bool reUseMP,const siritask::
 
 	if( engine.backendRequireMountPath() ){
 
-		if( !( _create_folder( opt.plainFolder ) || reUseMP ) ){
+		if( !( _create_folder( opt.plainFolder ) || s.reUseMP ) ){
 
 			return { engines::engine::status::failedToCreateMountPoint,engine } ;
 		}
@@ -523,8 +487,11 @@ static engines::engine::cmdStatus _mount( Opts opt,bool reUseMP,const siritask::
 	return e ;
 }
 
-static utility::qstring_result _configFilePath( const Engs& engine,const Opts& opt )
+static utility::qstring_result _configFilePath( const siritask::create& e )
 {
+	const auto& opt    = e.options ;
+	const auto& engine = e.engine ;
+
 	if( opt.configFilePath.isEmpty() ){
 
 		auto opts = opt ;
@@ -547,8 +514,11 @@ static utility::qstring_result _configFilePath( const Engs& engine,const Opts& o
 	}
 }
 
-static engines::engine::cmdStatus _create( const Opts& opt,const Engs& engine )
+static engines::engine::cmdStatus _create( const siritask::create& s )
 {
+	const auto& engine = s.engine ;
+	const auto& opt    = s.options ;
+
 	if( engine.unknown() ){
 
 		return { engines::engine::status::unknown,engine } ;
@@ -561,7 +531,7 @@ static engines::engine::cmdStatus _create( const Opts& opt,const Engs& engine )
 		return { mm,engine } ;
 	}
 
-	auto configPath = _configFilePath( engine,opt ) ;
+	auto configPath = _configFilePath( s ) ;
 
 	if( !configPath ){
 
@@ -591,7 +561,9 @@ static engines::engine::cmdStatus _create( const Opts& opt,const Engs& engine )
 
 		if( !engine.autoMountsOnCreate() ){
 
-			auto e = siritask::encryptedFolderMount( opt,true ) ;
+			engines::engineWithPaths s{ engine,opt.cipherFolder,opt.configFilePath } ;
+
+			auto e = siritask::encryptedFolderMount( { opt,true,s } ) ;
 
 			if( e != engines::engine::status::success ){
 
@@ -623,30 +595,33 @@ static void _warning( const QString& e )
 	utility::debug() << a + b ;
 }
 
-engines::engine::cmdStatus siritask::encryptedFolderCreate( const Opts& opt,const Engs& e )
+engines::engine::cmdStatus siritask::encryptedFolderCreate( const siritask::create& e )
 {
 	if( utility::platformIsWindows() ){
 
 		if( utility::runningOnGUIThread() ){
 
-			return _create( opt,e ) ;
+			return _create( e ) ;
 		}else{
 			/*
 			 * We should not take this path
 			 */
 			_warning( "siritask::encryptedFolderMount" ) ;
 
-			return _create( opt,e ) ;
+			return _create( e ) ;
 		}
 	}else{
-		auto& s = Task::run( [ & ](){ return _create( opt,e ) ; } ) ;
+		auto& s = Task::run( [ & ](){ return _create( e ) ; } ) ;
 
 		return utility::unwrap( s ) ;
 	}
 }
 
-static void _run_command_on_mount( const Opts& opt,const QString& type )
+static void _run_command_on_mount( const siritask::mount& e )
 {
+	const auto& opt  = e.options ;
+	const auto& type = e.engine->name() ;
+
 	auto exe = _cmd_args( settings::instance().runCommandOnMount() ) ;
 
 	if( !exe.isEmpty() ){
@@ -680,8 +655,12 @@ static void _run_command_on_mount( const Opts& opt,const QString& type )
 	}
 }
 
-engines::engine::cmdStatus
-siritask::encryptedFolderMount( const Opts& opt,bool m,const siritask::Engine& engine )
+engines::engine::cmdStatus siritask::encryptedFolderMount( const engines::engine::cmdArgsList::options& s )
+{
+	return siritask::encryptedFolderMount( { s,false,{ s.cipherFolder,s.configFilePath } } ) ;
+}
+
+engines::engine::cmdStatus siritask::encryptedFolderMount( const siritask::mount& e )
 {
 	auto s = [ & ](){
 
@@ -689,27 +668,27 @@ siritask::encryptedFolderMount( const Opts& opt,bool m,const siritask::Engine& e
 
 			if( utility::runningOnGUIThread() ){
 
-				return _mount( opt,m,engine ) ;
+				return _mount( e ) ;
 			}else{
 				/*
 				 * We should not take this path
 				 */
 				_warning( "siritask::encryptedFolderMount" ) ;
-				return _mount( opt,m,engine ) ;
+				return _mount( e ) ;
 			}
 		}else{
-			auto& e = Task::run( [ & ](){
+			auto& s = Task::run( [ & ](){
 
-				return _mount( opt,m,engine ) ;
+				return _mount( e ) ;
 			} ) ;
 
-			return utility::unwrap( e ) ;
+			return utility::unwrap( s ) ;
 		}
 	}() ;
 
 	if( s == engines::engine::status::success ){
 
-		_run_command_on_mount( opt,engine->name() ) ;
+		_run_command_on_mount( e ) ;
 	}
 
 	return s ;

@@ -141,7 +141,7 @@ keyDialog::keyDialog( QWidget * parent,
 	m_create( e.isNotValid() ),
 	m_secrets( s ),
 	m_settings( settings::instance() ),
-	m_engine( engines::instance().getByName( m_exe ) ),
+	m_engine( m_exe ),
 	m_cancel( std::move( p ) ),
 	m_updateVolumeList( std::move( l ) ),
 	m_walletKey( s )
@@ -382,7 +382,12 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 		m_ui->lineEditMountPoint->setFocus() ;
 	}else{
-		m_engine = siritask::mountEngine( { m_path,m_mountOptions.configFile,siritask::Engine() } ) ;
+		m_engine = { m_path,m_mountOptions.configFile } ;
+
+		if( m_engine->known() ){
+
+			m_mountOptions.configFile = m_engine.configFilePath() ;
+		}
 
 		m_ui->pbMountPoint_1->setEnabled( m_engine->supportsMountPathsOnWindows() ) ;
 
@@ -1095,7 +1100,7 @@ void keyDialog::encryptedFolderCreate()
 
 	m_working = true ;
 
-	auto e = siritask::encryptedFolderCreate( { path,m,m_key,m_createOptions},m_engine.get() ) ;
+	auto e = siritask::encryptedFolderCreate( { { path,m,m_key,m_createOptions },m_engine.get() } ) ;
 
 	m_warningLabel.hide() ;
 
@@ -1182,7 +1187,9 @@ void keyDialog::encryptedFolderMount()
 
 	if( m_engine->unknown() ){
 
-		m_engine = siritask::mountEngine( { m_path,m_mountOptions.configFile,siritask::Engine() } ) ;
+		m_engine = { m_path,m_mountOptions.configFile } ;
+	}else{
+		m_engine = { m_engine.get(),m_engine.cipherFolder(),m_mountOptions.configFile } ;
 	}
 
 	if( m_engine->takesTooLongToUnlock() ){
@@ -1192,7 +1199,7 @@ void keyDialog::encryptedFolderMount()
 
 	this->disableAll() ;
 
-	auto e = siritask::encryptedFolderMount( { m_path,m,m_key,m_mountOptions },false,m_engine ) ;
+	auto e = siritask::encryptedFolderMount( { { m_path,m,m_key,m_mountOptions },false,m_engine } ) ;
 
 	m_warningLabel.hide() ;
 

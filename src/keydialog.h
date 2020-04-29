@@ -293,7 +293,7 @@ private :
 	secrets& m_secrets ;
 	settings& m_settings ;
 
-	siritask::Engine m_engine ;
+	engines::engineWithPaths m_engine ;
 
 	keystrength m_keyStrength ;
 

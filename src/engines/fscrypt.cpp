@@ -264,7 +264,7 @@ static QString _name( const QString& cipherPath,const QString& e,const QString& 
 
 	auto mp = utility::Task::makePath( _mount_point( cipherPath,ee ) ) ;
 
-	auto mm = _get_protector_names( exe,mp ) ;
+	auto mm = _get_protector_names( ee,mp ) ;
 
 	auto _contains = [ & ]( const QString& e ){
 
@@ -371,12 +371,14 @@ engines::engine::status fscrypt::unmount( const QString& cipherFolder,
 
 QStringList fscrypt::mountInfo( const QStringList& a ) const
 {
-	const auto& exe = this->executableFullPath() ;
+	auto exe = this->executableFullPath() ;
 
 	if( exe.isEmpty() ){
 
 		return {} ;
 	}
+
+	exe = utility::Task::makePath( exe ) ;
 
 	auto list = m_unlockedVolumeManager.getList() ;
 	const auto& names = this->fuseNames() ;
@@ -387,35 +389,33 @@ QStringList fscrypt::mountInfo( const QStringList& a ) const
 	} ) ;
 }
 
-bool fscrypt::ownsCipherPath( const QString& cipherPath,
-			      const QString& configPath ) const
+engines::engine::ownsCipherFolder fscrypt::ownsCipherPath( const QString& cipherPath,
+							   const QString& configPath ) const
 {
 	Q_UNUSED( configPath )
 
 	if( QFileInfo( cipherPath ).isFile() ){
 
-		return false ;
+		return { false,cipherPath,configPath } ;
 	}
 
 	const auto& exe = this->executableFullPath() ;
 
-	if( exe.isEmpty() ){
+	if( !exe.isEmpty() ){
 
-		return false ;
-	}else{
 		auto m = utility::Task::makePath( cipherPath ) ;
 
 		auto e = utility::Task::makePath( exe ) ;
 
 		auto s = _run( e + " status " + m ) ;
 
-		if( s.success() ){
+		if( s.success() && s.stdOut().contains( "is encrypted with fscrypt" ) ){
 
-			return s.stdOut().contains( "is encrypted with fscrypt" ) ;
-		}else{
-			return false ;
+			return { true,cipherPath,configPath } ;
 		}
 	}
+
+	return { false,cipherPath,configPath } ;
 }
 
 bool fscrypt::requiresAPassword( const engines::engine::cmdArgsList::options& opt ) const

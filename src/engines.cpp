@@ -774,27 +774,33 @@ bool _found( const listSource& getList,const Compare& cmp )
 	return false ;
 }
 
-bool engines::engine::ownsCipherPath( const QString& cipherPath,
-				      const QString& configFilePath ) const
+engines::engine::ownsCipherFolder engines::engine::ownsCipherPath( const QString& cipherPath,
+								   const QString& configFilePath ) const
 {
-	if( cipherPath.startsWith( this->name() + " ",Qt::CaseInsensitive ) ){
+	auto a = this->name() + " " ;
 
-		return true ;
+	if( cipherPath.startsWith( a,Qt::CaseInsensitive ) ){
+
+		return { true,cipherPath.mid( a.size() ),configFilePath } ;
 
 	}else if( utility::pathIsFile( cipherPath ) ){
 
-		return _found( this->fileExtensions(),[ & ]( const QString& e ){
+		auto a = _found( this->fileExtensions(),[ & ]( const QString& e ){
 
 			return cipherPath.endsWith( e ) ;
 		} ) ;
 
+		return { a,cipherPath,configFilePath } ;
+
 	}else if( configFilePath.isEmpty() ){
 
-		return _found( this->configFileNames(),[ & ]( const QString& e ){
+		auto a = _found( this->configFileNames(),[ & ]( const QString& e ){
 
 			return utility::pathExists( cipherPath + "/" + e ) ;
 		} ) ;
-	}else{
+
+		return { a,cipherPath,configFilePath } ;
+	}else{		
 		auto ee = [ & ]( const QString& e ){
 
 			return configFilePath.endsWith( e ) ;
@@ -802,27 +808,36 @@ bool engines::engine::ownsCipherPath( const QString& cipherPath,
 
 		if( _found( this->configFileNames(),ee ) ){
 
-			return true ;
-		}else{
-			return configFilePath.startsWith( "[[[" + this->name() + "]]]" ) ;
+			return { true,cipherPath,configFilePath } ;
+		}else{			
+			auto a = "[[[" + this->name() + "]]]" ;
+
+			if( configFilePath.startsWith( a ) ){
+
+				return { true,cipherPath,configFilePath.mid( a.size() ) } ;
+			}else{
+				return {} ;
+			}
 		}
 	}
 }
 
-const engines::engine& engines::getByPaths( const QString& cipherPath,
-					    const QString& configFilePath ) const
+engines::engineWithPaths engines::getByPaths( const QString& cipherPath,
+					      const QString& configFilePath ) const
 {
 	for( size_t i = 1 ; i < m_backends.size() ; i++ ){
 
 		const auto& m = m_backends[ i ] ;
 
-		if( m->ownsCipherPath( cipherPath,configFilePath ) ){
+		auto mm = m->ownsCipherPath( cipherPath,configFilePath ) ;
 
-			return *m ;
+		if( mm.yes ){
+
+			return { *m,mm } ;
 		}
 	}
 
-	return this->getUnKnown() ;
+	return {} ;
 }
 
 const engines::engine& engines::getByFuseName( const QString& e ) const
@@ -857,6 +872,38 @@ const engines::engine& engines::getByName( const QString& e ) const
 	}
 
 	return this->getUnKnown() ;
+}
+
+engines::engineWithPaths::engineWithPaths()
+{
+}
+
+engines::engineWithPaths::engineWithPaths( const QString& e ) :
+	m_engine( engines::instance().getByName( e ) )
+{
+}
+
+engines::engineWithPaths::engineWithPaths( const QString& cipherPath,
+					   const QString& configFilePath )
+{
+	*this = engines::instance().getByPaths( cipherPath,configFilePath ) ;
+}
+
+engines::engineWithPaths::engineWithPaths( const engines::engine& e,
+					   const engines::engine::ownsCipherFolder& s ) :
+	m_engine( e ),
+	m_cipherPath( s.cipherPath ),
+	m_configPath( s.configPath )
+{
+}
+
+engines::engineWithPaths::engineWithPaths( const engines::engine& e,
+					   const QString& cipherPath,
+					   const QString& configFilePath ) :
+	m_engine( e ),
+	m_cipherPath( cipherPath ),
+	m_configPath( configFilePath )
+{
 }
 
 engines::engine::cmdStatus::cmdStatus()

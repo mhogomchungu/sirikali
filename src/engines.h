@@ -575,7 +575,14 @@ public:
 
 		virtual engine::engine::status passAllRequirenments( const engines::engine::cmdArgsList::options& ) const ;
 
-		virtual bool ownsCipherPath( const QString& cipherPath,const QString& configPath ) const ;
+		struct ownsCipherFolder{
+		        bool yes ;
+			QString cipherPath ;
+			QString configPath ;
+		} ;
+
+		virtual ownsCipherFolder ownsCipherPath( const QString& cipherPath,
+		                                         const QString& configPath ) const ;
 
 		virtual void updateOptions( engines::engine::cmdArgsList::options& ) const ;
 
@@ -740,8 +747,41 @@ public:
 	QStringList enginesWithNoConfigFile() const ;
 	QStringList enginesWithConfigFile() const ;
 	const std::vector< engines::engine::Wrapper >& supportedEngines() const ;
+
+	class engineWithPaths{
+	public:
+	        engineWithPaths() ;
+		engineWithPaths( const QString& engine ) ;
+		engineWithPaths( const QString& cipherPath,const QString& configFilePath ) ;
+		engineWithPaths( const engines::engine&,const engines::engine::ownsCipherFolder& ) ;
+		engineWithPaths( const engines::engine& e,
+		                 const QString& cipherPath,
+		                 const QString& configFilePath ) ;
+		const engines::engine& get() const
+		{
+		        return m_engine.get() ;
+		}
+		const engines::engine * operator->() const
+		{
+		        return m_engine.operator->() ;
+		}
+		const QString& configFilePath() const
+		{
+		        return m_configPath ;
+		}
+		const QString& cipherFolder() const
+		{
+		        return m_cipherPath ;
+		}
+	private:
+		engines::engine::Wrapper m_engine ;
+		QString m_cipherPath ;
+		QString m_configPath ;
+	} ;
+
+	engines::engineWithPaths getByPaths( const QString& cipherPath,
+	                                     const QString& configPath = QString() ) const ;
 	const engine& getUnKnown() const ;
-	const engine& getByPaths( const QString& cipherPath,const QString& configPath = QString() ) const ;
 	const engine& getByName( const QString& e ) const ;
 	const engine& getByFuseName( const QString& e ) const ;
 private:
