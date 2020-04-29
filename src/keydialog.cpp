@@ -384,11 +384,6 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 	}else{
 		m_engine = { m_path,m_mountOptions.configFile } ;
 
-		if( m_engine->known() ){
-
-			m_mountOptions.configFile = m_engine.configFilePath() ;
-		}
-
 		m_ui->pbMountPoint_1->setEnabled( m_engine->supportsMountPathsOnWindows() ) ;
 
 		auto m = m_ui->pbOptions->menu() ;
@@ -413,6 +408,8 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 		m->addSeparator() ;
 
 		if( m_engine->known() ){
+
+			m_mountOptions.configFile = m_engine.configFilePath() ;
 
 			const auto& aa = m_engine->name() ;
 
@@ -441,7 +438,8 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 				this->pbOptions() ;
 			}else{
-				m_engine = ac->objectName() ;
+				const auto& engine = engines::instance().getByName( ac->objectName() ) ;
+				m_engine = { engine,m_path,m_mountOptions.configFile } ;
 			}
 		} ) ;
 
