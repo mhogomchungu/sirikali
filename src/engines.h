@@ -445,7 +445,7 @@ public:
 
 		struct BaseOptions
 		{
-		        struct vInfo{
+			struct vInfo{
 
 				QString versionArgument ;
 				bool readFromStdOut ;
@@ -576,7 +576,7 @@ public:
 		virtual engine::engine::status passAllRequirenments( const engines::engine::cmdArgsList::options& ) const ;
 
 		struct ownsCipherFolder{
-		        bool yes ;
+			bool yes ;
 			QString cipherPath ;
 			QString configPath ;
 		} ;

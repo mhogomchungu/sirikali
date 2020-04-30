@@ -420,12 +420,11 @@ engines::engine::ownsCipherFolder fscrypt::ownsCipherPath( const QString& cipher
 
 bool fscrypt::requiresAPassword( const engines::engine::cmdArgsList::options& opt ) const
 {
-	if( opt.mountOptions.contains( "--key=" ) ||
-	    opt.createOptions.contains( "--key=" ) || !opt.keyFile.isEmpty() ){
+	if( opt.keyFile.isEmpty() ){
 
-		return false ;
-	}else{
 		return engines::engine::requiresAPassword( opt ) ;
+	}else{
+		return false ;
 	}
 }
 

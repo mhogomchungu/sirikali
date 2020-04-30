@@ -761,9 +761,9 @@ engines::engines()
 }
 
 template< typename Compare,typename listSource >
-bool _found( const listSource& getList,const Compare& cmp )
+bool _found( const listSource& list,const Compare& cmp )
 {
-	for( const auto& xt : getList ){
+	for( const auto& xt : list ){
 
 		if( cmp( xt ) ){
 
@@ -800,7 +800,7 @@ engines::engine::ownsCipherFolder engines::engine::ownsCipherPath( const QString
 		} ) ;
 
 		return { a,cipherPath,configFilePath } ;
-	}else{		
+	}else{
 		auto ee = [ & ]( const QString& e ){
 
 			return configFilePath.endsWith( e ) ;
