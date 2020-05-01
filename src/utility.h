@@ -313,7 +313,7 @@ namespace utility
 
 	void wait( int ) ;
 
-	void waitForFinished( QProcess& ) ;
+	bool waitForFinished( QProcess&,int timeOut = 5 ) ;
 
 	void setMainQWidget( QWidget * ) ;
 	QWidget * mainQWidget() ;

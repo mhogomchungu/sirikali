@@ -31,6 +31,7 @@
 namespace SiriKali{
 namespace Windows{
 static const char * _backEndTimedOut = "SiriKali::Windows::BackendTimedOut" ;
+static const char * _backEndFailedToFinish = "SiriKali::Windows::BackendFailedToFinisht" ;
 
 #ifdef Q_OS_WIN
 
@@ -146,15 +147,17 @@ static QString _errorMsg( DWORD err,const QString& path )
 
 std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path )
 {
-	auto a = path.mid( 0,1 ).toStdWString()[ 0 ] ;
+	auto a = path.mid( 0,1 ).toLatin1()[ 0 ] ;
 
-	std::array< WCHAR,4 >rpath = { a,':','\\','\0' } ;
+	std::array< TCHAR,4 >rpath = { a,':','\\','\0' } ;
 
-	std::array< WCHAR,1024 > fsname ;
+	std::array< TCHAR,MAX_PATH + 1 > fsname ;
 
-	if( GetVolumeInformationW( rpath.data(),nullptr,0,nullptr,nullptr,nullptr,fsname.data(),fsname.size() ) ) {
+	std::fill( fsname.begin(),fsname.end(),'\0' ) ;
 
-		auto m = QString::fromWCharArray( fsname.data() ) ;
+	if( GetVolumeInformationA( rpath.data(),nullptr,0,nullptr,nullptr,nullptr,fsname.data(),fsname.size() ) ) {
+
+		auto m = fsname.data() ;
 
 		for( const auto& it : settings::instance().supportedFileSystemsOnMountPaths() ){
 
@@ -458,10 +461,22 @@ static std::pair< Task::process::result,QString > _terminate_process( const term
 
 	if( m.success() ){
 
-		utility::waitForFinished( e.exe ) ;
-	}
+		if( utility::waitForFinished( e.exe ) ){
 
-	return { std::move( m ),std::move( exe ) } ;
+			return { std::move( m ),std::move( exe ) } ;
+
+		}else{
+			auto a = Task::process::result( SiriKali::Windows::_backEndFailedToFinish,
+							QByteArray(),
+							-1,
+							0,
+							true ) ;
+
+			return { std::move( a ),std::move( exe ) } ;
+		}
+	}else{
+		return { std::move( m ),std::move( exe ) } ;
+	}
 }
 
 Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::opts& opts )

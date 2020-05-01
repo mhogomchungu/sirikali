@@ -45,6 +45,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = true ;
 	s.hasGUICreateOptions   = false ;
 	s.setsCipherPath        = true ;
+	s.windowsUnMountCommand = "" ;
 	s.executableName        = "sshfs" ;
 	s.releaseURL            = "https://api.github.com/repos/libfuse/sshfs/releases" ;
 	s.windowsInstallPathRegistryKey = "SOFTWARE\\SSHFS-Win" ;

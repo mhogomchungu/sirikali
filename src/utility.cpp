@@ -1343,17 +1343,34 @@ void utility::wait( int time )
 	}
 }
 
-void utility::waitForFinished( QProcess& e )
+template <typename Function >
+static bool _wait_for_finished( QProcess& e,int timeOut,Function wait )
 {
-	if( utility::runningOnGUIThread() ){
+	for( int i = 0 ; i < timeOut ; i++ ){
 
-		while( e.state() == QProcess::Running ){
+		if( e.state() == QProcess::Running ){
 
-			utility::waitForOneSecond() ;
+			utility::debug() << "Waiting For A Process To Finish" ;
+			wait() ;
+		}else{
+			utility::debug() << "Process Stopped Running" ;
+			return true ;
 		}
 	}
 
-	e.waitForFinished() ;
+	utility::debug() << "Warning, Process Is Still Running Past Timeout" ;
+
+	return false ;
+}
+
+bool utility::waitForFinished( QProcess& e,int timeOut )
+{
+	if( utility::runningOnGUIThread() ){
+
+		return _wait_for_finished( e,timeOut,[](){ utility::Task::suspendForOneSecond() ; } ) ;
+	}else{
+		return _wait_for_finished( e,timeOut,[](){ utility::Task::waitForOneSecond() ; } ) ;
+	}
 }
 
 static QString _ykchalresp_path()
