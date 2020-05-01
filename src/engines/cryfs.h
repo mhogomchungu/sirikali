@@ -26,6 +26,8 @@ public:
 
 	bool takesTooLongToUnlock() const override ;
 
+	void updateOptions( engines::engine::cmdArgsList::options&,bool ) const override ;
+
 	const QProcessEnvironment& getProcessEnvironment() const override ;
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
@@ -42,5 +44,5 @@ private:
 	QProcessEnvironment setEnv() const ;
 	const QProcessEnvironment m_env ;
 	const engines::versionGreaterOrEqual m_version_greater_or_equal_0_10_0 ;
-	const engines::versionGreaterOrEqual m_use_error_codes ;
+	const engines::versionGreaterOrEqual m_version_greater_or_equal_0_9_9 ;
 } ;

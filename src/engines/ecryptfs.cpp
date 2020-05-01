@@ -88,8 +88,10 @@ ecryptfs::ecryptfs() :
 {
 }
 
-void ecryptfs::updateOptions( engines::engine::cmdArgsList::options& opt ) const
+void ecryptfs::updateOptions( engines::engine::cmdArgsList::options& opt,bool creating ) const
 {
+	Q_UNUSED( creating )
+
 	if( opt.configFilePath.isEmpty() ){
 
 		opt.configFilePath = opt.cipherFolder + "/" + this->configFileName() ;

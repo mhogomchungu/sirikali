@@ -303,7 +303,6 @@ struct cmd_args{
 	bool create ;
 	const engines::engine::cmdArgsList::options& opts ;
 	const QByteArray& password ;
-	const QString& configFilePath ;
 };
 
 struct run_task{
@@ -394,7 +393,7 @@ static engines::engine::cmdStatus _cmd( const cmd_args& e )
 	const auto& engine         = e.engine ;
 	const auto& opts           = e.opts ;
 	const auto& password       = e.password ;
-	const auto& configFilePath = e.configFilePath ;
+	const auto& configFilePath = e.opts.configFilePath ;
 	bool create                = e.create ;
 
 	auto exe = engine.executableFullPath() ;
@@ -455,7 +454,7 @@ static engines::engine::cmdStatus _mount( const siritask::mount& s )
 	opt.configFilePath = Engine.configFilePath() ;
 	opt.cipherFolder   = Engine.cipherFolder() ;
 
-	engine.updateOptions( opt ) ;
+	engine.updateOptions( opt,false ) ;
 
 	auto mm = engine.passAllRequirenments( opt ) ;
 
@@ -472,7 +471,7 @@ static engines::engine::cmdStatus _mount( const siritask::mount& s )
 		}
 	}
 
-	auto e = _cmd( { engine,false,opt,opt.key,opt.configFilePath } ) ;
+	auto e = _cmd( { engine,false,opt,opt.key } ) ;
 
 	if( e != engines::engine::status::success ){
 
@@ -487,55 +486,23 @@ static engines::engine::cmdStatus _mount( const siritask::mount& s )
 	return e ;
 }
 
-static utility::qstring_result _configFilePath( const siritask::create& e )
-{
-	const auto& opt    = e.options ;
-	const auto& engine = e.engine ;
-
-	if( opt.configFilePath.isEmpty() ){
-
-		auto opts = opt ;
-
-		engine.updateOptions( opts ) ;
-
-		return opts.configFilePath ;
-	}else{
-		auto m = QDir().absoluteFilePath( opt.configFilePath ) ;
-
-		for( const auto& it : engine.configFileNames() ){
-
-			if( m.endsWith( it ) ){
-
-				return m ;
-			}
-		}
-
-		return {} ;
-	}
-}
-
 static engines::engine::cmdStatus _create( const siritask::create& s )
 {
 	const auto& engine = s.engine ;
-	const auto& opt    = s.options ;
+	auto opt           = s.options ;
 
 	if( engine.unknown() ){
 
 		return { engines::engine::status::unknown,engine } ;
 	}
 
+	engine.updateOptions( opt,true ) ;
+
 	auto mm = engine.passAllRequirenments( opt ) ;
 
 	if( mm != engines::engine::status::success ){
 
 		return { mm,engine } ;
-	}
-
-	auto configPath = _configFilePath( s ) ;
-
-	if( !configPath ){
-
-		return { engines::engine::status::invalidConfigFileName,engine } ;
 	}
 
 	if( !_create_folder( opt.cipherFolder ) ){
@@ -553,7 +520,7 @@ static engines::engine::cmdStatus _create( const siritask::create& s )
 		}
 	}
 
-	auto e = _cmd( { engine,true,opt,engine.setPassword( opt.key ),configPath.value() } ) ;
+	auto e = _cmd( { engine,true,opt,engine.setPassword( opt.key ) } ) ;
 
 	if( e == engines::engine::status::success ){
 

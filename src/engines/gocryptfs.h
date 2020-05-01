@@ -24,7 +24,7 @@ class gocryptfs : public engines::engine
 public:
 	gocryptfs() ;
 
-	void updateOptions( engines::engine::cmdArgsList::options& ) const override ;
+	void updateOptions( engines::engine::cmdArgsList::options&,bool ) const override ;
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 

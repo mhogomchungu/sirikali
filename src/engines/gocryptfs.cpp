@@ -81,8 +81,10 @@ static bool _set_if_found( const Function& function )
 	return false ;
 }
 
-void gocryptfs::updateOptions( engines::engine::cmdArgsList::options& opt ) const
+void gocryptfs::updateOptions( engines::engine::cmdArgsList::options& opt,bool creating ) const
 {
+	Q_UNUSED( creating )
+
 	opt.boolOptions.unlockInReverseMode = [ & ](){
 
 		if( opt.configFilePath.isEmpty() ){

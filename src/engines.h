@@ -268,6 +268,7 @@ public:
 
 			cryfsMigrateFileSystem,
 			cryfsReplaceFileSystem,
+		        cryfsVersionTooOldToMigrateVolume,
 			notSupportedMountPointFolderPath,
 			mountPointFolderNotEmpty,
 			IllegalPath,
@@ -584,7 +585,7 @@ public:
 		virtual ownsCipherFolder ownsCipherPath( const QString& cipherPath,
 		                                         const QString& configPath ) const ;
 
-		virtual void updateOptions( engines::engine::cmdArgsList::options& ) const ;
+		virtual void updateOptions( engines::engine::cmdArgsList::options&,bool ) const ;
 
 		virtual const QProcessEnvironment& getProcessEnvironment() const ;
 		virtual bool requiresPolkit() const ;		

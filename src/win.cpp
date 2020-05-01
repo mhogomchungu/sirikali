@@ -464,7 +464,6 @@ static std::pair< Task::process::result,QString > _terminate_process( const term
 		if( utility::waitForFinished( e.exe ) ){
 
 			return { std::move( m ),std::move( exe ) } ;
-
 		}else{
 			auto a = Task::process::result( SiriKali::Windows::_backEndFailedToFinish,
 							QByteArray(),

@@ -66,8 +66,8 @@ cryfs::cryfs() :
 	engines::engine( _setOptions() ),
 	m_env( this->setEnv() ),
 	m_version_greater_or_equal_0_10_0( true,*this,0,10,0 ),
-	m_use_error_codes( true,*this,0,9,9 )
-{
+	m_version_greater_or_equal_0_9_9( true,*this,0,9,9 )
+{	
 }
 
 QProcessEnvironment cryfs::setEnv() const
@@ -143,7 +143,7 @@ engines::engine::args cryfs::command( const QByteArray& password,
 
 engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 {
-	if( m_use_error_codes ){
+	if( m_version_greater_or_equal_0_9_9 ){
 
 		/*
 		 * Error codes are here: https://github.com/cryfs/cryfs/blob/develop/src/cryfs/ErrorCodes.h
@@ -185,21 +185,41 @@ engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 	return engines::engine::status::backendFail ;
 }
 
+void cryfs::updateOptions( engines::engine::cmdArgsList::options& e,bool creating ) const
+{
+	Q_UNUSED( creating )
+
+	if( !m_version_greater_or_equal_0_10_0 ){
+
+		e.boolOptions.allowReplacedFileSystem = false ;
+	}
+}
+
 engines::engine::status cryfs::passAllRequirenments( const engines::engine::cmdArgsList::options& opt ) const
 {
-	auto s = engines::engine::passAllRequirenments( opt ) ;
+	auto s = engines::engine::passAllRequirenments( opt ) ;	
 
-	if( s == engines::engine::status::success ){
+	if( s != engines::engine::status::success ){
 
-		if( utility::platformIsWindows() ){
+		return s ;
+	}
 
-			/*
-			 * Not sure how to work around this[1] bug report but it
-			 * should be handled here.
-			 *
-			 * [1] https://github.com/cryfs/cryfs/issues/319
-			 */
+	if( opt.boolOptions.allowUpgradeFileSystem ){
+
+		if( !m_version_greater_or_equal_0_9_9 ){
+
+			return engines::engine::status::cryfsVersionTooOldToMigrateVolume ;
 		}
+	}
+
+	if( utility::platformIsWindows() ){
+
+		/*
+		 * Not sure how to work around this[1] bug report but it
+		 * should be handled here.
+		 *
+		 * [1] https://github.com/cryfs/cryfs/issues/319
+		 */
 	}
 
 	return s ;
@@ -207,7 +227,7 @@ engines::engine::status cryfs::passAllRequirenments( const engines::engine::cmdA
 
 void cryfs::GUICreateOptions( const engines::engine::createGUIOptions& s ) const
 {
-	cryfscreateoptions::instance( *this,s ) ;
+	cryfscreateoptions::instance( *this,s,m_version_greater_or_equal_0_10_0 ) ;
 }
 
 void cryfs::GUIMountOptions( const engines::engine::mountGUIOptions& s ) const
@@ -216,7 +236,13 @@ void cryfs::GUIMountOptions( const engines::engine::mountGUIOptions& s ) const
 
 	auto& ee = e.GUIOptions() ;
 
-	ee.checkBoxChecked = s.mOpts.opts.allowReplacedFileSystem ;
+	if( m_version_greater_or_equal_0_10_0 ){
+
+		ee.checkBoxChecked = s.mOpts.opts.allowReplacedFileSystem ;
+	}else{
+		ee.checkBoxChecked = false ;
+	}
+
 	ee.checkBoxText    = QObject::tr( "Allow Replaced File System" ) ;
 	ee.enableCheckBox  = true ;
 	ee.enableKeyFile   = false ;

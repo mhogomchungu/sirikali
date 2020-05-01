@@ -38,12 +38,14 @@ class cryfscreateoptions : public QDialog
 	Q_OBJECT
 public:
 	static void instance( const engines::engine& engine,
-			      const engines::engine::createGUIOptions& s )
+			      const engines::engine::createGUIOptions& s,
+			      bool allowReplacedFileSystem )
 	{
-		new cryfscreateoptions( engine,s ) ;
+		new cryfscreateoptions( engine,s,allowReplacedFileSystem ) ;
 	}
 	explicit cryfscreateoptions( const engines::engine& engine,
-				     const engines::engine::createGUIOptions& s ) ;
+				     const engines::engine::createGUIOptions& s,
+				     bool ) ;
 	~cryfscreateoptions() ;
 private slots:
 	void pbSelectConfigPath() ;

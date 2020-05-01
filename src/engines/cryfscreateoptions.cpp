@@ -26,7 +26,8 @@
 #include "../engines.h"
 
 cryfscreateoptions::cryfscreateoptions( const engines::engine& engine,
-					const engines::engine::createGUIOptions& s ) :
+					const engines::engine::createGUIOptions& s,
+					bool allowReplacedFileSystem ) :
 	QDialog( s.parent ),
 	m_ui( new Ui::cryfscreateoptions ),
 	m_configFileName( engine.configFileName() ),
@@ -40,7 +41,12 @@ cryfscreateoptions::cryfscreateoptions( const engines::engine& engine,
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbConfigPath,SIGNAL( clicked() ),this,SLOT( pbSelectConfigPath() ) ) ;
 
-	m_ui->cbAllowReplacedFileSystem->setChecked( s.cOpts.opts.allowReplacedFileSystem ) ;
+	if( allowReplacedFileSystem ){
+
+		m_ui->cbAllowReplacedFileSystem->setChecked( s.cOpts.opts.allowReplacedFileSystem ) ;
+	}else{
+		m_ui->cbAllowReplacedFileSystem->setEnabled( false ) ;
+	}
 
 	m_ui->pbConfigPath->setIcon( QIcon( ":/folder.png" ) ) ;
 

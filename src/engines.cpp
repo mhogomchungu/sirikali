@@ -622,9 +622,10 @@ engines::engine::status engines::engine::passAllRequirenments( const engines::en
 	return engines::engine::status::success ;
 }
 
-void engines::engine::updateOptions( engines::engine::cmdArgsList::options& e ) const
+void engines::engine::updateOptions( engines::engine::cmdArgsList::options& e,bool s ) const
 {
 	Q_UNUSED( e )
+	Q_UNUSED( s )
 }
 
 QString engines::engine::setConfigFilePath( const QString& e ) const
@@ -1052,6 +1053,10 @@ QString engines::engine::cmdStatus::toString() const
 
 		return QObject::tr( "This Volume Of Cryfs Is Different From The Known One.\n\nCheck The \"Replace File System\" Option And Unlock The Volume Again To Replace The Previous File System." ) ;
 
+	case engines::engine::status::cryfsVersionTooOldToMigrateVolume :
+
+		return QObject::tr( "Atleast Version 0.9.9 Of Cryfs Is Required To Be Able To Upgrade A Volume and Installed Version Is \"%1\"." ).arg( m_engine->installedVersion().toString() ) ;
+
 	case engines::engine::status::notSupportedMountPointFolderPath :
 
 		return QObject::tr( "Mount Point Folder Path Must Reside In An NTFS FileSystem." ) ;
@@ -1439,16 +1444,17 @@ bool engines::engineVersion::operator<( const engines::engineVersion& other ) co
 	if( m_major < other.m_major ){
 
 		return true ;
-	}
 
-	if( m_minor < other.m_minor ){
+	}else if( m_major == other.m_major ){
 
-		return true ;
-	}
+		if( m_minor < other.m_minor ){
 
-	if( m_patch < other.m_patch ){
+			return true ;
 
-		return true ;
+		}else if( m_minor == other.m_minor ){
+
+			return m_patch < other.m_patch ;
+		}
 	}
 
 	return false ;
