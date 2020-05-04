@@ -5,9 +5,9 @@ project( mhogomchungu_task )
 set( LIB_VERSION "1.2.3" )
 set( SO_VERSION "1.0.0" )
 
-add_definitions( -Wextra -Wall -pedantic -std=c++11 )
+add_definitions( -Wextra -Wall -pedantic -std=c++14 )
 
-set( CMAKE_CXX_STANDARD 11 )
+set( CMAKE_CXX_STANDARD 14 )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
 set( CMAKE_CXX_EXTENSIONS OFF)
 

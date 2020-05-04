@@ -1436,7 +1436,7 @@ bool engines::engineVersion::valid() const
 
 bool engines::engineVersion::operator==( const engines::engineVersion& other ) const
 {
-	return  m_major == other.m_major && m_minor == other.m_minor &&	m_patch == other.m_patch ;
+	return m_major == other.m_major && m_minor == other.m_minor && m_patch == other.m_patch ;
 }
 
 bool engines::engineVersion::operator<( const engines::engineVersion& other ) const

@@ -67,7 +67,7 @@ cryfs::cryfs() :
 	m_env( this->setEnv() ),
 	m_version_greater_or_equal_0_10_0( true,*this,0,10,0 ),
 	m_version_greater_or_equal_0_9_9( true,*this,0,9,9 )
-{	
+{
 }
 
 QProcessEnvironment cryfs::setEnv() const
