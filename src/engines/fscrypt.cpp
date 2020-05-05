@@ -312,8 +312,8 @@ static engines::engine::BaseOptions _setOptions()
 	s.names                 = QStringList{ "fscrypt","fscrypt*" } ;
 	s.volumePropertiesCommands = QStringList{ "fscrypt status %{plainFolder}" } ;
 	s.notFoundCode             = engines::engine::status::fscryptNotFound ;
-	s.versionInfo              = { { "--version",true,0,2 },    // for fscrypt < 0.2.7
-				       { "--version",true,2,0 } } ; // for fscrypt >= 0.2.7
+	s.versionInfo              = { { "--version",true,2,0 },    // for fscrypt >= 0.2.7
+				       { "--version",true,0,2 } } ; // for fscrypt < 0.2.7
 
 	return s ;
 }
