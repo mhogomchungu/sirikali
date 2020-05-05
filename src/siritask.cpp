@@ -444,11 +444,6 @@ static engines::engine::cmdStatus _mount( const siritask::mount& s )
 	const auto& Engine = s.engine ;
 	const auto& engine = Engine.get() ;
 
-	if( engine.unknown() ){
-
-		return { engines::engine::status::unknown,engine } ;
-	}
-
 	auto opt = s.options ;
 
 	opt.configFilePath = Engine.configFilePath() ;
@@ -490,11 +485,6 @@ static engines::engine::cmdStatus _create( const siritask::create& s )
 {
 	const auto& engine = s.engine ;
 	auto opt           = s.options ;
-
-	if( engine.unknown() ){
-
-		return { engines::engine::status::unknown,engine } ;
-	}
 
 	engine.updateOptions( opt,true ) ;
 

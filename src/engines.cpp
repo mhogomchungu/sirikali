@@ -585,6 +585,11 @@ static bool _illegal_path( const engines::engine::cmdArgsList::options& opts,
 
 engines::engine::status engines::engine::passAllRequirenments( const engines::engine::cmdArgsList::options& opt ) const
 {
+	if( this->unknown() ){
+
+		return engines::engine::status::unknown ;
+	}
+
 	if( utility::platformIsLinux() && _illegal_path( opt,*this ) ){
 
 		return engines::engine::status::IllegalPath ;
