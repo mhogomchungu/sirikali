@@ -245,8 +245,6 @@ set( UI_FILES 	src/sirikali.ui
 		src/createbackendwindow.ui
 		src/favorites2.ui
 		src/readonlywarning.ui
-		src/walletconfig.ui
-		src/walletconfiginput.ui
 		src/dialogok.ui
 		src/help.ui
 		src/filemanager.ui
@@ -265,12 +263,12 @@ set( UI_FILES 	src/sirikali.ui
 )
 
 set( MOC_FILES
-                src/configoptions.h
-                src/configfileoption.h
-                src/checkforupdates.h
-                src/dialogok.h
-                src/help.h
-                src/createbackendwindow.h
+		src/configoptions.h
+		src/configfileoption.h
+		src/checkforupdates.h
+		src/dialogok.h
+		src/help.h
+		src/createbackendwindow.h
 		src/sirikali.h
 		src/keydialog.h
 		src/oneinstance.h
@@ -278,8 +276,6 @@ set( MOC_FILES
 		src/plugin.h
 		src/favorites2.h
 		src/readonlywarning.h
-		src/walletconfig.h
-		src/walletconfiginput.h
 		src/filemanager.h
 		src/mountinfo.h
 		src/debugwindow.h
@@ -320,12 +316,10 @@ set( SRC 	src/dialogok.cpp
 		src/plugin.cpp
 		src/tablewidget.cpp
 		src/readonlywarning.cpp
-		src/walletconfig.cpp
-		src/walletconfiginput.cpp
 		src/secrets.cpp
 		src/filemanager.cpp
 		src/utility2.cpp
-                src/win.cpp
+		src/win.cpp
 		src/settings.cpp
 		src/engines/options.cpp
 		src/engines/cryfs.cpp

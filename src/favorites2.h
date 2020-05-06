@@ -37,19 +37,34 @@ class favorites2 : public QDialog
 {
 	Q_OBJECT
 public:
+	static void deleteKey( secrets::wallet&,const QString& id ) ;
+
+	static bool addKey( secrets::wallet&,const QString& id,
+			    const QString& key,const QString& comment ) ;
 	static favorites2& instance( QWidget * parent,
+				     secrets& wallet,
 				     favorites::type type,
 				     std::function< void() > function,
 				     const QString& cp = QString() )
 	{
-		return *( new favorites2( parent,type,std::move( function ),cp ) ) ;
+		return *( new favorites2( parent,
+					  wallet,
+					  type,
+					  std::move( function ),
+					  cp ) ) ;
 	}
 	favorites2( QWidget * parent,
+		    secrets& wallet,
 		    favorites::type type,
 		    std::function< void() > function,
 		    const QString& cp ) ;
 	~favorites2() ;
 private :
+	void showContextMenu( QTableWidgetItem * item,bool itemClicked ) ;
+	void addkeyToWallet() ;
+	void deleteKeyFromWallet( const QString& ) ;
+	void walletBkChanged( LXQt::Wallet::BackEnd ) ;
+	void setControlsAvailability( bool ) ;
 	void tabChanged( int ) ;
 	void updateVolumeList( const std::vector< favorites::entry >&,const QString& ) ;
 	void updateVolumeList( const std::vector< favorites::entry >&,int ) ;
@@ -74,6 +89,7 @@ private :
 	void ShowUI( favorites::type ) ;
 	void HideUI( void ) ;
 	void checkFavoritesConsistency() ;
+	QStringList readAllKeys() ;
 	favorites::entry getEntry( int ) ;
 	QString getExistingFile( const QString& ) ;
 	QString getExistingDirectory( const QString& ) ;
@@ -81,6 +97,7 @@ private :
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	void addEntries( const QStringList& ) ;
 	Ui::favorites2 * m_ui ;
+	secrets& m_secrets ;
 	QWidget * m_parentWidget ;
 	favorites::type m_type ;
 	int m_editRow ;
@@ -92,6 +109,40 @@ private :
 	settings& m_settings ;
 	std::function< void() > m_function ;
 	QString m_cipherPath ;
+
+	class wallet{
+
+	public:
+		void operator=( secrets::wallet s )
+		{
+			m_w.reset( new w{ std::move( s ) } ) ;
+		}
+		LXQt::Wallet::Wallet * operator->()
+		{
+			return m_w.get()->wallet.operator->() ;
+		}
+		secrets::wallet& get()
+		{
+			return m_w.get()->wallet ;
+		}
+		operator bool()
+		{
+			auto s = m_w.get() ;
+
+			if( s == nullptr ){
+
+				return false ;
+			}else{
+				return s->wallet.operator bool() ;
+			}
+		}
+	private:
+		struct w{
+			secrets::wallet wallet ;
+		} ;
+		std::unique_ptr< w > m_w = nullptr ;
+
+	} m_wallet ;
 } ;
 
 #endif // FAVORITES2_H

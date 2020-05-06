@@ -86,7 +86,7 @@ static void _delete( LXQt::Wallet::Wallet * w )
 {
 	if( w && w->backEnd() != LXQt::Wallet::BackEnd::internal ){
 
-		w->deleteLater() ;
+		delete w ;
 	}
 }
 

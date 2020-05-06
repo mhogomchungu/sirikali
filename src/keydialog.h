@@ -39,9 +39,9 @@ class QTableWidget ;
 #include "can_build_pwquality.h"
 #include "secrets.h"
 #include "engines.h"
-#include "walletconfig.h"
 #include "settings.h"
 #include "favorites.h"
+#include "favorites2.h"
 
 #include <functional>
 #include <memory>
@@ -337,16 +337,16 @@ private :
 
 				if( s->opened() ){
 
-					walletconfig::deleteKey( s,id ) ;
+					favorites2::deleteKey( s,id ) ;
 				}else {
 					if( s->open( walletName,appName ) ){
 
-						walletconfig::deleteKey( s,id ) ;
+						favorites2::deleteKey( s,id ) ;
 					}
 				}
 			}
 		}
-	} m_walletKey;
+	} m_walletKey ;
 };
 
 #endif // KEYDIALOG_H

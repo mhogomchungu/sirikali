@@ -55,7 +55,6 @@
 #include "siritask.h"
 #include "checkforupdates.h"
 #include "favorites.h"
-#include "walletconfig.h"
 #include "plugins.h"
 #include "crypto.h"
 #include "help.h"
@@ -511,7 +510,7 @@ void sirikali::favoriteClicked( QAction * ac )
 
 		this->disableAll() ;
 
-		favorites2::instance( this,favorites::type::others,[ this ](){
+		favorites2::instance( this,m_secrets,favorites::type::others,[ this ](){
 
 			this->enableAll() ;
 
@@ -1160,7 +1159,7 @@ void sirikali::addToFavorites()
 
 	if( cp.size() > 0 ){
 
-		favorites2::instance( this,favorites::type::others,[ this ](){
+		favorites2::instance( this,m_secrets,favorites::type::others,[ this ](){
 
 			this->updateFavoritesInContextMenu() ;
 
@@ -1408,7 +1407,7 @@ void sirikali::createVolume( QAction * ac )
 
 		if( s == "Sshfs" ){
 
-			favorites2::instance( this,favorites::type::sshfs,[ this ](){
+			favorites2::instance( this,m_secrets,favorites::type::sshfs,[ this ](){
 
 				this->updateFavoritesInContextMenu() ;
 			} ) ;

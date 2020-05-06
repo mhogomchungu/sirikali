@@ -37,7 +37,6 @@
 #include "plugin.h"
 #include "crypto.h"
 #include "configfileoption.h"
-#include "walletconfig.h"
 
 static QString _kwallet()
 {
@@ -1285,7 +1284,7 @@ void keyDialog::setKeyInWallet()
 
 		if( w->readValue( id ).isEmpty() ){
 
-			if( walletconfig::addKey( w,id,passphrase,"Nil" ) ){
+			if( favorites2::addKey( w,id,passphrase,"Nil" ) ){
 
 				m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
 				m_ui->lineEditKey->setText( passphrase ) ;
