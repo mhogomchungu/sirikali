@@ -610,6 +610,8 @@ void favorites2::walletBkChanged( LXQt::Wallet::BackEnd bk )
 			tablewidget::addRow( m_ui->tableWidgetWallet,{ it } ) ;
 		}
 	}else{
+		this->hide() ;
+
 		m_wallet->setImage( QIcon( ":/sirikali" ) ) ;
 
 		auto a = settings::instance().walletName( m_wallet->backEnd() ) ;
@@ -626,6 +628,8 @@ void favorites2::walletBkChanged( LXQt::Wallet::BackEnd bk )
 			}else{
 				this->setControlsAvailability( false ) ;
 			}
+
+			this->show() ;
 		} ) ;
 	}
 }
