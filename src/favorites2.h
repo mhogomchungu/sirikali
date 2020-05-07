@@ -70,7 +70,6 @@ private :
 	void updateVolumeList( const std::vector< favorites::entry >&,int ) ;
 	void showUpdatedEntry( const favorites::entry& ) ;
 	void updateFavorite( bool );
-	void setOptionMenu( QMenu&,bool ) ;
 	void toggleAutoMount( void ) ;
 	void edit( void ) ;
 	void configPath( void ) ;
@@ -105,7 +104,6 @@ private :
 	bool m_volumeNeedNoPassword = false ;
 	bool m_mountReadOnly = false ;
 	bool m_editMode = false ;
-	QMenu m_optionMenu ;
 	settings& m_settings ;
 	std::function< void() > m_function ;
 	QString m_cipherPath ;

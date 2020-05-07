@@ -350,6 +350,8 @@ favorites2::favorites2( QWidget * parent,
 
 	if( utility::platformIsWindows() ){
 
+		m_ui->label_22->setEnabled( false ) ;
+
 		m_ui->pbChangeWalletPassword->setEnabled( false ) ;
 	}else{
 		m_ui->pbChangeWalletPassword->setEnabled( [ this ](){
@@ -406,8 +408,34 @@ favorites2::favorites2( QWidget * parent,
 		return ac ;
 	}() ) ;
 
-	this->setOptionMenu( m_optionMenu,false ) ;
-	m_ui->pbOptions->setMenu( &m_optionMenu ) ;
+	auto optionsMenu = new QMenu( this ) ;
+
+	optionsMenu->setFont( this->font() ) ;
+
+	connect( optionsMenu->addAction( tr( "Toggle AutoMount" ) ),&QAction::triggered,[ this ](){
+
+		this->toggleAutoMount() ;
+	} ) ;
+
+	optionsMenu->addSeparator() ;
+
+	connect( optionsMenu->addAction( tr( "Edit" ) ),&QAction::triggered,[ this ](){
+
+		this->edit() ;
+	} ) ;
+
+	optionsMenu->addSeparator() ;
+
+	connect( optionsMenu->addAction( tr( "Remove Selected Entry" ) ),&QAction::triggered,[ this ](){
+
+		this->removeEntryFromFavoriteList() ;
+	} ) ;
+
+	optionsMenu->addSeparator() ;
+
+	optionsMenu->addAction( tr( "Cancel" ) ) ;
+
+	m_ui->pbOptions->setMenu( optionsMenu ) ;
 
 	this->ShowUI( type ) ;
 }
@@ -684,39 +712,6 @@ void favorites2::showUpdatedEntry( const favorites::entry& e )
 	this->updateVolumeList( favorites::instance().readFavorites(),e.volumePath ) ;
 
 	m_ui->tabWidget->setCurrentIndex( 0 ) ;
-}
-
-void favorites2::setOptionMenu( QMenu& m,bool addCancel )
-{
-	m.setFont( this->font() ) ;
-
-	connect( m.addAction( tr( "Toggle AutoMount" ) ),&QAction::triggered,[ this ](){
-
-		this->toggleAutoMount() ;
-	} ) ;
-
-	m.addSeparator() ;
-
-	connect( m.addAction( tr( "Edit" ) ),&QAction::triggered,[ this ](){
-
-		this->edit() ;
-	} ) ;
-
-	m.addSeparator() ;
-
-	connect( m.addAction( tr( "Remove Selected Entry" ) ),&QAction::triggered,[ this ](){
-
-		this->removeEntryFromFavoriteList() ;
-	} ) ;
-
-	m.addSeparator() ;
-
-	if( addCancel ){
-
-		m.addSeparator() ;
-
-		m.addAction( tr( "Cancel" ) ) ;
-	}
 }
 
 void favorites2::toggleAutoMount()
