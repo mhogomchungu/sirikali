@@ -29,30 +29,38 @@
 
 const QString COMMENT = "-SiriKali_Comment_ID" ;
 
-void favorites2::deleteKey( secrets::wallet& wallet,const QString& id )
+Task::future< void >& favorites2::deleteKey( secrets::wallet& wallet,const QString& id )
 {
-	wallet->deleteKey( id ) ;
-	wallet->deleteKey( id + COMMENT ) ;
+	return Task::run( [ &wallet,id ](){
+
+		wallet->deleteKey( id ) ;
+		wallet->deleteKey( id + COMMENT ) ;
+	} ) ;
 }
 
-bool favorites2::addKey( secrets::wallet& wallet,
-			 const QString& id,
-			 const QString& key,
-			 const QString& comment )
+Task::future< bool >& favorites2::addKey( secrets::wallet& wallet,
+					  const QString& id,
+					  const QString& key,
+					  const QString& comment )
 {
-	if( wallet->addKey( id,key ) ){
+	return Task::run( [ &wallet,id,key,comment ](){
 
-		if( wallet->addKey( id + COMMENT,comment ) ){
+		if( wallet->addKey( id,key ) ){
 
-			return true ;
+			if( wallet->addKey( id + COMMENT,comment ) ){
+
+				return true ;
+			}else{
+				utility::debug() << "Failed To Add Key To Wallet" ;
+
+				wallet->deleteKey( id ) ;
+
+				return false ;
+			}
 		}else{
-			wallet->deleteKey( id ) ;
-
 			return false ;
 		}
-	}else{
-		return false ;
-	}
+	} ) ;
 }
 
 favorites2::favorites2( QWidget * parent,
@@ -149,7 +157,6 @@ favorites2::favorites2( QWidget * parent,
 	connect( m_ui->tableWidgetWallet,&QTableWidget::currentItemChanged,[]( QTableWidgetItem * c,QTableWidgetItem * p ){
 
 		tablewidget::selectRow( c,p ) ;
-
 	} ) ;
 
 	connect( m_ui->pbPreMount,&QPushButton::clicked,[ = ](){
@@ -457,35 +464,33 @@ void favorites2::addkeyToWallet()
 
 	m_ui->pbAddKeyToWallet->setEnabled( false ) ;
 
-	if( m_wallet->addKey( a,b ) ){
+	favorites2::addKey( m_wallet.get(),a,b,"Nil" ).then( [ this,a ]( bool s ){
 
-		if( m_wallet->addKey( a + COMMENT,QString( "Nil" ) ) ){
+		if( s ){
 
-			auto table = m_ui->tableWidgetWallet ;
-
-			tablewidget::addRow( table,{ a } ) ;
+			tablewidget::addRow( m_ui->tableWidgetWallet,{ a } ) ;
 
 			m_ui->lineEditPassword->clear() ;
 			m_ui->lineEditVolumePath->clear() ;
 			m_ui->lineEditVolumePath->setFocus() ;
-		}else{
-			m_wallet->deleteKey( a ) ;
 		}
-	}
 
-	m_ui->pbAddKeyToWallet->setEnabled( true ) ;
+		m_ui->pbAddKeyToWallet->setEnabled( true ) ;
+	} ) ;
 }
 
 void favorites2::deleteKeyFromWallet( const QString& id )
 {
-	favorites2::deleteKey( m_wallet.get(),id ) ;
+	favorites2::deleteKey( m_wallet.get(),id ).await() ;
 }
 
 QStringList favorites2::readAllKeys()
 {
 	QStringList a ;
 
-	for( const auto& it : m_wallet->readAllKeys() ){
+	auto s = Task::await( [ & ](){ return m_wallet->readAllKeys() ; } ) ;
+
+	for( const auto& it : s ){
 
 		if( !it.endsWith( "-SiriKali_Comment_ID" ) ){
 
@@ -522,11 +527,14 @@ void favorites2::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 		if( row != -1 ){
 
-			auto a = m_wallet->readValue( table->item( row,0 )->text() ) ;
+			auto a = Task::await( [ & ]()->QString{
+
+				return m_wallet->readValue( table->item( row,0 )->text() ) ;
+			} ) ;
 
 			if( !a.isEmpty() ){
 
-				auto e = QObject::tr( "The Volume's Password Is \"%1\"" ).arg( QString( a ) ) ;
+				auto e = QObject::tr( "The Password Is \"%1\"" ).arg( a ) ;
 
 				m_ui->labelPassword->setText( e ) ;
 				m_ui->labelPassword->setVisible( true ) ;

@@ -37,10 +37,13 @@ class favorites2 : public QDialog
 {
 	Q_OBJECT
 public:
-	static void deleteKey( secrets::wallet&,const QString& id ) ;
+	static Task::future< void >& deleteKey( secrets::wallet&,const QString& id ) ;
 
-	static bool addKey( secrets::wallet&,const QString& id,
-			    const QString& key,const QString& comment ) ;
+	static Task::future< bool >& addKey( secrets::wallet&,
+					     const QString& id,
+					     const QString& key,
+					     const QString& comment ) ;
+
 	static favorites2& instance( QWidget * parent,
 				     secrets& wallet,
 				     favorites::type type,
