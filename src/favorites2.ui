@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="FavoritesList">
     <attribute name="title">
@@ -1135,6 +1135,9 @@
         <height>31</height>
        </rect>
       </property>
+      <property name="echoMode">
+       <enum>QLineEdit::Normal</enum>
+      </property>
      </widget>
      <widget class="QLabel" name="label_23">
       <property name="geometry">
@@ -1160,6 +1163,9 @@
         <width>421</width>
         <height>31</height>
        </rect>
+      </property>
+      <property name="echoMode">
+       <enum>QLineEdit::Password</enum>
       </property>
      </widget>
      <widget class="QPushButton" name="pbAddKeyToWallet">
@@ -1220,13 +1226,26 @@
        <string/>
       </property>
      </widget>
+     <widget class="QCheckBox" name="cbShowPassword">
+      <property name="geometry">
+       <rect>
+        <x>680</x>
+        <y>370</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
      <widget class="QLabel" name="labelPassword">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>10</y>
-        <width>721</width>
-        <height>431</height>
+        <x>0</x>
+        <y>0</y>
+        <width>741</width>
+        <height>461</height>
        </rect>
       </property>
       <property name="autoFillBackground">

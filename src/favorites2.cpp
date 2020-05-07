@@ -269,12 +269,17 @@ favorites2::favorites2( QWidget * parent,
 		}else{
 			m_ui->rbNone->setChecked( true ) ;
 		}
+
+		m_ui->label_22->setEnabled( walletBk == bk::internal ) ;
+		m_ui->pbChangeWalletPassword->setEnabled( walletBk == bk::internal ) ;
 	}
 
 	connect( m_ui->rbInternalWallet,&QRadioButton::toggled,[ this ]( bool e ){
 
 		if( e ){
 
+			m_ui->label_22->setEnabled( true ) ;
+			m_ui->pbChangeWalletPassword->setEnabled( true ) ;
 			this->walletBkChanged( bk::internal ) ;
 			m_settings.autoMountBackEnd( bk::internal ) ;
 		}
@@ -284,6 +289,8 @@ favorites2::favorites2( QWidget * parent,
 
 		if( e ){
 
+			m_ui->label_22->setEnabled( false ) ;
+			m_ui->pbChangeWalletPassword->setEnabled( false ) ;
 			this->walletBkChanged( bk::kwallet ) ;
 			m_settings.autoMountBackEnd( bk::kwallet ) ;
 		}
@@ -293,6 +300,8 @@ favorites2::favorites2( QWidget * parent,
 
 		if( e ){
 
+			m_ui->label_22->setEnabled( false ) ;
+			m_ui->pbChangeWalletPassword->setEnabled( false ) ;
 			this->walletBkChanged( bk::libsecret ) ;
 			m_settings.autoMountBackEnd( bk::libsecret ) ;
 		}
@@ -302,6 +311,8 @@ favorites2::favorites2( QWidget * parent,
 
 		if( e ){
 
+			m_ui->label_22->setEnabled( false ) ;
+			m_ui->pbChangeWalletPassword->setEnabled( false ) ;
 			this->walletBkChanged( bk::osxkeychain ) ;
 			m_settings.autoMountBackEnd( bk::osxkeychain ) ;
 		}
@@ -309,6 +320,8 @@ favorites2::favorites2( QWidget * parent,
 
 	connect( m_ui->rbNone,&QRadioButton::toggled,[ this ](){
 
+		m_ui->label_22->setEnabled( false ) ;
+		m_ui->pbChangeWalletPassword->setEnabled( false ) ;
 		this->setControlsAvailability( false ) ;
 		m_settings.autoMountBackEnd( settings::walletBackEnd() ) ;
 	} ) ;
@@ -370,6 +383,20 @@ favorites2::favorites2( QWidget * parent,
 		}() ) ;
 	}
 
+	m_ui->cbShowPassword->setChecked( true ) ;
+
+	m_ui->lineEditPassword->setEchoMode( QLineEdit::Password ) ;
+
+	connect( m_ui->cbShowPassword,&QCheckBox::stateChanged,[ this ]( int s ){
+
+		if( s ){
+
+			m_ui->lineEditPassword->setEchoMode( QLineEdit::Password ) ;
+		}else{
+			m_ui->lineEditPassword->setEchoMode( QLineEdit::Normal ) ;
+		}
+	} ) ;
+
 	connect( m_ui->pbChangeWalletPassword,&QPushButton::clicked,[ this ](){
 
 		auto a = m_settings.walletName() ;
@@ -377,7 +404,12 @@ favorites2::favorites2( QWidget * parent,
 
 		this->hide() ;
 
-		m_secrets.changeInternalWalletPassword( a,b,[ this ](){ this->show() ; } ) ;
+		m_secrets.changeInternalWalletPassword( a,b,[ this ](){
+
+			this->walletBkChanged( LXQt::Wallet::BackEnd::internal ) ;
+
+			this->show() ;
+		} ) ;
 	} ) ;
 
 	m_ui->pbFolderPath->setIcon( QIcon( ":/sirikali.png" ) ) ;
@@ -471,6 +503,7 @@ void favorites2::addkeyToWallet()
 			tablewidget::addRow( m_ui->tableWidgetWallet,{ a } ) ;
 
 			m_ui->lineEditPassword->clear() ;
+			m_ui->lineEditPassword->setEchoMode( QLineEdit::Password ) ;
 			m_ui->lineEditVolumePath->clear() ;
 			m_ui->lineEditVolumePath->setFocus() ;
 		}
@@ -611,6 +644,7 @@ void favorites2::setControlsAvailability( bool e )
 	m_ui->lineEditVolumePath->setEnabled( e ) ;
 	m_ui->lineEditPassword->setEnabled( e ) ;
 	m_ui->pbVolumePath->setEnabled( e ) ;
+	m_ui->cbShowPassword->setEnabled( e ) ;
 }
 
 void favorites2::tabChanged( int index )
