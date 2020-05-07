@@ -152,7 +152,7 @@ void sirikali::closeApplication( int s,const QString& e )
 
 	if( !e.isEmpty() ){
 
-		utility::debug() << e ;
+		utility::debug::cerr() << e ;
 	}
 
 	if( m_ui ){
@@ -971,6 +971,8 @@ favorites::volumeList sirikali::autoUnlockVolumes( favorites::volumeList l,bool 
 
 				q.emplace_back( e.first,key ) ;
 			}else{
+				this->disableAll() ;
+
 				auto s = siritask::encryptedFolderMount( { e.first,key } ) ;
 
 				if( s == engines::engine::status::success ){
@@ -984,7 +986,13 @@ favorites::volumeList sirikali::autoUnlockVolumes( favorites::volumeList l,bool 
 
 						this->updateList() ;
 					}
+				}else{
+					q.emplace_back( e.first,key ) ;
+
+					utility::debug() << "Automounting has failed because: " + s.toString() ;
 				}
+
+				this->enableAll() ;
 			}
 		} ;
 

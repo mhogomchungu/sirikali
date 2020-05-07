@@ -88,7 +88,7 @@ favorites2::favorites2( QWidget * parent,
 
 	table->horizontalHeader()->setStretchLastSection( true ) ;
 
-	m_ui->pbVolumePath->setIcon( QIcon( ":/folder" ) ) ;
+	m_ui->pbVolumePath->setIcon( QIcon( ":/sirikali" ) ) ;
 
 	m_ui->tableWidgetWallet->horizontalHeader()->setStretchLastSection( true ) ;
 
