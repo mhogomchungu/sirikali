@@ -59,8 +59,11 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
-encfs::encfs() : engines::engine( _setOptions() )
-{
+encfs::encfs() :
+	engines::engine( _setOptions() ),
+	m_environment( engines::engine::getProcessEnvironment() ),
+	m_versionGreatorOrEqual_1_9_5( true,*this,1,9,5 )
+{	
 }
 
 engines::engine::args encfs::command( const QByteArray& password,
@@ -103,9 +106,21 @@ engines::engine::args encfs::command( const QByteArray& password,
 		}
 	}
 
+	m_environment.remove( "ENCFS6_CONFIG" ) ;
+
 	if( !args.configFilePath.isEmpty() ){
 
-		exeOptions.add( args.configFilePath ) ;
+		if( m_versionGreatorOrEqual_1_9_5 ){
+
+			exeOptions.add( args.configFilePath ) ;
+		}else{
+			auto a = args.configFilePath ;
+			a.replace( "--config ","" ) ;
+
+			a = utility::removeFirstAndLast( a,1,1 ) ;
+
+			m_environment.insert( "ENCFS6_CONFIG",a ) ;
+		}
 	}
 
 	if( !args.opt.idleTimeout.isEmpty() ){
@@ -136,6 +151,11 @@ engines::engine::status encfs::errorCode( const QString& e,int s ) const
 	}else{
 		return engines::engine::status::backendFail ;
 	}
+}
+
+const QProcessEnvironment& encfs::getProcessEnvironment() const
+{
+	return m_environment ;
 }
 
 void encfs::GUICreateOptions( const engines::engine::createGUIOptions& s ) const

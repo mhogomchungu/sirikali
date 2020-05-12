@@ -169,6 +169,9 @@ void LXQt::Wallet::changePassWordDialog::change_internal()
 	class wallet
 	{
 	public:
+		wallet()
+		{
+		}
 		wallet( const QString& password,const QString& walletName,const QString& applicationName )
 		{
 			m_error = lxqt_wallet_open( &m_wallet,
