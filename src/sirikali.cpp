@@ -137,6 +137,8 @@ configOptions::functions sirikali::configOption()
 
 void sirikali::closeApplication( int s,const QString& e )
 {
+	m_secrets.close() ;
+
 	if( utility::platformIsWindows() && m_ui && !m_emergencyShuttingDown ){
 
 		if( m_ui->tableWidget->rowCount() > 0 ){

@@ -35,9 +35,9 @@
 
 #include <QString>
 #include <QByteArray>
-#include <QDebug>
 #include <QEventLoop>
 
+#include <functional>
 #include <memory>
 
 class QWidget ;
@@ -91,18 +91,22 @@ public:
 	LXQt::Wallet::BackEnd backEnd( void ) ;
 	QObject * qObject( void ) ;
 private:
-	struct Header{
-
-		int keySize ;
-		int valueSize ;
-	} m_header ;
-
-	bool decryptData() ;
+	void setEntropy( const QString& ) ;
+	void createWallet( void ) ;
+	void openWallet() ;
+	void openWalletWithPassword( QString ) ;
 	void deserializeData( const QByteArray& ) ;
 	QByteArray serializeData() ;
-
+	QString m_walletName ;
+	QString m_applicationName ;
+	QString m_displayApplicationName ;
+	QString m_password ;
 	QByteArray m_entropy ;
+	QByteArray m_data ;
 	bool m_opened = false ;
+	QEventLoop m_loop ;
+	std::function< void( bool ) > m_correctPassword = []( bool e ){ Q_UNUSED( e ) } ;
+	std::function< void( bool ) > m_walletOpened = []( bool e ){ Q_UNUSED( e ) } ;
 	QVector< std::pair< QString,QByteArray > > m_keys ;
 };
 

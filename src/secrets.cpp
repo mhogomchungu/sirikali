@@ -45,7 +45,16 @@ void secrets::changeInternalWalletPassword( const QString& walletName,
 
 secrets::~secrets()
 {
+	this->close() ;
+}
+
+void secrets::close()
+{
 	delete m_internalWallet ;
+	m_internalWallet = nullptr ;
+
+	delete m_windows_dpapi ;
+	m_windows_dpapi = nullptr ;
 }
 
 LXQt::Wallet::Wallet ** secrets::internalWallet() const
@@ -62,8 +71,30 @@ LXQt::Wallet::Wallet ** secrets::internalWallet() const
 	return &m_internalWallet ;
 }
 
+LXQt::Wallet::Wallet * secrets::windows_dpapiBackend() const
+{
+	if( m_windows_dpapi == nullptr ){
+
+		namespace w = LXQt::Wallet ;
+
+		m_windows_dpapi = w::getWalletBackend( w::BackEnd::windows_DPAPI ) ;
+
+		m_windows_dpapi->setParent( m_parent ) ;
+	}
+
+	return m_windows_dpapi ;
+}
+
 secrets::wallet secrets::walletBk( LXQt::Wallet::BackEnd e ) const
 {
+	#ifdef Q_OS_WIN
+
+		if( e == LXQt::Wallet::BackEnd::windows_DPAPI ){
+
+			return this->windows_dpapiBackend() ;
+		}
+	#endif
+
 	if( e == LXQt::Wallet::BackEnd::internal ){
 
 		return this->internalWallet() ;
@@ -84,9 +115,24 @@ void secrets::setParent( QWidget * w )
 
 static void _delete( LXQt::Wallet::Wallet * w )
 {
-	if( w && w->backEnd() != LXQt::Wallet::BackEnd::internal ){
+	if( w ){
 
-		delete w ;
+		using e = LXQt::Wallet::BackEnd ;
+
+		auto m = w->backEnd() ;
+
+		#ifdef Q_OS_WIN
+			if( m == e::windows_DPAPI || m == e::internal ){
+
+			}else{
+				delete w ;
+			}
+		#else
+			if( m != e::internal ){
+
+				delete w ;
+			}
+		#endif
 	}
 }
 

@@ -77,7 +77,9 @@ public:
 
 		return e ;
 	}
-	explicit changePassWordDialog( QWidget * parent = 0,const QString& walletName = QString(),const QString& applicationName = QString() ) ;
+	explicit changePassWordDialog( QWidget * parent = 0,
+				       const QString& walletName = QString(),
+				       const QString& applicationName = QString() ) ;
 	void ShowUI( std::function< void( const QString&,bool ) >&& ) ;
 	void ShowUI_1( std::function< void( bool ) >&& ) ;
 
@@ -91,6 +93,7 @@ private slots:
 	void ok( void ) ;
 	void ok_1( void ) ;
 private:
+	void change_internal() ;
 	void HideUI( void ) ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter ( QObject * watched,QEvent * event ) ;

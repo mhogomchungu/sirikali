@@ -64,7 +64,7 @@ public:
 
 	void changeInternalWalletPassword( const QString&,const QString&,std::function< void() > ) ;
 	void setParent( QWidget * ) ;
-
+	void close() ;
 	secrets( QWidget * parent = nullptr ) ;
 	secrets( const secrets& ) = delete ;
 
@@ -73,8 +73,10 @@ public:
 	~secrets() ;
 private:
 	LXQt::Wallet::Wallet ** internalWallet() const ;
+	LXQt::Wallet::Wallet * windows_dpapiBackend() const ;
 	QWidget * m_parent = nullptr ;
 	mutable LXQt::Wallet::Wallet * m_internalWallet = nullptr ;
+	mutable LXQt::Wallet::Wallet * m_windows_dpapi = nullptr ;
 };
 
 #endif

@@ -634,17 +634,14 @@ void favorites2::walletBkChanged( LXQt::Wallet::BackEnd bk )
 			tablewidget::addRow( m_ui->tableWidgetWallet,{ it } ) ;
 		}
 	}else{
-		if( bk == LXQt::Wallet::BackEnd::internal ){
-
-			this->hide() ;
-		}
+		this->hide() ;
 
 		m_wallet->setImage( QIcon( ":/sirikali" ) ) ;
 
 		auto a = settings::instance().walletName( m_wallet->backEnd() ) ;
 		auto b = settings::instance().applicationName() ;
 
-		m_wallet->open( a,b,[ &,bk ]( bool opened ){
+		m_wallet->open( a,b,[ this ]( bool opened ){
 
 			if( opened ){
 
@@ -658,10 +655,7 @@ void favorites2::walletBkChanged( LXQt::Wallet::BackEnd bk )
 				this->setControlsAvailability( false,true ) ;
 			}
 
-			if( bk == LXQt::Wallet::BackEnd::internal ){
-
-				this->show() ;
-			}
+			this->show() ;
 		} ) ;
 	}
 }

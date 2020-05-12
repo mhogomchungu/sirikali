@@ -1,6 +1,9 @@
 
 #include "lxqt_windows_dpapi.h"
 
+#include "password_dialog.h"
+#include "changepassworddialog.h"
+
 QByteArray windowsKeysStorageData() ;
 
 void windowsKeysStorageData( const QByteArray& e ) ;
@@ -136,105 +139,195 @@ LXQt::Wallet::windows_dpapi::windows_dpapi()
 
 LXQt::Wallet::windows_dpapi::~windows_dpapi()
 {
-	auto a = this->serializeData() ;
+	if( m_opened ){
 
-	if( !a.isEmpty() ){
-
-		auto b = _encrypt( a,m_entropy ) ;
+		auto b = _encrypt( this->serializeData(),m_entropy ) ;
 
 		if( b.first ){
 
 			windowsKeysStorageData( b.second ) ;
 		}
+	}else{
+		windowsDebugWindow( "LXQt:Wallet::Windows_dpapi: Wallet Not Opened." ) ;
 	}
+}
+
+bool LXQt::Wallet::windows_dpapi::open( const QString& walletName,
+					const QString& applicationName,
+					QWidget * parent,
+					const QString& password,
+					const QString& displayApplicationName )
+{
+	this->open( walletName,
+		    applicationName,
+		    []( bool e ){ Q_UNUSED( e ) },
+		    parent,
+		    password,
+		    displayApplicationName ) ;
+
+	m_loop.exec() ;
+
+	return m_opened ;
 }
 
 void LXQt::Wallet::windows_dpapi::open( const QString& walletName,
 					const QString& applicationName,
 					std::function< void( bool )> function ,
-					QWidget *,
+					QWidget * parent,
 					const QString& password,
 					const QString& displayApplicationName )
 {
-	Q_UNUSED( displayApplicationName )
+	if( parent ){
 
-	auto a = walletName + applicationName + password ;
+		this->setParent( parent ) ;
+	}
 
-	m_entropy = a.toUtf8() ;
+	m_walletName      = walletName ;
+	m_applicationName = applicationName ;
 
-	m_opened = this->decryptData() ;
+	m_walletOpened = std::move( function ) ;
 
-	function( m_opened ) ;
-}
+	if( m_applicationName.isEmpty() ){
 
-bool LXQt::Wallet::windows_dpapi::open( const QString& walletName,
-					const QString& applicationName,
-					QWidget *,
-					const QString& password,
-					const QString& displayApplicationName )
-{
-	Q_UNUSED( displayApplicationName )
+		m_applicationName = m_walletName ;
+	}
 
-	auto a = walletName + applicationName + password ;
+	if( displayApplicationName.isEmpty() ){
 
-	m_entropy = a.toUtf8() ;
-
-	return this->decryptData() ;
-}
-
-bool LXQt::Wallet::windows_dpapi::decryptData()
-{
-	auto a = windowsKeysStorageData() ;
-
-	if( a.isEmpty() ){
-
-		windowsDebugWindow( "Window's Key Store Is Empty." ) ;
-		return true ;
+		m_displayApplicationName = m_applicationName ;
 	}else{
-		auto m = _decrypt( a,m_entropy ) ;
+		m_displayApplicationName = displayApplicationName ;
+	}
 
-		if( m.first ){
+	this->setEntropy( password ) ;
 
-			this->deserializeData( m.second ) ;
-			return true ;
+	m_data = windowsKeysStorageData() ;
+
+	if( m_data.isEmpty() ){
+
+		this->createWallet() ;
+	}else{
+		this->openWallet() ;
+	}
+}
+
+void LXQt::Wallet::windows_dpapi::setEntropy( const QString& e )
+{
+	m_entropy = e.toUtf8() ;
+}
+
+void LXQt::Wallet::windows_dpapi::createWallet()
+{
+	using cbd = LXQt::Wallet::changePassWordDialog ;
+
+	const auto& w = m_walletName ;
+	const auto& d = m_displayApplicationName ;
+
+	cbd::instance( this,w,d,[ this ]( const QString& password,bool create ){
+
+		if( create ){
+
+			this->setEntropy( password ) ;
+			m_opened = true ;
+			m_walletOpened( true ) ;
 		}else{
-			return false ;
+			m_opened = false ;
+			m_walletOpened( false ) ;
+		}
+	} ) ;
+}
+
+void LXQt::Wallet::windows_dpapi::openWallet()
+{
+	auto m = _decrypt( m_data,m_entropy ) ;
+
+	if( m.first ){
+
+		this->deserializeData( m.second ) ;
+
+		m_opened = true ;
+
+		return m_walletOpened( true ) ;
+	}
+
+	using pwd = LXQt::Wallet::password_dialog ;
+
+	auto _cancelled = [ this ](){
+
+		if( m_loop.isRunning() ){
+
+			m_loop.exit() ;
+		}
+
+		m_opened = false ;
+
+		m_walletOpened( m_opened ) ;
+	} ;
+
+	pwd::instance( this,
+		       m_walletName,
+		       m_displayApplicationName,
+		       [ this ]( const QString& p ){ this->openWalletWithPassword( p ) ; },
+		       std::move( _cancelled ),
+		       &m_correctPassword ) ;
+}
+
+void LXQt::Wallet::windows_dpapi::openWalletWithPassword( QString e )
+{
+	this->setEntropy( e ) ;
+
+	auto m = _decrypt( m_data,m_entropy ) ;
+
+	bool s = m.first ;
+
+	m_opened = s ;
+
+	if( s ){
+
+		this->deserializeData( m.second ) ;
+
+		m_walletOpened( s ) ;
+
+		if( m_loop.isRunning() ){
+
+			m_loop.exit() ;
 		}
 	}
+
+	m_correctPassword( s ) ;
 }
 
 void LXQt::Wallet::windows_dpapi::deserializeData( const QByteArray& e )
 {
-	if( e.isEmpty() ){
-
-		windowsDebugWindow( "Windows Wallet Is Empty." ) ;
-		return ;
-	}
-
 	int s ;
 
 	auto data = e.constData() ;
 
 	std::memcpy( &s,data,sizeof( int ) ) ;
 
-	windowsDebugWindow( "Number Of Entries In Wallet Is: " + QString::number( s ) ) ;
+	windowsDebugWindow( "LXQt:Wallet::Windows_dpapi: Number Of Entries In Wallet Is: " + QString::number( s ) ) ;
 
 	if( s != 0 ){
 
-		const size_t size = sizeof( Header ) ;
+		const size_t int_size    = sizeof( int ) ;
+		const size_t header_size = 2 * sizeof( int ) ;
 
 		data = data + sizeof( int ) ;
 
+		int keySize ;
+		int valueSize ;
+
 		for( int i = 0 ; i < s ; i++ ){
 
-			std::memcpy( &m_header,data,size ) ;
+			std::memcpy( &keySize,data,int_size ) ;
+			std::memcpy( &valueSize,data + int_size,int_size ) ;
 
-			auto a = QString::fromUtf8( data + size,m_header.keySize ) ;
-			auto b = QByteArray{ data + size + m_header.keySize,m_header.valueSize } ;
+			auto a = QString::fromUtf8( data + header_size,keySize ) ;
+			auto b = QByteArray{ data + header_size + keySize,valueSize } ;
 
 			m_keys.append( { std::move( a ),std::move( b ) } ) ;
 
-			data = data + size + m_header.keySize + m_header.valueSize ;
+			data = data + header_size + keySize + valueSize ;
 		}
 	}
 }
@@ -243,32 +336,36 @@ QByteArray LXQt::Wallet::windows_dpapi::serializeData()
 {
 	QByteArray data ;
 
-	char buffer[ sizeof( int ) ] ;
+	const size_t int_size = sizeof( int ) ;
+
+	char buffer[ int_size ] ;
 
 	int s = m_keys.size() ;
 
-	std::memcpy( buffer,&s,sizeof( int ) ) ;
+	std::memcpy( buffer,&s,int_size ) ;
 
-	data.append( buffer,sizeof( int ) ) ;
+	data.append( buffer,int_size ) ;
 
 	if( s != 0 ){
 
-		char buffer[ sizeof( Header ) ] ;
-		const size_t size = sizeof( Header ) ;
+		const size_t header_size = 2 * sizeof( int ) ;
+
+		char buffer[ header_size ] ;
 
 		for( const auto& it : m_keys ){
 
 			const auto& key   = it.first ;
 			const auto& value = it.second ;
 
-			m_header.keySize   = key.size() ;
-			m_header.valueSize = value.size() ;
+			int keySize   = key.size() ;
+			int valueSize = value.size() ;
 
-			std::memcpy( buffer,&m_header,size ) ;
+			std::memcpy( buffer,&keySize,int_size ) ;
+			std::memcpy( buffer + int_size,&valueSize,int_size ) ;
 
-			data.append( buffer,size ) ;
+			data.append( buffer,header_size ) ;
 
-			data.append( QByteArray{ key.toUtf8(),key.size() } ) ;
+			data.append( QByteArray{ key.toUtf8(),keySize } ) ;
 
 			data.append( value ) ;
 		}
