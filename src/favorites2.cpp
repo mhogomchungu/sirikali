@@ -276,6 +276,8 @@ favorites2::favorites2( QWidget * parent,
 		}
 	} ) ;
 #else
+	m_ui->rbWindowsDPAPI->setEnabled( false ) ;
+
 	if( walletBk == bk::internal ){
 
 		m_ui->rbInternalWallet->setChecked( true ) ;
