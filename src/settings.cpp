@@ -158,6 +158,36 @@ QString settings::windowsExecutableSearchPath()
 	return m_settings.value( "WindowsExecutableSearchPath" ).toString() ;
 }
 
+QByteArray windowsKeysStorageData()
+{
+	return settings::instance().windowsKeysStorageData() ;
+}
+
+void windowsKeysStorageData( const QByteArray& e )
+{
+	settings::instance().windowsKeysStorageData( e ) ;
+}
+
+void windowsDebugWindow( const QString& e )
+{
+	utility::debug() << e ;
+}
+
+QByteArray settings::windowsKeysStorageData()
+{
+	if( !m_settings.contains( "windowsKeysStorageData" ) ){
+
+		m_settings.setValue( "windowsKeysStorageData",QByteArray() ) ;
+	}
+
+	return m_settings.value( "windowsKeysStorageData" ).toByteArray() ;
+}
+
+void settings::windowsKeysStorageData( const QByteArray& e )
+{
+	m_settings.setValue( "windowsKeysStorageData",e ) ;
+}
+
 QString settings::externalPluginExecutable()
 {
 	if( m_settings.contains( "ExternalPluginExecutable" ) ){
@@ -853,7 +883,13 @@ void settings::autoMountBackEnd( const settings::walletBackEnd& e )
 
 			return "osxkeychain" ;
 		}else{
-			return "none" ;
+			#ifdef Q_OS_WIN
+			if( e == LXQt::Wallet::BackEnd::windows_DPAPI ){
+
+				return "windows_DPAPI" ;
+			}
+			#endif
+			return "none" ;			
 		}
 	}() ) ;
 }
@@ -885,6 +921,12 @@ settings::walletBackEnd settings::autoMountBackEnd()
 
 			return LXQt::Wallet::BackEnd::osxkeychain ;
 		}else{
+			#ifdef Q_OS_WIN
+			if( e == "windows_DPAPI" ){
+
+				return LXQt::Wallet::BackEnd::windows_DPAPI ;
+			}
+			#endif
 			return settings::walletBackEnd() ;
 		}
 	}else{

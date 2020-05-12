@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="FavoritesList">
     <attribute name="title">
@@ -812,6 +812,22 @@
          <string/>
         </property>
        </widget>
+       <widget class="QPushButton" name="pbAddToWallets">
+        <property name="geometry">
+         <rect>
+          <x>680</x>
+          <y>0</y>
+          <width>31</width>
+          <height>33</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Add Volume To Secure Wallets</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
       </widget>
       <widget class="QWidget" name="tabCustomCommands">
        <attribute name="title">
@@ -1037,7 +1053,7 @@
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>150</y>
+         <y>140</y>
          <width>161</width>
          <height>41</height>
         </rect>
@@ -1050,7 +1066,7 @@
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>210</y>
+         <y>190</y>
          <width>161</width>
          <height>41</height>
         </rect>
@@ -1063,7 +1079,7 @@
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>270</y>
+         <y>240</y>
          <width>161</width>
          <height>41</height>
         </rect>
@@ -1076,13 +1092,26 @@
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>30</y>
+         <y>40</y>
          <width>161</width>
          <height>41</height>
         </rect>
        </property>
        <property name="text">
         <string>&amp;None</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="rbWindowsDPAPI">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>290</y>
+         <width>161</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Windows' DPAPI</string>
        </property>
       </widget>
      </widget>
@@ -1242,7 +1271,7 @@
      <widget class="QLabel" name="labelPassword">
       <property name="geometry">
        <rect>
-        <x>0</x>
+        <x>10</x>
         <y>0</y>
         <width>741</width>
         <height>461</height>

@@ -131,6 +131,8 @@ public:
 	int sshfsBackendTimeout() ;
 	void setWindowsExecutableSearchPath( const QString& ) ;
 	QString windowsExecutableSearchPath() ;
+	QByteArray windowsKeysStorageData() ;
+	void windowsKeysStorageData( const QByteArray& ) ;
 	QString externalPluginExecutable() ;
 	QString ykchalrespArguments() ;
 	bool yubikeyRemoveNewLine() ;

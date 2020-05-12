@@ -221,6 +221,18 @@ favorites2::favorites2( QWidget * parent,
 		this->addkeyToWallet() ;
 	} ) ;
 
+	connect( m_ui->pbAddToWallets,&QPushButton::clicked,[ this ](){
+
+		auto a = m_ui->lineEditEncryptedFolderPath->toPlainText() ;
+
+		if( !a.isEmpty() && !m_ui->rbNone->isChecked() ){
+
+			m_ui->lineEditVolumePath->setText( a ) ;
+
+			m_ui->tabWidget->setCurrentIndex( 2 ) ;
+		}
+	} ) ;
+
 	connect( m_ui->pbVolumePath,&QPushButton::clicked,[ this ](){
 
 		auto s = this->getExistingDirectory( tr( "Path To An Encrypted Folder" ) ) ;
@@ -235,44 +247,56 @@ favorites2::favorites2( QWidget * parent,
 
 	m_ui->rbNone->setEnabled( true ) ;
 
-	if( utility::platformIsWindows() ){
+	m_ui->rbInternalWallet->setEnabled( LXQt::Wallet::backEndIsSupported( bk::internal ) ) ;
+	m_ui->rbKWallet->setEnabled( LXQt::Wallet::backEndIsSupported( bk::kwallet ) ) ;
+	m_ui->rbLibSecret->setEnabled( LXQt::Wallet::backEndIsSupported( bk::libsecret ) ) ;
+	m_ui->rbMacOSKeyChain->setEnabled( LXQt::Wallet::backEndIsSupported( bk::osxkeychain ) ) ;
 
-		m_ui->rbNone->setChecked( true ) ;
+	auto walletBk = m_settings.autoMountBackEnd() ;
 
-		m_ui->rbInternalWallet->setEnabled( false ) ;
-		m_ui->rbKWallet->setEnabled( false ) ;
-		m_ui->rbLibSecret->setEnabled( false ) ;
-		m_ui->rbMacOSKeyChain->setEnabled( false ) ;
+#ifdef Q_OS_WIN
+
+	m_ui->rbWindowsDPAPI->setEnabled( true ) ;
+
+	if( walletBk == bk::windows_DPAPI ){
+
+		m_ui->rbWindowsDPAPI->setChecked( true ) ;
 	}else{
-		m_ui->rbInternalWallet->setEnabled( LXQt::Wallet::backEndIsSupported( bk::internal ) ) ;
-		m_ui->rbKWallet->setEnabled( LXQt::Wallet::backEndIsSupported( bk::kwallet ) ) ;
-		m_ui->rbLibSecret->setEnabled( LXQt::Wallet::backEndIsSupported( bk::libsecret ) ) ;
-		m_ui->rbMacOSKeyChain->setEnabled( LXQt::Wallet::backEndIsSupported( bk::osxkeychain ) ) ;
-
-		auto walletBk = m_settings.autoMountBackEnd() ;
-
-		if( walletBk == bk::internal ){
-
-			m_ui->rbInternalWallet->setChecked( true ) ;
-
-		}else if( walletBk == bk::osxkeychain ){
-
-			m_ui->rbMacOSKeyChain->setChecked( true ) ;
-
-		}else if( walletBk == bk::libsecret ){
-
-			m_ui->rbLibSecret->setChecked( true ) ;
-
-		}else if( walletBk == bk::kwallet ){
-
-			m_ui->rbKWallet->setChecked( true ) ;
-		}else{
-			m_ui->rbNone->setChecked( true ) ;
-		}
-
-		m_ui->label_22->setEnabled( walletBk == bk::internal ) ;
-		m_ui->pbChangeWalletPassword->setEnabled( walletBk == bk::internal ) ;
+		m_ui->rbNone->setChecked( true ) ;
 	}
+
+	connect( m_ui->rbWindowsDPAPI,&QRadioButton::toggled,[ this ]( bool e ){
+
+		if( e ){
+
+			m_ui->label_22->setEnabled( true ) ;
+			m_ui->pbChangeWalletPassword->setEnabled( true ) ;
+			this->walletBkChanged( bk::windows_DPAPI ) ;
+			m_settings.autoMountBackEnd( bk::windows_DPAPI ) ;
+		}
+	} ) ;
+#else
+	if( walletBk == bk::internal ){
+
+		m_ui->rbInternalWallet->setChecked( true ) ;
+
+	}else if( walletBk == bk::osxkeychain ){
+
+		m_ui->rbMacOSKeyChain->setChecked( true ) ;
+
+	}else if( walletBk == bk::libsecret ){
+
+		m_ui->rbLibSecret->setChecked( true ) ;
+
+	}else if( walletBk == bk::kwallet ){
+
+		m_ui->rbKWallet->setChecked( true ) ;
+	}else{
+		m_ui->rbNone->setChecked( true ) ;
+	}
+#endif
+	m_ui->label_22->setEnabled( walletBk == bk::internal ) ;
+	m_ui->pbChangeWalletPassword->setEnabled( walletBk == bk::internal ) ;
 
 	connect( m_ui->rbInternalWallet,&QRadioButton::toggled,[ this ]( bool e ){
 
@@ -322,7 +346,7 @@ favorites2::favorites2( QWidget * parent,
 
 		m_ui->label_22->setEnabled( false ) ;
 		m_ui->pbChangeWalletPassword->setEnabled( false ) ;
-		this->setControlsAvailability( false ) ;
+		this->setControlsAvailability( false,true ) ;
 		m_settings.autoMountBackEnd( settings::walletBackEnd() ) ;
 	} ) ;
 
@@ -597,9 +621,7 @@ void favorites2::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 void favorites2::walletBkChanged( LXQt::Wallet::BackEnd bk )
 {
-	this->setControlsAvailability( true ) ;
-
-	tablewidget::clearTable( m_ui->tableWidgetWallet ) ;
+	this->setControlsAvailability( true,true ) ;
 
 	m_wallet = m_secrets.walletBk( bk ) ;
 
@@ -610,14 +632,17 @@ void favorites2::walletBkChanged( LXQt::Wallet::BackEnd bk )
 			tablewidget::addRow( m_ui->tableWidgetWallet,{ it } ) ;
 		}
 	}else{
-		this->hide() ;
+		if( bk == LXQt::Wallet::BackEnd::internal ){
+
+			this->hide() ;
+		}
 
 		m_wallet->setImage( QIcon( ":/sirikali" ) ) ;
 
 		auto a = settings::instance().walletName( m_wallet->backEnd() ) ;
 		auto b = settings::instance().applicationName() ;
 
-		m_wallet->open( a,b,[ & ]( bool opened ){
+		m_wallet->open( a,b,[ &,bk ]( bool opened ){
 
 			if( opened ){
 
@@ -626,17 +651,22 @@ void favorites2::walletBkChanged( LXQt::Wallet::BackEnd bk )
 					tablewidget::addRow( m_ui->tableWidgetWallet,{ it } ) ;
 				}
 			}else{
-				this->setControlsAvailability( false ) ;
+				m_ui->lineEditVolumePath->clear() ;
+
+				this->setControlsAvailability( false,true ) ;
 			}
 
-			this->show() ;
+			if( bk == LXQt::Wallet::BackEnd::internal ){
+
+				this->show() ;
+			}
 		} ) ;
 	}
 }
 
-void favorites2::setControlsAvailability( bool e )
+void favorites2::setControlsAvailability( bool e,bool m )
 {
-	if( !e ){
+	if( m ){
 
 		tablewidget::clearTable( m_ui->tableWidgetWallet ) ;
 	}
@@ -701,7 +731,7 @@ void favorites2::tabChanged( int index )
 
 			this->walletBkChanged( w.bk() ) ;
 		}else {
-			this->setControlsAvailability( false ) ;
+			this->setControlsAvailability( false,true ) ;
 		}
 	}
 }

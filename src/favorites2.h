@@ -67,7 +67,7 @@ private :
 	void addkeyToWallet() ;
 	void deleteKeyFromWallet( const QString& ) ;
 	void walletBkChanged( LXQt::Wallet::BackEnd ) ;
-	void setControlsAvailability( bool ) ;
+	void setControlsAvailability( bool,bool clearTable ) ;
 	void tabChanged( int ) ;
 	void updateVolumeList( const std::vector< favorites::entry >&,const QString& ) ;
 	void updateVolumeList( const std::vector< favorites::entry >&,int ) ;

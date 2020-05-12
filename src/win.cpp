@@ -133,6 +133,18 @@ static auto _msg( DWORD err )
 	return std::make_pair( m > 0,utility2::unique_ptr( s,[]( TCHAR * e ){ LocalFree( e ) ; } ) ) ;
 }
 
+QString lastError()
+{
+	auto a = _msg( GetLastError() ) ;
+
+	if( a.first ){
+
+		return a.second.get() ;
+	}else{
+		return "SiriKali::Win: Failed To Get Last Error" ;
+	}
+}
+
 static QString _errorMsg( DWORD err,const QString& path )
 {
 	auto a = _msg( err ) ;
@@ -174,6 +186,11 @@ std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path )
 }
 
 #else
+
+QString lastError()
+{
+	return {} ;
+}
 
 static int _terminateProcess( unsigned long pid )
 {
