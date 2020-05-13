@@ -244,7 +244,7 @@ void LXQt::Wallet::internalWallet::changeWalletPassWord( const QString& walletNa
 
 			auto s = lxqt_wallet_open( &wallet,
 						   old.toLatin1().constData(),
-						   u_int32_t( old.size() ),
+						   old.size(),
 						   m_walletName.toLatin1().constData(),
 						   m_applicationName.toLatin1().constData() ) ;
 
@@ -255,7 +255,7 @@ void LXQt::Wallet::internalWallet::changeWalletPassWord( const QString& walletNa
 
 			auto m = lxqt_wallet_change_wallet_password( wallet,
 								     New.toLatin1().constData(),
-								     u_int32_t( New.size() ) ) ;
+								     New.size() ) ;
 
 			lxqt_wallet_close( &wallet ) ;
 

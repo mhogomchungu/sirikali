@@ -258,11 +258,23 @@ favorites2::favorites2( QWidget * parent,
 
 	if( walletBk == SiriKali::Windows::windowsWalletBackend() ){
 
+		m_ui->label_22->setEnabled( true ) ;
+		m_ui->pbChangeWalletPassword->setEnabled( true ) ;
+
 		m_ui->label_22->setText( tr( "Change Window's Wallet Password" ) ) ;
 
 		m_ui->rbWindowsDPAPI->setChecked( true ) ;
 
 	}else if( walletBk == bk::internal ){
+
+		m_ui->label_22->setEnabled( true ) ;
+		m_ui->pbChangeWalletPassword->setEnabled( [ this ](){
+
+			auto a = m_settings.walletName() ;
+			auto b = m_settings.applicationName() ;
+
+			return LXQt::Wallet::walletExists( LXQt::Wallet::BackEnd::internal,a,b ) ;
+		}() ) ;
 
 		m_ui->label_22->setText( tr( "Change Internal Wallet Password" ) ) ;
 
@@ -270,21 +282,38 @@ favorites2::favorites2( QWidget * parent,
 
 	}else if( walletBk == bk::osxkeychain ){
 
+		m_ui->label_22->setEnabled( false ) ;
+		m_ui->pbChangeWalletPassword->setEnabled( false ) ;
+
+		m_ui->label_22->setText( tr( "Not Applicable" ) ) ;
+
 		m_ui->rbMacOSKeyChain->setChecked( true ) ;
 
 	}else if( walletBk == bk::libsecret ){
+
+		m_ui->label_22->setEnabled( false ) ;
+		m_ui->pbChangeWalletPassword->setEnabled( false ) ;
+
+		m_ui->label_22->setText( tr( "Not Applicable" ) ) ;
 
 		m_ui->rbLibSecret->setChecked( true ) ;
 
 	}else if( walletBk == bk::kwallet ){
 
+		m_ui->label_22->setEnabled( false ) ;
+		m_ui->pbChangeWalletPassword->setEnabled( false ) ;
+
+		m_ui->label_22->setText( tr( "Not Applicable" ) ) ;
+
 		m_ui->rbKWallet->setChecked( true ) ;
 	}else{
+		m_ui->label_22->setEnabled( false ) ;
+		m_ui->pbChangeWalletPassword->setEnabled( false ) ;
+
+		m_ui->label_22->setText( tr( "Not Applicable" ) ) ;
+
 		m_ui->rbNone->setChecked( true ) ;
 	}
-
-	m_ui->label_22->setEnabled( walletBk == bk::internal ) ;
-	m_ui->pbChangeWalletPassword->setEnabled( walletBk == bk::internal ) ;
 
 	connect( m_ui->rbInternalWallet,&QRadioButton::toggled,[ this ]( bool e ){
 
@@ -295,6 +324,14 @@ favorites2::favorites2( QWidget * parent,
 			m_ui->pbChangeWalletPassword->setEnabled( true ) ;
 			this->walletBkChanged( bk::internal ) ;
 			m_settings.autoMountBackEnd( bk::internal ) ;
+
+			m_ui->pbChangeWalletPassword->setEnabled( [ this ](){
+
+				auto a = m_settings.walletName() ;
+				auto b = m_settings.applicationName() ;
+
+				return LXQt::Wallet::walletExists( LXQt::Wallet::BackEnd::internal,a,b ) ;
+			}() ) ;
 		}
 	} ) ;
 
@@ -400,21 +437,6 @@ favorites2::favorites2( QWidget * parent,
 		m_ui->pbVisiblePassword->setVisible( false ) ;
 	} ) ;
 
-	if( utility::platformIsWindows() ){
-
-		m_ui->label_22->setEnabled( true ) ;
-
-		m_ui->pbChangeWalletPassword->setEnabled( true ) ;
-	}else{
-		m_ui->pbChangeWalletPassword->setEnabled( [ this ](){
-
-			auto a = m_settings.walletName() ;
-			auto b = m_settings.applicationName() ;
-
-			return LXQt::Wallet::walletExists( LXQt::Wallet::BackEnd::internal,a,b ) ;
-		}() ) ;
-	}
-
 	m_ui->cbShowPassword->setChecked( true ) ;
 
 	m_ui->lineEditPassword->setEchoMode( QLineEdit::Password ) ;
@@ -450,14 +472,16 @@ favorites2::favorites2( QWidget * parent,
 
 		}else if( m_ui->rbWindowsDPAPI->isChecked() ){
 
+			this->hide() ;
+
 			m_secrets.changeWindowsDPAPIWalletPassword( a,b,[ this ]( bool s ){
 
 				if( s ){
 
 					this->walletBkChanged( SiriKali::Windows::windowsWalletBackend() ) ;
-				}else{
-					this->show() ;
 				}
+
+				this->show() ;
 			} ) ;
 		}
 	} ) ;
