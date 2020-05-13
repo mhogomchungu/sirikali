@@ -63,6 +63,8 @@ public:
 	QWidget * parent() const ;
 
 	void changeInternalWalletPassword( const QString&,const QString&,std::function< void() > ) ;
+	void changeWindowsDPAPIWalletPassword( const QString&,const QString&,std::function< void() > ) ;
+
 	void setParent( QWidget * ) ;
 	void close() ;
 	secrets( QWidget * parent = nullptr ) ;

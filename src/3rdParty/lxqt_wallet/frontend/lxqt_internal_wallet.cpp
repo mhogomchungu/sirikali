@@ -226,8 +226,17 @@ void LXQt::Wallet::internalWallet::changeWalletPassWord( const QString& walletNa
 							 const QString& applicationName,
 							 std::function< void( bool ) > function )
 {
-	LXQt::Wallet::changePassWordDialog::instance_1( this,walletName,applicationName,
-							[ this,function ]( bool e ){ function( e ) ;} ) ;
+	auto f = [ function = std::move( function ) ]( const QString& e,bool s ){
+
+		Q_UNUSED( e )
+
+		function( s ) ;
+	} ;
+
+	LXQt::Wallet::changePassWordDialog::instance_1( "internal",
+							this,
+							walletName,applicationName,
+							std::move( f ) ) ;
 }
 
 QByteArray LXQt::Wallet::internalWallet::readValue( const QString& key )

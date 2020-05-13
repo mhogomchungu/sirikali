@@ -23,47 +23,69 @@ namespace SiriKali{
 	}
 }
 
+class db{
+public:
+	db( const QByteArray& e ) : m_delete( false )
+	{
+		ZeroMemory( &m_db,sizeof( DATA_BLOB ) ) ;
+
+		m_db.pbData = reinterpret_cast< BYTE * >( const_cast< char * >( e.data() ) ) ;
+		m_db.cbData = static_cast< DWORD >( e.size() ) ;
+	}
+	db()
+	{
+		ZeroMemory( &m_db,sizeof( DATA_BLOB ) ) ;
+	}
+	DATA_BLOB * get()
+	{
+		return &m_db ;
+	}
+	QByteArray data()
+	{
+		auto data = reinterpret_cast< const char * >( m_db.pbData ) ;
+		auto size = static_cast< int >( m_db.cbData ) ;
+
+		return{ data,size } ;
+	}
+	CRYPTPROTECT_PROMPTSTRUCT * prompt( unsigned long flags = CRYPTPROTECT_PROMPT_ON_UNPROTECT )
+	{
+		ZeroMemory( &m_prompt,sizeof( m_prompt ) ) ;
+
+		m_prompt.cbSize        = sizeof( m_prompt ) ;
+		m_prompt.dwPromptFlags = flags ;
+		m_prompt.szPrompt      = L"Enter Password To Unlock LXQt Credentials Storage System" ;
+
+		return &m_prompt ;
+	}
+	~db()
+	{
+		if( m_delete ){
+
+			LocalFree( m_db.pbData ) ;
+		}
+	}
+private:
+	bool m_delete = true ;
+	DATA_BLOB m_db ;
+	CRYPTPROTECT_PROMPTSTRUCT m_prompt ;
+};
+
 static std::pair< bool,QByteArray > _encrypt( const QByteArray& e,const QByteArray& entropy )
 {
-	DATA_BLOB DataIn ;
-	DATA_BLOB DataOut ;
-	DATA_BLOB DataEntropy ;
-
-	ZeroMemory( &DataIn,sizeof( DATA_BLOB ) ) ;
-	ZeroMemory( &DataOut,sizeof( DATA_BLOB ) ) ;
-	ZeroMemory( &DataEntropy,sizeof( DATA_BLOB ) ) ;
-
-	DataIn.pbData = reinterpret_cast< BYTE * >( const_cast< char * >( e.data() ) ) ;
-	DataIn.cbData = static_cast< DWORD >( e.size() ) ;
-
-	DataEntropy.pbData = reinterpret_cast< BYTE * >( const_cast< char * >( entropy.data() ) ) ;
-	DataEntropy.cbData = static_cast< DWORD >( entropy.size() ) ;
-
-	CRYPTPROTECT_PROMPTSTRUCT PromptStruct ;
-
-	ZeroMemory( &PromptStruct,sizeof( PromptStruct ) ) ;
-	PromptStruct.cbSize = sizeof( PromptStruct ) ;
-	PromptStruct.szPrompt = L"Enter Password To Unlock LXQt Credentials Storage System." ;
+	db In( e ) ;
+	db Entropy( entropy ) ;
+	db Out ;
 
 	auto a = L"LXQt Wallet::Windows_dpapi." ;
 
-	if( CryptProtectData( &DataIn,a,&DataEntropy,nullptr,&PromptStruct,0,&DataOut ) ){
+	if( CryptProtectData( In.get(),a,Entropy.get(),nullptr,nullptr,0,Out.get() ) ){
 
-		auto data = reinterpret_cast< char * >( DataOut.pbData ) ;
-		auto size = static_cast< int >( DataOut.cbData ) ;
+		windowsDebugWindow( "LXQt:Wallet::Windows_dpapi: Data Successfully Encrypted." ) ;		
 
-		windowsDebugWindow( "LXQt:Wallet::Windows_dpapi: Data Successfully Encrypted." ) ;
-
-		QByteArray r{ data,size } ;
-
-		LocalFree( DataOut.pbData ) ;
-
-		return { true,std::move( r ) } ;
+		return { true,Out.data() } ;
 	}else{
-		windowsDebugWindow( "LXQt:Wallet::Windows_dpapi: Failed To Encrypt Data" ) ;
+		windowsDebugWindow( "LXQt:Wallet::Windows_dpapi: Failed To Encrypt Data." ) ;
 		//windowsDebugWindow( SiriKali::Windows::lastError() ) ;
-
-		LocalFree( DataOut.pbData ) ;
 
 		return { false,{} } ;
 	}
@@ -71,45 +93,18 @@ static std::pair< bool,QByteArray > _encrypt( const QByteArray& e,const QByteArr
 
 static std::pair< bool,QByteArray > _decrypt( const QByteArray& e,const QByteArray& entropy )
 {
-	DATA_BLOB DataIn ;
-	DATA_BLOB DataOut ;
-	DATA_BLOB DataEntropy ;
+	db In( e ) ;
+	db Entropy( entropy ) ;
+	db Out ;
 
-	ZeroMemory( &DataIn,sizeof( DATA_BLOB ) ) ;
-	ZeroMemory( &DataOut,sizeof( DATA_BLOB ) ) ;
-	ZeroMemory( &DataEntropy,sizeof( DATA_BLOB ) ) ;
-
-	DataIn.pbData = reinterpret_cast< BYTE * >( const_cast< char * >( e.data() ) ) ;
-	DataIn.cbData = static_cast< DWORD >( e.size() ) ;
-
-	DataEntropy.pbData = reinterpret_cast< BYTE * >( const_cast< char * >( entropy.data() ) ) ;
-	DataEntropy.cbData = static_cast< DWORD >( entropy.size() ) ;
-
-	CRYPTPROTECT_PROMPTSTRUCT PromptStruct;
-
-	ZeroMemory( &PromptStruct,sizeof( PromptStruct ) ) ;
-
-	PromptStruct.cbSize        = sizeof( PromptStruct ) ;
-	PromptStruct.dwPromptFlags = CRYPTPROTECT_PROMPT_ON_UNPROTECT ;
-	PromptStruct.szPrompt      = L"Enter Password To Unlock LXQt Credentials Storage System" ;
-
-	if( CryptUnprotectData(	&DataIn,nullptr,&DataEntropy,nullptr,&PromptStruct,0,&DataOut ) ){
+	if( CryptUnprotectData(	In.get(),nullptr,Entropy.get(),nullptr,In.prompt(),0,Out.get() ) ){
 
 		windowsDebugWindow( "LXQt:Wallet::Windows_dpapi: Data Successfully Decrypted." ) ;
 
-		auto data = reinterpret_cast< char * >( DataOut.pbData ) ;
-		auto size = static_cast< int >( DataOut.cbData ) ;
-
-		QByteArray r{ data,size } ;
-
-		LocalFree( DataOut.pbData ) ;
-
-		return { true,std::move( r ) } ;
+		return { true,Out.data() } ;
 	}else{
 		windowsDebugWindow( "LXQt:Wallet::Windows_dpapi: Failed To Decrypt Data." ) ;
 		//windowsDebugWindow( SiriKali::Windows::lastError() ) ;
-
-		LocalFree( DataOut.pbData ) ;
 
 		return { false,{} } ;
 	}
@@ -461,9 +456,28 @@ void LXQt::Wallet::windows_dpapi::changeWalletPassWord( const QString& walletNam
 							const QString& applicationName,
 							std::function< void( bool ) > function )
 {
-	Q_UNUSED( walletName )
-	Q_UNUSED( applicationName )
-	Q_UNUSED( function )
+	auto f = [ this,function = std::move( function ) ]( const QString& e,bool s ){
+
+		if( s ){
+
+			this->setEntropy( e ) ;
+		}
+
+		function( s ) ;
+	} ;
+
+	auto cp = []( const QString& e ){
+
+		auto a = windowsKeysStorageData() ;
+
+		return _decrypt( a,e.toUtf8() ).first ;
+	} ;
+
+	LXQt::Wallet::changePassWordDialog::instance_1( "windows_dpapi",
+							this,
+							walletName,applicationName,
+							std::move( f ),
+							std::move( cp ) ) ;
 }
 
 void LXQt::Wallet::windows_dpapi::setImage( const QIcon& e )

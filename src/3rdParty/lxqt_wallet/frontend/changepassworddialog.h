@@ -66,14 +66,16 @@ public:
 
 		return e ;
 	}
-	static changePassWordDialog& instance_1( QWidget * parent,
-					       const QString& walletName,
-					       const QString& applicationName,
-					       std::function< void( bool ) >&& function )
+	static changePassWordDialog& instance_1( const QString& s,
+						 QWidget * parent,
+						 const QString& walletName,
+						 const QString& applicationName,
+						 std::function< void( const QString&,bool ) >&& function,
+						 std::function< bool( const QString& ) > cp = []( const QString& ){ return false ; } )
 	{
 		auto& e = *( new changePassWordDialog( parent,walletName,applicationName ) ) ;
 
-		e.ShowUI_1( std::move( function ) ) ;
+		e.ShowUI_1( s,std::move( function ),std::move( cp ) ) ;
 
 		return e ;
 	}
@@ -81,7 +83,9 @@ public:
 				       const QString& walletName = QString(),
 				       const QString& applicationName = QString() ) ;
 	void ShowUI( std::function< void( const QString&,bool ) >&& ) ;
-	void ShowUI_1( std::function< void( bool ) >&& ) ;
+	void ShowUI_1( const QString&,
+		       std::function< void( const QString&,bool ) >&&,
+		       std::function< bool( const QString& ) >&& cp ) ;
 
 	~changePassWordDialog() ;
 signals:
@@ -93,6 +97,7 @@ private slots:
 	void ok( void ) ;
 	void ok_1( void ) ;
 private:
+	void wrongPassword() ;
 	void change_internal() ;
 	void HideUI( void ) ;
 	void closeEvent( QCloseEvent * ) ;
@@ -102,6 +107,7 @@ private:
 	QString m_walletName ;
 	QString m_applicationName ;
 	QString m_banner ;
+	QString m_walletType ;
 	bool m_walletPassWordChanged ;
 
 	std::function< void( const QString&,bool ) > m_create = []( const QString& e,bool f ){
@@ -110,7 +116,17 @@ private:
 		Q_UNUSED( f )
 	} ;
 
-	std::function< void( bool ) > m_change = []( bool e ){ Q_UNUSED( e ) } ;
+	std::function< void( const QString&,bool ) > m_change = []( const QString& e,bool s ){
+
+		Q_UNUSED( e )
+		Q_UNUSED( s )
+	} ;
+
+	std::function< bool( const QString& ) > m_passwordCorrect = []( const QString& e ){
+
+		Q_UNUSED( e )
+		return false ;
+	} ;
 };
 
 }

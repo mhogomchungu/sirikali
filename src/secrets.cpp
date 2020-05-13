@@ -43,6 +43,22 @@ void secrets::changeInternalWalletPassword( const QString& walletName,
 	} ) ;
 }
 
+void secrets::changeWindowsDPAPIWalletPassword( const QString& walletName,
+						const QString& appName,
+						std::function< void() > function )
+{
+	auto s = this->windows_dpapiBackend() ;
+
+	if( s ){
+
+		s->changeWalletPassWord( walletName,appName,[ function = std::move( function ) ]( bool q ){
+
+			Q_UNUSED( q )
+			function() ;
+		} ) ;
+	}
+}
+
 secrets::~secrets()
 {
 	this->close() ;
@@ -73,6 +89,8 @@ LXQt::Wallet::Wallet ** secrets::internalWallet() const
 
 LXQt::Wallet::Wallet * secrets::windows_dpapiBackend() const
 {
+#ifdef Q_OS_WIN
+
 	if( m_windows_dpapi == nullptr ){
 
 		namespace w = LXQt::Wallet ;
@@ -81,7 +99,7 @@ LXQt::Wallet::Wallet * secrets::windows_dpapiBackend() const
 
 		m_windows_dpapi->setParent( m_parent ) ;
 	}
-
+#endif
 	return m_windows_dpapi ;
 }
 

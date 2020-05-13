@@ -260,6 +260,8 @@ favorites2::favorites2( QWidget * parent,
 
 	if( walletBk == bk::windows_DPAPI ){
 
+		m_ui->label_22->setText( tr( "Change Window's Wallet Password" ) ) ;
+
 		m_ui->rbWindowsDPAPI->setChecked( true ) ;
 	}else{
 		m_ui->rbNone->setChecked( true ) ;
@@ -268,6 +270,8 @@ favorites2::favorites2( QWidget * parent,
 	connect( m_ui->rbWindowsDPAPI,&QRadioButton::toggled,[ this ]( bool e ){
 
 		if( e ){
+
+			m_ui->label_22->setText( tr( "Change Window's Wallet Password" ) ) ;
 
 			m_ui->label_22->setEnabled( true ) ;
 			m_ui->pbChangeWalletPassword->setEnabled( true ) ;
@@ -279,6 +283,8 @@ favorites2::favorites2( QWidget * parent,
 	m_ui->rbWindowsDPAPI->setEnabled( false ) ;
 
 	if( walletBk == bk::internal ){
+
+		m_ui->label_22->setText( tr( "Change Internal Wallet Password" ) ) ;
 
 		m_ui->rbInternalWallet->setChecked( true ) ;
 
@@ -304,6 +310,7 @@ favorites2::favorites2( QWidget * parent,
 
 		if( e ){
 
+			m_ui->label_22->setText( tr( "Change Internal Wallet Password" ) ) ;
 			m_ui->label_22->setEnabled( true ) ;
 			m_ui->pbChangeWalletPassword->setEnabled( true ) ;
 			this->walletBkChanged( bk::internal ) ;
@@ -314,6 +321,8 @@ favorites2::favorites2( QWidget * parent,
 	connect( m_ui->rbKWallet,&QRadioButton::toggled,[ this ]( bool e ){
 
 		if( e ){
+
+			m_ui->label_22->setText( tr( "Not Applicable" ) ) ;
 
 			m_ui->label_22->setEnabled( false ) ;
 			m_ui->pbChangeWalletPassword->setEnabled( false ) ;
@@ -326,6 +335,7 @@ favorites2::favorites2( QWidget * parent,
 
 		if( e ){
 
+			m_ui->label_22->setText( tr( "Not Applicable" ) ) ;
 			m_ui->label_22->setEnabled( false ) ;
 			m_ui->pbChangeWalletPassword->setEnabled( false ) ;
 			this->walletBkChanged( bk::libsecret ) ;
@@ -337,6 +347,7 @@ favorites2::favorites2( QWidget * parent,
 
 		if( e ){
 
+			m_ui->label_22->setText( tr( "Not Applicable" ) ) ;
 			m_ui->label_22->setEnabled( false ) ;
 			m_ui->pbChangeWalletPassword->setEnabled( false ) ;
 			this->walletBkChanged( bk::osxkeychain ) ;
@@ -346,6 +357,7 @@ favorites2::favorites2( QWidget * parent,
 
 	connect( m_ui->rbNone,&QRadioButton::toggled,[ this ](){
 
+		m_ui->label_22->setText( tr( "Not Applicable" ) ) ;
 		m_ui->label_22->setEnabled( false ) ;
 		m_ui->pbChangeWalletPassword->setEnabled( false ) ;
 		this->setControlsAvailability( false,true ) ;
@@ -396,9 +408,9 @@ favorites2::favorites2( QWidget * parent,
 
 	if( utility::platformIsWindows() ){
 
-		m_ui->label_22->setEnabled( false ) ;
+		m_ui->label_22->setEnabled( true ) ;
 
-		m_ui->pbChangeWalletPassword->setEnabled( false ) ;
+		m_ui->pbChangeWalletPassword->setEnabled( true ) ;
 	}else{
 		m_ui->pbChangeWalletPassword->setEnabled( [ this ](){
 
@@ -425,17 +437,37 @@ favorites2::favorites2( QWidget * parent,
 
 	connect( m_ui->pbChangeWalletPassword,&QPushButton::clicked,[ this ](){
 
-		auto a = m_settings.walletName() ;
-		auto b = m_settings.applicationName() ;
+		if( m_ui->rbInternalWallet->isChecked() ){
 
-		this->hide() ;
+			auto a = m_settings.walletName() ;
+			auto b = m_settings.applicationName() ;
 
-		m_secrets.changeInternalWalletPassword( a,b,[ this ](){
+			this->hide() ;
 
-			this->walletBkChanged( LXQt::Wallet::BackEnd::internal ) ;
+			m_secrets.changeInternalWalletPassword( a,b,[ this ](){
 
-			this->show() ;
-		} ) ;
+				this->walletBkChanged( LXQt::Wallet::BackEnd::internal ) ;
+
+				this->show() ;
+			} ) ;
+
+		}else if( m_ui->rbWindowsDPAPI->isChecked() ){
+
+			auto a = m_settings.walletName() ;
+			auto b = m_settings.applicationName() ;
+
+			this->hide() ;
+
+			m_secrets.changeWindowsDPAPIWalletPassword( a,b,[ this ](){
+
+				#ifdef Q_OS_WIN
+					this->walletBkChanged( LXQt::Wallet::BackEnd::windows_DPAPI ) ;
+				#endif
+
+				this->show() ;
+			} ) ;
+		}
+
 	} ) ;
 
 	m_ui->pbFolderPath->setIcon( QIcon( ":/sirikali.png" ) ) ;
