@@ -114,11 +114,14 @@ engines::engine::args encfs::command( const QByteArray& password,
 
 			exeOptions.add( args.configFilePath ) ;
 		}else{
-			auto a = args.configFilePath ;
-			a.replace( "--config ","" ) ;
+			/*
+			 * args.configFilePath will contain something
+			 * like --config "/foo/bar" and we only want
+			 * the /foo/bar part without quotation marks.
+			 */
+			auto a = utility::removeFirstAndLast( args.configFilePath,10,1 ) ;
 
-			a = utility::removeFirstAndLast( a,1,1 ) ;
-
+			utility::debug() << "Encfs: Setting Env Variable Of: ENCFS6_CONFIG=" + a ;
 			m_environment.insert( "ENCFS6_CONFIG",a ) ;
 		}
 	}
