@@ -19,6 +19,7 @@
 
 #include "secrets.h"
 #include "utility.h"
+#include "win.h"
 
 secrets::secrets( QWidget * parent ) : m_parent( parent )
 {
@@ -26,7 +27,7 @@ secrets::secrets( QWidget * parent ) : m_parent( parent )
 
 void secrets::changeInternalWalletPassword( const QString& walletName,
 					    const QString& appName,
-					    std::function< void() > function )
+					    std::function< void( bool ) > function )
 {
 	auto e = this->internalWallet() ;
 	auto f = *e ;
@@ -39,13 +40,13 @@ void secrets::changeInternalWalletPassword( const QString& walletName,
 			*e = nullptr ;
 		}
 
-		function() ;
+		function( q ) ;
 	} ) ;
 }
 
 void secrets::changeWindowsDPAPIWalletPassword( const QString& walletName,
 						const QString& appName,
-						std::function< void() > function )
+						std::function< void( bool ) > function )
 {
 	auto s = this->windows_dpapiBackend() ;
 
@@ -53,8 +54,7 @@ void secrets::changeWindowsDPAPIWalletPassword( const QString& walletName,
 
 		s->changeWalletPassWord( walletName,appName,[ function = std::move( function ) ]( bool q ){
 
-			Q_UNUSED( q )
-			function() ;
+			function( q ) ;
 		} ) ;
 	}
 }
@@ -89,31 +89,25 @@ LXQt::Wallet::Wallet ** secrets::internalWallet() const
 
 LXQt::Wallet::Wallet * secrets::windows_dpapiBackend() const
 {
-#ifdef Q_OS_WIN
-
 	if( m_windows_dpapi == nullptr ){
 
-		namespace w = LXQt::Wallet ;
+		auto a = SiriKali::Windows::windowsWalletBackend() ;
 
-		m_windows_dpapi = w::getWalletBackend( w::BackEnd::windows_DPAPI ) ;
+		m_windows_dpapi = LXQt::Wallet::getWalletBackend( a ) ;
 
 		m_windows_dpapi->setParent( m_parent ) ;
 	}
-#endif
+
 	return m_windows_dpapi ;
 }
 
 secrets::wallet secrets::walletBk( LXQt::Wallet::BackEnd e ) const
 {
-	#ifdef Q_OS_WIN
+	if( e == SiriKali::Windows::windowsWalletBackend() ){
 
-		if( e == LXQt::Wallet::BackEnd::windows_DPAPI ){
+		return this->windows_dpapiBackend() ;
 
-			return this->windows_dpapiBackend() ;
-		}
-	#endif
-
-	if( e == LXQt::Wallet::BackEnd::internal ){
+	}else if( e == LXQt::Wallet::BackEnd::internal ){
 
 		return this->internalWallet() ;
 	}else{

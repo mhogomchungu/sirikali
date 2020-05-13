@@ -27,6 +27,8 @@
 #include "utility.h"
 #include "readonlywarning.h"
 #include "locale_path.h"
+#include "win.h"
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -882,13 +884,11 @@ void settings::autoMountBackEnd( const settings::walletBackEnd& e )
 		}else if( e == LXQt::Wallet::BackEnd::osxkeychain ){
 
 			return "osxkeychain" ;
-		}else{
-			#ifdef Q_OS_WIN
-			if( e == LXQt::Wallet::BackEnd::windows_DPAPI ){
 
-				return "windows_DPAPI" ;
-			}
-			#endif
+		}else if( e == SiriKali::Windows::windowsWalletBackend() ){
+
+			return "windows_DPAPI" ;
+		}else{
 			return "none" ;			
 		}
 	}() ) ;
@@ -920,13 +920,11 @@ settings::walletBackEnd settings::autoMountBackEnd()
 		}else if( e == "osxkeychain" ){
 
 			return LXQt::Wallet::BackEnd::osxkeychain ;
-		}else{
-			#ifdef Q_OS_WIN
-			if( e == "windows_DPAPI" ){
 
-				return LXQt::Wallet::BackEnd::windows_DPAPI ;
-			}
-			#endif
+		}else if( e == "windows_DPAPI" ){
+
+			return SiriKali::Windows::windowsWalletBackend() ;
+		}else{
 			return settings::walletBackEnd() ;
 		}
 	}else{

@@ -31,6 +31,7 @@
 #include "task.hpp"
 #include "siritask.h"
 #include "engines.h"
+#include "lxqt_wallet.h"
 
 namespace SiriKali{
 namespace Windows{
@@ -58,6 +59,8 @@ QString engineInstalledDir( const QString& key,const QString& value ) ;
 QStringList engineInstalledDirs() ;
 
 QString lastError() ;
+
+LXQt::Wallet::BackEnd windowsWalletBackend() ;
 
 std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path ) ;
 

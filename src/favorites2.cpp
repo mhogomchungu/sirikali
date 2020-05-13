@@ -24,6 +24,7 @@
 #include "utility.h"
 #include "dialogmsg.h"
 #include "engines.h"
+#include "win.h"
 
 #include <QFileDialog>
 
@@ -251,38 +252,17 @@ favorites2::favorites2( QWidget * parent,
 	m_ui->rbKWallet->setEnabled( LXQt::Wallet::backEndIsSupported( bk::kwallet ) ) ;
 	m_ui->rbLibSecret->setEnabled( LXQt::Wallet::backEndIsSupported( bk::libsecret ) ) ;
 	m_ui->rbMacOSKeyChain->setEnabled( LXQt::Wallet::backEndIsSupported( bk::osxkeychain ) ) ;
+	m_ui->rbWindowsDPAPI->setEnabled( LXQt::Wallet::backEndIsSupported( SiriKali::Windows::windowsWalletBackend() ) ) ;
 
 	auto walletBk = m_settings.autoMountBackEnd() ;
 
-#ifdef Q_OS_WIN
-
-	m_ui->rbWindowsDPAPI->setEnabled( true ) ;
-
-	if( walletBk == bk::windows_DPAPI ){
+	if( walletBk == SiriKali::Windows::windowsWalletBackend() ){
 
 		m_ui->label_22->setText( tr( "Change Window's Wallet Password" ) ) ;
 
 		m_ui->rbWindowsDPAPI->setChecked( true ) ;
-	}else{
-		m_ui->rbNone->setChecked( true ) ;
-	}
 
-	connect( m_ui->rbWindowsDPAPI,&QRadioButton::toggled,[ this ]( bool e ){
-
-		if( e ){
-
-			m_ui->label_22->setText( tr( "Change Window's Wallet Password" ) ) ;
-
-			m_ui->label_22->setEnabled( true ) ;
-			m_ui->pbChangeWalletPassword->setEnabled( true ) ;
-			this->walletBkChanged( bk::windows_DPAPI ) ;
-			m_settings.autoMountBackEnd( bk::windows_DPAPI ) ;
-		}
-	} ) ;
-#else
-	m_ui->rbWindowsDPAPI->setEnabled( false ) ;
-
-	if( walletBk == bk::internal ){
+	}else if( walletBk == bk::internal ){
 
 		m_ui->label_22->setText( tr( "Change Internal Wallet Password" ) ) ;
 
@@ -302,7 +282,7 @@ favorites2::favorites2( QWidget * parent,
 	}else{
 		m_ui->rbNone->setChecked( true ) ;
 	}
-#endif
+
 	m_ui->label_22->setEnabled( walletBk == bk::internal ) ;
 	m_ui->pbChangeWalletPassword->setEnabled( walletBk == bk::internal ) ;
 
@@ -315,6 +295,20 @@ favorites2::favorites2( QWidget * parent,
 			m_ui->pbChangeWalletPassword->setEnabled( true ) ;
 			this->walletBkChanged( bk::internal ) ;
 			m_settings.autoMountBackEnd( bk::internal ) ;
+		}
+	} ) ;
+
+	connect( m_ui->rbWindowsDPAPI,&QRadioButton::toggled,[ this ]( bool e ){
+
+		if( e ){
+
+			m_ui->label_22->setText( tr( "Change Window's Wallet Password" ) ) ;
+
+			m_ui->label_22->setEnabled( true ) ;
+			m_ui->pbChangeWalletPassword->setEnabled( true ) ;
+			auto bk = SiriKali::Windows::windowsWalletBackend() ;
+			this->walletBkChanged( bk ) ;
+			m_settings.autoMountBackEnd( bk ) ;
 		}
 	} ) ;
 
@@ -437,37 +431,35 @@ favorites2::favorites2( QWidget * parent,
 
 	connect( m_ui->pbChangeWalletPassword,&QPushButton::clicked,[ this ](){
 
-		if( m_ui->rbInternalWallet->isChecked() ){
+		auto a = m_settings.walletName() ;
+		auto b = m_settings.applicationName() ;
 
-			auto a = m_settings.walletName() ;
-			auto b = m_settings.applicationName() ;
+		if( m_ui->rbInternalWallet->isChecked() ){
 
 			this->hide() ;
 
-			m_secrets.changeInternalWalletPassword( a,b,[ this ](){
+			m_secrets.changeInternalWalletPassword( a,b,[ this ]( bool s ){
 
-				this->walletBkChanged( LXQt::Wallet::BackEnd::internal ) ;
+				if( s ){
 
-				this->show() ;
+					this->walletBkChanged( LXQt::Wallet::BackEnd::internal ) ;
+				}else{
+					this->show() ;
+				}
 			} ) ;
 
 		}else if( m_ui->rbWindowsDPAPI->isChecked() ){
 
-			auto a = m_settings.walletName() ;
-			auto b = m_settings.applicationName() ;
+			m_secrets.changeWindowsDPAPIWalletPassword( a,b,[ this ]( bool s ){
 
-			this->hide() ;
+				if( s ){
 
-			m_secrets.changeWindowsDPAPIWalletPassword( a,b,[ this ](){
-
-				#ifdef Q_OS_WIN
-					this->walletBkChanged( LXQt::Wallet::BackEnd::windows_DPAPI ) ;
-				#endif
-
-				this->show() ;
+					this->walletBkChanged( SiriKali::Windows::windowsWalletBackend() ) ;
+				}else{
+					this->show() ;
+				}
 			} ) ;
 		}
-
 	} ) ;
 
 	m_ui->pbFolderPath->setIcon( QIcon( ":/sirikali.png" ) ) ;

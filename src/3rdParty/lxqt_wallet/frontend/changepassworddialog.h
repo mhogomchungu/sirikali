@@ -55,37 +55,42 @@ class changePassWordDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	static changePassWordDialog& instance( QWidget * parent,
-					       const QString& walletName,
-					       const QString& applicationName,
-					       std::function< void( const QString&,bool ) >&& function )
+	struct changeArgs{
+		bool failedToUnlock ;
+		bool failedToChange ;
+	};
+
+	using changeFunction = std::function< changeArgs( const QString& old,const QString& New,bool ) > ;
+	using createFunction = std::function< void( const QString&,bool ) > ;
+
+	static changePassWordDialog& createInstance( QWidget * parent,
+						     const QString& walletName,
+						     const QString& applicationName,
+						     createFunction&& function )
 	{
 		auto& e = *( new changePassWordDialog( parent,walletName,applicationName ) ) ;
 
-		e.ShowUI( std::move( function ) ) ;
+		e.createShowUI( std::move( function ) ) ;
 
 		return e ;
 	}
-	static changePassWordDialog& instance_1( const QString& s,
-						 QWidget * parent,
-						 const QString& walletName,
-						 const QString& applicationName,
-						 std::function< void( const QString&,bool ) >&& function,
-						 std::function< bool( const QString& ) > cp = []( const QString& ){ return false ; } )
+	static changePassWordDialog& changeInstance( QWidget * parent,
+						     const QString& walletName,
+						     const QString& applicationName,
+						     changeFunction&& function )
 	{
 		auto& e = *( new changePassWordDialog( parent,walletName,applicationName ) ) ;
 
-		e.ShowUI_1( s,std::move( function ),std::move( cp ) ) ;
+		e.changeShowUI( std::move( function ) ) ;
 
 		return e ;
 	}
 	explicit changePassWordDialog( QWidget * parent = 0,
 				       const QString& walletName = QString(),
 				       const QString& applicationName = QString() ) ;
-	void ShowUI( std::function< void( const QString&,bool ) >&& ) ;
-	void ShowUI_1( const QString&,
-		       std::function< void( const QString&,bool ) >&&,
-		       std::function< bool( const QString& ) >&& cp ) ;
+
+	void createShowUI( createFunction&& ) ;
+	void changeShowUI( changeFunction&& ) ;
 
 	~changePassWordDialog() ;
 signals:
@@ -97,8 +102,6 @@ private slots:
 	void ok( void ) ;
 	void ok_1( void ) ;
 private:
-	void wrongPassword() ;
-	void change_internal() ;
 	void HideUI( void ) ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter ( QObject * watched,QEvent * event ) ;
@@ -107,8 +110,6 @@ private:
 	QString m_walletName ;
 	QString m_applicationName ;
 	QString m_banner ;
-	QString m_walletType ;
-	bool m_walletPassWordChanged ;
 
 	std::function< void( const QString&,bool ) > m_create = []( const QString& e,bool f ){
 
@@ -116,16 +117,12 @@ private:
 		Q_UNUSED( f )
 	} ;
 
-	std::function< void( const QString&,bool ) > m_change = []( const QString& e,bool s ){
+	std::function< changeArgs( const QString& old,const QString& New,bool ) > m_change = []( const QString& old,const QString& New,bool ){
 
-		Q_UNUSED( e )
-		Q_UNUSED( s )
-	} ;
+		Q_UNUSED( old )
+		Q_UNUSED( New )
 
-	std::function< bool( const QString& ) > m_passwordCorrect = []( const QString& e ){
-
-		Q_UNUSED( e )
-		return false ;
+		return changeArgs{ false,false } ;
 	} ;
 };
 

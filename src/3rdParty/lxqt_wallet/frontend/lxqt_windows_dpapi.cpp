@@ -218,7 +218,7 @@ void LXQt::Wallet::windows_dpapi::createWallet()
 	const auto& w = m_walletName ;
 	const auto& d = m_displayApplicationName ;
 
-	cbd::instance( this,w,d,[ this ]( const QString& password,bool create ){
+	cbd::createInstance( this,w,d,[ this ]( const QString& password,bool create ){
 
 		if( create ){
 
@@ -456,28 +456,36 @@ void LXQt::Wallet::windows_dpapi::changeWalletPassWord( const QString& walletNam
 							const QString& applicationName,
 							std::function< void( bool ) > function )
 {
-	auto f = [ this,function = std::move( function ) ]( const QString& e,bool s ){
+	using args = LXQt::Wallet::changePassWordDialog::changeArgs ;
 
-		if( s ){
+	auto change = [ this,function = std::move( function ) ]( const QString& old,
+			const QString& New,bool cancelled  )->args{
 
-			this->setEntropy( e ) ;
+		if( cancelled ){
+
+			function( false ) ;
+
+			return { false,false } ;
 		}
-
-		function( s ) ;
-	} ;
-
-	auto cp = []( const QString& e ){
 
 		auto a = windowsKeysStorageData() ;
 
-		return _decrypt( a,e.toUtf8() ).first ;
+		if( _decrypt( a,old.toUtf8() ).first ){
+
+			this->setEntropy( New ) ;
+
+			function( true ) ;
+
+			return { false,false } ;
+		}else{
+			return { true,false } ;
+		}
 	} ;
 
-	LXQt::Wallet::changePassWordDialog::instance_1( "windows_dpapi",
-							this,
-							walletName,applicationName,
-							std::move( f ),
-							std::move( cp ) ) ;
+	LXQt::Wallet::changePassWordDialog::changeInstance( this,
+							    walletName,
+							    applicationName,
+							    std::move( change ) ) ;
 }
 
 void LXQt::Wallet::windows_dpapi::setImage( const QIcon& e )

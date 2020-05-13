@@ -194,7 +194,7 @@ void LXQt::Wallet::internalWallet::createWallet()
 	const auto& w = m_walletName ;
 	const auto& d = m_displayApplicationName ;
 
-	cbd::instance( this,w,d,[ this ]( const QString& password,bool create ){
+	cbd::createInstance( this,w,d,[ this ]( const QString& password,bool create ){
 
 		if( create ){
 
@@ -226,17 +226,59 @@ void LXQt::Wallet::internalWallet::changeWalletPassWord( const QString& walletNa
 							 const QString& applicationName,
 							 std::function< void( bool ) > function )
 {
-	auto f = [ function = std::move( function ) ]( const QString& e,bool s ){
+	using args = LXQt::Wallet::changePassWordDialog::changeArgs ;
 
-		Q_UNUSED( e )
+	auto change = [ this,function = std::move( function ) ]( const QString& old,
+			const QString& New,bool cancelled )->args{
 
-		function( s ) ;
+		if( cancelled ){
+
+			function( false ) ;
+
+			return { false,false } ;
+		}
+
+		auto result = Task::await< args >( [ & ]()->args{
+
+			lxqt_wallet_t wallet ;
+
+			auto s = lxqt_wallet_open( &wallet,
+						   old.toLatin1().constData(),
+						   u_int32_t( old.size() ),
+						   m_walletName.toLatin1().constData(),
+						   m_applicationName.toLatin1().constData() ) ;
+
+			if( s != lxqt_wallet_no_error ){
+
+				return { true,false } ;
+			}
+
+			auto m = lxqt_wallet_change_wallet_password( wallet,
+								     New.toLatin1().constData(),
+								     u_int32_t( New.size() ) ) ;
+
+			lxqt_wallet_close( &wallet ) ;
+
+			if( m != lxqt_wallet_no_error ){
+
+				return { false,true } ;
+			}else{
+				return { false,false } ;
+			}
+		} ) ;
+
+		if( result.failedToChange == false && result.failedToUnlock == false ){
+
+			function( true ) ;
+		}
+
+		return result ;
 	} ;
 
-	LXQt::Wallet::changePassWordDialog::instance_1( "internal",
-							this,
-							walletName,applicationName,
-							std::move( f ) ) ;
+	LXQt::Wallet::changePassWordDialog::changeInstance( this,
+							    walletName,
+							    applicationName,
+							    std::move( change ) ) ;
 }
 
 QByteArray LXQt::Wallet::internalWallet::readValue( const QString& key )
