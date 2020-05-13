@@ -207,6 +207,8 @@ version 1.4.2(December 18,2019)
 
     version 1.4.4(unreleased)
 -- Fix a bug that causes fscrypt folders paths that contain a space character from showing up in the GUI.
+-- Fix a bug with encfs < 1.9.5 when used with custom config path location. SiriKali will now pass the path
+    through enviromental variable instead of using --config CLI option.
 -- Prevent fscrypt error when creating a new volume with an already taken protector name by making sure
     we are using a unique protector name.
 -- Add a GUI option to set protector's name  when creating fscrypt volume.
@@ -214,3 +216,5 @@ version 1.4.2(December 18,2019)
    when creating fscrypt volume.
 -- Add support for securefs key file(introduced in securefs version 0.11.1).
 -- Add support for fscrypt keyfile.
+-- Add support for storing keys securely on Windows by using Window's Data Protection API.
+-- Rework UI and move key management feature from settings windows to favorites window.
