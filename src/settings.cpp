@@ -982,8 +982,8 @@ bool settings::showMountDialogWhenAutoMounting()
 
 		return m_settings.value( "ShowMountDialogWhenAutoMounting" ).toBool() ;
 	}else{
-		settings::showMountDialogWhenAutoMounting( false ) ;
-		return false ;
+		settings::showMountDialogWhenAutoMounting( true ) ;
+		return true ;
 	}
 }
 

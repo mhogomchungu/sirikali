@@ -17,6 +17,8 @@ void windowsDebugWindow( const QString& e ) ;
 #include <windows.h>
 #include <dpapi.h>
 
+static int TEST_VALUE = -1 ;
+
 namespace SiriKali{
 	namespace Windows{
 		QString lastError() ;
@@ -45,7 +47,7 @@ public:
 		auto data = reinterpret_cast< const char * >( m_db.pbData ) ;
 		auto size = static_cast< int >( m_db.cbData ) ;
 
-		return{ data,size } ;
+		return { data,size } ;
 	}
 	CRYPTPROTECT_PROMPTSTRUCT * prompt( unsigned long flags = CRYPTPROTECT_PROMPT_ON_UNPROTECT )
 	{
@@ -294,20 +296,32 @@ void LXQt::Wallet::windows_dpapi::openWalletWithPassword( QString e )
 
 void LXQt::Wallet::windows_dpapi::deserializeData( const QByteArray& e )
 {
-	int s ;
+	const size_t int_size = sizeof( int ) ;
+
+	int test ;
 
 	auto data = e.constData() ;
 
-	std::memcpy( &s,data,sizeof( int ) ) ;
+	std::memcpy( &test,data,int_size ) ;
+
+	if( test != TEST_VALUE ){
+
+		windowsDebugWindow( "LXQt:Wallet::Windows_dpapi: Data Decrypted But Failed Smelling Test." ) ;
+
+		return ;
+	}
+
+	int s ;
+
+	std::memcpy( &s,data + int_size,int_size ) ;
 
 	windowsDebugWindow( "LXQt:Wallet::Windows_dpapi: Number Of Entries In Wallet Is: " + QString::number( s ) ) ;
 
 	if( s != 0 ){
 
-		const size_t int_size    = sizeof( int ) ;
 		const size_t header_size = 2 * sizeof( int ) ;
 
-		data = data + sizeof( int ) ;
+		data = data + 2 * int_size ;
 
 		int keySize ;
 		int valueSize ;
@@ -333,13 +347,15 @@ QByteArray LXQt::Wallet::windows_dpapi::serializeData()
 
 	const size_t int_size = sizeof( int ) ;
 
-	char buffer[ int_size ] ;
+	char buffer[ 2 * int_size ] ;
+
+	std::memcpy( buffer,&TEST_VALUE,int_size ) ;
 
 	int s = m_keys.size() ;
 
-	std::memcpy( buffer,&s,int_size ) ;
+	std::memcpy( buffer + int_size,&s,int_size ) ;
 
-	data.append( buffer,int_size ) ;
+	data.append( buffer,2 * int_size ) ;
 
 	if( s != 0 ){
 
