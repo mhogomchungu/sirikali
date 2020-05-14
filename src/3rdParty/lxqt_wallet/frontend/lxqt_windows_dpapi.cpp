@@ -10,14 +10,14 @@ void windowsKeysStorageData( const QByteArray& e ) ;
 
 void windowsDebugWindow( const QString& e ) ;
 
+static int TEST_VALUE = -1 ;
+
 #include <cstring>
 
 #ifdef Q_OS_WIN
 
 #include <windows.h>
 #include <dpapi.h>
-
-static int TEST_VALUE = -1 ;
 
 namespace SiriKali{
 	namespace Windows{
