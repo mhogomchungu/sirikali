@@ -118,6 +118,33 @@ favorites2::favorites2( QWidget * parent,
 		return m ;
 	}() ) ;
 
+	connect( m_ui->cbAutoMountAtStartUp,&QCheckBox::toggled,[ this ]( bool e ){
+
+		m_settings.autoMountFavoritesOnStartUp( e ) ;
+	} ) ;
+
+	m_ui->cbAutoMountWhenAvailable->setChecked( m_settings.autoMountFavoritesOnAvailable() ) ;
+
+	connect( m_ui->cbShowFavoriteListOnContextMenu,&QCheckBox::toggled,[ this ]( bool e ){
+
+		m_settings.showFavoritesInContextMenu( e ) ;
+	} ) ;
+
+	connect( m_ui->cbAllowExternalToolsToReadPasswords,&QCheckBox::toggled,[ this ]( bool e ){
+
+		m_settings.allowExternalToolsToReadPasswords( e ) ;
+	} ) ;
+
+	connect( m_ui->cbAutoMountWhenAvailable,&QCheckBox::toggled,[ this ]( bool e ){
+
+		m_settings.autoMountFavoritesOnAvailable( e ) ;
+	} ) ;
+
+	connect( m_ui->cbShowMountDialogWhenAutoMounting,&QCheckBox::toggled,[ this ]( bool e ){
+
+		m_settings.showMountDialogWhenAutoMounting( e ) ;
+	} ) ;
+
 	connect( m_ui->pbConfigFilePath,&QPushButton::clicked,[ this ](){
 
 		this->configPath() ;
@@ -1259,6 +1286,14 @@ void favorites2::ShowUI( favorites::type type )
 	}
 
 	m_ui->tableWidget->setFocus() ;
+
+	m_ui->cbAllowExternalToolsToReadPasswords->setChecked( m_settings.allowExternalToolsToReadPasswords() ) ;
+
+	m_ui->cbAutoMountAtStartUp->setChecked( m_settings.autoMountFavoritesOnStartUp() ) ;
+
+	m_ui->cbShowMountDialogWhenAutoMounting->setChecked( m_settings.showMountDialogWhenAutoMounting() ) ;
+
+	m_ui->cbShowFavoriteListOnContextMenu->setChecked( m_settings.showFavoritesInContextMenu() ) ;
 
 	this->show() ;
 	this->raise() ;

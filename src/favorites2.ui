@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>3</number>
    </property>
    <widget class="QWidget" name="FavoritesList">
     <attribute name="title">
@@ -1306,6 +1306,162 @@
        <string>Ok</string>
       </property>
      </widget>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="Settings">
+    <attribute name="title">
+     <string>Settings</string>
+    </attribute>
+    <widget class="QCheckBox" name="cbAllowExternalToolsToReadPasswords">
+     <property name="geometry">
+      <rect>
+       <x>190</x>
+       <y>290</y>
+       <width>21</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="cbShowMountDialogWhenAutoMounting">
+     <property name="geometry">
+      <rect>
+       <x>190</x>
+       <y>250</y>
+       <width>21</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_24">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>210</y>
+       <width>401</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Auto Mount Favorites Volumes When Available</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="cbAutoMountAtStartUp">
+     <property name="geometry">
+      <rect>
+       <x>190</x>
+       <y>170</y>
+       <width>21</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_25">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>250</y>
+       <width>401</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Show Mount Dialog When Auto Mounting</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_26">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>290</y>
+       <width>401</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Allow External Tools To Get Passwords From Wallets</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="cbAutoMountWhenAvailable">
+     <property name="geometry">
+      <rect>
+       <x>190</x>
+       <y>210</y>
+       <width>21</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>431</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_27">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>170</y>
+       <width>401</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Auto Mount Favorites Volumes At Startup</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="cbShowFavoriteListOnContextMenu">
+     <property name="geometry">
+      <rect>
+       <x>190</x>
+       <y>130</y>
+       <width>21</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_28">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>120</y>
+       <width>401</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Show Favorite List On Context Menu(Restart Required)</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
     </widget>
    </widget>
   </widget>

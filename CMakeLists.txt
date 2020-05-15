@@ -413,58 +413,60 @@ file( WRITE ${PROJECT_BINARY_DIR}/siriPolkit.h "\n#define siriPolkitPath \"${CMA
 
 if( APPLE )
 
-SET( plugin_dest_dir sirikali.app/Contents/MacOS )
-SET( qtconf_dest_dir sirikali.app/Contents/Resources )
-SET( APPS "\${CMAKE_INSTALL_PREFIX}/sirikali.app" )
+	SET( plugin_dest_dir sirikali.app/Contents/MacOS )
+	SET( qtconf_dest_dir sirikali.app/Contents/Resources )
+	SET( APPS "\${CMAKE_INSTALL_PREFIX}/sirikali.app" )
 
-set_target_properties( sirikali PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/MacOSXBundleInfo.plist.in" )
+	set_target_properties( sirikali PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/MacOSXBundleInfo.plist.in" )
 
-install( TARGETS sirikali BUNDLE DESTINATION . COMPONENT Runtime )
+	install( TARGETS sirikali BUNDLE DESTINATION . COMPONENT Runtime )
 
-file( COPY icons/256x256/sirikali.icns DESTINATION "sirikali.app/Contents/Resources/" )
-file( COPY translations/fr_FR.qm DESTINATION "sirikali.app/Contents/Resources/" )
-file( COPY translations/en_US.qm DESTINATION "sirikali.app/Contents/Resources/" )
-file( COPY translations/de_DE.qm DESTINATION "sirikali.app/Contents/Resources/" )
-file( COPY translations/es_MX.qm DESTINATION "sirikali.app/Contents/Resources/" )
-file( COPY translations/ru_RU.qm DESTINATION "sirikali.app/Contents/Resources/" )
+	file( COPY icons/256x256/sirikali.icns DESTINATION "sirikali.app/Contents/Resources/" )
+	file( COPY translations/fr_FR.qm DESTINATION "sirikali.app/Contents/Resources/" )
+	file( COPY translations/ru_RU.qm DESTINATION "sirikali.app/Contents/Resources/" )
 
-file( COPY changelog DESTINATION "sirikali.app/Contents/Resources/" )
+	#file( COPY translations/en_US.qm DESTINATION "sirikali.app/Contents/Resources/" )
+	#file( COPY translations/de_DE.qm DESTINATION "sirikali.app/Contents/Resources/" )
+	#file( COPY translations/es_MX.qm DESTINATION "sirikali.app/Contents/Resources/" )
 
-#install( DIRECTORY "${QT_PLUGINS_DIR}/imageformats" DESTINATION ${plugin_dest_dir}/plugins COMPONENT Runtime )
+	file( COPY changelog DESTINATION "sirikali.app/Contents/Resources/" )
 
-#install( CODE " file(WRITE \"\${CMAKE_INSTALL_PREFIX}/${qtconf_dest_dir}/qt.conf\" \"\")" COMPONENT Runtime )
+	#install( DIRECTORY "${QT_PLUGINS_DIR}/imageformats" DESTINATION ${plugin_dest_dir}/plugins COMPONENT Runtime )
 
-#SET( DIRS ${QT_LIBRARY_DIRS} )
+	#install( CODE " file(WRITE \"\${CMAKE_INSTALL_PREFIX}/${qtconf_dest_dir}/qt.conf\" \"\")" COMPONENT Runtime )
 
-#INSTALL(CODE "
-#    file(GLOB_RECURSE QTPLUGINS
-#      \"\${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}/plugins/*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
-#    include(BundleUtilities)
-#   fixup_bundle(\"${APPS}\" \"\${QTPLUGINS}\" \"${DIRS}\")
-#    " COMPONENT Runtime)
+	#SET( DIRS ${QT_LIBRARY_DIRS} )
 
-#set( CPACK_BINARY_DRAGNDROP ON )
-#include( CPack )
+	#INSTALL(CODE "
+	#    file(GLOB_RECURSE QTPLUGINS
+	#      \"\${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}/plugins/*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+	#    include(BundleUtilities)
+	#   fixup_bundle(\"${APPS}\" \"\${QTPLUGINS}\" \"${DIRS}\")
+	#    " COMPONENT Runtime)
+
+	#set( CPACK_BINARY_DRAGNDROP ON )
+	#include( CPack )
 
 else()
 
-install( TARGETS sirikali RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} )
+	install( TARGETS sirikali RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} )
 
-install( FILES icons/256x256/sirikali.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/256x256/apps/ )
-install( FILES icons/48x48/sirikali.png DESTINATION   ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps/ )
-install( FILES src/sirikali.png DESTINATION           ${CMAKE_INSTALL_DATAROOTDIR}/pixmaps )
-install( FILES src/sirikali.png DESTINATION           ${CMAKE_INSTALL_DATAROOTDIR}/icons )
+	install( FILES icons/256x256/sirikali.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/256x256/apps/ )
+	install( FILES icons/48x48/sirikali.png DESTINATION   ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps/ )
+	install( FILES src/sirikali.png DESTINATION           ${CMAKE_INSTALL_DATAROOTDIR}/pixmaps )
+	install( FILES src/sirikali.png DESTINATION           ${CMAKE_INSTALL_DATAROOTDIR}/icons )
 
-install( FILES translations/en_US.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
-install( FILES translations/fr_FR.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
-install( FILES translations/es_MX.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
-install( FILES translations/de_DE.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
-install( FILES translations/ru_RU.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
+	install( FILES translations/fr_FR.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
+	install( FILES translations/ru_RU.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 
-install( FILES src/sirikali.1.gz DESTINATION ${CMAKE_INSTALL_DATADIR}/man/man1/ )
-install( FILES src/sirikali.pkexec.1.gz DESTINATION ${CMAKE_INSTALL_DATADIR}/man/man1/ )
+	#install( FILES translations/en_US.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
+	#install( FILES translations/es_MX.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
+	#install( FILES translations/de_DE.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 
-install( FILES src/sirikali.appdata.xml DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo/ )
+	install( FILES src/sirikali.1.gz DESTINATION ${CMAKE_INSTALL_DATADIR}/man/man1/ )
+	install( FILES src/sirikali.pkexec.1.gz DESTINATION ${CMAKE_INSTALL_DATADIR}/man/man1/ )
+
+	install( FILES src/sirikali.appdata.xml DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo/ )
 
 endif()
 

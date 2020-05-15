@@ -59,11 +59,6 @@ configOptions::configOptions( QWidget * parent,
 		m_settings.autoOpenFolderOnMount( e ) ;
 	} ) ;
 
-	connect( m_ui->cbShowFavoriteListOnContextMenu,&QCheckBox::toggled,[ this ]( bool e ){
-
-		m_settings.showFavoritesInContextMenu( e ) ;
-	} ) ;
-
 	connect( m_ui->cbReUseMountPoint,&QCheckBox::toggled,[ this ]( bool e ){
 
 		m_settings.reUseMountPoint( e ) ;
@@ -105,29 +100,6 @@ configOptions::configOptions( QWidget * parent,
 				m_settings.setDefaultMountPointPrefix( e ) ;
 			}
 		}
-	} ) ;
-
-	connect( m_ui->cbAutoMountAtStartUp,&QCheckBox::toggled,[ this ]( bool e ){
-
-		m_settings.autoMountFavoritesOnStartUp( e ) ;
-	} ) ;
-
-	m_ui->cbAutoMountWhenAvailable->setChecked( m_settings.autoMountFavoritesOnAvailable() ) ;
-
-
-	connect( m_ui->cbAllowExternalToolsToReadPasswords,&QCheckBox::toggled,[ this ]( bool e ){
-
-		m_settings.allowExternalToolsToReadPasswords( e ) ;
-	} ) ;
-
-	connect( m_ui->cbAutoMountWhenAvailable,&QCheckBox::toggled,[ this ]( bool e ){
-
-		m_settings.autoMountFavoritesOnAvailable( e ) ;
-	} ) ;
-
-	connect( m_ui->cbShowMountDialogWhenAutoMounting,&QCheckBox::toggled,[ this ]( bool e ){
-
-		m_settings.showMountDialogWhenAutoMounting( e ) ;
 	} ) ;
 
 	m_ui->pbSelectLanguage->setMenu( m ) ;
@@ -251,8 +223,6 @@ void configOptions::translateUI()
 
 void configOptions::ShowUI()
 {
-	m_ui->cbAllowExternalToolsToReadPasswords->setChecked( m_settings.allowExternalToolsToReadPasswords() ) ;
-
 	m_ui->cbAutoOpenMountPoint->setChecked( m_settings.autoOpenFolderOnMount() ) ;
 
 	m_ui->cbReUseMountPoint->setChecked( m_settings.reUseMountPoint() ) ;
@@ -260,12 +230,6 @@ void configOptions::ShowUI()
 	m_ui->cbAutoCheckForUpdates->setChecked( m_settings.autoCheck() ) ;
 
 	m_ui->cbStartMinimized->setChecked( m_settings.startMinimized() ) ;
-
-	m_ui->cbAutoMountAtStartUp->setChecked( m_settings.autoMountFavoritesOnStartUp() ) ;
-
-	m_ui->cbShowFavoriteListOnContextMenu->setChecked( m_settings.showFavoritesInContextMenu() ) ;
-
-	m_ui->cbShowMountDialogWhenAutoMounting->setChecked( m_settings.showMountDialogWhenAutoMounting() ) ;
 
 	m_ui->lineEditFileManager->setText( m_settings.fileManager() ) ;
 
