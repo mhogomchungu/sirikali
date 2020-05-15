@@ -573,6 +573,29 @@ favorites2::favorites2( QWidget * parent,
 
 	optionsMenu->addSeparator() ;
 
+	connect( optionsMenu->addAction( tr( "Add Entry To Default Wallet" ) ),&QAction::triggered,[ this ](){
+
+		auto table = m_ui->tableWidget ;
+
+		auto m = table->currentRow() ;
+
+		if( m != -1 ){
+
+			auto a = table->item( m,0 )->text() ;
+
+			if( !a.isEmpty() && !m_ui->rbNone->isChecked() ){
+
+				m_ui->lineEditVolumePath->setText( a ) ;
+
+				m_ui->tabWidget->setCurrentIndex( 2 ) ;
+
+				m_ui->lineEditPassword->setFocus() ;
+			}
+		}
+	} ) ;
+
+	optionsMenu->addSeparator() ;
+
 	optionsMenu->addAction( tr( "Cancel" ) ) ;
 
 	m_ui->pbOptions->setMenu( optionsMenu ) ;
@@ -759,9 +782,16 @@ void favorites2::tabChanged( int index )
 		/*
 		 * favorites list tab
 		 */
+
+		m_ui->lineEditVolumePath->clear() ;
+		m_ui->lineEditPassword->clear() ;
+
 		m_editMode = false ;
 
 	}else if( index == 1 ){
+
+		m_ui->lineEditVolumePath->clear() ;
+		m_ui->lineEditPassword->clear() ;
 
 		/*
 		 * Add/Edit tab
@@ -792,7 +822,9 @@ void favorites2::tabChanged( int index )
 
 			m_ui->pbAdd->setFocus() ;
 		}
-	}else{
+
+	}else if( index == 2 ){
+
 		/*
 		 * Manage keys in wallets
 		 */
@@ -804,6 +836,12 @@ void favorites2::tabChanged( int index )
 		}else {
 			this->setControlsAvailability( false,true ) ;
 		}
+	}else{
+		m_ui->lineEditVolumePath->clear() ;
+		m_ui->lineEditPassword->clear() ;
+		/*
+		 * Settings
+		 */
 	}
 }
 

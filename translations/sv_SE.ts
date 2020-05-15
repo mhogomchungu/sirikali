@@ -455,7 +455,7 @@ options:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="671"/>
+        <location filename="../src/favorites2.cpp" line="694"/>
         <source>The Password Is &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1118,7 +1118,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="234"/>
-        <location filename="../src/favorites2.cpp" line="943"/>
+        <location filename="../src/favorites2.cpp" line="981"/>
         <source>Path To A Config File</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1157,64 +1157,69 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="576"/>
+        <source>Add Entry To Default Wallet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/favorites2.cpp" line="599"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="642"/>
+        <location filename="../src/favorites2.cpp" line="665"/>
         <source>Delete Entry</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="656"/>
+        <location filename="../src/favorites2.cpp" line="679"/>
         <source>Show Password</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="680"/>
+        <location filename="../src/favorites2.cpp" line="703"/>
         <source>Close Menu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="980"/>
-        <location filename="../src/favorites2.cpp" line="985"/>
+        <location filename="../src/favorites2.cpp" line="1018"/>
+        <location filename="../src/favorites2.cpp" line="1023"/>
         <source>ERROR!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="980"/>
+        <location filename="../src/favorites2.cpp" line="1018"/>
         <source>Encrypted Folder Address Field Is Empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="985"/>
+        <location filename="../src/favorites2.cpp" line="1023"/>
         <source>Mount Point Path Field Is Empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="266"/>
-        <location filename="../src/favorites2.cpp" line="1098"/>
+        <location filename="../src/favorites2.cpp" line="1136"/>
         <source>Path To An Encrypted Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1108"/>
+        <location filename="../src/favorites2.cpp" line="1146"/>
         <source>Path To Mount Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1272"/>
+        <location filename="../src/favorites2.cpp" line="1310"/>
         <source>Remote Ssh Server Address
 (Example: woof@example.com:/remote/path)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1273"/>
+        <location filename="../src/favorites2.cpp" line="1311"/>
         <source>SSH_AUTH_SOCK Socket Path (Optional)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1274"/>
+        <location filename="../src/favorites2.cpp" line="1312"/>
         <source>IdentityFile Path (Optional)</source>
         <translation type="unfinished"></translation>
     </message>
