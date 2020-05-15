@@ -8,9 +8,9 @@ QByteArray windowsKeysStorageData() ;
 
 void windowsKeysStorageData( const QByteArray& e ) ;
 
-void windowsDebugWindow( const QString& e ) ;
+void windowsDebugWindow( const QString& e,bool = false ) ;
 
-static int TEST_VALUE = -1 ;
+static const int TEST_VALUE = -1 ;
 
 #include <cstring>
 
@@ -38,7 +38,7 @@ public:
 	{
 		ZeroMemory( &m_db,sizeof( DATA_BLOB ) ) ;
 	}
-	DATA_BLOB * get()
+	DATA_BLOB * operator&()
 	{
 		return &m_db ;
 	}
@@ -80,7 +80,7 @@ static std::pair< bool,QByteArray > _encrypt( const QByteArray& e,const QByteArr
 
 	auto a = L"LXQt Wallet::Windows_dpapi." ;
 
-	if( CryptProtectData( In.get(),a,Entropy.get(),nullptr,nullptr,0,Out.get() ) ){
+	if( CryptProtectData( &In,a,&Entropy,nullptr,nullptr,0,&Out ) ){
 
 		windowsDebugWindow( "LXQt:Wallet::Windows_dpapi: Data Successfully Encrypted." ) ;		
 
@@ -99,7 +99,7 @@ static std::pair< bool,QByteArray > _decrypt( const QByteArray& e,const QByteArr
 	db Entropy( entropy ) ;
 	db Out ;
 
-	if( CryptUnprotectData(	In.get(),nullptr,Entropy.get(),nullptr,In.prompt(),0,Out.get() ) ){
+	if( CryptUnprotectData(	&In,nullptr,&Entropy,nullptr,In.prompt(),0,&Out ) ){
 
 		windowsDebugWindow( "LXQt:Wallet::Windows_dpapi: Data Successfully Decrypted." ) ;
 
@@ -155,14 +155,22 @@ bool LXQt::Wallet::windows_dpapi::open( const QString& walletName,
 					const QString& password,
 					const QString& displayApplicationName )
 {
+	QEventLoop loop ;
+
+	auto exitLoop = [ & ]( bool e ){
+
+		Q_UNUSED( e )
+		loop.exit() ;
+	} ;
+
 	this->open( walletName,
 		    applicationName,
-		    []( bool e ){ Q_UNUSED( e ) },
+		    std::move( exitLoop ),
 		    parent,
 		    password,
 		    displayApplicationName ) ;
 
-	m_loop.exec() ;
+	loop.exec() ;
 
 	return m_opened ;
 }
@@ -244,29 +252,24 @@ void LXQt::Wallet::windows_dpapi::openWallet()
 
 		m_opened = true ;
 
-		return m_walletOpened( true ) ;
+		m_walletOpened( true ) ;
+	}else{
+		using pwd = LXQt::Wallet::password_dialog ;
+
+		auto _cancelled = [ this ](){
+
+			m_opened = false ;
+
+			m_walletOpened( m_opened ) ;
+		} ;
+
+		pwd::instance( this,
+			       m_walletName,
+			       m_displayApplicationName,
+			       [ this ]( const QString& p ){ this->openWalletWithPassword( p ) ; },
+			       std::move( _cancelled ),
+			       &m_correctPassword ) ;
 	}
-
-	using pwd = LXQt::Wallet::password_dialog ;
-
-	auto _cancelled = [ this ](){
-
-		if( m_loop.isRunning() ){
-
-			m_loop.exit() ;
-		}
-
-		m_opened = false ;
-
-		m_walletOpened( m_opened ) ;
-	} ;
-
-	pwd::instance( this,
-		       m_walletName,
-		       m_displayApplicationName,
-		       [ this ]( const QString& p ){ this->openWalletWithPassword( p ) ; },
-		       std::move( _cancelled ),
-		       &m_correctPassword ) ;
 }
 
 void LXQt::Wallet::windows_dpapi::openWalletWithPassword( QString e )
@@ -279,19 +282,14 @@ void LXQt::Wallet::windows_dpapi::openWalletWithPassword( QString e )
 
 	m_opened = s ;
 
+	m_correctPassword( s ) ;
+
 	if( s ){
 
 		this->deserializeData( m.second ) ;
 
 		m_walletOpened( s ) ;
-
-		if( m_loop.isRunning() ){
-
-			m_loop.exit() ;
-		}
 	}
-
-	m_correctPassword( s ) ;
 }
 
 void LXQt::Wallet::windows_dpapi::deserializeData( const QByteArray& e )
@@ -306,7 +304,7 @@ void LXQt::Wallet::windows_dpapi::deserializeData( const QByteArray& e )
 
 	if( test != TEST_VALUE ){
 
-		windowsDebugWindow( "LXQt:Wallet::Windows_dpapi: Data Decrypted But Failed Smelling Test." ) ;
+		windowsDebugWindow( "LXQt:Wallet::Windows_dpapi: Deleting Stored Data Because It Appears To Be Corrupted.",true ) ;
 
 		return ;
 	}

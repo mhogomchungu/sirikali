@@ -104,7 +104,6 @@ private:
 	QByteArray m_entropy ;
 	QByteArray m_data ;
 	bool m_opened = false ;
-	QEventLoop m_loop ;
 	std::function< void( bool ) > m_correctPassword = []( bool e ){ Q_UNUSED( e ) } ;
 	std::function< void( bool ) > m_walletOpened = []( bool e ){ Q_UNUSED( e ) } ;
 	QVector< std::pair< QString,QByteArray > > m_keys ;

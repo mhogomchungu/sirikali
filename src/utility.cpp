@@ -191,6 +191,17 @@ static void _set_debug_window_text( const QString& e )
 	_debugWindow->UpdateOutPut( e,utility::debugEnabled() ) ;
 }
 
+void windowsDebugWindow( const QString& e,bool s )
+{
+	if( s ){
+
+		utility::enableDebug( true ) ;
+		_show_debug_window() ;
+	}
+
+	utility::debug() << e ;
+}
+
 utility::SocketPaths utility::socketPath()
 {
 	if( utility::platformIsWindows() ){

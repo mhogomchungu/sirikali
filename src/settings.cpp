@@ -170,11 +170,6 @@ void windowsKeysStorageData( const QByteArray& e )
 	settings::instance().windowsKeysStorageData( e ) ;
 }
 
-void windowsDebugWindow( const QString& e )
-{
-	utility::debug() << e ;
-}
-
 QByteArray settings::windowsKeysStorageData()
 {
 	if( !m_settings.contains( "windowsKeysStorageData" ) ){
