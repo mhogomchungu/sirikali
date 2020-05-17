@@ -424,8 +424,8 @@ if( APPLE )
 	file( COPY icons/256x256/sirikali.icns DESTINATION "sirikali.app/Contents/Resources/" )
 	file( COPY translations/fr_FR.qm DESTINATION "sirikali.app/Contents/Resources/" )
 	file( COPY translations/ru_RU.qm DESTINATION "sirikali.app/Contents/Resources/" )
+	file( COPY translations/en_US.qm DESTINATION "sirikali.app/Contents/Resources/" )
 
-	#file( COPY translations/en_US.qm DESTINATION "sirikali.app/Contents/Resources/" )
 	#file( COPY translations/de_DE.qm DESTINATION "sirikali.app/Contents/Resources/" )
 	#file( COPY translations/es_MX.qm DESTINATION "sirikali.app/Contents/Resources/" )
 
@@ -458,8 +458,8 @@ else()
 
 	install( FILES translations/fr_FR.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 	install( FILES translations/ru_RU.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
+	install( FILES translations/en_US.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 
-	#install( FILES translations/en_US.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 	#install( FILES translations/es_MX.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 	#install( FILES translations/de_DE.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 

@@ -373,7 +373,7 @@ key = hmac_sha256(password,keyfile contents)</source>
 key = hmac_sha256 (пароль, содержимое Файлового ключа)</translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="605"/>
+        <location filename="../src/utility.cpp" line="616"/>
         <source>
 options:
 	-d   Path to where a volume to be auto unlocked/mounted is located.
@@ -426,17 +426,17 @@ options:
 	-s     Возможность запуска генерации хэша паролей.</translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="848"/>
+        <location filename="../src/utility.cpp" line="859"/>
         <source>about SiriKali</source>
         <translation>О SiriKali</translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="1422"/>
+        <location filename="../src/utility.cpp" line="1433"/>
         <source>Policy:</source>
         <translation>Политика:</translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="1427"/>
+        <location filename="../src/utility.cpp" line="1438"/>
         <source>Comment:</source>
         <translation>Комментарий:</translation>
     </message>
@@ -446,47 +446,47 @@ options:
         <translation>Этот плагин делегирует генерацию ключей во внешнее приложение</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="496"/>
+        <location filename="../src/settings.cpp" line="491"/>
         <source>Manage Favorites</source>
         <translation>Управление Избранным</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="497"/>
+        <location filename="../src/settings.cpp" line="492"/>
         <source>Mount All</source>
         <translation>Смонтировать все</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1174"/>
+        <location filename="../src/settings.cpp" line="1169"/>
         <source>Russian (RU)</source>
         <translation>Русский (RU)</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1175"/>
+        <location filename="../src/settings.cpp" line="1170"/>
         <source>French (FR)</source>
         <translation>Français (FR)</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1176"/>
+        <location filename="../src/settings.cpp" line="1171"/>
         <source>German (DE)</source>
         <translation>Deutsch (DE)</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1177"/>
+        <location filename="../src/settings.cpp" line="1172"/>
         <source>English (US)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1178"/>
+        <location filename="../src/settings.cpp" line="1173"/>
         <source>Swedish (SE)</source>
         <translation>Svenska (SE)</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1179"/>
+        <location filename="../src/settings.cpp" line="1174"/>
         <source>Arabic (SA)</source>
         <translation>(SA) العربية</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1180"/>
+        <location filename="../src/settings.cpp" line="1175"/>
         <source>Spanish (MX)</source>
         <translation>Español (MX)</translation>
     </message>
