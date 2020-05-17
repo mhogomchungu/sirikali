@@ -160,6 +160,21 @@ QString settings::windowsExecutableSearchPath()
 	return m_settings.value( "WindowsExecutableSearchPath" ).toString() ;
 }
 
+int settings::windowsPbkdf2Interations()
+{
+	if( !m_settings.contains( "WindowsPbkdf2Interations" ) ){
+
+		m_settings.setValue( "WindowsPbkdf2Interations",50000 ) ;
+	}
+
+	return m_settings.value( "WindowsPbkdf2Interations" ).toInt() ;
+}
+
+int windowsPbkdf2Interations()
+{
+	return settings::instance().windowsPbkdf2Interations() ;
+}
+
 QByteArray windowsKeysStorageData()
 {
 	return settings::instance().windowsKeysStorageData() ;
@@ -172,17 +187,17 @@ void windowsKeysStorageData( const QByteArray& e )
 
 QByteArray settings::windowsKeysStorageData()
 {
-	if( !m_settings.contains( "windowsKeysStorageData" ) ){
+	if( !m_settings.contains( "WindowsKeysStorageData" ) ){
 
-		m_settings.setValue( "windowsKeysStorageData",QByteArray() ) ;
+		m_settings.setValue( "WindowsKeysStorageData",QByteArray() ) ;
 	}
 
-	return m_settings.value( "windowsKeysStorageData" ).toByteArray() ;
+	return m_settings.value( "WindowsKeysStorageData" ).toByteArray() ;
 }
 
 void settings::windowsKeysStorageData( const QByteArray& e )
 {
-	m_settings.setValue( "windowsKeysStorageData",e ) ;
+	m_settings.setValue( "WindowsKeysStorageData",e ) ;
 }
 
 QString settings::externalPluginExecutable()

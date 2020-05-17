@@ -185,6 +185,7 @@ public:
 	int networkTimeOut() ;
 	bool showMountDialogWhenAutoMounting() ;
 	int checkForUpdateInterval() ;
+	int windowsPbkdf2Interations() ;
 	bool ecryptfsAllowNotEncryptingFileNames() ;
 	QString homePath() ;
 	QString windowsMountPointPath() ;

@@ -8,6 +8,8 @@ QByteArray windowsKeysStorageData() ;
 
 void windowsKeysStorageData( const QByteArray& e ) ;
 
+int windowsPbkdf2Interations() ;
+
 void windowsDebugWindow( const QString& e,bool = false ) ;
 
 static const int TEST_VALUE = -1 ;
@@ -16,8 +18,12 @@ static const int TEST_VALUE = -1 ;
 
 #ifdef Q_OS_WIN
 
+#include "task.h"
+
 #include <windows.h>
 #include <dpapi.h>
+
+#include <qpassworddigestor.h>
 
 namespace SiriKali{
 	namespace Windows{
@@ -72,44 +78,63 @@ private:
 	CRYPTPROTECT_PROMPTSTRUCT m_prompt ;
 };
 
-static std::pair< bool,QByteArray > _encrypt( const QByteArray& e,const QByteArray& entropy )
+static QByteArray _entropy( const QByteArray& e )
 {
-	db In( e ) ;
-	db Entropy( entropy ) ;
-	db Out ;
+	auto len = QCryptographicHash::hashLength( QCryptographicHash::Sha256 ) ;
 
-	auto a = L"LXQt Wallet::Windows_dpapi." ;
-
-	if( CryptProtectData( &In,a,&Entropy,nullptr,nullptr,0,&Out ) ){
-
-		windowsDebugWindow( "LXQt:Wallet::Windows_dpapi: Data Successfully Encrypted." ) ;		
-
-		return { true,Out.data() } ;
-	}else{
-		windowsDebugWindow( "LXQt:Wallet::Windows_dpapi: Failed To Encrypt Data." ) ;
-		//windowsDebugWindow( SiriKali::Windows::lastError() ) ;
-
-		return { false,{} } ;
-	}
+	return QPasswordDigestor::deriveKeyPbkdf2( QCryptographicHash::Sha256,
+						   e,
+						   "lxqt_windows_dpapi",
+						   windowsPbkdf2Interations(),
+						   static_cast< quint64 >( len ) ) ;
 }
 
-static std::pair< bool,QByteArray > _decrypt( const QByteArray& e,const QByteArray& entropy )
+using result = std::pair< bool,QByteArray > ;
+
+static std::pair< bool,QByteArray > _encrypt( const QByteArray& e,const QByteArray& entropy )
 {
-	db In( e ) ;
-	db Entropy( entropy ) ;
-	db Out ;
+	return LXQt::Wallet::Task::await< result >( [ & ]()->result{
 
-	if( CryptUnprotectData(	&In,nullptr,&Entropy,nullptr,In.prompt(),0,&Out ) ){
+		db In( e ) ;
+		db Entropy( _entropy( entropy ) ) ;
+		db Out ;
 
-		windowsDebugWindow( "LXQt:Wallet::Windows_dpapi: Data Successfully Decrypted." ) ;
+		auto a = L"LXQt Wallet::Windows_dpapi." ;
 
-		return { true,Out.data() } ;
-	}else{
-		windowsDebugWindow( "LXQt:Wallet::Windows_dpapi: Failed To Decrypt Data." ) ;
-		//windowsDebugWindow( SiriKali::Windows::lastError() ) ;
+		if( CryptProtectData( &In,a,&Entropy,nullptr,nullptr,0,&Out ) ){
 
-		return { false,{} } ;
-	}
+			windowsDebugWindow( "LXQt:Wallet::Windows_dpapi: Data Successfully Encrypted." ) ;
+
+			return { true,Out.data() } ;
+		}else{
+			windowsDebugWindow( "LXQt:Wallet::Windows_dpapi: Failed To Encrypt Data." ) ;
+			//windowsDebugWindow( SiriKali::Windows::lastError() ) ;
+
+			return { false,{} } ;
+		}
+	} ) ;
+}
+
+static result _decrypt( const QByteArray& e,const QByteArray& entropy )
+{
+	return LXQt::Wallet::Task::await< result >( [ & ]()->result{
+
+		db In( e ) ;
+		db Entropy( _entropy( entropy  ) ) ;
+		db Out ;
+
+		if( CryptUnprotectData(	&In,nullptr,&Entropy,nullptr,In.prompt(),0,&Out ) ){
+
+			windowsDebugWindow( "LXQt:Wallet::Windows_dpapi: Data Successfully Decrypted." ) ;
+
+			return { true,Out.data() } ;
+		}else{
+			windowsDebugWindow( "LXQt:Wallet::Windows_dpapi: Failed To Decrypt Data." ) ;
+			//windowsDebugWindow( SiriKali::Windows::lastError() ) ;
+
+			return { false,{} } ;
+		}
+	} ) ;
 }
 
 #else
