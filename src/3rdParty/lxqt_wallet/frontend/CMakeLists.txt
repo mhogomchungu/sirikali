@@ -295,9 +295,14 @@ else()
     set_target_properties(lxqt-wallet PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic ")
 endif()
 
-
 set_target_properties(lxqt-wallet PROPERTIES SOVERSION "${LIBRARY_VERSION}")
-TARGET_LINK_LIBRARIES(lxqt-wallet "${link_libraries}" lxqt-wallet-backend)
+
+if( WIN32 )
+	TARGET_LINK_LIBRARIES(lxqt-wallet -lcrypt32 "${link_libraries}" lxqt-wallet-backend)
+else()
+	TARGET_LINK_LIBRARIES(lxqt-wallet "${link_libraries}" lxqt-wallet-backend)
+endif()
+
 
 if( APPLE )
 	find_library(COREFOUNDATION_LIBRARY CoreFoundation REQUIRED)
