@@ -79,7 +79,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/utility.cpp" line="605"/>
+        <location filename="../src/utility.cpp" line="616"/>
         <source>
 options:
 	-d   Path to where a volume to be auto unlocked/mounted is located.
@@ -132,17 +132,17 @@ Options:
 	-s   Option pour déclencher la génération du hash du mot de passe.</translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="848"/>
+        <location filename="../src/utility.cpp" line="859"/>
         <source>about SiriKali</source>
         <translation>A propos de SiriKali</translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="1422"/>
+        <location filename="../src/utility.cpp" line="1433"/>
         <source>Policy:</source>
         <translation>Règle:</translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="1427"/>
+        <location filename="../src/utility.cpp" line="1438"/>
         <source>Comment:</source>
         <translation>Commentaire:</translation>
     </message>
@@ -445,47 +445,47 @@ Il doit se terminer avec un des termes suivants : &quot;%1&quot;</translation>
 </translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="496"/>
+        <location filename="../src/settings.cpp" line="491"/>
         <source>Manage Favorites</source>
         <translation>Gérer les Favoris</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="497"/>
+        <location filename="../src/settings.cpp" line="492"/>
         <source>Mount All</source>
         <translation>Monter Tout</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1174"/>
+        <location filename="../src/settings.cpp" line="1169"/>
         <source>Russian (RU)</source>
         <translation>Russe (RU)</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1175"/>
+        <location filename="../src/settings.cpp" line="1170"/>
         <source>French (FR)</source>
         <translation>Français (FR)</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1176"/>
+        <location filename="../src/settings.cpp" line="1171"/>
         <source>German (DE)</source>
         <translation>Allemand (DE)</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1177"/>
+        <location filename="../src/settings.cpp" line="1172"/>
         <source>English (US)</source>
         <translation>Anglais (US)</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1178"/>
+        <location filename="../src/settings.cpp" line="1173"/>
         <source>Swedish (SE)</source>
         <translation>Suedois (SE)</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1179"/>
+        <location filename="../src/settings.cpp" line="1174"/>
         <source>Arabic (SA)</source>
         <translation>Arabe (SA)</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1180"/>
+        <location filename="../src/settings.cpp" line="1175"/>
         <source>Spanish (MX)</source>
         <translation>Espagnol (MX)</translation>
     </message>
