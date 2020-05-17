@@ -545,7 +545,13 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 			}else{
 				utility::waitForFinished( *exe ) ;
 
-				return Task::process::result( "SiriKali::Error: Backend Disappeared For Some Reason (It Probably Crashed).",
+				auto a = "SiriKali::Error: Backend Reported \"Success\" But Its No Longer Running\nGenerated Logs Are:\n" ;
+
+				QString b = "std error\n----------------------\n" + exe->readAllStandardError() + "\n----------------------\n" ;
+
+				QString c = "std out\n----------------------\n" + exe->readAllStandardOutput() + "\n----------------------\n" ;
+
+				return Task::process::result( QString( "%1%2%3" ).arg( a,b,c ).toLatin1(),
 							      QByteArray(),
 							      -1,
 							      0,
