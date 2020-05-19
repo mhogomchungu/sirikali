@@ -16,6 +16,8 @@ static const int TEST_VALUE = -1 ;
 
 #include <cstring>
 
+using result = std::pair< bool,QByteArray > ;
+
 #ifdef Q_OS_WIN
 
 #include "task.h"
@@ -88,8 +90,6 @@ static QByteArray _entropy( const QByteArray& e )
 						   windowsPbkdf2Interations(),
 						   static_cast< quint64 >( len ) ) ;
 }
-
-using result = std::pair< bool,QByteArray > ;
 
 static LXQt::Wallet::Task::future< result >& _encrypt( const QByteArray& e,const QByteArray& entropy )
 {
