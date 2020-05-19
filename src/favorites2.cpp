@@ -66,15 +66,15 @@ Task::future< bool >& favorites2::addKey( secrets::wallet& wallet,
 
 favorites2::favorites2( QWidget * parent,
 			secrets& wallet,
-			favorites::type type,
 			std::function< void() > function,
+			const QString& vt,
 			const QString& cp ) :
 	QDialog ( parent ),
 	m_ui( new Ui::favorites2 ),
 	m_secrets( wallet ),
-	m_type( type ),
 	m_settings( settings::instance() ),
 	m_function( std::move( function ) ),
+	m_volumeType( vt.toLower() ),
 	m_cipherPath( cp )
 {
 	m_ui->setupUi( this ) ;
@@ -253,9 +253,16 @@ favorites2::favorites2( QWidget * parent,
 
 		auto a = m_ui->lineEditEncryptedFolderPath->toPlainText() ;
 
-		if( !a.isEmpty() && !m_ui->rbNone->isChecked() ){
+		if( !a.isEmpty() ){
 
-			m_ui->lineEditVolumePath->setText( a ) ;
+			auto b = m_ui->lineEditVolumeType->toPlainText() ;
+
+			if( b.isEmpty() ){
+
+				m_ui->lineEditVolumePath->setText( a ) ;
+			}else{
+				m_ui->lineEditVolumePath->setText( b.toLower() + " " + a ) ;
+			}
 
 			m_ui->tabWidget->setCurrentIndex( 2 ) ;
 		}
@@ -516,6 +523,7 @@ favorites2::favorites2( QWidget * parent,
 	m_ui->pbFolderPath->setIcon( QIcon( ":/sirikali.png" ) ) ;
 	m_ui->pbConfigFilePath->setIcon( QIcon( ":/file.png" ) ) ;
 	m_ui->pbIdentityFile->setIcon( QIcon( ":/file.png" ) ) ;
+	m_ui->pbAddToWallets->setIcon( QIcon( ":/lock.png" ) ) ;
 
 	QIcon exeIcon( ":/executable.png" ) ;
 
@@ -600,7 +608,7 @@ favorites2::favorites2( QWidget * parent,
 
 	m_ui->pbOptions->setMenu( optionsMenu ) ;
 
-	this->ShowUI( type ) ;
+	this->ShowUI() ;
 }
 
 favorites2::~favorites2()
@@ -792,6 +800,8 @@ void favorites2::tabChanged( int index )
 
 		m_ui->lineEditVolumePath->clear() ;
 		m_ui->lineEditPassword->clear() ;
+
+		m_ui->pbAddToWallets->setEnabled( !m_ui->rbNone->isChecked() ) ;
 
 		/*
 		 * Add/Edit tab
@@ -1028,7 +1038,7 @@ void favorites2::updateFavorite( bool edit )
 	auto configPath = m_ui->lineEditConfigFilePath->toPlainText() ;
 	auto idleTimeOUt = m_ui->lineEditIdleTimeOut->toPlainText() ;
 
-	if( m_type == favorites::type::sshfs ){
+	if( m_volumeType == "sshfs" ){
 
 		if( !configPath.isEmpty() ){
 
@@ -1283,10 +1293,8 @@ void favorites2::setVolumeProperties( const favorites::entry& e )
 	m_ui->textEditPostUnmount->setText( e.postUnmountCommand ) ;
 }
 
-void favorites2::ShowUI( favorites::type type )
+void favorites2::ShowUI()
 {
-	m_type = type ;
-
 	m_ui->lineEditEncryptedFolderPath->clear() ;
 
 	if( utility::platformIsWindows() ){
@@ -1296,7 +1304,7 @@ void favorites2::ShowUI( favorites::type type )
 		m_ui->lineEditMountPath->setText( m_settings.mountPath() ) ;
 	}
 
-	if( m_type == favorites::type::sshfs ){
+	if( m_volumeType == "sshfs" ){
 
 		m_ui->tabWidget->setCurrentIndex( 1 ) ;
 
@@ -1307,6 +1315,7 @@ void favorites2::ShowUI( favorites::type type )
 			m_ui->lineEditMountOptions->setText( "idmap=user,StrictHostKeyChecking=no" ) ;
 		}
 
+		m_ui->lineEditEncryptedFolderPath->setText( m_cipherPath ) ;
 		m_ui->labelName ->setText( tr( "Remote Ssh Server Address\n(Example: woof@example.com:/remote/path)" ) ) ;
 		m_ui->labelCofigFilePath->setText( tr( "SSH_AUTH_SOCK Socket Path (Optional)" ) ) ;
 		m_ui->labelIdleTimeOut->setText( tr( "IdentityFile Path (Optional)" ) ) ;

@@ -9,5 +9,6 @@
 		 <file>module.png</file>
  		 <file>harddrive.png</file>
 		 <file>executable.png</file>
+		 <file>lock.png</file>
 	 </qresource>
  </RCC>

@@ -512,7 +512,7 @@ void sirikali::favoriteClicked( QAction * ac )
 
 		this->disableAll() ;
 
-		favorites2::instance( this,m_secrets,favorites::type::others,[ this ](){
+		favorites2::instance( this,m_secrets,[ this ](){
 
 			this->enableAll() ;
 
@@ -1165,15 +1165,22 @@ void sirikali::addToFavorites()
 {
 	auto table = m_ui->tableWidget ;
 
-	auto cp = tablewidget::rowEntries( table,table->currentRow() ) ;
+	int s = table->currentRow() ;
+
+	if( s == -1 ){
+
+		return ;
+	}
+
+	auto cp = tablewidget::rowEntries( table,s ) ;
 
 	if( cp.size() > 0 ){
 
-		favorites2::instance( this,m_secrets,favorites::type::others,[ this ](){
+		favorites2::instance( this,m_secrets,[ this ](){
 
 			this->updateFavoritesInContextMenu() ;
 
-		},cp.first() ) ;
+		},cp.at( 2 ),cp.at( 0 ) ) ;
 	}
 }
 
@@ -1417,10 +1424,11 @@ void sirikali::createVolume( QAction * ac )
 
 		if( s == "Sshfs" ){
 
-			favorites2::instance( this,m_secrets,favorites::type::sshfs,[ this ](){
+			favorites2::instance( this,m_secrets,[ this ](){
 
 				this->updateFavoritesInContextMenu() ;
-			} ) ;
+
+			},s ) ;
 		}else{
 			this->mount( volumeInfo(),s ) ;
 		}

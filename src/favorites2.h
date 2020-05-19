@@ -46,20 +46,20 @@ public:
 
 	static favorites2& instance( QWidget * parent,
 				     secrets& wallet,
-				     favorites::type type,
 				     std::function< void() > function,
+				     const QString& volumeType = QString(),
 				     const QString& cp = QString() )
 	{
 		return *( new favorites2( parent,
 					  wallet,
-					  type,
 					  std::move( function ),
+					  volumeType,
 					  cp ) ) ;
 	}
 	favorites2( QWidget * parent,
 		    secrets& wallet,
-		    favorites::type type,
 		    std::function< void() > function,
+		    const QString& volumeType,
 		    const QString& cp ) ;
 	~favorites2() ;
 private :
@@ -88,7 +88,7 @@ private :
 	void devicePathTextChange( QString ) ;
 	void clearEditVariables() ;
 	void setVolumeProperties( const favorites::entry& e ) ;
-	void ShowUI( favorites::type ) ;
+	void ShowUI() ;
 	void HideUI( void ) ;
 	void checkFavoritesConsistency() ;
 	QStringList readAllKeys() ;
@@ -101,7 +101,6 @@ private :
 	Ui::favorites2 * m_ui ;
 	secrets& m_secrets ;
 	QWidget * m_parentWidget ;
-	favorites::type m_type ;
 	int m_editRow ;
 	bool m_reverseMode = false ;
 	bool m_volumeNeedNoPassword = false ;
@@ -109,6 +108,7 @@ private :
 	bool m_editMode = false ;
 	settings& m_settings ;
 	std::function< void() > m_function ;
+	QString m_volumeType ;
 	QString m_cipherPath ;
 
 	class wallet{
