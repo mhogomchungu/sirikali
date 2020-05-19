@@ -187,17 +187,17 @@ void windowsKeysStorageData( const QByteArray& e )
 
 QByteArray settings::windowsKeysStorageData()
 {
-	if( !m_settings.contains( "WindowsKeysStorageData" ) ){
+	if( !m_settings.contains( "LXQtWindowsDPAPI_Data" ) ){
 
-		m_settings.setValue( "WindowsKeysStorageData",QByteArray() ) ;
+		m_settings.setValue( "LXQtWindowsDPAPI_Data",QByteArray() ) ;
 	}
 
-	return m_settings.value( "WindowsKeysStorageData" ).toByteArray() ;
+	return m_settings.value( "LXQtWindowsDPAPI_Data" ).toByteArray() ;
 }
 
 void settings::windowsKeysStorageData( const QByteArray& e )
 {
-	m_settings.setValue( "WindowsKeysStorageData",e ) ;
+	m_settings.setValue( "LXQtWindowsDPAPI_Data",e ) ;
 }
 
 QString settings::externalPluginExecutable()

@@ -518,17 +518,53 @@ void sirikali::favoriteClicked( QAction * ac )
 
 			this->updateFavoritesInContextMenu() ;
 		} ) ;
-	}else{
+	}else{		
 		if( e == "Mount All" ){
 
-			this->mountMultipleVolumes( _readFavorites() ) ;
+			auto v = _readFavorites() ;
+
+			auto e = settings::instance().autoMountBackEnd() ;
+
+			if( e.isValid() ){
+
+				auto m = m_secrets.walletBk( e.bk() ) ;
+
+				if( m ){
+
+					auto function = [ & ](){
+
+						for( auto& it : v ){
+
+							auto s = m->readValue( it.first.volumePath ) ;
+
+							if( !s.isEmpty() ){
+
+								it.second = s ;
+							}
+						}
+					} ;
+
+					if( m->opened() ){
+
+						function() ;
+					}else{
+						m->setImage( QIcon( ":/sirikali" ) ) ;
+
+						auto& s = settings::instance() ;
+
+						if( m->open( s.walletName( m->backEnd() ),s.applicationName() ) ){
+
+							function() ;
+						}
+					}
+				}
+			}
+
+			this->mountMultipleVolumes( std::move( v ) ) ;
 		}else{
-			QString volumePath ;
-			QString mountPointPath ;
-
-			utility2::stringListToStrings( utility::split( e ),volumePath,mountPointPath ) ;
-
-			auto _found = [ & ]( const std::pair< favorites::entry,QByteArray >& e ){
+			auto _found = [ & ]( const std::pair< favorites::entry,QByteArray >& e,
+					     const QString& mountPointPath,
+					     const QString& volumePath ){
 
 				const auto& s = e.first ;
 
@@ -540,9 +576,14 @@ void sirikali::favoriteClicked( QAction * ac )
 				}
 			} ;
 
+			QString volumePath ;
+			QString mountPointPath ;
+
+			utility2::stringListToStrings( utility::split( e ),volumePath,mountPointPath ) ;
+
 			for( auto&& it : _readFavorites() ){
 
-				if( _found( it ) ){
+				if( _found( it,mountPointPath,volumePath ) ){
 
 					this->mountMultipleVolumes( this->autoUnlockVolumes( { std::move( it ) },true ) ) ;
 					break ;
@@ -1014,7 +1055,6 @@ favorites::volumeList sirikali::autoUnlockVolumes( favorites::volumeList l,bool 
 
 		return e ;
 	} ;
-
 
 	if( m->opened() ){
 
