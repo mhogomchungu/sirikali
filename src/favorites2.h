@@ -126,6 +126,11 @@ private :
 		{
 			return m_w.get()->wallet ;
 		}
+		template< typename ... Args >
+		void open( Args&& ... args )
+		{
+			m_w->wallet.open( std::forward< Args >( args ) ... ) ;
+		}
 		operator bool()
 		{
 			auto s = m_w.get() ;

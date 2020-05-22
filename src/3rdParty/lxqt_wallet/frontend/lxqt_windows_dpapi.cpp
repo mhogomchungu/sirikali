@@ -211,7 +211,7 @@ bool LXQt::Wallet::windows_dpapi::open( const QString& walletName,
 
 void LXQt::Wallet::windows_dpapi::open( const QString& walletName,
 					const QString& applicationName,
-					std::function< void( bool )> function ,
+					std::function< void( bool ) > function ,
 					QWidget * parent,
 					const QString& password,
 					const QString& displayApplicationName )

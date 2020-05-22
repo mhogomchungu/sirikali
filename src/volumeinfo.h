@@ -88,6 +88,7 @@ public:
 		m_reverseMode          = e.reverseMode ;
 		m_readOnlyMode         = e.readOnlyMode ;
 		m_volumeNeedNoPassword = e.volumeNeedNoPassword ;
+		m_autoMount            = e.autoMount ;
 
 		if( e.configFilePath != "N/A" ){
 
@@ -112,6 +113,10 @@ public:
 	const favorites::triState& mountReadOnly() const
 	{
 		return m_readOnlyMode ;
+	}
+	const favorites::triState& autoMount() const
+	{
+		return m_autoMount ;
 	}
 	bool reverseMode() const
 	{
@@ -174,6 +179,7 @@ private:
 	bool m_reverseMode = false ;
 	bool m_volumeNeedNoPassword = false ;
 	favorites::triState m_readOnlyMode ;
+	favorites::triState m_autoMount ;
 };
 
 #endif // VOLUMEENTRYPROPERTIES_H

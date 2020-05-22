@@ -529,35 +529,20 @@ void sirikali::favoriteClicked( QAction * ac )
 
 				auto m = m_secrets.walletBk( e.bk() ) ;
 
-				if( m ){
+				m.open( [ & ](){
 
-					auto function = [ & ](){
+					for( auto& it : v ){
 
-						for( auto& it : v ){
+						auto s = m->readValue( it.first.volumePath ) ;
 
-							auto s = m->readValue( it.first.volumePath ) ;
+						if( !s.isEmpty() ){
 
-							if( !s.isEmpty() ){
-
-								it.second = s ;
-							}
-						}
-					} ;
-
-					if( m->opened() ){
-
-						function() ;
-					}else{
-						m->setImage( QIcon( ":/sirikali" ) ) ;
-
-						auto& s = settings::instance() ;
-
-						if( m->open( s.walletName( m->backEnd() ),s.applicationName() ) ){
-
-							function() ;
+							it.second = s ;
 						}
 					}
-				}
+
+					return true ;
+				} ) ;
 			}
 
 			this->mountMultipleVolumes( std::move( v ) ) ;
@@ -865,39 +850,35 @@ void sirikali::unlockVolume( const QStringList& l )
 
 		auto w = [ & ](){
 
-			namespace wxt = LXQt::Wallet ;
+			using wxt = LXQt::Wallet::BackEnd ;
 
-			auto _supported = [ & ]( wxt::BackEnd e,const char * s ){
+			auto _supported = [ & ]( wxt e,const char * s ){
 
-				return backEnd == s && wxt::backEndIsSupported( e ) ;
+				return backEnd == s && LXQt::Wallet::backEndIsSupported( e ) ;
 			} ;
 
-			if( _supported( wxt::BackEnd::internal,"internal" ) ){
+			if( _supported( wxt::internal,"internal" ) ){
 
-				auto s = m_secrets.walletBk( wxt::BackEnd::internal ) ;
+				return m_secrets.walletBk( wxt::internal ).getKey( volume ) ;
 
-				return utility::getKey( volume,s.bk() ) ;
+			}else if( _supported( wxt::libsecret,"gnomewallet" ) ||
+				  _supported( wxt::libsecret,"libsecret" ) ){
 
-			}else if( _supported( wxt::BackEnd::libsecret,"gnomewallet" ) ||
-				  _supported( wxt::BackEnd::libsecret,"libsecret" ) ){
+				return m_secrets.walletBk( wxt::libsecret ).getKey( volume ) ;
 
-				auto s = m_secrets.walletBk( wxt::BackEnd::libsecret ) ;
+			}else if( _supported( wxt::kwallet,"kwallet" ) ){
 
-				return utility::getKey( volume,s.bk() ) ;
+				return m_secrets.walletBk( wxt::kwallet ).getKey( volume ) ;
 
-			}else if( _supported( wxt::BackEnd::kwallet,"kwallet" ) ){
+			}else if( _supported( wxt::osxkeychain,"osxkeychain" ) ){
 
-				auto s = m_secrets.walletBk( wxt::BackEnd::kwallet ) ;
+				return m_secrets.walletBk( wxt::osxkeychain ).getKey( volume ) ;
 
-				return utility::getKey( volume,s.bk() ) ;
+			}else if( _supported( SiriKali::Windows::windowsWalletBackend(),"windows_dpapi" ) ){
 
-			}else if( _supported( wxt::BackEnd::osxkeychain,"osxkeychain" ) ){
-
-				auto s = m_secrets.walletBk( wxt::BackEnd::osxkeychain ) ;
-
-				return utility::getKey( volume,s.bk() ) ;
+				return m_secrets.walletBk( SiriKali::Windows::windowsWalletBackend() ).getKey( volume ) ;
 			}else{
-				return utility::wallet{ false,true,"" } ;
+				return secrets::wallet::walletKey{ false,true,"" } ;
 			}
 		}() ;
 
@@ -1002,7 +983,7 @@ favorites::volumeList sirikali::autoUnlockVolumes( favorites::volumeList l,bool 
 		return l ;
 	}
 
-	auto _mountVolumes = [ & ](){
+	auto s = m.open( [ & ](){
 
 		favorites::volumeList e ;
 
@@ -1054,22 +1035,13 @@ favorites::volumeList sirikali::autoUnlockVolumes( favorites::volumeList l,bool 
 		}
 
 		return e ;
-	} ;
+	} ) ;
 
-	if( m->opened() ){
+	if( s.opened ){
 
-		return _mountVolumes() ;
+		return s.result ;
 	}else{
-		m->setImage( QIcon( ":/sirikali" ) ) ;
-
-		auto& s = settings::instance() ;
-
-		if( m->open( s.walletName( m->backEnd() ),s.applicationName() ) ){
-
-			return _mountVolumes() ;
-		}else{
-			return l ;
-		}
+		return l ;
 	}
 }
 
@@ -1683,7 +1655,19 @@ void sirikali::runIntervalCustomCommand( const QString& cmd )
 		auto b = utility::Task::makePath( s.mountPoint ) ;
 		auto c = s.volumeType ;
 
-		auto key = utility::getKey( s.cipherPath,m_secrets ) ;
+		QString key ;
+
+		auto& settings = settings::instance() ;
+
+		if( settings.allowExternalToolsToReadPasswords() ){
+
+			auto bk = settings.autoMountBackEnd() ;
+
+			if( bk.isValid() ){
+
+				key = m_secrets.walletBk( bk.bk() ).getKey( s.cipherPath ).key ;
+			}
+		}
 
 		Task::exec( [ = ](){
 

@@ -124,7 +124,7 @@ engines::engine::args securefs::command( const QByteArray& password,
 
 				exeOptions.addPair( "--keyfile",utility::Task::makePath( args.opt.keyFile ) ) ;
 
-				if( !args.opt.key.isEmpty()){
+				if( !args.opt.key.isEmpty() ){
 
 					exeOptions.add( "--askpass" ) ;
 				}

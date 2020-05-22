@@ -234,13 +234,6 @@ namespace utility
 		utility::debug operator<<( const QStringList& ) ;
 	};
 
-	struct wallet
-	{
-		bool opened ;
-		bool notConfigured ;
-		QString key ;
-	};
-
 	struct fsInfo
 	{
 		bool valid ;
@@ -262,10 +255,6 @@ namespace utility
 	int startApplication( std::function< int() > ) ;
 
 	bool printVersionOrHelpInfo( const QStringList& ) ;
-
-	QString getKey( const QString& keyID,const secrets& secret ) ;
-
-	wallet getKey( const QString& keyID,LXQt::Wallet::Wallet&,QWidget * = nullptr ) ;
 
 	QString cmdArgumentValue( const QStringList&,const QString& arg,const QString& defaulT = QString() ) ;
 

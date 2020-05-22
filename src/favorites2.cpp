@@ -496,12 +496,10 @@ favorites2::favorites2( QWidget * parent,
 
 			m_secrets.changeInternalWalletPassword( a,b,[ this ]( bool s ){
 
-				if( s ){
+				Q_UNUSED( s )
 
-					this->walletBkChanged( LXQt::Wallet::BackEnd::internal ) ;
-				}else{
-					this->show() ;
-				}
+				this->walletBkChanged( LXQt::Wallet::BackEnd::internal ) ;
+				this->show() ;
 			} ) ;
 
 		}else if( m_ui->rbWindowsDPAPI->isChecked() ){
@@ -733,37 +731,29 @@ void favorites2::walletBkChanged( LXQt::Wallet::BackEnd bk )
 
 	m_wallet = m_secrets.walletBk( bk ) ;
 
-	if( m_wallet->opened() ){
+	m_wallet.open( [ this ](){
 
 		for( const auto& it : this->readAllKeys() ){
 
 			tablewidget::addRow( m_ui->tableWidgetWallet,{ it } ) ;
 		}
-	}else{
-		this->hide() ;
 
-		m_wallet->setImage( QIcon( ":/sirikali" ) ) ;
+	},[ this ](){ this->hide() ; },[ this ]( bool opened ){
 
-		auto a = settings::instance().walletName( m_wallet->backEnd() ) ;
-		auto b = settings::instance().applicationName() ;
+		if( opened ){
 
-		m_wallet->open( a,b,[ this ]( bool opened ){
+			for( const auto& it : this->readAllKeys() ){
 
-			if( opened ){
-
-				for( const auto& it : this->readAllKeys() ){
-
-					tablewidget::addRow( m_ui->tableWidgetWallet,{ it } ) ;
-				}
-			}else{
-				m_ui->lineEditVolumePath->clear() ;
-
-				this->setControlsAvailability( false,true ) ;
+				tablewidget::addRow( m_ui->tableWidgetWallet,{ it } ) ;
 			}
+		}else{
+			m_ui->lineEditVolumePath->clear() ;
 
-			this->show() ;
-		} ) ;
-	}
+			this->setControlsAvailability( false,true ) ;
+		}
+
+		this->show() ;
+	} ) ;
 }
 
 void favorites2::setControlsAvailability( bool e,bool m )

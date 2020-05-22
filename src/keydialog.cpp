@@ -58,6 +58,11 @@ static QString _OSXKeyChain()
 	return QObject::tr( "OSX KeyChain" ) ;
 }
 
+static QString _windowsDPAPI()
+{
+	return QObject::tr( "Windows DPAPI" ) ;
+}
+
 keyDialog::keyDialog( QWidget * parent,
 		      secrets& s,
 		      bool o,
@@ -304,6 +309,11 @@ void keyDialog::setUpInitUI()
 		m_ui->cbKeyType->addItem( _OSXKeyChain() ) ;
 	}
 
+	if( LXQt::Wallet::backEndIsSupported( SiriKali::Windows::windowsWalletBackend() ) ){
+
+		m_ui->cbKeyType->addItem( _windowsDPAPI() ) ;
+	}
+
 	if( m_create ){
 
 		if( m_keyStrength ){
@@ -522,6 +532,14 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 			}
 		}
 	}() ) ;
+
+	if( !m_create ){
+
+		if( e.autoMount().True() && !key.isEmpty() ){
+
+			this->pbOpen() ;
+		}
+	}
 }
 
 void keyDialog::setDefaultUI()
@@ -893,7 +911,7 @@ void keyDialog::pbOpen()
 
 	if( m_ui->cbKeyType->currentIndex() > keyDialog::keyKeyFile ){
 
-		utility::wallet w ;
+		secrets::wallet::walletKey w ;
 
 		auto wallet = m_ui->lineEditKey->text() ;
 
@@ -901,6 +919,7 @@ void keyDialog::pbOpen()
 		auto gnome    = wallet == _gnomeWallet() ;
 		auto internal = wallet == _internalWallet() ;
 		auto osx      = wallet == _OSXKeyChain() ;
+		auto win      = wallet == _windowsDPAPI() ;
 
 		/*
 		 * Figure out which wallet is used. Defaults to 'internal'
@@ -920,17 +939,19 @@ void keyDialog::pbOpen()
 		}else if( wallet == _OSXKeyChain() ){
 
 			bkwallet = LXQt::Wallet::BackEnd::osxkeychain ;
+
+		}else if( wallet == _windowsDPAPI() ){
+
+			bkwallet = SiriKali::Windows::windowsWalletBackend() ;
 		}
 
 		if( kde || gnome || osx ){
 
-			w = utility::getKey( m_path,m_secrets.walletBk( bkwallet ).bk() ) ;
+			w = m_secrets.walletBk( bkwallet ).getKey( m_path ) ;
 
-		}else if( internal ){
+		}else if( internal || win ){
 
-			using bk = LXQt::Wallet::BackEnd ;
-
-			w = utility::getKey( m_path,m_secrets.walletBk( bk::internal ).bk(),this ) ;
+			w = m_secrets.walletBk( LXQt::Wallet::BackEnd::internal ).getKey( m_path,this ) ;
 
 			if( w.notConfigured ){
 
@@ -1271,7 +1292,19 @@ void keyDialog::setKeyInWallet()
 		}
 	}() ;
 
-	auto _add_key = [ & ]{
+	auto m = [ & ](){
+
+		if( w->backEnd() == LXQt::Wallet::BackEnd::internal ){
+
+			return w.openSync( [](){ return true ; },
+					   [ this ](){ this->hide() ; },
+					   [ this ](){ this->show() ; } ) ;
+		}else{
+			return w.open( [](){ return true ; } ) ;
+		}
+	}() ;
+
+	if( m.opened ){
 
 		QString id ;
 
@@ -1301,7 +1334,7 @@ void keyDialog::setKeyInWallet()
 
 				this->openVolume() ;
 
-				return true ;
+				return ;
 			}else{
 				m_ui->labelSetKey->setText( tr( "Failed To Add A Volume To The A Wallet." ) ) ;
 			}
@@ -1309,41 +1342,9 @@ void keyDialog::setKeyInWallet()
 			m_ui->labelSetKey->setText( tr( "Volume Already Exists In The Wallet." ) ) ;
 		}
 
-		return false ;
-	} ;
-
-	if( w->opened() ){
-
-		if( _add_key() ){
-
-			return ;
-		}
+		return ;
 	}else{
-		w->setImage( QIcon( ":/sirikali" ) ) ;
-
-		auto bk = w->backEnd() ;
-		bool s ;
-
-		if( bk == LXQt::Wallet::BackEnd::internal ){
-
-			this->hide() ;
-
-			s = w->open( m_settings.walletName( bk ),m_settings.applicationName() ) ;
-
-			this->show() ;
-		}else{
-			s = w->open( m_settings.walletName( bk ),m_settings.applicationName() ) ;
-		}
-
-		if( s ){
-
-			if( _add_key() ){
-
-				return ;
-			}
-		}else{
-			m_ui->labelSetKey->setText( tr( "Failed To Open Wallet." ) ) ;
-		}
+		m_ui->labelSetKey->setText( tr( "Failed To Open Wallet." ) ) ;
 	}
 
 	_enable_all() ;
