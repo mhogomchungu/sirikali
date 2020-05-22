@@ -230,7 +230,7 @@ private slots:
 	void pbSetKey( void ) ;
 	void pbSetKeyCancel( void ) ;
 private :	
-	void autoMount( const favorites::entry& e ) ;
+	void autoMount( const favorites::entry& e,const QByteArray& key ) ;
 	void unlockVolume( void ) ;
 	void setVolumeToUnlock() ;
 	void setUpVolumeProperties( const volumeInfo& e,const QByteArray& ) ;

@@ -63,6 +63,11 @@ static QString _windowsDPAPI()
 	return QObject::tr( "Windows DPAPI" ) ;
 }
 
+/*
+ *
+ * Called when mounting volumes
+ *
+ */
 keyDialog::keyDialog( QWidget * parent,
 		      secrets& s,
 		      bool o,
@@ -95,26 +100,22 @@ keyDialog::keyDialog( QWidget * parent,
 
 		this->HideUI() ;
 	}else{
-		this->setVolumeToUnlock() ;
-
 		this->ShowUI() ;
+
+		this->setVolumeToUnlock() ;
 	}
 }
 
-void keyDialog::autoMount( const favorites::entry& e )
+void keyDialog::autoMount( const favorites::entry& e,const QByteArray& key )
 {
-	if( e.volumeNeedNoPassword ){
-
-		if( !this->isVisible() ){
-
-			this->ShowUI() ;
-		}
-
-		this->disableAll() ;
-
-		utility::Task::suspendForOneSecond() ;
+	if( e.volumeNeedNoPassword ){		
 
 		this->openVolume() ;
+	}else{
+		if( e.autoMount.True() && !key.isEmpty() ){
+
+			this->openVolume() ;
+		}
 	}
 }
 
@@ -128,8 +129,12 @@ void keyDialog::unlockVolume()
 	}
 }
 
-keyDialog::keyDialog( QWidget * parent,
-		      secrets& s,
+/*
+ *
+ * Called when creating volumes
+ *
+ */
+keyDialog::keyDialog( QWidget * parent,secrets& s,
 		      const volumeInfo& e,
 		      std::function< void() > p,
 		      std::function< void() > l,
@@ -356,7 +361,7 @@ void keyDialog::setVolumeToUnlock()
 		this->windowSetTitle( tr( "(%1/%2) Unlocking \"%3\"" ).arg( a,b,m_path ) ) ;
 	}
 
-	this->autoMount( m.first ) ;
+	this->autoMount( m.first,m.second ) ;
 }
 
 void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key )
@@ -532,14 +537,6 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 			}
 		}
 	}() ) ;
-
-	if( !m_create ){
-
-		if( e.autoMount().True() && !key.isEmpty() ){
-
-			this->pbOpen() ;
-		}
-	}
 }
 
 void keyDialog::setDefaultUI()

@@ -318,7 +318,7 @@ void sirikali::setUpApp( const QString& volume )
 
 		this->enableAll() ;
 	}else{
-		this->showMoungDialog( volume ) ;
+		this->autoMount( volume ) ;
 	}
 
 	this->startGUI( m ) ;
@@ -616,7 +616,7 @@ void sirikali::raiseWindow( const QString& volume )
 	this->raise() ;
 	this->show() ;
 	this->setWindowState( Qt::WindowActive ) ;
-	this->showMoungDialog( volume ) ;
+	this->autoMount( volume ) ;
 }
 
 int sirikali::start( QApplication& e )
@@ -1413,21 +1413,6 @@ void sirikali::dropEvent( QDropEvent * e )
 	this->mountMultipleVolumes( std::move( s ) ) ;
 }
 
-void sirikali::mount( const volumeInfo& entry,const QString& exe,const QByteArray& key )
-{
-	this->disableAll() ;
-
-	keyDialog::instance( this,
-			     m_secrets,
-			     entry,
-			     [ this ](){ this->enableAll() ; },
-			     [ this ](){ this->updateList() ; },
-			     m_autoOpenFolderOnMount,
-			     m_folderOpener,
-			     exe,
-			     key ) ;
-}
-
 void sirikali::createVolume( QAction * ac )
 {
 	if( ac ){
@@ -1442,41 +1427,23 @@ void sirikali::createVolume( QAction * ac )
 
 			},s ) ;
 		}else{
-			this->mount( volumeInfo(),s ) ;
+			keyDialog::instance( this,
+					     m_secrets,
+					     volumeInfo(),
+					     [ this ](){ this->enableAll() ; },
+					     [ this ](){ this->updateList() ; },
+					     m_autoOpenFolderOnMount,
+					     m_folderOpener,
+					     s ) ;
 		}
 	}
 }
 
-void sirikali::slotMount()
-{
-	auto table = m_ui->tableWidget ;
-
-	if( table->rowCount() > 0 ){
-
-		auto row = table->currentRow() ;
-
-		this->mount( tablewidget::rowEntries( table,row ) ) ;
-	}
-}
-
-void sirikali::showMoungDialog( const volumeInfo& v )
-{
-	if( v.isNotValid() ){
-
-		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),
-					    tr( "Permission To Access The Volume Was Denied\nOr\nThe Volume Is Not Supported" ) ) ;
-
-		this->enableAll() ;
-	}else{
-		this->mount( v ) ;
-	}
-}
-
-void sirikali::showMoungDialog( const QString& volume,const QString& m_point )
+void sirikali::autoMount( const QString& volume )
 {
 	if( !volume.isEmpty() ){
 
-		this->mount( { { volume,m_point } } ) ;
+		this->mountMultipleVolumes( { { volume,{} } } ) ;
 	}
 }
 
@@ -1499,7 +1466,7 @@ void sirikali::unlockVolume( bool dir )
 
 		this->enableAll() ;
 	}else{
-		this->showMoungDialog( path ) ;
+		this->autoMount( path ) ;
 	}
 }
 
