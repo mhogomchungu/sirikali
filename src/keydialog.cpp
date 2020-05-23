@@ -84,7 +84,6 @@ keyDialog::keyDialog( QWidget * parent,
 	m_settings( settings::instance() ),
 	m_done( std::move( f ) ),
 	m_updateVolumeList( std::move( g ) ),
-	m_volumes( std::move( z ) ),
 	m_walletKey( s )
 {
 	m_ui->setupUi( this ) ;
@@ -95,6 +94,30 @@ keyDialog::keyDialog( QWidget * parent,
 	this->setFont( parent->font() ) ;
 
 	this->setUpInitUI() ;
+
+	/*
+	 * We are sorting in a way that makes all volumes that meet below two criteria to appear first.
+	 *
+	 * 1. Have auto mount option set.
+	 * 2. Have password.
+	 */
+
+	favorites::volumeList b ;
+
+	for( auto&& it : z ){
+
+		if( it.first.autoMount.True() && !it.second.isEmpty() ){
+
+			m_volumes.emplace_back( std::move( it ) ) ;
+		}else{
+			b.emplace_back( std::move( it ) ) ;
+		}
+	}
+
+	for( auto&& it : b ){
+
+		m_volumes.emplace_back( std::move( it ) ) ;
+	}
 
 	if( this->mountedAll() ){
 
