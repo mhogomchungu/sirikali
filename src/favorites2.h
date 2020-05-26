@@ -37,25 +37,42 @@ class favorites2 : public QDialog
 {
 	Q_OBJECT
 public:
+	static Task::future< void >& deleteKey( secrets::wallet&,const QString& id ) ;
+
+	static Task::future< bool >& addKey( secrets::wallet&,
+					     const QString& id,
+					     const QString& key,
+					     const QString& comment ) ;
+
 	static favorites2& instance( QWidget * parent,
-				     favorites::type type,
+				     secrets& wallet,
 				     std::function< void() > function,
+				     const QString& volumeType = QString(),
 				     const QString& cp = QString() )
 	{
-		return *( new favorites2( parent,type,std::move( function ),cp ) ) ;
+		return *( new favorites2( parent,
+					  wallet,
+					  std::move( function ),
+					  volumeType,
+					  cp ) ) ;
 	}
 	favorites2( QWidget * parent,
-		    favorites::type type,
+		    secrets& wallet,
 		    std::function< void() > function,
+		    const QString& volumeType,
 		    const QString& cp ) ;
 	~favorites2() ;
 private :
+	void showContextMenu( QTableWidgetItem * item,bool itemClicked ) ;
+	void addkeyToWallet() ;
+	void deleteKeyFromWallet( const QString& ) ;
+	void walletBkChanged( LXQt::Wallet::BackEnd ) ;
+	void setControlsAvailability( bool,bool clearTable ) ;
 	void tabChanged( int ) ;
 	void updateVolumeList( const std::vector< favorites::entry >&,const QString& ) ;
 	void updateVolumeList( const std::vector< favorites::entry >&,int ) ;
 	void showUpdatedEntry( const favorites::entry& ) ;
 	void updateFavorite( bool );
-	void setOptionMenu( QMenu&,bool ) ;
 	void toggleAutoMount( void ) ;
 	void edit( void ) ;
 	void configPath( void ) ;
@@ -71,9 +88,10 @@ private :
 	void devicePathTextChange( QString ) ;
 	void clearEditVariables() ;
 	void setVolumeProperties( const favorites::entry& e ) ;
-	void ShowUI( favorites::type ) ;
+	void ShowUI() ;
 	void HideUI( void ) ;
 	void checkFavoritesConsistency() ;
+	QStringList readAllKeys() ;
 	favorites::entry getEntry( int ) ;
 	QString getExistingFile( const QString& ) ;
 	QString getExistingDirectory( const QString& ) ;
@@ -81,17 +99,56 @@ private :
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	void addEntries( const QStringList& ) ;
 	Ui::favorites2 * m_ui ;
+	secrets& m_secrets ;
 	QWidget * m_parentWidget ;
-	favorites::type m_type ;
 	int m_editRow ;
 	bool m_reverseMode = false ;
 	bool m_volumeNeedNoPassword = false ;
 	bool m_mountReadOnly = false ;
 	bool m_editMode = false ;
-	QMenu m_optionMenu ;
 	settings& m_settings ;
 	std::function< void() > m_function ;
+	QString m_volumeType ;
 	QString m_cipherPath ;
+
+	class wallet{
+
+	public:
+		void operator=( secrets::wallet s )
+		{
+			m_w.reset( new w{ std::move( s ) } ) ;
+		}
+		LXQt::Wallet::Wallet * operator->()
+		{
+			return m_w.get()->wallet.operator->() ;
+		}
+		secrets::wallet& get()
+		{
+			return m_w.get()->wallet ;
+		}
+		template< typename ... Args >
+		void open( Args&& ... args )
+		{
+			m_w->wallet.open( std::forward< Args >( args ) ... ) ;
+		}
+		operator bool()
+		{
+			auto s = m_w.get() ;
+
+			if( s == nullptr ){
+
+				return false ;
+			}else{
+				return s->wallet.operator bool() ;
+			}
+		}
+	private:
+		struct w{
+			secrets::wallet wallet ;
+		} ;
+		std::unique_ptr< w > m_w = nullptr ;
+
+	} m_wallet ;
 } ;
 
 #endif // FAVORITES2_H

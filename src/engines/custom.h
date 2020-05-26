@@ -42,7 +42,7 @@ public:
 	engines::engine::args command( const QByteArray& password,
 				       const engines::engine::cmdArgsList& args ) const override ;
 
-	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
+	void GUICreateOptions( const engines::engine::createGUIOptions& ) const override ;
 private:
 	const QString m_mountControlStructure ;
 	const QString m_createControlStructure ;

@@ -21,6 +21,8 @@
 
 #include "securefscreateoptions.h"
 
+#include "options.h"
+
 static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
@@ -70,10 +72,27 @@ engines::engine::args securefs::command( const QByteArray& password,
 
 	if( args.create ){
 
+		auto exeOptions  = m.exeOptions() ;
+
+		exeOptions.add( args.opt.createOptions ) ;
+
+		if( m_version_greater_or_equal_0_11_1 ){
+
+			if( !args.opt.keyFile.isEmpty() ){
+
+				exeOptions.addPair( "--keyfile",utility::Task::makePath( args.opt.keyFile ) ) ;
+
+				if( !args.opt.key.isEmpty() ){
+
+					exeOptions.add( "--askpass" ) ;
+				}
+			}
+		}
+
 		QString e = "%1 create %2 %3 %4" ;
 
 		auto cmd = e.arg( args.exe,
-				  args.opt.createOptions,
+				  exeOptions.get(),
 				  args.configFilePath,
 				  args.cipherFolder ) ;
 
@@ -100,6 +119,16 @@ engines::engine::args securefs::command( const QByteArray& password,
 
 			exeOptions.addPair( "--fsname",fsname ) ;
 			exeOptions.addPair( "--fssubtype",fssubtype ) ;
+
+			if( !args.opt.keyFile.isEmpty() ){
+
+				exeOptions.addPair( "--keyfile",utility::Task::makePath( args.opt.keyFile ) ) ;
+
+				if( !args.opt.key.isEmpty() ){
+
+					exeOptions.add( "--askpass" ) ;
+				}
+			}
 		}
 
 		if( !args.configFilePath.isEmpty() ){
@@ -133,7 +162,30 @@ engines::engine::status securefs::errorCode( const QString& e,int s ) const
 	}
 }
 
-void securefs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
+bool securefs::requiresAPassword( const engines::engine::cmdArgsList::options& opt ) const
 {
-	securefscreateoptions::instance( parent,std::move( function ) ) ;
+	if( opt.mountOptions.contains( "--keyfile" ) || !opt.keyFile.isEmpty() ){
+
+		return false ;
+	}else{
+		return engines::engine::requiresAPassword( opt ) ;
+	}
+}
+
+void securefs::GUICreateOptions( const engines::engine::createGUIOptions& s ) const
+{
+	securefscreateoptions::instance( *this,s,m_version_greater_or_equal_0_11_1 ) ;
+}
+
+void securefs::GUIMountOptions( const engines::engine::mountGUIOptions& s ) const
+{
+	auto& e = options::instance( *this,s ) ;
+
+	auto& ee = e.GUIOptions() ;
+
+	ee.enableIdleTime = false ;
+	ee.enableCheckBox = false ;
+	ee.enableKeyFile  = m_version_greater_or_equal_0_11_1 ;
+
+	e.ShowUI() ;
 }

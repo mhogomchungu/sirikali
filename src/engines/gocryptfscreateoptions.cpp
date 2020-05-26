@@ -24,11 +24,12 @@
 #include "task.hpp"
 #include "../engines.h"
 
-gocryptfscreateoptions::gocryptfscreateoptions( QWidget * parent,
-					std::function< void( const engines::engine::Options& ) > function ) :
-	QDialog( parent ),
+gocryptfscreateoptions::gocryptfscreateoptions( const engines::engine& engine,
+						const engines::engine::createGUIOptions& s ) :
+	QDialog( s.parent ),
 	m_ui( new Ui::gocryptfscreateoptions ),
-	m_function( std::move( function ) )
+	m_configFileName( engine.configFileName() ),
+	m_function( s.fCreateOptions )
 {
 	m_ui->setupUi( this ) ;
 
@@ -56,7 +57,7 @@ gocryptfscreateoptions::~gocryptfscreateoptions()
 
 void gocryptfscreateoptions::pbSelectConfigPath()
 {
-	m_ui->lineEdit_2->setText( utility::configFilePath( this,"gocryptfs" ) ) ;
+	m_ui->lineEdit_2->setText( utility::configFilePath( this,m_configFileName ) ) ;
 }
 
 void gocryptfscreateoptions::pbOK()
@@ -81,13 +82,13 @@ void gocryptfscreateoptions::pbOK()
 		}
 	}() ;
 
-	auto c = { QString( "%1 %2" ).arg( a,b ),m_ui->lineEdit_2->text() } ;
+	auto c = QString( "%1 %2" ).arg( a,b ) ;
 
-	engines::engine::options::booleanOptions opts ;
+	engines::engine::booleanOptions opts ;
 
 	opts.unlockInReverseMode = m_ui->checkBox->isChecked() ;
 
-	this->HideUI( { { c },opts } ) ;
+	this->HideUI( { c,m_ui->lineEdit_2->text(),QString(),opts } ) ;
 }
 
 void gocryptfscreateoptions::pbCancel()
@@ -95,7 +96,7 @@ void gocryptfscreateoptions::pbCancel()
 	this->HideUI() ;
 }
 
-void gocryptfscreateoptions::HideUI( const engines::engine::Options& opts )
+void gocryptfscreateoptions::HideUI( const engines::engine::cOpts& opts )
 {
 	this->hide() ;
 	m_function( opts ) ;

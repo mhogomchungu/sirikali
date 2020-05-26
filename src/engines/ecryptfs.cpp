@@ -20,6 +20,7 @@
 #include "ecryptfs.h"
 #include "ecryptfscreateoptions.h"
 #include "../siritask.h"
+#include "options.h"
 
 static engines::engine::BaseOptions _setOptions()
 {
@@ -87,8 +88,10 @@ ecryptfs::ecryptfs() :
 {
 }
 
-void ecryptfs::updateOptions( engines::engine::options& opt ) const
+void ecryptfs::updateOptions( engines::engine::cmdArgsList::options& opt,bool creating ) const
 {
+	Q_UNUSED( creating )
+
 	if( opt.configFilePath.isEmpty() ){
 
 		opt.configFilePath = opt.cipherFolder + "/" + this->configFileName() ;
@@ -226,7 +229,22 @@ engines::engine::status ecryptfs::errorCode( const QString& e,int s ) const
 	}
 }
 
-void ecryptfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
+void ecryptfs::GUICreateOptions( const engines::engine::createGUIOptions& s ) const
 {
-	ecryptfscreateoptions::instance( parent,std::move( function ) ) ;
+	ecryptfscreateoptions::instance( *this,s ) ;
+}
+
+void ecryptfs::GUIMountOptions( const engines::engine::mountGUIOptions& s ) const
+{
+	auto& e = options::instance( *this,s ) ;
+
+	auto& ee = e.GUIOptions() ;
+
+	ee.enableCheckBox = false ;
+	ee.enableConfigFile = false ;
+	ee.enableIdleTime = false ;
+	ee.enableMountOptions = false ;
+	ee.enableKeyFile = false ;
+
+	e.ShowUI() ;
 }

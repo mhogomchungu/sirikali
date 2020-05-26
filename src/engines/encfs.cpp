@@ -20,6 +20,7 @@
 #include "encfs.h"
 
 #include "encfscreateoptions.h"
+#include "options.h"
 
 static engines::engine::BaseOptions _setOptions()
 {
@@ -58,8 +59,11 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
-encfs::encfs() : engines::engine( _setOptions() )
-{
+encfs::encfs() :
+	engines::engine( _setOptions() ),
+	m_environment( engines::engine::getProcessEnvironment() ),
+	m_versionGreatorOrEqual_1_9_5( true,*this,1,9,5 )
+{	
 }
 
 engines::engine::args encfs::command( const QByteArray& password,
@@ -102,9 +106,24 @@ engines::engine::args encfs::command( const QByteArray& password,
 		}
 	}
 
+	m_environment.remove( "ENCFS6_CONFIG" ) ;
+
 	if( !args.configFilePath.isEmpty() ){
 
-		exeOptions.add( args.configFilePath ) ;
+		if( m_versionGreatorOrEqual_1_9_5 ){
+
+			exeOptions.add( args.configFilePath ) ;
+		}else{
+			/*
+			 * args.configFilePath will contain something
+			 * like --config "/foo/bar" and we only want
+			 * the /foo/bar part without quotation marks.
+			 */
+			auto a = utility::removeFirstAndLast( args.configFilePath,10,1 ) ;
+
+			utility::debug() << "Encfs: Setting Env Variable Of: ENCFS6_CONFIG=" + a ;
+			m_environment.insert( "ENCFS6_CONFIG",a ) ;
+		}
 	}
 
 	if( !args.opt.idleTimeout.isEmpty() ){
@@ -137,7 +156,34 @@ engines::engine::status encfs::errorCode( const QString& e,int s ) const
 	}
 }
 
-void encfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
+const QProcessEnvironment& encfs::getProcessEnvironment() const
 {
-	encfscreateoptions::instance( parent,std::move( function ) ) ;
+	return m_environment ;
+}
+
+void encfs::GUICreateOptions( const engines::engine::createGUIOptions& s ) const
+{
+	encfscreateoptions::instance( s ) ;
+}
+
+void encfs::GUIMountOptions( const engines::engine::mountGUIOptions& s ) const
+{
+	auto& e = options::instance( *this,s ) ;
+
+	auto& ee = e.GUIOptions() ;
+
+	ee.enableKeyFile = false ;
+
+	ee.checkBoxChecked = s.mOpts.opts.unlockInReverseMode ;
+
+	ee.updateOptions = []( const ::options::Options& s ){
+
+		engines::engine::booleanOptions e ;
+
+		e.unlockInReverseMode = s.checkBoxChecked ;
+
+		return e ;
+	} ;
+
+	e.ShowUI() ;
 }

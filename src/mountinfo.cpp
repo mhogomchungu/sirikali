@@ -479,7 +479,8 @@ void mountinfo::folderMountEvents::start()
 
 	int select_fd = m_inotify_fd + 1 ;
 
-	int interval = settings::instance().mountMonitorFolderPollingInterval() ;
+	//int interval = settings::instance().mountMonitorFolderPollingInterval() ;
+	int interval = 0 ; //No longer listening for timeouts
 
 	auto _reset_variables = [ & ](){
 
@@ -532,23 +533,15 @@ void mountinfo::folderMountEvents::start()
 
 		if( event->mask & IN_CREATE ){
 
-			for( const auto& it : m_fds ){
+			for( auto& it : m_fds ){
 
 				if( it.fd() == event->wd ){
 
-					m_update( it.path() + "/" + event->name ) ;
+					m_update( it.path() + event->name ) ;
 
 					break ;
 				}
 			}
-		}
-	} ;
-
-	auto _processTimeout = [ & ](){
-
-		for( auto& it : m_fds ){
-
-			it.contentCountChanged( m_update ) ;
 		}
 	} ;
 
@@ -568,7 +561,9 @@ void mountinfo::folderMountEvents::start()
 
 		}else if( e.timeout ){
 
-			_processTimeout() ;
+			/*
+			 * Not listening to timeouts
+			 */
 		}
 	}
 }
@@ -576,11 +571,6 @@ void mountinfo::folderMountEvents::start()
 void mountinfo::folderMountEvents::stop()
 {
 	close( m_inotify_fd ) ;
-
-	for( const auto& it : m_fds ){
-
-		close( it.fd() ) ;
-	}
 }
 
 bool mountinfo::folderMountEvents::monitor()
@@ -588,7 +578,16 @@ bool mountinfo::folderMountEvents::monitor()
 	return m_inotify_fd != -1 && m_fds.size() > 0 ;
 }
 
+mountinfo::folderMountEvents::entry::~entry()
+{
+	close( m_fd ) ;
+}
+
 #else
+
+mountinfo::folderMountEvents::entry::~entry()
+{
+}
 
 mountinfo::folderMountEvents::folderMountEvents( std::function< void( const QString& ) > e )
 {
@@ -709,9 +708,9 @@ void folderMonitor::contentCountDecreased( folderMonitor::function& function )
 
 	if( s.has_value() && s.value() != m_folderList ){
 
-		auto e = s.value() ;
+		auto e = s.RValue() ;
 
-		for( const auto& it : s.value() ){
+		for( const auto& it : e ){
 
 			m_folderList.removeOne( it ) ;
 		}

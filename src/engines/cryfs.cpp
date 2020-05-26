@@ -20,6 +20,7 @@
 #include "cryfs.h"
 #include "cryfscreateoptions.h"
 #include "../win.h"
+#include "options.h"
 
 static engines::engine::BaseOptions _setOptions()
 {
@@ -65,53 +66,8 @@ cryfs::cryfs() :
 	engines::engine( _setOptions() ),
 	m_env( this->setEnv() ),
 	m_version_greater_or_equal_0_10_0( true,*this,0,10,0 ),
-	m_use_error_codes( true,*this,0,9,9 )
+	m_version_greater_or_equal_0_9_9( true,*this,0,9,9 )
 {
-}
-
-static bool _supported( const QString& exe,const QString& path,bool checkDrive )
-{
-	if( checkDrive && utility::isDriveLetter( path ) ){
-
-		/*
-		 * Drive letters are supported
-		 */
-		return true ;
-
-	}else if( exe.startsWith( path.midRef( 0,2 ) ) ){
-
-		/*
-		 * Folder path is on the same drive as the executable
-		 */
-		return true ;
-	}else{
-		/*
-		 * Folder path is on a different drive as the executable
-		 */
-		return false ;
-	}
-}
-
-engines::engine::status cryfs::passAllRequirenments( const engines::engine::options& opt ) const
-{
-	if( utility::platformIsWindows() ){
-
-		/*
-		 * We do not support paths that are not in the same drive as the
-		 * executable(usually drive C:)
-		 * to work around this bug: https://github.com/cryfs/cryfs/issues/319
-		 */
-		const auto& e = this->executableFullPath() ;
-
-		if( _supported( e,opt.plainFolder,true ) && _supported( e,opt.cipherFolder,false ) ){
-
-			return engines::engine::status::success ;
-		}else{
-			return engines::engine::status::cryfsNotSupportedFolderPath ;
-		}
-	}else{
-		return engines::engine::status::success ;
-	}
 }
 
 QProcessEnvironment cryfs::setEnv() const
@@ -187,7 +143,7 @@ engines::engine::args cryfs::command( const QByteArray& password,
 
 engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 {
-	if( m_use_error_codes ){
+	if( m_version_greater_or_equal_0_9_9 ){
 
 		/*
 		 * Error codes are here: https://github.com/cryfs/cryfs/blob/develop/src/cryfs/ErrorCodes.h
@@ -229,7 +185,76 @@ engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 	return engines::engine::status::backendFail ;
 }
 
-void cryfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
+void cryfs::updateOptions( engines::engine::cmdArgsList::options& e,bool creating ) const
 {
-	cryfscreateoptions::instance( parent,std::move( function ) ) ;
+	Q_UNUSED( creating )
+
+	if( !m_version_greater_or_equal_0_10_0 ){
+
+		e.boolOptions.allowReplacedFileSystem = false ;
+	}
+}
+
+engines::engine::status cryfs::passAllRequirenments( const engines::engine::cmdArgsList::options& opt ) const
+{
+	auto s = engines::engine::passAllRequirenments( opt ) ;	
+
+	if( s != engines::engine::status::success ){
+
+		return s ;
+	}
+
+	if( opt.boolOptions.allowUpgradeFileSystem ){
+
+		if( !m_version_greater_or_equal_0_9_9 ){
+
+			return engines::engine::status::cryfsVersionTooOldToMigrateVolume ;
+		}
+	}
+
+	if( utility::platformIsWindows() ){
+
+		/*
+		 * Not sure how to work around this[1] bug report but it
+		 * should be handled here.
+		 *
+		 * [1] https://github.com/cryfs/cryfs/issues/319
+		 */
+	}
+
+	return s ;
+}
+
+void cryfs::GUICreateOptions( const engines::engine::createGUIOptions& s ) const
+{
+	cryfscreateoptions::instance( *this,s,m_version_greater_or_equal_0_10_0 ) ;
+}
+
+void cryfs::GUIMountOptions( const engines::engine::mountGUIOptions& s ) const
+{
+	auto& e = options::instance( *this,s ) ;
+
+	auto& ee = e.GUIOptions() ;
+
+	if( m_version_greater_or_equal_0_10_0 ){
+
+		ee.checkBoxChecked = s.mOpts.opts.allowReplacedFileSystem ;
+	}else{
+		ee.checkBoxChecked = false ;
+	}
+
+	ee.checkBoxText    = QObject::tr( "Allow Replaced File System" ) ;
+	ee.enableCheckBox  = true ;
+	ee.enableKeyFile   = false ;
+
+	ee.updateOptions = []( const ::options::Options& s ){
+
+		engines::engine::booleanOptions e ;
+
+		e.allowReplacedFileSystem = s.checkBoxChecked ;
+
+		return e ;
+	} ;
+
+	e.ShowUI() ;
 }

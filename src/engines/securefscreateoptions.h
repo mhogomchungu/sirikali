@@ -38,21 +38,27 @@ class securefscreateoptions : public QDialog
 {
 	Q_OBJECT
 public:
-	static void instance( QWidget * parent,std::function< void( const engines::engine::Options& ) > function )
+	static void instance( const engines::engine& engine,
+			      const engines::engine::createGUIOptions& copts,
+			      bool enableKeyFile )
 	{
-		new securefscreateoptions( parent,std::move( function ) ) ;
+		new securefscreateoptions( engine,copts,enableKeyFile ) ;
 	}
-	explicit securefscreateoptions( QWidget * parent,std::function< void( const engines::engine::Options& ) > ) ;
+	securefscreateoptions( const engines::engine&,
+			       const engines::engine::createGUIOptions&,
+			       bool ) ;
 	~securefscreateoptions() ;
 private slots:
 	void pbOK() ;
 	void pbCancel() ;
 	void pbConfigFilePath() ;
+	void pbKeyFilePath() ;
 private:
-	void HideUI( const engines::engine::Options& = engines::engine::Options() ) ;
+	void HideUI( const engines::engine::cOpts& = engines::engine::cOpts() ) ;
 	void closeEvent( QCloseEvent * ) ;
 	Ui::securefscreateoptions * m_ui ;
-	std::function< void( const engines::engine::Options& ) > m_function ;
+	QString m_configFileName ;
+	engines::engine::fcreate m_function ;
 };
 
 #endif // SECUREFSCREATEOPTIONS_H

@@ -25,11 +25,13 @@
 
 #include "../engines.h"
 
-cryfscreateoptions::cryfscreateoptions( QWidget * parent,
-					std::function< void( const engines::engine::Options& ) > function ) :
-	QDialog( parent ),
+cryfscreateoptions::cryfscreateoptions( const engines::engine& engine,
+					const engines::engine::createGUIOptions& s,
+					bool allowReplacedFileSystem ) :
+	QDialog( s.parent ),
 	m_ui( new Ui::cryfscreateoptions ),
-	m_function( std::move( function ) )
+	m_configFileName( engine.configFileName() ),
+	m_function( s.fCreateOptions )
 {
 	m_ui->setupUi( this ) ;
 
@@ -39,7 +41,12 @@ cryfscreateoptions::cryfscreateoptions( QWidget * parent,
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbConfigPath,SIGNAL( clicked() ),this,SLOT( pbSelectConfigPath() ) ) ;
 
-	m_ui->cbAllowReplacedFileSystem->setChecked( true ) ;
+	if( allowReplacedFileSystem ){
+
+		m_ui->cbAllowReplacedFileSystem->setChecked( s.cOpts.opts.allowReplacedFileSystem ) ;
+	}else{
+		m_ui->cbAllowReplacedFileSystem->setEnabled( false ) ;
+	}
 
 	m_ui->pbConfigPath->setIcon( QIcon( ":/folder.png" ) ) ;
 
@@ -66,7 +73,7 @@ cryfscreateoptions::cryfscreateoptions( QWidget * parent,
 		return m ;
 	}() ) ;
 
-	auto exe = engines::instance().getByName( "cryfs" ).executableFullPath() + " --show-ciphers" ;
+	auto exe = engine.executableFullPath() + " --show-ciphers" ;
 
 	utility::Task::run( exe ).then( [ this ]( const utility::Task& e ){
 
@@ -97,7 +104,7 @@ cryfscreateoptions::~cryfscreateoptions()
 
 void cryfscreateoptions::pbSelectConfigPath()
 {
-	m_ui->lineEdit_2->setText( utility::configFilePath( this,"cryfs" ) ) ;
+	m_ui->lineEdit_2->setText( utility::configFilePath( this,m_configFileName ) ) ;
 }
 
 void cryfscreateoptions::pbOK()
@@ -121,11 +128,11 @@ void cryfscreateoptions::pbOK()
 		}
 	}() ;
 
-	engines::engine::options::booleanOptions opts ;
+	engines::engine::booleanOptions opts ;
 
 	opts.allowReplacedFileSystem = m_ui->cbAllowReplacedFileSystem->isChecked() ;
 
-	this->HideUI( { { e,m_ui->lineEdit_2->text() },opts } ) ;
+	this->HideUI( { e,m_ui->lineEdit_2->text(),QString(),opts } ) ;
 }
 
 void cryfscreateoptions::pbCancel()
@@ -133,7 +140,7 @@ void cryfscreateoptions::pbCancel()
 	this->HideUI() ;
 }
 
-void cryfscreateoptions::HideUI( const engines::engine::Options& opts )
+void cryfscreateoptions::HideUI( const engines::engine::cOpts& opts )
 {
 	this->hide() ;
 	m_function( opts ) ;

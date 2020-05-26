@@ -45,6 +45,8 @@
 #include "lxqt_osx_keychain.h"
 #include "osx_keychain.h"
 
+#include "lxqt_windows_dpapi.h"
+
 #include <cstring>
 #include <cstdlib>
 
@@ -60,9 +62,11 @@ extern "C"{
 	char * home_path()
 	{
 		auto s = QDir::homePath().toLatin1() ;
-		auto a = static_cast< char * >( std::malloc( s.size() + 1 ) ) ;
-		std::memcpy( a,s.constData(),s.size() ) ;
-		*( a + s.size() ) = '\0' ;
+		auto m = static_cast< size_t >( s.size() ) ;
+
+		auto a = static_cast< char * >( std::malloc( m + 1 ) ) ;
+		std::memcpy( a,s.constData(),m ) ;
+		*( a + m ) = '\0' ;
 		return a ;
 	}
 }
@@ -77,6 +81,15 @@ LXQt::Wallet::Wallet::~Wallet()
 
 LXQt::Wallet::Wallet * LXQt::Wallet::getWalletBackend( LXQt::Wallet::BackEnd bk )
 {
+	if( bk == LXQt::Wallet::BackEnd::windows_DPAPI ){
+
+#ifdef Q_OS_WIN
+		return new LXQt::Wallet::windows_dpapi() ;
+#else
+		return nullptr ;
+#endif
+	}
+
 	if( bk == LXQt::Wallet::BackEnd::internal ){
 
 #ifdef Q_OS_WIN
@@ -108,6 +121,15 @@ LXQt::Wallet::Wallet * LXQt::Wallet::getWalletBackend( LXQt::Wallet::BackEnd bk 
 
 bool LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd bk )
 {
+	if( bk == LXQt::Wallet::BackEnd::windows_DPAPI ){
+
+#ifdef Q_OS_WIN
+		return true ;
+#else
+		return false ;
+#endif
+	}
+
 	if( bk == LXQt::Wallet::BackEnd::internal ){
 
 #ifdef Q_OS_WIN

@@ -22,24 +22,3 @@
 unknown::unknown() : engines::engine( engines::engine::BaseOptions() )
 {
 }
-
-engines::engine::args unknown::command( const QByteArray& password,
-					const engines::engine::cmdArgsList& args ) const
-{
-	Q_UNUSED( password )
-	Q_UNUSED( args )
-	return {} ;
-}
-
-engines::engine::status unknown::errorCode( const QString& e,int s ) const
-{
-	Q_UNUSED( e )
-	Q_UNUSED( s )
-	return engines::engine::status::backendFail ;
-}
-
-void unknown::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
-{
-	Q_UNUSED( parent )
-	Q_UNUSED( function )
-}

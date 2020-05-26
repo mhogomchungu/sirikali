@@ -25,11 +25,10 @@
 
 #include "../engines.h"
 
-encfscreateoptions::encfscreateoptions( QWidget * parent,
-					std::function< void( const engines::engine::Options& ) > function ) :
-	QDialog( parent ),
+encfscreateoptions::encfscreateoptions( const engines::engine::createGUIOptions& s ) :
+	QDialog( s.parent ),
 	m_ui( new Ui::encfscreateoptions ),
-	m_function( std::move( function ) )
+	m_function( s.fCreateOptions )
 {
 	m_ui->setupUi( this ) ;
 
@@ -54,11 +53,11 @@ void encfscreateoptions::pbSelectConfigPath()
 
 void encfscreateoptions::pbOK()
 {
-	engines::engine::options::booleanOptions opts ;
+	engines::engine::booleanOptions opts ;
 
 	opts.unlockInReverseMode = m_ui->checkBox->isChecked() ;
 
-	this->HideUI( { opts } ) ;
+	this->HideUI( { QString(),QString(),QString(),opts } ) ;
 }
 
 void encfscreateoptions::pbCancel()
@@ -66,7 +65,7 @@ void encfscreateoptions::pbCancel()
 	this->HideUI() ;
 }
 
-void encfscreateoptions::HideUI( const engines::engine::Options& opts )
+void encfscreateoptions::HideUI( const engines::engine::cOpts& opts )
 {
 	this->hide() ;
 	m_function( opts ) ;

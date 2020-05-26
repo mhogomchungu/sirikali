@@ -31,6 +31,7 @@
 namespace SiriKali{
 namespace Windows{
 static const char * _backEndTimedOut = "SiriKali::Windows::BackendTimedOut" ;
+static const char * _backEndFailedToFinish = "SiriKali::Windows::BackendFailedToFinisht" ;
 
 #ifdef Q_OS_WIN
 
@@ -115,7 +116,91 @@ static QString _readRegistry( const char * subKey,const char * key )
 	return _reg_get_value( s.get(),key ) ;
 }
 
+static auto _msg( DWORD err )
+{
+	TCHAR * s = nullptr ;
+
+	DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_ALLOCATE_BUFFER ;
+
+	auto m = FormatMessage( flags,
+				nullptr,
+				err,
+				MAKELANGID( LANG_NEUTRAL,SUBLANG_DEFAULT ),
+				reinterpret_cast< TCHAR * >( &s ),
+				0,
+				nullptr ) ;
+
+	return std::make_pair( m > 0,utility2::unique_ptr( s,[]( TCHAR * e ){ LocalFree( e ) ; } ) ) ;
+}
+
+QString lastError()
+{
+	auto a = _msg( GetLastError() ) ;
+
+	if( a.first ){
+
+		return a.second.get() ;
+	}else{
+		return "SiriKali::Win: Failed To Get Last Error" ;
+	}
+}
+
+static QString _errorMsg( DWORD err,const QString& path )
+{
+	auto a = _msg( err ) ;
+
+	if( a.first ){
+
+		return "SiriKali::Error: Error On Path \"" + path + "\" : " + QString::fromLatin1( a.second.get() ) ;
+	}else{
+		return "SiriKali::Error: Unknown Error Has Occurred On Path \"" + path + "\"" ;
+	}
+}
+
+std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path )
+{
+	auto a = path.mid( 0,1 ).toLatin1()[ 0 ] ;
+
+	std::array< TCHAR,4 >rpath = { a,':','\\','\0' } ;
+
+	std::array< TCHAR,MAX_PATH + 1 > fsname ;
+
+	std::fill( fsname.begin(),fsname.end(),'\0' ) ;
+
+	if( GetVolumeInformationA( rpath.data(),nullptr,0,nullptr,nullptr,nullptr,fsname.data(),fsname.size() ) ) {
+
+		auto m = fsname.data() ;
+
+		for( const auto& it : settings::instance().supportedFileSystemsOnMountPaths() ){
+
+			if( it == m ){
+
+				return { true,QString() } ;
+			}
+		}
+
+		return { false,QString( "SiriKali::Error: \"%1\" File System On Path \"%2\" Is Not Supported." ).arg( m,path ) } ;
+	}else{
+		return { false,_errorMsg( GetLastError(),path ) } ;
+	}
+}
+
+LXQt::Wallet::BackEnd windowsWalletBackend()
+{
+	return LXQt::Wallet::BackEnd::windows_DPAPI ;
+}
+
 #else
+
+LXQt::Wallet::BackEnd windowsWalletBackend()
+{
+	return LXQt::Wallet::BackEnd( 255 ) ;
+}
+
+QString lastError()
+{
+	return {} ;
+}
 
 static int _terminateProcess( unsigned long pid )
 {
@@ -128,6 +213,13 @@ static QString _readRegistry( const char * subKey,const char * key )
 	Q_UNUSED( subKey )
 	Q_UNUSED( key )
 	return QString() ;
+}
+
+std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path )
+{
+	Q_UNUSED( path )
+
+	return { false,QString() } ;
 }
 
 #endif
@@ -396,10 +488,21 @@ static std::pair< Task::process::result,QString > _terminate_process( const term
 
 	if( m.success() ){
 
-		utility::waitForFinished( e.exe ) ;
-	}
+		if( utility::waitForFinished( e.exe ) ){
 
-	return { std::move( m ),std::move( exe ) } ;
+			return { std::move( m ),std::move( exe ) } ;
+		}else{
+			auto a = Task::process::result( SiriKali::Windows::_backEndFailedToFinish,
+							QByteArray(),
+							-1,
+							0,
+							true ) ;
+
+			return { std::move( a ),std::move( exe ) } ;
+		}
+	}else{
+		return { std::move( m ),std::move( exe ) } ;
+	}
 }
 
 Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::opts& opts )
@@ -429,14 +532,32 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 
 		}else if( m.type == engines::engine::error::Success ){
 
-			exe->closeReadChannel( QProcess::StandardError ) ;
-			exe->closeReadChannel( QProcess::StandardOutput ) ;
+			if( exe->state() == QProcess::Running ){
 
-			m_instances.emplace_back( opts,std::move( exe ) ) ;
+				exe->closeReadChannel( QProcess::StandardError ) ;
+				exe->closeReadChannel( QProcess::StandardOutput ) ;
 
-			m_updateVolumeList() ;
+				m_instances.emplace_back( opts,std::move( exe ) ) ;
 
-			return Task::process::result( 0 ) ;
+				m_updateVolumeList() ;
+
+				return Task::process::result( 0 ) ;
+			}else{
+				utility::waitForFinished( *exe ) ;
+
+				auto a = "SiriKali::Error: Backend Reported \"Success\" But Its No Longer Running\nGenerated Logs Are:\n" ;
+
+				QString b = "std error\n----------------------\n" + exe->readAllStandardError() + "\n----------------------\n" ;
+
+				QString c = "std out\n----------------------\n" + exe->readAllStandardOutput() + "\n----------------------\n" ;
+
+				return Task::process::result( QString( "%1%2%3" ).arg( a,b,c ).toLatin1(),
+							      QByteArray(),
+							      -1,
+							      0,
+							      true ) ;
+			}
+
 		}else{
 			utility::waitForFinished( *exe ) ;
 

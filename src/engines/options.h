@@ -30,10 +30,11 @@
 #include <QDir>
 #include <QAction>
 #include <QCloseEvent>
+#include <QCheckBox>
 
 #include <functional>
 
-#include "engines.h"
+#include "../engines.h"
 
 namespace Ui {
 class options;
@@ -44,37 +45,54 @@ class options : public QDialog
 	Q_OBJECT
 public:
 	struct Options{
-		Options( const QStringList& e,const engines::engine::options::booleanOptions& r ) :
-			options( e ),opts( r ),success( true )
-		{
-		}
-		Options() : success( false )
-		{
-		}
-		QStringList options ;
-		engines::engine::options::booleanOptions opts ;
-		bool success ;
-	} ;
-	static void instance( QWidget * parent,bool r,const Options& l,
-			      std::function< void( const Options& ) >&& e )
+
+		engines::engine::mOpts mOpts ;
+		bool enableCheckBox = true ;
+		bool checkBoxChecked = true ;
+		bool enableIdleTime = true ;
+		bool enableMountOptions = true ;
+		bool enableConfigFile = true ;
+		bool enableKeyFile = true ;
+
+		QString checkBoxText ;
+		QString keyFileTitle ;
+
+		using boolOpts = engines::engine::booleanOptions ;
+
+		using function = std::function< boolOpts( const options::Options& ) > ;
+
+		function updateOptions = []( const options::Options& s ){
+
+			Q_UNUSED( s )
+
+			return boolOpts() ;
+		} ;
+	};
+
+	static options& instance( const engines::engine& engine,
+				  const engines::engine::mountGUIOptions& s )
 	{
-		new options( parent,r,l,std::move( e ) ) ;
+		return *( new options( engine,s ) ) ;
 	}
 
-	options( QWidget * parent,bool,const Options&,std::function< void( const Options& ) >&& ) ;
+	options( const engines::engine&,const engines::engine::mountGUIOptions& ) ;
 	~options() ;
+	void ShowUI() ;
+	Options& GUIOptions() ;
 private slots:
-        void pushButton( void ) ;
+        void pbConfigFile( void ) ;
+	void pbKeyFile( void ) ;
 	void pbSet( void ) ;
 	void pbCancel( void ) ;
 private:
-	void Hide( const Options& = Options() ) ;
+	void Hide( const engines::engine::mOpts& = engines::engine::mOpts() ) ;
 	void closeEvent( QCloseEvent * ) ;
 	Ui::options * m_ui ;
+	const engines::engine& m_engine ;
 	bool m_create ;
-	QString m_type ;
-	std::function< void( const Options& ) > m_setOptions ;
+	std::function< void( const engines::engine::mOpts& ) > m_setOptions ;
 	QWidget * m_parentWidget ;
+	Options m_setGUIOptions ;
 };
 
 #endif // OPTIONS_H

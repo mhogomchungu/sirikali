@@ -29,7 +29,11 @@ public:
 	engines::engine::args command( const QByteArray& password,
 				       const engines::engine::cmdArgsList& args ) const override ;
 
-	void GUICreateOptionsinstance( QWidget * parent,engines::engine::function ) const override ;
+	bool requiresAPassword( const engines::engine::cmdArgsList::options& ) const override ;
+
+	void GUICreateOptions( const engines::engine::createGUIOptions& ) const override ;
+
+	void GUIMountOptions( const engines::engine::mountGUIOptions& ) const override ;
 private:
 	const engines::versionGreaterOrEqual m_version_greater_or_equal_0_11_1 ;
 } ;

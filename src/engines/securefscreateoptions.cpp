@@ -22,27 +22,38 @@
 
 #include "../utility.h"
 
-securefscreateoptions::securefscreateoptions( QWidget * parent,
-					      std::function< void( const engines::engine::Options& ) > function ) :
-	QDialog( parent ),
+#include <QFileDialog>
+
+securefscreateoptions::securefscreateoptions( const engines::engine& engine,
+					      const engines::engine::createGUIOptions& s,
+					      bool e ) :
+	QDialog( s.parent ),
 	m_ui( new Ui::securefscreateoptions ),
-	m_function( std::move( function ) )
+	m_configFileName( engine.configFileName() ),
+	m_function( s.fCreateOptions )
 {
 	m_ui->setupUi( this ) ;
+
+	m_ui->pbConfigFile_2->setEnabled( e ) ;
+	m_ui->lineEdit_2->setEnabled( e ) ;
+	m_ui->label->setEnabled( e ) ;
 
 	this->setFixedSize( this->window()->size() ) ;
 
 	connect( m_ui->pbOK,SIGNAL( clicked() ),this,SLOT( pbOK() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbConfigFile,SIGNAL( clicked() ),this,SLOT( pbConfigFilePath() ) ) ;
+	connect( m_ui->pbConfigFile_2,SIGNAL( clicked() ),this,SLOT( pbKeyFilePath() ) ) ;
 
 	m_ui->pbConfigFile->setIcon( QIcon( ":/folder.png" ) ) ;
 
+	m_ui->pbConfigFile_2->setIcon( QIcon( ":/file.png" ) ) ;
+
 	m_ui->comboBox->setFocus() ;
 
-	auto s = tr( "The \"lite format\" simply encrypts filenames and file contents separately, similar to how encfs operates, although with more security.\n\nThe \"full format\" maps files, directories and symlinks in the virtual filesystem all to regular files in the underlying filesystem. The directory structure is flattened and recorded as B-trees in files.\n\nThe lite format has become the default on Unix-like operating systems as it is much faster and features easier conflict resolution, especially when used with DropBox, Google Drive, etc. The full format, however, leaks fewer information about the filesystem hierarchy, runs relatively independent of the features of the underlying filesystem, and is in general more secure." ) ;
+	auto ss = tr( "The \"lite format\" simply encrypts filenames and file contents separately, similar to how encfs operates, although with more security.\n\nThe \"full format\" maps files, directories and symlinks in the virtual filesystem all to regular files in the underlying filesystem. The directory structure is flattened and recorded as B-trees in files.\n\nThe lite format has become the default on Unix-like operating systems as it is much faster and features easier conflict resolution, especially when used with DropBox, Google Drive, etc. The full format, however, leaks fewer information about the filesystem hierarchy, runs relatively independent of the features of the underlying filesystem, and is in general more secure." ) ;
 
-	m_ui->plainTextEdit->appendPlainText( s ) ;
+	m_ui->plainTextEdit->appendPlainText( ss ) ;
 
 	this->show() ;
 }
@@ -56,18 +67,11 @@ void securefscreateoptions::pbOK()
 {
 	this->hide() ;
 
-	auto e = m_ui->lineEdit->text() ;
-
-	if( !e.isEmpty() ){
-
-		e = "--config " + e ;
-	}
-
 	if( m_ui->comboBox->currentIndex() == 1 ){
 
-		this->HideUI( { { "--format 2",m_ui->lineEdit->text() } } ) ;
+		this->HideUI( { "--format 2",m_ui->lineEdit->text(),m_ui->lineEdit_2->text() } ) ;
 	}else{
-		this->HideUI( { { "--format 4",m_ui->lineEdit->text() } } ) ;
+		this->HideUI( { "--format 4",m_ui->lineEdit->text(),m_ui->lineEdit_2->text() } ) ;
 	}
 }
 
@@ -78,10 +82,20 @@ void securefscreateoptions::pbCancel()
 
 void securefscreateoptions::pbConfigFilePath()
 {
-	m_ui->lineEdit->setText( utility::configFilePath( this,"securefs" ) ) ;
+	m_ui->lineEdit->setText( utility::configFilePath( this,m_configFileName ) ) ;
 }
 
-void securefscreateoptions::HideUI( const engines::engine::Options& opts )
+void securefscreateoptions::pbKeyFilePath()
+{
+	auto e = QFileDialog::getOpenFileName( this,tr( "Select A KeyFile" ),QDir::homePath() ) ;
+
+	if( !e.isEmpty() ){
+
+		m_ui->lineEdit_2->setText( e ) ;
+	}
+}
+
+void securefscreateoptions::HideUI( const engines::engine::cOpts& opts )
 {
 	this->hide() ;
 	m_function( opts ) ;

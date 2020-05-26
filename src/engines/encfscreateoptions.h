@@ -37,21 +37,21 @@ class encfscreateoptions : public QDialog
 {
 	Q_OBJECT
 public:
-	static void instance( QWidget * parent,std::function< void( const engines::engine::Options& ) > function )
+	static void instance( const engines::engine::createGUIOptions& s )
 	{
-                new encfscreateoptions( parent,std::move( function ) ) ;
+		new encfscreateoptions( s ) ;
 	}
-	encfscreateoptions( QWidget * parent,std::function< void( const engines::engine::Options& ) > ) ;
+	encfscreateoptions( const engines::engine::createGUIOptions& ) ;
         ~encfscreateoptions() ;
 private slots:
 	void pbSelectConfigPath() ;
 	void pbOK() ;
 	void pbCancel() ;
 private:
-	void HideUI( const engines::engine::Options& = engines::engine::Options() ) ;
+	void HideUI( const engines::engine::cOpts& = engines::engine::cOpts() ) ;
 	void closeEvent( QCloseEvent * ) ;
         Ui::encfscreateoptions * m_ui ;
-	std::function< void( const engines::engine::Options& ) > m_function ;
+	engines::engine::fcreate m_function ;
 };
 
 #endif // GOCRYPTFSCREATEOPTIONS_H

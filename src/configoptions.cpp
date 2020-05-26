@@ -21,7 +21,6 @@
 #include "ui_configoptions.h"
 
 #include "utility.h"
-#include "walletconfig.h"
 
 #include <QFileDialog>
 
@@ -60,11 +59,6 @@ configOptions::configOptions( QWidget * parent,
 		m_settings.autoOpenFolderOnMount( e ) ;
 	} ) ;
 
-	connect( m_ui->cbShowFavoriteListOnContextMenu,&QCheckBox::toggled,[ this ]( bool e ){
-
-		m_settings.showFavoritesInContextMenu( e ) ;
-	} ) ;
-
 	connect( m_ui->cbReUseMountPoint,&QCheckBox::toggled,[ this ]( bool e ){
 
 		m_settings.reUseMountPoint( e ) ;
@@ -73,22 +67,7 @@ configOptions::configOptions( QWidget * parent,
 	connect( m_ui->cbAutoCheckForUpdates,&QCheckBox::toggled,[ this ]( bool e ){
 
 		m_settings.autoCheck( e ) ;
-	} ) ;
-
-	if( utility::platformIsWindows() ){
-
-		m_ui->cbAutoCheckForUpdates->setEnabled( false ) ;
-		m_ui->pbChangeWalletPassword->setEnabled( false ) ;
-		m_ui->pbKeyStorage->setEnabled( false ) ;
-	}else{
-		m_ui->pbChangeWalletPassword->setEnabled( [ this ](){
-
-			auto a = m_settings.walletName() ;
-			auto b = m_settings.applicationName() ;
-
-			return LXQt::Wallet::walletExists( LXQt::Wallet::BackEnd::internal,a,b ) ;
-		}() ) ;
-	}
+	} ) ;	
 
 	connect( m_ui->cbStartMinimized,&QCheckBox::toggled,[ this ]( bool e ){
 
@@ -123,39 +102,6 @@ configOptions::configOptions( QWidget * parent,
 		}
 	} ) ;
 
-	connect( m_ui->cbAutoMountAtStartUp,&QCheckBox::toggled,[ this ]( bool e ){
-
-		m_settings.autoMountFavoritesOnStartUp( e ) ;
-	} ) ;
-
-	m_ui->cbAutoMountWhenAvailable->setChecked( m_settings.autoMountFavoritesOnAvailable() ) ;
-
-
-	connect( m_ui->cbAllowExternalToolsToReadPasswords,&QCheckBox::toggled,[ this ]( bool e ){
-
-		m_settings.allowExternalToolsToReadPasswords( e ) ;
-	} ) ;
-
-	connect( m_ui->cbAutoMountWhenAvailable,&QCheckBox::toggled,[ this ]( bool e ){
-
-		m_settings.autoMountFavoritesOnAvailable( e ) ;
-	} ) ;
-
-	connect( m_ui->cbShowMountDialogWhenAutoMounting,&QCheckBox::toggled,[ this ]( bool e ){
-
-		m_settings.showMountDialogWhenAutoMounting( e ) ;
-	} ) ;
-
-	connect( m_ui->pbChangeWalletPassword,&QPushButton::clicked,[ this ](){
-
-		auto a = m_settings.walletName() ;
-		auto b = m_settings.applicationName() ;
-
-		this->hide() ;
-
-		m_secrets.changeInternalWalletPassword( a,b,[ this ](){ this->show() ; } ) ;
-	} ) ;
-
 	m_ui->pbSelectLanguage->setMenu( m ) ;
 
 	connect( m,&QMenu::triggered,[ this ]( QAction * ac ){
@@ -163,102 +109,6 @@ configOptions::configOptions( QWidget * parent,
 		m_functions.function_2( ac ) ;
 
 		this->translateUI() ;
-	} ) ;
-
-	m_ui->pbKeyStorage->setMenu( [ this ](){
-
-		using bk = LXQt::Wallet::BackEnd ;
-
-		auto m = new QMenu( this ) ;
-
-		auto _addAction = [ m,this ]( const QString& e,const char * s,bk z ){
-
-			auto ac = m->addAction( e ) ;
-
-			ac->setEnabled( LXQt::Wallet::backEndIsSupported( z ) ) ;
-
-			m_actionPair.emplace_back( ac,s ) ;
-
-			connect( ac,&QAction::triggered,[ this,z ](){
-
-				this->hide() ;
-
-				walletconfig::instance( this,m_secrets.walletBk( z ),[ this ](){ this->show() ; } ) ;
-			} ) ;
-		} ;
-
-		_addAction( tr( "Internal Wallet" ),"Internal Wallet",bk::internal ) ;
-		_addAction( tr( "Libsecret" ),"Libsecret",bk::libsecret ) ;
-		_addAction( tr( "KWallet" ),"KWallet",bk::kwallet ) ;
-		_addAction( tr( "MACOS Keychain" ),"MACOS Keychain",bk::osxkeychain ) ;
-
-		return m ;
-	}() ) ;
-
-	using bk = LXQt::Wallet::BackEnd ;
-
-	auto walletBk = m_settings.autoMountBackEnd() ;
-
-	if( walletBk == bk::internal ){
-
-		m_ui->rbInternalWallet->setChecked( true ) ;
-
-	}else if( walletBk == bk::osxkeychain ){
-
-		m_ui->rbMacOSKeyChain->setChecked( true ) ;
-
-	}else if( walletBk == bk::libsecret ){
-
-		m_ui->rbLibSecret->setChecked( true ) ;
-
-	}else if( walletBk == bk::kwallet ){
-
-		m_ui->rbKWallet->setChecked( true ) ;
-	}else{
-		m_ui->rbNone->setChecked( true ) ;
-	}
-
-	m_ui->rbInternalWallet->setEnabled( LXQt::Wallet::backEndIsSupported( bk::internal ) ) ;
-	m_ui->rbKWallet->setEnabled( LXQt::Wallet::backEndIsSupported( bk::kwallet ) ) ;
-	m_ui->rbLibSecret->setEnabled( LXQt::Wallet::backEndIsSupported( bk::libsecret ) ) ;
-	m_ui->rbMacOSKeyChain->setEnabled( LXQt::Wallet::backEndIsSupported( bk::osxkeychain ) ) ;
-	m_ui->rbNone->setEnabled( true ) ;
-
-	connect( m_ui->rbInternalWallet,&QRadioButton::toggled,[ this ]( bool e ){
-
-		if( e ){
-
-			m_settings.autoMountBackEnd( bk::internal ) ;
-		}
-	} ) ;
-
-	connect( m_ui->rbKWallet,&QRadioButton::toggled,[ this ]( bool e ){
-
-		if( e ){
-
-			m_settings.autoMountBackEnd( bk::kwallet ) ;
-		}
-	} ) ;
-
-	connect( m_ui->rbLibSecret,&QRadioButton::toggled,[ this ]( bool e ){
-
-		if( e ){
-
-			m_settings.autoMountBackEnd( bk::libsecret ) ;
-		}
-	} ) ;
-
-	connect( m_ui->rbMacOSKeyChain,&QRadioButton::toggled,[ this ]( bool e ){
-
-		if( e ){
-
-			m_settings.autoMountBackEnd( bk::osxkeychain ) ;
-		}
-	} ) ;
-
-	connect( m_ui->rbNone,&QRadioButton::toggled,[ this ](){
-
-		m_settings.autoMountBackEnd( settings::walletBackEnd() ) ;
 	} ) ;
 
 	connect( m_ui->pbPostMountCommand,&QPushButton::pressed,[ this ](){
@@ -373,8 +223,6 @@ void configOptions::translateUI()
 
 void configOptions::ShowUI()
 {
-	m_ui->cbAllowExternalToolsToReadPasswords->setChecked( m_settings.allowExternalToolsToReadPasswords() ) ;
-
 	m_ui->cbAutoOpenMountPoint->setChecked( m_settings.autoOpenFolderOnMount() ) ;
 
 	m_ui->cbReUseMountPoint->setChecked( m_settings.reUseMountPoint() ) ;
@@ -382,12 +230,6 @@ void configOptions::ShowUI()
 	m_ui->cbAutoCheckForUpdates->setChecked( m_settings.autoCheck() ) ;
 
 	m_ui->cbStartMinimized->setChecked( m_settings.startMinimized() ) ;
-
-	m_ui->cbAutoMountAtStartUp->setChecked( m_settings.autoMountFavoritesOnStartUp() ) ;
-
-	m_ui->cbShowFavoriteListOnContextMenu->setChecked( m_settings.showFavoritesInContextMenu() ) ;
-
-	m_ui->cbShowMountDialogWhenAutoMounting->setChecked( m_settings.showMountDialogWhenAutoMounting() ) ;
 
 	m_ui->lineEditFileManager->setText( m_settings.fileManager() ) ;
 

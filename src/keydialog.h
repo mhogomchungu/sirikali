@@ -39,9 +39,9 @@ class QTableWidget ;
 #include "can_build_pwquality.h"
 #include "secrets.h"
 #include "engines.h"
-#include "walletconfig.h"
 #include "settings.h"
 #include "favorites.h"
+#include "favorites2.h"
 
 #include <functional>
 #include <memory>
@@ -230,6 +230,7 @@ private slots:
 	void pbSetKey( void ) ;
 	void pbSetKeyCancel( void ) ;
 private :	
+	void autoMount( const favorites::entry& e,const QByteArray& key ) ;
 	void unlockVolume( void ) ;
 	void setVolumeToUnlock() ;
 	void setUpVolumeProperties( const volumeInfo& e,const QByteArray& ) ;
@@ -271,13 +272,8 @@ private :
 	QString m_checkBoxOriginalText ;
 	QString m_path ;
 	QString m_deviceOffSet ;
-	QString m_idleTimeOut ;
-	QString m_configFile ;
 	QString m_exe ;
-	QString m_mountOptions ;
-	QString m_createOptions ;
 	QString m_fileManagerOpen ;
-	QStringList m_keyFiles ;
 
 	bool m_autoOpenMountPoint ;
 	bool m_working ;
@@ -286,9 +282,9 @@ private :
 	bool m_checked = false ;
 	bool m_hmac ;
 	bool m_closeGUI = false ;
-	bool m_allowReplaceFileSystemSet = false ;
 
-	engines::engine::options::booleanOptions m_boolOpts ;
+	engines::engine::mOpts m_mountOptions ;
+	engines::engine::cOpts m_createOptions ;
 
 	engines::engine::status m_status ;
 
@@ -297,7 +293,7 @@ private :
 	secrets& m_secrets ;
 	settings& m_settings ;
 
-	siritask::Engine m_engine ;
+	engines::engineWithPaths m_engine ;
 
 	keystrength m_keyStrength ;
 
@@ -341,16 +337,16 @@ private :
 
 				if( s->opened() ){
 
-					walletconfig::deleteKey( s,id ) ;
+					favorites2::deleteKey( s,id ) ;
 				}else {
 					if( s->open( walletName,appName ) ){
 
-						walletconfig::deleteKey( s,id ) ;
+						favorites2::deleteKey( s,id ) ;
 					}
 				}
 			}
 		}
-	} m_walletKey;
+	} m_walletKey ;
 };
 
 #endif // KEYDIALOG_H

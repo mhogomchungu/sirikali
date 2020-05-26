@@ -55,31 +55,42 @@ class changePassWordDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	static changePassWordDialog& instance( QWidget * parent,
-					       const QString& walletName,
-					       const QString& applicationName,
-					       std::function< void( const QString&,bool ) >&& function )
+	struct changeArgs{
+		bool failedToUnlock ;
+		bool failedToChange ;
+	};
+
+	using changeFunction = std::function< changeArgs( const QString& old,const QString& New,bool ) > ;
+	using createFunction = std::function< void( const QString&,bool ) > ;
+
+	static changePassWordDialog& createInstance( QWidget * parent,
+						     const QString& walletName,
+						     const QString& applicationName,
+						     createFunction&& function )
 	{
 		auto& e = *( new changePassWordDialog( parent,walletName,applicationName ) ) ;
 
-		e.ShowUI( std::move( function ) ) ;
+		e.createShowUI( std::move( function ) ) ;
 
 		return e ;
 	}
-	static changePassWordDialog& instance_1( QWidget * parent,
-					       const QString& walletName,
-					       const QString& applicationName,
-					       std::function< void( bool ) >&& function )
+	static changePassWordDialog& changeInstance( QWidget * parent,
+						     const QString& walletName,
+						     const QString& applicationName,
+						     changeFunction&& function )
 	{
 		auto& e = *( new changePassWordDialog( parent,walletName,applicationName ) ) ;
 
-		e.ShowUI_1( std::move( function ) ) ;
+		e.changeShowUI( std::move( function ) ) ;
 
 		return e ;
 	}
-	explicit changePassWordDialog( QWidget * parent = 0,const QString& walletName = QString(),const QString& applicationName = QString() ) ;
-	void ShowUI( std::function< void( const QString&,bool ) >&& ) ;
-	void ShowUI_1( std::function< void( bool ) >&& ) ;
+	explicit changePassWordDialog( QWidget * parent = 0,
+				       const QString& walletName = QString(),
+				       const QString& applicationName = QString() ) ;
+
+	void createShowUI( createFunction&& ) ;
+	void changeShowUI( changeFunction&& ) ;
 
 	~changePassWordDialog() ;
 signals:
@@ -99,7 +110,6 @@ private:
 	QString m_walletName ;
 	QString m_applicationName ;
 	QString m_banner ;
-	bool m_walletPassWordChanged ;
 
 	std::function< void( const QString&,bool ) > m_create = []( const QString& e,bool f ){
 
@@ -107,7 +117,13 @@ private:
 		Q_UNUSED( f )
 	} ;
 
-	std::function< void( bool ) > m_change = []( bool e ){ Q_UNUSED( e ) } ;
+	std::function< changeArgs( const QString& old,const QString& New,bool ) > m_change = []( const QString& old,const QString& New,bool ){
+
+		Q_UNUSED( old )
+		Q_UNUSED( New )
+
+		return changeArgs{ false,false } ;
+	} ;
 };
 
 }

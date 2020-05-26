@@ -20,16 +20,9 @@
 #ifndef UTILITY_TWO_H
 #define UTILITY_TWO_H
 
-#include <QStringList>
-#include <QDir>
-#include <QtGlobal>
-
 #include <functional>
 #include <memory>
 #include <type_traits>
-
-class QByteArray ;
-class QTranslator ;
 
 namespace utility2
 {
@@ -98,6 +91,12 @@ namespace utility2
 				   std::forward< Deleter >( deleter ),type ) ;
 	}
 
+	/*
+	 * Example use cases of this method
+	 *
+	 * auto exe  = utility2::unique_qptr< QProcess >() ;
+	 * auto exe1 = utility2::unique_qptr< QProcess >( "ls" ) ;
+	 */
 	template< typename Type,typename ... Arguments >
 	auto unique_qptr( Arguments&& ... args )
 	{

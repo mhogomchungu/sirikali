@@ -27,6 +27,8 @@
 #include "utility.h"
 #include "readonlywarning.h"
 #include "locale_path.h"
+#include "win.h"
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -91,9 +93,9 @@ QString settings::windowsMountPointPath()
 	return m + "/" ;
 }
 
-bool settings::windowsUseMountPointPath( const QString& e )
+bool settings::windowsUseMountPointPath( const engines::engine& e )
 {
-	if( engines::instance().getByName( e ).supportsMountPathsOnWindows() ){
+	if( e.supportsMountPathsOnWindows() ){
 
 		if( !m_settings.contains( "WindowsUseMountPointPath" ) ){
 
@@ -156,6 +158,46 @@ QString settings::windowsExecutableSearchPath()
 	}
 
 	return m_settings.value( "WindowsExecutableSearchPath" ).toString() ;
+}
+
+int settings::windowsPbkdf2Interations()
+{
+	if( !m_settings.contains( "WindowsPbkdf2Interations" ) ){
+
+		m_settings.setValue( "WindowsPbkdf2Interations",50000 ) ;
+	}
+
+	return m_settings.value( "WindowsPbkdf2Interations" ).toInt() ;
+}
+
+int windowsPbkdf2Interations()
+{
+	return settings::instance().windowsPbkdf2Interations() ;
+}
+
+QByteArray windowsKeysStorageData()
+{
+	return settings::instance().windowsKeysStorageData() ;
+}
+
+void windowsKeysStorageData( const QByteArray& e )
+{
+	settings::instance().windowsKeysStorageData( e ) ;
+}
+
+QByteArray settings::windowsKeysStorageData()
+{
+	if( !m_settings.contains( "LXQtWindowsDPAPI_Data" ) ){
+
+		m_settings.setValue( "LXQtWindowsDPAPI_Data",QByteArray() ) ;
+	}
+
+	return m_settings.value( "LXQtWindowsDPAPI_Data" ).toByteArray() ;
+}
+
+void settings::windowsKeysStorageData( const QByteArray& e )
+{
+	m_settings.setValue( "LXQtWindowsDPAPI_Data",e ) ;
 }
 
 QString settings::externalPluginExecutable()
@@ -415,6 +457,16 @@ QStringList settings::mountMonitorFolderPaths()
 	}
 
 	return m_settings.value( "MountMonitorFolderPaths" ).toStringList() ;
+}
+
+QStringList settings::supportedFileSystemsOnMountPaths()
+{
+	if( !m_settings.contains( "SupportedFileSystemsOnMountPaths" ) ){
+
+		m_settings.setValue( "SupportedFileSystemsOnMountPaths",QStringList( { "NTFS" } ) ) ;
+	}
+
+	return m_settings.value( "SupportedFileSystemsOnMountPaths" ).toStringList() ;
 }
 
 QString settings::gvfsFuseMonitorPath()
@@ -842,8 +894,12 @@ void settings::autoMountBackEnd( const settings::walletBackEnd& e )
 		}else if( e == LXQt::Wallet::BackEnd::osxkeychain ){
 
 			return "osxkeychain" ;
+
+		}else if( e == SiriKali::Windows::windowsWalletBackend() ){
+
+			return "windows_DPAPI" ;
 		}else{
-			return "none" ;
+			return "none" ;			
 		}
 	}() ) ;
 }
@@ -874,6 +930,10 @@ settings::walletBackEnd settings::autoMountBackEnd()
 		}else if( e == "osxkeychain" ){
 
 			return LXQt::Wallet::BackEnd::osxkeychain ;
+
+		}else if( e == "windows_DPAPI" ){
+
+			return SiriKali::Windows::windowsWalletBackend() ;
 		}else{
 			return settings::walletBackEnd() ;
 		}
@@ -932,8 +992,8 @@ bool settings::showMountDialogWhenAutoMounting()
 
 		return m_settings.value( "ShowMountDialogWhenAutoMounting" ).toBool() ;
 	}else{
-		settings::showMountDialogWhenAutoMounting( false ) ;
-		return false ;
+		settings::showMountDialogWhenAutoMounting( true ) ;
+		return true ;
 	}
 }
 

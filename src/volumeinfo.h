@@ -22,8 +22,6 @@
 #include <QString>
 #include <QStringList>
 
-#include <initializer_list>
-
 #include "utility2.h"
 #include "utility.h"
 #include "favorites.h"
@@ -44,17 +42,26 @@ public:
 						      fileSystem,
 						      mode,
 						      idleTimeout,
-						      mountOptions ) ;
+						      mountOptions,
+						      keyFile ) ;
 		}
 		QStringList minimalList() const
 		{
-			return { volumePath,mountPoint,
-				 fileSystem,mode } ;
+			return { volumePath,
+				 mountPoint,
+				 fileSystem,
+				 mode } ;
 		}
 		QStringList fullList() const
 		{
-			return { volumePath,mountPoint,
-				 fileSystem,mode,idleTimeout,mountOptions,configPath } ;
+			return { volumePath,
+				 mountPoint,
+				 fileSystem,
+				 mode,
+				 idleTimeout,
+				 mountOptions,
+				 configPath,
+				 keyFile } ;
 		}
 		QString volumePath ;
 		QString mountPoint ;
@@ -63,11 +70,9 @@ public:
 		QString idleTimeout ;
 		QString mountOptions ;
 		QString configPath ;
+		QString keyFile ;
 	};
 	volumeInfo()
-	{
-	}
-	volumeInfo( const std::initializer_list< QString >& e ) : m_mountinfo( e )
 	{
 	}
 	volumeInfo( const QStringList& e ) : m_mountinfo( e )
@@ -82,10 +87,17 @@ public:
 		m_mountinfo.mountPoint = e.mountPointPath ;
 		m_reverseMode          = e.reverseMode ;
 		m_readOnlyMode         = e.readOnlyMode ;
+		m_volumeNeedNoPassword = e.volumeNeedNoPassword ;
+		m_autoMount            = e.autoMount ;
 
 		if( e.configFilePath != "N/A" ){
 
 			m_mountinfo.configPath = e.configFilePath ;
+		}
+
+		if( e.keyFile != "N/A" ){
+
+			m_mountinfo.keyFile = e.keyFile ;
 		}
 
 		if( e.idleTimeOut != "N/A" ){
@@ -102,9 +114,17 @@ public:
 	{
 		return m_readOnlyMode ;
 	}
+	const favorites::triState& autoMount() const
+	{
+		return m_autoMount ;
+	}
 	bool reverseMode() const
 	{
 		return m_reverseMode ;
+	}
+	bool volumeNeedNoPassword() const
+	{
+		return m_volumeNeedNoPassword ;
 	}
 	const QString& volumePath() const
 	{
@@ -121,6 +141,10 @@ public:
 	const QString& configFilePath() const
 	{
 		return m_mountinfo.configPath ;
+	}
+	const QString& keyFile() const
+	{
+		return m_mountinfo.keyFile ;
 	}
 	const QString& idleTimeOut() const
 	{
@@ -153,7 +177,9 @@ public:
 private:
 	volumeInfo::mountinfo m_mountinfo ;
 	bool m_reverseMode = false ;
+	bool m_volumeNeedNoPassword = false ;
 	favorites::triState m_readOnlyMode ;
+	favorites::triState m_autoMount ;
 };
 
 #endif // VOLUMEENTRYPROPERTIES_H

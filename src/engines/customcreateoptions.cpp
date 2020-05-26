@@ -1,11 +1,10 @@
 #include "customcreateoptions.h"
 #include "ui_customcreateoptions.h"
 
-customcreateoptions::customcreateoptions( QWidget * parent,
-					std::function< void( const engines::engine::Options& ) > function ) :
-	QDialog( parent ),
+customcreateoptions::customcreateoptions( const engines::engine::createGUIOptions& s ) :
+	QDialog( s.parent ),
 	m_ui( new Ui::customcreateoptions ),
-	m_function( std::move( function ) )
+	m_function( s.fCreateOptions )
 {
 	m_ui->setupUi( this ) ;
 
@@ -18,7 +17,7 @@ customcreateoptions::customcreateoptions( QWidget * parent,
 
 		auto m = m_ui->lineEdit->text() ;
 
-		this->HideUI( { { m } } ) ;
+		this->HideUI( { m,QString(),QString() } ) ;
 	} ) ;
 
 	this->show() ;
@@ -29,7 +28,7 @@ customcreateoptions::~customcreateoptions()
 	delete m_ui ;
 }
 
-void customcreateoptions::HideUI( const engines::engine::Options& e )
+void customcreateoptions::HideUI( const engines::engine::cOpts& e )
 {
 	this->hide() ;
 	m_function( e ) ;

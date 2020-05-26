@@ -19,6 +19,7 @@
 
 #include "sshfs.h"
 #include "../settings.h"
+#include "options.h"
 
 static engines::engine::BaseOptions _setOptions()
 {
@@ -44,6 +45,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = true ;
 	s.hasGUICreateOptions   = false ;
 	s.setsCipherPath        = true ;
+	s.windowsUnMountCommand = "" ;
 	s.executableName        = "sshfs" ;
 	s.releaseURL            = "https://api.github.com/repos/libfuse/sshfs/releases" ;
 	s.windowsInstallPathRegistryKey = "SOFTWARE\\SSHFS-Win" ;
@@ -70,13 +72,17 @@ sshfs::sshfs() :
 {
 }
 
-engines::engine::status sshfs::passAllRequirenments( const engines::engine::options& opt ) const
+engines::engine::status sshfs::passAllRequirenments( const engines::engine::cmdArgsList::options& opt ) const
 {
-	Q_UNUSED( opt )
-
 	if( utility::platformIsWindows() ){
 
-		if( m_version_greater_or_equal_minimum ){
+		auto m = engines::engine::passAllRequirenments( opt ) ;
+
+		if( m != engines::engine::status::success ){
+
+			return m ;
+
+		}else if( m_version_greater_or_equal_minimum ){
 
 			return engines::engine::status::success ;
 		}else{
@@ -182,8 +188,16 @@ engines::engine::status sshfs::errorCode( const QString& e,int s ) const
 	}
 }
 
-void sshfs::GUICreateOptionsinstance( QWidget * parent,engines::engine::function function ) const
+void sshfs::GUIMountOptions( const engines::engine::mountGUIOptions& s ) const
 {
-	Q_UNUSED( parent )
-	Q_UNUSED( function )
+	auto& e = options::instance( *this,s ) ;
+
+	auto& ee = e.GUIOptions() ;
+
+	ee.enableCheckBox  = false ;
+	ee.enableIdleTime  = false ;
+	ee.enableConfigFile = false ;
+	ee.enableKeyFile = false ;
+
+	e.ShowUI() ;
 }

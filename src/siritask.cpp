@@ -29,9 +29,6 @@
 #include <QDebug>
 #include <QFile>
 
-using Opts = engines::engine::options ;
-using Engs = engines::engine ;
-
 static bool _create_folder( const QString& m )
 {
 	if( utility::pathExists( m ) ){
@@ -45,21 +42,6 @@ static bool _create_folder( const QString& m )
 static QString _makePath( const QString& e )
 {
 	return utility::Task::makePath( e ) ;
-}
-
-static bool _illegal_path( const Opts& opts,const engines::engine& engine )
-{
-	if( engine.requiresPolkit() && utility::useSiriPolkit() ){
-
-		if( engine.backendRequireMountPath() ){
-
-			return opts.cipherFolder.contains( " " ) || opts.plainFolder.contains( " " ) ;
-		}else {
-			return opts.cipherFolder.contains( " " ) ;
-		}
-	}else{
-		return false ;
-	}
 }
 
 template< typename ... T >
@@ -319,9 +301,8 @@ struct cmd_args{
 
 	const engines::engine& engine ;
 	bool create ;
-	const engines::engine::options& opts ;
+	const engines::engine::cmdArgsList::options& opts ;
 	const QByteArray& password ;
-	const QString& configFilePath ;
 };
 
 struct run_task{
@@ -334,7 +315,7 @@ struct run_task{
 	const engines::engine::args& args ;
 	const engines::engine& engine ;
 	const QByteArray& password ;
-	const engines::engine::options& opts ;
+	const engines::engine::cmdArgsList::options& opts ;
 	bool create ;
 };
 
@@ -409,22 +390,17 @@ static utility::qstring_result _build_config_file_path( const build_config_path&
 
 static engines::engine::cmdStatus _cmd( const cmd_args& e )
 {
-	const engines::engine& engine        = e.engine ;
-	const engines::engine::options& opts = e.opts ;
-	const QByteArray& password           = e.password ;
-	const QString& configFilePath        = e.configFilePath ;
-	bool create                          = e.create ;
+	const auto& engine         = e.engine ;
+	const auto& opts           = e.opts ;
+	const auto& password       = e.password ;
+	const auto& configFilePath = e.opts.configFilePath ;
+	bool create                = e.create ;
 
 	auto exe = engine.executableFullPath() ;
 
 	if( exe.isEmpty() ){
 
 		return { engine.notFoundCode(),engine } ;
-	}
-
-	if( engine.requiresPolkit() && !utility::enablePolkit() ){
-
-		return { engines::engine::status::failedToStartPolkit,engine } ;
 	}
 
 	auto m = _build_config_file_path( { engine,configFilePath } ) ;
@@ -434,8 +410,8 @@ static engines::engine::cmdStatus _cmd( const cmd_args& e )
 		return { engines::engine::status::backEndDoesNotSupportCustomConfigPath,engine } ;
 	}
 
-	auto cc = _makePath( opts.cipherFolder ) ;
-	auto mm = _makePath( opts.plainFolder ) ;
+	auto cc = _makePath( e.opts.cipherFolder ) ;
+	auto mm = _makePath( e.opts.plainFolder ) ;
 
 	exe = utility::Task::makePath( exe ) ;
 
@@ -463,131 +439,17 @@ static engines::engine::cmdStatus _cmd( const cmd_args& e )
 	}
 }
 
-static utility::qstring_result _path_exist( QString e,const QString& m )
+static engines::engine::cmdStatus _mount( const siritask::mount& s )
 {
-	e.remove( 0,m.size() ) ;
+	const auto& Engine = s.engine ;
+	const auto& engine = Engine.get() ;
 
-	if( utility::pathExists( e ) ){
+	auto opt = s.options ;
 
-		return e ;
-	}else{
-		return {} ;
-	}
-}
+	opt.configFilePath = Engine.configFilePath() ;
+	opt.cipherFolder   = Engine.cipherFolder() ;
 
-siritask::Engine siritask::mountEngine( const siritask::mount& e )
-{
-	const QString& cipherFolder    = e.cipherFolder ;
-	const QString& configFilePath  = e.configFilePath ;
-	const siritask::Engine& Engine = e.engine ;
-
-	if( Engine->known() ){
-
-		const auto& engine = Engine.get() ;
-
-		auto a = "[[[" + engine.name() + "]]]" ;
-
-		auto b = engine.name() + " " ;
-
-		if( configFilePath.startsWith( a ) ){
-
-			return { { engine,configFilePath.mid( a.size() ),cipherFolder } } ;
-
-		}else if( cipherFolder.startsWith( b,Qt::CaseInsensitive ) ){
-
-			return { { engine,configFilePath,cipherFolder.mid( b.size() ) } } ;
-		}else{
-			return { { engine,configFilePath,cipherFolder } } ;
-		}
-	}
-
-	const auto& engines = engines::instance() ;
-
-	if( utility::pathIsFile( cipherFolder ) ){
-
-		const auto& engine = engines.getByFileExtension( cipherFolder ) ;
-
-		return { { engine,configFilePath,cipherFolder } } ;
-	}
-
-	for( const auto& it : engines.supportedEngines() ){
-
-		if( cipherFolder.startsWith( it->name() + " ",Qt::CaseInsensitive ) ){
-
-			const auto& engine = it.get() ;
-
-			if( engine.known() ){
-
-				return { { engine,configFilePath,cipherFolder.mid( it->name().size() + 1 ) } } ;
-			}
-		}
-	}
-
-	if( configFilePath.isEmpty() ){
-
-		const auto& m = engines.getByConfigFileNames( [ & ]( const QString& e ){
-
-			return utility::pathExists( cipherFolder + "/" + e ) ;
-		} ) ;
-
-		if( m.known() ){
-
-			return { { m,"",cipherFolder } } ;
-		}else{
-			return { { engines.getByCipherFolderPath( cipherFolder ),"",cipherFolder } } ;
-		}
-
-	}else if( utility::pathExists( configFilePath ) ){
-
-		const auto& m = engines.getByConfigFileNames( [ & ]( const QString& e ){
-
-			return configFilePath.endsWith( e ) ;
-		} ) ;
-
-		return { { m,configFilePath,cipherFolder } } ;
-	}else{
-		for( const auto& it : engines.supportedEngines() ){
-
-			const auto& engine = it.get() ;
-
-			for( const auto& xt: engine.names() ){
-
-				auto s = "[[[" + xt + "]]]" ;
-
-				if( configFilePath.startsWith( s ) ){
-
-					auto m = _path_exist( configFilePath,s ) ;
-
-					if( m ){
-
-						return { { engine,m.value(),cipherFolder } } ;
-					}
-				}
-			}
-		}
-
-		return {} ;
-	}
-}
-
-/*
- * Opts is taken by value instead of const reference on purpose.
- */
-static engines::engine::cmdStatus _mount( Opts opt,bool reUseMP,const siritask::Engine& eng )
-{
-	auto Engine = siritask::mountEngine( { opt.cipherFolder,opt.configFilePath,eng } ) ;
-
-	const auto& engine  = Engine.get() ;
-
-	if( engine.unknown() ){
-
-		return { engines::engine::status::unknown,engine } ;
-	}
-
-	opt.configFilePath  = Engine.configFilePath() ;
-	opt.cipherFolder    = Engine.cipherFolder() ;
-
-	engine.updateOptions( opt ) ;
+	engine.updateOptions( opt,false ) ;
 
 	auto mm = engine.passAllRequirenments( opt ) ;
 
@@ -596,25 +458,15 @@ static engines::engine::cmdStatus _mount( Opts opt,bool reUseMP,const siritask::
 		return { mm,engine } ;
 	}
 
-	if( opt.key.isEmpty() && engine.requiresAPassword() ){
-
-		return { engines::engine::status::backendRequiresPassword,engine } ;
-	}
-
-	if( _illegal_path( opt,engine ) ){
-
-		return { engines::engine::status::IllegalPath,engine } ;
-	}
-
 	if( engine.backendRequireMountPath() ){
 
-		if( !( _create_folder( opt.plainFolder ) || reUseMP ) ){
+		if( !( _create_folder( opt.plainFolder ) || s.reUseMP ) ){
 
 			return { engines::engine::status::failedToCreateMountPoint,engine } ;
 		}
 	}
 
-	auto e = _cmd( { engine,false,opt,opt.key,opt.configFilePath } ) ;
+	auto e = _cmd( { engine,false,opt,opt.key } ) ;
 
 	if( e != engines::engine::status::success ){
 
@@ -629,59 +481,18 @@ static engines::engine::cmdStatus _mount( Opts opt,bool reUseMP,const siritask::
 	return e ;
 }
 
-static utility::qstring_result _configFilePath( const Engs& engine,const Opts& opt )
+static engines::engine::cmdStatus _create( const siritask::create& s )
 {
-	if( opt.configFilePath.isEmpty() ){
+	const auto& engine = s.engine ;
+	auto opt           = s.options ;
 
-		auto opts = opt ;
-
-		engine.updateOptions( opts ) ;
-
-		return opts.configFilePath ;
-	}else{
-		auto m = QDir().absoluteFilePath( opt.configFilePath ) ;
-
-		for( const auto& it : engine.configFileNames() ){
-
-			if( m.endsWith( it ) ){
-
-				return m ;
-			}
-		}
-
-		return {} ;
-	}
-}
-
-static engines::engine::cmdStatus _create( const Opts& opt,const Engs& engine )
-{
-	if( engine.unknown() ){
-
-		return { engines::engine::status::unknown,engine } ;
-	}
+	engine.updateOptions( opt,true ) ;
 
 	auto mm = engine.passAllRequirenments( opt ) ;
 
 	if( mm != engines::engine::status::success ){
 
 		return { mm,engine } ;
-	}
-
-	if( _illegal_path( opt,engine ) ){
-
-		return { engines::engine::status::IllegalPath,engine } ;
-	}
-
-	if( opt.key.isEmpty() && engine.requiresAPassword() ){
-
-		return { engines::engine::status::backendRequiresPassword,engine } ;
-	}
-
-	auto configPath = _configFilePath( engine,opt ) ;
-
-	if( !configPath ){
-
-		return { engines::engine::status::invalidConfigFileName,engine } ;
 	}
 
 	if( !_create_folder( opt.cipherFolder ) ){
@@ -699,7 +510,7 @@ static engines::engine::cmdStatus _create( const Opts& opt,const Engs& engine )
 		}
 	}
 
-	auto e = _cmd( { engine,true,opt,engine.setPassword( opt.key ),configPath.value() } ) ;
+	auto e = _cmd( { engine,true,opt,engine.setPassword( opt.key ) } ) ;
 
 	if( e == engines::engine::status::success ){
 
@@ -707,7 +518,9 @@ static engines::engine::cmdStatus _create( const Opts& opt,const Engs& engine )
 
 		if( !engine.autoMountsOnCreate() ){
 
-			auto e = siritask::encryptedFolderMount( opt,true ) ;
+			engines::engineWithPaths s{ engine,opt.cipherFolder,opt.configFilePath } ;
+
+			auto e = siritask::encryptedFolderMount( { opt,true,s } ) ;
 
 			if( e != engines::engine::status::success ){
 
@@ -739,30 +552,33 @@ static void _warning( const QString& e )
 	utility::debug() << a + b ;
 }
 
-engines::engine::cmdStatus siritask::encryptedFolderCreate( const Opts& opt,const Engs& e )
+engines::engine::cmdStatus siritask::encryptedFolderCreate( const siritask::create& e )
 {
 	if( utility::platformIsWindows() ){
 
 		if( utility::runningOnGUIThread() ){
 
-			return _create( opt,e ) ;
+			return _create( e ) ;
 		}else{
 			/*
 			 * We should not take this path
 			 */
 			_warning( "siritask::encryptedFolderMount" ) ;
 
-			return _create( opt,e ) ;
+			return _create( e ) ;
 		}
 	}else{
-		auto& s = Task::run( [ & ](){ return _create( opt,e ) ; } ) ;
+		auto& s = Task::run( [ & ](){ return _create( e ) ; } ) ;
 
 		return utility::unwrap( s ) ;
 	}
 }
 
-static void _run_command_on_mount( const Opts& opt,const QString& type )
+static void _run_command_on_mount( const siritask::mount& e )
 {
+	const auto& opt  = e.options ;
+	const auto& type = e.engine->name() ;
+
 	auto exe = _cmd_args( settings::instance().runCommandOnMount() ) ;
 
 	if( !exe.isEmpty() ){
@@ -796,8 +612,12 @@ static void _run_command_on_mount( const Opts& opt,const QString& type )
 	}
 }
 
-engines::engine::cmdStatus
-siritask::encryptedFolderMount( const Opts& opt,bool m,const siritask::Engine& engine )
+engines::engine::cmdStatus siritask::encryptedFolderMount( const engines::engine::cmdArgsList::options& s )
+{
+	return siritask::encryptedFolderMount( { s,false,{ s.cipherFolder,s.configFilePath } } ) ;
+}
+
+engines::engine::cmdStatus siritask::encryptedFolderMount( const siritask::mount& e )
 {
 	auto s = [ & ](){
 
@@ -805,27 +625,27 @@ siritask::encryptedFolderMount( const Opts& opt,bool m,const siritask::Engine& e
 
 			if( utility::runningOnGUIThread() ){
 
-				return _mount( opt,m,engine ) ;
+				return _mount( e ) ;
 			}else{
 				/*
 				 * We should not take this path
 				 */
 				_warning( "siritask::encryptedFolderMount" ) ;
-				return _mount( opt,m,engine ) ;
+				return _mount( e ) ;
 			}
 		}else{
-			auto& e = Task::run( [ & ](){
+			auto& s = Task::run( [ & ](){
 
-				return _mount( opt,m,engine ) ;
+				return _mount( e ) ;
 			} ) ;
 
-			return utility::unwrap( e ) ;
+			return utility::unwrap( s ) ;
 		}
 	}() ;
 
 	if( s == engines::engine::status::success ){
 
-		_run_command_on_mount( opt,engine->name() ) ;
+		_run_command_on_mount( e ) ;
 	}
 
 	return s ;

@@ -24,18 +24,57 @@
 #include "utility.h"
 #include "dialogmsg.h"
 #include "engines.h"
+#include "win.h"
 
 #include <QFileDialog>
 
+const QString COMMENT = "-SiriKali_Comment_ID" ;
+
+Task::future< void >& favorites2::deleteKey( secrets::wallet& wallet,const QString& id )
+{
+	return Task::run( [ &wallet,id ](){
+
+		wallet->deleteKey( id ) ;
+		wallet->deleteKey( id + COMMENT ) ;
+	} ) ;
+}
+
+Task::future< bool >& favorites2::addKey( secrets::wallet& wallet,
+					  const QString& id,
+					  const QString& key,
+					  const QString& comment )
+{
+	return Task::run( [ &wallet,id,key,comment ](){
+
+		if( wallet->addKey( id,key ) ){
+
+			if( wallet->addKey( id + COMMENT,comment ) ){
+
+				return true ;
+			}else{
+				utility::debug() << "Failed To Add Key To Wallet" ;
+
+				wallet->deleteKey( id ) ;
+
+				return false ;
+			}
+		}else{
+			return false ;
+		}
+	} ) ;
+}
+
 favorites2::favorites2( QWidget * parent,
-			favorites::type type,
+			secrets& wallet,
 			std::function< void() > function,
+			const QString& vt,
 			const QString& cp ) :
-	QDialog ( parent) ,
+	QDialog ( parent ),
 	m_ui( new Ui::favorites2 ),
-	m_type( type ),
+	m_secrets( wallet ),
 	m_settings( settings::instance() ),
 	m_function( std::move( function ) ),
+	m_volumeType( vt.toLower() ),
 	m_cipherPath( cp )
 {
 	m_ui->setupUi( this ) ;
@@ -49,6 +88,14 @@ favorites2::favorites2( QWidget * parent,
 	auto table = m_ui->tableWidget ;
 
 	table->horizontalHeader()->setStretchLastSection( true ) ;
+
+	m_ui->pbVolumePath->setIcon( QIcon( ":/sirikali" ) ) ;
+
+	m_ui->tableWidgetWallet->horizontalHeader()->setStretchLastSection( true ) ;
+
+	m_ui->tableWidgetWallet->setMouseTracking( true ) ;
+
+	m_ui->tableWidgetWallet->setContextMenuPolicy( Qt::CustomContextMenu ) ;
 
 	m_ui->pbVolumeTypes->setMenu( [ this ](){
 
@@ -71,6 +118,33 @@ favorites2::favorites2( QWidget * parent,
 		return m ;
 	}() ) ;
 
+	connect( m_ui->cbAutoMountAtStartUp,&QCheckBox::toggled,[ this ]( bool e ){
+
+		m_settings.autoMountFavoritesOnStartUp( e ) ;
+	} ) ;
+
+	m_ui->cbAutoMountWhenAvailable->setChecked( m_settings.autoMountFavoritesOnAvailable() ) ;
+
+	connect( m_ui->cbShowFavoriteListOnContextMenu,&QCheckBox::toggled,[ this ]( bool e ){
+
+		m_settings.showFavoritesInContextMenu( e ) ;
+	} ) ;
+
+	connect( m_ui->cbAllowExternalToolsToReadPasswords,&QCheckBox::toggled,[ this ]( bool e ){
+
+		m_settings.allowExternalToolsToReadPasswords( e ) ;
+	} ) ;
+
+	connect( m_ui->cbAutoMountWhenAvailable,&QCheckBox::toggled,[ this ]( bool e ){
+
+		m_settings.autoMountFavoritesOnAvailable( e ) ;
+	} ) ;
+
+	connect( m_ui->cbShowMountDialogWhenAutoMounting,&QCheckBox::toggled,[ this ]( bool e ){
+
+		m_settings.showMountDialogWhenAutoMounting( e ) ;
+	} ) ;
+
 	connect( m_ui->pbConfigFilePath,&QPushButton::clicked,[ this ](){
 
 		this->configPath() ;
@@ -86,6 +160,18 @@ favorites2::favorites2( QWidget * parent,
 		this->folderPath() ;
 	} ) ;
 
+	connect( m_ui->tableWidgetWallet,&QTableWidget::customContextMenuRequested,[ this ]( QPoint s ){
+
+		Q_UNUSED( s )
+
+		auto item = m_ui->tableWidgetWallet->currentItem() ;
+
+		if( item ){
+
+			this->showContextMenu( item,true ) ;
+		}
+	} ) ;
+
 	auto _setCommand = [ this ]( QLineEdit * lineEdit ){
 
 		auto path = this->getExistingFile( tr( "Select A Command Executable" ) ) ;
@@ -95,6 +181,11 @@ favorites2::favorites2( QWidget * parent,
 			lineEdit->setText( path ) ;
 		}
 	} ;
+
+	connect( m_ui->tableWidgetWallet,&QTableWidget::currentItemChanged,[]( QTableWidgetItem * c,QTableWidgetItem * p ){
+
+		tablewidget::selectRow( c,p ) ;
+	} ) ;
 
 	connect( m_ui->pbPreMount,&QPushButton::clicked,[ = ](){
 
@@ -153,6 +244,191 @@ favorites2::favorites2( QWidget * parent,
 		this->tabChanged( index ) ;
 	} ) ;
 
+	connect( m_ui->pbAddKeyToWallet,&QPushButton::clicked,[ this ](){
+
+		this->addkeyToWallet() ;
+	} ) ;
+
+	connect( m_ui->pbAddToWallets,&QPushButton::clicked,[ this ](){
+
+		auto a = m_ui->lineEditEncryptedFolderPath->toPlainText() ;
+
+		if( !a.isEmpty() ){
+
+			auto b = m_ui->lineEditVolumeType->toPlainText() ;
+
+			if( b.isEmpty() ){
+
+				m_ui->lineEditVolumePath->setText( a ) ;
+			}else{
+				m_ui->lineEditVolumePath->setText( b.toLower() + " " + a ) ;
+			}
+
+			m_ui->tabWidget->setCurrentIndex( 2 ) ;
+		}
+	} ) ;
+
+	connect( m_ui->pbVolumePath,&QPushButton::clicked,[ this ](){
+
+		auto s = this->getExistingDirectory( tr( "Path To An Encrypted Folder" ) ) ;
+
+		if( !s.isEmpty() ){
+
+			m_ui->lineEditVolumePath->setText( s ) ;
+		}
+	} ) ;
+
+	using bk = LXQt::Wallet::BackEnd ;
+
+	m_ui->rbNone->setEnabled( true ) ;
+
+	m_ui->rbInternalWallet->setEnabled( LXQt::Wallet::backEndIsSupported( bk::internal ) ) ;
+	m_ui->rbKWallet->setEnabled( LXQt::Wallet::backEndIsSupported( bk::kwallet ) ) ;
+	m_ui->rbLibSecret->setEnabled( LXQt::Wallet::backEndIsSupported( bk::libsecret ) ) ;
+	m_ui->rbMacOSKeyChain->setEnabled( LXQt::Wallet::backEndIsSupported( bk::osxkeychain ) ) ;
+	m_ui->rbWindowsDPAPI->setEnabled( LXQt::Wallet::backEndIsSupported( SiriKali::Windows::windowsWalletBackend() ) ) ;
+
+	auto walletBk = m_settings.autoMountBackEnd() ;
+
+	if( walletBk == SiriKali::Windows::windowsWalletBackend() ){
+
+		m_ui->label_22->setEnabled( true ) ;
+		m_ui->pbChangeWalletPassword->setEnabled( true ) ;
+
+		m_ui->label_22->setText( tr( "Change Window's Wallet Password" ) ) ;
+
+		m_ui->rbWindowsDPAPI->setChecked( true ) ;
+
+	}else if( walletBk == bk::internal ){
+
+		m_ui->label_22->setEnabled( true ) ;
+		m_ui->pbChangeWalletPassword->setEnabled( [ this ](){
+
+			auto a = m_settings.walletName() ;
+			auto b = m_settings.applicationName() ;
+
+			return LXQt::Wallet::walletExists( LXQt::Wallet::BackEnd::internal,a,b ) ;
+		}() ) ;
+
+		m_ui->label_22->setText( tr( "Change Internal Wallet Password" ) ) ;
+
+		m_ui->rbInternalWallet->setChecked( true ) ;
+
+	}else if( walletBk == bk::osxkeychain ){
+
+		m_ui->label_22->setEnabled( false ) ;
+		m_ui->pbChangeWalletPassword->setEnabled( false ) ;
+
+		m_ui->label_22->setText( tr( "Not Applicable" ) ) ;
+
+		m_ui->rbMacOSKeyChain->setChecked( true ) ;
+
+	}else if( walletBk == bk::libsecret ){
+
+		m_ui->label_22->setEnabled( false ) ;
+		m_ui->pbChangeWalletPassword->setEnabled( false ) ;
+
+		m_ui->label_22->setText( tr( "Not Applicable" ) ) ;
+
+		m_ui->rbLibSecret->setChecked( true ) ;
+
+	}else if( walletBk == bk::kwallet ){
+
+		m_ui->label_22->setEnabled( false ) ;
+		m_ui->pbChangeWalletPassword->setEnabled( false ) ;
+
+		m_ui->label_22->setText( tr( "Not Applicable" ) ) ;
+
+		m_ui->rbKWallet->setChecked( true ) ;
+	}else{
+		m_ui->label_22->setEnabled( false ) ;
+		m_ui->pbChangeWalletPassword->setEnabled( false ) ;
+
+		m_ui->label_22->setText( tr( "Not Applicable" ) ) ;
+
+		m_ui->rbNone->setChecked( true ) ;
+	}
+
+	connect( m_ui->rbInternalWallet,&QRadioButton::toggled,[ this ]( bool e ){
+
+		if( e ){
+
+			m_ui->label_22->setText( tr( "Change Internal Wallet Password" ) ) ;
+			m_ui->label_22->setEnabled( true ) ;
+			m_ui->pbChangeWalletPassword->setEnabled( true ) ;
+			this->walletBkChanged( bk::internal ) ;
+			m_settings.autoMountBackEnd( bk::internal ) ;
+
+			m_ui->pbChangeWalletPassword->setEnabled( [ this ](){
+
+				auto a = m_settings.walletName() ;
+				auto b = m_settings.applicationName() ;
+
+				return LXQt::Wallet::walletExists( LXQt::Wallet::BackEnd::internal,a,b ) ;
+			}() ) ;
+		}
+	} ) ;
+
+	connect( m_ui->rbWindowsDPAPI,&QRadioButton::toggled,[ this ]( bool e ){
+
+		if( e ){
+
+			m_ui->label_22->setText( tr( "Change Window's Wallet Password" ) ) ;
+
+			m_ui->label_22->setEnabled( true ) ;
+			m_ui->pbChangeWalletPassword->setEnabled( true ) ;
+			auto bk = SiriKali::Windows::windowsWalletBackend() ;
+			this->walletBkChanged( bk ) ;
+			m_settings.autoMountBackEnd( bk ) ;
+		}
+	} ) ;
+
+	connect( m_ui->rbKWallet,&QRadioButton::toggled,[ this ]( bool e ){
+
+		if( e ){
+
+			m_ui->label_22->setText( tr( "Not Applicable" ) ) ;
+
+			m_ui->label_22->setEnabled( false ) ;
+			m_ui->pbChangeWalletPassword->setEnabled( false ) ;
+			this->walletBkChanged( bk::kwallet ) ;
+			m_settings.autoMountBackEnd( bk::kwallet ) ;
+		}
+	} ) ;
+
+	connect( m_ui->rbLibSecret,&QRadioButton::toggled,[ this ]( bool e ){
+
+		if( e ){
+
+			m_ui->label_22->setText( tr( "Not Applicable" ) ) ;
+			m_ui->label_22->setEnabled( false ) ;
+			m_ui->pbChangeWalletPassword->setEnabled( false ) ;
+			this->walletBkChanged( bk::libsecret ) ;
+			m_settings.autoMountBackEnd( bk::libsecret ) ;
+		}
+	} ) ;
+
+	connect( m_ui->rbMacOSKeyChain,&QRadioButton::toggled,[ this ]( bool e ){
+
+		if( e ){
+
+			m_ui->label_22->setText( tr( "Not Applicable" ) ) ;
+			m_ui->label_22->setEnabled( false ) ;
+			m_ui->pbChangeWalletPassword->setEnabled( false ) ;
+			this->walletBkChanged( bk::osxkeychain ) ;
+			m_settings.autoMountBackEnd( bk::osxkeychain ) ;
+		}
+	} ) ;
+
+	connect( m_ui->rbNone,&QRadioButton::toggled,[ this ](){
+
+		m_ui->label_22->setText( tr( "Not Applicable" ) ) ;
+		m_ui->label_22->setEnabled( false ) ;
+		m_ui->pbChangeWalletPassword->setEnabled( false ) ;
+		this->setControlsAvailability( false,true ) ;
+		m_settings.autoMountBackEnd( settings::walletBackEnd() ) ;
+	} ) ;
+
 	if( utility::platformIsWindows() ){
 
 		utility::setWindowsMountPointOptions( this,m_ui->lineEditMountPath,m_ui->pbMountPointPath ) ;
@@ -185,9 +461,67 @@ favorites2::favorites2( QWidget * parent,
 		tablewidget::selectRow( x,y ) ;
 	} ) ;
 
+	m_ui->labelPassword->setVisible( false ) ;
+	m_ui->pbVisiblePassword->setVisible( false ) ;
+
+	connect( m_ui->pbVisiblePassword,&QPushButton::clicked,[ this ](){
+
+		m_ui->labelPassword->clear() ;
+		m_ui->labelPassword->setVisible( false ) ;
+		m_ui->pbVisiblePassword->setVisible( false ) ;
+	} ) ;
+
+	m_ui->cbShowPassword->setChecked( true ) ;
+
+	m_ui->lineEditPassword->setEchoMode( QLineEdit::Password ) ;
+
+	connect( m_ui->cbShowPassword,&QCheckBox::stateChanged,[ this ]( int s ){
+
+		if( s ){
+
+			m_ui->lineEditPassword->setEchoMode( QLineEdit::Password ) ;
+		}else{
+			m_ui->lineEditPassword->setEchoMode( QLineEdit::Normal ) ;
+		}
+	} ) ;
+
+	connect( m_ui->pbChangeWalletPassword,&QPushButton::clicked,[ this ](){
+
+		auto a = m_settings.walletName() ;
+		auto b = m_settings.applicationName() ;
+
+		if( m_ui->rbInternalWallet->isChecked() ){
+
+			this->hide() ;
+
+			m_secrets.changeInternalWalletPassword( a,b,[ this ]( bool s ){
+
+				Q_UNUSED( s )
+
+				this->walletBkChanged( LXQt::Wallet::BackEnd::internal ) ;
+				this->show() ;
+			} ) ;
+
+		}else if( m_ui->rbWindowsDPAPI->isChecked() ){
+
+			this->hide() ;
+
+			m_secrets.changeWindowsDPAPIWalletPassword( a,b,[ this ]( bool s ){
+
+				if( s ){
+
+					this->walletBkChanged( SiriKali::Windows::windowsWalletBackend() ) ;
+				}
+
+				this->show() ;
+			} ) ;
+		}
+	} ) ;
+
 	m_ui->pbFolderPath->setIcon( QIcon( ":/sirikali.png" ) ) ;
 	m_ui->pbConfigFilePath->setIcon( QIcon( ":/file.png" ) ) ;
 	m_ui->pbIdentityFile->setIcon( QIcon( ":/file.png" ) ) ;
+	m_ui->pbAddToWallets->setIcon( QIcon( ":/lock.png" ) ) ;
 
 	QIcon exeIcon( ":/executable.png" ) ;
 
@@ -220,10 +554,59 @@ favorites2::favorites2( QWidget * parent,
 		return ac ;
 	}() ) ;
 
-	this->setOptionMenu( m_optionMenu,false ) ;
-	m_ui->pbOptions->setMenu( &m_optionMenu ) ;
+	auto optionsMenu = new QMenu( this ) ;
 
-	this->ShowUI( type ) ;
+	optionsMenu->setFont( this->font() ) ;
+
+	connect( optionsMenu->addAction( tr( "Toggle AutoMount" ) ),&QAction::triggered,[ this ](){
+
+		this->toggleAutoMount() ;
+	} ) ;
+
+	optionsMenu->addSeparator() ;
+
+	connect( optionsMenu->addAction( tr( "Edit" ) ),&QAction::triggered,[ this ](){
+
+		this->edit() ;
+	} ) ;
+
+	optionsMenu->addSeparator() ;
+
+	connect( optionsMenu->addAction( tr( "Remove Selected Entry" ) ),&QAction::triggered,[ this ](){
+
+		this->removeEntryFromFavoriteList() ;
+	} ) ;
+
+	optionsMenu->addSeparator() ;
+
+	connect( optionsMenu->addAction( tr( "Add Entry To Default Wallet" ) ),&QAction::triggered,[ this ](){
+
+		auto table = m_ui->tableWidget ;
+
+		auto m = table->currentRow() ;
+
+		if( m != -1 ){
+
+			auto a = table->item( m,0 )->text() ;
+
+			if( !a.isEmpty() && !m_ui->rbNone->isChecked() ){
+
+				m_ui->lineEditVolumePath->setText( a ) ;
+
+				m_ui->tabWidget->setCurrentIndex( 2 ) ;
+
+				m_ui->lineEditPassword->setFocus() ;
+			}
+		}
+	} ) ;
+
+	optionsMenu->addSeparator() ;
+
+	optionsMenu->addAction( tr( "Cancel" ) ) ;
+
+	m_ui->pbOptions->setMenu( optionsMenu ) ;
+
+	this->ShowUI() ;
 }
 
 favorites2::~favorites2()
@@ -231,12 +614,188 @@ favorites2::~favorites2()
 	delete m_ui ;
 }
 
+void favorites2::addkeyToWallet()
+{
+	auto a = m_ui->lineEditVolumePath->text() ;
+	auto b = m_ui->lineEditPassword->text() ;
+
+	if( a.isEmpty() || b.isEmpty() ){
+
+		return ;
+	}
+
+	m_ui->pbAddKeyToWallet->setEnabled( false ) ;
+
+	favorites2::addKey( m_wallet.get(),a,b,"Nil" ).then( [ this,a ]( bool s ){
+
+		if( s ){
+
+			tablewidget::addRow( m_ui->tableWidgetWallet,{ a } ) ;
+
+			m_ui->lineEditPassword->clear() ;
+			m_ui->lineEditPassword->setEchoMode( QLineEdit::Password ) ;
+			m_ui->lineEditVolumePath->clear() ;
+			m_ui->lineEditVolumePath->setFocus() ;
+		}
+
+		m_ui->pbAddKeyToWallet->setEnabled( true ) ;
+	} ) ;
+}
+
+void favorites2::deleteKeyFromWallet( const QString& id )
+{
+	favorites2::deleteKey( m_wallet.get(),id ).await() ;
+}
+
+QStringList favorites2::readAllKeys()
+{
+	QStringList a ;
+
+	auto s = Task::await( [ & ](){ return m_wallet->readAllKeys() ; } ) ;
+
+	for( const auto& it : s ){
+
+		if( !it.endsWith( "-SiriKali_Comment_ID" ) ){
+
+			a.append( it ) ;
+		}
+	}
+
+	return a ;
+}
+
+void favorites2::showContextMenu( QTableWidgetItem * item,bool itemClicked )
+{
+	QMenu m ;
+
+	connect( m.addAction( tr( "Delete Entry" ) ),&QAction::triggered,[ this ](){
+
+		auto table = m_ui->tableWidgetWallet ;
+
+		auto row = table->currentRow() ;
+
+		if( row != -1 ){
+
+			auto a = table->item( row,0 )->text() ;
+			this->deleteKeyFromWallet( a ) ;
+			tablewidget::deleteRow( table,row ) ;
+		}
+	} ) ;
+
+	connect( m.addAction( tr( "Show Password" ) ),&QAction::triggered,[ this ](){
+
+		auto table = m_ui->tableWidgetWallet ;
+
+		auto row = table->currentRow() ;
+
+		if( row != -1 ){
+
+			auto a = Task::await( [ & ]()->QString{
+
+				return m_wallet->readValue( table->item( row,0 )->text() ) ;
+			} ) ;
+
+			if( !a.isEmpty() ){
+
+				auto e = QObject::tr( "The Password Is \"%1\"" ).arg( a ) ;
+
+				m_ui->labelPassword->setText( e ) ;
+				m_ui->labelPassword->setVisible( true ) ;
+				m_ui->pbVisiblePassword->setVisible( true ) ;
+			}
+		}
+	} ) ;
+
+	m.addAction( tr( "Close Menu" ) ) ;
+
+	m.setFont( this->font() ) ;
+
+	if( itemClicked ){
+
+		m.exec( QCursor::pos() ) ;
+	}else{
+		auto p = this->pos() ;
+
+		auto x = p.x() + 100 + m_ui->tableWidgetWallet->columnWidth( 0 ) ;
+		auto y = p.y() + 50 + m_ui->tableWidgetWallet->rowHeight( 0 ) * item->row() ;
+
+		p.setX( x ) ;
+		p.setY( y ) ;
+		m.exec( p ) ;
+	}
+}
+
+void favorites2::walletBkChanged( LXQt::Wallet::BackEnd bk )
+{
+	this->setControlsAvailability( true,true ) ;
+
+	m_wallet = m_secrets.walletBk( bk ) ;
+
+	m_wallet.open( [ this ](){
+
+		for( const auto& it : this->readAllKeys() ){
+
+			tablewidget::addRow( m_ui->tableWidgetWallet,{ it } ) ;
+		}
+
+	},[ this ](){ this->hide() ; },[ this ]( bool opened ){
+
+		if( opened ){
+
+			for( const auto& it : this->readAllKeys() ){
+
+				tablewidget::addRow( m_ui->tableWidgetWallet,{ it } ) ;
+			}
+		}else{
+			m_ui->lineEditVolumePath->clear() ;
+
+			this->setControlsAvailability( false,true ) ;
+		}
+
+		this->show() ;
+	} ) ;
+}
+
+void favorites2::setControlsAvailability( bool e,bool m )
+{
+	if( m ){
+
+		tablewidget::clearTable( m_ui->tableWidgetWallet ) ;
+	}
+
+	m_ui->label_21->setEnabled( e ) ;
+	m_ui->label_23->setEnabled( e ) ;
+	m_ui->tableWidgetWallet->setEnabled( e ) ;
+	m_ui->pbAddKeyToWallet->setEnabled( e ) ;
+	m_ui->lineEditVolumePath->setEnabled( e ) ;
+	m_ui->lineEditPassword->setEnabled( e ) ;
+	m_ui->pbVolumePath->setEnabled( e ) ;
+	m_ui->cbShowPassword->setEnabled( e ) ;
+}
+
 void favorites2::tabChanged( int index )
 {
 	if( index == 0 ){
 
+		/*
+		 * favorites list tab
+		 */
+
+		m_ui->lineEditVolumePath->clear() ;
+		m_ui->lineEditPassword->clear() ;
+
 		m_editMode = false ;
-	}else{
+
+	}else if( index == 1 ){
+
+		m_ui->lineEditVolumePath->clear() ;
+		m_ui->lineEditPassword->clear() ;
+
+		m_ui->pbAddToWallets->setEnabled( !m_ui->rbNone->isChecked() ) ;
+
+		/*
+		 * Add/Edit tab
+		 */
 		if( m_editMode ){
 
 			m_ui->pbEdit->setEnabled( true ) ;
@@ -263,6 +822,26 @@ void favorites2::tabChanged( int index )
 
 			m_ui->pbAdd->setFocus() ;
 		}
+
+	}else if( index == 2 ){
+
+		/*
+		 * Manage keys in wallets
+		 */
+		auto w = m_settings.autoMountBackEnd() ;
+
+		if( w.isValid() ){
+
+			this->walletBkChanged( w.bk() ) ;
+		}else {
+			this->setControlsAvailability( false,true ) ;
+		}
+	}else{
+		m_ui->lineEditVolumePath->clear() ;
+		m_ui->lineEditPassword->clear() ;
+		/*
+		 * Settings
+		 */
 	}
 }
 
@@ -318,39 +897,6 @@ void favorites2::showUpdatedEntry( const favorites::entry& e )
 	this->updateVolumeList( favorites::instance().readFavorites(),e.volumePath ) ;
 
 	m_ui->tabWidget->setCurrentIndex( 0 ) ;
-}
-
-void favorites2::setOptionMenu( QMenu& m,bool addCancel )
-{
-	m.setFont( this->font() ) ;
-
-	connect( m.addAction( tr( "Toggle AutoMount" ) ),&QAction::triggered,[ this ](){
-
-		this->toggleAutoMount() ;
-	} ) ;
-
-	m.addSeparator() ;
-
-	connect( m.addAction( tr( "Edit" ) ),&QAction::triggered,[ this ](){
-
-		this->edit() ;
-	} ) ;
-
-	m.addSeparator() ;
-
-	connect( m.addAction( tr( "Remove Selected Entry" ) ),&QAction::triggered,[ this ](){
-
-		this->removeEntryFromFavoriteList() ;
-	} ) ;
-
-	m.addSeparator() ;
-
-	if( addCancel ){
-
-		m.addSeparator() ;
-
-		m.addAction( tr( "Cancel" ) ) ;
-	}
 }
 
 void favorites2::toggleAutoMount()
@@ -482,7 +1028,7 @@ void favorites2::updateFavorite( bool edit )
 	auto configPath = m_ui->lineEditConfigFilePath->toPlainText() ;
 	auto idleTimeOUt = m_ui->lineEditIdleTimeOut->toPlainText() ;
 
-	if( m_type == favorites::type::sshfs ){
+	if( m_volumeType == "sshfs" ){
 
 		if( !configPath.isEmpty() ){
 
@@ -737,10 +1283,8 @@ void favorites2::setVolumeProperties( const favorites::entry& e )
 	m_ui->textEditPostUnmount->setText( e.postUnmountCommand ) ;
 }
 
-void favorites2::ShowUI( favorites::type type )
+void favorites2::ShowUI()
 {
-	m_type = type ;
-
 	m_ui->lineEditEncryptedFolderPath->clear() ;
 
 	if( utility::platformIsWindows() ){
@@ -750,7 +1294,7 @@ void favorites2::ShowUI( favorites::type type )
 		m_ui->lineEditMountPath->setText( m_settings.mountPath() ) ;
 	}
 
-	if( m_type == favorites::type::sshfs ){
+	if( m_volumeType == "sshfs" ){
 
 		m_ui->tabWidget->setCurrentIndex( 1 ) ;
 
@@ -761,6 +1305,7 @@ void favorites2::ShowUI( favorites::type type )
 			m_ui->lineEditMountOptions->setText( "idmap=user,StrictHostKeyChecking=no" ) ;
 		}
 
+		m_ui->lineEditEncryptedFolderPath->setText( m_cipherPath ) ;
 		m_ui->labelName ->setText( tr( "Remote Ssh Server Address\n(Example: woof@example.com:/remote/path)" ) ) ;
 		m_ui->labelCofigFilePath->setText( tr( "SSH_AUTH_SOCK Socket Path (Optional)" ) ) ;
 		m_ui->labelIdleTimeOut->setText( tr( "IdentityFile Path (Optional)" ) ) ;
@@ -778,6 +1323,14 @@ void favorites2::ShowUI( favorites::type type )
 	}
 
 	m_ui->tableWidget->setFocus() ;
+
+	m_ui->cbAllowExternalToolsToReadPasswords->setChecked( m_settings.allowExternalToolsToReadPasswords() ) ;
+
+	m_ui->cbAutoMountAtStartUp->setChecked( m_settings.autoMountFavoritesOnStartUp() ) ;
+
+	m_ui->cbShowMountDialogWhenAutoMounting->setChecked( m_settings.showMountDialogWhenAutoMounting() ) ;
+
+	m_ui->cbShowFavoriteListOnContextMenu->setChecked( m_settings.showFavoritesInContextMenu() ) ;
 
 	this->show() ;
 	this->raise() ;

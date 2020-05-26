@@ -32,6 +32,7 @@
 #include "version.h"
 #include "json.h"
 #include "checkforupdateswindow.h"
+#include "engines.h"
 
 #include <utility>
 #include <vector>
@@ -48,7 +49,7 @@ private:
 
 	void showResult() ;
 
-	QString InstalledVersion( const QString& ) ;
+	QString InstalledVersion( const engines::engine& ) ;
 	QString latestVersion( const QByteArray& data ) ;
 
 	void checkForUpdate( size_t position = 0 ) ;
@@ -67,7 +68,7 @@ private:
 
 	bool m_running ;
 
-	std::vector< std::pair< QString,QString > > m_backends ;
+	std::vector< engines::engine::Wrapper > m_backends ;
 	checkforupdateswindow::functions m_functions ;
 } ;
 

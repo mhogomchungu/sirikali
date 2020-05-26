@@ -40,6 +40,7 @@
 #include <QEventLoop>
 #include <QMutex>
 #include <QProcess>
+#include <QVariant>
 
 /*
  *
@@ -146,29 +147,7 @@ namespace Task
 	pair< void > make_pair( E e,F f )
 	{
 		return pair< void >( std::move( e ),std::move( f ) ) ;
-	}
-
-	class Thread : public QThread
-	{
-		Q_OBJECT
-	public:
-		Thread()
-		{
-			#if QT_VERSION < QT_VERSION_CHECK( 5,0,0 )
-				connect( this,SIGNAL( finished() ),this,SLOT( deleteLater() ) ) ;
-			#else
-				connect( this,&QThread::finished,this,&QThread::deleteLater ) ;
-			#endif
-		}
-	protected:
-		virtual ~Thread()
-		{
-		}
-	private:
-		virtual void run()
-		{
-		}
-	};
+	}	
 
 	template< typename T >
 	class future : private QObject
@@ -197,6 +176,26 @@ namespace Task
 				m_function_1 = std::move( function ) ;
 
 				this->_queue() ;
+			}else{
+				this->then( std::move( function ) ) ;
+			}
+		}
+		/*
+		 * Below two API just exposes existing functionality using more standard names
+		 */
+		void when_all( std::function< void() > function = [](){} )
+		{
+			this->then( std::move( function ) ) ;
+		}
+		void when_seq( std::function< void() > function = [](){} )
+		{
+			this->queue( std::move( function ) ) ;
+		}
+		void when_any( std::function< void() > function = [](){} )
+		{
+			if( this->manages_multiple_futures() ){
+
+				this->_when_any( std::move( function ) ) ;
 			}else{
 				this->then( std::move( function ) ) ;
 			}
@@ -313,6 +312,39 @@ namespace Task
 					  Task::future< E >&,
 					  std::function< void( E ) >&& ) ;
 	private:
+		void _when_any( std::function< void() > function = [](){} )
+		{
+			m_when_any_function = std::move( function ) ;
+
+			for( auto& it : m_tasks ){
+
+				it.first->then( [ & ]( T&& e ){
+
+					QMutexLocker m( &m_mutex ) ;
+
+					m_counter++ ;
+
+					if( m_task_not_run ){
+
+						m_task_not_run = false ;
+
+						m.unlock() ;
+
+						it.second( std::forward<T>( e ) ) ;
+
+						m_when_any_function() ;
+					}else{
+						m.unlock() ;
+						it.second( std::forward<T>( e ) ) ;
+					}
+
+					if( m_counter == m_tasks.size() ){
+
+						this->deleteLater() ;
+					}
+				} ) ;
+			}
+		}
 		void _queue()
 		{
 			m_tasks[ m_counter ].first->then( [ this ]( T&& e ){
@@ -368,11 +400,13 @@ namespace Task
 		std::function< void() > m_start       = [](){} ;
 		std::function< void() > m_cancel      = [](){} ;
 		std::function< T() > m_get            = [](){ return T() ; } ;
+		std::function< void() > m_when_any_function ;
 
 		QMutex m_mutex ;
 		std::vector< std::pair< Task::future< T > *,std::function< void( T ) > > > m_tasks ;
 		std::vector< QThread * > m_threads ;
 		decltype( m_tasks.size() ) m_counter = 0 ;
+		bool m_task_not_run = true ;
 	};
 
 	template<>
@@ -383,6 +417,37 @@ namespace Task
 		{
 			m_function = std::move( function ) ;
 			this->start() ;
+		}
+		void queue( std::function< void() > function = [](){} )
+		{
+			if( this->manages_multiple_futures() ){
+
+				m_function = std::move( function ) ;
+
+				this->_queue() ;
+			}else{
+				this->then( std::move( function ) ) ;
+			}
+		}
+		void when_any( std::function< void() > function = [](){} )
+		{
+			if( this->manages_multiple_futures() ){
+
+				this->_when_any( std::move( function ) ) ;
+			}else{
+				this->then( std::move( function ) ) ;
+			}
+		}
+		/*
+		 * Below two API just exposes existing functionality using more standard names
+		 */
+		void when_all( std::function< void() > function = [](){} )
+		{
+			this->then( std::move( function ) ) ;
+		}
+		void when_seq( std::function< void() > function = [](){} )
+		{
+			this->queue( std::move( function ) ) ;
 		}
 		void get()
 		{
@@ -448,17 +513,6 @@ namespace Task
 				m_cancel() ;
 			}
 		}
-		void queue( std::function< void() > function = [](){} )
-		{
-			if( this->manages_multiple_futures() ){
-
-				m_function = std::move( function ) ;
-
-				this->_queue() ;
-			}else{
-				this->then( std::move( function ) ) ;
-			}
-		}
 		future() = default ;
 		future( const future& ) = delete ;
 		future( future&& ) = delete ;
@@ -495,6 +549,39 @@ namespace Task
 			m_function() ;
 		}
 	private:
+		void _when_any( std::function< void() > function )
+		{
+			m_when_any_function = std::move( function ) ;
+
+			for( auto& it : m_tasks ){
+
+				it.first->then( [ & ](){
+
+					QMutexLocker m( &m_mutex ) ;
+
+					m_counter++ ;
+
+					if( m_task_not_run ){
+
+						m_task_not_run = false ;
+
+						m.unlock() ;
+
+						it.second() ;
+
+						m_when_any_function() ;
+					}else{
+						m.unlock() ;
+						it.second() ;
+					}
+
+					if( m_counter == m_tasks.size() ){
+
+						this->deleteLater() ;
+					}
+				} ) ;
+			}
+		}
 		void _queue()
 		{
 			m_tasks[ m_counter ].first->then( [ this ](){
@@ -544,78 +631,79 @@ namespace Task
 		std::function< void() > m_start    = [](){} ;
 		std::function< void() > m_cancel   = [](){} ;
 		std::function< void() > m_get      = [](){} ;
-
+		std::function< void() > m_when_any_function ;
 		QMutex m_mutex ;
 		std::vector< std::pair< Task::future< void > *,std::function< void() > > > m_tasks ;
 		std::vector< QThread * > m_threads ;
 		decltype( m_tasks.size() ) m_counter = 0 ;
+		bool m_task_not_run = true ;
 	};
-
-	template< typename T >
-	class ThreadHelper : public Thread
-	{
-	public:
-		ThreadHelper( std::function< T() >&& function ) :
-			m_function( std::move( function ) ),
-			m_future( this,
-				  [ this ](){ this->start() ; },
-				  [ this ](){ this->deleteLater() ; },
-				  [ this ](){ this->deleteLater() ; return m_function() ; } )
-		{
-		}
-		future<T>& Future()
-		{
-			return m_future ;
-		}
-	private:
-		~ThreadHelper()
-		{
-			m_future.run( std::move( m_result ) ) ;
-		}
-		void run()
-		{
-			m_result = m_function() ;
-		}
-		std::function< T() > m_function ;
-		future<T> m_future ;
-		T m_result ;
-	};
-
-	template<>
-	class ThreadHelper< void > : public Thread
-	{
-	public:
-		ThreadHelper( std::function< void() >&& function ) :
-			m_function( std::move( function ) ),
-			m_future( this,
-				  [ this ](){ this->start() ; },
-				  [ this ](){ this->deleteLater() ; },
-				  [ this ](){ m_function() ; this->deleteLater() ; } )
-		{
-		}
-		future< void >& Future()
-		{
-			return m_future ;
-		}
-	private:
-		~ThreadHelper()
-		{
-			m_future.run() ;
-		}
-		void run()
-		{
-			m_function() ;
-		}
-		std::function< void() > m_function ;
-		future< void > m_future ;
-	};
-
-	/*
-	 * -------------------------Start of internal helper functions-------------------------
-	 */
 
 	namespace detail
 	{
+		/*
+		 * -------------------------Start of internal helper functions-------------------------
+		 */
+		template< typename T >
+		class ThreadHelper : public QThread
+		{
+		public:
+			ThreadHelper( std::function< T() >&& function ) :
+				m_function( std::move( function ) ),
+				m_future( this,
+					  [ this ](){ this->start() ; },
+					  [ this ](){ this->deleteLater() ; },
+					  [ this ](){ this->deleteLater() ; return m_function() ; } )
+			{
+				connect( this,&QThread::finished,this,&QThread::deleteLater ) ;
+			}
+			future<T>& Future()
+			{
+				return m_future ;
+			}
+		private:
+			~ThreadHelper()
+			{
+				m_future.run( std::move( m_result ) ) ;
+			}
+			void run()
+			{
+				m_result = m_function() ;
+			}
+			std::function< T() > m_function ;
+			future<T> m_future ;
+			T m_result ;
+		};
+
+		template<>
+		class ThreadHelper< void > : public QThread
+		{
+		public:
+			ThreadHelper( std::function< void() >&& function ) :
+				m_function( std::move( function ) ),
+				m_future( this,
+					  [ this ](){ this->start() ; },
+					  [ this ](){ this->deleteLater() ; },
+					  [ this ](){ m_function() ; this->deleteLater() ; } )
+			{
+				connect( this,&QThread::finished,this,&QThread::deleteLater ) ;
+			}
+			future< void >& Future()
+			{
+				return m_future ;
+			}
+		private:
+			~ThreadHelper()
+			{
+				m_future.run() ;
+			}
+			void run()
+			{
+				m_function() ;
+			}
+			std::function< void() > m_function ;
+			future< void > m_future ;
+		};
 		template< typename Fn >
 		Task::future<typename std::result_of<Fn()>::type>& run( Fn function )
 		{
@@ -695,6 +783,7 @@ namespace Task
 		{
 			return *( new Task::future< T >() ) ;
 		}
+
 	} //end of detail namespace
 
 
@@ -712,6 +801,28 @@ namespace Task
 	future<typename std::result_of<Fn(Args...)>::type>& run( Fn function,Args ... args )
 	{
 		return Task::run( std::bind( std::move( function ),std::move( args ) ... ) ) ;
+	}
+
+	class progress : public QObject{
+		Q_OBJECT
+	public:
+		template< typename function >
+		progress( QObject * obj,function fn )
+		{
+			connect( this,&progress::update,obj,std::move( fn ) ) ;
+		}
+	signals:
+		void update( QVariant x ) const ;
+	private:
+	};
+
+	template< typename Fn,typename cb >
+	future<typename std::result_of<Fn( const progress& )>::type>& run( QObject * obj,Fn function,cb rp )
+	{
+		return Task::run( [ obj,rp = std::move( rp ),function = std::move( function ) ](){
+
+			return function( progress( obj,std::move( rp ) ) ) ;
+		} ) ;
 	}
 
 	template< typename ... T >

@@ -184,10 +184,10 @@ set(MOC_FILES_1 changepassworddialog.h password_dialog.h lxqt_kwallet.h task.h)
 set(MOC_FILES_2 changepassworddialog.h password_dialog.h lxqt_kwallet.h task.h)
 set(MOC_FILES_3 changepassworddialog.h password_dialog.h task.h)
 
-set(SRC 	lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp)
-set(SRC_1 	lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp lxqt_kwallet.cpp)
-set(SRC_2 	lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp lxqt_kwallet.cpp lxqt_libsecret.cpp)
-set(SRC_3 	lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp lxqt_libsecret.cpp)
+set(SRC 	lxqt_windows_dpapi.cpp lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp)
+set(SRC_1 	lxqt_windows_dpapi.cpp lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp lxqt_kwallet.cpp)
+set(SRC_2 	lxqt_windows_dpapi.cpp lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp lxqt_kwallet.cpp lxqt_libsecret.cpp)
+set(SRC_3 	lxqt_windows_dpapi.cpp lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp lxqt_libsecret.cpp)
 
 if(BUILD_SHARED)
 	set( LIBRARY_TYPE "SHARED")
@@ -295,9 +295,15 @@ else()
     set_target_properties(lxqt-wallet PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic ")
 endif()
 
-
 set_target_properties(lxqt-wallet PROPERTIES SOVERSION "${LIBRARY_VERSION}")
-TARGET_LINK_LIBRARIES(lxqt-wallet "${link_libraries}" lxqt-wallet-backend)
+
+if( WIN32 )
+
+	TARGET_LINK_LIBRARIES(lxqt-wallet -lcrypt32 ${Qt5Network_LIBRARIES} "${link_libraries}" lxqt-wallet-backend)
+else()
+	TARGET_LINK_LIBRARIES(lxqt-wallet "${link_libraries}" lxqt-wallet-backend)
+endif()
+
 
 if( APPLE )
 	find_library(COREFOUNDATION_LIBRARY CoreFoundation REQUIRED)

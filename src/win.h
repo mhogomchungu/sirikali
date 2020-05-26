@@ -31,6 +31,7 @@
 #include "task.hpp"
 #include "siritask.h"
 #include "engines.h"
+#include "lxqt_wallet.h"
 
 namespace SiriKali{
 namespace Windows{
@@ -39,7 +40,7 @@ struct opts{
 
 	bool create ;
 	const engines::engine::args& args ;
-	const engines::engine::options& options ;
+	const engines::engine::cmdArgsList::options& options ;
 	const engines::engine& engine ;
 	const QByteArray& password ;
 } ;
@@ -56,6 +57,12 @@ QString engineInstalledDir( const engines::engine& ) ;
 QString engineInstalledDir( const QString& key,const QString& value ) ;
 
 QStringList engineInstalledDirs() ;
+
+QString lastError() ;
+
+LXQt::Wallet::BackEnd windowsWalletBackend() ;
+
+std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path ) ;
 
 bool mountPointTaken( const QString& ) ;
 
@@ -109,9 +116,19 @@ struct QStorageInfo
 		return QString() ;
 	}
 
+	QString displayName() const
+	{
+		return QString() ;
+	}
+
 	QByteArray device() const
 	{
 		return QByteArray() ;
+	}
+
+	QString name() const
+	{
+		return QString() ;
 	}
 
 	QByteArray fileSystemType() const

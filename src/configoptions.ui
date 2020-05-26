@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="widget">
     <attribute name="title">
@@ -33,7 +33,7 @@
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>40</y>
+       <y>10</y>
        <width>21</width>
        <height>41</height>
       </rect>
@@ -46,7 +46,7 @@
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>80</y>
+       <y>50</y>
        <width>21</width>
        <height>41</height>
       </rect>
@@ -59,7 +59,7 @@
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>120</y>
+       <y>90</y>
        <width>21</width>
        <height>41</height>
       </rect>
@@ -72,7 +72,7 @@
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>160</y>
+       <y>130</y>
        <width>21</width>
        <height>41</height>
       </rect>
@@ -98,7 +98,7 @@
      <property name="geometry">
       <rect>
        <x>150</x>
-       <y>40</y>
+       <y>10</y>
        <width>401</width>
        <height>41</height>
       </rect>
@@ -114,7 +114,7 @@
      <property name="geometry">
       <rect>
        <x>150</x>
-       <y>80</y>
+       <y>50</y>
        <width>401</width>
        <height>41</height>
       </rect>
@@ -130,7 +130,7 @@
      <property name="geometry">
       <rect>
        <x>150</x>
-       <y>120</y>
+       <y>90</y>
        <width>401</width>
        <height>41</height>
       </rect>
@@ -146,7 +146,7 @@
      <property name="geometry">
       <rect>
        <x>150</x>
-       <y>160</y>
+       <y>130</y>
        <width>401</width>
        <height>41</height>
       </rect>
@@ -158,246 +158,87 @@
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QCheckBox" name="cbAutoMountAtStartUp">
+    <widget class="QGroupBox" name="groupBox">
      <property name="geometry">
       <rect>
-       <x>120</x>
-       <y>200</y>
-       <width>21</width>
-       <height>41</height>
+       <x>20</x>
+       <y>170</y>
+       <width>531</width>
+       <height>191</height>
       </rect>
      </property>
-     <property name="text">
-      <string/>
+     <property name="title">
+      <string>HiDPI Settings</string>
      </property>
-    </widget>
-    <widget class="QLabel" name="label_7">
-     <property name="geometry">
-      <rect>
-       <x>150</x>
-       <y>200</y>
-       <width>401</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Auto Mount Favorites Volumes At Startup</string>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QCheckBox" name="cbAutoMountWhenAvailable">
-     <property name="geometry">
-      <rect>
-       <x>120</x>
-       <y>240</y>
-       <width>21</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>431</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_6">
-     <property name="geometry">
-      <rect>
-       <x>150</x>
-       <y>240</y>
-       <width>401</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Auto Mount Favorites Volumes When Available</string>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QCheckBox" name="cbShowMountDialogWhenAutoMounting">
-     <property name="geometry">
-      <rect>
-       <x>120</x>
-       <y>280</y>
-       <width>21</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_8">
-     <property name="geometry">
-      <rect>
-       <x>150</x>
-       <y>280</y>
-       <width>401</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Show Mount Dialog When Auto Mounting</string>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QCheckBox" name="cbAllowExternalToolsToReadPasswords">
-     <property name="geometry">
-      <rect>
-       <x>120</x>
-       <y>320</y>
-       <width>21</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_15">
-     <property name="geometry">
-      <rect>
-       <x>150</x>
-       <y>320</y>
-       <width>401</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Allow External Tools To Get Passwords From Wallets</string>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QCheckBox" name="cbShowFavoriteListOnContextMenu">
-     <property name="geometry">
-      <rect>
-       <x>120</x>
-       <y>10</y>
-       <width>21</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_16">
-     <property name="geometry">
-      <rect>
-       <x>150</x>
-       <y>0</y>
-       <width>401</width>
-       <height>51</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Show Favorite List On Context Menu(Restart Required)</string>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </widget>
-   <widget class="QWidget" name="HiDPI_Settings">
-    <attribute name="title">
-     <string>HiDPI Settings</string>
-    </attribute>
-    <widget class="QCheckBox" name="cbHiDPI">
-     <property name="geometry">
-      <rect>
-       <x>260</x>
-       <y>180</y>
-       <width>31</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="lineEditHiDPI">
-     <property name="geometry">
-      <rect>
-       <x>260</x>
-       <y>230</y>
-       <width>113</width>
-       <height>31</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_18">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>210</y>
-       <width>241</width>
-       <height>61</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Scale Factor
-(Enter A Decimal Number)</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_19">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>180</y>
-       <width>241</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Enable HiDPI Scalling</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QFrame" name="frame">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>20</y>
-       <width>551</width>
-       <height>81</height>
-      </rect>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
-     <widget class="QLabel" name="label_17">
+     <widget class="QCheckBox" name="cbHiDPI">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>10</y>
-        <width>511</width>
+        <x>270</x>
+        <y>80</y>
+        <width>31</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEditHiDPI">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>130</y>
+        <width>113</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_19">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>80</y>
+        <width>241</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Enable HiDPI Scalling</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_18">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>110</y>
+        <width>241</width>
         <height>61</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Scale Factor
+(Enter A Decimal Number)</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_6">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>20</y>
+        <width>491</width>
+        <height>71</height>
        </rect>
       </property>
       <property name="text">
@@ -410,115 +251,6 @@
        <bool>true</bool>
       </property>
      </widget>
-    </widget>
-   </widget>
-   <widget class="QWidget" name="manageKeys">
-    <attribute name="title">
-     <string>Manage Keys In Wallets</string>
-    </attribute>
-    <widget class="QGroupBox" name="groupBox">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>10</y>
-       <width>491</width>
-       <height>321</height>
-      </rect>
-     </property>
-     <property name="title">
-      <string>Set Default Wallet To Retrieve Volume Keys</string>
-     </property>
-     <widget class="QRadioButton" name="rbInternalWallet">
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>90</y>
-        <width>311</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Internal Wallet</string>
-      </property>
-     </widget>
-     <widget class="QRadioButton" name="rbLibSecret">
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>150</y>
-        <width>311</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>&amp;Libsecret</string>
-      </property>
-     </widget>
-     <widget class="QRadioButton" name="rbKWallet">
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>210</y>
-        <width>311</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>&amp;KWallet</string>
-      </property>
-     </widget>
-     <widget class="QRadioButton" name="rbMacOSKeyChain">
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>270</y>
-        <width>311</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>&amp;MACOS Keychain</string>
-      </property>
-     </widget>
-     <widget class="QRadioButton" name="rbNone">
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>30</y>
-        <width>311</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>&amp;None</string>
-      </property>
-     </widget>
-    </widget>
-    <widget class="QPushButton" name="pbChangeWalletPassword">
-     <property name="geometry">
-      <rect>
-       <x>70</x>
-       <y>330</y>
-       <width>431</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Change Internal Wallet Password</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pbKeyStorage">
-     <property name="geometry">
-      <rect>
-       <x>140</x>
-       <y>360</y>
-       <width>291</width>
-       <height>33</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>&amp;Key Storage</string>
-     </property>
     </widget>
    </widget>
    <widget class="QWidget" name="setExecutables">
@@ -924,18 +656,7 @@
   <tabstop>cbReUseMountPoint</tabstop>
   <tabstop>cbAutoCheckForUpdates</tabstop>
   <tabstop>cbStartMinimized</tabstop>
-  <tabstop>cbAutoMountAtStartUp</tabstop>
-  <tabstop>cbAutoMountWhenAvailable</tabstop>
-  <tabstop>cbShowMountDialogWhenAutoMounting</tabstop>
-  <tabstop>cbAllowExternalToolsToReadPasswords</tabstop>
   <tabstop>pbSelectLanguage</tabstop>
-  <tabstop>rbNone</tabstop>
-  <tabstop>rbInternalWallet</tabstop>
-  <tabstop>rbLibSecret</tabstop>
-  <tabstop>rbKWallet</tabstop>
-  <tabstop>rbMacOSKeyChain</tabstop>
-  <tabstop>pbChangeWalletPassword</tabstop>
-  <tabstop>pbKeyStorage</tabstop>
   <tabstop>lineEditMountPointPrefix</tabstop>
   <tabstop>pbMountPointPrefix</tabstop>
   <tabstop>pbMountPointPrefixDefault</tabstop>

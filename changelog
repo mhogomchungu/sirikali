@@ -135,7 +135,7 @@ version 1.3.5(August 1st,2018)
 -- Add ability to edit favorites entries.
 -- Fix a bug on windows when unlocking securefs volume with a custom config path.
 
-version 1.3.6(October 1st,2018)
+version 1.3.6(October 01,2018)
 -- Add ability to pass both fuse options and options specific to backends when unlocking a volume.
    -- For example, this option will allow passing "--allow-filesystem-upgrade" option to cryfs backend when
       unlocking a cryfs volume to automatically upgrade the volume's file system when necessary.
@@ -143,7 +143,7 @@ version 1.3.6(October 1st,2018)
 -- Fix a bug in windows that allowed more than once instance to run.
 -- Create drive letters on Windows with a label equals to the name of the cipher folder when unlocking volumes.
 
-version 1.3.7(February 9th,2019)
+version 1.3.7(February 09,2019)
 -- Add support for gocryptfs "idle" option.
 -- Add ability to set a favorite volume that does not need a password. Useful when connecting to ssh server
    with a private key that does not need a password or when getting credentials from external tools like keepass.
@@ -154,12 +154,12 @@ version 1.3.7(February 9th,2019)
 -- Add support for Cryfs backend on windows.
 -- Add support for using a mount folder on windows(sshfs, encfs and cryfs supports both mount folders and drive letters)
 
-version 1.3.8(May 1st,2019)
+version 1.3.8(May 01,2019)
 -- Remove backend timeout of 20 seconds because cryfs >= 0.10.0 may take a very long time to finish.
 -- Show a warning that says working with cryfs >= 0.10.0 may take a very long time when creating/unlocking cryfs volumes.
 -- Improves a window that manages favorites.
 
-version 1.3.9(August 1st,2019)
+version 1.3.9(August 01,2019)
 -- Add ability to run a custom command on user specified time interval.
 -- Add ability to set premount, postmount, preunmount and postunmount commands to run per favorite entry.
 -- Add support for creating and unlocking volumes using yubikey's challenge-response feature.
@@ -169,7 +169,7 @@ version 1.3.9(August 1st,2019)
 -- Fix an occassional crash that happens when creating an internal wallet when an internal version of
    lxqt_wallet is in use.
 
-version 1.4.0(October 1st,2019)
+version 1.4.0(October 01,2019)
 -- Make it buildable again on Qt < 5.10.0(1.3.9 broke this promise because it should be buildable in debian 8)
 -- Add a config option to show favorites entries on the tray icon context menu with an ability to
    mount/unmount volume from the menu.
@@ -193,13 +193,28 @@ version 1.4.2(December 18,2019)
 -- Add support for "lock" command in fscrypt backend. This option is used for locking directories that use V2
    encryption policies.
 
-   version 1.4.3(unreleased)
+   version 1.4.3(April 01,2020)
 -- Add ability to set arbitrary folder paths to monitor for mount events.
 -- Add ability to monitor gvfs mount events.
 -- Fix a bug that prevented unlocking volumes with a path that contains "," character. The bug was due to fuse
    using the character as an option separator.
--- Fix a bug that prevented unlocked volumes from showing up in the GUI in MACOS.
+-- Fix a bug that prevented recent versions of unlocked securefs from showing up in the GUI in MACOS.
 -- Add a GUI option to "allow replaced file system" when creating/unlocking CryFS volume.
 -- Set the option "--allow-replaced-filesystem" by default when creating a CryFS volume.
 -- When dealing with CryFs volume, do not support paths that are not in drive C to work around
     this bug: https://github.com/cryfs/cryfs/issues/319
+-- Fix a breaking change in how fscrypt 0.2.7 reported its version info.
+
+    version 1.4.4(unreleased)
+-- Fix a bug that causes fscrypt folders paths that contain a space character from showing up in the GUI.
+-- Fix a bug with encfs < 1.9.5 when used with custom config path location. SiriKali will now pass the path
+    through enviromental variable instead of using --config CLI option.
+-- Prevent fscrypt error when creating a new volume with an already taken protector name by making sure
+    we are using a unique protector name.
+-- Add a GUI option to set protector's name  when creating fscrypt volume.
+-- Add a GUI option to choose between using a custom passphrase,login passphrase or a key file
+   when creating fscrypt volume.
+-- Add support for securefs key file(introduced in securefs version 0.11.1).
+-- Add support for fscrypt keyfile.
+-- Add support for storing keys securely on Windows by using Window's Data Protection API.
+-- Rework UI and move key management feature from settings windows to favorites window.

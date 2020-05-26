@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Creatve Volume Options</string>
+   <string>Create Volume Options</string>
   </property>
   <widget class="QLabel" name="label">
    <property name="geometry">

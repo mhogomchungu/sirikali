@@ -1,6 +1,11 @@
+#ifndef FSCRYPTCREATEOPTIONS_H
+#define FSCRYPTCREATEOPTIONS_H
+
+#include <functional>
+#include <utility>
 /*
  *
- *  Copyright (c) 2017
+ *  Copyright (c) 2020
  *  name : Francis Banyikwa
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -17,46 +22,34 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CRYFSCREATEOPTIONS_H
-#define CRYFSCREATEOPTIONS_H
-
-#include <functional>
-#include <utility>
-
 #include <QCloseEvent>
 #include <QString>
 #include <QDialog>
+#include <QStringList>
 
 #include "../engines.h"
 
 namespace Ui {
-class cryfscreateoptions;
+class fscryptcreateoptions;
 }
 
-class cryfscreateoptions : public QDialog
+class fscryptcreateoptions : public QDialog
 {
 	Q_OBJECT
 public:
-	static void instance( const engines::engine& engine,
-			      const engines::engine::createGUIOptions& s,
-			      bool allowReplacedFileSystem )
+	static void instance( const engines::engine::createGUIOptions& s,
+			      const QStringList& l )
 	{
-		new cryfscreateoptions( engine,s,allowReplacedFileSystem ) ;
+		new fscryptcreateoptions( s,l ) ;
 	}
-	explicit cryfscreateoptions( const engines::engine& engine,
-				     const engines::engine::createGUIOptions& s,
-				     bool ) ;
-	~cryfscreateoptions() ;
-private slots:
-	void pbSelectConfigPath() ;
-	void pbOK() ;
-	void pbCancel() ;
+	fscryptcreateoptions( const engines::engine::createGUIOptions&,const QStringList& ) ;
+	~fscryptcreateoptions() ;
 private:
+	Ui::fscryptcreateoptions * m_ui ;
 	void HideUI( const engines::engine::cOpts& = engines::engine::cOpts() ) ;
 	void closeEvent( QCloseEvent * ) ;
-	Ui::cryfscreateoptions * m_ui ;
-	QString m_configFileName ;
 	engines::engine::fcreate m_function ;
+	QStringList m_protectorNames ;
 };
 
-#endif // CRYFSCREATEOPTIONS_H
+#endif // FSCRYPTCREATEOPTIONS_H

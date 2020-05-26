@@ -26,15 +26,23 @@ SOURCES += \
     engines/gocryptfscreateoptions.cpp \
     monitor_mountinfo.cpp \
     tablewidget.cpp \
-    options.cpp \
     engines/securefscreateoptions.cpp \
     engines/cryfscreateoptions.cpp \
     configfileoption.cpp \
     help.cpp \
     configoptions.cpp \
+    engines/options.cpp \
     engines/ecryptfscreateoptions.cpp \
     engines/encfscreateoptions.cpp \
     engines/customcreateoptions.cpp \
+    engines/fscryptcreateoptions.cpp \
+    engines/cryfs.cpp \
+    engines/fscrypt.cpp \
+    engines/securefs.cpp \
+    engines/sshfs.cpp \
+    engines/gocryptfs.cpp \
+    engines/ecryptfs.cpp \
+    engines/encfs.cpp \
     settings.cpp \
     engines.cpp
 
@@ -43,6 +51,8 @@ HEADERS += \
     engines/ecryptfscreateoptions.h \
     engines/cryfscreateoptions.h \
     engines/customcreateoptions,h \
+    engines/fscryptcreateoptions.h \
+    engines/options.h \
     dialogok.h \
     configoptions.h \
     engines/gocryptfscreateoptions.h \
@@ -65,7 +75,6 @@ HEADERS += \
     dialogmsg.h \
     monitor_mountinfo.h \
     tablewidget.h \
-    options.h \
     3rdParty/lxqt_wallet/backend/lxqtwallet.h \
     3rdParty/lxqt_wallet/frontend/password_dialog.h \
     3rdParty/lxqt_wallet/frontend/task.h \
@@ -80,6 +89,8 @@ FORMS += \
     engines/ecryptfscreateoptions.ui \
     engines/cryfscreateoptions.ui \
     engines/customcreateoptions,ui \
+    engines/fscryptcreateoptions.ui \
+    engines/options.ui \
     dialogok.ui \
     sirikali.ui \
     engines/gocryptfscreateoptions.ui \
@@ -96,15 +107,10 @@ FORMS += \
     keydialog.ui \
     readonlywarning.ui \
     walletconfig.ui \
-    options.ui \
     3rdParty/lxqt_wallet/frontend/password_dialog.ui \
     3rdParty/lxqt_wallet/frontend/changepassworddialog.ui
 
-TRANSLATIONS = ../translations/en_US.ts \
-               ../translations/sv_SE.ts \
+TRANSLATIONS = \
+               ../translations/en_US.ts \
                ../translations/fr_FR.ts \
-               ../translations/es_MX.ts \
-               ../translations/ar_SA.ts \
-               ../translations/de_DE.ts \
                ../translations/ru_RU.ts
-

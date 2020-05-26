@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>522</width>
-    <height>291</height>
+    <width>581</width>
+    <height>374</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,46 +19,27 @@
   <widget class="QWidget" name="centralWidget" native="true">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>0</y>
-     <width>481</width>
-     <height>261</height>
+     <x>10</x>
+     <y>10</y>
+     <width>561</width>
+     <height>301</height>
     </rect>
    </property>
-   <widget class="QLabel" name="label_2">
+   <widget class="QLineEdit" name="lineEditConfigFilePath">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>0</y>
-      <width>481</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-    <property name="wordWrap">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="lineConfigFilePath">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>130</y>
-      <width>421</width>
+      <x>50</x>
+      <y>120</y>
+      <width>461</width>
       <height>31</height>
      </rect>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="pbConfigFile">
     <property name="geometry">
      <rect>
-      <x>440</x>
-      <y>130</y>
+      <x>510</x>
+      <y>120</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -67,17 +48,17 @@
      <string/>
     </property>
    </widget>
-   <widget class="QLabel" name="label">
+   <widget class="QLabel" name="labelConfigFile">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>50</x>
       <y>80</y>
-      <width>421</width>
-      <height>51</height>
+      <width>461</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="text">
-     <string>Unlock A Cryfs/Gocryptfs/Securefs Volume With Specified Configuration File.</string>
+     <string>Unlock A Volume With Below Configuration File.</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -89,24 +70,24 @@
    <widget class="QLineEdit" name="lineEditIdleTime">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>50</y>
-      <width>421</width>
+      <x>50</x>
+      <y>260</y>
+      <width>461</width>
       <height>31</height>
      </rect>
     </property>
    </widget>
-   <widget class="QLabel" name="label_3">
+   <widget class="QLabel" name="labelKeyFile">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>0</y>
-      <width>421</width>
-      <height>51</height>
+      <x>50</x>
+      <y>10</y>
+      <width>461</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="text">
-     <string>Automatically Unmount After Specified Minutes of Inactivity Is Reached.</string>
+     <string>Unlock A Volume With Below KeyFile.</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -118,19 +99,19 @@
    <widget class="QLineEdit" name="lineEditMountOptions">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>200</y>
-      <width>421</width>
-      <height>29</height>
+      <x>50</x>
+      <y>188</y>
+      <width>461</width>
+      <height>31</height>
      </rect>
     </property>
    </widget>
-   <widget class="QLabel" name="label_4">
+   <widget class="QLabel" name="labelMountOptions">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>160</y>
-      <width>421</width>
+      <x>50</x>
+      <y>150</y>
+      <width>461</width>
       <height>41</height>
      </rect>
     </property>
@@ -144,25 +125,54 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox">
+   <widget class="QPushButton" name="pbKeyFile">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>230</y>
-      <width>421</width>
+      <x>510</x>
+      <y>50</y>
+      <width>31</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Reverse Mode (Gocryptfs and Encfs Only).</string>
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelIdleTimeout">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>220</y>
+      <width>461</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Automatically Unmount After Specified Minutes of Inactivity Is Reached.</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEditKeyFile">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>50</y>
+      <width>461</width>
+      <height>31</height>
+     </rect>
     </property>
    </widget>
   </widget>
   <widget class="QPushButton" name="pbOK">
    <property name="geometry">
     <rect>
-     <x>160</x>
-     <y>260</y>
+     <x>190</x>
+     <y>340</y>
      <width>101</width>
      <height>31</height>
     </rect>
@@ -174,8 +184,8 @@
   <widget class="QPushButton" name="pbCancel">
    <property name="geometry">
     <rect>
-     <x>260</x>
-     <y>260</y>
+     <x>290</x>
+     <y>340</y>
      <width>101</width>
      <height>31</height>
     </rect>
@@ -184,12 +194,25 @@
     <string>&amp;Cancel</string>
    </property>
   </widget>
+  <widget class="QCheckBox" name="checkBox">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>310</y>
+     <width>451</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Reverse Mode.</string>
+   </property>
+  </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
   <tabstop>lineEditIdleTime</tabstop>
-  <tabstop>lineConfigFilePath</tabstop>
-  <tabstop>pushButton</tabstop>
+  <tabstop>lineEditConfigFilePath</tabstop>
+  <tabstop>pbConfigFile</tabstop>
   <tabstop>lineEditMountOptions</tabstop>
   <tabstop>pbOK</tabstop>
  </tabstops>

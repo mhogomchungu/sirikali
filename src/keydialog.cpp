@@ -29,7 +29,6 @@
 #include <QMessageBox>
 
 #include "win.h"
-#include "options.h"
 #include "dialogmsg.h"
 #include "task.hpp"
 #include "utility.h"
@@ -38,7 +37,6 @@
 #include "plugin.h"
 #include "crypto.h"
 #include "configfileoption.h"
-#include "walletconfig.h"
 
 static QString _kwallet()
 {
@@ -60,6 +58,16 @@ static QString _OSXKeyChain()
 	return QObject::tr( "OSX KeyChain" ) ;
 }
 
+static QString _windowsDPAPI()
+{
+	return QObject::tr( "Windows DPAPI" ) ;
+}
+
+/*
+ *
+ * Called when mounting volumes
+ *
+ */
 keyDialog::keyDialog( QWidget * parent,
 		      secrets& s,
 		      bool o,
@@ -76,7 +84,6 @@ keyDialog::keyDialog( QWidget * parent,
 	m_settings( settings::instance() ),
 	m_done( std::move( f ) ),
 	m_updateVolumeList( std::move( g ) ),
-	m_volumes( std::move( z ) ),
 	m_walletKey( s )
 {
 	m_ui->setupUi( this ) ;
@@ -88,13 +95,50 @@ keyDialog::keyDialog( QWidget * parent,
 
 	this->setUpInitUI() ;
 
+	/*
+	 * We are sorting in a way that makes all volumes that meet below two criteria to appear first.
+	 *
+	 * 1. Have auto mount option set.
+	 * 2. Have password.
+	 */
+
+	favorites::volumeList b ;
+
+	for( auto&& it : z ){
+
+		if( it.first.autoMount.True() && !it.second.isEmpty() ){
+
+			m_volumes.emplace_back( std::move( it ) ) ;
+		}else{
+			b.emplace_back( std::move( it ) ) ;
+		}
+	}
+
+	for( auto&& it : b ){
+
+		m_volumes.emplace_back( std::move( it ) ) ;
+	}
+
 	if( this->mountedAll() ){
 
 		this->HideUI() ;
 	}else{
-		this->setVolumeToUnlock() ;
-
 		this->ShowUI() ;
+
+		this->setVolumeToUnlock() ;
+	}
+}
+
+void keyDialog::autoMount( const favorites::entry& e,const QByteArray& key )
+{
+	if( e.volumeNeedNoPassword ){		
+
+		this->openVolume() ;
+	}else{
+		if( e.autoMount.True() && !key.isEmpty() ){
+
+			this->openVolume() ;
+		}
 	}
 }
 
@@ -108,8 +152,12 @@ void keyDialog::unlockVolume()
 	}
 }
 
-keyDialog::keyDialog( QWidget * parent,
-		      secrets& s,
+/*
+ *
+ * Called when creating volumes
+ *
+ */
+keyDialog::keyDialog( QWidget * parent,secrets& s,
 		      const volumeInfo& e,
 		      std::function< void() > p,
 		      std::function< void() > l,
@@ -125,6 +173,7 @@ keyDialog::keyDialog( QWidget * parent,
 	m_create( e.isNotValid() ),
 	m_secrets( s ),
 	m_settings( settings::instance() ),
+	m_engine( m_exe ),
 	m_cancel( std::move( p ) ),
 	m_updateVolumeList( std::move( l ) ),
 	m_walletKey( s )
@@ -288,6 +337,11 @@ void keyDialog::setUpInitUI()
 		m_ui->cbKeyType->addItem( _OSXKeyChain() ) ;
 	}
 
+	if( LXQt::Wallet::backEndIsSupported( SiriKali::Windows::windowsWalletBackend() ) ){
+
+		m_ui->cbKeyType->addItem( _windowsDPAPI() ) ;
+	}
+
 	if( m_create ){
 
 		if( m_keyStrength ){
@@ -329,17 +383,15 @@ void keyDialog::setVolumeToUnlock()
 
 		this->windowSetTitle( tr( "(%1/%2) Unlocking \"%3\"" ).arg( a,b,m_path ) ) ;
 	}
+
+	this->autoMount( m.first,m.second ) ;
 }
 
 void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key )
 {
-	m_path         = e.volumePath() ;
-	m_boolOpts     = { false,e.reverseMode(),false } ;
-	m_configFile   = e.configFilePath() ;
-	m_idleTimeOut  = e.idleTimeOut() ;
-	m_mountOptions = e.mountOptions() ;
-	m_working      = false ;
-
+	m_path             = e.volumePath() ;
+	m_mountOptions     = e ;
+	m_working          = false ;
 	m_favoriteReadOnly = e.mountReadOnly() ;
 
 	if( m_favoriteReadOnly.defined() ){
@@ -367,7 +419,9 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 		m_ui->lineEditMountPoint->setFocus() ;
 	}else{
-		m_engine = siritask::mountEngine( { m_path,m_configFile,siritask::Engine() } ) ;
+		m_engine = { m_path,m_mountOptions.configFile } ;
+
+		m_ui->pbMountPoint_1->setEnabled( m_engine->supportsMountPathsOnWindows() ) ;
 
 		auto m = m_ui->pbOptions->menu() ;
 
@@ -391,6 +445,8 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 		m->addSeparator() ;
 
 		if( m_engine->known() ){
+
+			m_mountOptions.configFile = m_engine.configFilePath() ;
 
 			const auto& aa = m_engine->name() ;
 
@@ -419,7 +475,8 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 				this->pbOptions() ;
 			}else{
-				m_engine = ac->objectName() ;
+				const auto& engine = engines::instance().getByName( ac->objectName() ) ;
+				m_engine = { engine,m_path,m_mountOptions.configFile } ;
 			}
 		} ) ;
 
@@ -435,9 +492,7 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 	m_ui->lineEditMountPoint->setText( [ & ]()->QString{
 
-		const auto& engine = m_engine.get() ;
-
-		if( engine.known() && !engine.backendRequireMountPath() ){
+		if( m_engine->known() && !m_engine->backendRequireMountPath() ){
 
 			return tr( "Not Used" ) ;
 		}
@@ -452,7 +507,7 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 			if( m.isEmpty() ){
 
-				if( m_settings.windowsUseMountPointPath( engine.name() ) ){
+				if( m_settings.windowsUseMountPointPath( m_engine.get() ) ){
 
 					auto mm = m_settings.windowsMountPointPath() ;
 
@@ -511,9 +566,7 @@ void keyDialog::setDefaultUI()
 {
 	if( m_create ){
 
-		auto e = engines::instance().getByName( m_exe ).hasGUICreateOptions() ;
-
-		m_ui->pbOptions->setEnabled( e ) ;
+		m_ui->pbOptions->setEnabled( m_engine->hasGUICreateOptions() ) ;
 
 		m_ui->label_3->setVisible( true ) ;
 
@@ -570,28 +623,17 @@ void keyDialog::pbOptions()
 {
 	if( m_create ){
 
-		auto& s = engines::instance().getByName( m_exe ) ;
-
-		bool CryFS = s.name() == "cryfs" ;
-
 		this->hide() ;
 
-		s.GUICreateOptionsinstance( m_parentWidget,[ = ]( const engines::engine::Options& e ){
+		m_engine->GUICreateOptions( { m_parentWidget,m_createOptions,[ & ]( const engines::engine::cOpts& e ){
 
 			if( e.success ){
 
-				m_boolOpts = e.opts ;
-
-				if( CryFS ){
-
-					m_allowReplaceFileSystemSet = true ;
-				}
-
-				utility2::stringListToStrings( e.options,m_createOptions,m_configFile ) ;
+				m_createOptions = e ;
 			}
 
 			this->ShowUI() ;
-		} ) ;
+		} } ) ;
 	}else{
 		if( !m_checked ){
 
@@ -601,23 +643,17 @@ void keyDialog::pbOptions()
 
 			if( f.has_value() ){
 
-				const auto& e = f.value() ;
-				m_idleTimeOut  = e.idleTimeOut ;
-				m_configFile   = e.configFilePath ;
-				m_mountOptions = e.mountOptions ;
-				m_boolOpts     = { false,e.reverseMode,false } ;
+				m_mountOptions = f.value() ;
 			}
 		}
 
-		options::Options e{ { m_idleTimeOut,m_configFile,m_mountOptions,m_engine->name() },m_boolOpts } ;
-
 		this->hide() ;
 
-		options::instance( m_parentWidget,m_create,e,[ this ]( const options::Options& e ){
+		m_engine->GUIMountOptions( { m_parentWidget,m_create,m_mountOptions,[ this ]( const engines::engine::mOpts& e ){
 
 			if( e.success ){
 
-				utility2::stringListToStrings( e.options,m_idleTimeOut,m_configFile,m_mountOptions ) ;
+				m_mountOptions = e ;
 
 				if( m_ui->lineEditKey->text().isEmpty() ){
 
@@ -625,12 +661,10 @@ void keyDialog::pbOptions()
 				}else{
 					m_ui->pbOpen->setFocus() ;
 				}
-
-				m_boolOpts = e.opts ;
 			}
 
 			this->ShowUI() ;
-		} ) ;
+		} } ) ;
 	}
 }
 
@@ -768,6 +802,8 @@ void keyDialog::enableAll()
 	if( utility::platformIsNOTWindows() ){
 
 		m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
+	}else{
+		m_ui->pbMountPoint_1->setEnabled( m_engine->supportsMountPathsOnWindows() ) ;
 	}
 
 	m_ui->lineEditFolderPath->setEnabled( false ) ;
@@ -895,7 +931,7 @@ void keyDialog::pbOpen()
 
 	if( m_ui->cbKeyType->currentIndex() > keyDialog::keyKeyFile ){
 
-		utility::wallet w ;
+		secrets::wallet::walletKey w ;
 
 		auto wallet = m_ui->lineEditKey->text() ;
 
@@ -903,6 +939,7 @@ void keyDialog::pbOpen()
 		auto gnome    = wallet == _gnomeWallet() ;
 		auto internal = wallet == _internalWallet() ;
 		auto osx      = wallet == _OSXKeyChain() ;
+		auto win      = wallet == _windowsDPAPI() ;
 
 		/*
 		 * Figure out which wallet is used. Defaults to 'internal'
@@ -922,17 +959,19 @@ void keyDialog::pbOpen()
 		}else if( wallet == _OSXKeyChain() ){
 
 			bkwallet = LXQt::Wallet::BackEnd::osxkeychain ;
+
+		}else if( wallet == _windowsDPAPI() ){
+
+			bkwallet = SiriKali::Windows::windowsWalletBackend() ;
 		}
 
 		if( kde || gnome || osx ){
 
-			w = utility::getKey( m_path,m_secrets.walletBk( bkwallet ).bk() ) ;
+			w = m_secrets.walletBk( bkwallet ).getKey( m_path ) ;
 
-		}else if( internal ){
+		}else if( internal || win ){
 
-			using bk = LXQt::Wallet::BackEnd ;
-
-			w = utility::getKey( m_path,m_secrets.walletBk( bk::internal ).bk(),this ) ;
+			w = m_secrets.walletBk( LXQt::Wallet::BackEnd::internal ).getKey( m_path,this ) ;
 
 			if( w.notConfigured ){
 
@@ -1060,7 +1099,7 @@ void keyDialog::encryptedFolderCreate()
 
 	if( utility::platformIsWindows() ){
 
-		if( m_settings.windowsUseMountPointPath( m_exe.toLower() ) ){
+		if( m_settings.windowsUseMountPointPath( m_engine.get() ) ){
 
 			m = m_settings.windowsMountPointPath() + m ;
 
@@ -1090,34 +1129,16 @@ void keyDialog::encryptedFolderCreate()
 		}
 	}
 
-	auto boolOpts = m_boolOpts ;
+	if( m_engine->takesTooLongToUnlock() ){
 
-	if( !m_allowReplaceFileSystemSet ){
-
-		boolOpts.allowReplacedFileSystem = true ;
-	}
-
-	engines::engine::options s( path,
-				    m,
-				    m_key,
-				    m_idleTimeOut,
-				    m_configFile,
-				    boolOpts,
-				    m_mountOptions,
-				    m_createOptions ) ;
-
-	const auto& engine = engines::instance().getByName( m_exe.toLower() ) ;
-
-	if( engine.takesTooLongToUnlock() ){
-
-		m_warningLabel.showCreate( engine.name() ) ;
+		m_warningLabel.showCreate( m_engine->name() ) ;
 	}
 
 	this->disableAll() ;
 
 	m_working = true ;
 
-	auto e = siritask::encryptedFolderCreate( s,engine ) ;
+	auto e = siritask::encryptedFolderCreate( { { path,m,m_key,m_createOptions },m_engine.get() } ) ;
 
 	m_warningLabel.hide() ;
 
@@ -1188,34 +1209,25 @@ void keyDialog::encryptedFolderMount()
 		}
 	}
 
-	auto boolOpts = m_boolOpts ;
-
-	boolOpts.unlockInReadOnly = m_ui->checkBoxOpenReadOnly->isChecked() ;
+	m_mountOptions.opts.unlockInReadOnly = m_ui->checkBoxOpenReadOnly->isChecked() ;
 
 	if( this->upgradingFileSystem() ){
 
-		boolOpts.allowUpgradeFileSystem = m_ui->checkBoxOpenReadOnly->isChecked() ;
+		m_mountOptions.opts.allowUpgradeFileSystem = m_ui->checkBoxOpenReadOnly->isChecked() ;
 	}
 
 	if( this->replaceFileSystem() ){
 
-		boolOpts.allowReplacedFileSystem = m_ui->checkBoxOpenReadOnly->isChecked() ;
+		m_mountOptions.opts.allowReplacedFileSystem = m_ui->checkBoxOpenReadOnly->isChecked() ;
 	}
 
 	m_working = true ;
 
-	engines::engine::options s{ m_path,
-				    m,
-				    m_key,
-				    m_idleTimeOut,
-				    m_configFile,
-				    boolOpts,
-				    m_mountOptions,
-				    QString() } ;
-
 	if( m_engine->unknown() ){
 
-		m_engine = siritask::mountEngine( { m_path,m_configFile,siritask::Engine() } ) ;
+		m_engine = { m_path,m_mountOptions.configFile } ;
+	}else{
+		m_engine = { m_engine.get(),m_engine.cipherFolder(),m_mountOptions.configFile } ;
 	}
 
 	if( m_engine->takesTooLongToUnlock() ){
@@ -1225,7 +1237,7 @@ void keyDialog::encryptedFolderMount()
 
 	this->disableAll() ;
 
-	auto e = siritask::encryptedFolderMount( s,false,m_engine ) ;
+	auto e = siritask::encryptedFolderMount( { { m_path,m,m_key,m_mountOptions },false,m_engine } ) ;
 
 	m_warningLabel.hide() ;
 
@@ -1300,7 +1312,19 @@ void keyDialog::setKeyInWallet()
 		}
 	}() ;
 
-	auto _add_key = [ & ]{
+	auto m = [ & ](){
+
+		if( w->backEnd() == LXQt::Wallet::BackEnd::internal ){
+
+			return w.openSync( [](){ return true ; },
+					   [ this ](){ this->hide() ; },
+					   [ this ](){ this->show() ; } ) ;
+		}else{
+			return w.open( [](){ return true ; } ) ;
+		}
+	}() ;
+
+	if( m.opened ){
 
 		QString id ;
 
@@ -1313,7 +1337,7 @@ void keyDialog::setKeyInWallet()
 
 		if( w->readValue( id ).isEmpty() ){
 
-			if( walletconfig::addKey( w,id,passphrase,"Nil" ) ){
+			if( favorites2::addKey( w,id,passphrase,"Nil" ).await() ){
 
 				m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
 				m_ui->lineEditKey->setText( passphrase ) ;
@@ -1330,7 +1354,7 @@ void keyDialog::setKeyInWallet()
 
 				this->openVolume() ;
 
-				return true ;
+				return ;
 			}else{
 				m_ui->labelSetKey->setText( tr( "Failed To Add A Volume To The A Wallet." ) ) ;
 			}
@@ -1338,41 +1362,9 @@ void keyDialog::setKeyInWallet()
 			m_ui->labelSetKey->setText( tr( "Volume Already Exists In The Wallet." ) ) ;
 		}
 
-		return false ;
-	} ;
-
-	if( w->opened() ){
-
-		if( _add_key() ){
-
-			return ;
-		}
+		return ;
 	}else{
-		w->setImage( QIcon( ":/sirikali" ) ) ;
-
-		auto bk = w->backEnd() ;
-		bool s ;
-
-		if( bk == LXQt::Wallet::BackEnd::internal ){
-
-			this->hide() ;
-
-			s = w->open( m_settings.walletName( bk ),m_settings.applicationName() ) ;
-
-			this->show() ;
-		}else{
-			s = w->open( m_settings.walletName( bk ),m_settings.applicationName() ) ;
-		}
-
-		if( s ){
-
-			if( _add_key() ){
-
-				return ;
-			}
-		}else{
-			m_ui->labelSetKey->setText( tr( "Failed To Open Wallet." ) ) ;
-		}
+		m_ui->labelSetKey->setText( tr( "Failed To Open Wallet." ) ) ;
 	}
 
 	_enable_all() ;

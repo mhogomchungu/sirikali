@@ -33,6 +33,7 @@
 
 #include "lxqt_wallet.h"
 #include "favorites.h"
+#include "engines.h"
 #include <vector>
 #include <array>
 #include <functional>
@@ -130,6 +131,8 @@ public:
 	int sshfsBackendTimeout() ;
 	void setWindowsExecutableSearchPath( const QString& ) ;
 	QString windowsExecutableSearchPath() ;
+	QByteArray windowsKeysStorageData() ;
+	void windowsKeysStorageData( const QByteArray& ) ;
 	QString externalPluginExecutable() ;
 	QString ykchalrespArguments() ;
 	bool yubikeyRemoveNewLine() ;
@@ -182,10 +185,11 @@ public:
 	int networkTimeOut() ;
 	bool showMountDialogWhenAutoMounting() ;
 	int checkForUpdateInterval() ;
+	int windowsPbkdf2Interations() ;
 	bool ecryptfsAllowNotEncryptingFileNames() ;
 	QString homePath() ;
 	QString windowsMountPointPath() ;
-	bool windowsUseMountPointPath( const QString& ) ;
+	bool windowsUseMountPointPath( const engines::engine& ) ;
 	void clearFavorites() ;
 	void showMountDialogWhenAutoMounting( bool ) ;
 	int favoritesEntrySize() ;
@@ -206,6 +210,7 @@ public:
 	int readPasswordMaximumLength() ;
 	bool unMountVolumesOnLogout( void ) ;
 	QStringList mountMonitorFolderPaths( void ) ;
+	QStringList supportedFileSystemsOnMountPaths( void ) ;
 	QString gvfsFuseMonitorPath( void ) ;
 	int mountMonitorFolderPollingInterval( void ) ;
 private:

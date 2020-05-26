@@ -46,7 +46,7 @@ namespace LXQt{
 
 namespace Wallet{
 
-enum class BackEnd{ internal,kwallet,libsecret,osxkeychain } ;
+enum class BackEnd{ internal,kwallet,libsecret,osxkeychain,windows_DPAPI } ;
 
 /*
  * Forward declare the Wallet class

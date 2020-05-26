@@ -135,6 +135,10 @@ namespace utility
 		{
 			return m_value ;
 		}
+		T&& RValue()
+		{
+			return std::move( m_value ) ;
+		}
 		void set( T value )
 		{
 			m_value = std::move( value ) ;
@@ -156,6 +160,8 @@ namespace utility
 	struct debug
 	{
 		static void showDebugWindow( const QString& ) ;
+
+		static void logErrorWhileStarting( const QString& ) ;
 
 		struct cout{
 
@@ -228,13 +234,6 @@ namespace utility
 		utility::debug operator<<( const QStringList& ) ;
 	};
 
-	struct wallet
-	{
-		bool opened ;
-		bool notConfigured ;
-		QString key ;
-	};
-
 	struct fsInfo
 	{
 		bool valid ;
@@ -256,10 +255,6 @@ namespace utility
 	int startApplication( std::function< int() > ) ;
 
 	bool printVersionOrHelpInfo( const QStringList& ) ;
-
-	QString getKey( const QString& keyID,const secrets& secret ) ;
-
-	wallet getKey( const QString& keyID,LXQt::Wallet::Wallet&,QWidget * = nullptr ) ;
 
 	QString cmdArgumentValue( const QStringList&,const QString& arg,const QString& defaulT = QString() ) ;
 
@@ -307,7 +302,7 @@ namespace utility
 
 	void wait( int ) ;
 
-	void waitForFinished( QProcess& ) ;
+	bool waitForFinished( QProcess&,int timeOut = 5 ) ;
 
 	void setMainQWidget( QWidget * ) ;
 	QWidget * mainQWidget() ;
@@ -393,6 +388,8 @@ namespace utility
 	bool eventFilter( QObject * gui,QObject * watched,QEvent * event,std::function< void() > ) ;
 	void licenseInfo( QWidget * ) ;
 
+	void applicationStarted() ;
+
 	QString removeOption( const QStringList&,const QString& option ) ;
 	QString removeOption( const QString& commaSeparatedString,const QString& option ) ;
 
@@ -408,8 +405,6 @@ namespace utility
 	} ;
 
 	SocketPaths socketPath() ;
-
-	::Task::future< utility::result< QString > >& backEndInstalledVersion( const QString& backend ) ;
 
 	::Task::future< bool >& openPath( const QString& path,const QString& opener ) ;
 

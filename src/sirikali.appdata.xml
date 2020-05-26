@@ -8,7 +8,7 @@
   <name>SiriKali</name>
   <summary>Manage user encrypted directories</summary>
   <description>
-    <p>Sirikali provides a Qt/C++ GUI front end to cryfs,gocryptfs,securefs and encfs, allowing the user to create, mount, and unmount encrypted volumes.</p>
+    <p>Sirikali provides a Qt/C++ GUI front end to sshfs, fscrypt, cryfs, gocryptfs, securefs and encfs, allowing the user to create, mount, and unmount encrypted volumes.</p>
     <p>It works well together with cloud services like Dropbox, iCloud, OneDrive and others.</p>
   </description>
   <url type="homepage">https://mhogomchungu.github.io/sirikali/</url>
@@ -35,6 +35,7 @@
   <releases>
     <!-- Get timestamp with 'date +%s' -->
 
+    <release version="1.4.3" timestamp="1585718929"></release>
     <release version="1.4.2" timestamp="1576640518"></release>
     <release version="1.4.1" timestamp="1571142210"></release>
     <release version="1.4.0" timestamp="1569904705"></release>

@@ -191,6 +191,17 @@ static void _set_debug_window_text( const QString& e )
 	_debugWindow->UpdateOutPut( e,utility::debugEnabled() ) ;
 }
 
+void windowsDebugWindow( const QString& e,bool s )
+{
+	if( s ){
+
+		utility::enableDebug( true ) ;
+		_show_debug_window() ;
+	}
+
+	utility::debug() << e ;
+}
+
 utility::SocketPaths utility::socketPath()
 {
 	if( utility::platformIsWindows() ){
@@ -327,11 +338,33 @@ utility::debug utility::debug::operator<<( const QString& e )
 	return utility::debug() ;
 }
 
+static QString _has_early_error_log ;
+
+void utility::applicationStarted()
+{
+	if( !_has_early_error_log.isEmpty() ){
+
+		utility::enableDebug( true ) ;
+
+		QString a = "***********Start early logs************" ;
+		QString b = "\n\n***********End early logs*****************" ;
+
+		_set_debug_window_text( a + _has_early_error_log + b ) ;
+
+		_show_debug_window() ;
+	}
+}
+
 void utility::debug::showDebugWindow( const QString& e )
 {
 	utility::enableDebug( true ) ;
 	_build_debug_msg( e ) ;
 	_show_debug_window() ;
+}
+
+void utility::debug::logErrorWhileStarting( const QString& e )
+{
+	_has_early_error_log += "\n\n" + e ;
 }
 
 utility::debug utility::debug::operator<<( int e )
@@ -627,88 +660,6 @@ bool utility::printVersionOrHelpInfo( const QStringList& e )
 	}else{
 		return false ;
 	}
-}
-
-QString utility::getKey( const QString& cipherPath,const secrets& secret )
-{
-	if( utility::runningOnBackGroundThread() ){
-
-		return QString() ;
-	}
-
-	auto& settings = settings::instance() ;
-
-	if( !settings.allowExternalToolsToReadPasswords() ){
-
-		return QString() ;
-	}
-
-	auto bk = settings.autoMountBackEnd() ;
-
-	if( bk.isInvalid() ){
-
-		return QString() ;
-	}
-
-	auto m = utility::getKey( cipherPath,secret.walletBk( bk.bk() ).bk() ) ;
-
-	return m.key ;
-}
-
-utility::wallet utility::getKey( const QString& keyID,LXQt::Wallet::Wallet& wallet,QWidget * widget )
-{
-	auto _getKey = []( LXQt::Wallet::Wallet& wallet,const QString& volumeID ){
-
-		return ::Task::await( [ & ](){ return wallet.readValue( volumeID ) ; } ) ;
-	} ;
-
-	utility::wallet w{ false,false,"" } ;
-
-	auto s = wallet.backEnd() ;
-	auto& wlt = settings::instance() ;
-
-	if( s == LXQt::Wallet::BackEnd::internal ){
-
-		auto walletName = wlt.walletName() ;
-		auto appName    = wlt.applicationName() ;
-
-		if( LXQt::Wallet::walletExists( s,walletName,appName ) ){
-
-			if( wallet.opened() ){
-
-				w.opened = true ;
-			}else{
-				wallet.setImage( QIcon( ":/sirikali" ) ) ;
-
-				if( widget ){
-
-					widget->hide() ;
-
-					w.opened = wallet.open( walletName,appName ) ;
-
-					widget->show() ;
-				}else{
-					w.opened = wallet.open( walletName,appName ) ;
-				}
-			}
-
-			if( w.opened ){
-
-				w.key = _getKey( wallet,keyID ) ;
-			}
-		}else{
-			w.notConfigured = true ;
-		}
-	}else{
-		w.opened = wallet.open( wlt.walletName( s ),wlt.applicationName() ) ;
-
-		if( w.opened ){
-
-			w.key = _getKey( wallet,keyID ) ;
-		}
-	}
-
-	return w ;
 }
 
 bool utility::eventFilter( QObject * gui,QObject * watched,QEvent * event,std::function< void() > function )
@@ -1157,10 +1108,7 @@ QString utility::configFilePath( QWidget * s,const QString& e )
 
 	dialog.setAcceptMode( QFileDialog::AcceptSave ) ;
 
-	dialog.selectFile( [ = ](){
-
-		return engines::instance().getByName( e ).configFileName() ;
-	}() ) ;
+	dialog.selectFile( e ) ;
 
 	if( dialog.exec() ){
 
@@ -1289,14 +1237,6 @@ void utility::setWindowsMountPointOptions( QWidget * obj,QLineEdit * e,QPushButt
 	_setWindowsMountMountOptions( obj,e,s ) ;
 }
 
-::Task::future< utility::result< QString > >& utility::backEndInstalledVersion( const QString& backend )
-{
-	return ::Task::run( [ = ]()->utility::result< QString >{
-
-		return engines::instance().getByName( backend ).installedVersion().toString() ;
-	} ) ;
-}
-
 void utility::setGUIThread()
 {
 	_main_gui_thread = QThread::currentThread() ;
@@ -1332,17 +1272,34 @@ void utility::wait( int time )
 	}
 }
 
-void utility::waitForFinished( QProcess& e )
+template <typename Function >
+static bool _wait_for_finished( QProcess& e,int timeOut,Function wait )
 {
-	if( utility::runningOnGUIThread() ){
+	for( int i = 0 ; i < timeOut ; i++ ){
 
-		while( e.state() == QProcess::Running ){
+		if( e.state() == QProcess::Running ){
 
-			utility::waitForOneSecond() ;
+			utility::debug() << "Waiting For A Process To Finish" ;
+			wait() ;
+		}else{
+			utility::debug() << "Process Stopped Running" ;
+			return true ;
 		}
 	}
 
-	e.waitForFinished() ;
+	utility::debug() << "Warning, Process Is Still Running Past Timeout" ;
+
+	return false ;
+}
+
+bool utility::waitForFinished( QProcess& e,int timeOut )
+{
+	if( utility::runningOnGUIThread() ){
+
+		return _wait_for_finished( e,timeOut,[](){ utility::Task::suspendForOneSecond() ; } ) ;
+	}else{
+		return _wait_for_finished( e,timeOut,[](){ utility::Task::waitForOneSecond() ; } ) ;
+	}
 }
 
 static QString _ykchalresp_path()

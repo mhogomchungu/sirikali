@@ -78,15 +78,12 @@ private slots:
 	void closeApplication( int = 0,const QString& = QString() ) ;
 	void unlockVolume( bool ) ;
 	void startGUI( const std::vector< volumeInfo >& ) ;
-	void showMoungDialog( const volumeInfo& ) ;
-	void showMoungDialog( const QString&,const QString& = QString() ) ;
-	void mount( const volumeInfo&,const QString& = QString(),const QByteArray& = QByteArray() ) ;
+	void autoMount( const QString& ) ;
 	void defaultButton( void ) ;
 	void itemClicked( QTableWidgetItem * ) ;
 	void pbUpdate( void ) ;
 	void updateList( void ) ;
 	void createVolume( QAction * = nullptr ) ;
-	void slotMount( void ) ;
 	void unMountAll( void ) ;
 	void emergencyShutDown( void ) ;
 	std::function< void( systemSignalHandler::signal ) > getEmergencyShutDown() ;
