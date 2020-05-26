@@ -163,7 +163,7 @@ Wrong Password Entered.</source>
     <message>
         <location filename="../src/engines.cpp" line="1015"/>
         <source>This Fscrypt Volume Requires A KeyFile.</source>
-        <translation type="unfinished"></translation>
+        <translation>Этот том Fscrypt требует KeyFile.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="1027"/>
@@ -235,17 +235,17 @@ Check The &quot;Replace File System&quot; Option And Unlock The Volume Again To 
     <message>
         <location filename="../src/engines.cpp" line="1063"/>
         <source>Atleast Version 0.9.9 Of Cryfs Is Required To Be Able To Upgrade A Volume and Installed Version Is &quot;%1&quot;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Для обновления тома требуется  Cryfs версии 0.9.9 или выше, а текущая версия - &quot;%1&quot;.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="1067"/>
         <source>Mount Point Folder Path Must Reside In An NTFS FileSystem.</source>
-        <translation type="unfinished"></translation>
+        <translation>Путь к папке точки монтирования должен находиться в файловой системе NTFS.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="1071"/>
         <source>Mount Point Folder Path Is Not Empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>Путь к папке точки монтирования не пуст.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="1075"/>
@@ -357,7 +357,7 @@ It Must End With One Of The Following:
     <message>
         <location filename="../src/keydialog.cpp" line="63"/>
         <source>Windows DPAPI</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1581"/>
@@ -498,12 +498,12 @@ options:
     <message>
         <location filename="../src/engines/options.cpp" line="84"/>
         <source>Select %1 Configuration File.</source>
-        <translation type="unfinished"></translation>
+        <translation>Выберите Файл конфигурации %1.</translation>
     </message>
     <message>
         <location filename="../src/engines/options.cpp" line="99"/>
         <source>Select %1 KeyFile.</source>
-        <translation type="unfinished"></translation>
+        <translation>Выберите KeyFile %1.</translation>
     </message>
     <message>
         <location filename="../src/engines/cryfs.cpp" line="246"/>
@@ -513,12 +513,12 @@ options:
     <message>
         <location filename="../src/engines/fscrypt.cpp" line="544"/>
         <source>Unlock Fscrypt Volume With A Specified 32 Byte(256-Bit) KeyFile.</source>
-        <translation type="unfinished"></translation>
+        <translation>Разблокируйте том Fscrypt с указанным 32-байтным (256-битным) KeyFile.</translation>
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="700"/>
         <source>The Password Is &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Пароль &quot;%1&quot;</translation>
     </message>
 </context>
 <context>
@@ -1067,7 +1067,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.ui" line="825"/>
         <source>Add Volume To Secure Wallets</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить том для защиты хранилищей ключей</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="834"/>
@@ -1082,7 +1082,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.ui" line="1037"/>
         <source>Set Default Wallet</source>
-        <translation type="unfinished"></translation>
+        <translation>Установить хранилище ключей по умолчанию</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="1049"/>
@@ -1092,17 +1092,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.ui" line="1062"/>
         <source>&amp;Libsecret</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="1075"/>
         <source>&amp;KWallet</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="1088"/>
         <source>&amp;MACOS Keychain</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="1101"/>
@@ -1112,7 +1112,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.ui" line="1114"/>
         <source>Windows&apos; DPAPI</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="1135"/>
@@ -1122,17 +1122,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.ui" line="1152"/>
         <source>Enter Volume Path Below</source>
-        <translation type="unfinished"></translation>
+        <translation>Введите путь к тому ниже</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="1181"/>
         <source>Enter Password Below</source>
-        <translation type="unfinished"></translation>
+        <translation>Введите пароль ниже</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="1210"/>
         <source>Add Volume To Selected Wallet</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить том в выбранное хранилище ключей</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="1236"/>
@@ -1144,12 +1144,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.ui" line="1284"/>
         <source>TextLabel</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="1306"/>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="1313"/>
@@ -1201,7 +1201,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/favorites2.cpp" line="298"/>
         <location filename="../src/favorites2.cpp" line="376"/>
         <source>Change Window&apos;s Wallet Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменить пароль хранилища ключей Windows</translation>
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="322"/>
@@ -1213,7 +1213,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/favorites2.cpp" line="415"/>
         <location filename="../src/favorites2.cpp" line="425"/>
         <source>Not Applicable</source>
-        <translation type="unfinished"></translation>
+        <translation>Не применим</translation>
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="435"/>
@@ -1233,7 +1233,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.cpp" line="582"/>
         <source>Add Entry To Default Wallet</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить запись в хранилище ключей по умолчанию</translation>
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="605"/>
@@ -1248,7 +1248,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.cpp" line="685"/>
         <source>Show Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать пароль</translation>
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="709"/>
@@ -1339,7 +1339,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/engines/fscryptcreateoptions.ui" line="14"/>
         <source>Select Volume Creation Options </source>
-        <translation type="unfinished"></translation>
+        <translation>Укажите параметры создания тома </translation>
     </message>
     <message>
         <location filename="../src/engines/fscryptcreateoptions.ui" line="26"/>
@@ -1349,42 +1349,42 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/engines/fscryptcreateoptions.ui" line="39"/>
         <source>&amp;Ok</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/engines/fscryptcreateoptions.ui" line="62"/>
         <source>Enter Volume&apos;s Protector Name Below(Optional)</source>
-        <translation type="unfinished"></translation>
+        <translation>Введите имя защитника тома ниже (необязательно)</translation>
     </message>
     <message>
         <location filename="../src/engines/fscryptcreateoptions.ui" line="81"/>
         <source>Key Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Тип ключа</translation>
     </message>
     <message>
         <location filename="../src/engines/fscryptcreateoptions.ui" line="93"/>
         <source>A Custom Passphrase</source>
-        <translation type="unfinished"></translation>
+        <translation>Пользовательский пароль</translation>
     </message>
     <message>
         <location filename="../src/engines/fscryptcreateoptions.ui" line="106"/>
         <source>Your Login Passphrase</source>
-        <translation type="unfinished"></translation>
+        <translation>Пароль пользователя системы (pam авторизация)</translation>
     </message>
     <message>
         <location filename="../src/engines/fscryptcreateoptions.ui" line="119"/>
         <source>A Raw 256-Bit Key</source>
-        <translation type="unfinished"></translation>
+        <translation>256-битный ключ</translation>
     </message>
     <message>
         <location filename="../src/engines/fscryptcreateoptions.ui" line="143"/>
         <source>Enter A Path To A Raw 256 Bit Key</source>
-        <translation type="unfinished"></translation>
+        <translation>Введите путь к 256-битному ключу</translation>
     </message>
     <message>
         <location filename="../src/engines/fscryptcreateoptions.cpp" line="46"/>
         <source>Select A 32 Byte KeyFile</source>
-        <translation type="unfinished"></translation>
+        <translation>Выберите 32-байтовый KeyFile</translation>
     </message>
 </context>
 <context>
@@ -1848,12 +1848,12 @@ Set The Volume Key To Add It To The Wallet Before Mounting.</source>
     <message>
         <location filename="../src/engines/options.ui" line="61"/>
         <source>Unlock A Volume With Below Configuration File.</source>
-        <translation type="unfinished"></translation>
+        <translation>Разблокировать том с помощью файла конфигурации ниже.</translation>
     </message>
     <message>
         <location filename="../src/engines/options.ui" line="90"/>
         <source>Unlock A Volume With Below KeyFile.</source>
-        <translation type="unfinished"></translation>
+        <translation>Разблокировать том с помощью KeyFile.</translation>
     </message>
     <message>
         <location filename="../src/engines/options.ui" line="181"/>
@@ -1874,12 +1874,12 @@ Set The Volume Key To Add It To The Wallet Before Mounting.</source>
     <message>
         <location filename="../src/engines/options.cpp" line="71"/>
         <source>Unlock %1 Volume With A KeyFile.</source>
-        <translation type="unfinished"></translation>
+        <translation>Разблокируйте том %1 с помощью KeyFile.</translation>
     </message>
     <message>
         <location filename="../src/engines/options.cpp" line="73"/>
         <source>Unlock %1 Volume With A Configuration File.</source>
-        <translation type="unfinished"></translation>
+        <translation>Разблокируйте том %1 с помощью файла конфигурации.</translation>
     </message>
 </context>
 <context>
