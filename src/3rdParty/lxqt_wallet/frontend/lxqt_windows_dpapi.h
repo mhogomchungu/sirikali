@@ -92,6 +92,7 @@ public:
 	QObject * qObject( void ) ;
 private:
 	void setEntropy( const QString& ) ;
+	void encrypt() ;
 	void createWallet( void ) ;
 	void openWallet() ;
 	void openWalletWithPassword( QString ) ;

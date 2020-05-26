@@ -169,6 +169,11 @@ LXQt::Wallet::windows_dpapi::windows_dpapi()
 
 LXQt::Wallet::windows_dpapi::~windows_dpapi()
 {
+	this->encrypt() ;
+}
+
+void LXQt::Wallet::windows_dpapi::encrypt()
+{
 	if( m_opened ){
 
 		auto b = _encrypt( this->serializeData(),m_entropy ).await() ;
@@ -520,9 +525,21 @@ void LXQt::Wallet::windows_dpapi::changeWalletPassWord( const QString& walletNam
 
 		auto a = windowsKeysStorageData() ;
 
-		if( _decrypt( a,old.toUtf8() ).await().first ){
+		auto m = _decrypt( a,old.toUtf8() ).await() ;
+
+		if( m.first ){
 
 			this->setEntropy( New ) ;
+
+			if( !m_opened ){
+
+				m_opened = true ;
+
+				m_keys.clear() ;
+				this->deserializeData( m.second ) ;
+			}
+
+			this->encrypt() ;
 
 			function( true ) ;
 
