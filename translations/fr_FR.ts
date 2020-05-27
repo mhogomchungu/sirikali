@@ -184,7 +184,7 @@ Options:
     <message>
         <location filename="../src/keydialog.cpp" line="63"/>
         <source>Windows DPAPI</source>
-        <translation type="unfinished"></translation>
+        <translation>Windows DPAPI</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1581"/>
@@ -279,7 +279,7 @@ Mot de passe entré incorrect.</translation>
     <message>
         <location filename="../src/engines.cpp" line="1015"/>
         <source>This Fscrypt Volume Requires A KeyFile.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ce volume Fscrypt nécessite un fichier de clé.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="1027"/>
@@ -351,17 +351,17 @@ Testez l&apos;option &quot;Remplacer le système de fichiers&quot; et déchiffre
     <message>
         <location filename="../src/engines.cpp" line="1063"/>
         <source>Atleast Version 0.9.9 Of Cryfs Is Required To Be Able To Upgrade A Volume and Installed Version Is &quot;%1&quot;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Il faut au moins la version 0.9.9 de Cryfs pour pouvoir mettre à jour le volume, et la version actuellement installée est &quot;%1&quot;.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="1067"/>
         <source>Mount Point Folder Path Must Reside In An NTFS FileSystem.</source>
-        <translation type="unfinished"></translation>
+        <translation>Le chemin de répertoire du point de montage doit se situer dans un système de fichiers NTFS.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="1071"/>
         <source>Mount Point Folder Path Is Not Empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>Le chemin de répertoire du point de montage n&apos;est pas vide.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="1075"/>
@@ -497,12 +497,12 @@ Il doit se terminer avec un des termes suivants : &quot;%1&quot;</translation>
     <message>
         <location filename="../src/engines/options.cpp" line="84"/>
         <source>Select %1 Configuration File.</source>
-        <translation type="unfinished"></translation>
+        <translation>Sélectionner le fichier de configuration %1.</translation>
     </message>
     <message>
         <location filename="../src/engines/options.cpp" line="99"/>
         <source>Select %1 KeyFile.</source>
-        <translation type="unfinished"></translation>
+        <translation>Sélectionner le fichier de clé %1.</translation>
     </message>
     <message>
         <location filename="../src/engines/cryfs.cpp" line="246"/>
@@ -512,12 +512,12 @@ Il doit se terminer avec un des termes suivants : &quot;%1&quot;</translation>
     <message>
         <location filename="../src/engines/fscrypt.cpp" line="544"/>
         <source>Unlock Fscrypt Volume With A Specified 32 Byte(256-Bit) KeyFile.</source>
-        <translation type="unfinished"></translation>
+        <translation>Déchiffrer le volume Fscrypt avec un fichier de clé 32 octets (256-Bit) spécifique.</translation>
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="700"/>
         <source>The Password Is &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Le mot de passe est &quot;%1&quot;</translation>
     </message>
 </context>
 <context>
@@ -1069,7 +1069,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.ui" line="825"/>
         <source>Add Volume To Secure Wallets</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajouter le volume aux trousseaux sécurisés</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="834"/>
@@ -1084,7 +1084,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.ui" line="1037"/>
         <source>Set Default Wallet</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir le trousseau par défaut</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="1049"/>
@@ -1114,7 +1114,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.ui" line="1114"/>
         <source>Windows&apos; DPAPI</source>
-        <translation type="unfinished"></translation>
+        <translation>Windows&apos; DPAPI</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="1135"/>
@@ -1124,17 +1124,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.ui" line="1152"/>
         <source>Enter Volume Path Below</source>
-        <translation type="unfinished"></translation>
+        <translation>Saisir le chemin de volume ci dessous</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="1181"/>
         <source>Enter Password Below</source>
-        <translation type="unfinished"></translation>
+        <translation>Saisir le mot de passe ci dessous</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="1210"/>
         <source>Add Volume To Selected Wallet</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajouter le volume au trousseau sélectionné</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="1236"/>
@@ -1151,7 +1151,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.ui" line="1306"/>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>Ok</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="1313"/>
@@ -1203,7 +1203,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/favorites2.cpp" line="298"/>
         <location filename="../src/favorites2.cpp" line="376"/>
         <source>Change Window&apos;s Wallet Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Modifier le mot de passe de trousseau de Windows</translation>
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="322"/>
@@ -1215,7 +1215,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/favorites2.cpp" line="415"/>
         <location filename="../src/favorites2.cpp" line="425"/>
         <source>Not Applicable</source>
-        <translation type="unfinished"></translation>
+        <translation>Non Applicable</translation>
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="435"/>
@@ -1235,7 +1235,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.cpp" line="582"/>
         <source>Add Entry To Default Wallet</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajouter l&apos;entrée de trousseau par défaut</translation>
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="605"/>
@@ -1250,7 +1250,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.cpp" line="685"/>
         <source>Show Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Montrer le mot de passe</translation>
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="709"/>
@@ -1341,7 +1341,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/engines/fscryptcreateoptions.ui" line="14"/>
         <source>Select Volume Creation Options </source>
-        <translation type="unfinished"></translation>
+        <translation>Sélectionner les options de création de volume </translation>
     </message>
     <message>
         <location filename="../src/engines/fscryptcreateoptions.ui" line="26"/>
@@ -1356,37 +1356,37 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/engines/fscryptcreateoptions.ui" line="62"/>
         <source>Enter Volume&apos;s Protector Name Below(Optional)</source>
-        <translation type="unfinished"></translation>
+        <translation>Saisir le nom de la protection de volume (optionnel)</translation>
     </message>
     <message>
         <location filename="../src/engines/fscryptcreateoptions.ui" line="81"/>
         <source>Key Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Type de clé</translation>
     </message>
     <message>
         <location filename="../src/engines/fscryptcreateoptions.ui" line="93"/>
         <source>A Custom Passphrase</source>
-        <translation type="unfinished"></translation>
+        <translation>Une passphrase personnalisée</translation>
     </message>
     <message>
         <location filename="../src/engines/fscryptcreateoptions.ui" line="106"/>
         <source>Your Login Passphrase</source>
-        <translation type="unfinished"></translation>
+        <translation>Votre passphrase de Login</translation>
     </message>
     <message>
         <location filename="../src/engines/fscryptcreateoptions.ui" line="119"/>
         <source>A Raw 256-Bit Key</source>
-        <translation type="unfinished"></translation>
+        <translation>Une clé Raw 256 bits</translation>
     </message>
     <message>
         <location filename="../src/engines/fscryptcreateoptions.ui" line="143"/>
         <source>Enter A Path To A Raw 256 Bit Key</source>
-        <translation type="unfinished"></translation>
+        <translation>Entrer le chemin vers la clé Raw 256 bits</translation>
     </message>
     <message>
         <location filename="../src/engines/fscryptcreateoptions.cpp" line="46"/>
         <source>Select A 32 Byte KeyFile</source>
-        <translation type="unfinished"></translation>
+        <translation>Sélectionner un fichier de clé 32 octets (256 bits)</translation>
     </message>
 </context>
 <context>
@@ -1814,12 +1814,12 @@ Mettre la clé de volume à ajouter dans le trousseau avant le montage.</transla
     <message>
         <location filename="../src/engines/options.ui" line="61"/>
         <source>Unlock A Volume With Below Configuration File.</source>
-        <translation type="unfinished"></translation>
+        <translation>Déchiffrer le volume avec le fichier de configuration ci-dessous.</translation>
     </message>
     <message>
         <location filename="../src/engines/options.ui" line="90"/>
         <source>Unlock A Volume With Below KeyFile.</source>
-        <translation type="unfinished"></translation>
+        <translation>Déchiffrer le volume avec le fichier de clé ci-dessous.</translation>
     </message>
     <message>
         <location filename="../src/engines/options.ui" line="181"/>
@@ -1840,12 +1840,12 @@ Mettre la clé de volume à ajouter dans le trousseau avant le montage.</transla
     <message>
         <location filename="../src/engines/options.cpp" line="71"/>
         <source>Unlock %1 Volume With A KeyFile.</source>
-        <translation type="unfinished"></translation>
+        <translation>Déchiffrer le volume %1 avec le fichier de clé.</translation>
     </message>
     <message>
         <location filename="../src/engines/options.cpp" line="73"/>
         <source>Unlock %1 Volume With A Configuration File.</source>
-        <translation type="unfinished"></translation>
+        <translation>Déchiffrer le volume %1 avec le fichier de configuration.</translation>
     </message>
 </context>
 <context>
