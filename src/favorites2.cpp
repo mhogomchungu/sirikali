@@ -1300,7 +1300,7 @@ void favorites2::ShowUI()
 
 		if( utility::platformIsWindows() ){
 
-			m_ui->lineEditMountOptions->setText( "idmap=user,StrictHostKeyChecking=no,UseNetworkDrive=no" ) ;
+			m_ui->lineEditMountOptions->setText( "create_file_umask=0000,create_dir_umask=0000,umask=0000,idmap=user,StrictHostKeyChecking=no,UseNetworkDrive=no" ) ;
 		}else{
 			m_ui->lineEditMountOptions->setText( "idmap=user,StrictHostKeyChecking=no" ) ;
 		}
