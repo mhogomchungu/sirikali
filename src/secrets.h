@@ -99,6 +99,11 @@ public:
 			return this->openSync( std::move( function ),[](){},[](){} ) ;
 		}
 
+		bool open()
+		{
+			return this->openSync( []{ return true ; },[](){},[](){} ).opened ;
+		}
+
 		template< typename Opened,typename Before,typename After >
 		void open( Opened&& o,Before&& b,After&& a )
 		{

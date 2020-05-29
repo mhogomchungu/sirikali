@@ -1350,21 +1350,22 @@ void sirikali::dragEnterEvent( QDragEnterEvent * e )
 	e->accept() ;
 }
 
-void sirikali::dropEvent( QDropEvent * e )
+template< typename Function >
+static favorites::volumeList _dropEvent( QDropEvent * e,Function function )
 {
 	favorites::volumeList s ;
 
-	auto _favorite_entry = [ & ]( const QString& path )->favorites::entry{
+	auto _favorite_entry = [ & ]( const QString& path )->std::pair< favorites::entry,QByteArray >{
 
 		for( const auto& it : _readFavorites() ){
 
 			if( it.first.volumePath == path ){
 
-				return it.first ;
+				return { it.first,function( path ) } ;
 			}
 		}
 
-		return path ;
+		return { path,function( path ) } ;
 	} ;
 
 	QFileInfo fileInfo ;
@@ -1392,7 +1393,7 @@ void sirikali::dropEvent( QDropEvent * e )
 
 		if( fileInfo.isDir() ){
 
-			s.emplace_back( _favorite_entry( m ),QByteArray() ) ;
+			s.emplace_back( _favorite_entry( m ) ) ;
 
 		}else if( fileInfo.isFile() ){
 
@@ -1410,7 +1411,34 @@ void sirikali::dropEvent( QDropEvent * e )
 		}
 	}
 
-	this->mountMultipleVolumes( std::move( s ) ) ;
+	return s ;
+}
+
+void sirikali::dropEvent( QDropEvent * e )
+{
+	auto m = settings::instance().autoMountBackEnd() ;
+
+	if( m.isValid() ){
+
+		auto wallet = m_secrets.walletBk( m.bk() ) ;
+
+		if( wallet.open() ){
+
+			this->mountMultipleVolumes( _dropEvent( e,[ & ]( const QString& e ){
+
+				return wallet->readValue( e ) ;
+			} ) ) ;
+
+			return ;
+		}
+	}
+
+	this->mountMultipleVolumes( _dropEvent( e,[]( const QString& e ){
+
+		Q_UNUSED( e )
+
+		return QByteArray() ;
+	} ) ) ;
 }
 
 void sirikali::createVolume( QAction * ac )
