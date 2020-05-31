@@ -29,6 +29,8 @@
 #include <type_traits>
 #include <utility>
 
+#include "utility.h"
+
 class secrets
 {
 public:
@@ -60,6 +62,12 @@ public:
 		template< typename T >
 		struct walletResult
 		{
+			walletResult( T&& t ) : opened( true ),result( std::move( t ) )
+			{
+			}
+			walletResult() : opened( false )
+			{
+			}
 			bool opened ;
 			T result ;
 		} ;
@@ -71,7 +79,7 @@ public:
 		{
 			if( m_wallet->opened() ){
 
-				return { true,function() } ;
+				return function() ;
 			}else{
 				m_wallet->setImage( QIcon( ":/sirikali" ) ) ;
 
@@ -85,9 +93,9 @@ public:
 
 				if( m ){
 
-					return { true,function() } ;
+					return function() ;
 				}else{
-					return { false,{} } ;
+					return {} ;
 				}
 			}
 		}
