@@ -754,7 +754,7 @@ public:
 	        engineWithPaths() ;
 		engineWithPaths( const QString& engine ) ;
 		engineWithPaths( const QString& cipherPath,const QString& configFilePath ) ;
-		engineWithPaths( const engines::engine&,const engines::engine::ownsCipherFolder& ) ;
+		engineWithPaths( const engines::engine&,engines::engine::ownsCipherFolder ) ;
 		engineWithPaths( const engines::engine& e,
 		                 const QString& cipherPath,
 		                 const QString& configFilePath ) ;

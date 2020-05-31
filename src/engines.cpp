@@ -839,7 +839,7 @@ engines::engineWithPaths engines::getByPaths( const QString& cipherPath,
 
 		if( mm.yes ){
 
-			return { *m,mm } ;
+			return { *m,std::move( mm ) } ;
 		}
 	}
 
@@ -896,10 +896,10 @@ engines::engineWithPaths::engineWithPaths( const QString& cipherPath,
 }
 
 engines::engineWithPaths::engineWithPaths( const engines::engine& e,
-					   const engines::engine::ownsCipherFolder& s ) :
+					   engines::engine::ownsCipherFolder s ) :
 	m_engine( e ),
-	m_cipherPath( s.cipherPath ),
-	m_configPath( s.configPath )
+	m_cipherPath( std::move( s.cipherPath ) ),
+	m_configPath( std::move( s.configPath ) )
 {
 }
 

@@ -36,7 +36,6 @@ public:
 	{
 	public:
 		wallet( LXQt::Wallet::Wallet * ) ;
-		wallet( LXQt::Wallet::Wallet ** ) ;
 		wallet() ;
 
 		~wallet() ;
@@ -161,7 +160,7 @@ public:
 
 	~secrets() ;
 private:
-	LXQt::Wallet::Wallet ** internalWallet() const ;
+	LXQt::Wallet::Wallet * internalWallet() const ;
 	LXQt::Wallet::Wallet * windows_dpapiBackend() const ;
 	QWidget * m_parent = nullptr ;
 	mutable LXQt::Wallet::Wallet * m_internalWallet = nullptr ;

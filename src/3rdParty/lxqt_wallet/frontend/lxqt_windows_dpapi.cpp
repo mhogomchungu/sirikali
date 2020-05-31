@@ -16,7 +16,11 @@ static const int TEST_VALUE = -1 ;
 
 #include <cstring>
 
-using result = std::pair< bool,QByteArray > ;
+struct result{
+
+	bool success ;
+	QByteArray data ;
+} ;
 
 #ifdef Q_OS_WIN
 
@@ -178,9 +182,9 @@ void LXQt::Wallet::windows_dpapi::encrypt()
 
 		auto b = _encrypt( this->serializeData(),m_entropy ).await() ;
 
-		if( b.first ){
+		if( b.success ){
 
-			windowsKeysStorageData( b.second ) ;
+			windowsKeysStorageData( b.data ) ;
 		}
 	}else{
 		windowsDebugWindow( "LXQt:Wallet::Windows_dpapi: Wallet Not Opened." ) ;
@@ -285,9 +289,9 @@ void LXQt::Wallet::windows_dpapi::openWallet()
 {
 	_decrypt( m_data,m_entropy ).then( [ this ]( const result& m ){
 
-		if( m.first ){
+		if( m.success ){
 
-			this->deserializeData( m.second ) ;
+			this->deserializeData( m.data ) ;
 
 			m_opened = true ;
 
@@ -318,7 +322,7 @@ void LXQt::Wallet::windows_dpapi::openWalletWithPassword( QString e )
 
 	_decrypt( m_data,m_entropy ).then( [ this ]( const result& m ){
 
-		bool s = m.first ;
+		bool s = m.success ;
 
 		m_opened = s ;
 
@@ -326,7 +330,7 @@ void LXQt::Wallet::windows_dpapi::openWalletWithPassword( QString e )
 
 		if( s ){
 
-			this->deserializeData( m.second ) ;
+			this->deserializeData( m.data ) ;
 
 			m_walletOpened( s ) ;
 		}
@@ -527,7 +531,7 @@ void LXQt::Wallet::windows_dpapi::changeWalletPassWord( const QString& walletNam
 
 		auto m = _decrypt( a,old.toUtf8() ).await() ;
 
-		if( m.first ){
+		if( m.success ){
 
 			this->setEntropy( New ) ;
 
@@ -536,7 +540,7 @@ void LXQt::Wallet::windows_dpapi::changeWalletPassWord( const QString& walletNam
 				m_opened = true ;
 
 				m_keys.clear() ;
-				this->deserializeData( m.second ) ;
+				this->deserializeData( m.data ) ;
 			}
 
 			this->encrypt() ;
