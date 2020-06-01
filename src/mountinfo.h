@@ -42,7 +42,7 @@ public:
 	void contentCountDecreased( folderMonitor::function& function ) ;
 private:
 	QStringList folderList() const ;
-	utility::result< QStringList > folderListSynced() const ;
+	utility::qstringlist_result folderListSynced() const ;
 	QString m_path ;
 	QStringList m_folderList ;
 	bool m_waitForSynced ;

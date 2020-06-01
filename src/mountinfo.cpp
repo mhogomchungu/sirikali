@@ -729,7 +729,7 @@ QStringList folderMonitor::folderList() const
 	return QDir( m_path ).entryList( QDir::NoDotAndDotDot | QDir::Dirs ) ;
 }
 
-utility::result< QStringList > folderMonitor::folderListSynced() const
+utility::qstringlist_result folderMonitor::folderListSynced() const
 {
 	if( m_waitForSynced ){
 

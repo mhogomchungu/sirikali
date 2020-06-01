@@ -561,7 +561,7 @@ void LXQt::Wallet::windows_dpapi::changeWalletPassWord( const QString& walletNam
 
 void LXQt::Wallet::windows_dpapi::setImage( const QIcon& e )
 {
-	Q_UNUSED( e )
+	this->setWindowIcon( e ) ;
 }
 
 LXQt::Wallet::BackEnd LXQt::Wallet::windows_dpapi::backEnd()

@@ -1086,7 +1086,7 @@ void keyDialog::pbOK()
 
 void keyDialog::encryptedFolderCreate()
 {
-	utility::raii deleteKey( [ & ](){ m_walletKey.deleteKey() ; } ) ;
+	utility2::raii deleteKey( [ & ](){ m_walletKey.deleteKey() ; } ) ;
 
 	auto path = m_ui->lineEditFolderPath->text() ;
 
@@ -1324,7 +1324,7 @@ void keyDialog::setKeyInWallet()
 		}
 	}() ;
 
-	if( m.opened ){
+	if( m ){
 
 		QString id ;
 

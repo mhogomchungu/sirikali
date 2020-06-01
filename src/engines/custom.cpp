@@ -84,7 +84,7 @@ static QString _getVersion( const SirikaliJson& json )
 	}
 }
 
-static utility::result< custom::opts > _getOptions( const QByteArray& e,const QString& s )
+static utility2::result< custom::opts > _getOptions( const QByteArray& e,const QString& s )
 {
 	auto _log_error = []( const QString& msg,const QString& path ){
 

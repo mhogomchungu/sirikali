@@ -1037,9 +1037,9 @@ favorites::volumeList sirikali::autoUnlockVolumes( favorites::volumeList l,bool 
 		return e ;
 	} ) ;
 
-	if( s.opened ){
+	if( s.has_value() ){
 
-		return s.result ;
+		return s.RValue() ;
 	}else{
 		return l ;
 	}

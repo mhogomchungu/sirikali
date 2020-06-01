@@ -1314,7 +1314,7 @@ static bool _yubikey_remove_newline()
 	return m ;
 }
 
-utility::result< QByteArray > utility::yubiKey( const QByteArray& challenge )
+utility::qbytearray_result utility::yubiKey( const QByteArray& challenge )
 {
 	QString exe = _ykchalresp_path() ;
 

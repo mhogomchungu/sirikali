@@ -27,7 +27,7 @@
 #include <QFile>
 #include <QCryptographicHash>
 
-static utility::result< QString > _config_path()
+static utility::qstring_result _config_path()
 {
 	QString m = settings::instance().ConfigLocation() + "/favorites/" ;
 
@@ -130,7 +130,7 @@ static void _log_error( const QString& msg,const QString& path )
 	utility::debug::showDebugWindow( msg + a ) ;
 }
 
-utility::result< favorites::entry > favorites::readFavoriteByPath( const QString& path ) const
+utility2::result< favorites::entry > favorites::readFavoriteByPath( const QString& path ) const
 {
 	try {
 		SirikaliJson json( path,SirikaliJson::type::PATH ) ;
@@ -205,7 +205,7 @@ std::vector<favorites::entry> favorites::readFavorites() const
 	return e ;
 }
 
-utility::result< favorites::entry > favorites::readFavorite( const QString& e,const QString& s ) const
+utility2::result< favorites::entry > favorites::readFavorite( const QString& e,const QString& s ) const
 {
 	if( s.isEmpty() ){
 

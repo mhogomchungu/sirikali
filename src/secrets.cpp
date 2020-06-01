@@ -174,7 +174,7 @@ secrets::wallet::walletKey secrets::wallet::getKey( const QString& keyID,QWidget
 						 [ & ](){ if( widget ){	widget->hide() ; } },
 						 [ & ](){ if( widget ){	widget->show() ; } } ) ;
 
-			w.opened = m.opened ;
+			w.opened = m ;
 
 			if( w.opened ){
 

@@ -123,8 +123,8 @@ public:
 		version()
 		{
 		}
-		utility::result< bool > compare( const engines::engineVersion& b,
-						 engines::version::Operator op ) const
+		utility::bool_result compare( const engines::engineVersion& b,
+					      engines::version::Operator op ) const
 		{
 			const auto& a = this->get() ;
 
@@ -147,11 +147,11 @@ public:
 		{
 			return this->get().toString() ;
 		}
-		utility::result< bool > greaterOrEqual( int major,int minor,int patch ) const
+		utility::bool_result greaterOrEqual( int major,int minor,int patch ) const
 		{
 			return this->compare( { major,minor,patch },engines::version::Operator::greaterOrEqual ) ;
 		}
-		utility::result< bool > greaterOrEqual( const QString& v ) const
+		utility::bool_result greaterOrEqual( const QString& v ) const
 		{
 		        return this->compare( v,engines::version::Operator::greaterOrEqual ) ;
 		}
@@ -160,9 +160,9 @@ public:
 		QString m_engineName ;
 	};
 
-	class booleanCache : public cache< utility::result< bool > >{
+	class booleanCache : public cache< utility::bool_result >{
 	public:
-	        booleanCache( std::function< utility::result< bool >() > s ) :
+		booleanCache( std::function< utility::bool_result() > s ) :
 		        cache( std::move( s ) )
 		{
 		}
@@ -174,7 +174,7 @@ public:
 		virtual void silenceWarning() ;
 	};
 
-	class versionGreaterOrEqual : public cache< utility::result< bool > >{
+	class versionGreaterOrEqual : public cache< utility::bool_result >{
 	public:
 	        versionGreaterOrEqual( bool m,const engines::engine& engine,int major,int minor,int patch ) :
 		        cache( [ =,&engine ](){ return this->setCallback( m,engine,major,minor,patch ) ; } )

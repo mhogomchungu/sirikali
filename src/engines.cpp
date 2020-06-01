@@ -822,7 +822,7 @@ engines::engine::ownsCipherFolder engines::engine::ownsCipherPath( const QString
 
 				return { true,cipherPath,configFilePath.mid( a.size() ) } ;
 			}else{
-				return {} ;
+				return { false,QString(),QString() } ;
 			}
 		}
 	}

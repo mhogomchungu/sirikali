@@ -72,91 +72,12 @@ class QEvent ;
 
 namespace utility
 {
-	class raii
-	{
-	public:
-		raii( std::function< void() > s ) : m_function( std::move( s ) )
-		{
-		}
-		~raii()
-		{
-			if( m_run ){
+	using qstringlist_result = utility2::result< QStringList > ;
+	using qbytearray_result  = utility2::result< QByteArray > ;
+	using qstring_result     = utility2::result< QString > ;
+	using bool_result        = utility2::result< bool > ;
+	using int_result         = utility2::result< int > ;
 
-				m_function() ;
-			}
-		}
-		void cancel()
-		{
-			m_run = false ;
-		}
-	private:
-		bool m_run = true ;
-		std::function< void() > m_function ;
-	};
-	template< typename T >
-	class result
-	{
-	public:
-		result()
-		{
-		}
-		result( T e ) : m_valid( true ),m_value( std::move( e ) )
-		{
-		}
-		T * operator->()
-		{
-			return &m_value ;
-		}
-		const T * operator->() const
-		{
-			return &m_value ;
-		}
-		T& operator*()
-		{
-			return m_value ;
-		}
-		const T& operator*() const
-		{
-			return m_value ;
-		}
-		operator bool()
-		{
-			return m_valid ;
-		}
-		bool has_value() const
-		{
-			return m_valid ;
-		}
-		T& value()
-		{
-			return m_value ;
-		}
-		const T& value() const
-		{
-			return m_value ;
-		}
-		T&& RValue()
-		{
-			return std::move( m_value ) ;
-		}
-		void set( T value )
-		{
-			m_value = std::move( value ) ;
-			m_valid = true ;
-		}
-	private:
-		bool m_valid = false ;
-		T m_value ;
-	} ;	
-
-	using qbytearray_result = result< QString > ;
-	using qstring_result    = result< QString > ;
-	using bool_result       = result< bool > ;
-	using int_result        = result< int > ;
-}
-
-namespace utility
-{
 	struct debug
 	{
 		static void showDebugWindow( const QString& ) ;
@@ -341,7 +262,7 @@ namespace utility
 
 	void setDefaultMountPointPrefix( const QString& path ) ;
 
-	utility::result< QByteArray > yubiKey( const QByteArray& challenge ) ;
+	qbytearray_result yubiKey( const QByteArray& challenge ) ;
 
 	QString mountPathPostFix( const QString& path ) ;
 	QString mountPathPostFix( const QString& prefix,const QString& path ) ;
@@ -639,7 +560,7 @@ namespace utility
 		bool m_finished = false ;
 	};
 
-	using task_result = utility::result< utility::Task > ;
+	using task_result = utility2::result< utility::Task > ;
 }
 
 #endif // MISCFUNCTIONS_H

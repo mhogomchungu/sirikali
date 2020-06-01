@@ -29,7 +29,7 @@
 #include <type_traits>
 #include <utility>
 
-#include "utility.h"
+#include "utility2.h"
 
 class secrets
 {
@@ -59,23 +59,10 @@ public:
 			return m_wallet ;
 		}
 
-		template< typename T >
-		struct walletResult
-		{
-			walletResult( T&& t ) : opened( true ),result( std::move( t ) )
-			{
-			}
-			walletResult() : opened( false )
-			{
-			}
-			bool opened ;
-			T result ;
-		} ;
-
 		template< typename Function,typename Before,typename After >
-		walletResult< std::result_of_t< Function() > > openSync( Function&& function,
-									 Before&& b = [](){},
-									 After&& a = [](){} )
+		utility2::result< std::result_of_t< Function() > > openSync( Function&& function,
+									     Before&& b = [](){},
+									     After&& a = [](){} )
 		{
 			if( m_wallet->opened() ){
 
@@ -101,14 +88,14 @@ public:
 		}
 
 		template< typename Function >
-		walletResult< std::result_of_t< Function() > > open( Function&& function )
+		utility2::result< std::result_of_t< Function() > > open( Function&& function )
 		{
 			return this->openSync( std::move( function ),[](){},[](){} ) ;
 		}
 
 		bool open()
 		{
-			return this->openSync( []{ return true ; },[](){},[](){} ).opened ;
+			return this->openSync( []{ return true ; },[](){},[](){} ).has_value() ;
 		}
 
 		template< typename Opened,typename Before,typename After >
@@ -121,6 +108,8 @@ public:
 				b() ;
 
 				auto s = this->walletInfo() ;
+
+				m_wallet->setImage( QIcon( ":/sirikali" ) ) ;
 
 				m_wallet->open( s.walletName,s.appName,std::move( a ) ) ;
 			}

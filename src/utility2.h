@@ -142,4 +142,85 @@ namespace utility2
 	}
 }
 
+namespace utility2
+{
+	class raii
+	{
+	public:
+		raii( std::function< void() > s ) : m_function( std::move( s ) )
+		{
+		}
+		~raii()
+		{
+			if( m_run ){
+
+				m_function() ;
+			}
+		}
+		void cancel()
+		{
+			m_run = false ;
+		}
+	private:
+		bool m_run = true ;
+		std::function< void() > m_function ;
+	};
+
+	template< typename T >
+	class result
+	{
+	public:
+		result()
+		{
+		}
+		result( T e ) : m_valid( true ),m_value( std::move( e ) )
+		{
+		}
+		T * operator->()
+		{
+			return &m_value ;
+		}
+		const T * operator->() const
+		{
+			return &m_value ;
+		}
+		T& operator*()
+		{
+			return m_value ;
+		}
+		const T& operator*() const
+		{
+			return m_value ;
+		}
+		operator bool()
+		{
+			return m_valid ;
+		}
+		bool has_value() const
+		{
+			return m_valid ;
+		}
+		T& value()
+		{
+			return m_value ;
+		}
+		const T& value() const
+		{
+			return m_value ;
+		}
+		T&& RValue()
+		{
+			return std::move( m_value ) ;
+		}
+		void set( T value )
+		{
+			m_value = std::move( value ) ;
+			m_valid = true ;
+		}
+	private:
+		bool m_valid = false ;
+		T m_value ;
+	} ;
+}
+
 #endif
