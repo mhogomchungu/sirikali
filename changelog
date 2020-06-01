@@ -205,7 +205,7 @@ version 1.4.2(December 18,2019)
     this bug: https://github.com/cryfs/cryfs/issues/319
 -- Fix a breaking change in how fscrypt 0.2.7 reported its version info.
 
-    version 1.4.4(unreleased)
+    version 1.4.4(June 01,2020)
     [WINDOWS]
 -- Add support for storing keys securely on Windows by using Window's Data Protection API.
 
