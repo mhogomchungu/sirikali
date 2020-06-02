@@ -63,12 +63,20 @@ std::unique_ptr<LXQt::Wallet::Wallet> LXQt::Wallet::getWalletBackend(LXQt::Walle
 {
     if( bk == LXQt::Wallet::BackEnd::windows_dpapi )
     {
+#ifdef Q_OS_WIN
 	return std::unique_ptr<LXQt::Wallet::Wallet>(new LXQt::Wallet::windows_dpapi());
+#else
+	return nullptr;
+#endif
     }
 
     if (bk == LXQt::Wallet::BackEnd::internal)
     {
+#ifdef Q_OS_WIN
+	return nullptr;
+#else
 	return std::unique_ptr<LXQt::Wallet::Wallet>(new LXQt::Wallet::internalWallet());
+#endif
     }
 
     if (bk == LXQt::Wallet::BackEnd::kwallet)
@@ -109,7 +117,11 @@ bool LXQt::Wallet::backEndIsSupported(LXQt::Wallet::BackEnd bk)
 
     if (bk == LXQt::Wallet::BackEnd::internal)
     {
-        return true;
+#ifdef Q_OS_WIN
+	return false;
+#else
+	return true;
+#endif
     }
 
     if (bk == LXQt::Wallet::BackEnd::kwallet)

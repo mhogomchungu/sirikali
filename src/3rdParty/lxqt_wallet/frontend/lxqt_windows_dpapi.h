@@ -32,11 +32,12 @@
 #define LXQT_WINDOWS_H
 
 #include "lxqt_wallet.h"
+#include "task.h"
 
 #include <QString>
 #include <QByteArray>
 #include <QEventLoop>
-
+#include <QSettings>
 #include <functional>
 #include <memory>
 
@@ -95,8 +96,19 @@ public:
     LXQt::Wallet::BackEnd backEnd(void);
     QObject *qObject(void);
 private:
+    QByteArray getData();
+
+    struct result
+    {
+	bool success;
+	QByteArray data;
+    };
+
+    LXQt::Wallet::Task::future<result> &encrypt();
+    LXQt::Wallet::Task::future<result> &decrypt();
+
     void setEntropy(const QString &);
-    void encrypt();
+    void store();
     void createWallet(void);
     void openWallet();
     void openWalletWithPassword(QString);
@@ -113,6 +125,8 @@ private:
     std::function< void(bool) > m_walletOpened = [](bool e) { Q_UNUSED(e) };
     std::function<void(QString)> m_log ;
     QVector<std::pair<QString,QByteArray>> m_keys;
+    std::unique_ptr<QSettings> m_settings;
+    const QString m_settingsName = "LXQtWindowsDPAPI_Data";
 };
 
 }
