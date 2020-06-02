@@ -154,6 +154,8 @@ engines::engine::args sshfs::command( const QByteArray& password,
 		auto n = fuseOptions.extractStartsWith( m ).replace( m,"" ) ;
 
 		m_environment.insert( "SSH_AUTH_SOCK",n ) ;
+
+		utility::debug() << "Sshfs: Setting Env Variable Of: SSH_AUTH_SOCK=" + n ;
 	}else{
 		auto m = qgetenv( "SSH_AUTH_SOCK" ) ;
 
@@ -161,6 +163,8 @@ engines::engine::args sshfs::command( const QByteArray& password,
 
 			m_environment.remove( "SSH_AUTH_SOCK" ) ;
 		}else{
+			utility::debug() << "Sshfs: Setting Env Variable Of: SSH_AUTH_SOCK=" + m ;
+
 			m_environment.insert( "SSH_AUTH_SOCK",m ) ;
 		}
 	}
