@@ -31,6 +31,8 @@
 
 #include "utility2.h"
 
+void windowsDebugWindow( const QString& e,bool s ) ;
+
 class secrets
 {
 public:
@@ -69,6 +71,11 @@ public:
 				return function() ;
 			}else{
 				m_wallet->setImage( QIcon( ":/sirikali" ) ) ;
+
+				m_wallet->log( []( QString e ){
+
+					windowsDebugWindow( e,e.contains( "CRITICAL" ) ) ;
+				} );
 
 				auto s = this->walletInfo() ;
 
@@ -110,6 +117,11 @@ public:
 				auto s = this->walletInfo() ;
 
 				m_wallet->setImage( QIcon( ":/sirikali" ) ) ;
+
+				m_wallet->log( []( QString e ){
+
+					windowsDebugWindow( e,e.contains( "CRITICAL" ) ) ;
+				} );
 
 				m_wallet->open( s.walletName,s.appName,std::move( a ) ) ;
 			}

@@ -874,9 +874,9 @@ void sirikali::unlockVolume( const QStringList& l )
 
 				return m_secrets.walletBk( wxt::osxkeychain ).getKey( volume ) ;
 
-			}else if( _supported( SiriKali::Windows::windowsWalletBackend(),"windows_dpapi" ) ){
+			}else if( _supported( wxt::windows_dpapi,"windows_dpapi" ) ){
 
-				return m_secrets.walletBk( SiriKali::Windows::windowsWalletBackend() ).getKey( volume ) ;
+				return m_secrets.walletBk( LXQt::Wallet::BackEnd::windows_dpapi ).getKey( volume ) ;
 			}else{
 				return secrets::wallet::walletKey{ false,true,"" } ;
 			}

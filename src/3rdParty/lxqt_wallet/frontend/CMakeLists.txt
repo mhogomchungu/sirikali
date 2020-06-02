@@ -29,6 +29,11 @@ else()
 	file( WRITE ${PROJECT_BINARY_DIR}/osx_keychain.h "#define OSX_KEYCHAIN 0" )
 endif()
 
+file( WRITE ${PROJECT_BINARY_DIR}/translations_path.h
+"
+#define TRANSLATIONS_PATH \"${CMAKE_INSTALL_PREFIX}/share/lxqt/translations/lxqt-wallet/\"
+")
+
 if(QT5)
 	find_package(Qt5Widgets REQUIRED)
 	find_package(Qt5Core REQUIRED)

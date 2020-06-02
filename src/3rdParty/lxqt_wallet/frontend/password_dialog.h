@@ -41,48 +41,51 @@
 #include <functional>
 #include <utility>
 
-namespace Ui{
+namespace Ui
+{
 class password_dialog;
 }
 
-namespace LXQt{
+namespace LXQt
+{
 
-namespace Wallet{
+namespace Wallet
+{
 
 class password_dialog : public QDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	static password_dialog& instance( QWidget * w,
-					  const QString& walletName,
-					  const QString& appName,
-					  std::function< void( const QString& ) > && p,
-					  std::function< void() > q,
-					  std::function< void( bool ) > * z )
-	{
-		return *( new password_dialog( w,walletName,appName,std::move( p ),std::move( q ),z ) ) ;
-	}
-	explicit password_dialog( QWidget * parent,
-				  const QString& walletName,
-				  const QString& appName,
-				  std::function< void( const QString& ) >&&,
-				  std::function< void() >&&,
-				  std::function< void( bool ) > * ) ;
-	~password_dialog();
+    static password_dialog &instance(QWidget *w,
+                                     const QString &walletName,
+                                     const QString &appName,
+                                     std::function< void(const QString &) > && p,
+                                     std::function< void() > q,
+                                     std::function< void(bool) > * z)
+    {
+        return *(new password_dialog(w, walletName, appName, std::move(p), std::move(q), z));
+    }
+    explicit password_dialog(QWidget *parent,
+                             const QString &walletName,
+                             const QString &appName,
+                             std::function< void(const QString &) > && ,
+                             std::function< void() > && ,
+                             std::function< void(bool) > *);
+    ~password_dialog();
 private slots:
-	void pbSend( void ) ;
-	void pbCancel( void ) ;
-	void pbOK( void ) ;
-	void pbOK_2( void ) ;
+    void pbSend(void);
+    void pbCancel(void);
+    void pbOK(void);
+    void pbOK_2(void);
 private:
-	void HideUI( void ) ;
-	void closeEvent( QCloseEvent * ) ;
-	bool eventFilter ( QObject * watched,QEvent * event ) ;
-	Ui::password_dialog * m_ui ;
-	QString m_banner ;
+    void HideUI(void);
+    void closeEvent(QCloseEvent *);
+    bool eventFilter(QObject *watched, QEvent *event);
+    Ui::password_dialog *m_ui;
+    QString m_banner;
 
-	std::function< void( const QString& ) > m_password ;
-	std::function< void() > m_cancel ;
+    std::function< void(const QString &) > m_password;
+    std::function< void() > m_cancel;
 };
 
 }

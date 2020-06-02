@@ -31,6 +31,7 @@
 #include "lxqt_wallet.h"
 #include "lxqt_internal_wallet.h"
 #include "../backend/lxqtwallet.h"
+#include "translations_path.h"
 
 #include "storage_manager.h"
 
@@ -42,34 +43,13 @@
 #include "lxqt_libsecret.h"
 #endif
 
+#include <QCoreApplication>
+#include <QTranslator>
+#include <QFile>
+
 #include "lxqt_osx_keychain.h"
 #include "osx_keychain.h"
-
 #include "lxqt_windows_dpapi.h"
-
-#include <cstring>
-#include <cstdlib>
-
-#include <QDir>
-
-extern "C"{
-
-	void make_path( const char * e )
-	{
-		QDir().mkpath( e ) ;
-	}
-
-	char * home_path()
-	{
-		auto s = QDir::homePath().toLatin1() ;
-		auto m = static_cast< size_t >( s.size() ) ;
-
-		auto a = static_cast< char * >( std::malloc( m + 1 ) ) ;
-		std::memcpy( a,s.constData(),m ) ;
-		*( a + m ) = '\0' ;
-		return a ;
-	}
-}
 
 LXQt::Wallet::Wallet::Wallet()
 {
@@ -79,190 +59,219 @@ LXQt::Wallet::Wallet::~Wallet()
 {
 }
 
-LXQt::Wallet::Wallet * LXQt::Wallet::getWalletBackend( LXQt::Wallet::BackEnd bk )
+std::unique_ptr<LXQt::Wallet::Wallet> LXQt::Wallet::getWalletBackend(LXQt::Wallet::BackEnd bk)
 {
-	if( bk == LXQt::Wallet::BackEnd::windows_DPAPI ){
+    if( bk == LXQt::Wallet::BackEnd::windows_dpapi )
+    {
+	return std::unique_ptr<LXQt::Wallet::Wallet>(new LXQt::Wallet::windows_dpapi());
+    }
 
-#ifdef Q_OS_WIN
-		return new LXQt::Wallet::windows_dpapi() ;
+    if (bk == LXQt::Wallet::BackEnd::internal)
+    {
+	return std::unique_ptr<LXQt::Wallet::Wallet>(new LXQt::Wallet::internalWallet());
+    }
+
+    if (bk == LXQt::Wallet::BackEnd::kwallet)
+    {
+#if HAS_KWALLET_SUPPORT
+	return std::unique_ptr<LXQt::Wallet::Wallet>(new LXQt::Wallet::kwallet());
 #else
-		return nullptr ;
+        return nullptr;
 #endif
-	}
+    }
 
-	if( bk == LXQt::Wallet::BackEnd::internal ){
-
-#ifdef Q_OS_WIN
-		return nullptr ;
+    if (bk == LXQt::Wallet::BackEnd::libsecret)
+    {
+#if HAS_SECRET_SUPPORT
+	return std::unique_ptr<LXQt::Wallet::Wallet>(new LXQt::Wallet::libsecret());
 #else
-		return new LXQt::Wallet::internalWallet() ;
+        return nullptr;
 #endif
-	}
-
-	if( bk == LXQt::Wallet::BackEnd::kwallet ){
-		#if HAS_KWALLET_SUPPORT
-			return new LXQt::Wallet::kwallet() ;
-		#endif
-	}
-
-	if( bk == LXQt::Wallet::BackEnd::libsecret ){
-		#if HAS_SECRET_SUPPORT
-			return new LXQt::Wallet::libsecret() ;
-		#endif
-	}
-
-	if( bk == LXQt::Wallet::BackEnd::osxkeychain ){
-		#if OSX_KEYCHAIN
-			return new LXQt::Wallet::osxKeyChain() ;
-		#endif
-	}
-	return nullptr ;
+    }
+    if (bk == LXQt::Wallet::BackEnd::osxkeychain)
+    {
+#if OSX_KEYCHAIN
+	return std::unique_ptr<LXQt::Wallet::Wallet>(new LXQt::Wallet::osxKeyChain());
+#endif
+    }
+    return nullptr;
 }
 
-bool LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd bk )
+bool LXQt::Wallet::backEndIsSupported(LXQt::Wallet::BackEnd bk)
 {
-	if( bk == LXQt::Wallet::BackEnd::windows_DPAPI ){
-
+    if( bk == LXQt::Wallet::BackEnd::windows_dpapi ){
 #ifdef Q_OS_WIN
-		return true ;
+	return true;
 #else
-		return false ;
+	return false;
 #endif
-	}
+    }
 
-	if( bk == LXQt::Wallet::BackEnd::internal ){
+    if (bk == LXQt::Wallet::BackEnd::internal)
+    {
+        return true;
+    }
 
-#ifdef Q_OS_WIN
-		return false ;
+    if (bk == LXQt::Wallet::BackEnd::kwallet)
+    {
+        return HAS_KWALLET_SUPPORT;
+    }
+
+    if (bk == LXQt::Wallet::BackEnd::libsecret)
+    {
+        return HAS_SECRET_SUPPORT;
+    }
+
+    if (bk == LXQt::Wallet::BackEnd::osxkeychain )
+    {
+        return OSX_KEYCHAIN;
+    }
+
+    return false;
+}
+
+bool LXQt::Wallet::deleteWallet(LXQt::Wallet::BackEnd bk,
+                                const QString &walletName,
+                                const QString &applicationName)
+{
+    QString appName;
+
+    if (applicationName.isEmpty())
+    {
+        appName = walletName;
+    }
+    else
+    {
+        appName = applicationName;
+    }
+
+    if (bk == LXQt::Wallet::BackEnd::internal)
+    {
+        auto e = lxqt_wallet_delete_wallet(walletName.toLatin1().constData(),
+                                           appName.toLatin1().constData());
+
+        return e == lxqt_wallet_no_error;
+    }
+
+    if (bk == LXQt::Wallet::BackEnd::kwallet)
+    {
+#if HAS_KWALLET_SUPPORT
+        return KWallet::Wallet::deleteWallet(walletName) == 0;
 #else
-		return true ;
+        return false;
 #endif
-	}
+    }
 
-	if( bk == LXQt::Wallet::BackEnd::kwallet ){
+    if (bk == LXQt::Wallet::BackEnd::libsecret)
+    {
+        return false;
+    }
 
-		return HAS_KWALLET_SUPPORT ;
-	}
-
-	if( bk == LXQt::Wallet::BackEnd::libsecret ){
-
-		return HAS_SECRET_SUPPORT ;
-	}
-
-	if( bk == LXQt::Wallet::BackEnd::osxkeychain ){
-
-		return OSX_KEYCHAIN ;
-	}
-
-	return false ;
+    return false;
 }
 
-bool LXQt::Wallet::deleteWallet( LXQt::Wallet::BackEnd bk,
-				 const QString& walletName,
-				 const QString& applicationName )
+bool LXQt::Wallet::walletExists(LXQt::Wallet::BackEnd bk,
+                                const QString &walletName,
+                                const QString &applicationName)
 {
-	QString appName ;
+    QString appName;
 
-	if( applicationName.isEmpty() ){
+    if (applicationName.isEmpty())
+    {
+        appName = walletName;
+    }
+    else
+    {
+        appName = applicationName;
+    }
 
-		appName = walletName ;
-	}else{
-		appName = applicationName ;
-	}
+    if (bk == LXQt::Wallet::BackEnd::internal)
+    {
+        return lxqt_wallet_exists(walletName.toLatin1().constData(),
+                                  appName.toLatin1().constData()) == 0;
+    }
 
-	if( bk == LXQt::Wallet::BackEnd::internal ){
+    if (bk == LXQt::Wallet::BackEnd::kwallet)
+    {
+#if HAS_KWALLET_SUPPORT
+        return !KWallet::Wallet::folderDoesNotExist(walletName, appName);
+#else
+        return false;
+#endif
+    }
 
-		auto e = lxqt_wallet_delete_wallet( walletName.toLatin1().constData(),
-						    appName.toLatin1().constData() ) ;
+    if (bk == LXQt::Wallet::BackEnd::libsecret)
+    {
+        return false;
+    }
 
-		return e == lxqt_wallet_no_error ;
-	}
-
-	if( bk == LXQt::Wallet::BackEnd::kwallet ){
-		#if HAS_KWALLET_SUPPORT
-			return KWallet::Wallet::deleteWallet( walletName ) == 0 ;
-		#else
-			return false ;
-		#endif
-	}
-
-	if( bk == LXQt::Wallet::BackEnd::libsecret ){
-
-		return false ;
-	}
-
-	return false ;
+    return false;
 }
 
-bool LXQt::Wallet::walletExists( LXQt::Wallet::BackEnd bk,
-				 const QString& walletName,
-				 const QString& applicationName )
+QStringList LXQt::Wallet::walletList(LXQt::Wallet::BackEnd bk)
 {
-	QString appName ;
+    if (bk == LXQt::Wallet::BackEnd::internal)
+    {
+	char path[4096];
 
-	if( applicationName.isEmpty() ){
+        lxqt_wallet_application_wallet_path(path, 4096, "");
 
-		appName = walletName ;
-	}else{
-		appName = applicationName ;
-	}
+        QDir d(path);
 
-	if( bk == LXQt::Wallet::BackEnd::internal ){
+        auto l = d.entryList();
 
-		return lxqt_wallet_exists( walletName.toLatin1().constData(),
-					   appName.toLatin1().constData() ) == 0 ;
-	}
+        l.removeOne(".");
+        l.removeOne("..");
 
-	if( bk == LXQt::Wallet::BackEnd::kwallet ){
-		#if HAS_KWALLET_SUPPORT
-			return !KWallet::Wallet::folderDoesNotExist( walletName,appName ) ;
-		#else
-			return false ;
-		#endif
-	}
-
-	if( bk == LXQt::Wallet::BackEnd::libsecret ){
-
-		return false ;
-	}
-
-	if( bk == LXQt::Wallet::BackEnd::osxkeychain ){
-
-		return false ;
-	}
-
-	return false ;
+        return l;
+    }
+    else if (bk == LXQt::Wallet::BackEnd::kwallet)
+    {
+#if HAS_KWALLET_SUPPORT
+        return KWallet::Wallet::walletList();
+#else
+        return QStringList();
+#endif
+    }
+    else if (bk == LXQt::Wallet::BackEnd::libsecret)
+    {
+        return QStringList();
+    }
+    else
+    {
+        return QStringList();
+    }
 }
 
-QStringList LXQt::Wallet::walletList( LXQt::Wallet::BackEnd bk )
+QStringList LXQt::Wallet::translations()
 {
-	if( bk == LXQt::Wallet::BackEnd::internal ){
+    QDir d(TRANSLATIONS_PATH);
 
-		char path[ 4096 ] ;
+    auto l = d.entryList();
 
-		lxqt_wallet_application_wallet_path( path,4096,"" ) ;
+    l.removeOne(".");
+    l.removeOne("..");
 
-		QDir d( path ) ;
+    for (auto& it : l)
+    {
+	it.remove("lxqt-wallet_");
+	it.remove(".qm");
+    }
 
-		auto l = d.entryList() ;
+    return l;
+}
 
-		l.removeOne( "." ) ;
-		l.removeOne( ".." ) ;
+void LXQt::Wallet::setTranslationLanguage(const QString &language)
+{
+    auto l = "lxqt-wallet_" + language + ".qm";
 
-		return l ;
-
-	}else if( bk == LXQt::Wallet::BackEnd::kwallet ){
-
-		#if HAS_KWALLET_SUPPORT
-			return KWallet::Wallet::walletList() ;
-		#else
-			return QStringList() ;
-		#endif
-
-	}else if( bk == LXQt::Wallet::BackEnd::libsecret ){
-
-		return QStringList() ;
-	}else{
-		return QStringList() ;
-	}
+    if (QFile::exists(TRANSLATIONS_PATH + l))
+    {
+	QCoreApplication::installTranslator([&]()
+	{
+	    auto e = new QTranslator();
+	    e->load(l, TRANSLATIONS_PATH);
+	    return e;
+	}());
+    }
 }

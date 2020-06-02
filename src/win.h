@@ -60,8 +60,6 @@ QStringList engineInstalledDirs() ;
 
 QString lastError() ;
 
-LXQt::Wallet::BackEnd windowsWalletBackend() ;
-
 std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path ) ;
 
 bool mountPointTaken( const QString& ) ;

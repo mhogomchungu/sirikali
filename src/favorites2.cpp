@@ -286,11 +286,11 @@ favorites2::favorites2( QWidget * parent,
 	m_ui->rbKWallet->setEnabled( LXQt::Wallet::backEndIsSupported( bk::kwallet ) ) ;
 	m_ui->rbLibSecret->setEnabled( LXQt::Wallet::backEndIsSupported( bk::libsecret ) ) ;
 	m_ui->rbMacOSKeyChain->setEnabled( LXQt::Wallet::backEndIsSupported( bk::osxkeychain ) ) ;
-	m_ui->rbWindowsDPAPI->setEnabled( LXQt::Wallet::backEndIsSupported( SiriKali::Windows::windowsWalletBackend() ) ) ;
+	m_ui->rbWindowsDPAPI->setEnabled( LXQt::Wallet::backEndIsSupported( bk::windows_dpapi ) ) ;
 
 	auto walletBk = m_settings.autoMountBackEnd() ;
 
-	if( walletBk == SiriKali::Windows::windowsWalletBackend() ){
+	if( walletBk == bk::windows_dpapi ){
 
 		m_ui->label_22->setEnabled( true ) ;
 		m_ui->pbChangeWalletPassword->setEnabled( true ) ;
@@ -377,7 +377,7 @@ favorites2::favorites2( QWidget * parent,
 
 			m_ui->label_22->setEnabled( true ) ;
 			m_ui->pbChangeWalletPassword->setEnabled( true ) ;
-			auto bk = SiriKali::Windows::windowsWalletBackend() ;
+			auto bk = bk::windows_dpapi ;
 			this->walletBkChanged( bk ) ;
 			m_settings.autoMountBackEnd( bk ) ;
 		}
@@ -496,9 +496,11 @@ favorites2::favorites2( QWidget * parent,
 
 			m_secrets.changeInternalWalletPassword( a,b,[ this ]( bool s ){
 
-				Q_UNUSED( s )
+				if( s ){
 
-				this->walletBkChanged( LXQt::Wallet::BackEnd::internal ) ;
+					this->walletBkChanged( LXQt::Wallet::BackEnd::internal ) ;
+				}
+
 				this->show() ;
 			} ) ;
 
@@ -510,7 +512,7 @@ favorites2::favorites2( QWidget * parent,
 
 				if( s ){
 
-					this->walletBkChanged( SiriKali::Windows::windowsWalletBackend() ) ;
+					this->walletBkChanged( LXQt::Wallet::BackEnd::windows_dpapi ) ;
 				}
 
 				this->show() ;

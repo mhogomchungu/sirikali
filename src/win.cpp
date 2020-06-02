@@ -185,17 +185,7 @@ std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path )
 	}
 }
 
-LXQt::Wallet::BackEnd windowsWalletBackend()
-{
-	return LXQt::Wallet::BackEnd::windows_DPAPI ;
-}
-
 #else
-
-LXQt::Wallet::BackEnd windowsWalletBackend()
-{
-	return LXQt::Wallet::BackEnd( 255 ) ;
-}
 
 QString lastError()
 {

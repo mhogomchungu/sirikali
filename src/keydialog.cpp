@@ -337,7 +337,7 @@ void keyDialog::setUpInitUI()
 		m_ui->cbKeyType->addItem( _OSXKeyChain() ) ;
 	}
 
-	if( LXQt::Wallet::backEndIsSupported( SiriKali::Windows::windowsWalletBackend() ) ){
+	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::windows_dpapi ) ){
 
 		m_ui->cbKeyType->addItem( _windowsDPAPI() ) ;
 	}
@@ -962,7 +962,7 @@ void keyDialog::pbOpen()
 
 		}else if( wallet == _windowsDPAPI() ){
 
-			bkwallet = SiriKali::Windows::windowsWalletBackend() ;
+			bkwallet = LXQt::Wallet::BackEnd::windows_dpapi ;
 		}
 
 		if( kde || gnome || osx ){

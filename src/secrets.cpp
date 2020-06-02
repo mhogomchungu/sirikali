@@ -32,8 +32,6 @@ void secrets::changeInternalWalletPassword( const QString& walletName,
 {
 	auto e = this->internalWallet() ;
 
-	e->closeWallet() ;
-
 	e->changeWalletPassWord( walletName,appName,[ ff = std::move( ff ) ]( bool q ){
 
 		ff( q ) ;
@@ -72,7 +70,7 @@ LXQt::Wallet::Wallet * secrets::internalWallet() const
 
 		namespace w = LXQt::Wallet ;
 
-		m_internalWallet = w::getWalletBackend( w::BackEnd::internal ) ;
+		m_internalWallet = w::getWalletBackend( w::BackEnd::internal ).release() ;
 
 		m_internalWallet->setParent( m_parent ) ;
 	}
@@ -84,9 +82,9 @@ LXQt::Wallet::Wallet * secrets::windows_dpapiBackend() const
 {
 	if( m_windows_dpapi == nullptr ){
 
-		auto a = SiriKali::Windows::windowsWalletBackend() ;
+		auto a = LXQt::Wallet::BackEnd::windows_dpapi ;
 
-		m_windows_dpapi = LXQt::Wallet::getWalletBackend( a ) ;
+		m_windows_dpapi = LXQt::Wallet::getWalletBackend( a ).release() ;
 
 		m_windows_dpapi->setParent( m_parent ) ;
 	}
@@ -96,7 +94,7 @@ LXQt::Wallet::Wallet * secrets::windows_dpapiBackend() const
 
 secrets::wallet secrets::walletBk( LXQt::Wallet::BackEnd e ) const
 {
-	if( e == SiriKali::Windows::windowsWalletBackend() ){
+	if( e == LXQt::Wallet::BackEnd::windows_dpapi ){
 
 		return this->windows_dpapiBackend() ;
 
@@ -104,7 +102,7 @@ secrets::wallet secrets::walletBk( LXQt::Wallet::BackEnd e ) const
 
 		return this->internalWallet() ;
 	}else{
-		return LXQt::Wallet::getWalletBackend( e ) ;
+		return LXQt::Wallet::getWalletBackend( e ).release() ;
 	}
 }
 
@@ -122,7 +120,7 @@ static void _delete( LXQt::Wallet::Wallet * w )
 {
 	if( w ){
 
-		auto wb = SiriKali::Windows::windowsWalletBackend() ;
+		auto wb = LXQt::Wallet::BackEnd::windows_dpapi ;
 
 		auto m = w->backEnd() ;
 
@@ -189,7 +187,7 @@ secrets::wallet::walletKey secrets::wallet::getKey( const QString& keyID,QWidget
 
 		_open( LXQt::Wallet::walletExists( s,wlt.walletName(),wlt.applicationName() ) ) ;
 
-	}else if( s == SiriKali::Windows::windowsWalletBackend() ){
+	}else if( s == LXQt::Wallet::BackEnd::windows_dpapi ){
 
 		_open( true ) ;
 	}else{

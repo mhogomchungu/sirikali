@@ -161,7 +161,7 @@ if( INTERNAL_LXQT_WALLET )
                 message( STATUS "---------------------------------------------------------------------------" )
         else()
                 message( STATUS "---------------------------------------------------------------------------" )
-                message( STATUS "lxqt wallet support will be provided by an internal library" )
+		message( STATUS "lxqt wallet support will be provided by an internal library" )
                 message( STATUS "---------------------------------------------------------------------------" )
         endif()
 

@@ -895,7 +895,7 @@ void settings::autoMountBackEnd( const settings::walletBackEnd& e )
 
 			return "osxkeychain" ;
 
-		}else if( e == SiriKali::Windows::windowsWalletBackend() ){
+		}else if( e == LXQt::Wallet::BackEnd::windows_dpapi ){
 
 			return "windows_DPAPI" ;
 		}else{
@@ -933,7 +933,7 @@ settings::walletBackEnd settings::autoMountBackEnd()
 
 		}else if( e == "windows_DPAPI" ){
 
-			return SiriKali::Windows::windowsWalletBackend() ;
+			return LXQt::Wallet::BackEnd::windows_dpapi ;
 		}else{
 			return settings::walletBackEnd() ;
 		}
