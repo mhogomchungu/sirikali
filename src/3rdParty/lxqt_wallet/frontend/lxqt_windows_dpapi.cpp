@@ -79,11 +79,11 @@ static QByteArray _entropy(QSettings &settings, const QByteArray& entropy)
 					      static_cast< quint64 >(len));
 }
 
-LXQt::Wallet::Task::future<LXQt::Wallet::windows_dpapi::result> &LXQt::Wallet::windows_dpapi::encrypt()
+LXQt::Wallet::Task::future<LXQt::Wallet::windows_dpapi::result> &LXQt::Wallet::windows_dpapi::encrypt(QByteArray data)
 {
-    return LXQt::Wallet::Task::run<result>([this]()->result
+    return LXQt::Wallet::Task::run<result>([this,data=std::move(data)]()->result
     {
-	db In(m_data);
+	db In(data);
 	db Entropy(_entropy(*m_settings, m_entropy));
 	db Out;
 
@@ -99,16 +99,16 @@ LXQt::Wallet::Task::future<LXQt::Wallet::windows_dpapi::result> &LXQt::Wallet::w
 	{
 	    m_log("LXQt:Wallet::Windows_dpapi: Failed To Encrypt Data.");
 
-	    return {false, {}};
+	    return {false, std::move(data)};
         }
     });
 }
 
-LXQt::Wallet::Task::future<LXQt::Wallet::windows_dpapi::result> &LXQt::Wallet::windows_dpapi::decrypt()
+LXQt::Wallet::Task::future<LXQt::Wallet::windows_dpapi::result> &LXQt::Wallet::windows_dpapi::decrypt(QByteArray data)
 {
-    return LXQt::Wallet::Task::run<result>([this]()->result
+    return LXQt::Wallet::Task::run<result>([this,data = std::move(data)]()->result
     {
-	db In(m_data);
+	db In(data);
 	db Entropy(_entropy(*m_settings, m_entropy));
 	db Out;
 
@@ -122,23 +122,25 @@ LXQt::Wallet::Task::future<LXQt::Wallet::windows_dpapi::result> &LXQt::Wallet::w
 	{
 	    m_log("LXQt:Wallet::Windows_dpapi: Failed To Decrypt Data.");
 
-	    return {false, {}};
+	    return {false, std::move(data)};
         }
     });
 }
 
 #else
 
-LXQt::Wallet::Task::future<LXQt::Wallet::windows_dpapi::result> &LXQt::Wallet::windows_dpapi::decrypt()
+LXQt::Wallet::Task::future<LXQt::Wallet::windows_dpapi::result> &LXQt::Wallet::windows_dpapi::decrypt(QByteArray data)
 {
+    Q_UNUSED(data)
     return LXQt::Wallet::Task::run<result>([]()->result
     {
 	return {false, {}};
     });
 }
 
-LXQt::Wallet::Task::future<LXQt::Wallet::windows_dpapi::result> &LXQt::Wallet::windows_dpapi::encrypt()
+LXQt::Wallet::Task::future<LXQt::Wallet::windows_dpapi::result> &LXQt::Wallet::windows_dpapi::encrypt(QByteArray data)
 {
+    Q_UNUSED(data)
     return LXQt::Wallet::Task::run<result>([]()->result
     {
 	return {false, {}};
@@ -170,7 +172,7 @@ void LXQt::Wallet::windows_dpapi::store()
 {
     if (m_opened)
     {
-	auto b = this->encrypt().await();
+	auto b = this->encrypt(this->serializeData()).await();
 
         if (b.success)
         {
@@ -245,15 +247,15 @@ void LXQt::Wallet::windows_dpapi::open(const QString &walletName,
 
     this->setEntropy(password);
 
-    m_data = this->getData();
+    auto data = this->getData();
 
-    if (m_data.isEmpty())
+    if (data.isEmpty())
     {
 	this->createWallet();
     }
     else
     {
-	this->openWallet();
+	this->openWallet(std::move(data));
     }
 }
 
@@ -285,9 +287,9 @@ void LXQt::Wallet::windows_dpapi::createWallet()
     });
 }
 
-void LXQt::Wallet::windows_dpapi::openWallet()
+void LXQt::Wallet::windows_dpapi::openWallet(QByteArray data)
 {
-    this->decrypt().then([ this ](const result &m)
+    this->decrypt(std::move(data)).then([this](result m)
     {
         if (m.success)
         {
@@ -308,7 +310,7 @@ void LXQt::Wallet::windows_dpapi::openWallet()
             pwd::instance(this,
                           m_walletName,
                           m_displayApplicationName,
-			  [ this ](const QString & p) { this->openWalletWithPassword(p); },
+			  [this,data=std::move(m.data)](const QString &p) { this->openWalletWithPassword(p, data);},
 			  std::move(_cancelled),
 			  &m_correctPassword);
         }
@@ -319,11 +321,11 @@ void LXQt::Wallet::windows_dpapi::log(std::function<void(QString)> function)
     m_log = std::move(function);
 }
 
-void LXQt::Wallet::windows_dpapi::openWalletWithPassword(QString e)
+void LXQt::Wallet::windows_dpapi::openWalletWithPassword(QString e, const QByteArray &data)
 {
     this->setEntropy(e);
 
-    this->decrypt().then([ this ](const result & m)
+    this->decrypt(data).then([ this ](const result &m)
     {
 	bool s = m.success;
 
@@ -457,7 +459,7 @@ void LXQt::Wallet::windows_dpapi::deleteKey(const QString &key)
 {
     for (int i = 0; i < m_keys.size(); i++)
     {
-        if (m_keys[ i ].first == key)
+	if (m_keys[i].first == key)
         {
 	    m_keys.remove(i);
 	    break;
@@ -513,13 +515,14 @@ void LXQt::Wallet::windows_dpapi::closeWallet(bool e)
 }
 
 void LXQt::Wallet::windows_dpapi::changeWalletPassWord(const QString &walletName,
-        const QString &applicationName,
-        std::function< void(bool) > function)
+						       const QString &applicationName,
+						       std::function< void(bool) > function)
 {
     using args = LXQt::Wallet::changePassWordDialog::changeArgs;
 
-    auto change = [ this, function = std::move(function) ](const QString & old,
-                  const QString & New, bool cancelled)->args
+    auto change = [this, function = std::move(function)](const QString & old,
+							 const QString & New,
+							 bool cancelled)->args
     {
         if (cancelled)
         {
@@ -531,11 +534,12 @@ void LXQt::Wallet::windows_dpapi::changeWalletPassWord(const QString &walletName
 
 	this->setEntropy(old);
 
-	auto m = this->decrypt().await();
+	auto m = this->decrypt(std::move(a)).await();
 
         if (m.success)
         {
 	    this->setEntropy(New);
+
             if (!m_opened)
             {
 		m_opened = true;

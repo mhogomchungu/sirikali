@@ -104,14 +104,14 @@ private:
 	QByteArray data;
     };
 
-    LXQt::Wallet::Task::future<result> &encrypt();
-    LXQt::Wallet::Task::future<result> &decrypt();
+    LXQt::Wallet::Task::future<result> &encrypt(QByteArray);
+    LXQt::Wallet::Task::future<result> &decrypt(QByteArray);
 
     void setEntropy(const QString &);
     void store();
     void createWallet(void);
-    void openWallet();
-    void openWalletWithPassword(QString);
+    void openWallet(QByteArray);
+    void openWalletWithPassword(QString, const QByteArray &);
     void deserializeData(const QByteArray &);
     QByteArray serializeData();
     QString m_walletName;
@@ -119,7 +119,6 @@ private:
     QString m_displayApplicationName;
     QString m_password;
     QByteArray m_entropy;
-    QByteArray m_data;
     bool m_opened = false;
     std::function< void(bool) > m_correctPassword = [](bool e) { Q_UNUSED(e) };
     std::function< void(bool) > m_walletOpened = [](bool e) { Q_UNUSED(e) };
