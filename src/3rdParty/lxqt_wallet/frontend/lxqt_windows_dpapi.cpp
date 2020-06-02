@@ -139,7 +139,6 @@ LXQt::Wallet::Task::future<LXQt::Wallet::windows_dpapi::result> &LXQt::Wallet::w
 
 LXQt::Wallet::Task::future<LXQt::Wallet::windows_dpapi::result> &LXQt::Wallet::windows_dpapi::encrypt()
 {
-    Q_UNUSED(args)
     return LXQt::Wallet::Task::run<result>([]()->result
     {
 	return {false, {}};
