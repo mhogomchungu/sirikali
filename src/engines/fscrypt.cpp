@@ -420,7 +420,11 @@ engines::engine::ownsCipherFolder fscrypt::ownsCipherPath( const QString& cipher
 
 bool fscrypt::requiresAPassword( const engines::engine::cmdArgsList::options& opt ) const
 {
-	if( opt.keyFile.isEmpty() ){
+	if( opt.createOptions.contains( "--source=raw_key" ) ){
+
+		return false ;
+
+	}else if( opt.keyFile.isEmpty() ){
 
 		return engines::engine::requiresAPassword( opt ) ;
 	}else{
