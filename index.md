@@ -57,7 +57,7 @@ Latest released version is 1.4.4 and its source code can be downloaded by clicki
 
 ## Download links for Microsoft Windows Operating System.
 
-There are two packages for Windows Windows, the one with an installer is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.4.4/SiriKali-1.4.4.setup.exe">here</a> and the one without an installer(portable version) is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.4.4/SiriKali-1.4.4.exe.zip">here.</a>
+There are two packages for Windows Windows, the one with an installer is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.4.4/SiriKali-1.4.4-1.setup.exe">here</a> and the one without an installer(portable version) is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.4.4/SiriKali-1.4.4-1.exe.zip">here.</a>
 
 The installer is not signed and expect to get a warning from windows saying the installer is from an unknown publisher.
 We recommend using the installer version.
