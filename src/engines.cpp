@@ -1358,6 +1358,11 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 
 		if( !s.isEmpty() ){
 
+			if( s.size() > 32 ){
+
+				s = s.mid( 0,29 ) + "..." ;
+			}
+
 			if( m_fuseOptions.isEmpty() ){
 
 				m_fuseOptions = "volname=" + utility::Task::makePath( s ) ;
