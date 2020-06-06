@@ -312,7 +312,7 @@ set_target_properties(lxqt-wallet PROPERTIES SOVERSION "${LIBRARY_VERSION}")
 
 if( WIN32 )
 
-	TARGET_LINK_LIBRARIES(lxqt-wallet -lcrypt32 ${Qt5Network_LIBRARIES} "${link_libraries}" lxqt-wallet-backend)
+	TARGET_LINK_LIBRARIES(lxqt-wallet -lcrypt32 -lbcrypt "${link_libraries}" lxqt-wallet-backend)
 else()
 	TARGET_LINK_LIBRARIES(lxqt-wallet "${link_libraries}" lxqt-wallet-backend)
 endif()

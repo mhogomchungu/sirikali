@@ -12,8 +12,7 @@ static const int TEST_VALUE = -1;
 
 #include <windows.h>
 #include <dpapi.h>
-
-#include <qpassworddigestor.h>
+#include <bcrypt.h>
 
 class db
 {
@@ -63,20 +62,44 @@ private:
     CRYPTPROTECT_PROMPTSTRUCT m_prompt;
 };
 
-static QByteArray _entropy(QSettings &settings, const QByteArray& entropy)
+template<typename Function>
+static QByteArray _entropy(QSettings &settings, const QByteArray& entropy, const Function& log)
 {
     if(!settings.contains("WindowsPbkdf2Interations"))
     {
 	settings.setValue("WindowsPbkdf2Interations",50000);
     }
 
-    auto len = QCryptographicHash::hashLength(QCryptographicHash::Sha256);
+    int iterations = settings.value( "WindowsPbkdf2Interations" ).toInt();
 
-    return QPasswordDigestor::deriveKeyPbkdf2(QCryptographicHash::Sha256,
-					      entropy,
-					      "lxqt_windows_dpapi",
-					      settings.value( "WindowsPbkdf2Interations" ).toInt(),
-					      static_cast< quint64 >(len));
+    BCRYPT_ALG_HANDLE h;
+
+    auto s = BCryptOpenAlgorithmProvider(&h,
+					 BCRYPT_SHA256_ALGORITHM,
+					 nullptr,
+					 BCRYPT_ALG_HANDLE_HMAC_FLAG);
+    if(BCRYPT_SUCCESS(s))
+    {
+	auto ss = "lxqt_windows_dpapi";
+
+	std::array<unsigned char,32> buffer;
+
+	BCryptDeriveKeyPBKDF2(h,
+			      reinterpret_cast<unsigned char*>(const_cast<char*>(entropy.data())),
+			      static_cast<ULONG>(entropy.size()),
+			      reinterpret_cast<unsigned char*>(const_cast<char*>(ss)),
+			      static_cast<ULONG>(strlen(ss)),
+			      static_cast<ULONGLONG>(iterations),
+			      buffer.data(),
+			      static_cast<ULONG>(buffer.size()),
+			      0);
+
+	BCryptCloseAlgorithmProvider(h, 0);
+	return QByteArray(reinterpret_cast<char*>(buffer.data()), buffer.size());
+    }else{
+	log("LXQt Wallet::Windows_dpapi: Failed to created PBKDF2 key");
+	return {} ;
+    }
 }
 
 LXQt::Wallet::Task::future<LXQt::Wallet::windows_dpapi::result> &LXQt::Wallet::windows_dpapi::encrypt(QByteArray data)
@@ -84,7 +107,7 @@ LXQt::Wallet::Task::future<LXQt::Wallet::windows_dpapi::result> &LXQt::Wallet::w
     return LXQt::Wallet::Task::run<result>([this,data=std::move(data)]()->result
     {
 	db In(data);
-	db Entropy(_entropy(*m_settings, m_entropy));
+	db Entropy(_entropy(*m_settings, m_entropy, m_log));
 	db Out;
 
 	auto a = L"LXQt Wallet::Windows_dpapi.";
@@ -109,7 +132,7 @@ LXQt::Wallet::Task::future<LXQt::Wallet::windows_dpapi::result> &LXQt::Wallet::w
     return LXQt::Wallet::Task::run<result>([this,data = std::move(data)]()->result
     {
 	db In(data);
-	db Entropy(_entropy(*m_settings, m_entropy));
+	db Entropy(_entropy(*m_settings, m_entropy, m_log));
 	db Out;
 
         if (CryptUnprotectData(&In, nullptr, &Entropy, nullptr, In.prompt(), 0, &Out))
