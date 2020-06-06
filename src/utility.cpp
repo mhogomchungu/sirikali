@@ -789,13 +789,18 @@ QStringList utility::directoryList( const QString& e )
 	return s ;
 }
 
-QIcon utility::getIcon()
+QIcon utility::getIcon( iconType type )
 {
 	if( utility::platformIsLinux() ){
 
 		QIcon icon( INSTALL_PREFIX "/share/icons/hicolor/48x48/apps/sirikali.png" ) ;
 
-		return QIcon::fromTheme( "sirikali",icon ) ;
+		if( type == utility::iconType::trayIcon ){
+
+			return QIcon::fromTheme( "sirikali-panel",icon ) ;
+		}else{
+			return QIcon::fromTheme( "sirikali",icon ) ;
+		}
 	}else{
 		return QIcon( ":sirikali" ) ;
 	}

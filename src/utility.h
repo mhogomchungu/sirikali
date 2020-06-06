@@ -184,7 +184,9 @@ namespace utility
 	QByteArray convertPassword( const QString& ) ;
 	QString convertPassword( const QByteArray& ) ;
 
-	QIcon getIcon() ;
+	enum class iconType{ trayIcon,general } ;
+
+	QIcon getIcon( iconType ) ;
 
 	QStringList directoryList( const QString& e ) ;
 

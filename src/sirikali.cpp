@@ -294,17 +294,15 @@ void sirikali::setUpApp( const QString& volume )
 
 	this->setUpFont() ;
 
-	const auto icon = utility::getIcon() ;
-
 	this->setAcceptDrops( true ) ;
-	this->setWindowIcon( icon ) ;
+	this->setWindowIcon( utility::getIcon( utility::iconType::general ) ) ;
 
 	this->setUpAppMenu() ;
 
 	this->setLocalizationLanguage( false ) ;
 
 	m_trayIcon.setParent( this ) ;
-	m_trayIcon.setIcon( icon ) ;
+	m_trayIcon.setIcon( utility::getIcon( utility::iconType::trayIcon ) ) ;
 
 	this->showTrayIcon() ;
 
