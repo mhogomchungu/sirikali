@@ -17,11 +17,12 @@ static const int TEST_VALUE = -1;
 class db
 {
 public:
+    db(QByteArray&&) = delete;
     db(const QByteArray &e) : m_delete(false)
     {
 	ZeroMemory(&m_db, sizeof(DATA_BLOB));
 
-	m_db.pbData = reinterpret_cast<BYTE *>(const_cast< char * >(e.data()));
+	m_db.pbData = reinterpret_cast<BYTE*>(const_cast<char*>(e.data()));
 	m_db.cbData = static_cast<DWORD>(e.size());
     }
     db()
@@ -34,10 +35,10 @@ public:
     }
     QByteArray data()
     {
-	auto data = reinterpret_cast<const char *>(m_db.pbData);
+	auto data = reinterpret_cast<const char*>(m_db.pbData);
 	auto size = static_cast<int>(m_db.cbData);
 
-	return { data, size };
+	return {data, size};
     }
     CRYPTPROTECT_PROMPTSTRUCT *prompt(unsigned long flags = CRYPTPROTECT_PROMPT_ON_UNPROTECT)
     {
@@ -107,8 +108,9 @@ LXQt::Wallet::Task::future<LXQt::Wallet::windows_dpapi::result>
 {
     return LXQt::Wallet::Task::run<result>([this,data=std::move(data)]()->result
     {
+	auto entropy = _entropy(*m_settings, m_entropy, m_log);
 	db In(data);
-	db Entropy(_entropy(*m_settings, m_entropy, m_log));
+	db Entropy(entropy);
 	db Out;
 
 	auto a = L"LXQt Wallet::Windows_dpapi.";
@@ -133,8 +135,9 @@ LXQt::Wallet::Task::future<LXQt::Wallet::windows_dpapi::result>
 {
     return LXQt::Wallet::Task::run<result>([this,data = std::move(data)]()->result
     {
+	auto entropy = _entropy(*m_settings, m_entropy, m_log);
 	db In(data);
-	db Entropy(_entropy(*m_settings, m_entropy, m_log));
+	db Entropy(entropy);
 	db Out;
 
         if (CryptUnprotectData(&In, nullptr, &Entropy, nullptr, In.prompt(), 0, &Out))
@@ -241,7 +244,7 @@ bool LXQt::Wallet::windows_dpapi::open(const QString &walletName,
 
 void LXQt::Wallet::windows_dpapi::open(const QString &walletName,
                                        const QString &applicationName,
-				       std::function<void(bool)> function ,
+				       std::function<void(bool)> function,
                                        QWidget *parent,
                                        const QString &password,
                                        const QString &displayApplicationName)
