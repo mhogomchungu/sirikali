@@ -1345,29 +1345,58 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 		m_fuseOptions = utility::removeLast( m_fuseOptions,1 ) ;
 	}
 
-	if( !utility::platformIsLinux() && !m_fuseOptions.contains( "volname=" ) ){
+	if( !utility::platformIsLinux() ){
 
-		QString s ;
+		if( m_fuseOptions.contains( "volname=" ) ){
 
-		if( utility::platformIsOSX() ){
+			QString m ;
 
-			s = utility::split( e.opt.plainFolder,'/' ).last() ;
-		}else{
-			s = utility::split( cipherFolder( e.opt.cipherFolder ),'/' ).last() ;
-		}
+			for( const auto& it : utility::split( m_fuseOptions,',' ) ){
 
-		if( !s.isEmpty() ){
+				if( it.startsWith( "volname=" ) ){
 
-			if( s.size() > 32 ){
+					auto s = it.mid( 8 ) ;
 
-				s = s.mid( 0,29 ) + "..." ;
+					if( s.size() > 32 ){
+
+						m += "volname=" + s.mid( 0,29 ) + "...," ;
+					}else{
+						m += "volname=" + it + "," ;
+					}
+				}else{
+					m += it + "," ;
+				}
 			}
 
-			if( m_fuseOptions.isEmpty() ){
+			if( m.endsWith( "," ) ){
 
-				m_fuseOptions = "volname=" + utility::Task::makePath( s ) ;
+				m_fuseOptions = utility::removeLast( m,1 ) ;
+			}
+
+			m_fuseOptions = std::move( m ) ;
+		}else{
+			QString s ;
+
+			if( utility::platformIsOSX() ){
+
+				s = utility::split( e.opt.plainFolder,'/' ).last() ;
 			}else{
-				m_fuseOptions += ",volname=" + utility::Task::makePath( s ) ;
+				s = utility::split( cipherFolder( e.opt.cipherFolder ),'/' ).last() ;
+			}
+
+			if( !s.isEmpty() ){
+
+				if( s.size() > 32 ){
+
+					s = s.mid( 0,29 ) + "..." ;
+				}
+
+				if( m_fuseOptions.isEmpty() ){
+
+					m_fuseOptions = "volname=" + utility::Task::makePath( s ) ;
+				}else{
+					m_fuseOptions += ",volname=" + utility::Task::makePath( s ) ;
+				}
 			}
 		}
 	}
