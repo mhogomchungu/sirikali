@@ -28,8 +28,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef LXQT_SECRET_SERVICE_H
-#define LXQT_SECRET_SERVICE_H
+#ifndef LXQT_OSX_KEYCHAIN_H
+#define LXQT_OSX_KEYCHAIN_H
 
 #include "lxqt_wallet.h"
 
@@ -103,4 +103,4 @@ private:
 
 }
 
-#endif // LXQT_KWALLET_H
+#endif // LXQT_OSX_KEYCHAIN_H
