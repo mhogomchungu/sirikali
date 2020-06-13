@@ -59,6 +59,10 @@ else()
 	INCLUDE(${QT_USE_FILE})
 endif()
 
+if( APPLE )
+	SET(NOSECRETSUPPORT "true")
+endif()
+
 if(NOSECRETSUPPORT)
 	SET(SECRET_SUPPORT "false")
 	file(WRITE  ${PROJECT_BINARY_DIR}/storage_manager.h "\n#define HAS_SECRET_SUPPORT 0\n")
