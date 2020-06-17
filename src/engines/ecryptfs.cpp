@@ -106,7 +106,7 @@ bool ecryptfs::requiresPolkit() const
 template< typename Function >
 static bool _unmount_ecryptfs_( Function cmd )
 {
-	auto s = siritask::unmountVolume( cmd(),QString(),true ) ;
+	auto s = siritask::unmountVolume( cmd(),true ) ;
 
 	if( s && s.value().success() ){
 
@@ -116,15 +116,15 @@ static bool _unmount_ecryptfs_( Function cmd )
 	}
 }
 
-QString ecryptfs::wrapSU( const QString& s ) const
+siritask::exe ecryptfs::wrapSU( const QString& s ) const
 {
 	const auto& su = m_exeSUFullPath.get() ;
 
 	if( su.isEmpty() ){
 
-		return s ;
+		return {} ;
 	}else{
-		return QString( "%1 - -c \"%2\"" ).arg( su,QString( s ).replace( "\"","'" ) ) ;
+		return { su,{ "-",QString( "-c \"%1" ).arg( s ) } } ;
 	}
 }
 
@@ -134,17 +134,20 @@ engines::engine::status ecryptfs::unmount( const QString& cipherFolder,
 {
 	Q_UNUSED( mountPoint )
 
-	auto cmd = [ & ](){
+	auto cmd = [ & ]()->siritask::exe{
 
 		auto exe = this->executableFullPath() ;
 
-		auto s = exe + " -k " + cipherFolder ;
-
 		if( utility::useSiriPolkit() ){
 
-			return this->wrapSU( s ) ;
-		}else{
+			auto s = this->wrapSU( exe ) ;
+
+			s.args.append( "-k" ) ;
+			s.args.append( cipherFolder ) ;
+
 			return s ;
+		}else{
+			return { exe,{ "-k",cipherFolder } } ;
 		}
 	} ;
 
@@ -171,8 +174,6 @@ engines::engine::args ecryptfs::command( const QByteArray& password,
 {
 	Q_UNUSED( password )
 
-	auto e = QString( "%1 %2 -a %3 %4 %5" ) ;
-
 	engines::engine::commandOptions m( args,QString() ) ;
 
 	auto exeOptions = m.exeOptions() ;
@@ -186,9 +187,9 @@ engines::engine::args ecryptfs::command( const QByteArray& password,
 
 		if( args.opt.createOptions.isEmpty() ){
 
-			exeOptions.add( ecryptfscreateoptions::defaultCreateOptions() ) ;
+			exeOptions.add( "-o",ecryptfscreateoptions::defaultCreateOptions() ) ;
 		}else{
-			exeOptions.add( args.opt.createOptions ) ;
+			exeOptions.add( "-o",args.opt.createOptions ) ;
 		}
 	}else{
 		exeOptions.add( "-o","key=passphrase" ) ;
@@ -199,17 +200,19 @@ engines::engine::args ecryptfs::command( const QByteArray& password,
 		exeOptions.add( "-o",args.opt.mountOptions ) ;
 	}
 
-	auto s = e.arg( args.exe,
-			exeOptions.get(),
-			args.configFilePath,
-			args.cipherFolder,
-			args.mountPoint ) ;
+	exeOptions.add( "-a","--config=" + args.opt.configFilePath ) ;
+
+	exeOptions.add( args.cipherFolder,args.mountPoint ) ;
 
 	if( utility::useSiriPolkit() ){
 
-		return { args,m,this->wrapSU( s ) } ;
+		auto s = this->wrapSU( args.exe ) ;
+
+		s.args[ 1 ].append( " " + exeOptions.get().join( ' ' ) + "\"" ) ;
+
+		return { args,m,s.exe,s.args } ;
 	}else{
-		return { args,m,s } ;
+		return { args,m,args.exe,exeOptions.get() } ;
 	}
 }
 

@@ -981,7 +981,7 @@ namespace Task
 		};
 
 		static inline Task::future< result >& run( const QString& cmd,
-							   const QStringList& args = QStringList(),
+							   const QStringList& args,
 							   int waitTime = -1,
 							   const QByteArray& password = QByteArray(),
 							   const QProcessEnvironment& env = QProcessEnvironment(),
@@ -1007,12 +1007,7 @@ namespace Task
 
 				} exe( std::move( setUp_child_process ),env ) ;
 
-				if( args.isEmpty() ){
-
-					exe.start( cmd ) ;
-				}else{
-					exe.start( cmd,args ) ;
-				}
+				exe.start( cmd,args ) ;
 
 				if( !password.isEmpty() ){
 

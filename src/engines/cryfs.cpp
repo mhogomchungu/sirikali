@@ -95,8 +95,6 @@ engines::engine::args cryfs::command( const QByteArray& password,
 {
 	Q_UNUSED( password )
 
-	auto e = QString( "%1 %2 %3 %4 %5 %6" ) ;
-
 	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
 
 	auto exeOptions = m.exeOptions() ;
@@ -108,17 +106,17 @@ engines::engine::args cryfs::command( const QByteArray& password,
 
 	if( !args.opt.idleTimeout.isEmpty() ){
 
-		exeOptions.addPair( this->idleString(),args.opt.idleTimeout ) ;
+		exeOptions.add( this->idleString(),args.opt.idleTimeout ) ;
 	}
 
-	if( args.create ){
+	if( args.create && !args.opt.createOptions.isEmpty() ){
 
-		exeOptions.add( args.opt.createOptions ) ;
+		exeOptions.add( utility::split( args.opt.createOptions,' ' ) ) ;
 	}
 
-	if( !args.configFilePath.isEmpty() ){
+	if( !args.opt.configFilePath.isEmpty() ){
 
-		exeOptions.add( args.configFilePath ) ;
+		exeOptions.add( this->configFileArgument(),args.opt.configFilePath ) ;
 	}
 
 	if( args.opt.boolOptions.allowReplacedFileSystem ){
@@ -131,14 +129,14 @@ engines::engine::args cryfs::command( const QByteArray& password,
 		exeOptions.add( "--allow-filesystem-upgrade" ) ;
 	}
 
-	auto cmd = e.arg( args.exe,
-			  exeOptions.get(),
-			  args.cipherFolder,
-			  args.mountPoint,
-			  m_version_greater_or_equal_0_10_0 ? "" : "--",
-			  m.fuseOpts().get() ) ;
+	if( m_version_greater_or_equal_0_10_0 ){
 
-	return { args,m,cmd } ;
+		exeOptions.add( args.cipherFolder,args.mountPoint,m.fuseOpts().get() ) ;
+	}else{
+		exeOptions.add( args.cipherFolder,args.mountPoint,"--",m.fuseOpts().get() ) ;
+	}
+
+	return { args,m,args.exe,exeOptions.get() } ;
 }
 
 engines::engine::status cryfs::errorCode( const QString& e,int s ) const

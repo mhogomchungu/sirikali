@@ -33,9 +33,13 @@
 
 namespace siritask
 {
-	utility::task_result unmountVolume( const QString& exe,
-					    const QString& mountPoint,
-					    bool usePolkit ) ;
+	struct exe{
+
+		QString exe ;
+		QStringList args ;
+	};
+
+	utility::task_result unmountVolume( const siritask::exe& exe,bool usePolkit ) ;
 
 	engines::engine::status unmountVolume( const QString& mountPoint,
 					       const QString& unMountCommand,

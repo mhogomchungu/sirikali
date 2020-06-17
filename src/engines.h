@@ -438,7 +438,6 @@ public:
 
 			const QString& exe ;
 			const engines::engine::cmdArgsList::options& opt ;
-			const QString& configFilePath ;
 			const QString& cipherFolder ;
 			const QString& mountPoint ;
 			const bool create ;
@@ -495,15 +494,17 @@ public:
 		struct args
 		{
 			args() ;
-			args( const cmdArgsList&,const engines::engine::commandOptions&,
-			      const QString& cmd = QString() ) ;
+			args( const cmdArgsList&,
+			      const engines::engine::commandOptions&,
+			      const QString& cmd,
+			      const QStringList& ) ;
 			QString cmd ;
 			QString cipherPath ;
 			QString mountPath ;
 			QString fuseOptions ;
-			QString exeOptions ;
 			QString mode ;
 			QString subtype ;
+			QStringList cmd_args ;
 		} ;
 
 		static void encodeSpecialCharacters( QString& ) ;
@@ -546,13 +547,13 @@ public:
 		const QString& incorrectPasswordText() const ;
 		const QString& incorrectPasswordCode() const ;
 		const QString& unMountCommand() const ;
+		const QString& configFileArgument() const ;
 		const QString& windowsUnMountCommand() const ;
 		const QString& windowsInstallPathRegistryKey() const ;
 		const QString& windowsInstallPathRegistryValue() const ;
 
 		engine::engine::error errorCode( const QString& ) const ;
 
-		QString setConfigFilePath( const QString& ) const ;
 		QByteArray setPassword( const QByteArray& ) const ;
 
 		engine( BaseOptions ) ;
@@ -644,9 +645,14 @@ public:
 					this->add( std::forward< E >( e ) ) ;
 					this->add( std::forward< T >( m ) ... ) ;
 				}
-				const QString& get() const
+				QStringList get() const
 				{
-					return m_options ;
+					if( m_options.isEmpty() ){
+
+						return {} ;
+					}else{
+						return { "-o",m_options } ;
+					}
 				}
 				QString extractStartsWith( const QString& e )
 				{
@@ -687,24 +693,46 @@ public:
 				}
 			} ;
 
-			class exeOptions : public Options
+			class exeOptions
 			{
 			public:
-				exeOptions( QString& m ) : Options( m," " )
+				exeOptions( QStringList& m ) : m_options( m )
 				{
+				}
+				template< typename E >
+				void add( E&& e )
+				{
+					m_options.append( e ) ;
+				}
+				template< typename E,typename ... T >
+				void add( E&& e,T&& ... m )
+				{
+					this->add( std::forward< E >( e ) ) ;
+					this->add( std::forward< T >( m ) ... ) ;
 				}
 				void addPair( const QString& key,const QString& value,
-					      separator s = separator::space )
+					      separator s = separator::equal_sign )
 				{
-					Options::addPair( key,value,s ) ;
+					if( s == separator::equal_sign ){
+
+						this->add( key + "=" + value ) ;
+					}else{
+						this->add( key + " " + value ) ;
+					}
 				}
+				const QStringList& get() const
+				{
+					return m_options ;
+				}
+			private:
+				QStringList& m_options ;
 			} ;
 
 			commandOptions( const engines::engine::cmdArgsList& e,
 					const QString& f,
 					const QString& g = QString() ) ;
 
-			const QString& constExeOptions() const
+			const QStringList& constExeOptions() const
 			{
 				return m_exeOptions ;
 			}
@@ -729,7 +757,7 @@ public:
 				return m_fuseOptions ;
 			}
 		private:
-			QString m_exeOptions ;
+			QStringList m_exeOptions ;
 			QString m_fuseOptions ;
 			QString m_subtype ;
 			QString m_mode ;

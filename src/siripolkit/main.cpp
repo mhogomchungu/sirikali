@@ -33,7 +33,11 @@ int main( int argc,char * argv[] )
 
 		s.removeLast() ;
 
-		if( QProcess::startDetached( s.join( " " ) ) ){
+		auto exe = s.first() ;
+
+		s.removeFirst() ;
+
+		if( QProcess::startDetached( exe,s ) ){
 
 			return 0 ;
 		}else{

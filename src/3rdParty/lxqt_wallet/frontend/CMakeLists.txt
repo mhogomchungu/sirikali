@@ -90,6 +90,8 @@ else()
 		find_package(Qt5Widgets REQUIRED)
 		find_package(Qt5Core REQUIRED)
 
+		cmake_policy(SET CMP0012 NEW)
+
 		find_package(KF5Wallet QUIET)
 		find_package(KF5Notifications QUIET)
 

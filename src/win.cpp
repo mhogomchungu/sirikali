@@ -459,28 +459,47 @@ struct terminate_process{
 	const QString& unMountCommand ;
 };
 
-static std::pair< Task::process::result,QString > _terminate_process( const terminate_process& e )
+struct terminate_result{
+
+	Task::process::result result ;
+	QString exe ;
+	QStringList args ;
+} ;
+
+static terminate_result _terminate_process( const terminate_process& e )
 {
 	QString exe ;
 
+	QStringList args ;
+
 	if( e.unMountCommand == "sirikali.exe -T" ){
 
-		exe = e.unMountCommand + QString::number( e.exe.processId() ) ;
+		exe = e.unMountCommand ;
+
+		args.append( QString::number( e.exe.processId() ) ) ;
 
 	}else if( e.unMountCommand.isEmpty() || e.mountPath.isEmpty() ){
 
 		exe = "taskkill /F /PID " + QString::number( e.exe.processId() ) ;
+
+		args.append( "/F" ) ;
+
+		args.append( "/PID" ) ;
+
+		args.append( QString::number( e.exe.processId() ) ) ;
 	}else{
-		exe = utility::Task::makePath( e.unMountCommand ) + " " + e.mountPath ;
+		exe = e.unMountCommand ;
+
+		args.append( e.mountPath ) ;
 	}
 
-	auto m = utility::unwrap( Task::process::run( exe,{},-1,"",e.env ) ) ;
+	auto m = utility::unwrap( Task::process::run( exe,args,-1,"",e.env ) ) ;
 
 	if( m.success() ){
 
 		if( utility::waitForFinished( e.exe ) ){
 
-			return { std::move( m ),std::move( exe ) } ;
+			return { std::move( m ),std::move( exe ),std::move( args ) } ;
 		}else{
 			auto a = Task::process::result( SiriKali::Windows::_backEndFailedToFinish,
 							QByteArray(),
@@ -488,10 +507,10 @@ static std::pair< Task::process::result,QString > _terminate_process( const term
 							0,
 							true ) ;
 
-			return { std::move( a ),std::move( exe ) } ;
+			return { std::move( a ),std::move( exe ),std::move( args ) } ;
 		}
 	}else{
-		return { std::move( m ),std::move( exe ) } ;
+		return { std::move( m ),std::move( exe ),std::move( args ) } ;
 	}
 }
 
@@ -501,7 +520,7 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 
 	exe->setProcessEnvironment( opts.engine.getProcessEnvironment() ) ;
 	exe->setProcessChannelMode( QProcess::MergedChannels ) ;
-	exe->start( opts.args.cmd ) ;
+	exe->start( opts.args.cmd,opts.args.cmd_args ) ;
 	exe->waitForStarted() ;
 	exe->write( opts.password + "\n" ) ;
 	exe->closeWriteChannel() ;
@@ -559,7 +578,7 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 		}
 	}() ;
 
-	utility::logCommandOutPut( s,opts.args.cmd ) ;
+	utility::logCommandOutPut( s,opts.args.cmd,opts.args.cmd_args ) ;
 
 	return s ;
 }
@@ -598,7 +617,7 @@ SiriKali::Windows::volumes::remove( const QString& unMountCommand,const QString&
 
 			auto r = [ & ](){
 
-				if( m.first.success() ) {
+				if( m.result.success() ) {
 
 					m_instances.erase( it ) ;
 
@@ -610,7 +629,7 @@ SiriKali::Windows::volumes::remove( const QString& unMountCommand,const QString&
 				}
 			}() ;
 
-			utility::logCommandOutPut( r,m.second ) ;
+			utility::logCommandOutPut( r,m.exe,m.args ) ;
 
 			return r ;
 		}
@@ -718,9 +737,9 @@ Task::process::result SiriKali::Windows::run( const opts& s )
 
 			return SiriKali::Windows::volumes::get().add( s ) ;
 		}else{
-			auto m = utility::unwrap( Task::process::run( s.args.cmd,s.password ) ) ;
+			auto m = utility::unwrap( Task::process::run( s.args.cmd,s.args.cmd_args,-1,s.password ) ) ;
 
-			utility::logCommandOutPut( m,s.args.cmd ) ;
+			utility::logCommandOutPut( m,s.args.cmd,s.args.cmd_args ) ;
 
 			return m ;
 		}

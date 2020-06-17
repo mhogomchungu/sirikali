@@ -199,48 +199,107 @@ engines::engine::args custom::command( const QByteArray& password,
 
 		auto exeOptions = m.exeOptions() ;
 
-		if( !args.configFilePath.isEmpty() ){
+		QStringList opts ;
 
-			exeOptions.add( args.configFilePath ) ;
+		if( !args.opt.configFilePath.isEmpty() ){
+
+			opts.append( this->configFileArgument() + args.opt.configFilePath ) ;
 		}
 
-		exeOptions.add( args.opt.createOptions ) ;
+		if( !args.opt.createOptions.isEmpty() ){
+
+			opts.append( utility::split( args.opt.createOptions,' ' ) ) ;
+		}
 
 		QString cmd = m_createControlStructure ;
 
-		cmd.replace( "%{mountOptions}",exeOptions.get(),Qt::CaseInsensitive ) ;
-		cmd.replace( "%{cipherFolder}",args.cipherFolder,Qt::CaseInsensitive ) ;
-		cmd.replace( "%{mountPoint}",args.mountPoint,Qt::CaseInsensitive ) ;
-		cmd.replace( "%{password}",password ) ;
+		if( opts.isEmpty() ){
 
-		return { args,m,args.exe + " " + cmd } ;
+			cmd.replace( "%{createOptions}","",Qt::CaseInsensitive ) ;
+		}else{
+			cmd.replace( "%{createOptions}",opts.join( ' ' ),Qt::CaseInsensitive ) ;
+		}
+
+		auto mm = utility::split( cmd,' ' ) ;
+
+		for( auto& it : mm ){
+
+			if( it == "%{cipherFolder}" ){
+
+				it = args.cipherFolder ;
+
+			}else if( it == "%{mountPoint}" ){
+
+				it = args.mountPoint ;
+
+			}else if( it == "%{password}" ){
+
+				it = password ;
+			}
+		}
+
+		exeOptions.add( mm ) ;
+
+		return { args,m,args.exe,exeOptions.get() } ;
 	}else{
-		QString cmd = m_mountControlStructure ;
+		QStringList opts ;
 
 		auto exeOptions = m.exeOptions() ;
 
-		if( !args.configFilePath.isEmpty() ){
+		if( !args.opt.configFilePath.isEmpty() ){
 
-			exeOptions.add( args.configFilePath ) ;
+			opts.append( args.opt.configFilePath ) ;
 		}
 
 		if( args.opt.boolOptions.unlockInReverseMode ){
 
-			exeOptions.add( this->reverseString() ) ;
+			opts.append( this->reverseString() ) ;
 		}
 
 		if( !args.opt.idleTimeout.isEmpty() && !this->idleString().isEmpty() ){
 
-			exeOptions.addPair( this->idleString(),args.opt.idleTimeout ) ;
+			opts.append( this->idleString() + args.opt.idleTimeout ) ;
 		}
 
-		cmd.replace( "%{mountOptions}",exeOptions.get(),Qt::CaseInsensitive ) ;
-		cmd.replace( "%{cipherFolder}",args.cipherFolder,Qt::CaseInsensitive ) ;
-		cmd.replace( "%{mountPoint}",args.mountPoint,Qt::CaseInsensitive ) ;
-		cmd.replace( "%{fuseOpts}",m.fuseOpts().get(),Qt::CaseInsensitive ) ;
-		cmd.replace( "%{password}",password ) ;
+		auto cmd = m_mountControlStructure ;
 
-		return { args,m,args.exe + " " + cmd } ;
+		if( opts.isEmpty() ){
+
+			cmd.replace( "%{mountOptions}","",Qt::CaseInsensitive ) ;
+		}else{
+			cmd.replace( "%{mountOptions}",opts.join( ' ' ),Qt::CaseInsensitive ) ;
+		}
+
+		auto ff = m.fuseOpts().get() ;
+
+		if( ff.isEmpty() ){
+
+			cmd.replace( "%{fuseOpts}","",Qt::CaseInsensitive ) ;
+		}else{
+			cmd.replace( "%{fuseOpts}",ff.join( ' ' ),Qt::CaseInsensitive ) ;
+		}
+
+		auto mm = utility::split( cmd,' ' ) ;
+
+		for( auto& it : mm ){
+
+			if( it == "%{cipherFolder}" ){
+
+				it = args.cipherFolder ;
+
+			}else if( it == "%{mountPoint}" ){
+
+				it = args.mountPoint ;
+
+			}else if( it == "%{password}" ){
+
+				it = password ;
+			}
+		}
+
+		exeOptions.add( mm ) ;
+
+		return { args,m,args.exe,exeOptions.get() } ;
 	}
 }
 

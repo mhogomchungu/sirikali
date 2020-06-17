@@ -196,12 +196,12 @@ void zuluPolkit::gotConnection()
 		auto password = json.getString( "password" ) ;
 		auto cookie   = json.getString( "cookie" ) ;
 		auto command  = json.getString( "command" ) ;
+		auto args     = json.getStringList( "args" ) ;
 
 		auto su = executableFullPath( "su" ) ;
 
 		auto e = su + " - -c \"'" + executableFullPath( "ecryptfs-simple" ) ;
-		auto f = su + " - -c \"" + executableFullPath( "ecryptfs-simple" ) ;
-		auto g = executableFullPath( "fscrypt" ) ;
+		auto f = su + " - -c " + executableFullPath( "ecryptfs-simple" ) ;
 
 		if( cookie == m_cookie ){
 
@@ -209,12 +209,9 @@ void zuluPolkit::gotConnection()
 
 				return QCoreApplication::quit() ;
 
-			}else if( command.startsWith( e ) ||
-				  command.startsWith( f ) ||
-				  command.startsWith( g ) ||
-				  command.startsWith( "\"" + g ) ){
+			}else if( false ){
 
-				return _respond( m,Task::process::run( command,password.toLatin1() ).get() ) ;
+				return _respond( m,Task::process::run( command,args,password.toLatin1() ).get() ) ;
 			}else{
 				_respond( m,"SiriPolkit: Invalid Command" ) ;
 			}

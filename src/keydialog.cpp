@@ -1005,7 +1005,7 @@ void keyDialog::openMountPoint( const QString& m )
 {
 	if( m_settings.autoOpenFolderOnMount() ){
 
-		utility::Task::exec( m_fileManagerOpen + " " + utility::Task::makePath( m ) ) ;
+		utility::Task::exec( m_fileManagerOpen,{ m } ) ;
 	}
 }
 
@@ -1411,11 +1411,9 @@ void keyDialog::pbSetKey()
 
 				return QByteArray() ;
 			}else{
-				exe = exe + " " + utility::Task::makePath( keyFile ) ;
-
 				const auto& env = utility::systemEnvironment() ;
 
-				return utility::Task( exe,20000,env,passphrase.toUtf8() ).stdOut() ;
+				return utility::Task( exe,{ keyFile },20000,env,passphrase.toUtf8() ).stdOut() ;
 			}
 		}
 

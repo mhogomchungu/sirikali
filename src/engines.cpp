@@ -189,7 +189,7 @@ Task::future< QString >& engines::engine::volumeProperties( const QString& ciphe
 
 			auto a = utility::split( it,' ' ) ;
 
-			auto b = [ & ](){
+			auto exe = [ & ](){
 
 				if( a.at( 0 ) == this->executableName() ){
 
@@ -199,21 +199,23 @@ Task::future< QString >& engines::engine::volumeProperties( const QString& ciphe
 				}
 			}() ;
 
-			a.removeFirst() ;
+			if( !exe.isEmpty() ){
 
-			auto c = a.join( " " ) ;
+				a.removeFirst() ;
 
-			if( !b.isEmpty() ){
+				for( auto& it : a ){
 
-				auto x = utility::Task::makePath( cipherFolder ) ;
-				auto y  = utility::Task::makePath( mountPoint ) ;
+					if( it == "%{cipherFolder}" ){
 
-				c.replace( "%{cipherFolder}",x ) ;
-				c.replace( "%{plainFolder}",y ) ;
+						it = cipherFolder ;
 
-				auto d = utility::Task::makePath( b ) ;
+					}else if( it == "%{plainFolder}" ){
 
-				auto e = utility::unwrap( utility::Task::run( d + " " + c ) ) ;
+						it = mountPoint ;
+					}
+				}
+
+				auto e = utility::unwrap( utility::Task::run( exe,a ) ) ;
 
 				if( e.success() ){
 
@@ -266,9 +268,9 @@ static engines::engineVersion _installedVersion( const engines::engine& e,
 						 const QProcessEnvironment env,
 						 const engines::engine::BaseOptions::vInfo& v )
 {
-	const auto cmd = utility::Task::makePath( e.executableFullPath() ) + " " + v.versionArgument ;
+	const auto& cmd = e.executableFullPath() ;
 
-	const auto r = utility::unwrap( ::Task::process::run( cmd,{},-1,{},env ) ) ;
+	const auto r = utility::unwrap( ::Task::process::run( cmd,{ v.versionArgument },-1,{},env ) ) ;
 
 	const auto m = utility::split( v.readFromStdOut ? r.std_out() : r.std_error(),'\n' ) ;
 
@@ -510,6 +512,11 @@ const QString& engines::engine::unMountCommand() const
 	return m_Options.unMountCommand ;
 }
 
+const QString &engines::engine::configFileArgument() const
+{
+	return m_Options.configFileArgument ;
+}
+
 const QString& engines::engine::windowsUnMountCommand() const
 {
 	return m_Options.windowsUnMountCommand ;
@@ -605,6 +612,11 @@ engines::engine::status engines::engine::passAllRequirenments( const engines::en
 		return engines::engine::status::failedToStartPolkit ;
 	}
 
+	if( this->configFileArgument().isEmpty() && !opt.configFilePath.isEmpty() ){
+
+		return engines::engine::status::backEndDoesNotSupportCustomConfigPath ;
+	}
+
 	if( utility::platformIsWindows() ){
 
 		if( !utility::isDriveLetter( opt.plainFolder ) ){
@@ -631,16 +643,6 @@ void engines::engine::updateOptions( engines::engine::cmdArgsList::options& e,bo
 {
 	Q_UNUSED( e )
 	Q_UNUSED( s )
-}
-
-QString engines::engine::setConfigFilePath( const QString& e ) const
-{
-	if( m_Options.configFileArgument.isEmpty() ){
-
-		return QString() ;
-	}else{
-		return m_Options.configFileArgument + " " + e ;
-	}
 }
 
 QByteArray engines::engine::setPassword( const QByteArray& e ) const
@@ -1253,14 +1255,15 @@ engines::engine::cmdArgsList::options::options( const QString& cipher_folder,
 
 engines::engine::args::args( const engines::engine::cmdArgsList& m,
 			     const engines::engine::commandOptions& s,
-			     const QString& c ) :
+			     const QString& c,
+			     const QStringList& l ) :
 	cmd( c ),
 	cipherPath( m.cipherFolder ),
 	mountPath( m.mountPoint ),
 	fuseOptions( s.constFuseOpts() ),
-	exeOptions( s.constExeOptions() ),
 	mode( s.mode() ),
-	subtype( s.subType() )
+	subtype( s.subType() ),
+	cmd_args( l )
 {
 }
 
@@ -1335,11 +1338,6 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 		}
 	}
 
-	if( m_exeOptions.endsWith( " " ) ){
-
-		m_exeOptions = utility::removeLast( m_exeOptions,1 ) ;
-	}
-
 	if( m_fuseOptions.endsWith( "," ) ){
 
 		m_fuseOptions = utility::removeLast( m_fuseOptions,1 ) ;
@@ -1393,9 +1391,9 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 
 				if( m_fuseOptions.isEmpty() ){
 
-					m_fuseOptions = "volname=" + utility::Task::makePath( s ) ;
+					m_fuseOptions = "volname=" + s ;
 				}else{
-					m_fuseOptions += ",volname=" + utility::Task::makePath( s ) ;
+					m_fuseOptions += ",volname=" + s ;
 				}
 			}
 		}
@@ -1414,7 +1412,7 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 
 	auto ss = cipherFolder( e.cipherFolder ) ;
 
-	QString s = " -o %1,fsname=%2@%3%4" ;
+	QString s = "%1,fsname=%2@%3%4" ;
 
 	if( m_fuseOptions.isEmpty() ){
 

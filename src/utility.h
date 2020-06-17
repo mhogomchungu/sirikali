@@ -297,7 +297,7 @@ namespace utility
 	QString removeFirstAndLast( const QString&,int firstChars,int lastChars ) ;
 	QString removeLastPathComponent( const QString& path,char separator = '/' ) ;
 
-	void logCommandOutPut( const ::Task::process::result&,const QString& ) ;
+	void logCommandOutPut( const ::Task::process::result&,const QString&,const QStringList& ) ;
 	void logCommandOutPut( const QString& ) ;
 
 	void setDebugWindow( debugWindow * ) ;
@@ -427,24 +427,31 @@ namespace utility
 	class Task
 	{
 	public :
-		static ::Task::future< utility::Task >& run( const QString& exe,bool e ) ;
-
-		static ::Task::future< utility::Task >& run( const QString& exe,int,bool e ) ;
+		static ::Task::future< utility::Task >& run( const QString& exe,
+							     const QStringList& list,
+							     bool e ) ;
 
 		static ::Task::future< utility::Task >& run( const QString& exe,
+							     const QStringList& list,
+							     int,
+							     bool e ) ;
+
+		static ::Task::future< utility::Task >& run( const QString& exe,
+							     const QStringList& list,
 							     const QByteArray& password = QByteArray() )
 		{
 			return ::Task::run( [ = ](){
 
-				return utility::Task( exe,-1,utility::systemEnvironment(),password ) ;
+				return utility::Task( exe,list,-1,utility::systemEnvironment(),password ) ;
 			} ) ;
 		}
 
 		static void exec( const QString& exe,
+				  const QStringList& list,
 				  const QProcessEnvironment& env = utility::systemEnvironment(),
 				  std::function< void() > f = [](){} )
 		{
-			::Task::exec( [ = ](){ utility::Task( exe,env,f ) ; } ) ;
+			::Task::exec( [ = ](){ utility::Task( exe,list,env,f ) ; } ) ;
 		}
 		static void wait( int s )
 		{
@@ -474,12 +481,6 @@ namespace utility
 
 			l.exec() ;
 		}
-		static QString makePath( QString e )
-		{
-			e.replace( "\"","\"\"\"" ) ;
-
-			return "\"" + e + "\"" ;
-		}
 		Task()
 		{
 		}
@@ -491,14 +492,23 @@ namespace utility
 			m_exitStatus = e.exit_status() ;
 			m_finished = e.finished() ;
 		}
-		Task( const QString& exe,int waitTime = -1,const QProcessEnvironment& env = utility::systemEnvironment(),
-		      const QByteArray& password = QByteArray(),std::function< void() > f = [](){},bool e = false )
+		Task( const QString& exe,
+		      const QStringList& list = QStringList(),
+		      int waitTime = -1,
+		      const QProcessEnvironment& env = utility::systemEnvironment(),
+		      const QByteArray& password = QByteArray(),
+		      std::function< void() > f = [](){},
+		      bool e = false )
 		{
-			this->execute( exe,waitTime,env,password,std::move( f ),e ) ;
+			this->execute( exe,list,waitTime,env,password,std::move( f ),e ) ;
 		}
-		Task( const QString& exe,const QProcessEnvironment& env,std::function< void() > f,bool e = false )
+		Task( const QString& exe,
+		      const QStringList& list,
+		      const QProcessEnvironment& env,
+		      std::function< void() > f,
+		      bool e = false )
 		{
-			this->execute( exe,-1,env,QByteArray(),std::move( f ),e ) ;
+			this->execute( exe,list,-1,env,QByteArray(),std::move( f ),e ) ;
 		}
 
 		enum class channel{ stdOut,stdError } ;
@@ -552,8 +562,12 @@ namespace utility
 			return { m_stdOut,m_stdError,m_exitCode,m_exitStatus,m_finished } ;
 		}
 	private:
-		void execute( const QString& exe,int waitTime,const QProcessEnvironment& env,
-			      const QByteArray& password,std::function< void() > f,bool e ) ;
+		void execute( const QString& exe,
+			      const QStringList& list,
+			      int waitTime,
+			      const QProcessEnvironment& env,
+			      const QByteArray& password,
+			      std::function< void() > f,bool e ) ;
 
 		QByteArray m_stdOut ;
 		QByteArray m_stdError ;

@@ -333,8 +333,6 @@ void sirikali::setUpApp( const QString& volume )
 
 	if( !e.isEmpty() ){
 
-		e = utility::Task::makePath( e ) ;
-
 		auto s = new QTimer( this ) ;
 
 		connect( s,&QTimer::timeout,[ this,e ](){
@@ -1642,11 +1640,9 @@ void sirikali::updateFavoritesInContextMenu()
 
 void sirikali::runIntervalCustomCommand( const QString& cmd )
 {
-	this->processMountedVolumes( [ = ]( const sirikali::mountedEntry& s ){
+	this->processMountedVolumes( [ = ]( const sirikali::mountedEntry& s ){		
 
-		auto a = utility::Task::makePath( s.cipherPath ) ;
-		auto b = utility::Task::makePath( s.mountPoint ) ;
-		auto c = s.volumeType ;
+		QStringList args{ s.cipherPath,s.mountPoint,s.volumeType } ;
 
 		QString key ;
 
@@ -1666,23 +1662,21 @@ void sirikali::runIntervalCustomCommand( const QString& cmd )
 
 			const auto& e = utility::systemEnvironment() ;
 
-			auto m = QString( "%1 %2 %3 %4" ).arg( cmd,a,b,c ) ;
-
 			auto r = [ & ](){
 
 				if( key.isEmpty() ){
 
-					return Task::process::run( m,{},-1,{},e ).get() ;
+					return Task::process::run( cmd,args,-1,{},e ).get() ;
 				}else{
 					auto s = e ;
 
 					s.insert( settings::instance().environmentalVariableVolumeKey(),key ) ;
 
-					return Task::process::run( m,{},-1,{},s ).get() ;
+					return Task::process::run( cmd,args,-1,{},s ).get() ;
 				}
 			}() ;
 
-			utility::logCommandOutPut( r,m ) ;
+			utility::logCommandOutPut( r,cmd,args ) ;
 		} ) ;
 	} ) ;
 }

@@ -73,9 +73,9 @@ cryfscreateoptions::cryfscreateoptions( const engines::engine& engine,
 		return m ;
 	}() ) ;
 
-	auto exe = engine.executableFullPath() + " --show-ciphers" ;
+	auto& exe = engine.executableFullPath() ;
 
-	utility::Task::run( exe ).then( [ this ]( const utility::Task& e ){
+	utility::Task::run( exe,{ "--show-ciphers" } ).then( [ this ]( const utility::Task& e ){
 
 		if( e.success() ){
 

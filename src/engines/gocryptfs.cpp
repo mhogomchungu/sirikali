@@ -46,7 +46,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.idleString            = "-idle" ;
 	s.executableName        = "gocryptfs" ;
 	s.incorrectPasswordText = "Password incorrect." ;
-	s.configFileArgument    = "--config" ;
+	s.configFileArgument    = "-config" ;
 	s.configFileNames       = QStringList{ "gocryptfs.conf",
 					       ".gocryptfs.conf",
 					       ".gocryptfs.reverse.conf",
@@ -121,39 +121,34 @@ engines::engine::args gocryptfs::command( const QByteArray& password,
 
 	if( !args.opt.idleTimeout.isEmpty() ){
 
-		exeOptions.addPair( this->idleString(),args.opt.idleTimeout ) ;
+		exeOptions.add( this->idleString(),args.opt.idleTimeout ) ;
 	}
 
-	if( !args.configFilePath.isEmpty() ){
+	if( !args.opt.configFilePath.isEmpty() ){
 
-		exeOptions.add( args.configFilePath ) ;
+		exeOptions.add( this->configFileArgument(),args.opt.configFilePath ) ;
 	}
-
-	QString cmd ;
 
 	if( args.create ){
 
-		exeOptions.add( "--init",args.opt.createOptions ) ;
+		exeOptions.add( "--init" ) ;
 
-		QString e = "%1 %2 %3" ;
+		if( !args.opt.createOptions.isEmpty() ){
 
-		cmd = e.arg( args.exe,exeOptions.get(),args.cipherFolder ) ;
+			exeOptions.add( utility::split( args.opt.createOptions,' ' ) ) ;
+		}
+
+		exeOptions.add( args.cipherFolder ) ;
 	}else{
-		QString e = "%1 %2 %3 %4 %5" ;
-
 		if( !utility::platformIsLinux() ){
 
 			fuseOptions.extractStartsWith( "volname=" ) ;
 		}
 
-		cmd = e.arg( args.exe,
-			     exeOptions.get(),
-			     args.cipherFolder,
-			     args.mountPoint,
-			     fuseOptions.get() ) ;
+		exeOptions.add( args.cipherFolder,args.mountPoint,fuseOptions.get() ) ;
 	}
 
-	return { args,m,cmd } ;
+	return { args,m,args.exe,exeOptions.get() } ;
 }
 
 engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const

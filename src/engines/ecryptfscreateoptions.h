@@ -39,11 +39,11 @@ class ecryptfscreateoptions : public QDialog
 public:
 	static QString defaultCreateOptions()
 	{
-		return "-o key=passphrase,ecryptfs_key_bytes=32,ecryptfs_cipher=aes,ecryptfs_passthrough=n,ecryptfs_enable_filename_crypto=y" ;
+		return "key=passphrase,ecryptfs_key_bytes=32,ecryptfs_cipher=aes,ecryptfs_passthrough=n,ecryptfs_enable_filename_crypto=y" ;
 	}
 	static QString defaultMiniCreateOptions()
 	{
-		return "-o key=passphrase,ecryptfs_key_bytes=32,ecryptfs_cipher=aes" ;
+		return "key=passphrase,ecryptfs_key_bytes=32,ecryptfs_cipher=aes" ;
 	}
 	static void instance( const engines::engine& e,const engines::engine::createGUIOptions& s )
 	{

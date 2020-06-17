@@ -74,13 +74,18 @@ engines::engine::args securefs::command( const QByteArray& password,
 
 		auto exeOptions  = m.exeOptions() ;
 
-		exeOptions.add( args.opt.createOptions ) ;
+		exeOptions.add( "create" ) ;
+
+		if( !args.opt.createOptions.isEmpty() ){
+
+			exeOptions.add( utility::split( args.opt.createOptions,' ' ) ) ;
+		}
 
 		if( m_version_greater_or_equal_0_11_1 ){
 
 			if( !args.opt.keyFile.isEmpty() ){
 
-				exeOptions.addPair( "--keyfile",utility::Task::makePath( args.opt.keyFile ) ) ;
+				exeOptions.add( "--keyfile",args.opt.keyFile ) ;
 
 				if( !args.opt.key.isEmpty() ){
 
@@ -89,19 +94,19 @@ engines::engine::args securefs::command( const QByteArray& password,
 			}
 		}
 
-		QString e = "%1 create %2 %3 %4" ;
+		if( !args.opt.configFilePath.isEmpty() ){
 
-		auto cmd = e.arg( args.exe,
-				  exeOptions.get(),
-				  args.configFilePath,
-				  args.cipherFolder ) ;
+			exeOptions.add( this->configFileArgument(),args.opt.configFilePath ) ;
+		}
 
-		return { args,m,cmd } ;
+		exeOptions.add( args.cipherFolder ) ;
+
+		return { args,m,args.exe,exeOptions.get() } ;
 	}else{
-		QString exe = "%1 mount %2 %3 %4 %5" ;
-
 		auto exeOptions  = m.exeOptions() ;
 		auto fuseOptions = m.fuseOpts() ;
+
+		exeOptions.add( "mount" ) ;
 
 		if( utility::platformIsNOTWindows() ){
 
@@ -117,12 +122,12 @@ engines::engine::args securefs::command( const QByteArray& password,
 			auto fsname    = fuseOptions.extractStartsWith( "fsname=" ).mid( 7 ) ;
 			auto fssubtype = fuseOptions.extractStartsWith( "subtype=" ).mid( 8 ) ;
 
-			exeOptions.addPair( "--fsname",fsname ) ;
-			exeOptions.addPair( "--fssubtype",fssubtype ) ;
+			exeOptions.add( "--fsname " + fsname ) ;
+			exeOptions.add( "--fssubtype " + fssubtype ) ;
 
 			if( !args.opt.keyFile.isEmpty() ){
 
-				exeOptions.addPair( "--keyfile",utility::Task::makePath( args.opt.keyFile ) ) ;
+				exeOptions.add( "--keyfile",args.opt.keyFile ) ;
 
 				if( !args.opt.key.isEmpty() ){
 
@@ -131,18 +136,14 @@ engines::engine::args securefs::command( const QByteArray& password,
 			}
 		}
 
-		if( !args.configFilePath.isEmpty() ){
+		if( !args.opt.configFilePath.isEmpty() ){
 
-			exeOptions.add( args.configFilePath ) ;
+			exeOptions.add( this->configFileArgument(),args.opt.configFilePath ) ;
 		}
 
-		auto cmd = exe.arg( args.exe,
-				    exeOptions.get(),
-				    args.cipherFolder,
-				    args.mountPoint,
-				    fuseOptions.get() ) ;
+		exeOptions.add( args.cipherFolder,args.mountPoint,fuseOptions.get() ) ;
 
-		return { args,m,cmd } ;
+		return { args,m,args.exe,exeOptions.get() } ;
 	}
 }
 

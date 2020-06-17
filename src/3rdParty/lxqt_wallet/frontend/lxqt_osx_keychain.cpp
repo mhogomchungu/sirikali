@@ -212,9 +212,11 @@ void LXQt::Wallet::osxKeyChain::deleteKey(const QString &key)
     if (_delete_key(key, m_walletName))
     {
         QString s = this->readValue(WALLET_KEYS);
-
+#if QT_VERSION < QT_VERSION_CHECK( 5,15,0 )
         auto e = s.split('\n', QString::SkipEmptyParts);
-
+#else
+	auto e = s.split('\n', Qt::SkipEmptyParts);
+#endif
         e.removeOne(key);
 
         _update_wallet_keys(e, m_walletName);
@@ -228,9 +230,11 @@ bool LXQt::Wallet::osxKeyChain::addKey(const QString &key, const QByteArray &val
         QString s = this->readValue(WALLET_KEYS);
 
         s += "\n" + key;
-
+#if QT_VERSION < QT_VERSION_CHECK( 5,15,0 )
         _update_wallet_keys(s.split("\n", QString::SkipEmptyParts), m_walletName);
-
+#else
+	_update_wallet_keys(s.split("\n", Qt::SkipEmptyParts), m_walletName);
+#endif
         return true;
     }
     else
@@ -269,8 +273,11 @@ for (const auto & it : this->readAllKeys())
 QStringList LXQt::Wallet::osxKeyChain::readAllKeys()
 {
     QString s = this->readValue(WALLET_KEYS);
-
+#if QT_VERSION < QT_VERSION_CHECK( 5,15,0 )
     return s.split('\n', QString::SkipEmptyParts);
+#else
+    return s.split('\n', Qt::SkipEmptyParts);
+#endif
 }
 
 QStringList LXQt::Wallet::osxKeyChain::managedWalletList()

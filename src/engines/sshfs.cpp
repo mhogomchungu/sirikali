@@ -115,16 +115,14 @@ engines::engine::args sshfs::command( const QByteArray& password,
 
 	if( fuseOptions.doesNotContain( "StrictHostKeyChecking=" ) ){
 
-		fuseOptions.addPair( "StrictHostKeyChecking","no" ) ;
+		fuseOptions.add( "StrictHostKeyChecking=no" ) ;
 	}
 
 	if( utility::platformIsWindows() ){
 
 		exeOptions.add( "-f" ) ;
 
-		auto m = utility::removeFirstAndLast( args.mountPoint,1,1 ) ;
-
-		if( utility::isDriveLetter( m ) ){
+		if( utility::isDriveLetter( args.mountPoint ) ){
 
 			if( !fuseOptions.contains( "--VolumePrefix=" ) ){
 
@@ -143,7 +141,7 @@ engines::engine::args sshfs::command( const QByteArray& password,
 			 * requires the mount path to not exist and we are deleting
 			 * it because SiriKali created it previously.
 			 */
-			utility::removeFolder( m,5 ) ;
+			utility::removeFolder( args.mountPoint,5 ) ;
 		}
 	}
 
@@ -169,15 +167,9 @@ engines::engine::args sshfs::command( const QByteArray& password,
 		}
 	}
 
-	QString s = "%1 %2 %3 %4 %5" ;
+	exeOptions.add( args.cipherFolder,args.mountPoint,m.fuseOpts().get() ) ;
 
-	auto cmd = s.arg( args.exe,
-			  exeOptions.get(),
-			  args.cipherFolder,
-			  args.mountPoint,
-			  fuseOptions.get() ) ;
-
-	return { args,m,cmd } ;
+	return { args,m,args.exe,exeOptions.get() } ;
 }
 
 engines::engine::status sshfs::errorCode( const QString& e,int s ) const
