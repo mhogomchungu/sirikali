@@ -474,13 +474,13 @@ static terminate_result _terminate_process( const terminate_process& e )
 
 	if( e.unMountCommand == "sirikali.exe -T" ){
 
-		exe = e.unMountCommand ;
+		exe = "sirikali.exe" ;
 
-		args.append( QString::number( e.exe.processId() ) ) ;
+		args.append( "-T" + QString::number( e.exe.processId() ) ) ;
 
 	}else if( e.unMountCommand.isEmpty() || e.mountPath.isEmpty() ){
 
-		exe = "taskkill /F /PID " + QString::number( e.exe.processId() ) ;
+		exe = "taskkill" ;
 
 		args.append( "/F" ) ;
 

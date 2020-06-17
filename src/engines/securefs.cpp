@@ -122,8 +122,8 @@ engines::engine::args securefs::command( const QByteArray& password,
 			auto fsname    = fuseOptions.extractStartsWith( "fsname=" ).mid( 7 ) ;
 			auto fssubtype = fuseOptions.extractStartsWith( "subtype=" ).mid( 8 ) ;
 
-			exeOptions.add( "--fsname " + fsname ) ;
-			exeOptions.add( "--fssubtype " + fssubtype ) ;
+			exeOptions.add( "--fsname",fsname ) ;
+			exeOptions.add( "--fssubtype",fssubtype ) ;
 
 			if( !args.opt.keyFile.isEmpty() ){
 
