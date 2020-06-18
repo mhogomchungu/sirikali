@@ -36,11 +36,14 @@ private slots:
 	void start() ;
 	void gotConnection() ;
 private:
+	bool passSanityCheck( const QString& cmd,const QStringList& s ) ;
 	QStringList m_arguments ;
 	QString readStdin() ;
 	QString m_cookie ;
 	QLocalServer m_server ;
 	QString m_socketPath ;
+	QString m_suCmd ;
+	QString m_ecryptfs_simpleCmd ;
 };
 
 #endif // ZULUPOLKIT_H

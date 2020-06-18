@@ -124,7 +124,7 @@ siritask::exe ecryptfs::wrapSU( const QString& s ) const
 
 		return {} ;
 	}else{
-		return { su,{ "-",QString( "-c \"%1" ).arg( s ) } } ;
+		return { su,{ "-","-c",s } } ;
 	}
 }
 
@@ -142,8 +142,7 @@ engines::engine::status ecryptfs::unmount( const QString& cipherFolder,
 
 			auto s = this->wrapSU( exe ) ;
 
-			s.args.append( "-k" ) ;
-			s.args.append( cipherFolder ) ;
+			s.args[ 2 ].append( " -k " + cipherFolder ) ;
 
 			return s ;
 		}else{
@@ -208,7 +207,7 @@ engines::engine::args ecryptfs::command( const QByteArray& password,
 
 		auto s = this->wrapSU( args.exe ) ;
 
-		s.args[ 1 ].append( " " + exeOptions.get().join( ' ' ) + "\"" ) ;
+		s.args[ 2 ].append( " " + exeOptions.get().join( ' ' ) ) ;
 
 		return { args,m,s.exe,s.args } ;
 	}else{

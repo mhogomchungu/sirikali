@@ -125,6 +125,10 @@ void zuluPolkit::start()
 
 		m_socketPath = m_arguments.at( 1 ) ;
 
+		m_suCmd = executableFullPath( "su" ) ;
+
+		m_ecryptfs_simpleCmd = executableFullPath( "ecryptfs-simple" ) ;
+
 		bool ok ;
 
 		auto uid = QProcessEnvironment::systemEnvironment().value( "PKEXEC_UID" ).toInt( &ok ) ;
@@ -136,7 +140,9 @@ void zuluPolkit::start()
 
 			auto s = e.toLatin1() ;
 
-			if( chown( s.constData(),uid,uid ) ){}
+			auto id = static_cast< unsigned int >( uid ) ;
+
+			if( chown( s.constData(),id,id ) ){}
 			if( chmod( s.constData(),0700 ) ){}
 		}
 
@@ -182,6 +188,22 @@ static void _respond( QLocalSocket& s,const Task::process::result& e )
 	s.waitForBytesWritten() ;
 }
 
+bool zuluPolkit::passSanityCheck( const QString& cmd,const QStringList& s )
+{
+	if( cmd == m_suCmd ){
+
+		if( s.size() > 2 ){
+
+			if( s.at( 0 ) == "-" && s.at( 1 ) == "-c" && s.at( 2 ).startsWith( m_ecryptfs_simpleCmd ) ){
+
+				return true ;
+			}
+		}
+	}
+
+	return false ;
+}
+
 void zuluPolkit::gotConnection()
 {
 	std::unique_ptr< QLocalSocket > s( m_server.nextPendingConnection() ) ;
@@ -198,18 +220,13 @@ void zuluPolkit::gotConnection()
 		auto command  = json.getString( "command" ) ;
 		auto args     = json.getStringList( "args" ) ;
 
-		auto su = executableFullPath( "su" ) ;
-
-		auto e = su + " - -c \"'" + executableFullPath( "ecryptfs-simple" ) ;
-		auto f = su + " - -c " + executableFullPath( "ecryptfs-simple" ) ;
-
 		if( cookie == m_cookie ){
 
 			if( command == "exit" ){
 
 				return QCoreApplication::quit() ;
 
-			}else if( false ){
+			}else if( this->passSanityCheck( command,args ) ){
 
 				return _respond( m,Task::process::run( command,args,password.toLatin1() ).get() ) ;
 			}else{
