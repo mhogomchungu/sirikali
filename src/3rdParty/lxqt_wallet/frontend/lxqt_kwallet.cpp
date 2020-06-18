@@ -125,8 +125,8 @@ void LXQt::Wallet::kwallet::open(const QString &walletName,
     }
     else
     {
-	m_log("LXQt:Wallet::kwallet: Failed to get a handle to kwallet.");
-	m_walletOpened(false);
+	m_log("LXQt:Wallet::kwallet: Failed to get a handle to kwallet, is it enabled?");
+	QMetaObject::invokeMethod(this, "walletOpened", Qt::QueuedConnection,Q_ARG(bool, false));
     }
 }
 

@@ -965,80 +965,75 @@ favorites::volumeList sirikali::autoUnlockVolumes( favorites::volumeList l,bool 
 		return l ;
 	}
 
-	auto e = settings::instance().autoMountBackEnd() ;
+	auto ee = settings::instance().autoMountBackEnd() ;
 
-	if( e.isInvalid() ){
+	if( ee.isInvalid() ){
 
 		return l ;
 	}
 
-	auto m = m_secrets.walletBk( e.bk() ) ;
+	auto m = m_secrets.walletBk( ee.bk() ) ;
 
 	if( !m ){
 
 		return l ;
 	}
 
-	auto s = m.open( [ & ](){
+	if( !m.open() ){
 
-		favorites::volumeList e ;
-
-		auto _mount = [ & ]( favorites::volumeList& q,
-				     const std::pair< favorites::entry,QByteArray >& e,
-				     const QByteArray& key,
-				     bool s ){
-			if( s ){
-
-				q.emplace_back( e.first,key ) ;
-			}else{
-				this->disableAll() ;
-
-				auto s = siritask::encryptedFolderMount( { e.first,key } ) ;
-
-				if( s == engines::engine::status::success ){
-
-					if( autoOpenFolderOnMount ){
-
-						this->openMountPointPath( e.first.mountPointPath ) ;
-					}
-
-					if( !s.engine().autorefreshOnMountUnMount() ){
-
-						this->updateList() ;
-					}
-				}else{
-					q.emplace_back( e.first,key ) ;
-
-					utility::debug() << "Automounting has failed because: " + s.toString() ;
-				}
-
-				this->enableAll() ;
-			}
-		} ;
-
-		auto s = settings::instance().showMountDialogWhenAutoMounting() ;
-
-		for( const auto& it : l ){
-
-			const auto key = m->readValue( it.first.volumePath ) ;
-
-			if( key.isEmpty() ){
-
-				e.emplace_back( it ) ;
-			}else{
-				_mount( e,it,key,s ) ;
-			}
-		}
-
-		return e ;
-	} ) ;
-
-	if( s.has_value() ){
-
-		return s.RValue() ;
-	}else{
 		return l ;
 	}
+
+	favorites::volumeList e ;
+
+	auto _mount = [ & ]( favorites::volumeList& q,
+			     const std::pair< favorites::entry,QByteArray >& e,
+			     const QByteArray& key,
+			     bool s ){
+		if( s ){
+
+			q.emplace_back( e.first,key ) ;
+		}else{
+			this->disableAll() ;
+
+			auto s = siritask::encryptedFolderMount( { e.first,key } ) ;
+
+			if( s == engines::engine::status::success ){
+
+				if( autoOpenFolderOnMount ){
+
+					this->openMountPointPath( e.first.mountPointPath ) ;
+				}
+
+				if( !s.engine().autorefreshOnMountUnMount() ){
+
+					this->updateList() ;
+				}
+			}else{
+				q.emplace_back( e.first,key ) ;
+
+				utility::debug() << "Automounting has failed because: " + s.toString() ;
+			}
+
+			this->enableAll() ;
+		}
+	} ;
+
+	auto s = settings::instance().showMountDialogWhenAutoMounting() ;
+
+	for( const auto& it : l ){
+
+		const auto key = m->readValue( it.first.volumePath ) ;
+
+		if( key.isEmpty() ){
+
+			e.emplace_back( it ) ;
+		}else{
+			_mount( e,it,key,s ) ;
+		}
+	}
+
+	return e ;
 }
 
 void sirikali::volumeProperties()
