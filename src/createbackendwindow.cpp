@@ -121,7 +121,7 @@ void createBackendWIndow::save()
 		return DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Wrong Password Field Can Not Be Empty" ) ) ;
 	}
 
-	SirikaliJson config ;
+	SirikaliJson config( []( const QString& e ){ utility::debug() << e ; } ) ;
 
 	auto _addList = [ & ]( const QString& e ){
 
@@ -141,9 +141,6 @@ void createBackendWIndow::save()
 	} ;
 
 	try {
-		config[ "versionNumber" ]               = "1.1" ;
-
-		//start of version 1.0
 		config[ "createControlStructure" ]      = "%{createOptions} %{cipherFolder} %{mountPoint}" ;
 		config[ "mountControlStructure" ]       = "%{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
 		config[ "idleString" ]                  = "" ;
@@ -167,18 +164,14 @@ void createBackendWIndow::save()
 		config[ "requiresAPassword" ]           = m_ui->cbRequiresAPassword->isChecked() ;
 		config[ "supportsMountPointPaths" ]     = m_ui->cbSupportsMountPointPaths->isChecked() ;
 		config[ "autoMountsOnVolumeCreation" ]  = m_ui->cbAutoMountsOnVolumeCreation->isChecked() ;
-
-		//start of version 1.1
 		config[ "backendRequireMountPath" ]     = true ;
 		config[ "autorefreshOnMountUnMount" ]   = true ;
 		config[ "backendTimeout" ]              = 0 ;
 		config[ "takesTooLongToUnlock" ]        = false ;
+		config[ "runsInBackGround" ]            = true ;
+		config[ "setsCipherPath" ]              = true ;
 
 		config.toFile( path ) ;
-
-	}catch( const SirikaliJson::exception& e ){
-
-		_log_error( e.what(),path ) ;
 
 	}catch( const std::exception& e ){
 

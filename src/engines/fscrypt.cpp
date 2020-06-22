@@ -292,6 +292,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.supportsMountPathsOnWindows = true ;
 	s.autorefreshOnMountUnMount   = false ;
 	s.backendRequireMountPath     = false ;
+	s.backendRunsInBackGround     = true ;
 	s.requiresPolkit        = false ;
 	s.customBackend         = false ;
 	s.requiresAPassword     = true ;
@@ -563,13 +564,11 @@ static void _log_error( const QString& msg,const QString& path )
 QStringList fscrypt::unlockedVolumeList::getList() const
 {
 	try {
-		SirikaliJson json( m_configFilePath,SirikaliJson::type::PATH ) ;
+		SirikaliJson json( m_configFilePath,
+				   SirikaliJson::type::PATH,
+				   []( const QString& e ){ utility::debug() << e ; } ) ;
 
 		return json.getStringList( m_keyName ) ;
-
-	}catch( const SirikaliJson::exception& e ){
-
-		_log_error( e.what(),m_configFilePath ) ;
 
 	}catch( const std::exception& e ){
 
@@ -586,17 +585,13 @@ QStringList fscrypt::unlockedVolumeList::getList() const
 void fscrypt::unlockedVolumeList::updateList( const QStringList& e )
 {
 	try {
-		SirikaliJson json ;
+		SirikaliJson json( []( const QString& e ){ utility::debug() << e ; } ) ;
 
 		json[ m_keyName ] = e ;
 
 		QFile::remove( m_configFilePath ) ;
 
 		json.toFile( m_configFilePath ) ;
-
-	}catch( const SirikaliJson::exception& e ){
-
-		_log_error( e.what(),m_configFilePath ) ;
 
 	}catch( const std::exception& e ){
 

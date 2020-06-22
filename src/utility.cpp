@@ -243,7 +243,8 @@ void utility::Task::execute( const QString& exe,
 			     const QProcessEnvironment& env,
 			     const QByteArray& password,
 			     std::function< void() > function,
-			     bool polkit )
+			     bool polkit,
+			     bool runs_in_background )
 {
 	if( polkit && utility::useSiriPolkit() ){
 
@@ -281,7 +282,7 @@ void utility::Task::execute( const QString& exe,
 
 		s.write( [ & ]()->QByteArray{
 
-			SirikaliJson json ;
+			SirikaliJson json( []( const QString& e ){ utility::debug() << e ; } ) ;
 
 			json[ "cookie" ]   = _cookie ;
 			json[ "password" ] = password ;
@@ -295,34 +296,54 @@ void utility::Task::execute( const QString& exe,
 
 		s.waitForReadyRead() ;
 
-		try{
-			SirikaliJson json( s.readAll(),SirikaliJson::type::CONTENTS ) ;
+		SirikaliJson json( s.readAll(),
+				   SirikaliJson::type::CONTENTS,
+				   []( const QString& e ){ utility::debug() << e ; } ) ;
 
-			m_finished   = json.getBool( "finished" ) ;
-			m_exitCode   = json.getInterger( "exitCode" ) ;
-			m_exitStatus = json.getInterger( "exitStatus" ) ;
-			m_stdError   = json.getByteArray( "stdError" ) ;
-			m_stdOut     = json.getByteArray( "stdOut" ) ;
+		m_finished   = json.getBool( "finished" ) ;
+		m_exitCode   = json.getInterger( "exitCode" ) ;
+		m_exitStatus = json.getInterger( "exitStatus" ) ;
+		m_stdError   = json.getByteArray( "stdError" ) ;
+		m_stdOut     = json.getByteArray( "stdOut" ) ;
 
-			utility::logCommandOutPut( { m_stdOut,m_stdError,m_exitCode,m_exitStatus,m_finished },exe,list ) ;
-
-		}catch( ... ){
-
-			_report_error( "SiriKali: Failed To Parse Polkit Backend Output" ) ;
-		}
+		utility::logCommandOutPut( { m_stdOut,m_stdError,m_exitCode,m_exitStatus,m_finished },exe,list ) ;
 	}else{
-		auto& ss = ::Task::process::run( exe,list,waitTime,password,env,std::move( function ) ) ;
+		if( runs_in_background ){
 
-		auto s = utility::unwrap( ss ) ;
+			auto& ss = ::Task::process::run( exe,list,waitTime,password,env,std::move( function ) ) ;
 
-		m_finished   = s.finished() ;
-		m_exitCode   = s.exit_code() ;
-		m_exitStatus = s.exit_status() ;
-		m_stdOut     = s.std_out() ;
-		m_stdError   = s.std_error() ;
+			auto s = utility::unwrap( ss ) ;
 
+			m_finished   = s.finished() ;
+			m_exitCode   = s.exit_code() ;
+			m_exitStatus = s.exit_status() ;
+			m_stdOut     = s.std_out() ;
+			m_stdError   = s.std_error() ;
 
-		utility::logCommandOutPut( s,exe,list ) ;
+			utility::logCommandOutPut( s,exe,list ) ;
+		}else{
+			utility::debug() << "Starting detached process" ;
+
+			QProcess ee ;
+
+			ee.setProgram( exe ) ;
+
+			ee.setArguments( list ) ;
+
+			if( ee.startDetached() ){
+
+				m_exitCode = 0 ;
+			}else{
+				m_exitCode = 1 ;
+			}
+
+			m_finished   = true ;
+			m_exitStatus = 0 ;
+
+			::Task::process::result m{ m_stdError,m_stdOut,m_exitCode,m_exitStatus,m_finished } ;
+
+			utility::logCommandOutPut( m,exe,list ) ;
+		}
 	}
 }
 
@@ -557,7 +578,7 @@ void utility::quitHelper()
 
 				s.write( [ & ]()->QByteArray{
 
-					SirikaliJson json ;
+					SirikaliJson json( []( const QString& e ){ utility::debug() << e ; } ) ;
 
 					json[ "cookie" ]   = _cookie ;
 					json[ "password" ] = "" ;

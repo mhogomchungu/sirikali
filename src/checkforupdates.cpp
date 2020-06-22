@@ -161,7 +161,9 @@ QString checkUpdates::latestVersion( const QByteArray& data )
 		return true ;
 	} ;
 
-	SirikaliJson json( data,SirikaliJson::type::CONTENTS ) ;
+	SirikaliJson json( data,
+			   SirikaliJson::type::CONTENTS,
+			   []( const QString& e ){ utility::debug() << e ; } ) ;
 
 	for( auto& it : json.getTags( "tag_name" ) ){
 

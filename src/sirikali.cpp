@@ -321,7 +321,10 @@ void sirikali::setUpApp( const QString& volume )
 
 	this->startGUI( m ) ;
 
-	QTimer::singleShot( settings::instance().checkForUpdateInterval(),this,SLOT( autoUpdateCheck() ) ) ;
+	if( utility::platformIsNOTWindows() ){
+
+		QTimer::singleShot( settings::instance().checkForUpdateInterval(),this,SLOT( autoUpdateCheck() ) ) ;
+	}
 
 	if( utility::debugEnabled() ){
 

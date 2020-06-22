@@ -31,6 +31,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.supportsMountPathsOnWindows = false ;
 	s.autorefreshOnMountUnMount   = true ;
 	s.backendRequireMountPath     = true ;
+	s.backendRunsInBackGround     = true ;
 	s.requiresPolkit        = true ;
 	s.customBackend         = false ;
 	s.requiresAPassword     = true ;
@@ -199,7 +200,7 @@ engines::engine::args ecryptfs::command( const QByteArray& password,
 		exeOptions.add( "-o",args.opt.mountOptions ) ;
 	}
 
-	exeOptions.add( "-a","--config=" + args.opt.configFilePath ) ;
+	exeOptions.add( "-a",this->configFileArgument() + "=" + args.opt.configFilePath ) ;
 
 	exeOptions.add( args.cipherFolder,args.mountPoint ) ;
 

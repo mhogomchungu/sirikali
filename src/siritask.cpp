@@ -333,7 +333,8 @@ static utility::Task _run_task_0( const run_task& e )
 				      s,
 				      e.password,
 				      [](){},
-				      e.engine.requiresPolkit() ) ;
+				      e.engine.requiresPolkit(),
+				      e.engine.backendRunsInBackGround() ) ;
 	}
 }
 

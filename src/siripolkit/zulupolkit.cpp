@@ -160,7 +160,7 @@ void zuluPolkit::start()
 
 static void _respond( QLocalSocket& s,const char * e )
 {
-	SirikaliJson json ;
+	SirikaliJson json( []( const QString& e ){ Q_UNUSED( e ) } ) ;
 
 	json[ "stdOut" ]     = e ;
 	json[ "stdError" ]   = e ;
@@ -175,7 +175,7 @@ static void _respond( QLocalSocket& s,const char * e )
 
 static void _respond( QLocalSocket& s,const Task::process::result& e )
 {
-	SirikaliJson json ;
+	SirikaliJson json( []( const QString& e ){ Q_UNUSED( e ) } ) ;
 
 	json[ "stdOut" ]     = e.std_out() ;
 	json[ "stdError" ]   = e.std_error() ;
@@ -210,34 +210,31 @@ void zuluPolkit::gotConnection()
 
 	auto& m = *s ;
 
-	try{
-		m.waitForReadyRead() ;
+	m.waitForReadyRead() ;
 
-		auto json = SirikaliJson( m.readAll(),SirikaliJson::type::CONTENTS ) ;
+	auto json = SirikaliJson( m.readAll(),
+				  SirikaliJson::type::CONTENTS,
+				  []( const QString& e ){ Q_UNUSED( e ) } ) ;
 
-		auto password = json.getString( "password" ) ;
-		auto cookie   = json.getString( "cookie" ) ;
-		auto command  = json.getString( "command" ) ;
-		auto args     = json.getStringList( "args" ) ;
+	auto password = json.getString( "password" ) ;
+	auto cookie   = json.getString( "cookie" ) ;
+	auto command  = json.getString( "command" ) ;
+	auto args     = json.getStringList( "args" ) ;
 
-		if( cookie == m_cookie ){
+	if( cookie == m_cookie ){
 
-			if( command == "exit" ){
+		if( command == "exit" ){
 
-				return QCoreApplication::quit() ;
+			return QCoreApplication::quit() ;
 
-			}else if( this->passSanityCheck( command,args ) ){
+		}else if( this->passSanityCheck( command,args ) ){
 
-				return _respond( m,Task::process::run( command,args,password.toLatin1() ).get() ) ;
-			}else{
-				_respond( m,"SiriPolkit: Invalid Command" ) ;
-			}
+			return _respond( m,Task::process::run( command,args,password.toLatin1() ).get() ) ;
 		}else{
-			_respond( m,"SiriPolkit: Failed To Authenticate Request" ) ;
+			_respond( m,"SiriPolkit: Invalid Command" ) ;
 		}
-	}catch( ... ){
-
-		_respond( m,"SiriPolkit: Failed To Parse Request" ) ;
+	}else{
+		_respond( m,"SiriPolkit: Failed To Authenticate Request" ) ;
 	}
 }
 

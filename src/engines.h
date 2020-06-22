@@ -453,7 +453,7 @@ public:
 				int argumentLine ;
 			};
 
-			std::vector< vInfo >versionInfo ;
+			std::vector< vInfo > versionInfo ;
 			int  backendTimeout ;
 			bool hasConfigFile ;
 			bool setsCipherPath ;
@@ -466,6 +466,7 @@ public:
 			bool autorefreshOnMountUnMount ;
 			bool backendRequireMountPath ;
 			bool takesTooLongToUnlock ;
+			bool backendRunsInBackGround ;
 
 			QByteArray passwordFormat ;
 			QString releaseURL ;
@@ -524,6 +525,7 @@ public:
 		bool customBackend() const ;
 		bool autorefreshOnMountUnMount() const ;
 		bool backendRequireMountPath() const ;
+		bool backendRunsInBackGround() const ;
 
 		engines::engine::status notFoundCode() const ;
 
@@ -710,15 +712,10 @@ public:
 					this->add( std::forward< E >( e ) ) ;
 					this->add( std::forward< T >( m ) ... ) ;
 				}
-				void addPair( const QString& key,const QString& value,
-					      separator s = separator::equal_sign )
+				template< typename E >
+				void addFront( E&& e )
 				{
-					if( s == separator::equal_sign ){
-
-						this->add( key + "=" + value ) ;
-					}else{
-						this->add( key + " " + value ) ;
-					}
+					m_options.insert( 0,std::forward< E >( e ) ) ;
 				}
 				const QStringList& get() const
 				{

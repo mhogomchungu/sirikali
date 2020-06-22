@@ -404,6 +404,11 @@ bool engines::engine::backendRequireMountPath() const
 	return m_Options.backendRequireMountPath ;
 }
 
+bool engines::engine::backendRunsInBackGround() const
+{
+	return m_Options.backendRunsInBackGround ;
+}
+
 bool engines::engine::takesTooLongToUnlock() const
 {
 	return m_Options.takesTooLongToUnlock ;
@@ -577,16 +582,11 @@ engines::engine::error engines::engine::errorCode( const QString& e ) const
 static bool _illegal_path( const engines::engine::cmdArgsList::options& opts,
 			   const engines::engine& engine )
 {
-	if( engine.requiresPolkit() && utility::useSiriPolkit() ){
+	if( engine.backendRequireMountPath() ){
 
-		if( engine.backendRequireMountPath() ){
-
-			return opts.cipherFolder.contains( " " ) || opts.plainFolder.contains( " " ) ;
-		}else {
-			return opts.cipherFolder.contains( " " ) ;
-		}
-	}else{
-		return false ;
+		return opts.cipherFolder.contains( " " ) || opts.plainFolder.contains( " " ) ;
+	}else {
+		return opts.cipherFolder.contains( " " ) ;
 	}
 }
 
@@ -597,19 +597,25 @@ engines::engine::status engines::engine::passAllRequirenments( const engines::en
 		return engines::engine::status::unknown ;
 	}
 
-	if( utility::platformIsLinux() && _illegal_path( opt,*this ) ){
-
-		return engines::engine::status::IllegalPath ;
-	}
-
 	if( opt.key.isEmpty() && this->requiresAPassword( opt ) ){
 
 		return engines::engine::status::backendRequiresPassword ;
 	}
 
-	if( this->requiresPolkit() && !utility::enablePolkit() ){
+	if( utility::platformIsLinux() ){
 
-		return engines::engine::status::failedToStartPolkit ;
+		if( this->requiresPolkit() ){
+
+			if( _illegal_path( opt,*this ) ){
+
+				return engines::engine::status::IllegalPath ;
+			}
+
+			if( !utility::enablePolkit() ){
+
+				return engines::engine::status::failedToStartPolkit ;
+			}
+		}
 	}
 
 	if( this->configFileArgument().isEmpty() && !opt.configFilePath.isEmpty() ){

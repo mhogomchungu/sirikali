@@ -498,17 +498,32 @@ namespace utility
 		      const QProcessEnvironment& env = utility::systemEnvironment(),
 		      const QByteArray& password = QByteArray(),
 		      std::function< void() > f = [](){},
-		      bool e = false )
+		      bool use_polkit = false,
+		      bool runs_in_background = true )
 		{
-			this->execute( exe,list,waitTime,env,password,std::move( f ),e ) ;
+			this->execute( exe,
+				       list,
+				       waitTime,
+				       env,
+				       password,
+				       std::move( f ),
+				       use_polkit,
+				       runs_in_background ) ;
 		}
 		Task( const QString& exe,
 		      const QStringList& list,
 		      const QProcessEnvironment& env,
 		      std::function< void() > f,
-		      bool e = false )
+		      bool use_polkit = false )
 		{
-			this->execute( exe,list,-1,env,QByteArray(),std::move( f ),e ) ;
+			this->execute( exe,
+				       list,
+				       -1,
+				       env,
+				       QByteArray(),
+				       std::move( f ),
+				       use_polkit,
+				       true ) ;
 		}
 
 		enum class channel{ stdOut,stdError } ;
@@ -567,7 +582,9 @@ namespace utility
 			      int waitTime,
 			      const QProcessEnvironment& env,
 			      const QByteArray& password,
-			      std::function< void() > f,bool e ) ;
+			      std::function< void() > f,
+			      bool e,
+			      bool runs_in_background ) ;
 
 		QByteArray m_stdOut ;
 		QByteArray m_stdError ;

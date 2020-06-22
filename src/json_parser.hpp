@@ -29,50 +29,49 @@
 class SirikaliJson
 {
 public:
-	class exception
-	{
-	public:
-		exception( const char * e ) : m_reason( QString( "Key \"%1\" not found" ).arg( e ) )
-		{
-		}
-		const QString& what() const noexcept
-		{
-			return m_reason ;
-		}
-	private:
-		QString m_reason ;
-	} ;
-
 	enum class type{ PATH,CONTENTS } ;
 
-	SirikaliJson()
+	SirikaliJson( std::function< void( const QString& ) > log ) :
+		m_log( std::move( log ) )
 	{
 	}
-	SirikaliJson( const QByteArray& e,type s )
+	SirikaliJson( const QByteArray& e,type s,std::function< void( const QString& ) > log ) :
+		m_log( std::move( log ) )
 	{
 		this->getData( e,s ) ;
 	}
-	SirikaliJson( const QString& e,type s )
+	SirikaliJson( const QString& e,type s,std::function< void( const QString& ) > log ) :
+		m_log( std::move( log ) )
 	{
 		this->getData( e.toLatin1(),s ) ;
 	}
 	template< typename T >
-	T get( const char * key ) const
+	T get( const char * key,const T& t = T() ) const
 	{
-		auto a = m_json.find( key ) ;
+		try{
+			auto a = m_json.find( key ) ;
 
-		if( a != m_json.end() ){
+			if( a != m_json.end() ){
 
-			return a->get< T >() ;
-		}else{
-			throw SirikaliJson::exception( key ) ;
+				return a->get< T >() ;
+			}else{
+				m_log( "Warning, Following Key Not Found: " + QString( key ) ) ;
+
+				return t ;
+			}
+
+		}catch( ... ) {
+
+			m_log( "Warning, Exception thrown when searching For Following Key: " + QString( key ) ) ;
+
+			return t ;
 		}
 	}
-	QStringList getStringList( const char * key ) const
+	QStringList getStringList( const char * key,const std::vector< std::string >& l = {} ) const
 	{
 		QStringList s ;
 
-		const auto e = this->get< std::vector< std::string > >( key ) ;
+		const auto e = this->get< std::vector< std::string > >( key,l ) ;
 
 		for( const auto& it : e ){
 
@@ -81,25 +80,25 @@ public:
 
 		return s ;
 	}
-	QString getString( const char * key ) const
+	QString getString( const char * key,const std::string& defaultValue = std::string() ) const
 	{
-		return this->get< std::string >( key ).c_str() ;
+		return this->get< std::string >( key,defaultValue ).c_str() ;
 	}
-	QByteArray getByteArray( const char * key ) const
+	QByteArray getByteArray( const char * key,const std::string& defaultValue = std::string() ) const
 	{
-		return this->get< std::string >( key ).c_str() ;
+		return this->get< std::string >( key,defaultValue ).c_str() ;
 	}
-	bool getBool( const char * key ) const
+	bool getBool( const char * key,bool s = false ) const
 	{
-		return this->get< bool >( key ) ;
+		return this->get< bool >( key,s ) ;
 	}
-	bool getInterger( const char * key ) const
+	bool getInterger( const char * key,int s = 0 ) const
 	{
-		return this->get< int >( key ) ;
+		return this->get< int >( key,s ) ;
 	}
-	double getDouble( const char * key ) const
+	double getDouble( const char * key,double s = 0.0 ) const
 	{
-		return this->get< double >( key ) ;
+		return this->get< double >( key,s ) ;
 	}
 	template< typename T >
 	void insert( const char * key,const T& value )
@@ -184,6 +183,7 @@ private:
 			m_json = nlohmann::json::parse( e.constData() ) ;
 		}
 	}
+	std::function< void( const QString& ) > m_log = []( const QString& e ){ Q_UNUSED( e ) } ;
 	const char * m_key ;
 	nlohmann::json m_json ;
 };
