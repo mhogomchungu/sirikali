@@ -167,24 +167,21 @@ custom::custom( custom::opts s ) :
 {
 }
 
-static QString _replace( QString a,const std::vector< std::pair< QString,QString > >& opts )
+template< typename T >
+static QString _replace( QString a,const T& opts )
 {
 	for( const auto& it : opts ){
 
-		if( it.second.isEmpty() ){
-
-			a.replace( it.first,"" ) ;
-		}else{
-			a.replace( it.first,it.second ) ;
-		}
+		a.replace( it.first,it.second ) ;
 	}
 
 	return a ;
 }
 
-void custom::setExeOptions( class engines::engine::commandOptions::exeOptions& exeOpts,
-			    const QString& controlStructure,
-			    const std::vector< std::pair< QString,QString > >& opts ) const
+static void _resolve( QStringList& orgs,
+		      const QString& name,
+		      const QString& controlStructure,
+		      const std::vector< std::pair< QString,QString > >& opts )
 {
 	if( controlStructure.isEmpty() ){
 
@@ -195,16 +192,109 @@ void custom::setExeOptions( class engines::engine::commandOptions::exeOptions& e
 
 	if( m.size() == 1 ){
 
-		exeOpts.addFront( _replace( m.at( 0 ),opts ) ) ;
+		if( !opts.at( 0 ).second.isEmpty() ){
+
+			orgs.append( _replace( m.at( 0 ),opts ) ) ;
+		}
 
 	}else if( m.size() == 2 ){
 
-		exeOpts.addFront( _replace( m.at( 1 ),opts ) ) ;
-		exeOpts.addFront( m.at( 0 ) ) ;
+		if( !opts.at( 1 ).second.isEmpty() ){
+
+			orgs.append( m.at( 0 ) ) ;
+			orgs.append( _replace( m.at( 1 ),opts ) ) ;
+		}
 	}else{
-		//auto s = QString( "Ignoring \"%1\" because it has wrong structure in custom backend named \"%2\"" ) ;
-		//utility::debug::logErrorWhileStarting( s.arg( optName,this->name() ) ) ;
+		auto s = QString( "Wrong control structure detected in custom backend named \"%1\"." ) ;
+		utility::debug::logErrorWhileStarting( s.arg( name ) ) ;
 	}
+}
+
+QStringList custom::resolve( const resolveStruct& r ) const
+{
+	auto mm = utility::split( r.controlStructure,' ' ) ;
+
+	for( auto& it : mm ){
+
+		if( it == "%{cipherFolder}" ){
+
+			it = r.args.cipherFolder ;
+
+		}else if( it == "%{mountPoint}" ){
+
+			it = r.args.mountPoint ;
+
+		}else if( it == "%{password}" ){
+
+			it = r.password ;
+		}
+	}
+
+	for( int i = 0 ; i < mm.size() ; i++ ){
+
+		auto& it = mm[ i ] ;
+
+		if( it == "%{fuseOpts}" ){
+
+			mm.removeAt( i ) ;
+
+			auto ff = r.fuseOpts ;
+
+			if( !ff.isEmpty() ){
+
+				auto a = ff.takeAt( 0 ) ;
+				mm.insert( i,ff.at( 0 ) ) ;
+				mm.insert( i,a ) ;
+			}
+
+			break ;
+		}
+	}
+
+	for( int i = 0 ; i < mm.size() ; i++ ){
+
+		const auto& it = mm[ i ] ;
+
+		if( it == "%{mountOptions}" ){
+
+			mm.removeAt( i ) ;
+
+			QStringList opts ;
+
+			if( r.args.opt.boolOptions.unlockInReverseMode ){
+
+				opts.append( this->reverseString() ) ;
+			}
+
+			std::vector< std::pair< QString,QString > > oo ;
+
+			oo.emplace_back( std::make_pair( "%{cipherFolder}",r.args.cipherFolder ) ) ;
+			oo.emplace_back( std::make_pair( "%{configFileName}",this->configFileName() ) ) ;
+			oo.emplace_back( std::make_pair( "%{configFilePath}",r.args.opt.configFilePath ) ) ;
+
+			_resolve( opts,this->name(),this->configFileArgument(),oo ) ;
+
+			oo.clear() ;
+
+			oo.emplace_back( std::make_pair( "%{timeout}",r.args.opt.idleTimeout ) ) ;
+
+			_resolve( opts,this->name(),this->idleString(),oo ) ;
+
+			opts.append( r.createOpts ) ;
+
+			if( !opts.isEmpty() ){
+
+				for( int j = opts.size() - 1 ; j >= 0 ; j-- ){
+
+					mm.insert( i,opts.at( j ) ) ;
+				}
+			}
+
+			break ;
+		}
+	}
+
+	return mm ;
 }
 
 engines::engine::args custom::command( const QByteArray& password,
@@ -214,104 +304,27 @@ engines::engine::args custom::command( const QByteArray& password,
 
 	if( args.create ){
 
-		auto exeOptions = m.exeOptions() ;
-
 		QStringList opts ;
 
 		if( !args.opt.createOptions.isEmpty() ){
 
-			opts.append( utility::split( args.opt.createOptions,' ' ) ) ;
+			opts = utility::split( args.opt.createOptions,' ' ) ;
 		}
-
-		QString cmd = m_createControlStructure ;
-
-		if( opts.isEmpty() ){
-
-			cmd.replace( "%{createOptions}","",Qt::CaseInsensitive ) ;
-		}else{
-			cmd.replace( "%{createOptions}",opts.join( ' ' ),Qt::CaseInsensitive ) ;
-		}
-
-		auto mm = utility::split( cmd,' ' ) ;
-
-		for( auto& it : mm ){
-
-			if( it == "%{cipherFolder}" ){
-
-				it = args.cipherFolder ;
-
-			}else if( it == "%{mountPoint}" ){
-
-				it = args.mountPoint ;
-
-			}else if( it == "%{password}" ){
-
-				it = password ;
-			}
-		}		
-
-		exeOptions.add( mm ) ;
-
-		return { args,m,args.exe,exeOptions.get() } ;
-	}else{
-		QStringList opts ;
 
 		auto exeOptions = m.exeOptions() ;
 
-		if( args.opt.boolOptions.unlockInReverseMode ){
+		auto s = this->resolve( { m_createControlStructure,args,password,opts,m.fuseOpts().get() } ) ;
 
-			opts.append( this->reverseString() ) ;
-		}
+		exeOptions.add( s ) ;
 
-		auto cmd = m_mountControlStructure ;
+		return { args,m,args.exe,exeOptions.get() } ;
 
-		if( opts.isEmpty() ){
+	}else{
+		auto exeOptions = m.exeOptions() ;
 
-			cmd.replace( "%{mountOptions}","",Qt::CaseInsensitive ) ;
-		}else{
-			cmd.replace( "%{mountOptions}",opts.join( ' ' ),Qt::CaseInsensitive ) ;
-		}
+		auto s = this->resolve( { m_mountControlStructure,args,password,{},m.fuseOpts().get() } ) ;
 
-		auto ff = m.fuseOpts().get() ;
-
-		if( ff.isEmpty() ){
-
-			cmd.replace( "%{fuseOpts}","",Qt::CaseInsensitive ) ;
-		}else{
-			cmd.replace( "%{fuseOpts}",ff.join( ' ' ),Qt::CaseInsensitive ) ;
-		}
-
-		auto mm = utility::split( cmd,' ' ) ;
-
-		for( auto& it : mm ){
-
-			if( it == "%{cipherFolder}" ){
-
-				it = args.cipherFolder ;
-
-			}else if( it == "%{mountPoint}" ){
-
-				it = args.mountPoint ;
-
-			}else if( it == "%{password}" ){
-
-				it = password ;
-			}
-		}
-
-		std::vector< std::pair< QString,QString > > oo ;
-
-		oo.emplace_back( std::make_pair( "%{cipherFolder}",args.cipherFolder ) ) ;
-		oo.emplace_back( std::make_pair( "%{configFileName}",this->configFileName() ) ) ;
-		oo.emplace_back( std::make_pair( "%{configFilePath}",args.opt.configFilePath ) ) ;
-
-		this->setExeOptions( exeOptions,this->configFileArgument(),oo ) ;
-
-		this->setExeOptions( exeOptions,
-				     this->idleString(),
-				     { std::make_pair( "%1",args.opt.idleTimeout ) } ) ;
-
-		exeOptions.add( mm ) ;
+		exeOptions.add( s ) ;
 
 		return { args,m,args.exe,exeOptions.get() } ;
 	}

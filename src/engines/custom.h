@@ -44,9 +44,15 @@ public:
 
 	void GUICreateOptions( const engines::engine::createGUIOptions& ) const override ;
 private:
-	void setExeOptions( class engines::engine::commandOptions::exeOptions& exeOpts,
-			    const QString& controlStructure,
-			    const std::vector< std::pair< QString,QString > >& ) const ;
+	struct resolveStruct{
+		const QString& controlStructure ;
+		const engines::engine::cmdArgsList& args ;
+		const QByteArray& password ;
+		const QStringList& createOpts ;
+		const QStringList& fuseOpts ;
+	} ;
+
+	QStringList resolve( const resolveStruct& ) const ;
 
 	const QString m_mountControlStructure ;
 	const QString m_createControlStructure ;
