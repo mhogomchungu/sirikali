@@ -192,18 +192,12 @@ static void _resolve( QStringList& orgs,
 
 	if( m.size() == 1 ){
 
-		if( !opts.at( 0 ).second.isEmpty() ){
-
-			orgs.append( _replace( m.at( 0 ),opts ) ) ;
-		}
+		orgs.append( _replace( m.at( 0 ),opts ) ) ;
 
 	}else if( m.size() == 2 ){
 
-		if( !opts.at( 1 ).second.isEmpty() ){
-
-			orgs.append( m.at( 0 ) ) ;
-			orgs.append( _replace( m.at( 1 ),opts ) ) ;
-		}
+		orgs.append( m.at( 0 ) ) ;
+		orgs.append( _replace( m.at( 1 ),opts ) ) ;
 	}else{
 		auto s = QString( "Wrong control structure detected in custom backend named \"%1\"." ) ;
 		utility::debug::logErrorWhileStarting( s.arg( name ) ) ;
@@ -274,11 +268,13 @@ QStringList custom::resolve( const resolveStruct& r ) const
 
 			_resolve( opts,this->name(),this->configFileArgument(),oo ) ;
 
-			oo.clear() ;
+			if( !r.args.opt.idleTimeout.isEmpty() ){
 
-			oo.emplace_back( std::make_pair( "%{timeout}",r.args.opt.idleTimeout ) ) ;
-
-			_resolve( opts,this->name(),this->idleString(),oo ) ;
+				_resolve( opts,
+					  this->name(),
+					  this->idleString(),
+					  { std::make_pair( "%{timeout}",r.args.opt.idleTimeout ) } ) ;
+			}
 
 			opts.append( r.createOpts ) ;
 
