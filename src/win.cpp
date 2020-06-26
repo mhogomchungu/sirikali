@@ -640,13 +640,11 @@ SiriKali::Windows::volumes::remove( const QString& unMountCommand,const QString&
 
 QString SiriKali::Windows::volumes::volumeProperties( const QString& mm )
 {
-	auto mountPath = "\"" + mm + "\"" ;
-
 	for( size_t i = 0 ; i < m_instances.size() ; i++ ){
 
 		const auto& e = m_instances[ i ] ;
 
-		if( mountPath == e.mountPoint() ){
+		if( mm == e.mountPoint() ){
 
 			auto m = QObject::tr( "Mount Options:\n\n" ) ;
 

@@ -1343,87 +1343,75 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 		return s ;
 	} ;
 
+	auto _volname = []( QString& e ){
+
+		if( e.size() > 40 ){
+			/*
+			 * we are making sure that volname value does not exceed 32 characters.
+			 * 40 is the sum of string "volname="(8) plus the volue that must be
+			 * less or equal to 32.
+			 */
+			auto s = e.mid( 8 ) ;
+
+			e = "volname=" + s.mid( 0,29 ) + "...," ;
+		}
+	} ;
+
+	bool hasNoVolname = true ;
+
+	bool notLinux = !utility::platformIsLinux() ;
+
 	auto mm = utility::split( e.mountOptions,',' ) ;
 
-	if( !mm.isEmpty() ){
+	for( int i = 0 ; i < mm.size() ; i++ ){
 
-		const auto& e = mm.at( 0 ) ;
+		auto& e = mm[ i ] ;
 
 		if( e.startsWith( '-' ) ){
 
-			m_exeOptions.append( e ) ;
-		}else{
-			m_fuseOptions = e ;
-		}
+			m_exeOptions.append( utility::split( e,' ' ) ) ;
 
-		for( int i = 1 ; i < mm.size() ; i++ ){
+			mm.removeAt( i ) ;
 
-			const auto& e = mm.at( 0 ) ;
+			i-- ;
 
-			if( e.startsWith( '-' ) ){
+		}else if( e.startsWith( "volname=" ) ){
 
-				m_exeOptions.append( e ) ;
+			if( notLinux ){
+
+				hasNoVolname = false ;
+
+				_volname( e ) ;
 			}else{
-				m_fuseOptions += "," + e ;
+				mm.removeAt( i ) ;
+
+				i-- ;
 			}
 		}
 	}
 
-	if( !utility::platformIsLinux() ){
+	if( notLinux && hasNoVolname ){
 
-		if( m_fuseOptions.contains( "volname=" ) ){
+		QString s ;
 
-			QString m ;
+		if( utility::platformIsOSX() ){
 
-			for( const auto& it : utility::split( m_fuseOptions,',' ) ){
-
-				if( it.startsWith( "volname=" ) ){
-
-					auto s = it.mid( 8 ) ;
-
-					if( s.size() > 32 ){
-
-						m += "volname=" + s.mid( 0,29 ) + "...," ;
-					}else{
-						m += "volname=" + it + "," ;
-					}
-				}else{
-					m += it + "," ;
-				}
-			}
-
-			if( m.endsWith( "," ) ){
-
-				m_fuseOptions = utility::removeLast( m,1 ) ;
-			}
-
-			m_fuseOptions = std::move( m ) ;
+			s = utility::split( e.mountPoint,'/' ).last() ;
 		}else{
-			QString s ;
+			s = utility::split( cipherFolder( e.cipherFolder ),'/' ).last() ;
+		}
 
-			if( utility::platformIsOSX() ){
+		if( !s.isEmpty() ){
 
-				s = utility::split( e.mountPoint,'/' ).last() ;
-			}else{
-				s = utility::split( cipherFolder( e.cipherFolder ),'/' ).last() ;
-			}
+			auto v = "volname=" + s ;
 
-			if( !s.isEmpty() ){
+			_volname( v ) ;
 
-				if( s.size() > 32 ){
-
-					s = s.mid( 0,29 ) + "..." ;
-				}
-
-				if( m_fuseOptions.isEmpty() ){
-
-					m_fuseOptions = "volname=" + s ;
-				}else{
-					m_fuseOptions += ",volname=" + s ;
-				}
-			}
+			mm.append( v ) ;
 		}
 	}
+
+	m_fuseOptions = mm.join( ',' ) ;
 
 	if( e.boolOptions.unlockInReadOnly ){
 
