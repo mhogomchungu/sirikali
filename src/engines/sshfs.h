@@ -24,14 +24,15 @@ class sshfs : public engines::engine
 public:
 	sshfs() ;
 
-	engine::engine::status passAllRequirenments( const engines::engine::cmdArgsList::options& opt ) const override ;
+	engine::engine::status passAllRequirenments( const engines::engine::cmdArgsList& opt ) const override ;
 
 	const QProcessEnvironment& getProcessEnvironment() const override ;
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 
 	engines::engine::args command( const QByteArray& password,
-				       const engines::engine::cmdArgsList& args ) const override ;
+				       const engines::engine::cmdArgsList& args,
+				       bool create ) const override ;
 
 	void GUIMountOptions( const engines::engine::mountGUIOptions& ) const override ;
 private:

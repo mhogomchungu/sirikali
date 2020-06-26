@@ -26,16 +26,17 @@ public:
 
 	bool takesTooLongToUnlock() const override ;
 
-	void updateOptions( engines::engine::cmdArgsList::options&,bool ) const override ;
+	void updateOptions( engines::engine::cmdArgsList&,bool ) const override ;
 
 	const QProcessEnvironment& getProcessEnvironment() const override ;
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 
-	engines::engine::status passAllRequirenments( const engines::engine::cmdArgsList::options& opt ) const override ;
+	engines::engine::status passAllRequirenments( const engines::engine::cmdArgsList& opt ) const override ;
 
 	engines::engine::args command( const QByteArray& password,
-				       const engines::engine::cmdArgsList& args ) const override ;
+				       const engines::engine::cmdArgsList& args,
+				       bool create ) const override ;
 
 	void GUICreateOptions( const createGUIOptions& ) const override ;
 

@@ -68,7 +68,8 @@ encfs::encfs() :
 }
 
 engines::engine::args encfs::command( const QByteArray& password,
-				      const engines::engine::cmdArgsList& args ) const
+				      const engines::engine::cmdArgsList& args,
+				      bool create ) const
 {
 	Q_UNUSED( password )
 
@@ -76,11 +77,11 @@ engines::engine::args encfs::command( const QByteArray& password,
 
 	auto exeOptions = m.exeOptions() ;
 
-	if( args.create ){
+	if( create ){
 
-		if( !args.opt.createOptions.isEmpty() ){
+		if( !args.createOptions.isEmpty() ){
 
-			exeOptions.add( utility::split( args.opt.createOptions,' ' ) ) ;
+			exeOptions.add( utility::split( args.createOptions,' ' ) ) ;
 		}
 
 		exeOptions.add( "--stdinpass","--standard" ) ;
@@ -88,7 +89,7 @@ engines::engine::args encfs::command( const QByteArray& password,
 		exeOptions.add( "--stdinpass" ) ;
 	}
 
-	if( args.opt.boolOptions.unlockInReverseMode ){
+	if( args.boolOptions.unlockInReverseMode ){
 
 		exeOptions.add( this->reverseString() ) ;
 	}
@@ -110,13 +111,13 @@ engines::engine::args encfs::command( const QByteArray& password,
 
 	m_environment.remove( "ENCFS6_CONFIG" ) ;
 
-	if( !args.opt.configFilePath.isEmpty() ){
+	if( !args.configFilePath.isEmpty() ){
 
 		if( m_versionGreatorOrEqual_1_9_5 ){
 
-			exeOptions.add( this->configFileArgument() + "=" + args.opt.configFilePath ) ;
+			exeOptions.add( this->configFileArgument() + "=" + args.configFilePath ) ;
 		}else{
-			auto& a = args.opt.configFilePath ;
+			auto& a = args.configFilePath ;
 
 			utility::debug() << "Encfs: Setting Env Variable Of: ENCFS6_CONFIG=" + a ;
 			m_environment.insert( "ENCFS6_CONFIG",a ) ;
@@ -125,7 +126,7 @@ engines::engine::args encfs::command( const QByteArray& password,
 
 	exeOptions.add( args.cipherFolder,args.mountPoint,m.fuseOpts().get() ) ;
 
-	return { args,m,args.exe,exeOptions.get() } ;
+	return { args,m,this->executableFullPath(),exeOptions.get() } ;
 }
 
 engines::engine::status encfs::errorCode( const QString& e,int s ) const

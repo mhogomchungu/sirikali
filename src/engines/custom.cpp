@@ -255,7 +255,7 @@ QStringList custom::resolve( const resolveStruct& r ) const
 
 			QStringList opts ;
 
-			if( r.args.opt.boolOptions.unlockInReverseMode ){
+			if( r.args.boolOptions.unlockInReverseMode ){
 
 				opts.append( this->reverseString() ) ;
 			}
@@ -264,16 +264,16 @@ QStringList custom::resolve( const resolveStruct& r ) const
 
 			oo.emplace_back( std::make_pair( "%{cipherFolder}",r.args.cipherFolder ) ) ;
 			oo.emplace_back( std::make_pair( "%{configFileName}",this->configFileName() ) ) ;
-			oo.emplace_back( std::make_pair( "%{configFilePath}",r.args.opt.configFilePath ) ) ;
+			oo.emplace_back( std::make_pair( "%{configFilePath}",r.args.configFilePath ) ) ;
 
 			_resolve( opts,this->name(),this->configFileArgument(),oo ) ;
 
-			if( !r.args.opt.idleTimeout.isEmpty() ){
+			if( !r.args.idleTimeout.isEmpty() ){
 
 				_resolve( opts,
 					  this->name(),
 					  this->idleString(),
-					  { std::make_pair( "%{timeout}",r.args.opt.idleTimeout ) } ) ;
+					  { std::make_pair( "%{timeout}",r.args.idleTimeout ) } ) ;
 			}
 
 			opts.append( r.createOpts ) ;
@@ -294,17 +294,18 @@ QStringList custom::resolve( const resolveStruct& r ) const
 }
 
 engines::engine::args custom::command( const QByteArray& password,
-				       const engines::engine::cmdArgsList& args ) const
+				       const engines::engine::cmdArgsList& args,
+				       bool create ) const
 {
 	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
 
-	if( args.create ){
+	if( create ){
 
 		QStringList opts ;
 
-		if( !args.opt.createOptions.isEmpty() ){
+		if( !args.createOptions.isEmpty() ){
 
-			opts = utility::split( args.opt.createOptions,' ' ) ;
+			opts = utility::split( args.createOptions,' ' ) ;
 		}
 
 		auto exeOptions = m.exeOptions() ;
@@ -313,7 +314,7 @@ engines::engine::args custom::command( const QByteArray& password,
 
 		exeOptions.add( s ) ;
 
-		return { args,m,args.exe,exeOptions.get() } ;
+		return { args,m,this->executableFullPath(),exeOptions.get() } ;
 
 	}else{
 		auto exeOptions = m.exeOptions() ;
@@ -322,7 +323,7 @@ engines::engine::args custom::command( const QByteArray& password,
 
 		exeOptions.add( s ) ;
 
-		return { args,m,args.exe,exeOptions.get() } ;
+		return { args,m,this->executableFullPath(),exeOptions.get() } ;
 	}
 }
 

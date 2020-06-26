@@ -73,7 +73,7 @@ sshfs::sshfs() :
 {
 }
 
-engines::engine::status sshfs::passAllRequirenments( const engines::engine::cmdArgsList::options& opt ) const
+engines::engine::status sshfs::passAllRequirenments( const engines::engine::cmdArgsList& opt ) const
 {
 	if( utility::platformIsWindows() ){
 
@@ -100,16 +100,18 @@ const QProcessEnvironment& sshfs::getProcessEnvironment() const
 }
 
 engines::engine::args sshfs::command( const QByteArray& password,
-				      const engines::engine::cmdArgsList& args ) const
+				      const engines::engine::cmdArgsList& args,
+				      bool create ) const
 {
 	Q_UNUSED( password )
+	Q_UNUSED( create )
 
 	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
 
 	auto fuseOptions = m.fuseOpts() ;
 	auto exeOptions  = m.exeOptions() ;
 
-	if( !args.opt.key.isEmpty() ){
+	if( !args.key.isEmpty() ){
 
 		fuseOptions.add( "password_stdin" ) ;
 	}
@@ -170,7 +172,7 @@ engines::engine::args sshfs::command( const QByteArray& password,
 
 	exeOptions.add( args.cipherFolder,args.mountPoint,m.fuseOpts().get() ) ;
 
-	return { args,m,args.exe,exeOptions.get() } ;
+	return { args,m,this->executableFullPath(),exeOptions.get() } ;
 }
 
 engines::engine::status sshfs::errorCode( const QString& e,int s ) const

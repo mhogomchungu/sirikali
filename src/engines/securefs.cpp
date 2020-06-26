@@ -65,44 +65,45 @@ securefs::securefs() :
 }
 
 engines::engine::args securefs::command( const QByteArray& password,
-					 const engines::engine::cmdArgsList& args ) const
+					 const engines::engine::cmdArgsList& args,
+					 bool create ) const
 {
 	Q_UNUSED( password )
 
 	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
 
-	if( args.create ){
+	if( create ){
 
 		auto exeOptions  = m.exeOptions() ;
 
 		exeOptions.add( "create" ) ;
 
-		if( !args.opt.createOptions.isEmpty() ){
+		if( !args.createOptions.isEmpty() ){
 
-			exeOptions.add( utility::split( args.opt.createOptions,' ' ) ) ;
+			exeOptions.add( utility::split( args.createOptions,' ' ) ) ;
 		}
 
 		if( m_version_greater_or_equal_0_11_1 ){
 
-			if( !args.opt.keyFile.isEmpty() ){
+			if( !args.keyFile.isEmpty() ){
 
-				exeOptions.add( "--keyfile",args.opt.keyFile ) ;
+				exeOptions.add( "--keyfile",args.keyFile ) ;
 
-				if( !args.opt.key.isEmpty() ){
+				if( !args.key.isEmpty() ){
 
 					exeOptions.add( "--askpass" ) ;
 				}
 			}
 		}
 
-		if( !args.opt.configFilePath.isEmpty() ){
+		if( !args.configFilePath.isEmpty() ){
 
-			exeOptions.add( this->configFileArgument(),args.opt.configFilePath ) ;
+			exeOptions.add( this->configFileArgument(),args.configFilePath ) ;
 		}
 
 		exeOptions.add( args.cipherFolder ) ;
 
-		return { args,m,args.exe,exeOptions.get() } ;
+		return { args,m,this->executableFullPath(),exeOptions.get() } ;
 	}else{
 		auto exeOptions  = m.exeOptions() ;
 		auto fuseOptions = m.fuseOpts() ;
@@ -126,25 +127,25 @@ engines::engine::args securefs::command( const QByteArray& password,
 			exeOptions.add( "--fsname",fsname ) ;
 			exeOptions.add( "--fssubtype",fssubtype ) ;
 
-			if( !args.opt.keyFile.isEmpty() ){
+			if( !args.keyFile.isEmpty() ){
 
-				exeOptions.add( "--keyfile",args.opt.keyFile ) ;
+				exeOptions.add( "--keyfile",args.keyFile ) ;
 
-				if( !args.opt.key.isEmpty() ){
+				if( !args.key.isEmpty() ){
 
 					exeOptions.add( "--askpass" ) ;
 				}
 			}
 		}
 
-		if( !args.opt.configFilePath.isEmpty() ){
+		if( !args.configFilePath.isEmpty() ){
 
-			exeOptions.add( this->configFileArgument(),args.opt.configFilePath ) ;
+			exeOptions.add( this->configFileArgument(),args.configFilePath ) ;
 		}
 
 		exeOptions.add( args.cipherFolder,args.mountPoint,fuseOptions.get() ) ;
 
-		return { args,m,args.exe,exeOptions.get() } ;
+		return { args,m,this->executableFullPath(),exeOptions.get() } ;
 	}
 }
 
@@ -164,7 +165,7 @@ engines::engine::status securefs::errorCode( const QString& e,int s ) const
 	}
 }
 
-bool securefs::requiresAPassword( const engines::engine::cmdArgsList::options& opt ) const
+bool securefs::requiresAPassword( const engines::engine::cmdArgsList& opt ) const
 {
 	if( opt.mountOptions.contains( "--keyfile" ) || !opt.keyFile.isEmpty() ){
 

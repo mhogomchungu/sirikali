@@ -27,9 +27,10 @@ public:
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 
 	engines::engine::args command( const QByteArray& password,
-				       const engines::engine::cmdArgsList& args ) const override ;
+				       const engines::engine::cmdArgsList& args,
+				       bool create ) const override ;
 
-	bool requiresAPassword( const engines::engine::cmdArgsList::options& ) const override ;
+	bool requiresAPassword( const engines::engine::cmdArgsList& ) const override ;
 
 	void GUICreateOptions( const engines::engine::createGUIOptions& ) const override ;
 

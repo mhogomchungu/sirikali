@@ -89,7 +89,7 @@ ecryptfs::ecryptfs() :
 {
 }
 
-void ecryptfs::updateOptions( engines::engine::cmdArgsList::options& opt,bool creating ) const
+void ecryptfs::updateOptions( engines::engine::cmdArgsList& opt,bool creating ) const
 {
 	Q_UNUSED( creating )
 
@@ -170,7 +170,8 @@ engines::engine::status ecryptfs::unmount( const QString& cipherFolder,
 }
 
 engines::engine::args ecryptfs::command( const QByteArray& password,
-					 const engines::engine::cmdArgsList& args ) const
+					 const engines::engine::cmdArgsList& args,
+					 bool create ) const
 {
 	Q_UNUSED( password )
 
@@ -178,41 +179,41 @@ engines::engine::args ecryptfs::command( const QByteArray& password,
 
 	auto exeOptions = m.exeOptions() ;
 
-	if( args.opt.boolOptions.unlockInReadOnly ){
+	if( args.boolOptions.unlockInReadOnly ){
 
 		exeOptions.add( "--readonly" ) ;
 	}
 
-	if( args.create ){
+	if( create ){
 
-		if( args.opt.createOptions.isEmpty() ){
+		if( args.createOptions.isEmpty() ){
 
 			exeOptions.add( "-o",ecryptfscreateoptions::defaultCreateOptions() ) ;
 		}else{
-			exeOptions.add( "-o",args.opt.createOptions ) ;
+			exeOptions.add( "-o",args.createOptions ) ;
 		}
 	}else{
 		exeOptions.add( "-o","key=passphrase" ) ;
 	}
 
-	if( !args.opt.mountOptions.isEmpty() ){
+	if( !args.mountOptions.isEmpty() ){
 
-		exeOptions.add( "-o",args.opt.mountOptions ) ;
+		exeOptions.add( "-o",args.mountOptions ) ;
 	}
 
-	exeOptions.add( "-a",this->configFileArgument() + "=" + args.opt.configFilePath ) ;
+	exeOptions.add( "-a",this->configFileArgument() + "=" + args.configFilePath ) ;
 
 	exeOptions.add( args.cipherFolder,args.mountPoint ) ;
 
 	if( utility::useSiriPolkit() ){
 
-		auto s = this->wrapSU( args.exe ) ;
+		auto s = this->wrapSU( this->executableFullPath() ) ;
 
 		s.args[ 2 ].append( " " + exeOptions.get().join( ' ' ) ) ;
 
 		return { args,m,s.exe,s.args } ;
 	}else{
-		return { args,m,args.exe,exeOptions.get() } ;
+		return { args,m,this->executableFullPath(),exeOptions.get() } ;
 	}
 }
 

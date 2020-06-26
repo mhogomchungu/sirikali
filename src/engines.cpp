@@ -155,10 +155,12 @@ engines::engine::~engine()
 }
 
 engines::engine::args engines::engine::command( const QByteArray& password,
-						const engines::engine::cmdArgsList& args ) const
+						const engines::engine::cmdArgsList& args,
+						bool create ) const
 {
 	Q_UNUSED( password )
 	Q_UNUSED( args )
+	Q_UNUSED( create )
 	return {} ;
 }
 
@@ -169,7 +171,7 @@ engines::engine::status engines::engine::errorCode( const QString& e,int s ) con
 	return engines::engine::status::backendFail ;
 }
 
-void engines::engine::updateVolumeList( const engines::engine::cmdArgsList::options& e ) const
+void engines::engine::updateVolumeList( const engines::engine::cmdArgsList& e ) const
 {
 	Q_UNUSED( e )
 }
@@ -382,7 +384,7 @@ bool engines::engine::supportsMountPathsOnWindows() const
 	return m_Options.supportsMountPathsOnWindows ;
 }
 
-bool engines::engine::requiresAPassword( const engines::engine::cmdArgsList::options& opts ) const
+bool engines::engine::requiresAPassword( const engines::engine::cmdArgsList& opts ) const
 {
 	Q_UNUSED( opts )
 
@@ -579,22 +581,26 @@ engines::engine::error engines::engine::errorCode( const QString& e ) const
 	}
 }
 
-static bool _illegal_path( const engines::engine::cmdArgsList::options& opts,
-			   const engines::engine& engine )
+static bool _illegal_path( const engines::engine::cmdArgsList& opts,const engines::engine& engine )
 {
 	if( engine.backendRequireMountPath() ){
 
-		return opts.cipherFolder.contains( " " ) || opts.plainFolder.contains( " " ) ;
+		return opts.cipherFolder.contains( " " ) || opts.mountPoint.contains( " " ) ;
 	}else {
 		return opts.cipherFolder.contains( " " ) ;
 	}
 }
 
-engines::engine::status engines::engine::passAllRequirenments( const engines::engine::cmdArgsList::options& opt ) const
+engines::engine::status engines::engine::passAllRequirenments( const engines::engine::cmdArgsList& opt ) const
 {
 	if( this->unknown() ){
 
 		return engines::engine::status::unknown ;
+	}
+
+	if( this->executableFullPath().isEmpty() ){
+
+		return this->notFoundCode() ;
 	}
 
 	if( opt.key.isEmpty() && this->requiresAPassword( opt ) ){
@@ -625,14 +631,14 @@ engines::engine::status engines::engine::passAllRequirenments( const engines::en
 
 	if( utility::platformIsWindows() ){
 
-		if( !utility::isDriveLetter( opt.plainFolder ) ){
+		if( !utility::isDriveLetter( opt.mountPoint ) ){
 
-			if( utility::folderNotEmpty( opt.plainFolder ) ){
+			if( utility::folderNotEmpty( opt.mountPoint ) ){
 
 				return engines::engine::status::mountPointFolderNotEmpty ;
 			}
 
-			auto a = SiriKali::Windows::driveHasSupportedFileSystem( opt.plainFolder ) ;
+			auto a = SiriKali::Windows::driveHasSupportedFileSystem( opt.mountPoint ) ;
 
 			if( !a.first ){
 
@@ -645,7 +651,7 @@ engines::engine::status engines::engine::passAllRequirenments( const engines::en
 	return engines::engine::status::success ;
 }
 
-void engines::engine::updateOptions( engines::engine::cmdArgsList::options& e,bool s ) const
+void engines::engine::updateOptions( engines::engine::cmdArgsList& e,bool s ) const
 {
 	Q_UNUSED( e )
 	Q_UNUSED( s )
@@ -1214,10 +1220,9 @@ engines::engine::mountGUIOptions::mountOptions::mountOptions() : success( false 
 {
 }
 
-engines::engine::cmdArgsList::options::options( const favorites::entry& e,
-						const QByteArray& volumeKey ) :
+engines::engine::cmdArgsList::cmdArgsList( const favorites::entry& e,const QByteArray& volumeKey ) :
 	cipherFolder( e.volumePath ),
-	plainFolder( e.mountPointPath ),
+	mountPoint( e.mountPointPath ),
 	key( volumeKey ),
 	idleTimeout( e.idleTimeOut ),
 	configFilePath( e.configFilePath ),
@@ -1227,12 +1232,12 @@ engines::engine::cmdArgsList::options::options( const favorites::entry& e,
 	boolOptions.unlockInReverseMode = e.reverseMode ;
 }
 
-engines::engine::cmdArgsList::options::options( const QString& cipher_folder,
-						const QString& plain_folder,
-						const QByteArray& volume_key,
-						const engines::engine::createGUIOptions::createOptions& e ) :
+engines::engine::cmdArgsList::cmdArgsList( const QString& cipher_folder,
+					   const QString& plain_folder,
+					   const QByteArray& volume_key,
+					   const engines::engine::createGUIOptions::createOptions& e ) :
 	cipherFolder( cipher_folder ),
-	plainFolder( plain_folder ),
+	mountPoint( plain_folder ),
 	key( volume_key ),
 	idleTimeout( e.idleTimeOut ),
 	configFilePath( e.configFile ),
@@ -1243,12 +1248,12 @@ engines::engine::cmdArgsList::options::options( const QString& cipher_folder,
 {
 }
 
-engines::engine::cmdArgsList::options::options( const QString& cipher_folder,
-						const QString& plain_folder,
-						const QByteArray& volume_key,
-						const engines::engine::mountGUIOptions::mountOptions& e ) :
+engines::engine::cmdArgsList::cmdArgsList( const QString& cipher_folder,
+					   const QString& plain_folder,
+					   const QByteArray& volume_key,
+					   const engines::engine::mountGUIOptions::mountOptions& e ) :
 	cipherFolder( cipher_folder ),
-	plainFolder( plain_folder ),
+	mountPoint( plain_folder ),
 	key( volume_key ),
 	idleTimeout( e.idleTimeOut ),
 	configFilePath( e.configFile ),
@@ -1323,6 +1328,10 @@ QString engines::engine::decodeSpecialCharactersConst( const QString& e )
 	return m ;
 }
 
+engines::engine::commandOptions::commandOptions()
+{
+}
+
 engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsList& e,
 						 const QString& f,
 						 const QString& subtype )
@@ -1334,19 +1343,30 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 		return s ;
 	} ;
 
-	for( const auto& it : utility::split( e.opt.mountOptions,',' ) ) {
+	auto mm = utility::split( e.mountOptions,',' ) ;
 
-		if( it.startsWith( '-' ) ){
+	if( !mm.isEmpty() ){
 
-			m_exeOptions += it + " " ;
+		const auto& e = mm.at( 0 ) ;
+
+		if( e.startsWith( '-' ) ){
+
+			m_exeOptions.append( e ) ;
 		}else{
-			m_fuseOptions += it + "," ;
+			m_fuseOptions = e ;
 		}
-	}
 
-	if( m_fuseOptions.endsWith( "," ) ){
+		for( int i = 1 ; i < mm.size() ; i++ ){
 
-		m_fuseOptions = utility::removeLast( m_fuseOptions,1 ) ;
+			const auto& e = mm.at( 0 ) ;
+
+			if( e.startsWith( '-' ) ){
+
+				m_exeOptions.append( e ) ;
+			}else{
+				m_fuseOptions += "," + e ;
+			}
+		}
 	}
 
 	if( !utility::platformIsLinux() ){
@@ -1383,9 +1403,9 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 
 			if( utility::platformIsOSX() ){
 
-				s = utility::split( e.opt.plainFolder,'/' ).last() ;
+				s = utility::split( e.mountPoint,'/' ).last() ;
 			}else{
-				s = utility::split( cipherFolder( e.opt.cipherFolder ),'/' ).last() ;
+				s = utility::split( cipherFolder( e.cipherFolder ),'/' ).last() ;
 			}
 
 			if( !s.isEmpty() ){
@@ -1405,7 +1425,7 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 		}
 	}
 
-	if( e.opt.boolOptions.unlockInReadOnly ){
+	if( e.boolOptions.unlockInReadOnly ){
 
 		m_mode = "ro" ;
 	}else{

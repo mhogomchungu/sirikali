@@ -82,7 +82,7 @@ static bool _set_if_found( const Function& function )
 	return false ;
 }
 
-void gocryptfs::updateOptions( engines::engine::cmdArgsList::options& opt,bool creating ) const
+void gocryptfs::updateOptions( engines::engine::cmdArgsList& opt,bool creating ) const
 {
 	Q_UNUSED( creating )
 
@@ -104,7 +104,8 @@ void gocryptfs::updateOptions( engines::engine::cmdArgsList::options& opt,bool c
 }
 
 engines::engine::args gocryptfs::command( const QByteArray& password,
-					  const engines::engine::cmdArgsList& args ) const
+					  const engines::engine::cmdArgsList& args,
+					  bool create ) const
 {
 	Q_UNUSED( password )
 
@@ -115,28 +116,28 @@ engines::engine::args gocryptfs::command( const QByteArray& password,
 
 	exeOptions.add( "-q" ) ;
 
-	if( args.opt.boolOptions.unlockInReverseMode ){
+	if( args.boolOptions.unlockInReverseMode ){
 
 		exeOptions.add( this->reverseString() ) ;
 	}
 
-	if( !args.opt.idleTimeout.isEmpty() ){
+	if( !args.idleTimeout.isEmpty() ){
 
-		exeOptions.add( this->idleString(),args.opt.idleTimeout ) ;
+		exeOptions.add( this->idleString(),args.idleTimeout ) ;
 	}
 
-	if( !args.opt.configFilePath.isEmpty() ){
+	if( !args.configFilePath.isEmpty() ){
 
-		exeOptions.add( this->configFileArgument(),args.opt.configFilePath ) ;
+		exeOptions.add( this->configFileArgument(),args.configFilePath ) ;
 	}
 
-	if( args.create ){
+	if( create ){
 
 		exeOptions.add( "--init" ) ;
 
-		if( !args.opt.createOptions.isEmpty() ){
+		if( !args.createOptions.isEmpty() ){
 
-			exeOptions.add( utility::split( args.opt.createOptions,' ' ) ) ;
+			exeOptions.add( utility::split( args.createOptions,' ' ) ) ;
 		}
 
 		exeOptions.add( args.cipherFolder ) ;
@@ -149,7 +150,7 @@ engines::engine::args gocryptfs::command( const QByteArray& password,
 		exeOptions.add( args.cipherFolder,args.mountPoint,fuseOptions.get() ) ;
 	}
 
-	return { args,m,args.exe,exeOptions.get() } ;
+	return { args,m,this->executableFullPath(),exeOptions.get() } ;
 }
 
 engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const

@@ -410,37 +410,28 @@ public:
 
 		struct cmdArgsList
 		{
-			struct options
-			{
-				options( const favorites::entry& e,
-					 const QByteArray& volumeKey = QByteArray() ) ;
+			cmdArgsList( const favorites::entry& e,
+				     const QByteArray& volumeKey = QByteArray() ) ;
 
-				options( const QString& cipher_folder,
-					 const QString& plain_folder,
-					 const QByteArray& volume_key,
-					 const engines::engine::createGUIOptions::createOptions& ) ;
+			cmdArgsList( const QString& cipher_folder,
+				     const QString& plain_folder,
+				     const QByteArray& volume_key,
+				     const engines::engine::createGUIOptions::createOptions& ) ;
 
-				options( const QString& cipher_folder,
-					 const QString& plain_folder,
-					 const QByteArray& volume_key,
-					 const engines::engine::mountGUIOptions::mountOptions& ) ;
+			cmdArgsList( const QString& cipher_folder,
+				     const QString& plain_folder,
+				     const QByteArray& volume_key,
+				     const engines::engine::mountGUIOptions::mountOptions& ) ;
 
-				QString cipherFolder ;
-				QString plainFolder ;
-				QByteArray key ;
-				QString idleTimeout ;
-				QString configFilePath ;
-				QString mountOptions ;
-				QString createOptions ;
-				QString keyFile ;
-				booleanOptions boolOptions ;
-			} ;
-
-			const QString& exe ;
-			const engines::engine::cmdArgsList::options& opt ;
-			const QString& cipherFolder ;
-			const QString& mountPoint ;
-			const bool create ;
+			QString cipherFolder ;
+			QString mountPoint ;
+			QByteArray key ;
+			QString idleTimeout ;
+			QString configFilePath ;
+			QString mountOptions ;
+			QString createOptions ;
+			QString keyFile ;
+			booleanOptions boolOptions ;
 		} ;
 
 		struct BaseOptions
@@ -562,7 +553,7 @@ public:
 
 		virtual ~engine() ;
 
-		virtual void updateVolumeList( const engines::engine::cmdArgsList::options& ) const ;
+		virtual void updateVolumeList( const engines::engine::cmdArgsList& ) const ;
 
 		virtual QStringList mountInfo( const QStringList& ) const ;
 
@@ -573,11 +564,11 @@ public:
 							 const QString& mountPoint,
 							 int maxCount ) const ;
 
-		virtual bool requiresAPassword( const engines::engine::cmdArgsList::options& ) const ;
+		virtual bool requiresAPassword( const engines::engine::cmdArgsList& ) const ;
 
 		virtual bool takesTooLongToUnlock() const ;
 
-		virtual engine::engine::status passAllRequirenments( const engines::engine::cmdArgsList::options& ) const ;
+		virtual engine::engine::status passAllRequirenments( const engines::engine::cmdArgsList& ) const ;
 
 		struct ownsCipherFolder{
 			bool yes ;
@@ -588,12 +579,13 @@ public:
 		virtual ownsCipherFolder ownsCipherPath( const QString& cipherPath,
 		                                         const QString& configPath ) const ;
 
-		virtual void updateOptions( engines::engine::cmdArgsList::options&,bool ) const ;
+		virtual void updateOptions( engines::engine::cmdArgsList&,bool ) const ;
 
 		virtual const QProcessEnvironment& getProcessEnvironment() const ;
 		virtual bool requiresPolkit() const ;		
 		virtual args command( const QByteArray& password,
-				      const engines::engine::cmdArgsList& args ) const ;
+				      const engines::engine::cmdArgsList& args,
+				      bool create ) const ;
 		virtual engines::engine::status errorCode( const QString& e,int s ) const ;
 
 		virtual void GUICreateOptions( const createGUIOptions& ) const ;
@@ -725,6 +717,7 @@ public:
 				QStringList& m_options ;
 			} ;
 
+			commandOptions() ;
 			commandOptions( const engines::engine::cmdArgsList& e,
 					const QString& f,
 					const QString& g = QString() ) ;

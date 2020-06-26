@@ -27,7 +27,7 @@ struct ecryptfs : public engines::engine
 
 	bool requiresPolkit() const override ;
 
-	void updateOptions( engines::engine::cmdArgsList::options&,bool ) const override ;
+	void updateOptions( engines::engine::cmdArgsList&,bool ) const override ;
 
 	engines::engine::status unmount( const QString& cipherFolder,
 					 const QString& mountPoint,
@@ -36,7 +36,8 @@ struct ecryptfs : public engines::engine
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 
 	engines::engine::args command( const QByteArray& password,
-				       const engines::engine::cmdArgsList& args ) const override ;
+				       const engines::engine::cmdArgsList& args,
+				       bool create ) const override ;
 
 	void GUICreateOptions( const engines::engine::createGUIOptions& ) const override ;
 

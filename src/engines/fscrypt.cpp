@@ -334,24 +334,22 @@ engines::engine::status fscrypt::unmount( const QString& cipherFolder,
 		return engines::engine::status::failedToUnMount ;
 	}
 
-	QStringList args ;
+	engines::engine::commandOptions m ;
+
+	auto exeOptions = m.exeOptions() ;
 
 	if( m_versionGreatorOrEqual_0_2_6 ){
 
-		args.append( "lock" ) ;
-		args.append( mountPoint ) ;
+		exeOptions.add( "lock",mountPoint ) ;
 	}else{
 		auto m = _mount_point( mountPoint,exe ) ;
 
-		args.append( "purge" ) ;
-		args.append( m ) ;
-		args.append( "--force" ) ;
-		args.append( "--drop-caches=false" ) ;
+		exeOptions.add( "purge",m,"--force","--drop-caches=false" ) ;
 	}
 
 	for( int i = 0 ; i < maxCount ; i++ ){
 
-		auto s = _run( exe,args ) ;
+		auto s = _run( exe,exeOptions.get() ) ;
 
 		if( s.success() ){
 
@@ -411,7 +409,7 @@ engines::engine::ownsCipherFolder fscrypt::ownsCipherPath( const QString& cipher
 	return { false,cipherPath,configPath } ;
 }
 
-bool fscrypt::requiresAPassword( const engines::engine::cmdArgsList::options& opt ) const
+bool fscrypt::requiresAPassword( const engines::engine::cmdArgsList& opt ) const
 {
 	if( opt.createOptions.contains( "--source=raw_key" ) ){
 
@@ -425,7 +423,7 @@ bool fscrypt::requiresAPassword( const engines::engine::cmdArgsList::options& op
 	}
 }
 
-void fscrypt::updateVolumeList( const engines::engine::cmdArgsList::options& e ) const
+void fscrypt::updateVolumeList( const engines::engine::cmdArgsList& e ) const
 {
 	m_unlockedVolumeManager.addEntry( e.cipherFolder ) ;
 }
@@ -440,7 +438,8 @@ Task::future< QString >& fscrypt::volumeProperties( const QString& cipherFolder,
 }
 
 engines::engine::args fscrypt::command( const QByteArray& password,
-					const engines::engine::cmdArgsList& args ) const
+					const engines::engine::cmdArgsList& args,
+					bool create ) const
 {
 	Q_UNUSED( password )
 
@@ -448,7 +447,7 @@ engines::engine::args fscrypt::command( const QByteArray& password,
 
 	auto exeOptions = m.exeOptions() ;
 
-	if( args.create ){
+	if( create ){
 
 		exeOptions.add( "encrypt" ) ;
 
@@ -456,7 +455,7 @@ engines::engine::args fscrypt::command( const QByteArray& password,
 
 		QString ss = "--source=custom_passphrase" ;
 
-		for( const auto& it : utility::split( args.opt.createOptions,"\\040" ) ){
+		for( const auto& it : utility::split( args.createOptions,"\\040" ) ){
 
 			if( it.startsWith( "--name=" ) ){
 
@@ -478,7 +477,7 @@ engines::engine::args fscrypt::command( const QByteArray& password,
 
 			if( n.isEmpty() ){
 
-				n = utility::split( args.opt.cipherFolder,'/' ).last() ;
+				n = utility::split( args.cipherFolder,'/' ).last() ;
 
 				if( n.isEmpty() ){
 
@@ -486,7 +485,7 @@ engines::engine::args fscrypt::command( const QByteArray& password,
 				}
 			}
 
-			auto nn = _name( args.opt.cipherFolder,n,this->executableFullPath() ) ;
+			auto nn = _name( args.cipherFolder,n,this->executableFullPath() ) ;
 
 			exeOptions.add( "--name=" + nn + "" ) ;
 		}
@@ -496,14 +495,14 @@ engines::engine::args fscrypt::command( const QByteArray& password,
 
 	exeOptions.add( "--quiet" ) ;
 
-	if( !args.opt.keyFile.isEmpty() ){
+	if( !args.keyFile.isEmpty() ){
 
-		exeOptions.add( "--key=" + args.opt.keyFile ) ;
+		exeOptions.add( "--key=" + args.keyFile ) ;
 	}
 
 	exeOptions.add( args.cipherFolder ) ;
 
-	return { args,m,args.exe,exeOptions.get() } ;
+	return { args,m,this->executableFullPath(),exeOptions.get() } ;
 }
 
 engines::engine::status fscrypt::errorCode( const QString& e,int s ) const

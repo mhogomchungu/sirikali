@@ -301,7 +301,7 @@ struct cmd_args{
 
 	const engines::engine& engine ;
 	bool create ;
-	const engines::engine::cmdArgsList::options& opts ;
+	const engines::engine::cmdArgsList& opts ;
 	const QByteArray& password ;
 };
 
@@ -315,7 +315,7 @@ struct run_task{
 	const engines::engine::args& args ;
 	const engines::engine& engine ;
 	const QByteArray& password ;
-	const engines::engine::cmdArgsList::options& opts ;
+	const engines::engine::cmdArgsList& opts ;
 	bool create ;
 };
 
@@ -340,14 +340,14 @@ static utility::Task _run_task_0( const run_task& e )
 
 static utility::Task _run_task( const run_task& e )
 {
-	auto fav = favorites::instance().readFavorite( e.opts.cipherFolder,e.opts.plainFolder ) ;
+	auto fav = favorites::instance().readFavorite( e.opts.cipherFolder,e.opts.mountPoint ) ;
 
 	if( fav.has_value() ){
 
 		const auto& m = fav.value() ;
 
 		auto& a = e.opts.cipherFolder ;
-		auto& b = e.opts.plainFolder ;
+		auto& b = e.opts.mountPoint ;
 		const auto& c = e.engine.name() ;
 
 		QByteArray key ;
@@ -380,22 +380,9 @@ struct build_config_path{
 
 static engines::engine::cmdStatus _cmd( const cmd_args& e )
 {
-	const auto& engine         = e.engine ;
-	const auto& opts           = e.opts ;
-	const auto& password       = e.password ;
-	bool create                = e.create ;
+	const auto& engine = e.engine ;
 
-	auto exe = engine.executableFullPath() ;
-
-	if( exe.isEmpty() ){
-
-		return { engine.notFoundCode(),engine } ;
-	}
-
-	auto& cc = e.opts.cipherFolder ;
-	auto& mm = e.opts.plainFolder ;
-
-	auto cmd = engine.command( password,{ exe,opts,cc,mm,create } ) ;
+	auto cmd = engine.command( e.password,e.opts,e.create ) ;
 
 	auto s = _run_task( { cmd,e } ) ;
 
@@ -440,7 +427,7 @@ static engines::engine::cmdStatus _mount( const siritask::mount& s )
 
 	if( engine.backendRequireMountPath() ){
 
-		if( !( _create_folder( opt.plainFolder ) || s.reUseMP ) ){
+		if( !( _create_folder( opt.mountPoint ) || s.reUseMP ) ){
 
 			return { engines::engine::status::failedToCreateMountPoint,engine } ;
 		}
@@ -452,7 +439,7 @@ static engines::engine::cmdStatus _mount( const siritask::mount& s )
 
 		if( engine.backendRequireMountPath() ){
 
-			siritask::deleteMountFolder( opt.plainFolder ) ;
+			siritask::deleteMountFolder( opt.mountPoint ) ;
 		}
 	}else{
 		engine.updateVolumeList( opt ) ;
@@ -482,7 +469,7 @@ static engines::engine::cmdStatus _create( const siritask::create& s )
 
 	if( engine.backendRequireMountPath() ){
 
-		if( !_create_folder( opt.plainFolder ) ){
+		if( !_create_folder( opt.mountPoint ) ){
 
 			_deleteFolders( opt.cipherFolder ) ;
 
@@ -506,7 +493,7 @@ static engines::engine::cmdStatus _create( const siritask::create& s )
 
 				if( e.engine().backendRequireMountPath() ){
 
-					_deleteFolders( opt.plainFolder,opt.cipherFolder ) ;
+					_deleteFolders( opt.mountPoint,opt.cipherFolder ) ;
 				}else{
 					_deleteFolders( opt.cipherFolder ) ;
 				}
@@ -515,7 +502,7 @@ static engines::engine::cmdStatus _create( const siritask::create& s )
 	}else{
 		if( e.engine().backendRequireMountPath() ){
 
-			_deleteFolders( opt.plainFolder,opt.cipherFolder ) ;
+			_deleteFolders( opt.mountPoint,opt.cipherFolder ) ;
 		}else{
 			_deleteFolders( opt.cipherFolder ) ;
 		}
@@ -564,7 +551,7 @@ static void _run_command_on_mount( const siritask::mount& e )
 	if( !s.exe.isEmpty() ){
 
 		s.args.append( opt.cipherFolder ) ;
-		s.args.append( opt.plainFolder ) ;
+		s.args.append( opt.mountPoint ) ;
 		s.args.append( type ) ;
 
 		Task::exec( [ = ](){
@@ -591,7 +578,7 @@ static void _run_command_on_mount( const siritask::mount& e )
 	}
 }
 
-engines::engine::cmdStatus siritask::encryptedFolderMount( const engines::engine::cmdArgsList::options& s )
+engines::engine::cmdStatus siritask::encryptedFolderMount( const engines::engine::cmdArgsList& s )
 {
 	return siritask::encryptedFolderMount( { s,false,{ s.cipherFolder,s.configFilePath } } ) ;
 }
