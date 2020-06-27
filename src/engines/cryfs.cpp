@@ -133,9 +133,9 @@ engines::engine::args cryfs::command( const QByteArray& password,
 
 	if( m_version_greater_or_equal_0_10_0 ){
 
-		exeOptions.add( args.cipherFolder,args.mountPoint,m.fuseOpts().get() ) ;
+		exeOptions.add( args.cipherFolder,args.mountPoint,m.fuseOpts() ) ;
 	}else{
-		exeOptions.add( args.cipherFolder,args.mountPoint,"--",m.fuseOpts().get() ) ;
+		exeOptions.add( args.cipherFolder,args.mountPoint,"--",m.fuseOpts() ) ;
 	}
 
 	return { args,m,this->executableFullPath(),exeOptions.get() } ;

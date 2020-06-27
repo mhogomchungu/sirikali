@@ -493,10 +493,10 @@ public:
 			QString cmd ;
 			QString cipherPath ;
 			QString mountPath ;
-			QString fuseOptions ;
 			QString mode ;
 			QString subtype ;
 			QStringList cmd_args ;
+			QStringList fuseOptions ;
 		} ;
 
 		static void encodeSpecialCharacters( QString& ) ;
@@ -594,109 +594,25 @@ public:
 	protected:
 		class commandOptions{
 		public:
-			enum class separator{ space,equal_sign } ;
+			class fuseOptions ;
 
 			class Options{
 			public:
-				Options( QString& m,QString s ) :
-					m_options( m ),m_separator( std::move( s ) )
-				{
-				}
-				bool doesNotContain( const QString& key ) const
-				{
-					return !this->contains( key ) ;
-				}
-				bool contains( const QString& key ) const
-				{
-					return m_options.contains( key ) ;
-				}
-				void addPair( const QString& key,const QString& value,separator s )
-				{
-					if( s == separator::space ){
-
-						this->add( key + " " + value ) ;
-					}else{
-						this->add( key + "=" + value ) ;
-					}
-				}
-				template< typename E >
-				void add( E&& e )
-				{
-					while( m_options.endsWith( "\n" ) ){
-
-						m_options = utility::removeLast( m_options,1 ) ;
-					}
-					if( m_options.isEmpty() ){
-
-						m_options = std::forward< E >( e ) ;
-					}else{
-						m_options += m_separator + std::forward< E >( e ) ;
-					}
-				}
-				template< typename E,typename ... T >
-				void add( E&& e,T&& ... m )
-				{
-					this->add( std::forward< E >( e ) ) ;
-					this->add( std::forward< T >( m ) ... ) ;
-				}
-				QStringList get() const
-				{
-					if( m_options.isEmpty() ){
-
-						return {} ;
-					}else{
-						return { "-o",m_options } ;
-					}
-				}
-				QString extractStartsWith( const QString& e )
-				{
-					auto tmp = m_options ;
-					m_options.clear() ;
-
-					QString m ;
-
-					auto s = m_separator[ 0 ].toLatin1() ;
-
-					for( const auto& it : utility::split( tmp,s ) ){
-
-						if( it.startsWith( e ) ){
-
-							m = it ;
-						}else{
-							this->add( it ) ;
-						}
-					}
-
-					return m ;
-				}
-			private:
-				QString& m_options ;
-				QString m_separator ;
-			};
-
-			class fuseOptions : public Options
-			{
-			public:
-				fuseOptions( QString& m ) : Options( m,"," )
-				{
-				}
-				void addPair( const QString& key,const QString& value,
-					      separator s = separator::equal_sign )
-				{
-					Options::addPair( key,value,s ) ;
-				}
-			} ;
-
-			class exeOptions
-			{
-			public:
-				exeOptions( QStringList& m ) : m_options( m )
+				Options( QStringList& m ) : m_options( m )
 				{
 				}
 				template< typename E >
 				void add( E&& e )
 				{
 					m_options.append( e ) ;
+				}
+				void add( fuseOptions&& e )
+				{
+					_add( e ) ;
+				}
+				void add( fuseOptions& e )
+				{
+					_add( e ) ;
 				}
 				template< typename E,typename ... T >
 				void add( E&& e,T&& ... m )
@@ -709,12 +625,58 @@ public:
 				{
 					m_options.insert( 0,std::forward< E >( e ) ) ;
 				}
+				bool doesNotContain( const QString& key ) const
+				{
+					return !this->contains( key ) ;
+				}
+				bool contains( const QString& key ) const
+				{
+					for( const auto& it : m_options ){
+
+						if( it.contains( key,Qt::CaseInsensitive ) ){
+
+							return true ;
+						}
+					}
+
+					return false ;
+				}			
 				const QStringList& get() const
 				{
 					return m_options ;
 				}
+				QString extractStartsWith( const QString& e )
+				{
+					for( int i = 0 ; i < m_options.size() ; i++ ){
+
+						if( m_options[ i ].startsWith( e ) ){
+
+							return m_options.takeAt( i ) ;
+						}
+					}
+
+					return {} ;
+				}
 			private:
+				void _add( const fuseOptions& s ) ;
+
 				QStringList& m_options ;
+			};
+
+			class fuseOptions : public Options
+			{
+			public:
+				fuseOptions( QStringList& m ) : Options( m )
+				{
+				}				
+			} ;
+
+			class exeOptions : public Options
+			{
+			public:
+				exeOptions( QStringList& m ) : Options( m )
+				{
+				}
 			} ;
 
 			commandOptions() ;
@@ -726,7 +688,7 @@ public:
 			{
 				return m_exeOptions ;
 			}
-			const QString& constFuseOpts() const
+			const QStringList& constFuseOpts() const
 			{
 				return m_fuseOptions ;
 			}
@@ -748,7 +710,7 @@ public:
 			}
 		private:
 			QStringList m_exeOptions ;
-			QString m_fuseOptions ;
+			QStringList m_fuseOptions ;
 			QString m_subtype ;
 			QString m_mode ;
 		};

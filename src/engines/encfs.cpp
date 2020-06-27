@@ -124,7 +124,7 @@ engines::engine::args encfs::command( const QByteArray& password,
 		}
 	}
 
-	exeOptions.add( args.cipherFolder,args.mountPoint,m.fuseOpts().get() ) ;
+	exeOptions.add( args.cipherFolder,args.mountPoint,m.fuseOpts() ) ;
 
 	return { args,m,this->executableFullPath(),exeOptions.get() } ;
 }

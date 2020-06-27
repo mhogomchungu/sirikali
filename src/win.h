@@ -71,7 +71,7 @@ bool backEndTimedOut( const QString& ) ;
 struct mountOptions
 {
 	mountOptions( const QString& a,const QString& b,const QString& c,
-		      const QString& d,const QString& e ) :
+		      const QString& d,const QStringList& e ) :
 		mode( a ),subtype( b ),cipherFolder( c ),mountPointPath( d ),fuseOptions( e )
 	{
 	}
@@ -79,7 +79,7 @@ struct mountOptions
 	QString subtype ;
 	QString cipherFolder ;
 	QString mountPointPath ;
-	QString fuseOptions ;
+	QStringList fuseOptions ;
 };
 
 std::vector< mountOptions > getMountOptions() ;

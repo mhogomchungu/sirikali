@@ -1270,11 +1270,11 @@ engines::engine::args::args( const engines::engine::cmdArgsList& m,
 			     const QStringList& l ) :
 	cmd( c ),
 	cipherPath( m.cipherFolder ),
-	mountPath( m.mountPoint ),
-	fuseOptions( s.constFuseOpts() ),
+	mountPath( m.mountPoint ),	
 	mode( s.mode() ),
 	subtype( s.subType() ),
-	cmd_args( l )
+	cmd_args( l ),
+	fuseOptions( s.constFuseOpts() )
 {
 }
 
@@ -1348,12 +1348,11 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 		if( e.size() > 40 ){
 			/*
 			 * we are making sure that volname value does not exceed 32 characters.
-			 * 40 is the sum of string "volname="(8) plus the volue that must be
+			 * 40 is the sum of characters in "volname="(8) plus the value that must be
 			 * less or equal to 32.
 			 */
-			auto s = e.mid( 8 ) ;
 
-			e = "volname=" + s.mid( 0,29 ) + "...," ;
+			e = e.mid( 0,37 ) + "...," ;
 		}
 	} ;
 
@@ -1361,17 +1360,20 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 
 	bool notLinux = !utility::platformIsLinux() ;
 
-	auto mm = utility::split( e.mountOptions,',' ) ;
+	if( !e.mountOptions.isEmpty() ){
 
-	for( int i = 0 ; i < mm.size() ; i++ ){
+		m_fuseOptions = utility::split( e.mountOptions,',' ) ;
+	}
 
-		auto& e = mm[ i ] ;
+	for( int i = 0 ; i < m_fuseOptions.size() ; i++ ){
+
+		auto& e = m_fuseOptions[ i ] ;
 
 		if( e.startsWith( '-' ) ){
 
 			m_exeOptions.append( utility::split( e,' ' ) ) ;
 
-			mm.removeAt( i ) ;
+			m_fuseOptions.removeAt( i ) ;
 
 			i-- ;
 
@@ -1383,7 +1385,7 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 
 				_volname( e ) ;
 			}else{
-				mm.removeAt( i ) ;
+				m_fuseOptions.removeAt( i ) ;
 
 				i-- ;
 			}
@@ -1407,11 +1409,18 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 
 			_volname( v ) ;
 
-			mm.append( v ) ;
+			m_fuseOptions.append( v ) ;
 		}
 	}
 
-	m_fuseOptions = mm.join( ',' ) ;
+	m_subtype = subtype ;
+
+	if( !m_subtype.isEmpty() ){
+
+		m_fuseOptions.insert( 0,"subtype=" + m_subtype ) ;
+	}
+
+	m_fuseOptions.insert( 0,QString( "fsname=%1@%2" ).arg( f,cipherFolder( e.cipherFolder ) ) ) ;
 
 	if( e.boolOptions.unlockInReadOnly ){
 
@@ -1420,19 +1429,20 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 		m_mode = "rw" ;
 	}
 
-	m_subtype = subtype ;
+	m_fuseOptions.insert( 0,m_mode ) ;
 
-	QString stype = subtype.isEmpty() ? "" : ",subtype=" + subtype ;
+	m_fuseOptions.removeAll( QString() ) ;
+}
 
-	auto ss = cipherFolder( e.cipherFolder ) ;
+void engines::engine::commandOptions::Options::_add( const engines::engine::commandOptions::fuseOptions& s )
+{
+	const auto& e = s.get() ;
 
-	QString s = "%1,fsname=%2@%3%4" ;
+	if( !e.isEmpty() ){
 
-	if( m_fuseOptions.isEmpty() ){
+		m_options.append( "-o" ) ;		
 
-		m_fuseOptions = s.arg( m_mode,f,ss,stype ) ;
-	}else{
-		m_fuseOptions = s.arg( m_mode,f,ss,stype ) + "," + m_fuseOptions ;
+		m_options.append( e.join( ',' ) ) ;
 	}
 }
 
@@ -1551,7 +1561,8 @@ bool engines::versionGreaterOrEqual::setCallback( bool m,const engines::engine& 
 	return _result( m,engine,major,minor,patch ) ;
 }
 
-bool engines::versionGreaterOrEqual::setCallback( bool m,const engines::engine& engine,
+bool engines::versionGreaterOrEqual::setCallback( bool m,
+						  const engines::engine& engine,
 						  const QString& u )
 {
 	return _result( m,engine,u ) ;

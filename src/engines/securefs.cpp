@@ -143,7 +143,7 @@ engines::engine::args securefs::command( const QByteArray& password,
 			exeOptions.add( this->configFileArgument(),args.configFilePath ) ;
 		}
 
-		exeOptions.add( args.cipherFolder,args.mountPoint,fuseOptions.get() ) ;
+		exeOptions.add( args.cipherFolder,args.mountPoint,fuseOptions ) ;
 
 		return { args,m,this->executableFullPath(),exeOptions.get() } ;
 	}

@@ -232,13 +232,10 @@ QStringList custom::resolve( const resolveStruct& r ) const
 
 			mm.removeAt( i ) ;
 
-			auto ff = r.fuseOpts ;
+			if( !r.fuseOpts.isEmpty() ){
 
-			if( !ff.isEmpty() ){
-
-				auto a = ff.takeAt( 0 ) ;
-				mm.insert( i,ff.at( 0 ) ) ;
-				mm.insert( i,a ) ;
+				mm.insert( i,r.fuseOpts.at( 0 ) ) ;
+				mm.insert( i,"-o" ) ;
 			}
 
 			break ;

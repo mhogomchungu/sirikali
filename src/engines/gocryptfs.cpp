@@ -147,7 +147,7 @@ engines::engine::args gocryptfs::command( const QByteArray& password,
 			fuseOptions.extractStartsWith( "volname=" ) ;
 		}
 
-		exeOptions.add( args.cipherFolder,args.mountPoint,fuseOptions.get() ) ;
+		exeOptions.add( args.cipherFolder,args.mountPoint,fuseOptions ) ;
 	}
 
 	return { args,m,this->executableFullPath(),exeOptions.get() } ;
