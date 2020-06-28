@@ -1413,7 +1413,13 @@ void keyDialog::pbSetKey()
 			}else{
 				const auto& env = utility::systemEnvironment() ;
 
-				return utility::Task( exe,{ keyFile },20000,env,passphrase.toUtf8() ).stdOut() ;
+				auto e = utility::split( exe,' ' ) ;
+
+				exe = e.takeAt( 0 ) ;
+
+				e.append( keyFile ) ;
+
+				return utility::Task( exe,e,20000,env,passphrase.toUtf8() ).stdOut() ;
 			}
 		}
 

@@ -229,7 +229,7 @@ void zuluPolkit::gotConnection()
 
 		}else if( this->passSanityCheck( command,args ) ){
 
-			return _respond( m,Task::process::run( command,args,password.toLatin1() ).get() ) ;
+			return _respond( m,Task::process::run( command,args,password.toUtf8() ).get() ) ;
 		}else{
 			_respond( m,"SiriPolkit: Invalid Command" ) ;
 		}

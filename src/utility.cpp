@@ -1366,7 +1366,7 @@ utility::qbytearray_result utility::yubiKey( const QByteArray& challenge )
 
 	if( !exe.isEmpty() ){
 
-		QStringList args{ settings::instance().ykchalrespArguments() } ;
+		auto args = utility::split( settings::instance().ykchalrespArguments(),' ' );
 
 		auto s = utility::unwrap( ::Task::process::run( exe,args,-1,challenge ) ) ;
 
