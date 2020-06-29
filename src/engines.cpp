@@ -411,6 +411,16 @@ bool engines::engine::backendRunsInBackGround() const
 	return m_Options.backendRunsInBackGround ;
 }
 
+bool engines::engine::acceptsSubType() const
+{
+	return m_Options.acceptsSubType ;
+}
+
+bool engines::engine::acceptsVolName() const
+{
+	return m_Options.acceptsVolName ;
+}
+
 bool engines::engine::takesTooLongToUnlock() const
 {
 	return m_Options.takesTooLongToUnlock ;
@@ -1332,9 +1342,8 @@ engines::engine::commandOptions::commandOptions()
 {
 }
 
-engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsList& e,
-						 const QString& f,
-						 const QString& subtype )
+engines::engine::commandOptions::commandOptions( const engines::engine& engine,
+						 const engines::engine::cmdArgsList& e )
 {
 	auto cipherFolder = [ & ]( QString s ){
 
@@ -1355,6 +1364,8 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 			e = e.mid( 0,37 ) + "...," ;
 		}
 	} ;
+
+	bool acceptsVolname = engine.acceptsVolName() ;
 
 	bool hasNoVolname = true ;
 
@@ -1379,7 +1390,7 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 
 		}else if( e.startsWith( "volname=" ) ){
 
-			if( notLinux ){
+			if( notLinux && acceptsVolname ){
 
 				hasNoVolname = false ;
 
@@ -1392,7 +1403,7 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 		}
 	}
 
-	if( notLinux && hasNoVolname ){
+	if( notLinux && hasNoVolname && acceptsVolname ){
 
 		QString s ;
 
@@ -1413,14 +1424,16 @@ engines::engine::commandOptions::commandOptions( const engines::engine::cmdArgsL
 		}
 	}
 
-	m_subtype = subtype ;
+	const auto& name = engine.name() ;
 
-	if( !m_subtype.isEmpty() ){
+	if( engine.acceptsSubType() ){
+
+		m_subtype = name ;
 
 		m_fuseOptions.insert( 0,"subtype=" + m_subtype ) ;
 	}
 
-	m_fuseOptions.insert( 0,QString( "fsname=%1@%2" ).arg( f,cipherFolder( e.cipherFolder ) ) ) ;
+	m_fuseOptions.insert( 0,QString( "fsname=%1@%2" ).arg( name,cipherFolder( e.cipherFolder ) ) ) ;
 
 	if( e.boolOptions.unlockInReadOnly ){
 

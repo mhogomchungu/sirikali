@@ -170,6 +170,8 @@ void createBackendWIndow::save()
 		config[ "takesTooLongToUnlock" ]        = false ;
 		config[ "runsInBackGround" ]            = true ;
 		config[ "setsCipherPath" ]              = true ;
+		config[ "acceptsSubType" ]              = true ;
+		config[ "acceptsVolName" ]              = true ;
 
 		config.toFile( path ) ;
 

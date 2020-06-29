@@ -39,6 +39,8 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = false ;
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = true ;
+	s.acceptsSubType        = false ;
+	s.acceptsVolName        = false ;
 	s.releaseURL            = "https://api.github.com/repos/rfjakob/gocryptfs/releases" ;
 	s.passwordFormat        = "%{password}" ;
 	s.volumePropertiesCommands = QStringList{ "gocryptfs -info %{cipherFolder}",
@@ -109,7 +111,7 @@ engines::engine::args gocryptfs::command( const QByteArray& password,
 {
 	Q_UNUSED( password )
 
-	engines::engine::commandOptions m( args,this->name() ) ;
+	engines::engine::commandOptions m( *this,args ) ;
 
 	auto exeOptions  = m.exeOptions() ;
 	auto fuseOptions = m.fuseOpts() ;
@@ -142,11 +144,6 @@ engines::engine::args gocryptfs::command( const QByteArray& password,
 
 		exeOptions.add( args.cipherFolder ) ;
 	}else{
-		if( !utility::platformIsLinux() ){
-
-			fuseOptions.extractStartsWith( "volname=" ) ;
-		}
-
 		exeOptions.add( args.cipherFolder,args.mountPoint,fuseOptions ) ;
 	}
 

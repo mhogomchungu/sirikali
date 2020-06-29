@@ -46,6 +46,8 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = true ;
 	s.hasGUICreateOptions   = false ;
 	s.setsCipherPath        = true ;
+	s.acceptsSubType        = true ;
+	s.acceptsVolName        = true ;
 	s.windowsUnMountCommand = "" ;
 	s.executableName        = "sshfs" ;
 	s.releaseURL            = "https://api.github.com/repos/libfuse/sshfs/releases" ;
@@ -106,7 +108,7 @@ engines::engine::args sshfs::command( const QByteArray& password,
 	Q_UNUSED( password )
 	Q_UNUSED( create )
 
-	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
+	engines::engine::commandOptions m( *this,args ) ;
 
 	auto fuseOptions = m.fuseOpts() ;
 	auto exeOptions  = m.exeOptions() ;

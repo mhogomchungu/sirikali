@@ -46,6 +46,8 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = true ;
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = true ;
+	s.acceptsSubType        = true ;
+	s.acceptsVolName        = true ;
 	s.passwordFormat        = "%{password}" ;
 	s.idleString            = "--unmount-idle" ;
 	s.executableName        = "cryfs" ;
@@ -97,7 +99,7 @@ engines::engine::args cryfs::command( const QByteArray& password,
 {
 	Q_UNUSED( password )
 
-	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
+	engines::engine::commandOptions m( *this,args ) ;
 
 	auto exeOptions = m.exeOptions() ;
 

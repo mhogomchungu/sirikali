@@ -40,12 +40,14 @@ static void _parse( custom::opts& s,const SirikaliJson& json )
 	s.baseOpts.requiresAPassword               = json.getBool( "requiresAPassword",true ) ;
 	s.baseOpts.autoMountsOnCreate              = json.getBool( "autoMountsOnVolumeCreation",true ) ;
 	s.baseOpts.supportsMountPathsOnWindows     = json.getBool( "supportsMountPointPaths",false ) ;
+	s.baseOpts.acceptsSubType                  = json.getBool( "acceptsSubType",true ) ;
+	s.baseOpts.acceptsVolName                  = json.getBool( "acceptsVolName",true ) ;
 
 	s.baseOpts.backendTimeout                  = json.getInterger( "backendTimeout",0 ) ;
 
 	s.baseOpts.passwordFormat                  = json.getByteArray( "passwordFormat","%{password}" ) ;
 
-	s.mountControlStructure                    = json.getString( "mountControlStructure","%{mountOptions} %{mountPoint} %{fuseOpts}" ) ;
+	s.mountControlStructure                    = json.getString( "mountControlStructure","%{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ) ;
 	s.createControlStructure                   = json.getString( "createControlStructure","%{createOptions} %{cipherFolder} %{mountPoint}" ) ;
 	s.baseOpts.reverseString                   = json.getString( "reverseString" ) ;
 	s.baseOpts.idleString                      = json.getString( "idleString" ) ;
@@ -234,7 +236,7 @@ QStringList custom::resolve( const resolveStruct& r ) const
 
 			if( !r.fuseOpts.isEmpty() ){
 
-				mm.insert( i,r.fuseOpts.at( 0 ) ) ;
+				mm.insert( i,r.fuseOpts.join( ',' ) ) ;
 				mm.insert( i,"-o" ) ;
 			}
 
@@ -294,7 +296,7 @@ engines::engine::args custom::command( const QByteArray& password,
 				       const engines::engine::cmdArgsList& args,
 				       bool create ) const
 {
-	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
+	engines::engine::commandOptions m( *this,args ) ;
 
 	if( create ){
 

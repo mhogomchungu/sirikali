@@ -443,7 +443,7 @@ engines::engine::args fscrypt::command( const QByteArray& password,
 {
 	Q_UNUSED( password )
 
-	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
+	engines::engine::commandOptions m( *this,args ) ;
 
 	auto exeOptions = m.exeOptions() ;
 

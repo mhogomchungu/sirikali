@@ -458,6 +458,8 @@ public:
 			bool backendRequireMountPath ;
 			bool takesTooLongToUnlock ;
 			bool backendRunsInBackGround ;
+			bool acceptsSubType ;
+			bool acceptsVolName ;
 
 			QByteArray passwordFormat ;
 			QString releaseURL ;
@@ -517,6 +519,8 @@ public:
 		bool autorefreshOnMountUnMount() const ;
 		bool backendRequireMountPath() const ;
 		bool backendRunsInBackGround() const ;
+		bool acceptsSubType() const ;
+		bool acceptsVolName() const ;
 
 		engines::engine::status notFoundCode() const ;
 
@@ -680,9 +684,8 @@ public:
 			} ;
 
 			commandOptions() ;
-			commandOptions( const engines::engine::cmdArgsList& e,
-					const QString& f,
-					const QString& g = QString() ) ;
+			commandOptions( const engines::engine& engine,
+			                const engines::engine::cmdArgsList& e ) ;
 
 			const QStringList& constExeOptions() const
 			{

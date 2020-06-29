@@ -175,7 +175,7 @@ engines::engine::args ecryptfs::command( const QByteArray& password,
 {
 	Q_UNUSED( password )
 
-	engines::engine::commandOptions m( args,QString() ) ;
+	engines::engine::commandOptions m( *this,args ) ;
 
 	auto exeOptions = m.exeOptions() ;
 

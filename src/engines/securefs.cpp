@@ -40,6 +40,8 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = false ;
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = false ;
+	s.acceptsSubType        = true ;
+	s.acceptsVolName        = true ;
 	s.releaseURL            = "https://api.github.com/repos/netheril96/securefs/releases" ;
 	s.passwordFormat        = "%{password}\n%{password}" ;
 	s.executableName        = "securefs" ;
@@ -70,7 +72,7 @@ engines::engine::args securefs::command( const QByteArray& password,
 {
 	Q_UNUSED( password )
 
-	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
+	engines::engine::commandOptions m( *this,args ) ;
 
 	if( create ){
 
