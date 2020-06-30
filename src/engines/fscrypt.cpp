@@ -323,8 +323,6 @@ fscrypt::fscrypt() :
 
 engines::engine::status fscrypt::unmount( const engines::engine::unMount& e ) const
 {
-	this->runPreUnmountCommand( e ) ;
-
 	const auto& exe = this->executableFullPath() ;
 
 	if( exe.isEmpty() ){

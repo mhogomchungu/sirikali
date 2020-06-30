@@ -239,28 +239,8 @@ bool engines::engine::unmountVolume( const engines::engine::exe& exe,bool usePol
 	return utility::unwrap( s ).success() ;
 }
 
-void engines::engine::runPreUnmountCommand( const engines::engine::unMount& e ) const
-{
-	auto cmd = settings::instance().preUnMountCommand() ;
-
-	int timeOut = 10000 ;
-
-	if( !cmd.isEmpty() ){
-
-		QStringList s ;
-
-		s.append( e.cipherFolder ) ;
-		s.append( e.mountPoint ) ;
-		s.append( e.fileSystem ) ;
-
-		utility::unwrap( utility::Task::run( cmd,s,timeOut,false ) ) ;
-	}
-}
-
 engines::engine::status engines::engine::unmount( const engines::engine::unMount& e ) const
 {
-	this->runPreUnmountCommand( e ) ;
-
 	auto cmd = [ & ]()->engines::engine::exe{
 
 		if( this->unMountCommand().isEmpty() ){

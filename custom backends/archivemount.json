@@ -1,0 +1,8 @@
+{
+        "executableName": "archivemount",
+        "fileExtensions": [ ".tar.xz",".tar.gz" ],
+        "fuseNames": [ "fuse.archivemount" ],
+        "mountControlStructure": "%{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}",
+        "names": [ "archivemount" ],
+        "requiresAPassword": false
+}

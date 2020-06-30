@@ -159,6 +159,24 @@ static void _run_command( const run_command& e )
 	}
 }
 
+static void _run_preUnmountCommand( const engines::engine::unMount& e )
+{
+	auto cmd = settings::instance().preUnMountCommand() ;
+
+	int timeOut = 10000 ;
+
+	if( !cmd.isEmpty() ){
+
+		QStringList s ;
+
+		s.append( e.cipherFolder ) ;
+		s.append( e.mountPoint ) ;
+		s.append( e.fileSystem ) ;
+
+		utility::Task::run( cmd,s,timeOut,false ).get() ;
+	}
+}
+
 static engines::engine::cmdStatus _unmount( const engines::engine::unMount& e )
 {
 	const auto& engine = engines::instance().getByName( e.fileSystem ) ;
@@ -186,7 +204,12 @@ static engines::engine::cmdStatus _unmount( const engines::engine::unMount& e )
 			return { engines::engine::status::failedToStartPolkit,engine } ;
 		}
 
-		auto s = utility::unwrap( Task::run( [ & ](){ return engine.unmount( e ) ; } ) ) ;
+		auto s = utility::unwrap( Task::run( [ & ](){
+
+			_run_preUnmountCommand( e ) ;
+
+			return engine.unmount( e ) ;
+		} ) ) ;
 
 		return { s,engine } ;
 	}

@@ -118,8 +118,6 @@ engines::engine::exe ecryptfs::wrapSU( const QString& s ) const
 
 engines::engine::status ecryptfs::unmount( const engines::engine::unMount& e ) const
 {
-	this->runPreUnmountCommand( e ) ;
-
 	auto usePolkit = utility::useSiriPolkit() ;
 
 	auto cmd = [ & ]()->engines::engine::exe{

@@ -611,8 +611,6 @@ public:
 	protected:
 		bool unmountVolume( const engine::engine::exe& exe,bool usePolkit ) const ;
 
-		void runPreUnmountCommand( const engines::engine::unMount& e ) const ;
-
 		class commandOptions{
 		public:
 			class fuseOptions ;
