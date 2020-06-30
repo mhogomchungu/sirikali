@@ -25,9 +25,7 @@ class fscrypt : public engines::engine
 public:
 	fscrypt() ;
 
-	engines::engine::status unmount( const QString& cipherFolder,
-					 const QString& mountPoint,
-					 int maxCount ) const override ;
+	engines::engine::status unmount( const engines::engine::unMount& e ) const override ;
 
 	QStringList mountInfo( const QStringList& ) const override ;
 

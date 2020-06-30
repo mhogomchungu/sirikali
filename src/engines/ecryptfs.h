@@ -29,9 +29,7 @@ struct ecryptfs : public engines::engine
 
 	void updateOptions( engines::engine::cmdArgsList&,bool ) const override ;
 
-	engines::engine::status unmount( const QString& cipherFolder,
-					 const QString& mountPoint,
-					 int maxCount ) const override ;
+	engines::engine::status unmount( const engines::engine::unMount& e ) const override ;
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 
@@ -43,7 +41,7 @@ struct ecryptfs : public engines::engine
 
 	void GUIMountOptions( const engines::engine::mountGUIOptions& ) const override ;
 private:
-	siritask::exe wrapSU( const QString& s ) const ;
+	engines::engine::exe wrapSU( const QString& s ) const ;
 	const bool m_requirePolkit ;
 	const engines::exeFullPath m_exeSUFullPath ;
 } ;

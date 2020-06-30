@@ -50,6 +50,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.configFileArgument    = "--config" ;
 	s.windowsInstallPathRegistryKey   = "SOFTWARE\\ENCFS" ;
 	s.windowsInstallPathRegistryValue = "InstallDir" ;
+	s.windowsUnMountCommand           = QStringList{ "taskkill","/F","/PID","%{PID}" } ;
 	s.volumePropertiesCommands        = QStringList{ "encfsctl %{cipherFolder}" } ;
 	s.configFileNames       = QStringList{ ".encfs6.xml","encfs6.xml",".encfs5",".encfs4" } ;
 	s.fuseNames             = QStringList{ "fuse.encfs" } ;

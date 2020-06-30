@@ -54,12 +54,12 @@ static void _parse( custom::opts& s,const SirikaliJson& json )
 	s.baseOpts.executableName                  = json.getString( "executableName" ) ;
 	s.baseOpts.incorrectPasswordText           = json.getString( "wrongPasswordText" ) ;
 	s.baseOpts.incorrectPassWordCode           = json.getString( "wrongPasswordErrorCode" ) ;
-	s.baseOpts.unMountCommand                  = json.getString( "unMountCommand" ) ;
 	s.baseOpts.configFileArgument              = json.getString( "configFileArgument" ) ;
-	s.baseOpts.windowsUnMountCommand           = json.getString( "windowsUnMountCommand" ) ;
 	s.baseOpts.windowsInstallPathRegistryKey   = json.getString( "windowsInstallPathRegistryKey" ) ;
 	s.baseOpts.windowsInstallPathRegistryValue = json.getString( "windowsInstallPathRegistryValue" ) ;
 
+	s.baseOpts.windowsUnMountCommand           = json.getStringList( "windowsUnMountCommand" ) ;
+	s.baseOpts.unMountCommand                  = json.getStringList( "unMountCommand" ) ;
 	s.baseOpts.failedToMountList               = json.getStringList( "failedToMountTextList" ) ;
 	s.baseOpts.successfulMountedList           = json.getStringList( "successfullyMountedList" ) ;
 	s.baseOpts.configFileNames                 = json.getStringList( "configFileNames" ) ;

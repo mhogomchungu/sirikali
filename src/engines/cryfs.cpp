@@ -29,9 +29,10 @@ static engines::engine::BaseOptions _setOptions()
 	auto a = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{26116061-4F99-4C44-A178-2153FA396308}" ;
 	auto b = "InstallLocation" ;
 
+	auto c = SiriKali::Windows::engineInstalledDir( a,b ) + "\\bin\\cryfs-unmount.exe" ;
 	s.windowsInstallPathRegistryKey   = a ;
 	s.windowsInstallPathRegistryValue = b ;
-	s.windowsUnMountCommand           = SiriKali::Windows::engineInstalledDir( a,b ) + "\\bin\\cryfs-unmount.exe" ;
+	s.windowsUnMountCommand           = QStringList{ c,"%{mountPointPath}" } ;
 
 	s.backendTimeout              = 0 ;
 	s.takesTooLongToUnlock        = false ;

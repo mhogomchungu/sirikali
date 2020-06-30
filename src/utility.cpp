@@ -469,7 +469,7 @@ void utility::logCommandOutPut( const ::Task::process::result& m,const QString& 
 }
 
 
-static siritask::exe siriPolkitExe()
+static engines::engine::exe siriPolkitExe()
 {
 	auto exe = engines::executableFullPath( "pkexec" ) ;
 
@@ -481,7 +481,7 @@ static siritask::exe siriPolkitExe()
 	}
 }
 
-static ::Task::future< utility::Task >& _start_siripolkit( const siritask::exe& e )
+static ::Task::future< utility::Task >& _start_siripolkit( const engines::engine::exe& e )
 {
 	_cookie = crypto::getRandomData( 16 ).toHex() ;
 

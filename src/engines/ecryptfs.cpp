@@ -104,20 +104,7 @@ bool ecryptfs::requiresPolkit() const
 	return m_requirePolkit ;
 }
 
-template< typename Function >
-static bool _unmount_ecryptfs_( Function cmd )
-{
-	auto s = siritask::unmountVolume( cmd(),true ) ;
-
-	if( s && s.value().success() ){
-
-		return true ;
-	}else{		
-		return false ;
-	}
-}
-
-siritask::exe ecryptfs::wrapSU( const QString& s ) const
+engines::engine::exe ecryptfs::wrapSU( const QString& s ) const
 {
 	const auto& su = m_exeSUFullPath.get() ;
 
@@ -129,37 +116,38 @@ siritask::exe ecryptfs::wrapSU( const QString& s ) const
 	}
 }
 
-engines::engine::status ecryptfs::unmount( const QString& cipherFolder,
-					   const QString& mountPoint,
-					   int maxCount ) const
+engines::engine::status ecryptfs::unmount( const engines::engine::unMount& e ) const
 {
-	Q_UNUSED( mountPoint )
+	this->runPreUnmountCommand( e ) ;
 
-	auto cmd = [ & ]()->siritask::exe{
+	auto usePolkit = utility::useSiriPolkit() ;
+
+	auto cmd = [ & ]()->engines::engine::exe{
 
 		auto exe = this->executableFullPath() ;
 
-		if( utility::useSiriPolkit() ){
+		if( usePolkit ){
 
 			auto s = this->wrapSU( exe ) ;
 
-			s.args[ 2 ].append( " -k " + cipherFolder ) ;
+			s.args[ 2 ].append( " -k " + e.cipherFolder ) ;
 
 			return s ;
 		}else{
-			return { exe,{ "-k",cipherFolder } } ;
+			return { exe,{ "-k",e.cipherFolder } } ;
 		}
 	} ;
 
-	if( _unmount_ecryptfs_( cmd ) ){
+
+	if( this->unmountVolume( cmd(),usePolkit ) ){
 
 		return engines::engine::status::success ;
 	}else{
-		for( int i = 1 ; i < maxCount ; i++ ){
+		for( int i = 1 ; i < e.numberOfAttempts ; i++ ){
 
 			utility::Task::waitForOneSecond() ;
 
-			if( _unmount_ecryptfs_( cmd ) ){
+			if( this->unmountVolume( cmd(),usePolkit ) ){
 
 				return engines::engine::status::success ;
 			}

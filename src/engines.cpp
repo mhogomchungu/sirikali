@@ -230,12 +230,71 @@ Task::future< QString >& engines::engine::volumeProperties( const QString& ciphe
 	} ) ;
 }
 
-engines::engine::status engines::engine::unmount( const QString& cipherFolder,
-						  const QString& mountPoint,
-						  int maxCount ) const
+bool engines::engine::unmountVolume( const engines::engine::exe& exe,bool usePolkit ) const
 {
-	Q_UNUSED( cipherFolder )
-	return siritask::unmountVolume( mountPoint,this->unMountCommand(),maxCount ) ;
+	int timeOut = 10000 ;
+
+	auto& s = utility::Task::run( exe.exe,exe.args,timeOut,usePolkit ) ;
+
+	return utility::unwrap( s ).success() ;
+}
+
+void engines::engine::runPreUnmountCommand( const engines::engine::unMount& e ) const
+{
+	auto cmd = settings::instance().preUnMountCommand() ;
+
+	int timeOut = 10000 ;
+
+	if( !cmd.isEmpty() ){
+
+		QStringList s ;
+
+		s.append( e.cipherFolder ) ;
+		s.append( e.mountPoint ) ;
+		s.append( e.fileSystem ) ;
+
+		utility::unwrap( utility::Task::run( cmd,s,timeOut,false ) ) ;
+	}
+}
+
+engines::engine::status engines::engine::unmount( const engines::engine::unMount& e ) const
+{
+	this->runPreUnmountCommand( e ) ;
+
+	auto cmd = [ & ]()->engines::engine::exe{
+
+		if( this->unMountCommand().isEmpty() ){
+
+			if( utility::platformIsOSX() ){
+
+				return { "umount",{ e.mountPoint } } ;
+			}else{
+				return { "fusermount",{ "-u",e.mountPoint } } ;
+			}
+		}else{
+			auto s = this->unMountCommand() ;
+			auto e = s.takeAt( 0 ) ;
+
+			return { e,s } ;
+		}
+	}() ;
+
+	if( this->unmountVolume( cmd,false ) ){
+
+		return engines::engine::status::success ;
+	}else{
+		for( int i = 1 ; i < e.numberOfAttempts ; i++ ){
+
+			utility::Task::waitForOneSecond() ;
+
+			if( this->unmountVolume( cmd,false ) ){
+
+				return engines::engine::status::success ;
+			}
+		}
+
+		return engines::engine::status::failedToUnMount ;
+	}
 }
 
 const QProcessEnvironment& engines::engine::getProcessEnvironment() const
@@ -524,7 +583,7 @@ const QString& engines::engine::incorrectPasswordCode() const
 	return m_Options.incorrectPassWordCode ;
 }
 
-const QString& engines::engine::unMountCommand() const
+const QStringList& engines::engine::unMountCommand() const
 {
 	return m_Options.unMountCommand ;
 }
@@ -534,7 +593,7 @@ const QString &engines::engine::configFileArgument() const
 	return m_Options.configFileArgument ;
 }
 
-const QString& engines::engine::windowsUnMountCommand() const
+const QStringList& engines::engine::windowsUnMountCommand() const
 {
 	return m_Options.windowsUnMountCommand ;
 }

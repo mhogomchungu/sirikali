@@ -208,6 +208,20 @@ public:
 	protected:
 		class commandOptions ;
 	public:
+		struct unMount{
+
+			const QString& cipherFolder ;
+			const QString& mountPoint ;
+			const QString& fileSystem ;
+			int numberOfAttempts ;
+		} ;
+
+		struct exe{
+
+			QString exe ;
+			QStringList args ;
+		};
+
 		class Wrapper{
 		public:
 			Wrapper( const engines::engine& e ) :
@@ -470,10 +484,11 @@ public:
 			QString incorrectPasswordText ;
 			QString incorrectPassWordCode ;
 			QString configFileArgument ;
-			QString unMountCommand ;
-			QString windowsUnMountCommand ;
 			QString windowsInstallPathRegistryKey ;
 			QString windowsInstallPathRegistryValue ;
+
+			QStringList windowsUnMountCommand ;
+			QStringList unMountCommand ;
 			QStringList volumePropertiesCommands ;
 			QStringList successfulMountedList ;
 			QStringList failedToMountList ;
@@ -530,6 +545,8 @@ public:
 		const QStringList& configFileNames() const ;
 		const QStringList& fileExtensions() const ;
 		const QStringList& volumePropertiesCommands() const ;
+		const QStringList& unMountCommand() const ;
+		const QStringList& windowsUnMountCommand() const ;
 
 		const engines::version& installedVersion() const ;
 
@@ -543,9 +560,7 @@ public:
 		const QString& configFileName() const ;
 		const QString& incorrectPasswordText() const ;
 		const QString& incorrectPasswordCode() const ;
-		const QString& unMountCommand() const ;
 		const QString& configFileArgument() const ;
-		const QString& windowsUnMountCommand() const ;
 		const QString& windowsInstallPathRegistryKey() const ;
 		const QString& windowsInstallPathRegistryValue() const ;
 
@@ -564,9 +579,7 @@ public:
 		virtual Task::future< QString >& volumeProperties( const QString& cipherFolder,
 								   const QString& mountPoint ) const ;
 
-		virtual engines::engine::status unmount( const QString& cipherFolder,
-							 const QString& mountPoint,
-							 int maxCount ) const ;
+		virtual engines::engine::status unmount( const engines::engine::unMount& ) const ;
 
 		virtual bool requiresAPassword( const engines::engine::cmdArgsList& ) const ;
 
@@ -596,6 +609,10 @@ public:
 
 		virtual void GUIMountOptions( const mountGUIOptions& ) const ;
 	protected:
+		bool unmountVolume( const engine::engine::exe& exe,bool usePolkit ) const ;
+
+		void runPreUnmountCommand( const engines::engine::unMount& e ) const ;
+
 		class commandOptions{
 		public:
 			class fuseOptions ;

@@ -622,13 +622,9 @@ int sirikali::start( QApplication& e )
 {
 	if( utility::platformIsWindows() ){
 
-		if( m_argumentList.size() > 1 && m_argumentList.at( 1 ).startsWith( "-T" ) ){
+		if( m_argumentList.size() > 2 && m_argumentList.at( 1 ) == "-T" ){
 
-			auto s = m_argumentList.at( 1 ) ;
-
-			s.replace( "-T","" ) ;
-
-			return SiriKali::Windows::terminateProcess( s.toULong() ) ;
+			return SiriKali::Windows::terminateProcess( m_argumentList.at( 2 ).toULong() ) ;
 		}
 	}
 

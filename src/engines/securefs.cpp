@@ -48,7 +48,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.incorrectPasswordText = "Invalid password" ;
 	s.configFileArgument    = "--config" ;
 	s.volumePropertiesCommands = QStringList{ "securefs info %{cipherFolder}" } ;
-	s.windowsUnMountCommand = "sirikali.exe -T" ;
+	s.windowsUnMountCommand = QStringList{ "sirikali.exe", "-T","%{PID}" } ;
 	s.configFileNames       = QStringList{ ".securefs.json","securefs.json" } ;
 	s.fuseNames             = QStringList{ "fuse.securefs" } ;
 	s.names                 = QStringList{ "securefs" } ;

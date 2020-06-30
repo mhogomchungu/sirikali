@@ -66,7 +66,7 @@ bool siritask::deleteMountFolder( const QString& m )
 	}
 }
 
-static siritask::exe _cmd_args_1( QString e )
+static engines::engine::exe _cmd_args_1( QString e )
 {
 	e.remove( 0,1 ) ;
 
@@ -88,7 +88,7 @@ static siritask::exe _cmd_args_1( QString e )
 	return {} ;
 }
 
-static siritask::exe _cmd_args( const QString& e )
+static engines::engine::exe _cmd_args( const QString& e )
 {
 	if( e.isEmpty() ){
 
@@ -113,83 +113,7 @@ static siritask::exe _cmd_args( const QString& e )
 	return { std::move( exe ),std::move( args ) } ;
 }
 
-utility::task_result siritask::unmountVolume( const siritask::exe& exe,
-					      bool usePolkit )
-{
-	auto e = _cmd_args( settings::instance().preUnMountCommand() ) ;
-
-	int timeOut = 10000 ;
-
-	if( e.exe.isEmpty() ){
-
-		auto& s = utility::Task::run( exe.exe,exe.args,timeOut,usePolkit ) ;
-
-		return utility::unwrap( s ) ;
-	}else{
-		auto& s = utility::Task::run( e.exe,e.args,timeOut,false ) ;
-
-		auto m = utility::unwrap( s ) ;
-
-		if( m.success() ){
-
-			auto& m = utility::Task::run( exe.exe,exe.args,timeOut,usePolkit ) ;
-
-			return utility::unwrap( m ) ;
-		}else{
-			return {} ;
-		}
-	}
-}
-
-engines::engine::status siritask::unmountVolume( const QString& mountPoint,
-						 const QString& unMountCommand,
-						 int maxCount )
-{
-	auto _unmount = []( const siritask::exe& exe ){
-
-		auto s = siritask::unmountVolume( exe,false ) ;
-
-		return s && s.value().success() ;
-	} ;
-
-	auto cmd = [ & ]()->siritask::exe{
-
-		if( unMountCommand.isEmpty() ){
-
-			if( utility::platformIsOSX() ){
-
-				return { "umount",{ mountPoint } } ;
-			}else{
-				return { "fusermount",{ "-u",mountPoint } } ;
-			}
-		}else{
-			auto s = _cmd_args( unMountCommand ) ;
-
-			s.args.append( mountPoint ) ;
-
-			return { std::move( s.exe ),std::move( s.args ) } ;
-		}
-	}() ;
-
-	if( _unmount( cmd ) ){
-
-		return engines::engine::status::success ;
-	}else{
-		for( int i = 1 ; i < maxCount ; i++ ){
-
-			utility::Task::waitForOneSecond() ;
-
-			if( _unmount( cmd ) ){
-
-				return engines::engine::status::success ;
-			}
-		}
-
-		return engines::engine::status::failedToUnMount ;
-	}
-}
-
-static void _run_command( const siritask::exe& exe,
+static void _run_command( const engines::engine::exe& exe,
 			  const QByteArray& password = QByteArray() )
 {
 	if( password.isEmpty() ){
@@ -235,7 +159,7 @@ static void _run_command( const run_command& e )
 	}
 }
 
-static engines::engine::cmdStatus _unmount( const siritask::unmount& e )
+static engines::engine::cmdStatus _unmount( const engines::engine::unMount& e )
 {
 	const auto& engine = engines::instance().getByName( e.fileSystem ) ;
 
@@ -262,10 +186,7 @@ static engines::engine::cmdStatus _unmount( const siritask::unmount& e )
 			return { engines::engine::status::failedToStartPolkit,engine } ;
 		}
 
-		auto s = utility::unwrap( Task::run( [ & ](){
-
-			return engine.unmount( e.cipherFolder,e.mountPoint,e.numberOfAttempts ) ;
-		} ) ) ;
+		auto s = utility::unwrap( Task::run( [ & ](){ return engine.unmount( e ) ; } ) ) ;
 
 		return { s,engine } ;
 	}
@@ -284,7 +205,7 @@ engines::engine::cmdStatus siritask::encryptedFolderUnMount( const siritask::unm
 
 		_run_command( { m.preUnmountCommand,a,b,e.fileSystem,"pre unmount",QByteArray() } ) ;
 
-		auto s = _unmount( e ) ;
+		auto s = _unmount( { e.cipherFolder,e.mountPoint,e.fileSystem,e.numberOfAttempts } ) ;
 
 		if( s.success() ){
 
@@ -293,7 +214,7 @@ engines::engine::cmdStatus siritask::encryptedFolderUnMount( const siritask::unm
 
 		return s ;
 	}else{
-		return _unmount( e ) ;
+		return _unmount( { e.cipherFolder,e.mountPoint,e.fileSystem,e.numberOfAttempts }  ) ;
 	}
 }
 
@@ -546,13 +467,11 @@ static void _run_command_on_mount( const siritask::mount& e )
 	const auto& opt  = e.options ;
 	const auto& type = e.engine->name() ;
 
-	auto s = _cmd_args( settings::instance().runCommandOnMount() ) ;
+	auto s = settings::instance().runCommandOnMount() ;
 
-	if( !s.exe.isEmpty() ){
+	if( !s.isEmpty() ){
 
-		s.args.append( opt.cipherFolder ) ;
-		s.args.append( opt.mountPoint ) ;
-		s.args.append( type ) ;
+		QStringList opts = { opt.cipherFolder,opt.mountPoint,type } ;
 
 		Task::exec( [ = ](){
 
@@ -565,15 +484,15 @@ static void _run_command_on_mount( const siritask::mount& e )
 
 					e.insert( m.environmentalVariableVolumeKey(),opt.key ) ;
 
-					return Task::process::run( s.exe,s.args,-1,{},e ).get() ;
+					return Task::process::run( s,opts,-1,{},e ).get() ;
 				}else{
 					const auto& e = utility::systemEnvironment() ;
 
-					return Task::process::run( s.exe,s.args,-1,{},e ).get() ;
+					return Task::process::run( s,opts,-1,{},e ).get() ;
 				}
 			}() ;
 
-			utility::logCommandOutPut( r,s.exe,s.args ) ;
+			utility::logCommandOutPut( r,s,opts ) ;
 		} ) ;
 	}
 }

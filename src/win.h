@@ -47,7 +47,7 @@ struct opts{
 
 Task::process::result run( const SiriKali::Windows::opts& ) ;
 
-Task::process::result unmount( const QString& unMountCommand,const QString& mountPath ) ;
+Task::process::result unmount( const QStringList& unMountCommand,const QString& mountPath ) ;
 
 QString volumeProperties( const QString& mountPath ) ;
 

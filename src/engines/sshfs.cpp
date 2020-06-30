@@ -48,11 +48,11 @@ static engines::engine::BaseOptions _setOptions()
 	s.setsCipherPath        = true ;
 	s.acceptsSubType        = true ;
 	s.acceptsVolName        = true ;
-	s.windowsUnMountCommand = "" ;
 	s.executableName        = "sshfs" ;
 	s.releaseURL            = "https://api.github.com/repos/libfuse/sshfs/releases" ;
 	s.windowsInstallPathRegistryKey = "SOFTWARE\\SSHFS-Win" ;
 	s.windowsInstallPathRegistryValue = "InstallDir" ;
+	s.windowsUnMountCommand           = QStringList{ "taskkill","/F","/PID","%{PID}" } ;
 	s.failedToMountList     = QStringList{ "ssh:","read:","Cannot create WinFsp-FUSE file system" } ;
 	s.successfulMountedList = QStringList{ "has been started" } ;
 	s.fuseNames             = QStringList{ "fuse.sshfs" } ;

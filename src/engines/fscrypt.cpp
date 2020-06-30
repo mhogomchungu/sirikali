@@ -321,11 +321,9 @@ fscrypt::fscrypt() :
 {
 }
 
-engines::engine::status fscrypt::unmount( const QString& cipherFolder,
-					  const QString& mountPoint,
-					  int maxCount) const
+engines::engine::status fscrypt::unmount( const engines::engine::unMount& e ) const
 {
-	Q_UNUSED( cipherFolder )
+	this->runPreUnmountCommand( e ) ;
 
 	const auto& exe = this->executableFullPath() ;
 
@@ -340,20 +338,20 @@ engines::engine::status fscrypt::unmount( const QString& cipherFolder,
 
 	if( m_versionGreatorOrEqual_0_2_6 ){
 
-		exeOptions.add( "lock",mountPoint ) ;
+		exeOptions.add( "lock",e.mountPoint ) ;
 	}else{
-		auto m = _mount_point( mountPoint,exe ) ;
+		auto m = _mount_point( e.mountPoint,exe ) ;
 
 		exeOptions.add( "purge",m,"--force","--drop-caches=false" ) ;
 	}
 
-	for( int i = 0 ; i < maxCount ; i++ ){
+	for( int i = 0 ; i < e.numberOfAttempts ; i++ ){
 
 		auto s = _run( exe,exeOptions.get() ) ;
 
 		if( s.success() ){
 
-			m_unlockedVolumeManager.removeEntry( mountinfo::encodeMountPath( mountPoint ) ) ;
+			m_unlockedVolumeManager.removeEntry( mountinfo::encodeMountPath( e.mountPoint ) ) ;
 
 			return engines::engine::status::success ;
 
