@@ -141,28 +141,31 @@ void createBackendWIndow::save()
 	} ;
 
 	try {
+		QStringList emptyStringList ;
+
 		config[ "createControlStructure" ]      = "%{createOptions} %{cipherFolder} %{mountPoint}" ;
 		config[ "mountControlStructure" ]       = "%{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
 		config[ "idleString" ]                  = "" ;
 		config[ "reverseString" ]               = "" ;
-		config[ "unMountCommand" ]              = "" ;
-		config[ "windowsUnMountCommand" ]       = "" ;
+		config[ "unMountCommand" ]              = emptyStringList ;
+		config[ "windowsUnMountCommand" ]       = emptyStringList ;
+		config[ "fileExtensions" ]              = emptyStringList ;
+		config[ "unMountCommand" ]              = emptyStringList ;
+		config[ "volumePropertiesCommands" ]    = emptyStringList ;
 		config[ "passwordFormat" ]              = "%{password}" ;
 		config[ "windowsInstallPathRegistryKey" ]   = "" ;
 		config[ "windowsInstallPathRegistryValue" ] = "" ;
+		config[ "windowsSupportsMountPointPaths" ]  = m_ui->cbSupportsMountPointPaths->isChecked() ;
+		config[ "windowsSuccessfullyMountedList" ]  = _addList( m_ui->lineEditSuccessfullyMountedText->text() ) ;
 		config[ "executableName" ]              = executable ;
 		config[ "configFileNames" ]             = _addList( configFileNames ) ;
 		config[ "fuseNames" ]                   = _addList( fusenames ) ;
 		config[ "names" ]                       = _addList( names ) ;
-		config[ "fileExtensions" ]              = QStringList() ;
-		config[ "volumePropertiesCommands" ]    = QStringList() ;
 		config[ "failedToMountTextList" ]       = _addList( m_ui->lineEditFailedToMountText->text() ) ;
-		config[ "successfullyMountedList" ]     = _addList( m_ui->lineEditSuccessfullyMountedText->text() ) ;
 		config[ "configFileArgument" ]          = m_ui->lineEditConfigFileArgument->text() ;
 		config[ "wrongPasswordText" ]           = password ;
 		config[ "wrongPasswordErrorCode" ]      = m_ui->lineEditWrongPasswordErrorCode->text() ;
 		config[ "requiresAPassword" ]           = m_ui->cbRequiresAPassword->isChecked() ;
-		config[ "supportsMountPointPaths" ]     = m_ui->cbSupportsMountPointPaths->isChecked() ;
 		config[ "autoMountsOnVolumeCreation" ]  = m_ui->cbAutoMountsOnVolumeCreation->isChecked() ;
 		config[ "backendRequireMountPath" ]     = true ;
 		config[ "autorefreshOnMountUnMount" ]   = true ;

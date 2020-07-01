@@ -135,7 +135,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>--config</string>
+    <string>--config %{configFilePath}</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_6">

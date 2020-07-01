@@ -55,23 +55,40 @@ public:
 
 				return a->get< T >() ;
 			}else{
-				m_log( "Warning, Following Key Not Found: " + QString( key ) ) ;
+				if( m_filePath.isEmpty() ){
+
+					m_log( QString( "Warning, Key \"%1\" Not Found" ).arg( key )  ) ;
+				}else{
+					m_log( QString( "Warning, Key \"%1\" Not Found In Config File at: %2" ).arg( key,m_filePath )  ) ;
+				}
 
 				return t ;
 			}
 
 		}catch( ... ) {
 
-			m_log( "Warning, Exception thrown when searching For Following Key: " + QString( key ) ) ;
+			if( m_filePath.isEmpty() ){
+
+				m_log( QString( "Warning, Exception thrown when searching For Key \"%1\"" ).arg( key ) ) ;
+			}else{
+				m_log( QString( "Warning, Exception thrown when searching For Key \"%1\" in Config File at: %2" ).arg( key,m_filePath )  ) ;
+			}
 
 			return t ;
 		}
 	}
-	QStringList getStringList( const char * key,const std::vector< std::string >& l = {} ) const
+	QStringList getStringList( const char * key,const QStringList& l ) const
 	{
-		QStringList s ;
+		std::vector< std::string > m ;
 
-		const auto e = this->get< std::vector< std::string > >( key,l ) ;
+		for( const auto& it : l ){
+
+			m.emplace_back( it.toStdString() ) ;
+		}
+
+		const auto e = this->get< std::vector< std::string > >( key,m ) ;
+
+		QStringList s ;
 
 		for( const auto& it : e ){
 
@@ -80,19 +97,40 @@ public:
 
 		return s ;
 	}
-	QString getString( const char * key,const std::string& defaultValue = std::string() ) const
+	QStringList getStringList( const char * key ) const
 	{
-		return this->get< std::string >( key,defaultValue ).c_str() ;
+		QStringList s ;
+
+		auto e = this->get< std::vector< std::string > >( key,m_defaultStringList ) ;
+
+		for( const auto& it : e ){
+
+			s.append( it.c_str() ) ;
+		}
+
+		return s ;
 	}
-	QByteArray getByteArray( const char * key,const std::string& defaultValue = std::string() ) const
+	QString getString( const char * key,const QString& defaultValue ) const
 	{
-		return this->get< std::string >( key,defaultValue ).c_str() ;
+		return this->get< std::string >( key,defaultValue.toStdString() ).c_str() ;
+	}
+	QString getString( const char * key ) const
+	{
+		return this->get< std::string >( key,m_defaultString ).c_str() ;
+	}
+	QByteArray getByteArray( const char * key,const QByteArray& defaultValue ) const
+	{
+		return this->get< std::string >( key,defaultValue.toStdString() ).c_str() ;
+	}
+	QByteArray getByteArray( const char * key ) const
+	{
+		return this->get< std::string >( key,m_defaultString ).c_str() ;
 	}
 	bool getBool( const char * key,bool s = false ) const
 	{
 		return this->get< bool >( key,s ) ;
 	}
-	bool getInterger( const char * key,int s = 0 ) const
+	int getInterger( const char * key,int s = 0 ) const
 	{
 		return this->get< int >( key,s ) ;
 	}
@@ -169,9 +207,15 @@ public:
 		return s ;
 	}
 private:
+	std::vector< std::string > m_defaultStringList ;
+	std::string m_defaultString ;
+	QString m_filePath ;
+
 	void getData( const QByteArray& e,type s )
 	{
 		if( s == type::PATH ){
+
+			m_filePath = e ;
 
 			QFile file( e ) ;
 

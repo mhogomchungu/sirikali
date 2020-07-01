@@ -39,7 +39,7 @@ static void _parse( custom::opts& s,const SirikaliJson& json )
 	s.baseOpts.takesTooLongToUnlock            = json.getBool( "takesTooLongToUnlock",false ) ;
 	s.baseOpts.requiresAPassword               = json.getBool( "requiresAPassword",true ) ;
 	s.baseOpts.autoMountsOnCreate              = json.getBool( "autoMountsOnVolumeCreation",true ) ;
-	s.baseOpts.supportsMountPathsOnWindows     = json.getBool( "supportsMountPointPaths",false ) ;
+	s.baseOpts.supportsMountPathsOnWindows     = json.getBool( "windowsSupportsMountPointPaths",false ) ;
 	s.baseOpts.acceptsSubType                  = json.getBool( "acceptsSubType",true ) ;
 	s.baseOpts.acceptsVolName                  = json.getBool( "acceptsVolName",true ) ;
 
@@ -61,7 +61,7 @@ static void _parse( custom::opts& s,const SirikaliJson& json )
 	s.baseOpts.windowsUnMountCommand           = json.getStringList( "windowsUnMountCommand" ) ;
 	s.baseOpts.unMountCommand                  = json.getStringList( "unMountCommand" ) ;
 	s.baseOpts.failedToMountList               = json.getStringList( "failedToMountTextList" ) ;
-	s.baseOpts.successfulMountedList           = json.getStringList( "successfullyMountedList" ) ;
+	s.baseOpts.successfulMountedList           = json.getStringList( "windowsSuccessfullyMountedList" ) ;
 	s.baseOpts.configFileNames                 = json.getStringList( "configFileNames" ) ;
 	s.baseOpts.names                           = json.getStringList( "names" ) ;
 	s.baseOpts.fuseNames                       = json.getStringList( "fuseNames" ) ;
@@ -169,12 +169,28 @@ custom::custom( custom::opts s ) :
 {
 }
 
+static std::array< const char *,4 > _contStr = { "%{cipherFolder}",
+						 "%{configFileName}",
+						 "%{configFilePath}",
+						 "%{timeout}"} ;
+
 template< typename T >
 static QString _replace( QString a,const T& opts )
 {
 	for( const auto& it : opts ){
 
-		a.replace( it.first,it.second ) ;
+		if( !it.second.isEmpty() ){
+
+			a.replace( it.first,it.second ) ;
+		}
+	}
+
+	for( const auto& it : _contStr ){
+
+		if( a.contains( it ) ) {
+
+			return {} ;
+		}
 	}
 
 	return a ;
@@ -194,12 +210,22 @@ static void _resolve( QStringList& orgs,
 
 	if( m.size() == 1 ){
 
-		orgs.append( _replace( m.at( 0 ),opts ) ) ;
+		auto a = _replace( m.at( 0 ),opts ) ;
 
-	}else if( m.size() == 2 ){
+		if( !a.isEmpty() ){
 
-		orgs.append( m.at( 0 ) ) ;
-		orgs.append( _replace( m.at( 1 ),opts ) ) ;
+			orgs.append( a ) ;
+		}
+
+	}else if( m.size() == 2 ){		
+
+		auto a = _replace( m.at( 1 ),opts ) ;
+
+		if( !a.isEmpty() ){
+
+			orgs.append( m.at( 0 ) ) ;
+			orgs.append( a ) ;
+		}
 	}else{
 		auto s = QString( "Wrong control structure detected in custom backend named \"%1\"." ) ;
 		utility::debug::logErrorWhileStarting( s.arg( name ) ) ;
@@ -261,19 +287,16 @@ QStringList custom::resolve( const resolveStruct& r ) const
 
 			std::vector< std::pair< QString,QString > > oo ;
 
-			oo.emplace_back( std::make_pair( "%{cipherFolder}",r.args.cipherFolder ) ) ;
-			oo.emplace_back( std::make_pair( "%{configFileName}",this->configFileName() ) ) ;
-			oo.emplace_back( std::make_pair( "%{configFilePath}",r.args.configFilePath ) ) ;
+			oo.emplace_back( std::make_pair( _contStr[ 0 ],r.args.cipherFolder ) ) ;
+			oo.emplace_back( std::make_pair( _contStr[ 1 ],this->configFileName() ) ) ;
+			oo.emplace_back( std::make_pair( _contStr[ 2 ],r.args.configFilePath ) ) ;
 
 			_resolve( opts,this->name(),this->configFileArgument(),oo ) ;
 
-			if( !r.args.idleTimeout.isEmpty() ){
-
-				_resolve( opts,
-					  this->name(),
-					  this->idleString(),
-					  { std::make_pair( "%{timeout}",r.args.idleTimeout ) } ) ;
-			}
+			_resolve( opts,
+				  this->name(),
+				  this->idleString(),
+				  { std::make_pair( _contStr[ 3 ],r.args.idleTimeout ) } ) ;
 
 			opts.append( r.createOpts ) ;
 

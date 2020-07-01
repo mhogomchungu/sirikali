@@ -331,8 +331,10 @@ void sirikali::setUpApp( const QString& volume )
 		this->showDebugWindow() ;
 	}
 
-	auto e = settings::instance().runCommandOnInterval() ;
-	auto p = settings::instance().runCommandOnIntervalTime() ;
+	auto& ss = settings::instance() ;
+
+	auto e = ss.runCommandOnInterval() ;
+	auto p = ss.runCommandOnIntervalTime() ;
 
 	if( !e.isEmpty() ){
 

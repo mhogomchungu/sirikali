@@ -256,11 +256,9 @@ static QStringList _get_protector_names( const QString& exe,const QString& mount
 
 static QString _name( const QString& cipherPath,const QString& e,const QString& exe )
 {
-	auto& ee = exe ;
+	auto mp = _mount_point( cipherPath,exe ) ;
 
-	auto mp = _mount_point( cipherPath,ee ) ;
-
-	auto mm = _get_protector_names( ee,mp ) ;
+	auto mm = _get_protector_names( exe,mp ) ;
 
 	auto _contains = [ & ]( const QString& e ){
 

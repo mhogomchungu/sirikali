@@ -486,7 +486,7 @@ static terminate_result _terminate_process( const terminate_process& e )
 
 			it = QString::number( e.exe.processId() ) ;
 
-		}else if( it == "%{mountPointPath}" ){
+		}else if( it == "%{mountPoint}" ){
 
 			it = e.mountPath ;
 		}

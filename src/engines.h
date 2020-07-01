@@ -540,6 +540,7 @@ public:
 		engines::engine::status notFoundCode() const ;
 
 		int backendTimeout() const ;
+
 		const QStringList& names() const ;
 		const QStringList& fuseNames() const ;
 		const QStringList& configFileNames() const ;
