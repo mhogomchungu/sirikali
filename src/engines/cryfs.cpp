@@ -64,8 +64,14 @@ static engines::engine::BaseOptions _setOptions()
 	s.notFoundCode          = engines::engine::status::cryfsNotFound ;
 	s.versionInfo           = { { "--version",true,2,0 } } ;
 
-	s.createControlStructure = "%{createOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
-	s.mountControlStructure  = "%{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
+	if( utility::platformIsWindows() ){
+
+		s.createControlStructure = "-f %{createOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
+		s.mountControlStructure  = "-f %{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
+	}else{
+		s.createControlStructure = "%{createOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
+		s.mountControlStructure  = "%{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
+	}
 
 	return s ;
 }
@@ -152,11 +158,6 @@ engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 void cryfs::updateOptions( engines::engine::cmdArgsList& e,bool creating ) const
 {
 	Q_UNUSED( creating )
-
-	if( utility::platformIsWindows() ){
-
-		e.mountOptions.append( "-b" ) ;
-	}
 
 	if( m_version_greater_or_equal_0_10_0 && e.boolOptions.allowReplacedFileSystem ){
 
