@@ -34,6 +34,8 @@ public:
 
 	bool requiresAPassword( const engines::engine::cmdArgsList& ) const override ;
 
+	void updateOptions( engines::engine::cmdArgsList&,bool ) const override ;
+
 	void updateVolumeList( const engines::engine::cmdArgsList& ) const override ;
 
 	Task::future< QString >& volumeProperties( const QString& cipherFolder,

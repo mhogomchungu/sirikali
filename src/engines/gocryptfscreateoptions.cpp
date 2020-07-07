@@ -82,7 +82,7 @@ void gocryptfscreateoptions::pbOK()
 		}
 	}() ;
 
-	auto c = QString( "%1 %2" ).arg( a,b ) ;
+	auto c = QString( "%1,%2" ).arg( a,b ) ;
 
 	engines::engine::booleanOptions opts ;
 

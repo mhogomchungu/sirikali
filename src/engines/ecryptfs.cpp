@@ -22,6 +22,8 @@
 #include "../siritask.h"
 #include "options.h"
 
+#include "custom.h"
+
 static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
@@ -43,13 +45,16 @@ static engines::engine::BaseOptions _setOptions()
 	s.passwordFormat        = "%{password}" ;
 	s.executableName        = "ecryptfs-simple" ;
 	s.incorrectPasswordText = "error: mount failed" ;
-	s.configFileArgument    = "--config" ;
+	s.configFileArgument    = "--config=%{configFilePath}" ;
 	s.configFileNames       = QStringList{ ".ecryptfs.config","ecryptfs.config" } ;
 	s.fuseNames             = QStringList{ "ecryptfs" } ;
 	s.names                 = QStringList{ "ecryptfs" } ;
 	s.versionInfo           = { { "--version",true,1,0 } } ;
 
 	s.notFoundCode = engines::engine::status::ecryptfs_simpleNotFound ;
+
+	s.createControlStructure = "%{createOptions} %{cipherFolder} %{mountPoint}" ;
+	s.mountControlStructure  = "%{mountOptions} %{cipherFolder} %{mountPoint}" ;
 
 	return s ;
 }
@@ -91,12 +96,40 @@ ecryptfs::ecryptfs() :
 
 void ecryptfs::updateOptions( engines::engine::cmdArgsList& opt,bool creating ) const
 {
-	Q_UNUSED( creating )
+	QStringList createOptions ;
+	QStringList mountOptions ;
+
+	if( creating ){
+
+		if( opt.createOptions.isEmpty() ){
+
+			createOptions.append( "-o " + ecryptfscreateoptions::defaultCreateOptions() ) ;
+		}else{
+			createOptions.append( "-o " + opt.createOptions.join( ',' ) ) ;
+		}
+	}else{
+		if( opt.mountOptions.isEmpty() ){
+
+			mountOptions.append( "-o key=passphrase" ) ;
+		}else{
+			mountOptions.append( "-o " + opt.mountOptions.join( ',' ) ) ;
+		}
+	}
 
 	if( opt.configFilePath.isEmpty() ){
 
 		opt.configFilePath = opt.cipherFolder + "/" + this->configFileName() ;
 	}
+
+	if( opt.boolOptions.unlockInReadOnly ){
+
+		mountOptions.append( "--readonly" ) ;
+	}
+
+	mountOptions.append( "-a" ) ;
+
+	opt.mountOptions  = mountOptions ;
+	opt.createOptions = createOptions ;
 }
 
 bool ecryptfs::requiresPolkit() const
@@ -126,11 +159,7 @@ engines::engine::status ecryptfs::unmount( const engines::engine::unMount& e ) c
 
 		if( usePolkit ){
 
-			auto s = this->wrapSU( exe ) ;
-
-			s.args[ 2 ].append( " -k " + e.cipherFolder ) ;
-
-			return s ;
+			return this->wrapSU( exe + " -k " + e.cipherFolder ) ;
 		}else{
 			return { exe,{ "-k",e.cipherFolder } } ;
 		}
@@ -159,47 +188,22 @@ engines::engine::args ecryptfs::command( const QByteArray& password,
 					 const engines::engine::cmdArgsList& args,
 					 bool create ) const
 {
-	Q_UNUSED( password )
-
-	engines::engine::commandOptions m( *this,args ) ;
-
-	auto exeOptions = m.exeOptions() ;
-
-	if( args.boolOptions.unlockInReadOnly ){
-
-		exeOptions.add( "--readonly" ) ;
-	}
-
-	if( create ){
-
-		if( args.createOptions.isEmpty() ){
-
-			exeOptions.add( "-o",ecryptfscreateoptions::defaultCreateOptions() ) ;
-		}else{
-			exeOptions.add( "-o",args.createOptions ) ;
-		}
-	}else{
-		exeOptions.add( "-o","key=passphrase" ) ;
-	}
-
-	if( !args.mountOptions.isEmpty() ){
-
-		exeOptions.add( "-o",args.mountOptions ) ;
-	}
-
-	exeOptions.add( "-a",this->configFileArgument() + "=" + args.configFilePath ) ;
-
-	exeOptions.add( args.cipherFolder,args.mountPoint ) ;
+	auto m = custom::set_command( *this,password,args,create ) ;
 
 	if( utility::useSiriPolkit() ){
 
-		auto s = this->wrapSU( this->executableFullPath() ) ;
+		auto exe = this->executableFullPath() + " " + m.cmd_args.join( ' ' ) ;
 
-		s.args[ 2 ].append( " " + exeOptions.get().join( ' ' ) ) ;
+		auto s = this->wrapSU( exe ) ;
 
-		return { args,m,s.exe,s.args } ;
+		engines::engine::args e( m ) ;
+
+		e.cmd      = s.exe ;
+		e.cmd_args = s.args ;
+
+		return e ;
 	}else{
-		return { args,m,this->executableFullPath(),exeOptions.get() } ;
+		return m ;
 	}
 }
 

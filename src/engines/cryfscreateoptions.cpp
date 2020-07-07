@@ -122,9 +122,9 @@ void cryfscreateoptions::pbOK()
 
 		if( m.isEmpty() ){
 
-			return QString( "--blocksize %2" ).arg( s ) ;
+			return QString( "--blocksize,%2" ).arg( s ) ;
 		}else{
-			return QString( "--cipher %1 --blocksize %2" ).arg( m,s ) ;
+			return QString( "--cipher,%1,--blocksize,%2" ).arg( m,s ) ;
 		}
 	}() ;
 

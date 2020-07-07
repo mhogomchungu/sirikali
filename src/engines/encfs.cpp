@@ -22,6 +22,8 @@
 #include "encfscreateoptions.h"
 #include "options.h"
 
+#include "custom.h"
+
 static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
@@ -44,10 +46,10 @@ static engines::engine::BaseOptions _setOptions()
 	s.releaseURL            = "https://api.github.com/repos/vgough/encfs/releases" ;
 	s.passwordFormat        = "%{password}\n%{password}" ;
 	s.reverseString         = "--reverse" ;
-	s.idleString            = "--idle" ;
+	s.idleString            = "--idle=%{timeout}" ;
 	s.executableName        = "encfs" ;
 	s.incorrectPasswordText = "Error decoding volume key, password incorrect" ;
-	s.configFileArgument    = "--config" ;
+	s.configFileArgument    = "--config=%{configFilePath}" ;
 	s.windowsInstallPathRegistryKey   = "SOFTWARE\\ENCFS" ;
 	s.windowsInstallPathRegistryValue = "InstallDir" ;
 	s.windowsUnMountCommand           = QStringList{ "taskkill","/F","/PID","%{PID}" } ;
@@ -60,13 +62,21 @@ static engines::engine::BaseOptions _setOptions()
 	s.notFoundCode          = engines::engine::status::encfsNotFound ;
 	s.versionInfo           = { { "--version",false,2,0 } } ;
 
+	if( utility::platformIsWindows() ){
+
+		s.mountControlStructure  = "-f --stdinpass %{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
+		s.createControlStructure = "-f --stdinpass --standard %{createOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
+	}else{
+		s.mountControlStructure  = "--stdinpass %{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
+		s.createControlStructure = "--stdinpass --standard %{createOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
+	}
+
 	return s ;
 }
 
 encfs::encfs() :
 	engines::engine( _setOptions() ),
-	m_environment( engines::engine::getProcessEnvironment() ),
-	m_versionGreatorOrEqual_1_9_5( true,*this,1,9,5 )
+	m_environment( engines::engine::getProcessEnvironment() )
 {	
 }
 
@@ -74,32 +84,7 @@ engines::engine::args encfs::command( const QByteArray& password,
 				      const engines::engine::cmdArgsList& args,
 				      bool create ) const
 {
-	Q_UNUSED( password )
-
-	engines::engine::commandOptions m( *this,args ) ;
-
-	auto exeOptions = m.exeOptions() ;
-
-	if( create ){
-
-		if( !args.createOptions.isEmpty() ){
-
-			exeOptions.add( utility::split( args.createOptions,' ' ) ) ;
-		}
-
-		exeOptions.add( "--stdinpass","--standard" ) ;
-	}else{
-		exeOptions.add( "--stdinpass" ) ;
-	}
-
-	if( args.boolOptions.unlockInReverseMode ){
-
-		exeOptions.add( this->reverseString() ) ;
-	}
-
 	if( utility::platformIsWindows() ){
-
-		exeOptions.add( "-f" ) ;
 
 		if( !utility::isDriveLetter( args.mountPoint ) ){
 
@@ -114,22 +99,14 @@ engines::engine::args encfs::command( const QByteArray& password,
 
 	m_environment.remove( "ENCFS6_CONFIG" ) ;
 
-	if( !args.configFilePath.isEmpty() ){
+	if( !m_configPathThroughEnv.isEmpty() ){
 
-		if( m_versionGreatorOrEqual_1_9_5 ){
-
-			exeOptions.add( this->configFileArgument() + "=" + args.configFilePath ) ;
-		}else{
-			auto& a = args.configFilePath ;
-
-			utility::debug() << "Encfs: Setting Env Variable Of: ENCFS6_CONFIG=" + a ;
-			m_environment.insert( "ENCFS6_CONFIG",a ) ;
-		}
+		auto a = "Encfs: Setting Env Variable Of: ENCFS6_CONFIG=" ;
+		utility::debug() << a + m_configPathThroughEnv ;
+		m_environment.insert( "ENCFS6_CONFIG",m_configPathThroughEnv ) ;
 	}
 
-	exeOptions.add( args.cipherFolder,args.mountPoint,m.fuseOpts() ) ;
-
-	return { args,m,this->executableFullPath(),exeOptions.get() } ;
+	return custom::set_command( *this,password,args,create ) ;
 }
 
 engines::engine::status encfs::errorCode( const QString& e,int s ) const
@@ -151,6 +128,18 @@ engines::engine::status encfs::errorCode( const QString& e,int s ) const
 const QProcessEnvironment& encfs::getProcessEnvironment() const
 {
 	return m_environment ;
+}
+
+void encfs::updateOptions( engines::engine::cmdArgsList& args,bool creating ) const
+{
+	if( creating && args.boolOptions.unlockInReverseMode ){
+
+		args.createOptions.append( this->reverseString() ) ;
+	}
+
+	m_configPathThroughEnv = args.configFilePath ;
+
+	args.configFilePath.clear() ;
 }
 
 void encfs::GUICreateOptions( const engines::engine::createGUIOptions& s ) const

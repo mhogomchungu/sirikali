@@ -143,10 +143,11 @@ void createBackendWIndow::save()
 	try {
 		QStringList emptyStringList ;
 
-		config[ "createControlStructure" ]      = "%{createOptions} %{cipherFolder} %{mountPoint}" ;
-		config[ "mountControlStructure" ]       = "%{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
-		config[ "idleString" ]                  = "" ;
+		config[ "createControlStructure" ]      = m_ui->lineEditCreateControlStructure->text() ;
+		config[ "mountControlStructure" ]       = m_ui->lineEditMountControlStructure->text() ;
+		config[ "idleString" ]                  = "--idle %{timeout}" ;
 		config[ "reverseString" ]               = "" ;
+		config[ "keyFileArgument" ]             = "--keyfile %{keyfile}" ;
 		config[ "unMountCommand" ]              = emptyStringList ;
 		config[ "windowsUnMountCommand" ]       = emptyStringList ;
 		config[ "fileExtensions" ]              = emptyStringList ;

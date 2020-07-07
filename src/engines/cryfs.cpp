@@ -21,6 +21,7 @@
 #include "cryfscreateoptions.h"
 #include "../win.h"
 #include "options.h"
+#include "custom.h"
 
 static engines::engine::BaseOptions _setOptions()
 {
@@ -50,10 +51,10 @@ static engines::engine::BaseOptions _setOptions()
 	s.acceptsSubType        = true ;
 	s.acceptsVolName        = true ;
 	s.passwordFormat        = "%{password}" ;
-	s.idleString            = "--unmount-idle" ;
+	s.idleString            = "--unmount-idle %{timeout}" ;
 	s.executableName        = "cryfs" ;
 	s.incorrectPasswordText = "Could not load config file. Did you enter the correct password?" ;
-	s.configFileArgument    = "--config" ;
+	s.configFileArgument    = "--config %{configFilePath}" ;
 	s.releaseURL            = "https://api.github.com/repos/cryfs/cryfs/releases" ;
 	s.successfulMountedList = QStringList{ "Mounting filesystem." } ;
 	s.configFileNames       = QStringList{ "cryfs.config",".cryfs.config" } ;
@@ -62,6 +63,9 @@ static engines::engine::BaseOptions _setOptions()
 	s.names                 = QStringList{ "cryfs" } ;
 	s.notFoundCode          = engines::engine::status::cryfsNotFound ;
 	s.versionInfo           = { { "--version",true,2,0 } } ;
+
+	s.createControlStructure = "%{createOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
+	s.mountControlStructure  = "%{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
 
 	return s ;
 }
@@ -98,50 +102,7 @@ engines::engine::args cryfs::command( const QByteArray& password,
 				      const engines::engine::cmdArgsList& args,
 				      bool create ) const
 {
-	Q_UNUSED( password )
-
-	engines::engine::commandOptions m( *this,args ) ;
-
-	auto exeOptions = m.exeOptions() ;
-
-	if( utility::platformIsWindows() ){
-
-		exeOptions.add( "-f" ) ;
-	}
-
-	if( !args.idleTimeout.isEmpty() ){
-
-		exeOptions.add( this->idleString(),args.idleTimeout ) ;
-	}
-
-	if( create && !args.createOptions.isEmpty() ){
-
-		exeOptions.add( utility::split( args.createOptions,' ' ) ) ;
-	}
-
-	if( !args.configFilePath.isEmpty() ){
-
-		exeOptions.add( this->configFileArgument(),args.configFilePath ) ;
-	}
-
-	if( args.boolOptions.allowReplacedFileSystem ){
-
-		exeOptions.add( "--allow-replaced-filesystem" ) ;
-	}
-
-	if( args.boolOptions.allowUpgradeFileSystem ){
-
-		exeOptions.add( "--allow-filesystem-upgrade" ) ;
-	}
-
-	if( m_version_greater_or_equal_0_10_0 ){
-
-		exeOptions.add( args.cipherFolder,args.mountPoint,m.fuseOpts() ) ;
-	}else{
-		exeOptions.add( args.cipherFolder,args.mountPoint,"--",m.fuseOpts() ) ;
-	}
-
-	return { args,m,this->executableFullPath(),exeOptions.get() } ;
+	return custom::set_command( *this,password,args,create ) ;
 }
 
 engines::engine::status cryfs::errorCode( const QString& e,int s ) const
@@ -192,9 +153,24 @@ void cryfs::updateOptions( engines::engine::cmdArgsList& e,bool creating ) const
 {
 	Q_UNUSED( creating )
 
+	if( utility::platformIsWindows() ){
+
+		e.mountOptions.append( "-b" ) ;
+	}
+
+	if( m_version_greater_or_equal_0_10_0 && e.boolOptions.allowReplacedFileSystem ){
+
+		e.mountOptions.append( "--allow-replaced-filesystem" ) ;
+	}
+
+	if( e.boolOptions.allowUpgradeFileSystem ){
+
+		e.mountOptions.append( "--allow-filesystem-upgrade" ) ;
+	}
+
 	if( !m_version_greater_or_equal_0_10_0 ){
 
-		e.boolOptions.allowReplacedFileSystem = false ;
+		e.fuseOptionsSeparator = "--" ;
 	}
 }
 

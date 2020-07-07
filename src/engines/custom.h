@@ -17,6 +17,10 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
+#ifndef CUSTOM_BACKEND_H
+#define CUSTOM_BACKEND_H
+
 #include "../engines.h"
 
 #include <QStringList>
@@ -27,15 +31,14 @@
 class custom : public engines::engine
 {
 public:
+	static engines::engine::args set_command( const engines::engine& engine,
+						  const QByteArray& password,
+						  const engines::engine::cmdArgsList& args,
+						  bool create ) ;
+
 	static void addEngines( std::vector< std::unique_ptr< engines::engine > >& ) ;
 
-	struct opts{
-		engines::engine::BaseOptions baseOpts ;
-		QString mountControlStructure ;
-		QString createControlStructure ;
-	};
-
-	custom( custom::opts ) ;
+	custom( engines::engine::BaseOptions baseOpts ) ;
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 
@@ -45,17 +48,7 @@ public:
 
 	void GUICreateOptions( const engines::engine::createGUIOptions& ) const override ;
 private:
-	struct resolveStruct{
-		const QString& controlStructure ;
-		const engines::engine::cmdArgsList& args ;
-		const QByteArray& password ;
-		const QStringList& createOpts ;
-		const QStringList& fuseOpts ;
-	} ;
-
-	QStringList resolve( const resolveStruct& ) const ;
-
-	const QString m_mountControlStructure ;
-	const QString m_createControlStructure ;
 	engines::version m_version ;
 } ;
+
+#endif

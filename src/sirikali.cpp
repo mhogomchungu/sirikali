@@ -1435,6 +1435,8 @@ void sirikali::dropEvent( QDropEvent * e )
 
 void sirikali::createVolume( QAction * ac )
 {
+	this->disableAll() ;
+
 	if( ac ){
 
 		auto s = ac->objectName() ;
@@ -1443,8 +1445,9 @@ void sirikali::createVolume( QAction * ac )
 
 			favorites2::instance( this,m_secrets,[ this ](){
 
-				this->updateFavoritesInContextMenu() ;
+				this->enableAll() ;
 
+				this->updateFavoritesInContextMenu() ;
 			},s ) ;
 		}else{
 			keyDialog::instance( this,

@@ -45,6 +45,35 @@ public:
 	{
 		this->getData( e.toLatin1(),s ) ;
 	}
+	struct result{
+	        bool contains ;
+		bool exceptionThrown ;
+	};
+	result contains( const char * key )
+	{
+		try{
+			auto a = m_json.find( key ) ;
+
+			if( a != m_json.end() ){
+
+				return { true,false } ;
+			}else{
+				return { false,false } ;
+			}
+
+		}catch( const std::exception& e ){
+
+			m_log( e.what() ) ;
+
+			return { false,true } ;
+
+		}catch( ... ){
+
+			m_log( "Unknown exception was thrown" ) ;
+
+			return { false,true } ;
+		}
+	}
 	template< typename T >
 	T get( const char * key,const T& t = T() ) const
 	{
@@ -71,7 +100,7 @@ public:
 
 				m_log( QString( "Warning, Exception thrown when searching For Key \"%1\"" ).arg( key ) ) ;
 			}else{
-				m_log( QString( "Warning, Exception thrown when searching For Key \"%1\" in Config File at: %2" ).arg( key,m_filePath )  ) ;
+			        m_log( QString( "Warning, Exception thrown when searching For Key \"%1\" in Config File at: %2" ).arg( key,m_filePath )  ) ;
 			}
 
 			return t ;

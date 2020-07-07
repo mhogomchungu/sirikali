@@ -18,6 +18,7 @@
  */
 
 #include "gocryptfs.h"
+#include "custom.h"
 
 #include "gocryptfscreateoptions.h"
 #include "options.h"
@@ -41,15 +42,15 @@ static engines::engine::BaseOptions _setOptions()
 	s.setsCipherPath        = true ;
 	s.acceptsSubType        = false ;
 	s.acceptsVolName        = false ;
-	s.releaseURL            = "https://api.github.com/repos/rfjakob/gocryptfs/releases" ;
-	s.passwordFormat        = "%{password}" ;
+	s.releaseURL             = "https://api.github.com/repos/rfjakob/gocryptfs/releases" ;
+	s.passwordFormat         = "%{password}" ;
 	s.volumePropertiesCommands = QStringList{ "gocryptfs -info %{cipherFolder}",
 						  "gocryptfs -info %{plainFolder}" } ;
 	s.reverseString         = "-reverse" ;
-	s.idleString            = "-idle" ;
+	s.idleString            = "-idle %{timeout}" ;
 	s.executableName        = "gocryptfs" ;
 	s.incorrectPasswordText = "Password incorrect." ;
-	s.configFileArgument    = "-config" ;
+	s.configFileArgument    = "--config %{configFilePath}" ;
 	s.configFileNames       = QStringList{ "gocryptfs.conf",
 					       ".gocryptfs.conf",
 					       ".gocryptfs.reverse.conf",
@@ -58,6 +59,9 @@ static engines::engine::BaseOptions _setOptions()
 	s.names                 = QStringList{ "gocryptfs","gocryptfs.reverse","gocryptfs-reverse" } ;
 	s.notFoundCode          = engines::engine::status::gocryptfsNotFound ;
 	s.versionInfo           = { { "--version",true,1,0 } } ;
+
+	s.createControlStructure = "-q --init %{createOptions} %{cipherFolder}" ;
+	s.mountControlStructure  = "-q %{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
 
 	return s ;
 }
@@ -86,68 +90,36 @@ static bool _set_if_found( const Function& function )
 
 void gocryptfs::updateOptions( engines::engine::cmdArgsList& opt,bool creating ) const
 {
-	Q_UNUSED( creating )
+	if( creating ){
 
-	opt.boolOptions.unlockInReverseMode = [ & ](){
+		if( opt.boolOptions.unlockInReverseMode ){
 
-		if( opt.configFilePath.isEmpty() ){
-
-			return _set_if_found( [ & ]( const QString& e ){
-
-				return utility::pathExists( opt.cipherFolder + "/" + e ) ;
-			} ) ;
-		}else{
-			return _set_if_found( [ & ]( const QString& e ){
-
-				return opt.configFilePath.endsWith( e ) ;
-			} ) ;
+			opt.createOptions.append( this->reverseString() ) ;
 		}
-	}() ;
+	}else{
+		opt.boolOptions.unlockInReverseMode = [ & ](){
+
+			if( opt.configFilePath.isEmpty() ){
+
+				return _set_if_found( [ & ]( const QString& e ){
+
+					return utility::pathExists( opt.cipherFolder + "/" + e ) ;
+				} ) ;
+			}else{
+				return _set_if_found( [ & ]( const QString& e ){
+
+					return opt.configFilePath.endsWith( e ) ;
+				} ) ;
+			}
+		}() ;
+	}
 }
 
 engines::engine::args gocryptfs::command( const QByteArray& password,
 					  const engines::engine::cmdArgsList& args,
 					  bool create ) const
 {
-	Q_UNUSED( password )
-
-	engines::engine::commandOptions m( *this,args ) ;
-
-	auto exeOptions  = m.exeOptions() ;
-	auto fuseOptions = m.fuseOpts() ;
-
-	exeOptions.add( "-q" ) ;
-
-	if( args.boolOptions.unlockInReverseMode ){
-
-		exeOptions.add( this->reverseString() ) ;
-	}
-
-	if( !args.idleTimeout.isEmpty() ){
-
-		exeOptions.add( this->idleString(),args.idleTimeout ) ;
-	}
-
-	if( !args.configFilePath.isEmpty() ){
-
-		exeOptions.add( this->configFileArgument(),args.configFilePath ) ;
-	}
-
-	if( create ){
-
-		exeOptions.add( "--init" ) ;
-
-		if( !args.createOptions.isEmpty() ){
-
-			exeOptions.add( utility::split( args.createOptions,' ' ) ) ;
-		}
-
-		exeOptions.add( args.cipherFolder ) ;
-	}else{
-		exeOptions.add( args.cipherFolder,args.mountPoint,fuseOptions ) ;
-	}
-
-	return { args,m,this->executableFullPath(),exeOptions.get() } ;
+	return custom::set_command( *this,password,args,create ) ;
 }
 
 engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const

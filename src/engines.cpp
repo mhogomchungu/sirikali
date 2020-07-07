@@ -460,6 +460,17 @@ bool engines::engine::acceptsVolName() const
 	return m_Options.acceptsVolName ;
 }
 
+bool engines::engine::copiedFuseOptionToBackendOption( bool creating,
+						       commandOptions& cmdOpts,
+						       const QString& fuseOpts ) const
+{
+	Q_UNUSED( creating )
+	Q_UNUSED( cmdOpts )
+	Q_UNUSED( fuseOpts )
+
+	return false ;
+}
+
 bool engines::engine::takesTooLongToUnlock() const
 {
 	return m_Options.takesTooLongToUnlock ;
@@ -551,6 +562,21 @@ const QString& engines::engine::configFileName() const
 	}else{
 		return m_Options.configFileNames.first() ;
 	}
+}
+
+const QString& engines::engine::keyFileArgument() const
+{
+	return m_Options.keyFileArgument ;
+}
+
+const QString& engines::engine::mountControlStructure() const
+{
+	return m_Options.mountControlStructure ;
+}
+
+const QString& engines::engine::createControlStructure() const
+{
+	return m_Options.createControlStructure ;
 }
 
 const QString& engines::engine::incorrectPasswordText() const
@@ -1203,26 +1229,32 @@ QString engines::engine::cmdStatus::toString() const
 	return e + "\n----------------------------------------\n" + m_message ;
 }
 
-engines::engine::createGUIOptions::createOptions::createOptions( const QString& createOpts,
+engines::engine::createGUIOptions::createOptions::createOptions( const QString& cOpts,
 								 const QString& configFile,
 								 const QString& keyFile,
 								 const engines::engine::booleanOptions& r ) :
-	createOpts( createOpts ),
 	configFile( configFile ),
 	keyFile( keyFile ),
 	opts( r ),
 	success( true )
 {
+	if( !cOpts.isEmpty() ){
+
+		createOpts = utility::split( cOpts,',' ) ;
+	}
 }
 
-engines::engine::createGUIOptions::createOptions::createOptions( const QString& createOpts,
+engines::engine::createGUIOptions::createOptions::createOptions( const QString& cOpts,
 								 const QString& configFile,
 								 const QString& keyFile ) :
-	createOpts( createOpts ),
 	configFile( configFile ),
 	keyFile( keyFile ),
 	success( true )
 {
+	if( !cOpts.isEmpty() ){
+
+		createOpts = utility::split( cOpts,',' ) ;
+	}
 }
 
 engines::engine::createGUIOptions::createOptions::createOptions( const engines::engine::booleanOptions& r ) :
@@ -1237,19 +1269,27 @@ engines::engine::createGUIOptions::createOptions::createOptions() : success( fal
 engines::engine::mountGUIOptions::mountOptions::mountOptions( const volumeInfo& e ) :
 	idleTimeOut( e.idleTimeOut() ),
 	configFile( e.configFilePath() ),
-	mountOpts( e.mountOptions() ),
 	keyFile( e.keyFile() )
 {
 	opts.unlockInReverseMode = e.reverseMode() ;
+
+	if( !e.mountOptions().isEmpty() ){
+
+		mountOpts = utility::split( e.mountOptions(),',' ) ;
+	}
 }
 
 engines::engine::mountGUIOptions::mountOptions::mountOptions( const favorites::entry& e ) :
 	idleTimeOut( e.idleTimeOut ),
 	configFile( e.configFilePath ),
-	mountOpts( e.mountOptions ),
 	keyFile( e.keyFile )
 {
 	opts.unlockInReverseMode = e.reverseMode ;
+
+	if( !e.mountOptions.isEmpty() ){
+
+		mountOpts = utility::split( e.mountOptions,',' ) ;
+	}
 }
 
 engines::engine::mountGUIOptions::mountOptions::mountOptions( const QString& idleTimeOut,
@@ -1259,10 +1299,13 @@ engines::engine::mountGUIOptions::mountOptions::mountOptions( const QString& idl
 							      const engines::engine::booleanOptions& r ) :
 	idleTimeOut( idleTimeOut ),
 	configFile( configFile ),
-	mountOpts( mountOptions ),
 	keyFile( keyFile ),
 	opts( r )
 {
+	if( !mountOptions.isEmpty() ){
+
+		mountOpts = utility::split( mountOptions,',' ) ;
+	}
 }
 
 engines::engine::mountGUIOptions::mountOptions::mountOptions() : success( false )
@@ -1381,7 +1424,8 @@ engines::engine::commandOptions::commandOptions()
 {
 }
 
-engines::engine::commandOptions::commandOptions( const engines::engine& engine,
+engines::engine::commandOptions::commandOptions( bool creating,
+						 const engines::engine& engine,
 						 const engines::engine::cmdArgsList& e )
 {
 	auto cipherFolder = [ & ]( QString s ){
@@ -1410,10 +1454,7 @@ engines::engine::commandOptions::commandOptions( const engines::engine& engine,
 
 	bool notLinux = !utility::platformIsLinux() ;
 
-	if( !e.mountOptions.isEmpty() ){
-
-		m_fuseOptions = utility::split( e.mountOptions,',' ) ;
-	}
+	m_fuseOptions = e.mountOptions ;
 
 	for( int i = 0 ; i < m_fuseOptions.size() ; i++ ){
 
@@ -1469,10 +1510,20 @@ engines::engine::commandOptions::commandOptions( const engines::engine& engine,
 
 		m_subtype = name ;
 
-		m_fuseOptions.insert( 0,"subtype=" + m_subtype ) ;
+		auto ss = "subtype=" + m_subtype ;
+
+		if( !engine.copiedFuseOptionToBackendOption( creating,*this,ss ) ){
+
+			m_fuseOptions.insert( 0,ss ) ;
+		}
 	}
 
-	m_fuseOptions.insert( 0,QString( "fsname=%1@%2" ).arg( name,cipherFolder( e.cipherFolder ) ) ) ;
+	auto m = QString( "fsname=%1@%2" ).arg( name,cipherFolder( e.cipherFolder ) ) ;
+
+	if( !engine.copiedFuseOptionToBackendOption( creating,*this,m ) ){
+
+		m_fuseOptions.insert( 0,m ) ;
+	}
 
 	if( e.boolOptions.unlockInReadOnly ){
 

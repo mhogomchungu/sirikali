@@ -232,6 +232,6 @@ version 1.4.2(December 18,2019)
 -- Make  it compile with Qt 5.15.0 without warnings(remove deprecated APIs).
 -- Declare backend API to be stable and provide a few examples backends.
     SiriKali now supports custom backends that can be added by users by providing json based
-    configuration files and place them in either "$HOME/.config/SiriKali/backends" or in
+    configuration files and place them in either "$HOME/.config/SiriKali/backends" and in
     "$INSTALL_PREFIX/share/SiriKali/backends". Look in "custom backends" folder for
     more information.

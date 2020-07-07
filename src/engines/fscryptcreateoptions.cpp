@@ -97,7 +97,7 @@ fscryptcreateoptions::fscryptcreateoptions( const engines::engine::createGUIOpti
 
 				m = opt ;
 			}else{
-				m += "\\040" + opt ;
+				m += "," + opt ;
 			}
 		} ;
 

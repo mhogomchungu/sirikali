@@ -108,7 +108,7 @@ engines::engine::args sshfs::command( const QByteArray& password,
 	Q_UNUSED( password )
 	Q_UNUSED( create )
 
-	engines::engine::commandOptions m( *this,args ) ;
+	engines::engine::commandOptions m( create,*this,args ) ;
 
 	auto fuseOptions = m.fuseOpts() ;
 	auto exeOptions  = m.exeOptions() ;

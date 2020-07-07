@@ -359,9 +359,9 @@ public:
 				createOptions() ;
 
 				QString idleTimeOut ;
-				QString createOpts ;
 				QString configFile ;
 				QString keyFile ;
+				QStringList createOpts ;
 				engines::engine::booleanOptions opts ;
 				bool success = true ;
 			} ;
@@ -394,8 +394,8 @@ public:
 				mountOptions() ;
 				QString idleTimeOut ;
 				QString configFile ;
-				QString mountOpts ;
 				QString keyFile ;
+				QStringList mountOpts ;
 				engines::engine::booleanOptions opts ;
 				bool success = true ;
 			} ;
@@ -442,9 +442,10 @@ public:
 			QByteArray key ;
 			QString idleTimeout ;
 			QString configFilePath ;
-			QString mountOptions ;
-			QString createOptions ;
+			QStringList mountOptions ;
+			QStringList createOptions ;
 			QString keyFile ;
+			QString fuseOptionsSeparator ;
 			booleanOptions boolOptions ;
 		} ;
 
@@ -484,8 +485,11 @@ public:
 			QString incorrectPasswordText ;
 			QString incorrectPassWordCode ;
 			QString configFileArgument ;
+			QString keyFileArgument ;
 			QString windowsInstallPathRegistryKey ;
 			QString windowsInstallPathRegistryValue ;
+			QString mountControlStructure ;
+			QString createControlStructure ;
 
 			QStringList windowsUnMountCommand ;
 			QStringList unMountCommand ;
@@ -559,6 +563,9 @@ public:
 		const QString& executableName() const ;
 		const QString& name() const ;
 		const QString& configFileName() const ;
+		const QString& keyFileArgument() const ;
+		const QString& mountControlStructure() const ;
+		const QString& createControlStructure() const ;
 		const QString& incorrectPasswordText() const ;
 		const QString& incorrectPasswordCode() const ;
 		const QString& configFileArgument() const ;
@@ -585,6 +592,10 @@ public:
 		virtual bool requiresAPassword( const engines::engine::cmdArgsList& ) const ;
 
 		virtual bool takesTooLongToUnlock() const ;
+
+		virtual bool copiedFuseOptionToBackendOption( bool creating,
+		                                              commandOptions& cmdOpts,
+		                                              const QString& fuseOpts ) const ;
 
 		virtual engine::engine::status passAllRequirenments( const engines::engine::cmdArgsList& ) const ;
 
@@ -700,7 +711,8 @@ public:
 			} ;
 
 			commandOptions() ;
-			commandOptions( const engines::engine& engine,
+			commandOptions( bool creating,
+			                const engines::engine& engine,
 			                const engines::engine::cmdArgsList& e ) ;
 
 			const QStringList& constExeOptions() const
