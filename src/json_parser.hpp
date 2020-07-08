@@ -149,7 +149,7 @@ public:
 	}
 	QByteArray getByteArray( const char * key,const QByteArray& defaultValue ) const
 	{
-		return this->get< std::string >( key,defaultValue.toStdString() ).c_str() ;
+		return this->get< std::string >( key,defaultValue.constData() ).c_str() ;
 	}
 	QByteArray getByteArray( const char * key ) const
 	{
