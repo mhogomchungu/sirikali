@@ -113,7 +113,7 @@ static engines::engine::exe_args _cmd_args( const QString& e )
 	return { std::move( exe ),std::move( args ) } ;
 }
 
-static void _run_command( const engines::engine::exe_args& exe,
+static void _run_command( const engines::engine::exe_args_const& exe,
 			  const QByteArray& password = QByteArray() )
 {
 	if( password.isEmpty() ){
@@ -155,7 +155,7 @@ static void _run_command( const run_command& e )
 		s.args.append( e.plainFolder ) ;
 		s.args.append( e.volumeType ) ;
 
-		_run_command( { s.exe,s.args },e.password ) ;
+		_run_command( s,e.password ) ;
 	}
 }
 

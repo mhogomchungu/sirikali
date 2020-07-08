@@ -230,7 +230,7 @@ Task::future< QString >& engines::engine::volumeProperties( const QString& ciphe
 	} ) ;
 }
 
-bool engines::engine::unmountVolume( const engines::engine::exe_args& exe,bool usePolkit ) const
+bool engines::engine::unmountVolume( const engines::engine::exe_args_const& exe,bool usePolkit ) const
 {
 	int timeOut = 10000 ;
 

@@ -475,7 +475,7 @@ static engines::engine::exe_args siriPolkitExe()
 	}
 }
 
-static ::Task::future< utility::Task >& _start_siripolkit( const engines::engine::exe_args& e )
+static ::Task::future< utility::Task >& _start_siripolkit( const engines::engine::exe_args_const& e )
 {
 	_cookie = crypto::getRandomData( 16 ).toHex() ;
 

@@ -217,7 +217,8 @@ public:
 		} ;
 
 		struct exe_args{
-			exe_args( const QString& e,const QStringList& s ) : exe( e ),args( s )
+			exe_args( const QString& e,const QStringList& s ) :
+				exe( e ),args( s )
 			{
 			}
 			exe_args()
@@ -225,6 +226,18 @@ public:
 			}
 			QString exe ;
 			QStringList args ;
+		};
+
+		struct exe_args_const{
+			exe_args_const( const exe_args& e ) : exe( e.exe ),args( e.args )
+			{
+			}
+			exe_args_const( const QString& e,const QStringList& s ) :
+				exe( e ),args( s )
+			{
+			}
+			const QString& exe ;
+			const QStringList& args ;
 		};
 
 		class Wrapper{
@@ -626,7 +639,7 @@ public:
 
 		virtual void GUIMountOptions( const mountGUIOptions& ) const ;
 	protected:
-		bool unmountVolume( const engine::engine::exe_args& exe,bool usePolkit ) const ;
+		bool unmountVolume( const engine::engine::exe_args_const& exe,bool usePolkit ) const ;
 
 		class commandOptions{
 		public:
