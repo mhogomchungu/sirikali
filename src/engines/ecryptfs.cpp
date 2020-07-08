@@ -165,7 +165,6 @@ engines::engine::status ecryptfs::unmount( const engines::engine::unMount& e ) c
 		}
 	} ;
 
-
 	if( this->unmountVolume( cmd(),usePolkit ) ){
 
 		return engines::engine::status::success ;
