@@ -324,13 +324,7 @@ void utility::Task::execute( const QString& exe,
 		}else{
 			utility::debug() << "Starting detached process" ;
 
-			QProcess ee ;
-
-			ee.setProgram( exe ) ;
-
-			ee.setArguments( list ) ;
-
-			if( ee.startDetached() ){
+			if( QProcess::startDetached( exe,list ) ){
 
 				m_exitCode = 0 ;
 			}else{
