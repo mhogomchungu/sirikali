@@ -137,7 +137,7 @@ bool ecryptfs::requiresPolkit() const
 	return m_requirePolkit ;
 }
 
-engines::engine::exe ecryptfs::wrapSU( const QString& s ) const
+engines::engine::exe_args ecryptfs::wrapSU( const QString& s ) const
 {
 	const auto& su = m_exeSUFullPath.get() ;
 
@@ -153,7 +153,7 @@ engines::engine::status ecryptfs::unmount( const engines::engine::unMount& e ) c
 {
 	auto usePolkit = utility::useSiriPolkit() ;
 
-	auto cmd = [ & ]()->engines::engine::exe{
+	auto cmd = [ & ]()->engines::engine::exe_args{
 
 		auto exe = this->executableFullPath() ;
 

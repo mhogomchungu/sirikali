@@ -41,7 +41,7 @@ struct ecryptfs : public engines::engine
 
 	void GUIMountOptions( const engines::engine::mountGUIOptions& ) const override ;
 private:
-	engines::engine::exe wrapSU( const QString& s ) const ;
+	engines::engine::exe_args wrapSU( const QString& s ) const ;
 	const bool m_requirePolkit ;
 	const engines::exeFullPath m_exeSUFullPath ;
 } ;

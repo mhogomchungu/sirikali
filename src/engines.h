@@ -216,8 +216,13 @@ public:
 			int numberOfAttempts ;
 		} ;
 
-		struct exe{
-
+		struct exe_args{
+			exe_args( const QString& e,const QStringList& s ) : exe( e ),args( s )
+			{
+			}
+			exe_args()
+			{
+			}
 			QString exe ;
 			QStringList args ;
 		};
@@ -621,7 +626,7 @@ public:
 
 		virtual void GUIMountOptions( const mountGUIOptions& ) const ;
 	protected:
-		bool unmountVolume( const engine::engine::exe& exe,bool usePolkit ) const ;
+		bool unmountVolume( const engine::engine::exe_args& exe,bool usePolkit ) const ;
 
 		class commandOptions{
 		public:

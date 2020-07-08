@@ -66,7 +66,7 @@ bool siritask::deleteMountFolder( const QString& m )
 	}
 }
 
-static engines::engine::exe _cmd_args_1( QString e )
+static engines::engine::exe_args _cmd_args_1( QString e )
 {
 	e.remove( 0,1 ) ;
 
@@ -88,7 +88,7 @@ static engines::engine::exe _cmd_args_1( QString e )
 	return {} ;
 }
 
-static engines::engine::exe _cmd_args( const QString& e )
+static engines::engine::exe_args _cmd_args( const QString& e )
 {
 	if( e.isEmpty() ){
 
@@ -113,7 +113,7 @@ static engines::engine::exe _cmd_args( const QString& e )
 	return { std::move( exe ),std::move( args ) } ;
 }
 
-static void _run_command( const engines::engine::exe& exe,
+static void _run_command( const engines::engine::exe_args& exe,
 			  const QByteArray& password = QByteArray() )
 {
 	if( password.isEmpty() ){

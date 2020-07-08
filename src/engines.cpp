@@ -230,7 +230,7 @@ Task::future< QString >& engines::engine::volumeProperties( const QString& ciphe
 	} ) ;
 }
 
-bool engines::engine::unmountVolume( const engines::engine::exe& exe,bool usePolkit ) const
+bool engines::engine::unmountVolume( const engines::engine::exe_args& exe,bool usePolkit ) const
 {
 	int timeOut = 10000 ;
 
@@ -241,7 +241,7 @@ bool engines::engine::unmountVolume( const engines::engine::exe& exe,bool usePol
 
 engines::engine::status engines::engine::unmount( const engines::engine::unMount& e ) const
 {
-	auto cmd = [ & ]()->engines::engine::exe{
+	auto cmd = [ & ]()->engines::engine::exe_args{
 
 		if( this->unMountCommand().isEmpty() ){
 

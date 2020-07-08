@@ -377,9 +377,8 @@ favorites2::favorites2( QWidget * parent,
 
 			m_ui->label_22->setEnabled( true ) ;
 			m_ui->pbChangeWalletPassword->setEnabled( true ) ;
-			auto bk = bk::windows_dpapi ;
-			this->walletBkChanged( bk ) ;
-			m_settings.autoMountBackEnd( bk ) ;
+			this->walletBkChanged( bk::windows_dpapi ) ;
+			m_settings.autoMountBackEnd( bk::windows_dpapi ) ;
 		}
 	} ) ;
 
