@@ -505,6 +505,18 @@ void sirikali::autoUpdateCheck()
 	m_checkUpdates.run( true ) ;
 }
 
+void sirikali::favoriteClicked()
+{
+	this->disableAll() ;
+
+	favorites2::instance( this,m_secrets,[ this ](){
+
+		this->enableAll() ;
+
+		this->updateFavoritesInContextMenu() ;
+	} ) ;
+}
+
 void sirikali::favoriteClicked( QAction * ac )
 {
 	auto e = ac->objectName() ;
@@ -1280,7 +1292,7 @@ void sirikali::setUpShortCuts()
 
 	this->addAction( _addAction( { Qt::Key_Enter,Qt::Key_Return },SLOT( defaultButton() ) ) ) ;
 
-	this->addAction( _addAction( { Qt::Key_M },SLOT( createVolume() ) ) ) ;
+	this->addAction( _addAction( { Qt::CTRL + Qt::Key::Key_F },SLOT( favoriteClicked() ) ) ) ;
 
 	this->addAction( _addAction( { Qt::Key_U },SLOT( pbUmount() ) ) ) ;
 
@@ -1435,9 +1447,9 @@ void sirikali::dropEvent( QDropEvent * e )
 
 void sirikali::createVolume( QAction * ac )
 {
-	this->disableAll() ;
-
 	if( ac ){
+
+		this->disableAll() ;
 
 		auto s = ac->objectName() ;
 
