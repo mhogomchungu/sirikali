@@ -48,17 +48,10 @@ Task::future< bool >& favorites2::addKey( secrets::wallet& wallet,
 
 		if( wallet->addKey( id,key ) ){
 
-			if( wallet->addKey( id + COMMENT,comment ) ){
-
-				return true ;
-			}else{
-				utility::debug() << "Failed To Add Key To Wallet" ;
-
-				wallet->deleteKey( id ) ;
-
-				return false ;
-			}
+			return true ;
 		}else{
+			utility::debug() << "Failed To Add Key To Wallet" ;
+
 			return false ;
 		}
 	} ) ;
