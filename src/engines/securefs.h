@@ -36,11 +36,9 @@ public:
 
 	void GUIMountOptions( const engines::engine::mountGUIOptions& ) const override ;
 
-	void updateOptions( engines::engine::cmdArgsList&,bool ) const override ;
+	void updateOptions( engines::engine::cmdArgsList&,bool creating ) const override ;
 
-	bool copiedFuseOptionToBackendOption( bool creating,
-					      commandOptions& cmdOpts,
-					      const QString& fuseOpts ) const override ;
+	void updateOptions( engines::engine::commandOptions& opts,bool creating ) const override ;
 private:
 	const engines::versionGreaterOrEqual m_version_greater_or_equal_0_11_1 ;
 } ;

@@ -460,17 +460,6 @@ bool engines::engine::acceptsVolName() const
 	return m_Options.acceptsVolName ;
 }
 
-bool engines::engine::copiedFuseOptionToBackendOption( bool creating,
-						       commandOptions& cmdOpts,
-						       const QString& fuseOpts ) const
-{
-	Q_UNUSED( creating )
-	Q_UNUSED( cmdOpts )
-	Q_UNUSED( fuseOpts )
-
-	return false ;
-}
-
 bool engines::engine::takesTooLongToUnlock() const
 {
 	return m_Options.takesTooLongToUnlock ;
@@ -730,6 +719,12 @@ void engines::engine::updateOptions( engines::engine::cmdArgsList& e,bool s ) co
 {
 	Q_UNUSED( e )
 	Q_UNUSED( s )
+}
+
+void engines::engine::updateOptions( engines::engine::commandOptions& opts,bool creating ) const
+{
+	Q_UNUSED( creating )
+	Q_UNUSED( opts )
 }
 
 QByteArray engines::engine::setPassword( const QByteArray& e ) const
@@ -1510,20 +1505,12 @@ engines::engine::commandOptions::commandOptions( bool creating,
 
 		m_subtype = name ;
 
-		auto ss = "subtype=" + m_subtype ;
-
-		if( !engine.copiedFuseOptionToBackendOption( creating,*this,ss ) ){
-
-			m_fuseOptions.insert( 0,ss ) ;
-		}
+		m_fuseOptions.insert( 0,"subtype=" + m_subtype ) ;
 	}
 
 	auto m = QString( "fsname=%1@%2" ).arg( name,cipherFolder( e.cipherFolder ) ) ;
 
-	if( !engine.copiedFuseOptionToBackendOption( creating,*this,m ) ){
-
-		m_fuseOptions.insert( 0,m ) ;
-	}
+	m_fuseOptions.insert( 0,m ) ;
 
 	if( e.boolOptions.unlockInReadOnly ){
 
@@ -1535,6 +1522,8 @@ engines::engine::commandOptions::commandOptions( bool creating,
 	m_fuseOptions.insert( 0,m_mode ) ;
 
 	m_fuseOptions.removeAll( QString() ) ;
+
+	engine.updateOptions( *this,creating ) ;
 }
 
 void engines::engine::commandOptions::Options::_add( const engines::engine::commandOptions::fuseOptions& s )

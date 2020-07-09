@@ -102,29 +102,27 @@ void securefs::updateOptions( engines::engine::cmdArgsList& e,bool creating ) co
 	}
 }
 
-bool securefs::copiedFuseOptionToBackendOption( bool creating,
-						commandOptions& cmdOpts,
-						const QString& fuseOpt ) const
+void securefs::updateOptions( engines::engine::commandOptions& opts,bool creating ) const
 {
 	if( !creating && m_version_greater_or_equal_0_11_1 ){
 
-		auto ee = cmdOpts.exeOptions() ;
+		auto fuseOpts = opts.fuseOpts() ;
+		auto exeOpts  = opts.exeOptions() ;
 
-		if( fuseOpt.startsWith( "fsname=" ) ){
+		auto fsname = fuseOpts.extractStartsWith( "fsname" ) ;
 
-			ee.add( "--fsname",fuseOpt.mid( 7 ) ) ;
+		auto fssubtype = fuseOpts.extractStartsWith( "subtype" ) ;
 
-			return true ;
+		if( !fsname.isEmpty() ){
 
-		}else if( fuseOpt.startsWith( "subtype=" ) ){
+			exeOpts.add( "--fsname",fsname.mid( 7 ) ) ;
+		}
 
-			ee.add( "--fssubtype",fuseOpt.mid( 8 ) ) ;
+		if( !fssubtype.isEmpty() ){
 
-			return true ;
+			exeOpts.add( "--fssubtype",fssubtype.mid( 8 ) ) ;
 		}
 	}
-
-	return false ;
 }
 
 engines::engine::args securefs::command( const QByteArray& password,

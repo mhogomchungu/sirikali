@@ -611,10 +611,6 @@ public:
 
 		virtual bool takesTooLongToUnlock() const ;
 
-		virtual bool copiedFuseOptionToBackendOption( bool creating,
-		                                              commandOptions& cmdOpts,
-		                                              const QString& fuseOpts ) const ;
-
 		virtual engine::engine::status passAllRequirenments( const engines::engine::cmdArgsList& ) const ;
 
 		struct ownsCipherFolder{
@@ -626,13 +622,18 @@ public:
 		virtual ownsCipherFolder ownsCipherPath( const QString& cipherPath,
 		                                         const QString& configPath ) const ;
 
-		virtual void updateOptions( engines::engine::cmdArgsList&,bool ) const ;
+		virtual void updateOptions( engines::engine::commandOptions& opts,bool creating ) const ;
+
+		virtual void updateOptions( engines::engine::cmdArgsList&,bool creating ) const ;
 
 		virtual const QProcessEnvironment& getProcessEnvironment() const ;
+
 		virtual bool requiresPolkit() const ;		
+
 		virtual args command( const QByteArray& password,
 				      const engines::engine::cmdArgsList& args,
 				      bool create ) const ;
+
 		virtual engines::engine::status errorCode( const QString& e,int s ) const ;
 
 		virtual void GUICreateOptions( const createGUIOptions& ) const ;

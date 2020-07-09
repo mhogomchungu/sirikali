@@ -1028,9 +1028,9 @@ void favorites2::updateFavorite( bool edit )
 
 			if( mOpts.isEmpty() ){
 
-				mOpts = "IdentityAgent=" + configPath ;
+				mOpts = "IdentityAgent=\"" + configPath + "\"" ;
 			}else{
-				mOpts += ",IdentityAgent=" + configPath ;
+				mOpts += ",IdentityAgent=\"" + configPath + "\"" ;
 			}
 		}
 
@@ -1038,9 +1038,9 @@ void favorites2::updateFavorite( bool edit )
 
 			if( mOpts.isEmpty() ){
 
-				mOpts = "IdentityFile=" + idleTimeOUt ;
+				mOpts = "IdentityFile=\"" + idleTimeOUt + "\"" ;
 			}else{
-				mOpts += ",IdentityFile=" + idleTimeOUt ;
+				mOpts += ",IdentityFile=\"" + idleTimeOUt + "\"" ;
 			}
 		}
 
