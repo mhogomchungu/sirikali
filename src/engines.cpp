@@ -721,10 +721,13 @@ void engines::engine::updateOptions( engines::engine::cmdArgsList& e,bool s ) co
 	Q_UNUSED( s )
 }
 
-void engines::engine::updateOptions( engines::engine::commandOptions& opts,bool creating ) const
+void engines::engine::updateOptions( engines::engine::commandOptions& opts,
+				     const engines::engine::cmdArgsList& args,
+				     bool creating ) const
 {
 	Q_UNUSED( creating )
 	Q_UNUSED( opts )
+	Q_UNUSED( args )
 }
 
 QByteArray engines::engine::setPassword( const QByteArray& e ) const
@@ -1523,7 +1526,7 @@ engines::engine::commandOptions::commandOptions( bool creating,
 
 	m_fuseOptions.removeAll( QString() ) ;
 
-	engine.updateOptions( *this,creating ) ;
+	engine.updateOptions( *this,e,creating ) ;
 }
 
 void engines::engine::commandOptions::Options::_add( const engines::engine::commandOptions::fuseOptions& s )

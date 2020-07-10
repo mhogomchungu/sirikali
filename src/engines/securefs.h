@@ -38,7 +38,9 @@ public:
 
 	void updateOptions( engines::engine::cmdArgsList&,bool creating ) const override ;
 
-	void updateOptions( engines::engine::commandOptions& opts,bool creating ) const override ;
+	void updateOptions( engines::engine::commandOptions& opts,
+			    const engines::engine::cmdArgsList& args,
+			    bool creating ) const override ;
 private:
 	const engines::versionGreaterOrEqual m_version_greater_or_equal_0_11_1 ;
 } ;

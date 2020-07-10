@@ -445,7 +445,6 @@ Task::future< QString >& fscrypt::volumeProperties( const QString& cipherFolder,
 	} ) ;
 }
 
-
 void fscrypt::updateOptions( engines::engine::cmdArgsList& args,bool creating ) const
 {
 	if( creating ){

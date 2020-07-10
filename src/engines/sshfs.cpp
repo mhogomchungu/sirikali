@@ -21,6 +21,8 @@
 #include "../settings.h"
 #include "options.h"
 
+#include "custom.h"
+
 static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
@@ -59,6 +61,8 @@ static engines::engine::BaseOptions _setOptions()
 	s.names                 = QStringList{ "sshfs" } ;
 	s.notFoundCode          = engines::engine::status::sshfsNotFound ;
 	s.versionInfo           = { { "--version",true,2,0 } } ;
+
+	s.mountControlStructure = "%{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
 
 	if( utility::platformIsWindows() ){
 
@@ -101,17 +105,14 @@ const QProcessEnvironment& sshfs::getProcessEnvironment() const
 	return m_environment ;
 }
 
-engines::engine::args sshfs::command( const QByteArray& password,
-				      const engines::engine::cmdArgsList& args,
-				      bool create ) const
+void sshfs::updateOptions( engines::engine::commandOptions& opts,
+			   const engines::engine::cmdArgsList& args,
+			   bool creating ) const
 {
-	Q_UNUSED( password )
-	Q_UNUSED( create )
+	Q_UNUSED( creating )
 
-	engines::engine::commandOptions m( create,*this,args ) ;
-
-	auto fuseOptions = m.fuseOpts() ;
-	auto exeOptions  = m.exeOptions() ;
+	auto fuseOptions = opts.fuseOpts() ;
+	auto exeOptions  = opts.exeOptions() ;
 
 	if( !args.key.isEmpty() ){
 
@@ -129,7 +130,7 @@ engines::engine::args sshfs::command( const QByteArray& password,
 
 		if( utility::isDriveLetter( args.mountPoint ) ){
 
-			if( !fuseOptions.contains( "--VolumePrefix=" ) ){
+			if( !exeOptions.contains( "--VolumePrefix=" ) ){
 
 				auto s = fuseOptions.extractStartsWith( "UseNetworkDrive=" ) ;
 
@@ -171,10 +172,13 @@ engines::engine::args sshfs::command( const QByteArray& password,
 			m_environment.insert( "SSH_AUTH_SOCK",m ) ;
 		}
 	}
+}
 
-	exeOptions.add( args.cipherFolder,args.mountPoint,fuseOptions ) ;
-
-	return { args,m,this->executableFullPath(),exeOptions.get() } ;
+engines::engine::args sshfs::command( const QByteArray& password,
+				      const engines::engine::cmdArgsList& args,
+				      bool create ) const
+{
+	return custom::set_command( *this,password,args,create ) ;
 }
 
 engines::engine::status sshfs::errorCode( const QString& e,int s ) const

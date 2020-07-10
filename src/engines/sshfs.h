@@ -34,6 +34,10 @@ public:
 				       const engines::engine::cmdArgsList& args,
 				       bool create ) const override ;
 
+	void updateOptions( engines::engine::commandOptions& opts,
+			    const engines::engine::cmdArgsList& args,
+			    bool creating ) const override ;
+
 	void GUIMountOptions( const engines::engine::mountGUIOptions& ) const override ;
 private:
 	mutable QProcessEnvironment m_environment ;

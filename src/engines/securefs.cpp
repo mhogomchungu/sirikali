@@ -102,8 +102,12 @@ void securefs::updateOptions( engines::engine::cmdArgsList& e,bool creating ) co
 	}
 }
 
-void securefs::updateOptions( engines::engine::commandOptions& opts,bool creating ) const
+void securefs::updateOptions( engines::engine::commandOptions& opts,
+			      const engines::engine::cmdArgsList& args,
+			      bool creating ) const
 {
+	Q_UNUSED( args )
+
 	if( !creating && m_version_greater_or_equal_0_11_1 ){
 
 		auto fuseOpts = opts.fuseOpts() ;

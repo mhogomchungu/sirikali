@@ -622,7 +622,9 @@ public:
 		virtual ownsCipherFolder ownsCipherPath( const QString& cipherPath,
 		                                         const QString& configPath ) const ;
 
-		virtual void updateOptions( engines::engine::commandOptions& opts,bool creating ) const ;
+		virtual void updateOptions( engines::engine::commandOptions& opts,
+					    const engines::engine::cmdArgsList& args,
+					    bool creating ) const ;
 
 		virtual void updateOptions( engines::engine::cmdArgsList&,bool creating ) const ;
 
