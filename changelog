@@ -229,6 +229,7 @@ version 1.4.2(December 18,2019)
 -- Rework UI and move key management feature from settings windows to favorites window.
 
    version 1.4.4(Unreleased)
+    [ALL]
 -- Make  it compile with Qt 5.15.0 without warnings(remove deprecated APIs).
 -- Declare backend API to be stable and provide a few examples backends.
     SiriKali now supports custom backends that can be added by users by providing json based

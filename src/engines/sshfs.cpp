@@ -33,8 +33,7 @@ static engines::engine::BaseOptions _setOptions()
 	 * enough for sshfs.
 	 */
 
-	s.passwordFormat        = "%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}" ;
-
+	s.passwordFormat              = "%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}\n%{password}" ;
 	s.backendTimeout              = settings::instance().sshfsBackendTimeout() ;
 	s.takesTooLongToUnlock        = false ;
 	s.supportsMountPathsOnWindows = true ;
@@ -124,6 +123,8 @@ void sshfs::updateOptions( engines::engine::commandOptions& opts,
 		fuseOptions.add( "StrictHostKeyChecking=no" ) ;
 	}
 
+	auto s = fuseOptions.extractStartsWith( "UseNetworkDrive=" ) ;
+
 	if( utility::platformIsWindows() ){
 
 		exeOptions.add( "-f" ) ;
@@ -131,8 +132,6 @@ void sshfs::updateOptions( engines::engine::commandOptions& opts,
 		if( utility::isDriveLetter( args.mountPoint ) ){
 
 			if( !exeOptions.contains( "--VolumePrefix=" ) ){
-
-				auto s = fuseOptions.extractStartsWith( "UseNetworkDrive=" ) ;
 
 				if( utility::endsWithAtLeastOne( s,"yes","Yes","YES" ) ){
 
