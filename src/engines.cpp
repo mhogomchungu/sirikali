@@ -34,26 +34,41 @@
 #include "win.h"
 #include "engines/options.h"
 
+static QStringList _search_path_0( const QString& e )
+{
+	QStringList s = { e,e + "\\bin\\",e + "\\.bin\\" };
+
+	const auto a = QDir( e ).entryList( QDir::Filter::Dirs | QDir::Filter::NoDotAndDotDot ) ;
+
+	for( const auto& it : a ){
+
+		s.append( e + it + "\\" ) ;
+		s.append( e + it  + "\\bin\\" ) ;
+		s.append( e + it  + "\\.bin\\" ) ;
+	}
+
+	return s ;
+}
+
 static QStringList _search_path( const QStringList& m )
 {
 	const auto a = QDir::homePath().toLatin1() ;
 
 	if( utility::platformIsWindows() ){
 
-		QStringList s = { QDir().currentPath() + "\\bin\\",
-				  a + "\\bin\\",
-				  a + "\\.bin\\",
-				  settings::instance().windowsExecutableSearchPath() + "\\" } ;
+		auto x = _search_path_0( a  + "\\bin\\" ) ;
+		x += _search_path_0( QDir().currentPath() ) ;
+		x += _search_path_0( settings::instance().windowsExecutableSearchPath() + "\\" ) ;
 
 		for( const auto& it : m ){
 
 			if( !it.isEmpty() ){
 
-				s.append( it + "\\bin\\" ) ;
+				x += _search_path_0( it ) ;
 			}
 		}
 
-		return s ;
+		return x ;
 	}else{
 		const auto b = a + "/bin/" ;
 		const auto c = a + "/.bin/" ;

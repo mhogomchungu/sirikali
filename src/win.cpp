@@ -526,6 +526,11 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 
 	auto m = _getProcessOutput( *exe,opts.engine ) ;
 
+	auto error = []( const QByteArray& e ){
+
+		return Task::process::result( e,QByteArray(),-1,0,true ) ;
+	} ;
+
 	auto s = [ & ](){
 
 		if( m.type == engines::engine::error::Timeout ){
@@ -535,11 +540,7 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 
 			_terminate_process( { *exe,opts.engine.getProcessEnvironment(),ss,ee } ) ;
 
-			return Task::process::result( SiriKali::Windows::_backEndTimedOut,
-						      QByteArray(),
-						      -1,
-						      0,
-						      true ) ;
+			return error( SiriKali::Windows::_backEndTimedOut ) ;
 
 		}else if( m.type == engines::engine::error::Success ){
 
@@ -562,21 +563,12 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 
 				QString c = "std out\n----------------------\n" + exe->readAllStandardOutput() + "\n----------------------\n" ;
 
-				return Task::process::result( QString( "%1%2%3" ).arg( a,b,c ).toLatin1(),
-							      QByteArray(),
-							      -1,
-							      0,
-							      true ) ;
+				return error( QString( "%1%2%3" ).arg( a,b,c ).toLatin1() ) ;
 			}
-
 		}else{
 			utility::waitForFinished( *exe ) ;
 
-			return Task::process::result( QByteArray(),
-						      m.outPut,
-						      exe->exitCode(),
-						      exe->exitStatus(),
-						      true ) ;
+			return error( m.outPut ) ;
 		}
 	}() ;
 

@@ -1226,7 +1226,13 @@ bool utility::isDriveLetter( const QString& path )
 
 	if( utility::platformIsWindows() ){
 
-		if( path.size() == 2 ){
+		if( path.size() == 1 ) {
+
+			auto a = path.at( 0 ) ;
+
+			return a >= 'A' && a <= 'Z' ;
+
+		}else if( path.size() == 2 ){
 
 			return _drivePrefix( path ) ;
 
