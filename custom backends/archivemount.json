@@ -1,6 +1,6 @@
 {
         "executableName": "archivemount",
-        "fileExtensions": [ ".tar.xz",".tar.gz" ],
+        "fileExtensions": [ ".tar.xz",".tar.gz",".tar.bz2",".tar",".zip",".pax",".cpio",".xar",".lha",".lzh",".cab",".rar",".7zip"  ],
         "fuseNames": [ "fuse.archivemount" ],
         "mountControlStructure": "%{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}",
         "names": [ "archivemount" ],
