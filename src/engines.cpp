@@ -43,8 +43,8 @@ static QStringList _search_path_0( const QString& e )
 	for( const auto& it : a ){
 
 		s.append( e + it + "\\" ) ;
-		s.append( e + it  + "\\bin\\" ) ;
-		s.append( e + it  + "\\.bin\\" ) ;
+		s.append( e + it + "\\bin\\" ) ;
+		s.append( e + it + "\\.bin\\" ) ;
 	}
 
 	return s ;
@@ -64,7 +64,7 @@ static QStringList _search_path( const QStringList& m )
 
 			if( !it.isEmpty() ){
 
-				x += _search_path_0( it ) ;
+				x += _search_path_0( it + "\\" ) ;
 			}
 		}
 
@@ -146,7 +146,11 @@ QStringList engines::executableSearchPaths()
 
 QStringList engines::executableSearchPaths( const engines::engine& engine )
 {
-	return _search_path( { SiriKali::Windows::engineInstalledDir( engine ) } ) ;
+	QStringList s = { SiriKali::Windows::engineInstalledDir( engine ) } ;
+
+	s.append( engine.windowsExecutableFolderPath() ) ;
+
+	return _search_path( s ) ;
 }
 
 QString engines::executableFullPath( const QString& f )
@@ -616,6 +620,11 @@ const QString& engines::engine::windowsInstallPathRegistryKey() const
 const QString& engines::engine::windowsInstallPathRegistryValue() const
 {
 	return m_Options.windowsInstallPathRegistryValue ;
+}
+
+const QString& engines::engine::windowsExecutableFolderPath() const
+{
+	return m_Options.windowsExecutableFolderPath ;
 }
 
 const QStringList& engines::engine::volumePropertiesCommands() const

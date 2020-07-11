@@ -156,6 +156,7 @@ void createBackendWIndow::save()
 		config[ "passwordFormat" ]              = "%{password}" ;
 		config[ "windowsInstallPathRegistryKey" ]   = "" ;
 		config[ "windowsInstallPathRegistryValue" ] = "" ;
+		config[ "windowsExecutableFolderPath" ]     = "" ;
 		config[ "windowsSupportsMountPointPaths" ]  = m_ui->cbSupportsMountPointPaths->isChecked() ;
 		config[ "windowsSuccessfullyMountedList" ]  = _addList( m_ui->lineEditSuccessfullyMountedText->text() ) ;
 		config[ "executableName" ]              = executable ;

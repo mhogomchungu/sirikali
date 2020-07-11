@@ -506,6 +506,7 @@ public:
 			QString keyFileArgument ;
 			QString windowsInstallPathRegistryKey ;
 			QString windowsInstallPathRegistryValue ;
+			QString windowsExecutableFolderPath ;
 			QString mountControlStructure ;
 			QString createControlStructure ;
 
@@ -589,6 +590,7 @@ public:
 		const QString& configFileArgument() const ;
 		const QString& windowsInstallPathRegistryKey() const ;
 		const QString& windowsInstallPathRegistryValue() const ;
+		const QString& windowsExecutableFolderPath() const ;
 
 		engine::engine::error errorCode( const QString& ) const ;
 
