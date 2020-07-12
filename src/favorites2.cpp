@@ -1292,12 +1292,7 @@ void favorites2::ShowUI()
 
 		m_ui->tabWidget->setCurrentIndex( 1 ) ;
 
-		if( utility::platformIsWindows() ){
-
-			m_ui->lineEditMountOptions->setText( "create_file_umask=0000,create_dir_umask=0000,umask=0000,idmap=user,StrictHostKeyChecking=no,UseNetworkDrive=no" ) ;
-		}else{
-			m_ui->lineEditMountOptions->setText( "idmap=user,StrictHostKeyChecking=no" ) ;
-		}
+		m_ui->lineEditMountOptions->setText( m_engine.sshOptions() ) ;
 
 		m_ui->lineEditEncryptedFolderPath->setText( m_cipherPath ) ;
 		m_ui->labelName ->setText( tr( "Remote Ssh Server Address\n(Example: woof@example.com:/remote/path)" ) ) ;

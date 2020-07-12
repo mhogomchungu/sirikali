@@ -154,6 +154,7 @@ void createBackendWIndow::save()
 		config[ "unMountCommand" ]              = emptyStringList ;
 		config[ "volumePropertiesCommands" ]    = emptyStringList ;
 		config[ "passwordFormat" ]              = "%{password}" ;
+		config[ "sshOptions" ]                  = "idmap=user,StrictHostKeyChecking=no" ;
 		config[ "windowsInstallPathRegistryKey" ]   = "" ;
 		config[ "windowsInstallPathRegistryValue" ] = "" ;
 		config[ "windowsExecutableFolderPath" ]     = "" ;

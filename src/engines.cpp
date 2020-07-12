@@ -655,6 +655,11 @@ const engines::version& engines::engine::installedVersion() const
 	return m_version ;
 }
 
+const QString& engines::engine::sshOptions() const
+{
+	return m_Options.sshOptions ;
+}
+
 const QString& engines::engine::minimumVersion() const
 {
 	return m_Options.minimumVersion ;

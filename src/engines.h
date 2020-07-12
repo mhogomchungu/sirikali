@@ -510,6 +510,7 @@ public:
 			QString windowsExecutableFolderPath ;
 			QString mountControlStructure ;
 			QString createControlStructure ;
+			QString sshOptions ;
 
 			QStringList windowsUnMountCommand ;
 			QStringList unMountCommand ;
@@ -576,6 +577,7 @@ public:
 
 		const engines::version& installedVersion() const ;
 
+		const QString& sshOptions() const ;
 		const QString& executableFullPath() const ;
 		const QString& minimumVersion() const ;
 		const QString& reverseString() const ;

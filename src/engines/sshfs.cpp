@@ -67,6 +67,9 @@ static engines::engine::BaseOptions _setOptions()
 	if( utility::platformIsWindows() ){
 
 		s.minimumVersion = "3.5.2" ;
+		s.sshOptions = "create_file_umask=0000,create_dir_umask=0000,umask=0000,idmap=user,StrictHostKeyChecking=no,UseNetworkDrive=no" ;
+	}else{
+		s.sshOptions = "idmap=user,StrictHostKeyChecking=no" ;
 	}
 
 	return s ;
