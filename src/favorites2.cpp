@@ -60,14 +60,14 @@ Task::future< bool >& favorites2::addKey( secrets::wallet& wallet,
 favorites2::favorites2( QWidget * parent,
 			secrets& wallet,
 			std::function< void() > function,
-			const QString& vt,
+			const engines::engine& engine,
 			const QString& cp ) :
 	QDialog ( parent ),
 	m_ui( new Ui::favorites2 ),
 	m_secrets( wallet ),
 	m_settings( settings::instance() ),
 	m_function( std::move( function ) ),
-	m_volumeType( vt.toLower() ),
+	m_engine( engine ),
 	m_cipherPath( cp )
 {
 	m_ui->setupUi( this ) ;
@@ -1022,7 +1022,7 @@ void favorites2::updateFavorite( bool edit )
 	auto configPath = m_ui->lineEditConfigFilePath->toPlainText() ;
 	auto idleTimeOUt = m_ui->lineEditIdleTimeOut->toPlainText() ;
 
-	if( m_volumeType == "sshfs" ){
+	if( m_engine.likeSsh() ){
 
 		if( !configPath.isEmpty() ){
 
@@ -1288,7 +1288,7 @@ void favorites2::ShowUI()
 		m_ui->lineEditMountPath->setText( m_settings.mountPath() ) ;
 	}
 
-	if( m_volumeType == "sshfs" ){
+	if( m_engine.likeSsh() ){
 
 		m_ui->tabWidget->setCurrentIndex( 1 ) ;
 
@@ -1303,7 +1303,7 @@ void favorites2::ShowUI()
 		m_ui->labelName ->setText( tr( "Remote Ssh Server Address\n(Example: woof@example.com:/remote/path)" ) ) ;
 		m_ui->labelCofigFilePath->setText( tr( "SSH_AUTH_SOCK Socket Path (Optional)" ) ) ;
 		m_ui->labelIdleTimeOut->setText( tr( "IdentityFile Path (Optional)" ) ) ;
-		m_ui->lineEditVolumeType->setText( "Sshfs" ) ;
+		m_ui->lineEditVolumeType->setText( m_engine.name() ) ;
 		m_ui->pbEdit->setEnabled( false ) ;
 	}else{
 		m_ui->pbIdentityFile->setVisible( false ) ;

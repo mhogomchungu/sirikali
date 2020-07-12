@@ -41,6 +41,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.autorefreshOnMountUnMount   = true ;
 	s.backendRequireMountPath     = true ;
 	s.backendRunsInBackGround     = true ;
+	s.likeSsh               = false ;
 	s.requiresPolkit        = false ;
 	s.customBackend         = false ;
 	s.requiresAPassword     = true ;

@@ -493,6 +493,7 @@ public:
 			bool backendRunsInBackGround ;
 			bool acceptsSubType ;
 			bool acceptsVolName ;
+			bool likeSsh ;
 
 			QByteArray passwordFormat ;
 			QString releaseURL ;
@@ -559,6 +560,7 @@ public:
 		bool backendRunsInBackGround() const ;
 		bool acceptsSubType() const ;
 		bool acceptsVolName() const ;
+		bool likeSsh() const ;
 
 		engines::engine::status notFoundCode() const ;
 

@@ -47,19 +47,19 @@ public:
 	static favorites2& instance( QWidget * parent,
 				     secrets& wallet,
 				     std::function< void() > function,
-				     const QString& volumeType = QString(),
-				     const QString& cp = QString() )
+				     const engines::engine& engine = engines::instance().getUnKnown(),
+				     const QString& cipherPath = QString() )
 	{
 		return *( new favorites2( parent,
 					  wallet,
 					  std::move( function ),
-					  volumeType,
-					  cp ) ) ;
+					  engine,
+					  cipherPath ) ) ;
 	}
 	favorites2( QWidget * parent,
 		    secrets& wallet,
 		    std::function< void() > function,
-		    const QString& volumeType,
+		    const engines::engine&,
 		    const QString& cp ) ;
 	~favorites2() ;
 private :
@@ -108,7 +108,7 @@ private :
 	bool m_editMode = false ;
 	settings& m_settings ;
 	std::function< void() > m_function ;
-	QString m_volumeType ;
+	const engines::engine& m_engine ;
 	QString m_cipherPath ;
 
 	class wallet{

@@ -42,13 +42,14 @@ static void _parse( engines::engine::BaseOptions& s,const SirikaliJson& json )
 	s.supportsMountPathsOnWindows     = json.getBool( "windowsSupportsMountPointPaths",false ) ;
 	s.acceptsSubType                  = json.getBool( "acceptsSubType",true ) ;
 	s.acceptsVolName                  = json.getBool( "acceptsVolName",true ) ;
+	s.likeSsh                         = json.getBool( "likeSsh",false ) ;
 
 	s.backendTimeout                  = json.getInterger( "backendTimeout",0 ) ;
 
 	s.passwordFormat                  = json.getByteArray( "passwordFormat","%{password}" ) ;
 
 	s.mountControlStructure           = json.getString( "mountControlStructure","%{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ) ;
-	s.createControlStructure          = json.getString( "createControlStructure","%{createOptions} %{cipherFolder} %{mountPoint}" ) ;
+	s.createControlStructure          = json.getString( "createControlStructure" ) ;
 	s.reverseString                   = json.getString( "reverseString" ) ;
 	s.idleString                      = json.getString( "idleString" ) ;
 	s.executableName                  = json.getString( "executableName" ) ;

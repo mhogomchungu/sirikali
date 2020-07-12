@@ -177,6 +177,7 @@ void createBackendWIndow::save()
 		config[ "setsCipherPath" ]              = true ;
 		config[ "acceptsSubType" ]              = true ;
 		config[ "acceptsVolName" ]              = true ;
+		config[ "likeSsh" ]                     = false ;
 
 		config.toFile( path ) ;
 

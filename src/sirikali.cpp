@@ -266,9 +266,7 @@ void sirikali::setUpApp( const QString& volume )
 
 		for( const auto& it : engines.supportedEngines() ){
 
-			auto name = it->name() ;
-
-			name.replace( 0,1,name.at( 0 ).toUpper() ) ;
+			const auto& name = it->name() ;
 
 			auto ac = m->addAction( name ) ;
 
@@ -283,6 +281,13 @@ void sirikali::setUpApp( const QString& volume )
 					ac->setText( tr( "%1 Is Not Installed" ).arg( "Ecryptfs-simple" ) ) ;
 				}else{
 					ac->setText( tr( "%1 Is Not Installed" ).arg( name ) ) ;
+				}
+			}else{
+				if( it->likeSsh() ){
+
+					ac->setEnabled( true ) ;
+				}else{
+					ac->setEnabled( !it->createControlStructure().isEmpty() ) ;
 				}
 			}
 		}
@@ -1196,7 +1201,7 @@ void sirikali::addToFavorites()
 
 			this->updateFavoritesInContextMenu() ;
 
-		},cp.at( 2 ),cp.at( 0 ) ) ;
+		},engines::instance().getByName( cp.at( 2 ) ),cp.at( 0 ) ) ;
 	}
 }
 
@@ -1453,14 +1458,16 @@ void sirikali::createVolume( QAction * ac )
 
 		auto s = ac->objectName() ;
 
-		if( s == "Sshfs" ){
+		const auto& engine = engines::instance().getByName( s ) ;
+
+		if( engine.likeSsh() ){
 
 			favorites2::instance( this,m_secrets,[ this ](){
 
 				this->enableAll() ;
 
 				this->updateFavoritesInContextMenu() ;
-			},s ) ;
+			},engine ) ;
 		}else{
 			keyDialog::instance( this,
 					     m_secrets,

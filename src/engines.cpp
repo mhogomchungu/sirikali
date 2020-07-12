@@ -169,10 +169,6 @@ void engines::version::logError() const
 	utility::debug() << a.arg( m_engineName,this->toString() ) ;
 }
 
-engines::engine::~engine()
-{
-}
-
 engines::engine::args engines::engine::command( const QByteArray& password,
 						const engines::engine::cmdArgsList& args,
 						bool create ) const
@@ -384,8 +380,25 @@ static QProcessEnvironment _set_env( const engines::engine& engine )
 	return m ;
 }
 
+engines::engine::~engine()
+{
+}
+
+static engines::engine::BaseOptions _update( engines::engine::BaseOptions m )
+{
+	for( auto& it : m.names ){
+
+		if( !it.isEmpty() ){
+
+			it.replace( 0,1,it.at( 0 ).toUpper() ) ;
+		}
+	}
+
+	return m ;
+}
+
 engines::engine::engine( engines::engine::BaseOptions o ) :
-	m_Options( std::move( o ) ),
+	m_Options( _update( std::move( o ) ) ),
 	m_processEnvironment( _set_env( *this ) ),
 	m_exeFullPath( [ this ](){ return engines::executableFullPath( this->executableName(),*this ) ; } ),
 	m_version( this->name(),[ this ](){ return _installedVersion( *this,m_processEnvironment,m_Options.versionInfo ) ; } )
@@ -477,6 +490,11 @@ bool engines::engine::acceptsSubType() const
 bool engines::engine::acceptsVolName() const
 {
 	return m_Options.acceptsVolName ;
+}
+
+bool engines::engine::likeSsh() const
+{
+	return m_Options.likeSsh ;
 }
 
 bool engines::engine::takesTooLongToUnlock() const
