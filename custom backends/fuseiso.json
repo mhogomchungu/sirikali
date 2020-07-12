@@ -1,6 +1,6 @@
 {
         "executableName": "fuseiso",
-        "fileExtensions": [ ".iso" ],
+        "fileExtensions": [ ".iso",".nrg",".bin",".mdf",".img" ],
         "fuseNames": [ "fuse.fuseiso" ],
         "mountControlStructure": "-n %{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}",
         "names": [ "fuseiso" ],
