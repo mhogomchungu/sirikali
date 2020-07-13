@@ -133,9 +133,7 @@ static void _log_error( const QString& msg,const QString& path )
 utility2::result< favorites::entry > favorites::readFavoriteByPath( const QString& path ) const
 {
 	try {
-		SirikaliJson json( path,
-				   SirikaliJson::type::PATH,
-				   []( const QString& e ){ utility::debug() << e ; } ) ;
+		SirikaliJson json( QFile( path ),[]( const QString& e ){ utility::debug() << e ; } ) ;
 
 		favorites::entry m ;
 
@@ -164,7 +162,7 @@ utility2::result< favorites::entry > favorites::readFavoriteByPath( const QStrin
 
 	}catch( ... ){
 
-		_log_error( "Unknown error has occured",path ) ;
+		_log_error( "Unknown Error Has Occured in File: ",path ) ;
 	}
 
 	return {} ;

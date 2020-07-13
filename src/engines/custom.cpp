@@ -77,11 +77,11 @@ static void _parse( engines::engine::BaseOptions& s,const SirikaliJson& json )
 	s.notFoundCode                    = engines::engine::status::customCommandNotFound ;
 }
 
-static utility2::result< engines::engine::BaseOptions > _getOptions( const QByteArray& e,const QString& s )
+static utility2::result< engines::engine::BaseOptions > _getOptions( QFile& f )
 {
 	auto _log_error = []( const QString& msg,const QString& path ){
 
-		auto a = "\nFailed to parse file for reading: " + path ;
+		auto a = "\nFailed To Parse File For Reading: " + path ;
 
 		utility::debug::logErrorWhileStarting( msg + a ) ;
 	} ;
@@ -89,9 +89,7 @@ static utility2::result< engines::engine::BaseOptions > _getOptions( const QByte
 	try{
 		engines::engine::BaseOptions s ;
 
-		SirikaliJson json( e,
-				   SirikaliJson::type::CONTENTS,
-				   []( const QString& e ){ utility::debug() << e ; } ) ;
+		SirikaliJson json( f,[]( const QString& e ){ utility::debug() << e ; } ) ;
 
 		_parse( s,json ) ;
 
@@ -99,11 +97,11 @@ static utility2::result< engines::engine::BaseOptions > _getOptions( const QByte
 
 	}catch( const std::exception& e ){
 
-		_log_error( e.what(),s ) ;
+		_log_error( e.what(),f.fileName() ) ;
 
 	}catch( ... ){
 
-		_log_error( "Unknown error has occured",s ) ;
+		_log_error( "Unknown Error Has Occured in File: ",f.fileName() ) ;
 	}
 
 	return {} ;
@@ -112,18 +110,16 @@ static utility2::result< engines::engine::BaseOptions > _getOptions( const QByte
 static void _add_engines( const QString& path,
 			  std::vector< std::unique_ptr< engines::engine >>& engines )
 {
-	const auto s = QDir( path ).entryList( QDir::Filter::Files ) ;
-
 	QFile file ;
 
-	for( const auto& it : s ){
+	for( const auto& it : QDir( path ).entryList( QDir::Filter::Files ) ){
 
 		auto c = path + it ;
 		file.setFileName( c ) ;
 
 		if( file.open( QIODevice::ReadOnly ) ){
 
-			auto s = _getOptions( file.readAll(),c ) ;
+			auto s = _getOptions( file ) ;
 
 			if( s.has_value() ){
 
@@ -145,6 +141,8 @@ static void _add_engines( const QString& path,
 			}
 
 			file.close() ;
+		}else{
+			utility::debug::logErrorWhileStarting( QString( "Warning, Failed To Open File For Reading: %1" ).arg( path ) ) ;
 		}
 	}
 }

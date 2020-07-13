@@ -29,26 +29,37 @@
 class SirikaliJson
 {
 public:
-	enum class type{ PATH,CONTENTS } ;
+	using function = std::function< void( const QString& ) > ;
 
-	SirikaliJson( std::function< void( const QString& ) > log ) :
-		m_log( std::move( log ) )
-	{
-	}
-	SirikaliJson( const QByteArray& e,type s,std::function< void( const QString& ) > log ) :
-		m_log( std::move( log ) )
-	{
-		this->getData( e,s ) ;
-	}
-	SirikaliJson( const QString& e,type s,std::function< void( const QString& ) > log ) :
-		m_log( std::move( log ) )
-	{
-		this->getData( e.toLatin1(),s ) ;
-	}
 	struct result{
-	        bool contains ;
+		bool contains ;
 		bool exceptionThrown ;
 	};
+
+	SirikaliJson( function log = []( const QString& e ){ Q_UNUSED( e ) } ) :
+		m_log( std::move( log ) )
+	{
+	}
+	SirikaliJson( const QByteArray& e,function log = []( const QString& e ){ Q_UNUSED( e ) } ) :
+		m_log( std::move( log ) )
+	{
+	        this->getData( e ) ;
+	}
+	SirikaliJson( const QString& e,function log = []( const QString& e ){ Q_UNUSED( e ) } ) :
+		m_log( std::move( log ) )
+	{
+	        this->getData( e.toUtf8() ) ;
+	}
+	SirikaliJson( QFile&& e,function log = []( const QString& e ){ Q_UNUSED( e ) } ) :
+	        m_log( std::move( log ) )
+	{
+	        this->getData( e ) ;
+	}
+	SirikaliJson( QFile& e,function log = []( const QString& e ){ Q_UNUSED( e ) } ) :
+	        m_log( std::move( log ) )
+	{
+	        this->getData( e ) ;
+	}
 	result contains( const char * key )
 	{
 		try{
@@ -69,7 +80,7 @@ public:
 
 		}catch( ... ){
 
-			m_log( "Unknown exception was thrown" ) ;
+			m_log( "Unknown Exception Was Thrown" ) ;
 
 			return { false,true } ;
 		}
@@ -84,11 +95,11 @@ public:
 
 				return a->get< T >() ;
 			}else{
-				if( m_filePath.isEmpty() ){
+			        if( m_fileName.isEmpty() ){
 
 					m_log( QString( "Warning, Key \"%1\" Not Found" ).arg( key )  ) ;
 				}else{
-					m_log( QString( "Warning, Key \"%1\" Not Found In Config File at: %2" ).arg( key,m_filePath )  ) ;
+				        m_log( QString( "Warning, Key \"%1\" Not Found In Config File at: %2" ).arg( key,m_fileName )  ) ;
 				}
 
 				return t ;
@@ -96,11 +107,11 @@ public:
 
 		}catch( ... ) {
 
-			if( m_filePath.isEmpty() ){
+		        if( m_fileName.isEmpty() ){
 
 				m_log( QString( "Warning, Exception thrown when searching For Key \"%1\"" ).arg( key ) ) ;
 			}else{
-			        m_log( QString( "Warning, Exception thrown when searching For Key \"%1\" in Config File at: %2" ).arg( key,m_filePath )  ) ;
+				m_log( QString( "Warning, Exception thrown when searching For Key \"%1\" in File at: %2" ).arg( key,m_fileName )  ) ;
 			}
 
 			return t ;
@@ -238,23 +249,27 @@ public:
 private:
 	std::vector< std::string > m_defaultStringList ;
 	std::string m_defaultString ;
-	QString m_filePath ;
+	QString m_fileName ;
 
-	void getData( const QByteArray& e,type s )
+	void getData( QFile& f )
 	{
-		if( s == type::PATH ){
+		m_fileName = f.fileName() ;
 
-			m_filePath = e ;
+		if( !f.isOpen() ){
 
-			QFile file( e ) ;
+			if( !f.open( QIODevice::ReadOnly ) ){
 
-			if( file.open( QIODevice::ReadOnly ) ){
+				m_log( QString( "Warning, Failed To Open File For Reading: %1" ).arg( m_fileName ) ) ;
 
-				m_json = nlohmann::json::parse( file.readAll().constData() ) ;
+				return ;
 			}
-		}else{
-			m_json = nlohmann::json::parse( e.constData() ) ;
 		}
+
+		this->getData( f.readAll() ) ;
+	}
+	void getData( const QByteArray& e )
+	{
+	        m_json = nlohmann::json::parse( e.constData() ) ;
 	}
 	std::function< void( const QString& ) > m_log = []( const QString& e ){ Q_UNUSED( e ) } ;
 	const char * m_key ;

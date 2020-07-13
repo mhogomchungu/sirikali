@@ -296,9 +296,7 @@ void utility::Task::execute( const QString& exe,
 
 		s.waitForReadyRead() ;
 
-		SirikaliJson json( s.readAll(),
-				   SirikaliJson::type::CONTENTS,
-				   []( const QString& e ){ utility::debug() << e ; } ) ;
+		SirikaliJson json( s.readAll(),[]( const QString& e ){ utility::debug() << e ; } ) ;
 
 		m_finished   = json.getBool( "finished" ) ;
 		m_exitCode   = json.getInterger( "exitCode" ) ;

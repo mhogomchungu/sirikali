@@ -565,8 +565,7 @@ static void _log_error( const QString& msg,const QString& path )
 QStringList fscrypt::unlockedVolumeList::getList() const
 {
 	try {
-		SirikaliJson json( m_configFilePath,
-				   SirikaliJson::type::PATH,
+		SirikaliJson json( QFile( m_configFilePath ),
 				   []( const QString& e ){ utility::debug() << e ; } ) ;
 
 		return json.getStringList( m_keyName ) ;
@@ -577,7 +576,7 @@ QStringList fscrypt::unlockedVolumeList::getList() const
 
 	}catch( ... ){
 
-		_log_error( "Unknown error has occured",m_configFilePath ) ;
+		_log_error( "Unknown Error Has Occured in File: ",m_configFilePath ) ;
 	}
 
 	return {} ;

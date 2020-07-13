@@ -75,7 +75,7 @@ static bool _terminalEchoOff( struct termios * old,struct termios * current )
 	}
 
 	*current = *old ;
-	current->c_lflag &= ~ECHO ;
+	current->c_lflag &= static_cast< tcflag_t >( ~ECHO ) ;
 
 	if( tcsetattr( 1,TCSAFLUSH,current ) != 0 ){
 
@@ -160,7 +160,7 @@ void zuluPolkit::start()
 
 static void _respond( QLocalSocket& s,const char * e )
 {
-	SirikaliJson json( []( const QString& e ){ Q_UNUSED( e ) } ) ;
+	SirikaliJson json ;
 
 	json[ "stdOut" ]     = e ;
 	json[ "stdError" ]   = e ;
@@ -212,9 +212,7 @@ void zuluPolkit::gotConnection()
 
 	m.waitForReadyRead() ;
 
-	auto json = SirikaliJson( m.readAll(),
-				  SirikaliJson::type::CONTENTS,
-				  []( const QString& e ){ Q_UNUSED( e ) } ) ;
+	auto json = SirikaliJson( m.readAll() ) ;
 
 	auto password = json.getString( "password" ) ;
 	auto cookie   = json.getString( "cookie" ) ;
