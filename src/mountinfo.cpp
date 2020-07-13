@@ -111,6 +111,11 @@ static QStringList _macox_volumes()
 
 		auto fs = _getFileSystem( dev,it.fileSystemType() ) ;
 
+		if( !fs.isEmpty() ){
+
+			fs.replace( 0,1,fs.at( 0 ).toUpper() ) ;
+		}
+
 		s.append( mountinfo::mountProperties( mp,it.isReadOnly() ? "ro" : "rw",fs,dev ) ) ;
 
 		m.append( e.arg( it.rootPath(),it.device(),it.fileSystemType(),it.displayName(),it.name() ) ) ;
@@ -202,7 +207,7 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 
 			for( const auto& it : e.names() ){
 
-				if( s.startsWith( it + "@" ) ){
+				if( s.startsWith( it + "@",Qt::CaseInsensitive ) ){
 
 					return true ;
 				}
@@ -214,6 +219,11 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 		auto _fs = []( QString e ){
 
 			e.replace( "fuse.","" ) ;
+
+			if( !e.isEmpty() ){
+
+				e.replace( 0,1,e.at( 0 ).toUpper() ) ;
+			}
 
 			return e ;
 		} ;

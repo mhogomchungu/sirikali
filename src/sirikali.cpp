@@ -1364,9 +1364,11 @@ static favorites::volumeList _dropEvent( QDropEvent * e,Function function )
 {
 	favorites::volumeList s ;
 
+	auto favorites = _readFavorites() ;
+
 	auto _favorite_entry = [ & ]( const QString& path )->std::pair< favorites::entry,QByteArray >{
 
-		for( const auto& it : _readFavorites() ){
+		for( const auto& it : favorites ){
 
 			if( it.first.volumePath == path ){
 
@@ -1412,7 +1414,9 @@ static favorites::volumeList _dropEvent( QDropEvent * e,Function function )
 
 				if( ss ){
 
-					s.emplace_back( ss.RValue(),QByteArray() ) ;
+					auto k = function( ss->volumePath ) ;
+
+					s.emplace_back( ss.RValue(),std::move( k ) ) ;
 				}
 			}else{
 				s.emplace_back( m,QByteArray() ) ;
