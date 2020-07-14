@@ -160,7 +160,6 @@ public:
 	void changeInternalWalletPassword( const QString&,const QString&,std::function< void( bool ) > ) ;
 	void changeWindowsDPAPIWalletPassword( const QString&,const QString&,std::function< void( bool ) > ) ;
 
-	void setParent( QWidget * ) ;
 	void close() ;
 	secrets( QWidget * parent = nullptr ) ;
 	secrets( const secrets& ) = delete ;
@@ -169,11 +168,28 @@ public:
 
 	~secrets() ;
 private:
-	LXQt::Wallet::Wallet * internalWallet() const ;
-	LXQt::Wallet::Wallet * windows_dpapiBackend() const ;
 	QWidget * m_parent = nullptr ;
-	mutable LXQt::Wallet::Wallet * m_internalWallet = nullptr ;
-	mutable LXQt::Wallet::Wallet * m_windows_dpapi = nullptr ;
-};
+
+	class backends{
+	public:
+		backends( QWidget * ) ;
+		LXQt::Wallet::Wallet * get( LXQt::Wallet::BackEnd ) ;
+		void close() ;
+	private:
+		struct bks{
+
+			bks( LXQt::Wallet::BackEnd e,LXQt::Wallet::Wallet * s ) :
+				bk( e ),wallet( s )
+			{
+			}
+			LXQt::Wallet::BackEnd bk ;
+			LXQt::Wallet::Wallet * wallet ;
+		} ;
+
+		std::vector< bks > m_backends ;
+		QWidget * m_parent ;
+
+	} mutable m_backends ;
+} ;
 
 #endif

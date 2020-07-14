@@ -719,6 +719,20 @@ void favorites2::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 	}
 }
 
+template< typename Function >
+static auto _hide_ui( Function hide,LXQt::Wallet::BackEnd bk )
+{
+	return [ hide = std::move( hide ),bk ](){
+
+		using w = LXQt::Wallet::BackEnd ;
+
+		if( bk == w::internal || bk == w::windows_dpapi ){
+
+			hide() ;
+		}
+	} ;
+}
+
 void favorites2::walletBkChanged( LXQt::Wallet::BackEnd bk )
 {
 	this->setControlsAvailability( true,true ) ;
@@ -732,7 +746,7 @@ void favorites2::walletBkChanged( LXQt::Wallet::BackEnd bk )
 			tablewidget::addRow( m_ui->tableWidgetWallet,{ it } ) ;
 		}
 
-	},[ this ](){ this->hide() ; },[ this ]( bool opened ){
+	},_hide_ui( [ this ](){ this->hide() ; },bk ),[ this ]( bool opened ){
 
 		if( opened ){
 
@@ -1093,8 +1107,6 @@ void favorites2::updateFavorite( bool edit )
 		}else{
 			e.mountPointPath = path + "/" + utility::split( dev,'/' ).last() ;
 		}
-
-		utility::debug() << e.volumePath << e.mountPointPath ;
 
 		favorites::instance().add( e ) ;
 	}
