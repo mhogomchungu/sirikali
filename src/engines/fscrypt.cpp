@@ -558,8 +558,8 @@ fscrypt::unlockedVolumeList::unlockedVolumeList() :
 
 static void _log_error( const QString& msg,const QString& path )
 {
-	auto a = "\nFailed to parse fscrypt config file: " + path ;
-	utility::debug::cout() << msg + a ;
+	auto a = "\nFailed To Parse Fscrypt Config File: " + path ;
+	utility::debug() << msg + a ;
 }
 
 QStringList fscrypt::unlockedVolumeList::getList() const

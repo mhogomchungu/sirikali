@@ -1364,7 +1364,7 @@ static favorites::volumeList _dropEvent( QDropEvent * e,Function function )
 {
 	favorites::volumeList s ;
 
-	auto favorites = _readFavorites() ;
+	const auto favorites = _readFavorites() ;
 
 	auto _favorite_entry = [ & ]( const QString& path )->std::pair< favorites::entry,QByteArray >{
 

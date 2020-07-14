@@ -97,9 +97,9 @@ public:
 			}else{
 			        if( m_fileName.isEmpty() ){
 
-					m_log( QString( "Warning, Key \"%1\" Not Found" ).arg( key )  ) ;
+					m_log( QString( "Warning, Key \"%1\" Not Found" ).arg( key ) ) ;
 				}else{
-				        m_log( QString( "Warning, Key \"%1\" Not Found In Config File at: %2" ).arg( key,m_fileName )  ) ;
+					m_log( QString( "Warning, Key \"%1\" Not Found In Config File at: %2" ).arg( key,m_fileName ) ) ;
 				}
 
 				return t ;
@@ -111,7 +111,7 @@ public:
 
 				m_log( QString( "Warning, Exception thrown when searching For Key \"%1\"" ).arg( key ) ) ;
 			}else{
-				m_log( QString( "Warning, Exception thrown when searching For Key \"%1\" in File at: %2" ).arg( key,m_fileName )  ) ;
+				m_log( QString( "Warning, Exception thrown when searching For Key \"%1\" in File at: %2" ).arg( key,m_fileName ) ) ;
 			}
 
 			return t ;

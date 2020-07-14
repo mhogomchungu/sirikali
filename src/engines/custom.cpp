@@ -400,7 +400,6 @@ engines::engine::args custom::set_command( const engines::engine& engine,
 				     m.fuseOpts().get() } ) ;
 
 		return { args,m,engine.executableFullPath(),s } ;
-
 	}else{
 		auto s = _resolve( { engine,
 				     engine.mountControlStructure(),

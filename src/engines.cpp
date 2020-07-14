@@ -146,11 +146,8 @@ QStringList engines::executableSearchPaths()
 
 QStringList engines::executableSearchPaths( const engines::engine& engine )
 {
-	QStringList s = { SiriKali::Windows::engineInstalledDir( engine ) } ;
-
-	s.append( engine.windowsExecutableFolderPath() ) ;
-
-	return _search_path( s ) ;
+	return _search_path( { SiriKali::Windows::engineInstalledDir( engine ),
+			       engine.windowsExecutableFolderPath() } ) ;
 }
 
 QString engines::executableFullPath( const QString& f )
@@ -934,12 +931,16 @@ engines::engine::ownsCipherFolder engines::engine::ownsCipherPath( const QString
 
 	}else if( configFilePath.isEmpty() ){
 
+		QString configPath ;
+
 		auto a = _found( this->configFileNames(),[ & ]( const QString& e ){
 
-			return utility::pathExists( cipherPath + "/" + e ) ;
+			configPath = cipherPath + "/" + e ;
+
+			return utility::pathExists( configPath ) ;
 		} ) ;
 
-		return { a,cipherPath,configFilePath } ;
+		return { a,cipherPath,std::move( configPath ) } ;
 	}else{
 		auto ee = [ & ]( const QString& e ){
 

@@ -1094,6 +1094,8 @@ void favorites2::updateFavorite( bool edit )
 			e.mountPointPath = path + "/" + utility::split( dev,'/' ).last() ;
 		}
 
+		utility::debug() << e.volumePath << e.mountPointPath ;
+
 		favorites::instance().add( e ) ;
 	}
 
