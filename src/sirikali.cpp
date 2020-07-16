@@ -311,20 +311,7 @@ void sirikali::setUpApp( const QString& volume )
 
 	this->showTrayIcon() ;
 
-	this->disableAll() ;
-
-	auto m = mountinfo::unlockedVolumes().await() ;
-
-	this->updateVolumeList( m ) ;
-
-	if( volume.isEmpty() ) {
-
-		this->enableAll() ;
-	}else{
-		this->autoMount( volume ) ;
-	}
-
-	this->startGUI( m ) ;
+	this->startGUI( volume ) ;
 
 	if( utility::platformIsNOTWindows() ){
 
@@ -608,17 +595,23 @@ void sirikali::setLocalizationLanguage( bool translate )
 	settings::instance().setLocalizationLanguage( translate,&m_language_menu,m_translator ) ;
 }
 
-void sirikali::startGUI( const std::vector< volumeInfo >& m )
+void sirikali::startGUI( const QString& volume )
 {
+	auto m = mountinfo::unlockedVolumes().await() ;
+
+	this->updateVolumeList( m ) ;
+
 	if( !m_startHidden ){
 
-		this->raiseWindow() ;
+		this->showMainWindow() ;
 	}
 
 	if( settings::instance().autoMountFavoritesOnStartUp() ){
 
 		this->autoUnlockVolumes( m ) ;
 	}
+
+	this->autoMount( volume ) ;
 
 	utility::applicationStarted() ;
 }
@@ -628,12 +621,17 @@ void sirikali::createbackendwindow()
 	createBackendWIndow::instance( this ) ;
 }
 
-void sirikali::raiseWindow( const QString& volume )
+void sirikali::showMainWindow()
 {
 	this->setVisible( true ) ;
 	this->raise() ;
 	this->show() ;
 	this->setWindowState( Qt::WindowActive ) ;
+}
+
+void sirikali::raiseWindow( const QString& volume )
+{
+	this->showMainWindow() ;
 	this->autoMount( volume ) ;
 }
 
@@ -995,7 +993,7 @@ favorites::volumeList sirikali::autoUnlockVolumes( favorites::volumeList l,bool 
 	if( !m ){
 
 		return l ;
-	}
+	}	
 
 	if( !m.open() ){
 
@@ -1489,7 +1487,22 @@ void sirikali::autoMount( const QString& volume )
 {
 	if( !volume.isEmpty() ){
 
-		this->mountMultipleVolumes( { { volume,{} } } ) ;
+		auto s = settings::instance().autoOpenFolderOnMount() ;
+
+		auto m = [ & ](){
+
+			for( auto&& it : _readFavorites() ){
+
+				if( it.first.volumePath == volume ){
+
+					return this->autoUnlockVolumes( { std::move( it ) },s ) ;
+				}
+			}
+
+			return this->autoUnlockVolumes( { { volume,{} } },s ) ;
+		}() ;
+
+		this->mountMultipleVolumes( std::move( m ) ) ;
 	}
 }
 

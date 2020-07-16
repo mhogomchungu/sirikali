@@ -77,7 +77,7 @@ private slots:
 	void unlockVolume( const QStringList& ) ;
 	void closeApplication( int = 0,const QString& = QString() ) ;
 	void unlockVolume( bool ) ;
-	void startGUI( const std::vector< volumeInfo >& ) ;
+	void startGUI( const QString& ) ;
 	void autoMount( const QString& ) ;
 	void defaultButton( void ) ;
 	void itemClicked( QTableWidgetItem * ) ;
@@ -131,6 +131,7 @@ private:
 	void closeEvent( QCloseEvent * e ) ;
 	void setUpFont( void ) ;
 	void setUpShortCuts( void ) ;
+	void showMainWindow( void ) ;
 	void raiseWindow( const QString& = QString() ) ;
 	void autoUnlockVolumes( const std::vector< volumeInfo >& ) ;	
 	favorites::volumeList autoUnlockVolumes( favorites::volumeList,bool = false ) ;
