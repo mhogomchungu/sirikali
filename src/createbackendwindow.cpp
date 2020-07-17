@@ -121,7 +121,7 @@ void createBackendWIndow::save()
 		return DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Wrong Password Field Can Not Be Empty" ) ) ;
 	}
 
-	SirikaliJson config( []( const QString& e ){ utility::debug() << e ; } ) ;
+	SirikaliJson config( utility::jsonLogger() ) ;
 
 	auto _addList = [ & ]( const QString& e ){
 
@@ -133,62 +133,48 @@ void createBackendWIndow::save()
 		}
 	} ;
 
-	auto _log_error = []( const QString& msg,const QString& path ){
+	QStringList emptyStringList ;
 
-		auto a = "\nFailed to parse file for writing: " + path ;
+	config[ "createControlStructure" ]      = m_ui->lineEditCreateControlStructure->text() ;
+	config[ "mountControlStructure" ]       = m_ui->lineEditMountControlStructure->text() ;
+	config[ "idleString" ]                  = "--idle %{timeout}" ;
+	config[ "reverseString" ]               = "" ;
+	config[ "keyFileArgument" ]             = "--keyfile %{keyfile}" ;
+	config[ "unMountCommand" ]              = emptyStringList ;
+	config[ "windowsUnMountCommand" ]       = emptyStringList ;
+	config[ "fileExtensions" ]              = emptyStringList ;
+	config[ "unMountCommand" ]              = emptyStringList ;
+	config[ "volumePropertiesCommands" ]    = emptyStringList ;
+	config[ "passwordFormat" ]              = "%{password}" ;
+	config[ "sshOptions" ]                  = "idmap=user,StrictHostKeyChecking=no" ;
+	config[ "windowsInstallPathRegistryKey" ]   = "" ;
+	config[ "windowsInstallPathRegistryValue" ] = "" ;
+	config[ "windowsExecutableFolderPath" ]     = "" ;
+	config[ "windowsSupportsMountPointPaths" ]  = m_ui->cbSupportsMountPointPaths->isChecked() ;
+	config[ "windowsSuccessfullyMountedList" ]  = _addList( m_ui->lineEditSuccessfullyMountedText->text() ) ;
+	config[ "executableName" ]              = executable ;
+	config[ "configFileNames" ]             = _addList( configFileNames ) ;
+	config[ "fuseNames" ]                   = _addList( fusenames ) ;
+	config[ "names" ]                       = _addList( names ) ;
+	config[ "failedToMountTextList" ]       = _addList( m_ui->lineEditFailedToMountText->text() ) ;
+	config[ "configFileArgument" ]          = m_ui->lineEditConfigFileArgument->text() ;
+	config[ "wrongPasswordText" ]           = password ;
+	config[ "wrongPasswordErrorCode" ]      = m_ui->lineEditWrongPasswordErrorCode->text() ;
+	config[ "requiresAPassword" ]           = m_ui->cbRequiresAPassword->isChecked() ;
+	config[ "autoMountsOnVolumeCreation" ]  = m_ui->cbAutoMountsOnVolumeCreation->isChecked() ;
+	config[ "backendRequireMountPath" ]     = true ;
+	config[ "autorefreshOnMountUnMount" ]   = true ;
+	config[ "backendTimeout" ]              = 0 ;
+	config[ "takesTooLongToUnlock" ]        = false ;
+	config[ "runsInBackGround" ]            = true ;
+	config[ "setsCipherPath" ]              = true ;
+	config[ "acceptsSubType" ]              = true ;
+	config[ "acceptsVolName" ]              = true ;
+	config[ "likeSsh" ]                     = false ;
 
-		utility::debug::logErrorWhileStarting( msg + a ) ;
-	} ;
-
-	try {
-		QStringList emptyStringList ;
-
-		config[ "createControlStructure" ]      = m_ui->lineEditCreateControlStructure->text() ;
-		config[ "mountControlStructure" ]       = m_ui->lineEditMountControlStructure->text() ;
-		config[ "idleString" ]                  = "--idle %{timeout}" ;
-		config[ "reverseString" ]               = "" ;
-		config[ "keyFileArgument" ]             = "--keyfile %{keyfile}" ;
-		config[ "unMountCommand" ]              = emptyStringList ;
-		config[ "windowsUnMountCommand" ]       = emptyStringList ;
-		config[ "fileExtensions" ]              = emptyStringList ;
-		config[ "unMountCommand" ]              = emptyStringList ;
-		config[ "volumePropertiesCommands" ]    = emptyStringList ;
-		config[ "passwordFormat" ]              = "%{password}" ;
-		config[ "sshOptions" ]                  = "idmap=user,StrictHostKeyChecking=no" ;
-		config[ "windowsInstallPathRegistryKey" ]   = "" ;
-		config[ "windowsInstallPathRegistryValue" ] = "" ;
-		config[ "windowsExecutableFolderPath" ]     = "" ;
-		config[ "windowsSupportsMountPointPaths" ]  = m_ui->cbSupportsMountPointPaths->isChecked() ;
-		config[ "windowsSuccessfullyMountedList" ]  = _addList( m_ui->lineEditSuccessfullyMountedText->text() ) ;
-		config[ "executableName" ]              = executable ;
-		config[ "configFileNames" ]             = _addList( configFileNames ) ;
-		config[ "fuseNames" ]                   = _addList( fusenames ) ;
-		config[ "names" ]                       = _addList( names ) ;
-		config[ "failedToMountTextList" ]       = _addList( m_ui->lineEditFailedToMountText->text() ) ;
-		config[ "configFileArgument" ]          = m_ui->lineEditConfigFileArgument->text() ;
-		config[ "wrongPasswordText" ]           = password ;
-		config[ "wrongPasswordErrorCode" ]      = m_ui->lineEditWrongPasswordErrorCode->text() ;
-		config[ "requiresAPassword" ]           = m_ui->cbRequiresAPassword->isChecked() ;
-		config[ "autoMountsOnVolumeCreation" ]  = m_ui->cbAutoMountsOnVolumeCreation->isChecked() ;
-		config[ "backendRequireMountPath" ]     = true ;
-		config[ "autorefreshOnMountUnMount" ]   = true ;
-		config[ "backendTimeout" ]              = 0 ;
-		config[ "takesTooLongToUnlock" ]        = false ;
-		config[ "runsInBackGround" ]            = true ;
-		config[ "setsCipherPath" ]              = true ;
-		config[ "acceptsSubType" ]              = true ;
-		config[ "acceptsVolName" ]              = true ;
-		config[ "likeSsh" ]                     = false ;
+	if( config.passed() ){
 
 		config.toFile( path ) ;
-
-	}catch( const std::exception& e ){
-
-		_log_error( e.what(),path ) ;
-
-	}catch( ... ){
-
-		_log_error( "Unknown error has occured",path ) ;
 	}
 
 	this->Hide() ;

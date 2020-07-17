@@ -214,6 +214,11 @@ void zuluPolkit::gotConnection()
 
 	auto json = SirikaliJson( m.readAll() ) ;
 
+	if( json.failed() ){
+
+		_respond( m,"SiriPolkit: Failed To Parse Data" ) ;
+	}
+
 	auto password = json.getString( "password" ) ;
 	auto cookie   = json.getString( "cookie" ) ;
 	auto command  = json.getString( "command" ) ;

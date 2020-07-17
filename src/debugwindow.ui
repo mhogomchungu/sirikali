@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>debugWindow</class>
  <widget class="QWidget" name="debugWindow">
+  <property name="windowModality">
+   <enum>Qt::NonModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>

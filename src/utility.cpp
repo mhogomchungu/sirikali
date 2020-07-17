@@ -144,7 +144,7 @@ bool utility::platformIsNOTWindows()
 static QByteArray _cookie ;
 static QString _polkit_socket_path ;
 
-static debugWindow * _debugWindow ;
+static debugWindow * _debugWindow = nullptr ;
 
 static bool _use_polkit = false ;
 
@@ -183,12 +183,18 @@ void utility::setDebugWindow( debugWindow * w )
 
 static void _show_debug_window()
 {
-	_debugWindow->Show() ;
+	if( _debugWindow ){
+
+		_debugWindow->Show() ;
+	}
 }
 
 static void _set_debug_window_text( const QString& e )
 {
-	_debugWindow->UpdateOutPut( e,utility::debugEnabled() ) ;
+	if( _debugWindow ){
+
+		_debugWindow->UpdateOutPut( e,utility::debugEnabled() ) ;
+	}
 }
 
 void windowsDebugWindow( const QString& e,bool s )
@@ -282,7 +288,7 @@ void utility::Task::execute( const QString& exe,
 
 		s.write( [ & ]()->QByteArray{
 
-			SirikaliJson json( []( const QString& e ){ utility::debug() << e ; } ) ;
+			SirikaliJson json( utility::jsonLogger() ) ;
 
 			json[ "cookie" ]   = _cookie ;
 			json[ "password" ] = password ;
@@ -296,7 +302,7 @@ void utility::Task::execute( const QString& exe,
 
 		s.waitForReadyRead() ;
 
-		SirikaliJson json( s.readAll(),[]( const QString& e ){ utility::debug() << e ; } ) ;
+		SirikaliJson json( s.readAll(),utility::jsonLogger() ) ;
 
 		m_finished   = json.getBool( "finished" ) ;
 		m_exitCode   = json.getInterger( "exitCode" ) ;
@@ -360,9 +366,12 @@ utility::debug utility::debug::operator<<( const QString& e )
 }
 
 static QString _has_early_error_log ;
+static bool _early_boot = true ;
 
 void utility::applicationStarted()
 {
+	_early_boot = false ;
+
 	if( !_has_early_error_log.isEmpty() ){
 
 		utility::enableDebug( true ) ;
@@ -374,6 +383,11 @@ void utility::applicationStarted()
 
 		_show_debug_window() ;
 	}
+}
+
+bool utility::earlyBoot()
+{
+	return _early_boot ;
 }
 
 void utility::debug::showDebugWindow( const QString& e )
@@ -1454,4 +1468,22 @@ QString utility::removeLastPathComponent( const QString& e,char separator )
 	}
 
 	return separator + s.join( separator ) ;
+}
+
+std::function< void( const QString& ) > utility::jsonLogger()
+{
+	return []( const QString& e ){
+
+		if( utility::earlyBoot() ){
+
+			if( e.startsWith( "Error" ) ){
+
+				utility::debug::logErrorWhileStarting( e ) ;
+			}else{
+				utility::debug() << e ;
+			}
+		}else{
+			utility::debug() << e ;
+		}
+	} ;
 }

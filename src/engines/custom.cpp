@@ -79,36 +79,22 @@ static void _parse( engines::engine::BaseOptions& s,const SirikaliJson& json )
 
 static utility2::result< engines::engine::BaseOptions > _getOptions( QFile& f )
 {
-	auto _log_error = []( const QString& msg,const QString& path ){
+	engines::engine::BaseOptions s ;
 
-		auto a = "\nFailed To Parse File For Reading: " + path ;
+	SirikaliJson json( f,utility::jsonLogger() ) ;
 
-		utility::debug::logErrorWhileStarting( msg + a ) ;
-	} ;
-
-	try{
-		engines::engine::BaseOptions s ;
-
-		SirikaliJson json( f,[]( const QString& e ){ utility::debug() << e ; } ) ;
+	if( json.passed() ){
 
 		_parse( s,json ) ;
 
 		return s ;
-
-	}catch( const std::exception& e ){
-
-		_log_error( e.what(),f.fileName() ) ;
-
-	}catch( ... ){
-
-		_log_error( "Unknown Error Has Occured in File: ",f.fileName() ) ;
+	}else{
+		return {} ;
 	}
-
-	return {} ;
 }
 
 static void _add_engines( const QString& path,
-			  std::vector< std::unique_ptr< engines::engine >>& engines )
+			  std::vector< std::unique_ptr< engines::engine > >& engines )
 {
 	QFile file ;
 

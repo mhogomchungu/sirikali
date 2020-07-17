@@ -217,11 +217,11 @@ static engines::engine::cmdStatus _unmount( const engines::engine::unMount& e )
 
 engines::engine::cmdStatus siritask::encryptedFolderUnMount( const siritask::unmount& e )
 {
-	auto fav = favorites::instance().readFavorite( e.cipherFolder,e.mountPoint ) ;
+	const auto& fav = favorites::instance().readFavorite( e.cipherFolder,e.mountPoint ) ;
 
-	if( fav.has_value() ){
+	if( fav.hasValue() ){
 
-		const auto& m = fav.value() ;
+		const auto& m = fav ;
 
 		auto& a = e.cipherFolder ;
 		auto& b = e.mountPoint ;
@@ -284,11 +284,9 @@ static utility::Task _run_task_0( const run_task& e )
 
 static utility::Task _run_task( const run_task& e )
 {
-	auto fav = favorites::instance().readFavorite( e.opts.cipherFolder,e.opts.mountPoint ) ;
+	const auto& m = favorites::instance().readFavorite( e.opts.cipherFolder,e.opts.mountPoint ) ;
 
-	if( fav.has_value() ){
-
-		const auto& m = fav.value() ;
+	if( m.hasValue() ){
 
 		auto& a = e.opts.cipherFolder ;
 		auto& b = e.opts.mountPoint ;

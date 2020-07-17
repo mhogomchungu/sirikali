@@ -56,7 +56,7 @@ class sirikali ;
 class sirikali : public QWidget
 {
 	Q_OBJECT
-public:
+public:	
 	sirikali( const QStringList& ) ;
 	int start( QApplication& ) ;
 	~sirikali() ;
@@ -148,6 +148,8 @@ private:
 
 	Ui::sirikali * m_ui = nullptr ;
 
+	debugWindow m_debugWindow ;
+
 	secrets m_secrets ;
 
 	settings::translator m_translator ;
@@ -183,8 +185,6 @@ private:
 	checkUpdates m_checkUpdates ;
 
 	configOptions m_configOptions ;
-
-	debugWindow m_debugWindow ;
 
 	systemSignalHandler m_signalHandler ;
 

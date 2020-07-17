@@ -556,50 +556,29 @@ fscrypt::unlockedVolumeList::unlockedVolumeList() :
 {
 }
 
-static void _log_error( const QString& msg,const QString& path )
-{
-	auto a = "\nFailed To Parse Fscrypt Config File: " + path ;
-	utility::debug() << msg + a ;
-}
-
 QStringList fscrypt::unlockedVolumeList::getList() const
 {
-	try {
-		SirikaliJson json( QFile( m_configFilePath ),
-				   []( const QString& e ){ utility::debug() << e ; } ) ;
+	SirikaliJson json( QFile( m_configFilePath ),utility::jsonLogger() ) ;
+
+	if( json.passed() ){
 
 		return json.getStringList( m_keyName ) ;
-
-	}catch( const std::exception& e ){
-
-		_log_error( e.what(),m_configFilePath ) ;
-
-	}catch( ... ){
-
-		_log_error( "Unknown Error Has Occured in File: ",m_configFilePath ) ;
+	}else {
+		return {} ;
 	}
-
-	return {} ;
 }
 
 void fscrypt::unlockedVolumeList::updateList( const QStringList& e )
 {
-	try {
-		SirikaliJson json( []( const QString& e ){ utility::debug() << e ; } ) ;
+	SirikaliJson json( utility::jsonLogger() ) ;
 
-		json[ m_keyName ] = e ;
+	json[ m_keyName ] = e ;
+
+	if( json.passed() ){
 
 		QFile::remove( m_configFilePath ) ;
 
 		json.toFile( m_configFilePath ) ;
-
-	}catch( const std::exception& e ){
-
-		_log_error( e.what(),m_configFilePath ) ;
-
-	}catch( ... ){
-
-		_log_error( "Unknown error has occured",m_configFilePath ) ;
 	}
 }
 

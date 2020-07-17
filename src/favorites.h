@@ -21,15 +21,16 @@
 #define FAVORITES_H
 
 #include <QString>
+
 #include <vector>
+#include <forward_list>
+
 #include "utility.h"
 #include "json_parser.hpp"
 
 class favorites
 {
 public:
-	enum class type{ sshfs,others } ;
-
 	class triState{
 	public:
 		triState() : m_state( triState::STATES::UNDEFINED )
@@ -110,6 +111,11 @@ public:
 		entry() ;
 		entry( const QString& volumePath ) ;
 
+		bool hasValue() const
+		{
+			return !volumePath.isEmpty() ;
+		}
+
 		QString volumePath ;
 		QString mountPointPath ;
 		QString configFilePath ;
@@ -120,6 +126,9 @@ public:
 		QString postMountCommand ;
 		QString preUnmountCommand ;
 		QString postUnmountCommand ;
+		QString internalConfigPath ;
+
+		QByteArray password ;
 
 		bool reverseMode = false ;
 		bool volumeNeedNoPassword = false ;
@@ -134,7 +143,30 @@ public:
 		return m ;
 	}
 
-	using volumeList = std::vector< std::pair< favorites::entry,QByteArray > > ;
+	struct volEntry{
+
+		volEntry( const favorites::entry& e ) :
+			favorite( e ),password( e.password )
+		{
+		}
+		volEntry( const favorites::entry& e,QByteArray s ) :
+			favorite( e ),password( std::move( s ) )
+		{
+		}
+		const favorites::entry& favorite ;
+		QByteArray password ;
+	};
+
+	class temporaryFavoriteEntries{
+	public:
+		void clear() ;
+		const favorites::entry& add( favorites::entry e ) ;
+	private:
+		std::forward_list< favorites::entry > m_tmpFavoriteList ;
+		std::forward_list< favorites::entry >::iterator m_iter ;
+	} ;
+
+	using volumeList = std::vector< volEntry > ;
 
 	enum class error{ ENTRY_ALREADY_EXISTS,FAILED_TO_CREATE_ENTRY,SUCCESS } ;
 
@@ -143,14 +175,24 @@ public:
 	void replaceFavorite( const favorites::entry&, const favorites::entry& ) ;
 	void removeFavoriteEntry( const favorites::entry& ) ;
 
-	std::vector< favorites::entry > readFavorites() const ;
+	const std::vector< favorites::entry >& readFavorites() const ;
 
-	utility2::result< favorites::entry > readFavorite( const QString&,const QString& = QString() ) const ;
+	volumeList readVolumeList() const ;
 
-	utility2::result< favorites::entry > readFavoriteByPath( const QString& ) const ;
+	const favorites::entry& readFavoriteByPath( const QString& configPath ) const ;
 
+	favorites::entry readFavoriteByFileSystemPath( const QString& configPath ) const ;
 
-	void updateFavorites() ;
+	const favorites::entry& readFavorite( const QString& volumePath,
+					      const QString& mountPath = QString() ) const ;
+
+	favorites::temporaryFavoriteEntries& getTmpFavoriteEntries() ;
+
+	favorites() ;
+private:
+	std::vector< favorites::entry > m_favorites ;
+	favorites::entry m_empty ;
+	favorites::temporaryFavoriteEntries m_tmpFe ;
 };
 
 #endif // FAVORITES_H

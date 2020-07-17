@@ -1080,17 +1080,18 @@ void favorites2::updateFavorite( bool edit )
 	}() ;
 
 	favorites::entry e ;
-	e.volumePath = dev_path ;
-	e.mountPointPath = path ;
-	e.autoMount = m_ui->cbAutoMount->isChecked() ;
-	e.configFilePath = configPath ;
-	e.idleTimeOut = idleTimeOUt ;
-	e.mountOptions = mOpts ;
+
+	e.volumePath           = dev_path ;
+	e.mountPointPath       = path ;
+	e.autoMount            = m_ui->cbAutoMount->isChecked() ;
+	e.configFilePath       = configPath ;
+	e.idleTimeOut          = idleTimeOUt ;
+	e.mountOptions         = mOpts ;
 	e.volumeNeedNoPassword = m_ui->cbVolumeNoPassword->isChecked() ;
-	e.preMountCommand = m_ui->lineEditPreMount->text() ;
-	e.preUnmountCommand = m_ui->lineEditPreUnMount->text() ;
-	e.postMountCommand = m_ui->lineEditPostMount->text() ;
-	e.postUnmountCommand = m_ui->lineEditPostUnmount->text() ;
+	e.preMountCommand      = m_ui->lineEditPreMount->text() ;
+	e.preUnmountCommand    = m_ui->lineEditPreUnMount->text() ;
+	e.postMountCommand     = m_ui->lineEditPostMount->text() ;
+	e.postUnmountCommand   = m_ui->lineEditPostUnmount->text() ;
 
 	if( edit ){
 

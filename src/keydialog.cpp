@@ -106,7 +106,7 @@ keyDialog::keyDialog( QWidget * parent,
 
 	for( auto&& it : z ){
 
-		if( it.first.autoMount.True() && !it.second.isEmpty() ){
+		if( it.favorite.autoMount.True() && !it.password.isEmpty() ){
 
 			m_volumes.emplace_back( std::move( it ) ) ;
 		}else{
@@ -374,7 +374,7 @@ void keyDialog::setVolumeToUnlock()
 
 	m_counter++ ;
 
-	this->setUpVolumeProperties( m.first,m.second ) ;
+	this->setUpVolumeProperties( m.favorite,m.password ) ;
 
 	auto a = QString::number( m_counter ) ;
 	auto b = QString::number( m_volumes.size() ) ;
@@ -384,7 +384,7 @@ void keyDialog::setVolumeToUnlock()
 		this->windowSetTitle( tr( "(%1/%2) Unlocking \"%3\"" ).arg( a,b,m_path ) ) ;
 	}
 
-	this->autoMount( m.first,m.second ) ;
+	this->autoMount( m.favorite,m.password ) ;
 }
 
 void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key )
@@ -639,11 +639,11 @@ void keyDialog::pbOptions()
 
 			m_checked = true ;
 
-			auto f = favorites::instance().readFavorite( m_path ) ;
+			const auto& f = favorites::instance().readFavorite( m_path ) ;
 
-			if( f.has_value() ){
+			if( f.hasValue() ){
 
-				m_mountOptions = f.value() ;
+				m_mountOptions = f ;
 			}
 		}
 

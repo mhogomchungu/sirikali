@@ -300,6 +300,8 @@ namespace utility
 	void logCommandOutPut( const ::Task::process::result&,const QString&,const QStringList& ) ;
 	void logCommandOutPut( const QString& ) ;
 
+	std::function< void( const QString& ) > jsonLogger() ;
+
 	void setDebugWindow( debugWindow * ) ;
 	void polkitFailedWarning( std::function< void() > ) ;
 	bool useSiriPolkit( void ) ;
@@ -312,6 +314,7 @@ namespace utility
 	void licenseInfo( QWidget * ) ;
 
 	void applicationStarted() ;
+	bool earlyBoot() ;
 
 	QString removeOption( const QStringList&,const QString& option ) ;
 	QString removeOption( const QString& commaSeparatedString,const QString& option ) ;
