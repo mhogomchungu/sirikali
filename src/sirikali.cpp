@@ -902,12 +902,19 @@ void sirikali::mountMultipleVolumes( favorites::volumeList e )
 
 		this->disableAll() ;
 
+		auto done = [ this ](){
+
+			m_runningDropEvent = false ;
+			m_disableEnableAll = false ;
+			this->enableAll() ;
+		} ;
+
 		keyDialog::instance( this,
 				     m_secrets,
 				     m_autoOpenFolderOnMount,
 				     m_folderOpener,
 				     std::move( e ),
-				     [ this ](){ m_disableEnableAll = false ; this->enableAll() ; },
+				     std::move( done ),
 				     [ this ](){ this->updateList() ; } ) ;
 	}
 }
@@ -1348,10 +1355,18 @@ void sirikali::dragEnterEvent( QDragEnterEvent * e )
 template< typename Function >
 struct Struct
 {
-	favorites& fentries ;
 	favorites::temporaryFavoriteEntries& tmpFe ;
-	Function& function ;
+	const favorites& fentries ;
+	const Function& function ;
 } ;
+
+template< typename T >
+static struct Struct< T > _make_str( favorites& f,
+				     favorites::temporaryFavoriteEntries& e,
+				     const T& t )
+{
+	return Struct< T >{ e,f,t } ;
+}
 
 template< typename T >
 static void _folder_entry( const QString& path,
@@ -1407,7 +1422,7 @@ static void _file_entry( const QString& path,
 }
 
 template< typename T >
-static favorites::volumeList _processMountEvents( const QStringList& paths,const T& str )
+static favorites::volumeList _events( const QStringList& paths,const T& str )
 {
 	favorites::volumeList volumeList ;
 
@@ -1432,6 +1447,13 @@ static favorites::volumeList _processMountEvents( const QStringList& paths,const
 
 void sirikali::dropEvent( QDropEvent * e )
 {
+	if( m_runningDropEvent ){
+
+		return ;
+	}
+
+	m_runningDropEvent = true ;
+
 	auto& ff = favorites::instance() ;
 
 	auto& s = ff.getTmpFavoriteEntries() ;
@@ -1466,28 +1488,22 @@ void sirikali::dropEvent( QDropEvent * e )
 
 		if( wallet.open() ){
 
-			auto function = [ & ]( const QString& e ){
+			auto l = _events( list,_make_str( ff,s,[ & ]( const QString& e ){
 
 				return wallet->readValue( e ) ;
-			} ;
+			} ) ) ;
 
-			Struct< decltype( function ) > z{ ff,s,function } ;
-
-			this->mountMultipleVolumes( _processMountEvents( list,z ) ) ;
+			this->mountMultipleVolumes( std::move( l ) ) ;
 
 			return ;
 		}
 	}
 
-	auto function = [ & ]( const QString& e ){
+	this->mountMultipleVolumes( _events( list,_make_str( ff,s,[ & ]( const QString& e ){
 
 		Q_UNUSED( e )
 		return QByteArray() ;
-	} ;
-
-	Struct< decltype( function ) > z{ ff,s,function } ;
-
-	this->mountMultipleVolumes( _processMountEvents( list,z ) ) ;
+	} ) ) ) ;
 }
 
 void sirikali::createVolume( QAction * ac )
