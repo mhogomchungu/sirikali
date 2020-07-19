@@ -103,6 +103,13 @@ static favorites::entry _favorites( const QString& path )
 
 favorites::favorites()
 {
+	this->reload() ;
+}
+
+void favorites::reload()
+{
+	m_favorites.clear() ;
+
 	const auto m = _config_path() ;
 
 	if( m.has_value() ){
@@ -159,7 +166,7 @@ favorites::error favorites::add( const favorites::entry& e )
 	}else{
 		if( json.passed() && json.toFile( a ) ){
 
-			m_favorites.emplace_back( e ) ;
+			this->reload() ;
 			return error::SUCCESS ;
 		}else{
 			utility::debug() << "Failed To Create Favorite Entry" ;
@@ -250,17 +257,7 @@ void favorites::removeFavoriteEntry( const favorites::entry& e )
 
 		QFile( s ).remove() ;
 
-		for( auto it = m_favorites.begin() ; it != m_favorites.end() ; it++ ){
-
-			const favorites::entry& s = *it ;
-
-			if( s.volumePath == e.volumePath && s.mountPointPath == e.mountPointPath ){
-
-				m_favorites.erase( it ) ;
-
-				break ;
-			}
-		}
+		this->reload() ;
 	}
 }
 

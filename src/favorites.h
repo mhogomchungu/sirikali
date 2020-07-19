@@ -190,6 +190,7 @@ public:
 
 	favorites() ;
 private:
+	void reload() ;
 	std::vector< favorites::entry > m_favorites ;
 	favorites::entry m_empty ;
 	favorites::temporaryFavoriteEntries m_tmpFe ;
