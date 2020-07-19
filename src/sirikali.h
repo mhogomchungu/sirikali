@@ -189,8 +189,6 @@ private:
 	systemSignalHandler m_signalHandler ;
 
 	const QStringList& m_argumentList ;
-
-	bool m_runningDropEvent = false ;
 };
 
 #endif // MAINWINDOW_H

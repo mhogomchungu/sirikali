@@ -904,10 +904,12 @@ void sirikali::mountMultipleVolumes( favorites::volumeList e )
 
 		auto done = [ this ](){
 
-			m_runningDropEvent = false ;
+			this->setAcceptDrops( true ) ;
 			m_disableEnableAll = false ;
 			this->enableAll() ;
 		} ;
+
+		this->setAcceptDrops( false ) ;
 
 		keyDialog::instance( this,
 				     m_secrets,
@@ -1447,13 +1449,6 @@ static favorites::volumeList _events( const QStringList& paths,const T& str )
 
 void sirikali::dropEvent( QDropEvent * e )
 {
-	if( m_runningDropEvent ){
-
-		return ;
-	}
-
-	m_runningDropEvent = true ;
-
 	auto& ff = favorites::instance() ;
 
 	auto& s = ff.getTmpFavoriteEntries() ;
