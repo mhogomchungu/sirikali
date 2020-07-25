@@ -1420,41 +1420,46 @@ engines::engine::args::args()
 {
 }
 
-void engines::engine::encodeSpecialCharacters( QString& e )
-{
-	struct args{
+struct _args{
 
-		const char * first ;
-		const char * second ;
-	} ;
+	const char * first ;
+	const char * second ;
 
-	static std::vector< args > s{ { ",","SiriKaliSpecialCharacter001" } } ;
+	template< typename T >
+	static void replace( QString& e,const T& s )
+	{
+		for( const auto& it : s ){
 
-	for( const auto& it : s ){
-
-		e.replace( it.first,it.second ) ;
+			e.replace( it.first,it.second ) ;
+		}
 	}
+} ;
+
+static void _replace( QString& e )
+{
+	Q_UNUSED( e )
 }
 
+template< typename B,typename ... C >
+static void _replace( QString& a,B&& b,C&& ... c )
+{
+	a.replace( b.first,b.second ) ;
+
+	_replace( a,std::forward< C >( c ) ... ) ;
+}
+
+void engines::engine::encodeSpecialCharacters( QString& e )
+{
+	_replace( e,std::make_pair( ",","SiriKaliSpecialCharacter001" ) ) ;
+}
 
 void engines::engine::decodeSpecialCharacters( QString& e )
 {
-	struct args{
-
-		const char * first ;
-		const char * second ;
-	} ;
-
-	static std::vector< args > s{ { "SiriKaliSpecialCharacter001","," },
-				      { "\\012","\n" },
-				      { "\\040"," " },
-				      { "\\134","\\" },
-				      { "\\011","\\t" } } ;
-
-	for( const auto& it : s ){
-
-		e.replace( it.first,it.second ) ;
-	}
+	_replace( e,std::make_pair( "SiriKaliSpecialCharacter001","," ),
+		    std::make_pair( "\\012","\n" ),
+		    std::make_pair( "\\040"," " ),
+		    std::make_pair( "\\134","\\" ),
+		    std::make_pair( "\\011","\\t" ) ) ;
 }
 
 QString engines::engine::decodeSpecialCharactersConst( const QString& e )

@@ -63,7 +63,7 @@ QByteArray crypto::hmac_key( const QString& keyFile,const QString& password )
 {
 	return Task::await( [ & ](){
 
-		QMessageAuthenticationCode hmac( QCryptographicHash::Sha256,password.toLatin1() ) ;
+		QMessageAuthenticationCode hmac( QCryptographicHash::Sha256,password.toUtf8() ) ;
 
 		QFile file( keyFile ) ;
 
@@ -77,6 +77,12 @@ QByteArray crypto::hmac_key( const QString& keyFile,const QString& password )
 
 		return QByteArray() ;
 	} ) ;
+}
+
+QByteArray crypto::hmac_key( const QString& password )
+{
+	QMessageAuthenticationCode hmac( QCryptographicHash::Sha256,password.toUtf8() ) ;
+	return hmac.result().toHex() ;
 }
 
 QByteArray crypto::sha256( const QString& e )

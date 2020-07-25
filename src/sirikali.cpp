@@ -708,13 +708,20 @@ void sirikali::cliCommand( const QStringList& l )
 
 		auto e = utility::cmdArgumentValue( l,"-f" ) ;
 
-		auto s = crypto::hmac_key( e,utility::readPassword() ) ;
+		if( e.isEmpty() ){
 
-		if( s.isEmpty() ){
+			auto s = crypto::hmac_key( utility::readPassword() ) ;
 
-			return this->closeApplication( 1 ) ;
+			return this->closeApplication( 0,std::move( s ) ) ;
 		}else{
-			return this->closeApplication( 0,s ) ;
+			auto s = crypto::hmac_key( e,utility::readPassword() ) ;
+
+			if( s.isEmpty() ){
+
+				return this->closeApplication( 1 ) ;
+			}else{
+				return this->closeApplication( 0,std::move( s ) ) ;
+			}
 		}
 	}
 
