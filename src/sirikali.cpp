@@ -338,26 +338,20 @@ void sirikali::showTrayIconWhenReady()
 
 void sirikali::showTrayIcon()
 {
-	auto _show_tray = [ & ]{
-
-		QMetaObject::invokeMethod( this,"showTrayIconWhenReady",Qt::QueuedConnection ) ;
-	} ;
-
 	for( int i = 0 ; i < 10 ; i++ ){
 
 		if( QSystemTrayIcon::isSystemTrayAvailable() ){
 
-			return _show_tray() ;
+			return m_trayIcon.show() ;
 		}else{
-			utility::waitForOneSecond();
+			utility::waitForOneSecond() ;
 		}
 	}
-
 	/*
 	 * The tray doesnt seem to be ready yet but we cant wait any longer,just display it and
 	 * hope for the best.
 	 */
-	_show_tray() ;
+	m_trayIcon.show() ;
 }
 
 void sirikali::setUpAppMenu()
