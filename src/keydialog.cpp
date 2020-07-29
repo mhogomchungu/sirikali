@@ -72,7 +72,7 @@ keyDialog::keyDialog( QWidget * parent,
 		      secrets& s,
 		      bool o,
 		      const QString& q,
-		      favorites::volumeList z,
+		      keyDialog::volumeList z,
 		      std::function< void() > f,
 		      std::function< void() > g ) :
 	QDialog( parent ),
@@ -102,11 +102,13 @@ keyDialog::keyDialog( QWidget * parent,
 	 * 2. Have password.
 	 */
 
-	favorites::volumeList b ;
+	keyDialog::volumeList b ;
 
 	for( auto&& it : z ){
 
-		if( it.favorite.autoMount.True() && !it.password.isEmpty() ){
+		const auto& e = it.volEntry ;
+
+		if( e.favorite.autoMount.True() && !e.password.isEmpty() ){
 
 			m_volumes.emplace_back( std::move( it ) ) ;
 		}else{
@@ -129,13 +131,15 @@ keyDialog::keyDialog( QWidget * parent,
 	}
 }
 
-void keyDialog::autoMount( const favorites::entry& e,const QByteArray& key )
+void keyDialog::autoMount( const keyDialog::entry& ee )
 {
+	const auto& e = ee.volEntry.favorite ;
+
 	if( e.volumeNeedNoPassword ){		
 
 		this->openVolume() ;
 	}else{
-		if( e.autoMount.True() && !key.isEmpty() ){
+		if( e.autoMount.True() && !ee.volEntry.password.isEmpty() ){
 
 			this->openVolume() ;
 		}
@@ -158,19 +162,17 @@ void keyDialog::unlockVolume()
  *
  */
 keyDialog::keyDialog( QWidget * parent,secrets& s,
-		      const volumeInfo& e,
 		      std::function< void() > p,
 		      std::function< void() > l,
 		      bool o,
 		      const QString& q,
-		      const QString& exe,
-		      const QByteArray& key ) :
+		      const QString& exe ) :
 	QDialog( parent ),
 	m_ui( new Ui::keyDialog ),
 	m_exe( exe ),
 	m_fileManagerOpen( q ),
 	m_autoOpenMountPoint( o ),
-	m_create( e.isNotValid() ),
+	m_create( true ),
 	m_secrets( s ),
 	m_settings( settings::instance() ),
 	m_engine( m_exe ),
@@ -187,12 +189,9 @@ keyDialog::keyDialog( QWidget * parent,secrets& s,
 
 	this->setUpInitUI() ;
 
-	this->setUpVolumeProperties( e,key ) ;
+	this->setUpVolumeProperties( { favorites::instance().unknown() } ) ;
 
-	if( m_create ){
-
-		m_ui->lineEditMountPoint->setText( QString() ) ;
-	}
+	m_ui->lineEditMountPoint->setText( QString() ) ;
 
 	this->ShowUI() ;
 }
@@ -370,11 +369,11 @@ void keyDialog::setUpInitUI()
 
 void keyDialog::setVolumeToUnlock()
 {
-	const auto& m = m_volumes[ m_counter ] ;
+	const auto& s = m_volumes[ m_counter ] ;
 
 	m_counter++ ;
 
-	this->setUpVolumeProperties( m.favorite,m.password ) ;
+	this->setUpVolumeProperties( s ) ;
 
 	auto a = QString::number( m_counter ) ;
 	auto b = QString::number( m_volumes.size() ) ;
@@ -384,15 +383,90 @@ void keyDialog::setVolumeToUnlock()
 		this->windowSetTitle( tr( "(%1/%2) Unlocking \"%3\"" ).arg( a,b,m_path ) ) ;
 	}
 
-	this->autoMount( m.favorite,m.password ) ;
+	this->autoMount( s ) ;
 }
 
-void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key )
+QString keyDialog::mountPointPath( const engines::engine& engine,
+				   const QString& cipherPath,
+				   const QString& moutPointPath,
+				   settings& settings,
+				   bool reUseMountPoint,
+				   const std::function< void() >& function )
 {
-	m_path             = e.volumePath() ;
-	m_mountOptions     = e ;
+	if( engine.known() && !engine.backendRequireMountPath() ){
+
+		return QObject::tr( "Not Used" ) ;
+	}
+
+	auto m = moutPointPath ;
+
+	if( utility::platformIsWindows() ){
+
+		function() ;
+
+		if( m.isEmpty() ){
+
+			if( settings.windowsUseMountPointPath( engine ) ){
+
+				auto mm = settings.windowsMountPointPath() ;
+
+				utility::createFolder( mm ) ;
+
+				return mm + utility::split( cipherPath,'/' ).last() ;
+			}else{
+				return utility::freeWindowsDriveLetter() ;
+			}
+		}else{
+			return m ;
+		}
+	}
+
+	if( m.startsWith( "/" ) ){
+
+		if( reUseMountPoint ){
+
+			return m ;
+		}else{
+			auto y = m ;
+			auto r = y.lastIndexOf( '/' ) ;
+
+			if( r != -1 ){
+
+				y.truncate( r ) ;
+			}
+
+			return y + "/" + utility::mountPathPostFix( m,m.split( '/' ).last() ) ;
+		}
+	}else{
+		if( reUseMountPoint ){
+
+			if( m.isEmpty() ){
+
+				return settings.mountPath( cipherPath.split( "/" ).last() ) ;
+			}else{
+				return settings.mountPath( m.split( "/" ).last() ) ;
+			}
+		}else{
+			return settings.mountPath( [ & ](){
+
+				if( m.isEmpty() ){
+
+					return utility::mountPathPostFix( cipherPath.split( "/" ).last() ) ;
+				}else{
+					return utility::mountPathPostFix( m ) ;
+				}
+			}() ) ;
+		}
+	}
+}
+
+void keyDialog::setUpVolumeProperties( const keyDialog::entry& ee )
+{
 	m_working          = false ;
-	m_favoriteReadOnly = e.mountReadOnly() ;
+	const auto& e      = ee.volEntry.favorite ;
+	m_path             = e.volumePath ;
+	m_mountOptions     = e ;
+	m_favoriteReadOnly = e.readOnlyMode ;
 
 	if( m_favoriteReadOnly.defined() ){
 
@@ -407,7 +481,7 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 		}
 	}
 
-	m_ui->lineEditKey->setText( key ) ;
+	m_ui->lineEditKey->setText( ee.volEntry.password ) ;
 
 	this->setUIVisible( true ) ;
 
@@ -419,7 +493,12 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 		m_ui->lineEditMountPoint->setFocus() ;
 	}else{
-		m_engine = { m_path,m_mountOptions.configFile } ;
+		if( ee.engine->known() ){
+
+			m_engine = ee.engine ;
+		}else{
+			m_engine = { m_path,m_mountOptions.configFile } ;
+		}
 
 		m_ui->pbMountPoint_1->setEnabled( m_engine->supportsMountPathsOnWindows() ) ;
 
@@ -482,7 +561,7 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 
 		m_ui->pbOptions->setMenu( m ) ;
 
-		if( key.isEmpty() ){
+		if( ee.volEntry.password.isEmpty() ){
 
 			m_ui->lineEditKey->setFocus() ;
 		}else{
@@ -490,76 +569,15 @@ void keyDialog::setUpVolumeProperties( const volumeInfo& e,const QByteArray& key
 		}
 	}
 
-	m_ui->lineEditMountPoint->setText( [ & ]()->QString{
+	auto function = [ this ](){
 
-		if( m_engine->known() && !m_engine->backendRequireMountPath() ){
+		utility::setWindowsMountPointOptions( this,m_ui->lineEditMountPoint,m_ui->pbMountPoint ) ;
+	} ;
 
-			return tr( "Not Used" ) ;
-		}
+	auto s = keyDialog::mountPointPath( m_engine.get(),m_path,e.mountPointPath,
+					    m_settings,m_reUseMountPoint,function ) ;
 
-		auto m = e.mountPoint() ;
-
-		if( utility::platformIsWindows() ){
-
-			utility::setWindowsMountPointOptions( this,
-							      m_ui->lineEditMountPoint,
-							      m_ui->pbMountPoint ) ;
-
-			if( m.isEmpty() ){
-
-				if( m_settings.windowsUseMountPointPath( m_engine.get() ) ){
-
-					auto mm = m_settings.windowsMountPointPath() ;
-
-					utility::createFolder( mm ) ;
-
-					return mm + utility::split( m_path,'/' ).last() ;
-				}else{
-					return utility::freeWindowsDriveLetter() ;
-				}
-			}else{
-				return m ;
-			}
-		}
-
-		if( m.startsWith( "/" ) ){
-
-			if( m_reUseMountPoint ){
-
-				return m ;
-			}else{
-				auto y = m ;
-				auto r = y.lastIndexOf( '/' ) ;
-
-				if( r != -1 ){
-
-					y.truncate( r ) ;
-				}
-
-				return y + "/" + utility::mountPathPostFix( m,m.split( '/' ).last() ) ;
-			}
-		}else{
-			if( m_reUseMountPoint ){
-
-				if( m.isEmpty() ){
-
-					return m_settings.mountPath( m_path.split( "/" ).last() ) ;
-				}else{
-					return m_settings.mountPath( m.split( "/" ).last() ) ;
-				}
-			}else{
-				return m_settings.mountPath( [ &m,this ](){
-
-					if( m.isEmpty() ){
-
-						return utility::mountPathPostFix( m_path.split( "/" ).last() ) ;
-					}else{
-						return utility::mountPathPostFix( m ) ;
-					}
-				}() ) ;
-			}
-		}
-	}() ) ;
+	m_ui->lineEditMountPoint->setText( s ) ;
 }
 
 void keyDialog::setDefaultUI()

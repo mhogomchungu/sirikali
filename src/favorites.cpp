@@ -212,6 +212,11 @@ favorites::entry favorites::readFavoriteByFileSystemPath( const QString& path ) 
 	return _favorites( path ) ;
 }
 
+const favorites::entry& favorites::unknown() const
+{
+	return m_empty ;
+}
+
 const favorites::entry& favorites::readFavorite( const QString& volumePath,
 						 const QString& mountPath ) const
 {
@@ -265,9 +270,9 @@ favorites::entry::entry()
 {
 }
 
-favorites::entry::entry( const QString& e )
+favorites::entry::entry( const QString& e,const QString& mountPath ) :
+	volumePath( e ),mountPointPath( mountPath )
 {
-	volumePath = e ;
 }
 
 void favorites::temporaryFavoriteEntries::clear()

@@ -41,6 +41,7 @@
 #include "debugwindow.h"
 #include "settings.h"
 #include "systemsignalhandler.h"
+#include "keydialog.h"
 
 #include <vector>
 
@@ -110,7 +111,13 @@ private:
 
 	void showTrayIcon() ;
 
-	void mountMultipleVolumes( favorites::volumeList ) ;
+	void mountMultipleVolumes( keyDialog::volumeList ) ;
+
+	void autoMount( keyDialog::volumeList&,
+			const keyDialog::entry&,
+			const QByteArray&,
+			bool,
+			bool ) ;
 
 	QString resolveFavoriteMountPoint( const QString& ) ;
 
@@ -134,7 +141,7 @@ private:
 	void showMainWindow( void ) ;
 	void raiseWindow( const QString& = QString() ) ;
 	void autoUnlockVolumes( const std::vector< volumeInfo >& ) ;	
-	favorites::volumeList autoUnlockVolumes( favorites::volumeList,bool = false ) ;
+	keyDialog::volumeList autoUnlockVolumes( favorites::volumeList,bool = false ) ;
 
 	struct mountedEntry{
 		const QString& cipherPath ;

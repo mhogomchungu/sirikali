@@ -109,7 +109,7 @@ public:
 	struct entry
 	{
 		entry() ;
-		entry( const QString& volumePath ) ;
+		entry( const QString& volumePath,const QString& mountPath = QString() ) ;
 
 		bool hasValue() const
 		{
@@ -182,6 +182,8 @@ public:
 	const favorites::entry& readFavoriteByPath( const QString& configPath ) const ;
 
 	favorites::entry readFavoriteByFileSystemPath( const QString& configPath ) const ;
+
+	const favorites::entry& unknown() const ;
 
 	const favorites::entry& readFavorite( const QString& volumePath,
 					      const QString& mountPath = QString() ) const ;
