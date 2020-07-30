@@ -383,9 +383,11 @@ void sirikali::showTrayIcon()
 				 * longer,just display it and hope for the best.
 				 */
 
+				utility::debug() << "TimeOut Waiting For System Tray to Become Available" ;
+
 				m_trayIcon.show() ;
 
-				return false ;
+				return true ;
 			}else{
 				utility::debug() << "Waiting For System Tray To Become Available" ;
 
