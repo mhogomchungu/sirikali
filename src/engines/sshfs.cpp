@@ -66,9 +66,14 @@ static engines::engine::BaseOptions _setOptions()
 
 	if( utility::platformIsWindows() ){
 
+		s.autoCreatesMountPoint = true ;
+		s.autoDeletesMountPoint = true ;
+
 		s.minimumVersion = "3.5.2" ;
 		s.sshOptions = "create_file_umask=0000,create_dir_umask=0000,umask=0000,idmap=user,StrictHostKeyChecking=no,UseNetworkDrive=no" ;
 	}else{
+		s.autoCreatesMountPoint = false ;
+		s.autoDeletesMountPoint = false ;
 		s.sshOptions = "idmap=user,StrictHostKeyChecking=no" ;
 	}
 
@@ -144,13 +149,6 @@ void sshfs::updateOptions( engines::engine::commandOptions& opts,
 					exeOptions.add ( "--VolumePrefix=\\mysshfs\\" + x ) ;
 				}
 			}
-		}else{
-			/*
-			 * A user is trying to use a folder as a mount path and sshfs
-			 * requires the mount path to not exist and we are deleting
-			 * it because SiriKali created it previously.
-			 */
-			utility::removeFolder( args.mountPoint,5 ) ;
 		}
 	}
 

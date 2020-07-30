@@ -65,9 +65,15 @@ static engines::engine::BaseOptions _setOptions()
 
 	if( utility::platformIsWindows() ){
 
+		s.autoCreatesMountPoint = true ;
+		s.autoDeletesMountPoint = true ;
+
 		s.mountControlStructure  = "-f --stdinpass %{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
 		s.createControlStructure = "-f --stdinpass --standard %{createOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
 	}else{
+		s.autoCreatesMountPoint  = false ;
+		s.autoDeletesMountPoint  = false ;
+
 		s.mountControlStructure  = "--stdinpass %{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
 		s.createControlStructure = "--stdinpass --standard %{createOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
 	}
@@ -85,19 +91,6 @@ engines::engine::args encfs::command( const QByteArray& password,
 				      const engines::engine::cmdArgsList& args,
 				      bool create ) const
 {
-	if( utility::platformIsWindows() ){
-
-		if( !utility::isDriveLetter( args.mountPoint ) ){
-
-			/*
-			 * A user is trying to use a folder as a mount path and cryfs
-			 * requires the mount path to not exist and we are deleting
-			 * it because SiriKali created it previously.
-			 */
-			utility::removeFolder( args.mountPoint,5 ) ;
-		}
-	}
-
 	m_environment.remove( "ENCFS6_CONFIG" ) ;
 
 	if( !m_configPathThroughEnv.isEmpty() ){

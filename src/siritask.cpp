@@ -367,27 +367,48 @@ static engines::engine::cmdStatus _mount( const siritask::mount& s )
 		return { mm,engine } ;
 	}
 
-	if( engine.backendRequireMountPath() ){
+	if( engine.autoCreatesMountPoint() ){
 
-		if( !( _create_folder( opt.mountPoint ) || s.reUseMP ) ){
+		utility::removeFolder( opt.mountPoint,5 ) ;
 
-			return { engines::engine::status::failedToCreateMountPoint,engine } ;
+		auto e = _cmd( { engine,false,opt,opt.key } ) ;
+
+		if( e == engines::engine::status::success ){
+
+			engine.updateVolumeList( opt ) ;
 		}
-	}
 
-	auto e = _cmd( { engine,false,opt,opt.key } ) ;
-
-	if( e != engines::engine::status::success ){
-
-		if( engine.backendRequireMountPath() ){
-
-			siritask::deleteMountFolder( opt.mountPoint ) ;
-		}
+		return e ;
 	}else{
-		engine.updateVolumeList( opt ) ;
-	}
+		auto e = [ & ]()->engines::engine::cmdStatus{
 
-	return e ;
+			if( engine.backendRequireMountPath() ){
+
+				if( !( _create_folder( opt.mountPoint ) || s.reUseMP ) ){
+
+					return { engines::engine::status::failedToCreateMountPoint,engine } ;
+				}
+
+				auto e = _cmd( { engine,false,opt,opt.key } ) ;
+
+				if( e != engines::engine::status::success ){
+
+					utility::removeFolder( opt.mountPoint,5 ) ;
+				}
+
+				return e ;
+			}else{
+				return _cmd( { engine,false,opt,opt.key } ) ;
+			}
+		}() ;
+
+		if( e == engines::engine::status::success ){
+
+			engine.updateVolumeList( opt ) ;
+		}
+
+		return e ;
+	}
 }
 
 static engines::engine::cmdStatus _create( const siritask::create& s )

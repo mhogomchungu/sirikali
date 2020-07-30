@@ -1875,7 +1875,9 @@ engines::engine::cmdStatus sirikali::unMountVolume( const sirikali::mountedEntry
 {
 	auto s = siritask::encryptedFolderUnMount( { e.cipherPath,e.mountPoint,e.volumeType,5 } ) ;
 
-	if( s.success() && s.engine().backendRequireMountPath() ){
+	const auto& m = s.engine() ;
+
+	if( s.success() && m.backendRequireMountPath() ){
 
 		siritask::deleteMountFolder( e.mountPoint ) ;
 	}

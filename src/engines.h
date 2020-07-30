@@ -494,6 +494,8 @@ public:
 			bool acceptsSubType ;
 			bool acceptsVolName ;
 			bool likeSsh ;
+			bool autoCreatesMountPoint ;
+			bool autoDeletesMountPoint ;
 
 			QByteArray passwordFormat ;
 			QString releaseURL ;
@@ -562,6 +564,8 @@ public:
 		bool acceptsSubType() const ;
 		bool acceptsVolName() const ;
 		bool likeSsh() const ;
+		bool autoCreatesMountPoint() const ;
+		bool autoDeletesMountPoint() const ;
 
 		engines::engine::status notFoundCode() const ;
 

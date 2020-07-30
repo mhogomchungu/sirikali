@@ -494,6 +494,16 @@ bool engines::engine::likeSsh() const
 	return m_Options.likeSsh ;
 }
 
+bool engines::engine::autoCreatesMountPoint() const
+{
+	return m_Options.autoCreatesMountPoint ;
+}
+
+bool engines::engine::autoDeletesMountPoint() const
+{
+	return m_Options.autoDeletesMountPoint ;
+}
+
 bool engines::engine::takesTooLongToUnlock() const
 {
 	return m_Options.takesTooLongToUnlock ;

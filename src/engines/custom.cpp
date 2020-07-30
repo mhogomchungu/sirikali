@@ -43,6 +43,8 @@ static void _parse( engines::engine::BaseOptions& s,const SirikaliJson& json )
 	s.acceptsSubType                  = json.getBool( "acceptsSubType",true ) ;
 	s.acceptsVolName                  = json.getBool( "acceptsVolName",true ) ;
 	s.likeSsh                         = json.getBool( "likeSsh",false ) ;
+	s.autoCreatesMountPoint           = json.getBool( "autoCreatesMountPoint",false ) ;
+	s.autoDeletesMountPoint           = json.getBool( "autoDeletesMountPoint",false ) ;
 
 	s.backendTimeout                  = json.getInterger( "backendTimeout",0 ) ;
 

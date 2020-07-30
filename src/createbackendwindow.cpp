@@ -171,6 +171,8 @@ void createBackendWIndow::save()
 	config[ "acceptsSubType" ]              = true ;
 	config[ "acceptsVolName" ]              = true ;
 	config[ "likeSsh" ]                     = false ;
+	config[ "autoCreatesMountPoint" ]       = false ;
+	config[ "autoDeletesMountPoint" ]       = false ;
 
 	if( config.passed() ){
 
