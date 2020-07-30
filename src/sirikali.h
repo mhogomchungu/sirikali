@@ -67,7 +67,6 @@ private slots:
 	void showDebugWindow( void ) ;
 	void configurationOptions( void ) ;
 	void FAQ( void ) ;
-	void showTrayIconWhenReady( void ) ;
 	void polkitFailedWarning( void ) ;
 	void hideWindow( void ) ;
 	void setUpApp( const QString& ) ;
