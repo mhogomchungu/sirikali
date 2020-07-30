@@ -365,20 +365,30 @@ void sirikali::showTrayIconWhenReady()
 
 void sirikali::showTrayIcon()
 {
-	for( int i = 0 ; i < 10 ; i++ ){
+	Task::exec( [ this ](){
+		/*
+		 * We are doing this on a background thread to allow the app to start while we wait
+		 * to display the icon.
+		 */
+		for( int i = 0 ; i < 10 ; i++ ){
 
-		if( QSystemTrayIcon::isSystemTrayAvailable() ){
+			if( QSystemTrayIcon::isSystemTrayAvailable() ){
 
-			return m_trayIcon.show() ;
-		}else{
-			utility::waitForOneSecond() ;
+				QMetaObject::invokeMethod( this,"showTrayIconWhenReady",Qt::QueuedConnection ) ;
+
+				return ;
+			}else{
+				utility::debug() << "Waiting For System Tray To Become Available" ;
+
+				utility::waitForOneSecond() ;
+			}
 		}
-	}
-	/*
-	 * The tray doesnt seem to be ready yet but we cant wait any longer,just display it and
-	 * hope for the best.
-	 */
-	m_trayIcon.show() ;
+		/*
+		 * The tray doesnt seem to be ready yet but we cant wait any longer,just display it and
+		 * hope for the best.
+		 */
+		QMetaObject::invokeMethod( this,"showTrayIconWhenReady",Qt::QueuedConnection ) ;
+	} ) ;
 }
 
 void sirikali::setUpAppMenu()
