@@ -44,7 +44,7 @@ static utility::qstring_result _config_path()
 	}
 }
 
-static QString _create_path( const QString& m,const favorites::entry& e )
+static QString _create_path( const QString& m,const favorites::entry& e,bool newFormat )
 {
 	auto a = utility::split( e.volumePath,'@' ).last() ;
 
@@ -52,18 +52,25 @@ static QString _create_path( const QString& m,const favorites::entry& e )
 
 	a.replace( ":","" ) ;
 
-	auto b = a + e.mountPointPath ;
+	if( newFormat ){
 
-	return m + a + "-" + crypto::sha256( b ) + ".json" ;
+		auto b = e.volumePath + e.mountPointPath ;
+
+		return m + a + "-" + crypto::sha256( b ) + ".json" ;
+	}else{
+		auto b = a + e.mountPointPath ;
+
+		return m + a + "-" + crypto::sha256( b ) + ".json" ;
+	}
 }
 
-static QString _create_path( const favorites::entry& e )
+static QString _create_entry_path( const favorites::entry& e,bool newFormat )
 {
 	auto s = _config_path() ;
 
 	if( s.has_value() ){
 
-		return _create_path( s.value(),e ) ;
+		return _create_path( s.value(),e,newFormat ) ;
 	}else{
 		return {} ;
 	}
@@ -127,6 +134,8 @@ void favorites::reload()
 				m_favorites.emplace_back( std::move( m ) ) ;
 			}
 		}
+	}else{
+		utility::debug() << "Failed To Get Favorites List" ;
 	}
 }
 
@@ -136,10 +145,12 @@ favorites::error favorites::add( const favorites::entry& e )
 
 	if( !m.has_value() ){
 
+		utility::debug() << "Failed To Get Favorites Path" ;
+
 		return error::FAILED_TO_CREATE_ENTRY ;
 	}
 
-	auto a = _create_path( m.value(),e ) ;
+	auto a = _create_path( m.value(),e,true ) ;
 
 	SirikaliJson json( utility::jsonLogger() ) ;
 
@@ -155,6 +166,7 @@ favorites::error favorites::add( const favorites::entry& e )
 	json[ "postUnmountCommand" ]   = e.postUnmountCommand ;
 	json[ "reverseMode" ]          = e.reverseMode ;
 	json[ "volumeNeedNoPassword" ] = e.volumeNeedNoPassword ;
+	json[ "password" ]             = e.password ;
 
 	favorites::triState::writeTriState( json,e.readOnlyMode,"mountReadOnly" ) ;
 	favorites::triState::writeTriState( json,e.autoMount,"autoMountVolume" ) ;
@@ -254,15 +266,30 @@ void favorites::replaceFavorite( const favorites::entry& old,const favorites::en
 	this->add( New ) ;
 }
 
+template< typename Function >
+static bool _remove( const favorites::entry& e,Function function,bool newFormat )
+{
+	auto s = function( e,newFormat ) ;
+
+	if( !s.isEmpty() && utility::pathExists( s ) ){
+
+		return QFile::remove( s ) ;
+	}else{
+		return false ;
+	}
+}
+
 void favorites::removeFavoriteEntry( const favorites::entry& e )
 {
-	auto s = _create_path( e ) ;
-
-	if( !s.isEmpty() ){
-
-		QFile( s ).remove() ;
+	if( _remove( e,_create_entry_path,false ) ){
 
 		this->reload() ;
+
+	}else if( _remove( e,_create_entry_path,true ) ){
+
+		this->reload() ;
+	}else{
+		utility::debug() << "Failed To Remove Favorite Entry: " + e.volumePath ;
 	}
 }
 

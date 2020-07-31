@@ -690,48 +690,50 @@ const QString& folderMonitor::path() const
 
 void folderMonitor::contentCountIncreased( folderMonitor::function& function )
 {
-	auto ss = this->folderListSynced() ;
+	this->folderListSynced( [ & ]( utility::qstringlist_result ss ){
 
-	if( ss.has_value() && ss.value() != m_folderList ){
+		if( ss.has_value() && ss.value() != m_folderList ){
 
-		auto s = ss.value() ;
+			auto s = ss.value() ;
 
-		auto e = s ;
+			auto e = s ;
 
-		for( const auto& it : m_folderList ){
+			for( const auto& it : m_folderList ){
 
-			s.removeOne( it ) ;
+				s.removeOne( it ) ;
+			}
+
+			for( const auto& it : s ){
+
+				function( m_path + "/" + it ) ;
+			}
+
+			m_folderList = std::move( e ) ;
 		}
-
-		for( const auto& it : s ){
-
-			function( m_path + "/" + it ) ;
-		}
-
-		m_folderList = std::move( e ) ;
-	}
+	} ) ;
 }
 
 void folderMonitor::contentCountDecreased( folderMonitor::function& function )
 {
-	auto s = this->folderListSynced() ;
+	this->folderListSynced( [ & ]( utility::qstringlist_result s ){
 
-	if( s.has_value() && s.value() != m_folderList ){
+		if( s.has_value() && s.value() != m_folderList ){
 
-		auto e = s.RValue() ;
+			auto e = s.RValue() ;
 
-		for( const auto& it : e ){
+			for( const auto& it : e ){
 
-			m_folderList.removeOne( it ) ;
+				m_folderList.removeOne( it ) ;
+			}
+
+			for( const auto& it : m_folderList ){
+
+				function( m_path + "/" + it ) ;
+			}
+
+			m_folderList = std::move( e ) ;
 		}
-
-		for( const auto& it : m_folderList ){
-
-			function( m_path + "/" + it ) ;
-		}
-
-		m_folderList = std::move( e ) ;
-	}
+	} ) ;
 }
 
 QStringList folderMonitor::folderList() const
@@ -739,11 +741,11 @@ QStringList folderMonitor::folderList() const
 	return QDir( m_path ).entryList( QDir::NoDotAndDotDot | QDir::Dirs ) ;
 }
 
-utility::qstringlist_result folderMonitor::folderListSynced() const
+void folderMonitor::folderListSynced( std::function< void( utility::qstringlist_result ) > function ) const
 {
 	if( m_waitForSynced ){
 
-		for( int i = 0 ; i < 6 ; i++ ){
+		utility::Timer( 1000,[ &,function = std::move( function ) ]( int counter ){
 
 			auto a = this->folderList() ;
 
@@ -751,18 +753,25 @@ utility::qstringlist_result folderMonitor::folderListSynced() const
 
 				utility::debug() << "gvfs folder is up to date" ;
 
-				return a ;
+				function( std::move( a ) ) ;
+
+				return true ;
+
+			}else if( counter == 5 ){
+
+				utility::debug() << "Timed out waiting for gvfs folder to update" ;
+
+				function( {} ) ;
+
+				return true ;
 			}else{
 				utility::debug() << "Waiting for gvfs folder to update" ;
 
-				utility::Task::suspendForOneSecond() ;
+				function( {} ) ;
+				return false ;
 			}
-		}
-
-		utility::debug() << "Timed out waiting for gvfs folder to update" ;
-
-		return {} ;
+		} ) ;
 	}else{
-		return this->folderList() ;
+		function( this->folderList() ) ;
 	}
 }
