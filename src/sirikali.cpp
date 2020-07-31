@@ -67,7 +67,9 @@
 #include "favorites2.h"
 #include "favorites.h"
 
-static keyDialog::volumeList _convert_lists( favorites::volumeList s,bool earlyBoot )
+static keyDialog::volumeList _convert_lists( favorites::volumeList s,
+					     bool earlyBoot,
+					     bool skipUnknown )
 {
 	keyDialog::volumeList m ;
 
@@ -80,6 +82,10 @@ static keyDialog::volumeList _convert_lists( favorites::volumeList s,bool earlyB
 		if( e->known() ){
 
 			m.emplace_back( std::move( it ),std::move( e ) ) ;
+
+		}else if( skipUnknown ){
+
+			utility::debug() << "Not Adding Not Available Volume: " + f.volumePath ;
 
 		}else if( !earlyBoot ){
 
@@ -573,7 +579,7 @@ void sirikali::favoriteClicked( QAction * ac )
 				} ) ;
 			}
 
-			this->mountMultipleVolumes( _convert_lists( std::move( v ),false ) ) ;
+			this->mountMultipleVolumes( _convert_lists( std::move( v ),false,false ) ) ;
 		}else{
 			auto _found = [ & ]( const favorites::volEntry& e,
 					     const QString& mountPointPath,
@@ -981,7 +987,7 @@ void sirikali::autoMountFavoritesOnAvailable( QString m )
 			}
 		}
 
-		this->mountMultipleVolumes( this->autoUnlockVolumes( std::move( e ) ) ) ;
+		this->mountMultipleVolumes( this->autoUnlockVolumes( std::move( e ),false,true ) ) ;
 	}
 }
 
@@ -1063,9 +1069,11 @@ void sirikali::autoMount( keyDialog::volumeList& q,
 	}
 }
 
-keyDialog::volumeList sirikali::autoUnlockVolumes( favorites::volumeList ss,bool autoOpenFolderOnMount )
+keyDialog::volumeList sirikali::autoUnlockVolumes( favorites::volumeList ss,
+						   bool autoOpenFolderOnMount,
+						   bool skipUnknown )
 {
-	auto l = _convert_lists( std::move( ss ),utility::earlyBoot() ) ;
+	auto l = _convert_lists( std::move( ss ),utility::earlyBoot(),skipUnknown ) ;
 
 	if( l.empty() ){
 

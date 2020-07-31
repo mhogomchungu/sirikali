@@ -140,7 +140,9 @@ private:
 	void showMainWindow( void ) ;
 	void raiseWindow( const QString& = QString() ) ;
 	void autoUnlockVolumes( const std::vector< volumeInfo >& ) ;	
-	keyDialog::volumeList autoUnlockVolumes( favorites::volumeList,bool = false ) ;
+	keyDialog::volumeList autoUnlockVolumes( favorites::volumeList,
+						 bool autoOpenFolderOnMount = false,
+						 bool skipUnknown = false ) ;
 
 	struct mountedEntry{
 		const QString& cipherPath ;
