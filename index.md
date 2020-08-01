@@ -51,13 +51,13 @@ Send me an email through mhogomchungu at Gmail Dot coM for transfer details.
 
 ## Source download link.
 
-Latest released version is 1.4.4 and its source code can be downloaded by clicking below link.
+Latest released version is 1.4.5 and its source code can be downloaded by clicking below link.
 
-<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.4.4/SiriKali-1.4.4.tar.xz">SiriKali-1.4.4.tar.xz</a>
+<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.4.5/SiriKali-1.4.5.tar.xz">SiriKali-1.4.5.tar.xz</a>
 
 ## Download links for Microsoft Windows Operating System.
 
-There are two packages for Windows Windows, the one with an installer is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.4.4/SiriKali-1.4.4-1.setup.exe">here</a> and the one without an installer(portable version) is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.4.4/SiriKali-1.4.4-1.exe.zip">here.</a>
+There are two packages for Windows Windows, the one with an installer is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.4.5/SiriKali-1.4.5.setup.exe">here</a> and the one without an installer(portable version) is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.4.5/SiriKali-1.4.5.exe.zip">here.</a>
 
 The installer is not signed and expect to get a warning from windows saying the installer is from an unknown publisher.
 We recommend using the installer version.
@@ -150,5 +150,4 @@ cv9jY9bZAbVaMUjF7dw/bsqgJ2HCJ33cf16GybRtozOE36YDB2omg58ngIrlmlea
 -----END PGP PUBLIC KEY BLOCK-----
 ```
 
-last update: Mon 01 Jun 2020 07:51:44 AM EAT
-
+last update: Sat 01 Aug 2020 10:11:20 PM EAT
