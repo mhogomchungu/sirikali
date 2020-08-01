@@ -228,7 +228,7 @@ version 1.4.2(December 18,2019)
     [ALL]
 -- Rework UI and move key management feature from settings windows to favorites window.
 
-   version 1.4.4(Unreleased)
+   version 1.4.5(August 01,2020)
     [ALL]
 -- Make  it compile with Qt 5.15.0 without warnings(remove Qt's deprecated APIs).
 -- Declare backend API to be stable and provide a few examples backends.
@@ -237,5 +237,5 @@ version 1.4.2(December 18,2019)
     "$INSTALL_PREFIX/share/SiriKali/backends". Look in "custom backends" folder for
     more information.
 -- Fix a bug that caused SiriKali to attempt to auto unlock not  available favorite volume at startup.
--- Fix a bug that caused SiriKali to delay showing up in GNOME or any other DE that do not use
+-- Fix a bug that caused SiriKali to delay showing up in GNOME or any other DE that does not use
     system tray functionality.
