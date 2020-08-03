@@ -1606,11 +1606,13 @@ void sirikali::autoMount( const QString& volume )
 {
 	if( !volume.isEmpty() ){
 
+		auto& favorites = favorites::instance() ;
+
 		auto s = settings::instance().autoOpenFolderOnMount() ;
 
 		auto m = [ & ](){
 
-			for( auto&& it : favorites::instance().readVolumeList() ){
+			for( auto&& it : favorites.readVolumeList() ){
 
 				if( it.favorite.volumePath == volume ){
 
@@ -1618,7 +1620,9 @@ void sirikali::autoMount( const QString& volume )
 				}
 			}
 
-			return this->autoUnlockVolumes( { { volume,{} } },s ) ;
+			auto& tmp = favorites.getTmpFavoriteEntries() ;
+
+			return this->autoUnlockVolumes( { { tmp.add( volume ) } },s ) ;
 		}() ;
 
 		this->mountMultipleVolumes( std::move( m ) ) ;
