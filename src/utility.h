@@ -295,6 +295,16 @@ namespace utility
 		new Timer( interval,std::move( function ) ) ;
 	}
 
+	static inline void Timer( int interval,std::function< bool( void ) > function )
+	{
+		utility::Timer( interval,[ function = std::move( function ) ]( int s ){
+
+			Q_UNUSED( s ) ;
+
+			return function() ;
+		} ) ;
+	}
+
 	void setDefaultMountPointPrefix( const QString& path ) ;
 
 	qbytearray_result yubiKey( const QByteArray& challenge ) ;
