@@ -34,14 +34,6 @@
 #include <vector>
 #include <utility>
 
-QString mountinfo::mountProperties( const QString& mountPoint,
-				    const QString& mode,
-				    const QString& fileSystem,
-				    const QString& cipherPath )
-{
-	return QString( "x x x:x x %1 %2,x - %3 %4 x" ).arg( mountPoint,mode,fileSystem,cipherPath ) ;
-}
-
 QString mountinfo::encodeMountPath( const QString& e )
 {
 	auto m = e ;
@@ -96,12 +88,9 @@ static QString _getFileSystem( const QString& dev,const QString& fs )
 	return fs ;
 }
 
-static QStringList _macox_volumes()
+static volumeInfo::List _macox_volumes()
 {
-	QStringList s ;
-	QStringList m ;
-
-	QString e = "(mp:%1)(dev:%2)(fs:%3)(dn:%4)(nm:%5)" ;
+	volumeInfo::List s ;
 
 	for( const auto& it : QStorageInfo::mountedVolumes() ){
 
@@ -111,21 +100,17 @@ static QStringList _macox_volumes()
 
 		auto fs = _getFileSystem( dev,it.fileSystemType() ) ;
 
-		s.append( mountinfo::mountProperties( mp,it.isReadOnly() ? "ro" : "rw",fs,dev ) ) ;
+		auto mode = it.isReadOnly() ? "ro" : "rw" ;
 
-		m.append( e.arg( it.rootPath(),it.device(),it.fileSystemType(),it.displayName(),it.name() ) ) ;
+		s.emplace_back( std::move( dev ),std::move( mp ),std::move( fs ),mode ) ;
 	}
-
-	utility::debug() << s ;
-
-	utility::debug() << m ;
 
 	return s ;
 }
 
-static QStringList _windows_volumes()
+static volumeInfo::List _windows_volumes()
 {
-	QStringList s ;
+	volumeInfo::List s ;
 
 	for( const auto& e : SiriKali::Windows::getMountOptions() ){
 
@@ -133,19 +118,38 @@ static QStringList _windows_volumes()
 
 		auto m = e.subtype + "@" + e.cipherFolder ;
 
-		s.append( mountinfo::mountProperties( e.mountPointPath,e.mode,fs,m ) ) ;
+		s.emplace_back( std::move( m ),e.mountPointPath,std::move( fs ),e.mode ) ;
 	}
 
 	return s ;
 }
 
-static QStringList _unlocked_volumes()
+static volumeInfo::List _linux_volumes()
+{
+	volumeInfo::List s ;
+
+	for( const auto& e : utility::split( utility::fileContents( "/proc/self/mountinfo" ) ) ){
+
+		const auto k = utility::split( e,' ' ) ;
+
+		const auto m = k.size() ;
+
+		if( m > 5 ){
+
+			s.emplace_back( k.at( m - 2 ),k.at( 4 ),k.at( m - 3 ),k.at( 5 ).mid( 0,2 ) ) ;
+		}
+	}
+
+	return s ;
+}
+
+static volumeInfo::List _unlocked_volumes()
 {
 	auto a = [](){
 
 		if( utility::platformIsLinux() ){
 
-			return utility::split( utility::fileContents( "/proc/self/mountinfo" ) ) ;
+			return _linux_volumes() ;
 
 		}else if( utility::platformIsOSX() ){
 
@@ -155,7 +159,12 @@ static QStringList _unlocked_volumes()
 		}
 	}() ;
 
-	return a + engines::instance().mountInfo( a ) ;
+	for( auto&& it : engines::instance().mountInfo( a ) ){
+
+		a.emplace_back( std::move( it ) ) ;
+	}
+
+	return a ;
 }
 
 mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& quit ) :
@@ -182,96 +191,69 @@ mountinfo::~mountinfo()
 {
 }
 
+static volumeInfo::FsEntry _decode( const engines::engine& engine,volumeInfo::FsEntry e )
+{
+	auto _decode = []( QString& path,bool set_offset ){
+
+		engines::engine::decodeSpecialCharacters( path ) ;
+
+		if( set_offset ){
+
+			path = path.mid( path.indexOf( '@' ) + 1 ) ;
+		}
+	} ;
+
+	auto _starts_with = []( const engines::engine& e,const QString& s ){
+
+		for( const auto& it : e.names() ){
+
+			if( s.startsWith( it + "@",Qt::CaseInsensitive ) ){
+
+				return true ;
+			}
+		}
+
+		return false ;
+	} ;
+
+	if( _starts_with( engine,e.cipherPath ) ){
+
+		_decode( e.cipherPath,true ) ;
+
+	}else if( engine.setsCipherPath() ){
+
+		_decode( e.cipherPath,false ) ;
+	}else{
+		e.cipherPath = crypto::sha256( e.mountPoint ).mid( 0,20 ) ;
+	}
+
+	_decode( e.mountPoint,false ) ;
+
+	e.fileSystem.replace( "fuse.","" ) ;
+
+	if( !e.fileSystem.isEmpty() ){
+
+		e.fileSystem.replace( 0,1,e.fileSystem.at( 0 ).toUpper() ) ;
+	}
+
+	return e ;
+}
+
 Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 {
 	return Task::run( [](){
 
-		auto _decode = []( QString path,bool set_offset ){
-
-			engines::engine::decodeSpecialCharacters( path ) ;
-
-			if( set_offset ){
-
-				return path.mid( path.indexOf( '@' ) + 1 ) ;
-			}else{
-				return path ;
-			}
-		} ;
-
-		auto _starts_with = []( const engines::engine& e,const QString& s ){
-
-			for( const auto& it : e.names() ){
-
-				if( s.startsWith( it + "@",Qt::CaseInsensitive ) ){
-
-					return true ;
-				}
-			}
-
-			return false ;
-		} ;
-
-		auto _fs = []( QString e ){
-
-			e.replace( "fuse.","" ) ;
-
-			if( !e.isEmpty() ){
-
-				e.replace( 0,1,e.at( 0 ).toUpper() ) ;
-			}
-
-			return e ;
-		} ;
-
-		auto _ro = []( const QStringList& l ){
-
-			return l.at( 5 ).mid( 0,2 ) ;
-		} ;
-
 		std::vector< volumeInfo > e ;
-
-		volumeInfo::mountinfo info ;
 
 		const auto& engines = engines::instance() ;
 
-		for( const auto& it : _unlocked_volumes() ){
+		for( auto&& it : _unlocked_volumes() ){
 
-			const auto k = utility::split( it,' ' ) ;
-
-			const auto s = k.size() ;
-
-			if( s < 8 ){
-
-				continue ;
-			}
-
-			const auto& cf = k.at( s - 2 ) ;
-
-			const auto& m = k.at( 4 ) ;
-
-			const auto& fs = k.at( s - 3 ) ;
-
-			const auto& engine = engines.getByFuseName( fs ) ;
+			const auto& engine = engines.getByFsName( it.fileSystem ) ;
 
 			if( engine.known() ){
 
-				if( _starts_with( engine,cf ) ){
-
-					info.volumePath = _decode( cf,true ) ;
-
-				}else if( engine.setsCipherPath() ){
-
-					info.volumePath = _decode( cf,false ) ;
-				}else{
-					info.volumePath = crypto::sha256( m ).mid( 0,20 ) ;
-				}
-
-				info.mountPoint   = _decode( m,false ) ;
-				info.fileSystem   = _fs( fs ) ;
-				info.mode         = _ro( k ) ;
-				info.mountOptions = k.last() ;
-
-				e.emplace_back( info ) ;
+				e.emplace_back( _decode( engine,std::move( it ) ) ) ;
 			}
 		}
 
@@ -300,7 +282,15 @@ void mountinfo::volumeUpdate()
 
 	auto _mountedVolume = [ & ]( const QString& e ){
 
-		return !m_oldMountList.contains( e ) ;
+		for( const auto& it : m_oldMountList ){
+
+			if( it.cipherPath == e ){
+
+				return false ;
+			}
+		}
+
+		return true ;
 	} ;
 
 	if( m_announceEvents ){
@@ -311,11 +301,9 @@ void mountinfo::volumeUpdate()
 
 			for( const auto& it : m_newMountList ){
 
-				const auto e = utility::split( it,' ' ) ;
+				if( _mountedVolume( it.cipherPath ) ){
 
-				if( _mountedVolume( it ) && e.size() > 4 ){
-
-					this->autoMount( e.at( 4 ) ) ;
+					this->autoMount( it.mountPoint ) ;
 				}
 			}
 		}
@@ -619,14 +607,9 @@ static QString _gvfs_fuse_path()
 
 		for( const auto& it : _unlocked_volumes() ){
 
-			if( it.contains( " fuse.gvfsd-fuse " ) ){
+			if( it.fileSystem == "fuse.gvfsd-fuse" ){
 
-				auto m = utility::split( it," " ) ;
-
-				if( m.size() > 4 ){
-
-					return m.at( 4 ) ;
-				}
+				return it.mountPoint ;
 			}
 		}
 	}
@@ -685,49 +668,39 @@ const QString& folderMonitor::path() const
 
 void folderMonitor::contentCountIncreased( folderMonitor::function& function )
 {
-	this->folderListSynced( [ & ]( utility::qstringlist_result ss ){
+	this->folderListSynced( [ & ]( QStringList s ){
 
-		if( ss.has_value() && ss.value() != m_folderList ){
+		auto e = s ;
 
-			auto s = ss.value() ;
+		for( const auto& it : m_folderList ){
 
-			auto e = s ;
-
-			for( const auto& it : m_folderList ){
-
-				s.removeOne( it ) ;
-			}
-
-			for( const auto& it : s ){
-
-				function( m_path + "/" + it ) ;
-			}
-
-			m_folderList = std::move( e ) ;
+			s.removeOne( it ) ;
 		}
+
+		for( const auto& it : s ){
+
+			function( m_path + "/" + it ) ;
+		}
+
+		m_folderList = std::move( e ) ;
 	} ) ;
 }
 
 void folderMonitor::contentCountDecreased( folderMonitor::function& function )
 {
-	this->folderListSynced( [ & ]( utility::qstringlist_result s ){
+	this->folderListSynced( [ & ]( QStringList s ){
 
-		if( s.has_value() && s.value() != m_folderList ){
+		for( const auto& it : s ){
 
-			auto e = s.RValue() ;
-
-			for( const auto& it : e ){
-
-				m_folderList.removeOne( it ) ;
-			}
-
-			for( const auto& it : m_folderList ){
-
-				function( m_path + "/" + it ) ;
-			}
-
-			m_folderList = std::move( e ) ;
+			m_folderList.removeOne( it ) ;
 		}
+
+		for( const auto& it : m_folderList ){
+
+			function( m_path + "/" + it ) ;
+		}
+
+		m_folderList = std::move( s ) ;
 	} ) ;
 }
 
@@ -736,7 +709,7 @@ QStringList folderMonitor::folderList() const
 	return QDir( m_path ).entryList( QDir::NoDotAndDotDot | QDir::Dirs ) ;
 }
 
-void folderMonitor::folderListSynced( std::function< void( utility::qstringlist_result ) > function ) const
+void folderMonitor::folderListSynced( std::function< void( QStringList ) > function ) const
 {
 	if( m_waitForSynced ){
 
@@ -756,13 +729,10 @@ void folderMonitor::folderListSynced( std::function< void( utility::qstringlist_
 
 				utility::debug() << "Timed out waiting for gvfs folder to update" ;
 
-				function( {} ) ;
-
 				return true ;
 			}else{
 				utility::debug() << "Waiting for gvfs folder to update" ;
 
-				function( {} ) ;
 				return false ;
 			}
 		} ) ;

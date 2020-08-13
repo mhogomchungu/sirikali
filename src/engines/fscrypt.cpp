@@ -28,7 +28,7 @@
 #include "custom.h"
 
 struct mountInfo{
-	const QStringList& mountInfo ;
+	const volumeInfo::List& mountInfo ;
 	const QStringList& mountedVolumes ;
 	const QStringList& fuseNames ;
 	const QString& exe ;
@@ -63,22 +63,17 @@ static QStringList _encrypted_volumes( const QString& list )
 	return l ;
 }
 
-static QString _get_fs_mode( const QStringList& s,const QString& m )
+static QString _get_fs_mode( const volumeInfo::List& s,const QString& m )
 {
 	for( const auto& it : s ){
 
-		auto a = utility::split( it,' ' ) ;
+		if( m.startsWith( it.mountPoint ) ){
 
-		if( a.size() > 6 ){
-
-			if( m.startsWith( a.at( 4 ) ) ){
-
-				return a.at( 5 ).mid( 0,2 ) ;
-			}
+			return it.mode ;
 		}
 	}
 
-	return "-" ;
+	return "rw" ;
 }
 
 static utility::Task _run( const QString& cmd,const QStringList& list )
@@ -158,9 +153,9 @@ static QString _property( const QString& exe,const QString& m,const QString& opt
 }
 
 template< typename Function >
-static QStringList _mountInfo( const mountInfo& e,Function removeEntry )
+static volumeInfo::List _mountInfo( const mountInfo& e,Function removeEntry )
 {
-	QStringList l ;
+	volumeInfo::List l ;
 
 	const auto& a = e.fuseNames.at( 0 ) ;
 	const auto& b = e.fuseNames.at( 1 ) ;
@@ -177,11 +172,11 @@ static QStringList _mountInfo( const mountInfo& e,Function removeEntry )
 
 			if( s == "Yes" ){
 
-				l.append( mountinfo::mountProperties( it,md,a,it ) ) ;
+				l.emplace_back( it,it,a,md ) ;
 
 			}else if( s.startsWith( "Partially" ) ){
 
-				l.append( mountinfo::mountProperties( it,md,b,it ) ) ;
+				l.emplace_back( it,it,b,md ) ;
 			}else{
 				removeEntry( it ) ;
 			}
@@ -377,7 +372,7 @@ engines::engine::status fscrypt::unmount( const engines::engine::unMount& e ) co
 	return engines::engine::status::failedToUnMount ;
 }
 
-QStringList fscrypt::mountInfo( const QStringList& a ) const
+volumeInfo::List fscrypt::mountInfo( const volumeInfo::List& a ) const
 {
 	auto exe = this->executableFullPath() ;
 

@@ -188,7 +188,7 @@ void engines::engine::updateVolumeList( const engines::engine::cmdArgsList& e ) 
 	Q_UNUSED( e )
 }
 
-QStringList engines::engine::mountInfo( const QStringList& e ) const
+volumeInfo::List engines::engine::mountInfo( const volumeInfo::List& e ) const
 {
 	Q_UNUSED( e )
 	return {} ;
@@ -820,13 +820,16 @@ bool engines::atLeastOneDealsWithFiles() const
 	return false ;
 }
 
-QStringList engines::mountInfo( const QStringList& m ) const
+volumeInfo::List engines::mountInfo( const volumeInfo::List& m ) const
 {
-	QStringList s ;
+	volumeInfo::List s ;
 
 	for( const auto& e : this->supportedEngines() ){
 
-		s += e->mountInfo( m ) ;
+		for( auto&& it : e->mountInfo( m ) ){
+
+			s.emplace_back( std::move( it ) ) ;
+		}
 	}
 
 	return s ;
@@ -991,7 +994,7 @@ engines::engineWithPaths engines::getByPaths( const QString& cipherPath,
 	return {} ;
 }
 
-const engines::engine& engines::getByFuseName( const QString& e ) const
+const engines::engine& engines::getByFsName( const QString& e ) const
 {
 	auto cmp = [ & ]( const QString& s ){ return !e.compare( s,Qt::CaseInsensitive ) ; } ;
 

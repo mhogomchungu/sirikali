@@ -27,7 +27,7 @@ public:
 
 	engines::engine::status unmount( const engines::engine::unMount& e ) const override ;
 
-	QStringList mountInfo( const QStringList& ) const override ;
+	volumeInfo::List mountInfo( const volumeInfo::List& ) const override ;
 
 	engines::engine::ownsCipherFolder ownsCipherPath( const QString& cipherPath,
 							  const QString& configPath ) const override ;

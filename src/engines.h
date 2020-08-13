@@ -610,7 +610,7 @@ public:
 
 		virtual void updateVolumeList( const engines::engine::cmdArgsList& ) const ;
 
-		virtual QStringList mountInfo( const QStringList& ) const ;
+		virtual volumeInfo::List mountInfo( const volumeInfo::List& ) const ;
 
 		virtual Task::future< QString >& volumeProperties( const QString& cipherFolder,
 								   const QString& mountPoint ) const ;
@@ -786,7 +786,7 @@ public:
 	engines() ;
 	static const engines& instance() ;
 	bool atLeastOneDealsWithFiles() const ;
-	QStringList mountInfo( const QStringList& ) const ;
+	volumeInfo::List mountInfo( const volumeInfo::List& ) const ;
 	QStringList enginesWithNoConfigFile() const ;
 	QStringList enginesWithConfigFile() const ;
 	const std::vector< engines::engine::Wrapper >& supportedEngines() const ;
@@ -826,7 +826,7 @@ public:
 	                                     const QString& configPath = QString() ) const ;
 	const engine& getUnKnown() const ;
 	const engine& getByName( const QString& e ) const ;
-	const engine& getByFuseName( const QString& e ) const ;
+	const engine& getByFsName( const QString& e ) const ;
 private:
 	std::vector< std::unique_ptr< engines::engine > > m_backends ;
 	std::vector< engines::engine::Wrapper > m_backendWrappers ;

@@ -26,12 +26,38 @@
 #include "utility.h"
 #include "favorites.h"
 
+#include <vector>
+
 class volumeInfo
 {
 public:
+	struct FsEntry{
+
+		FsEntry( QString c,QString m,QString f,QString mm ) :
+			cipherPath( std::move( c ) ),
+			mountPoint( std::move( m ) ),
+			fileSystem( std::move( f ) ),
+			mode( std::move( mm ) )
+		{
+		}
+		QString cipherPath ;
+		QString mountPoint ;
+		QString fileSystem ;
+		QString mode ;
+	} ;
+
+	using List = std::vector< volumeInfo::FsEntry > ;
+
 	struct mountinfo
 	{
 		mountinfo()
+		{
+		}
+		mountinfo( volumeInfo::FsEntry e ) :
+			volumePath( std::move( e.cipherPath ) ),
+			mountPoint( std::move( e.mountPoint ) ),
+			fileSystem( std::move( e.fileSystem ) ),
+			mode( std::move( e.mode ) )
 		{
 		}
 		mountinfo( const QStringList& e )

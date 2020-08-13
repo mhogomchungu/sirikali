@@ -42,7 +42,7 @@ public:
 	void contentCountDecreased( folderMonitor::function& function ) ;
 private:
 	QStringList folderList() const ;
-	void folderListSynced( std::function< void( utility::qstringlist_result ) > ) const ;
+	void folderListSynced( std::function< void( QStringList ) > ) const ;
 	QString m_path ;
 	QStringList m_folderList ;
 	bool m_waitForSynced ;
@@ -107,11 +107,6 @@ class mountinfo : private QObject
 {
 	Q_OBJECT
 public:
-	static QString mountProperties( const QString& mountPoint,
-					const QString& mode,
-					const QString& fileSystem,
-					const QString& cipherPath ) ;
-
 	static QString encodeMountPath( const QString& ) ;
 
 	static Task::future< std::vector< volumeInfo > >& unlockedVolumes() ;
@@ -143,8 +138,8 @@ private:
 
 	std::atomic_bool m_exit ;
 
-	QStringList m_oldMountList ;
-	QStringList m_newMountList ;
+	volumeInfo::List m_oldMountList ;
+	volumeInfo::List m_newMountList ;
 
 	dbusMonitor m_dbusMonitor ;
 
