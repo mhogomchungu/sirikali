@@ -543,6 +543,8 @@ public:
 			QStringList fuseOptions ;
 		} ;
 
+		static QString encodeMountPath( const QString& e ) ;
+
 		static void encodeSpecialCharacters( QString& ) ;
 		static void decodeSpecialCharacters( QString& ) ;
 

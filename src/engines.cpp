@@ -1475,6 +1475,24 @@ void engines::engine::decodeSpecialCharacters( QString& e )
 		    std::make_pair( "\\011","\\t" ) ) ;
 }
 
+QString engines::engine::encodeMountPath( const QString& e )
+{
+	auto m = e ;
+	/*
+	 * linux's /proc/self/mountinfo makes these substitutions and we make
+	 * them too to be consistent with linux
+	 */
+#if 0
+	_replace( m,std::make_pair( "\n","\\012" ),
+		    std::make_pair( " ","\\040" ),
+		    std::make_pair( "\\","\\134" ),
+		    std::make_pair( "\\t","\\011" ) ) ;
+#else
+	_replace( m,std::make_pair( " ","\\040" ) ) ;
+#endif
+	return m ;
+}
+
 QString engines::engine::decodeSpecialCharactersConst( const QString& e )
 {
 	auto m = e ;

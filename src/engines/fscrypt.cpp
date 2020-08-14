@@ -359,7 +359,7 @@ engines::engine::status fscrypt::unmount( const engines::engine::unMount& e ) co
 
 		if( s.success() ){
 
-			m_unlockedVolumeManager.removeEntry( mountinfo::encodeMountPath( e.mountPoint ) ) ;
+			m_unlockedVolumeManager.removeEntry( engines::engine::encodeMountPath( e.mountPoint ) ) ;
 
 			return engines::engine::status::success ;
 
@@ -583,7 +583,7 @@ void fscrypt::unlockedVolumeList::addEntry( const QString& e )
 {
 	auto a = this->getList() ;
 
-	a.append( mountinfo::encodeMountPath( e ) ) ;
+	a.append( engines::engine::encodeMountPath( e ) ) ;
 
 	this->updateList( a ) ;
 }

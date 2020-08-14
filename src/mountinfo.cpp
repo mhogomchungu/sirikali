@@ -34,21 +34,6 @@
 #include <vector>
 #include <utility>
 
-QString mountinfo::encodeMountPath( const QString& e )
-{
-	auto m = e ;
-	/*
-	 * linux's /proc/self/mountinfo makes these substitutions and we make
-	 * them too to be consistent with linux
-	 */
-	//m.replace( "\n","\\012" ) ;
-	m.replace( " ","\\040" ) ;
-	//m.replace( "\\","\\134" ) ;
-	//m.replace( "\\t","\\011" ) ;
-
-	return m ;
-}
-
 static QString _getFileSystem( const QString& dev,const QString& fs )
 {
 	/*
@@ -94,9 +79,9 @@ static volumeInfo::List _macox_volumes()
 
 	for( const auto& it : QStorageInfo::mountedVolumes() ){
 
-		auto dev = mountinfo::encodeMountPath( it.device() ) ;
+		auto dev = engines::engine::encodeMountPath( it.device() ) ;
 
-		auto mp = mountinfo::encodeMountPath( it.rootPath() ) ;
+		auto mp = engines::engine::encodeMountPath( it.rootPath() ) ;
 
 		auto fs = _getFileSystem( dev,it.fileSystemType() ) ;
 
