@@ -380,7 +380,31 @@ void keyDialog::setVolumeToUnlock()
 
 	if( m_volumes.size() > 1 ){
 
-		this->windowSetTitle( tr( "(%1/%2) Unlocking \"%3\"" ).arg( a,b,m_path ) ) ;
+		if( m_engine->likeSsh() ){
+
+			auto m = m_path.mid( m_engine->name().size() + 1 ) ;
+
+			this->windowSetTitle( tr( "(%1/%2) Connecting To \"%3\"" ).arg( a,b,m ) ) ;
+
+			m_ui->pbOpen->setText( tr( "Connect" ) ) ;
+		}else{
+			m_ui->pbOpen->setText( tr( "Open" ) ) ;
+
+			this->windowSetTitle( tr( "(%1/%2) Unlocking \"%3\"" ).arg( a,b,m_path ) ) ;
+		}
+	}else{
+		if( m_engine->likeSsh() ){
+
+			auto m = m_path.mid( m_engine->name().size() + 1 ) ;
+
+			this->windowSetTitle( tr( "Connecting To \"%1\"" ).arg( m ) ) ;
+
+			m_ui->pbOpen->setText( tr( "Connect" ) ) ;
+		}else{
+			m_ui->pbOpen->setText( tr( "Open" ) ) ;
+
+			this->windowSetTitle( tr( "Unlocking \"%1\"" ).arg( m_path ) ) ;
+		}
 	}
 
 	this->autoMount( s ) ;
@@ -602,8 +626,6 @@ void keyDialog::setDefaultUI()
 
 		m_ui->pbkeyOption->setVisible( false ) ;
 	}else{
-		this->windowSetTitle( tr( "Unlocking \"%1\"" ).arg( m_path ) ) ;
-
 		m_ui->label_3->setVisible( false ) ;
 
 		m_ui->lineEditMountPoint->setEnabled( true ) ;
