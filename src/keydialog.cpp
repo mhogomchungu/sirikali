@@ -378,9 +378,11 @@ void keyDialog::setVolumeToUnlock()
 	auto a = QString::number( m_counter ) ;
 	auto b = QString::number( m_volumes.size() ) ;
 
+	auto likeSsh = m_engine->known() && m_engine->likeSsh() ;
+
 	if( m_volumes.size() > 1 ){
 
-		if( m_engine->likeSsh() ){
+		if( likeSsh ){
 
 			auto m = m_path.mid( m_engine->name().size() + 1 ) ;
 
@@ -393,7 +395,7 @@ void keyDialog::setVolumeToUnlock()
 			this->windowSetTitle( tr( "(%1/%2) Unlocking \"%3\"" ).arg( a,b,m_path ) ) ;
 		}
 	}else{
-		if( m_engine->likeSsh() ){
+		if( likeSsh ){
 
 			auto m = m_path.mid( m_engine->name().size() + 1 ) ;
 
