@@ -384,7 +384,7 @@ void keyDialog::setVolumeToUnlock()
 
 		if( likeSsh ){
 
-			auto m = m_path.mid( m_engine->name().size() + 1 ) ;
+			const auto& m = m_engine.cipherFolder() ;
 
 			this->windowSetTitle( tr( "(%1/%2) Connecting To \"%3\"" ).arg( a,b,m ) ) ;
 
@@ -397,7 +397,7 @@ void keyDialog::setVolumeToUnlock()
 	}else{
 		if( likeSsh ){
 
-			auto m = m_path.mid( m_engine->name().size() + 1 ) ;
+			const auto& m = m_engine.cipherFolder() ;
 
 			this->windowSetTitle( tr( "Connecting To \"%1\"" ).arg( m ) ) ;
 
