@@ -34,6 +34,8 @@
 #include "win.h"
 #include "engines/options.h"
 
+#include <QCoreApplication>
+
 static QStringList _search_path_0( const QString& e )
 {
 	QStringList s = { e,e + "\\bin\\",e + "\\.bin\\" };
@@ -52,7 +54,7 @@ static QStringList _search_path_0( const QString& e )
 
 static QStringList _search_path( const QStringList& m )
 {
-	const auto a = QDir::homePath().toLatin1() ;
+	const auto a = QDir::homePath().toUtf8() ;
 
 	if( utility::platformIsWindows() ){
 
@@ -72,6 +74,7 @@ static QStringList _search_path( const QStringList& m )
 	}else{
 		const auto b = a + "/bin/" ;
 		const auto c = a + "/.bin/" ;
+		const auto d = QCoreApplication::applicationDirPath().toUtf8() ;
 
 		return { "/usr/local/bin/",
 			"/usr/local/sbin/",
@@ -84,7 +87,8 @@ static QStringList _search_path( const QStringList& m )
 			"/opt/bin/",
 			"/opt/sbin/",
 			 b.constData(),
-			 c.constData() } ;
+			 c.constData(),
+			 d.constData() } ;
 	}
 }
 
