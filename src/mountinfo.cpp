@@ -121,7 +121,9 @@ static volumeInfo::List _linux_volumes()
 
 		if( m > 5 ){
 
-			s.emplace_back( k.at( m - 2 ),k.at( 4 ),k.at( m - 3 ),k.at( 5 ).mid( 0,2 ) ) ;
+			const auto& q = k.at( 5 ) ;
+
+			s.emplace_back( k.at( m - 2 ),k.at( 4 ),k.at( m - 3 ),q.mid( 0,2 ),q ) ;
 		}
 	}
 
@@ -214,9 +216,18 @@ static volumeInfo::FsEntry _decode( const engines::engine& engine,volumeInfo::Fs
 
 	_decode( e.mountPoint,false ) ;
 
-	e.fileSystem.replace( "fuse.","" ) ;
+	const auto& n = engine.displayName() ;
 
-	if( !e.fileSystem.isEmpty() ){
+	if( n.isEmpty() ){
+
+		e.fileSystem.replace( "fuse.","" ) ;
+
+		if( !e.fileSystem.isEmpty() ){
+
+			e.fileSystem.replace( 0,1,e.fileSystem.at( 0 ).toUpper() ) ;
+		}
+	}else{
+		e.fileSystem = n ;
 
 		e.fileSystem.replace( 0,1,e.fileSystem.at( 0 ).toUpper() ) ;
 	}

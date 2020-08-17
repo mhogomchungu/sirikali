@@ -285,7 +285,17 @@ void sirikali::setUpApp( const QString& volume )
 
 		for( const auto& it : engines.supportedEngines() ){
 
-			const auto& name = it->name() ;
+			const auto& name = [ & ](){
+
+				const auto& e = it->displayName() ;
+
+				if( e.isEmpty() ){
+
+					return it->name() ;
+				}else{
+					return e ;
+				}
+			}() ;
 
 			auto ac = m->addAction( name ) ;
 

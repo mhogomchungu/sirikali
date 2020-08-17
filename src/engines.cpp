@@ -395,6 +395,11 @@ static engines::engine::BaseOptions _update( engines::engine::BaseOptions m )
 		}
 	}
 
+	if( !m.displayName.isEmpty() ){
+
+		m.displayName.replace( 0,1,m.displayName.at( 0 ).toUpper() ) ;
+	}
+
 	return m ;
 }
 
@@ -666,6 +671,11 @@ const engines::version& engines::engine::installedVersion() const
 	return m_version ;
 }
 
+const QString& engines::engine::displayName() const
+{
+	return m_Options.displayName ;
+}
+
 const QString& engines::engine::sshOptions() const
 {
 	return m_Options.sshOptions ;
@@ -839,34 +849,43 @@ volumeInfo::List engines::mountInfo( const volumeInfo::List& m ) const
 	return s ;
 }
 
-QStringList engines::enginesWithNoConfigFile() const
+template< typename Engines,typename Function >
+static QStringList _configs( const Engines& engines,Function function )
 {
 	QStringList m ;
 
-	for( const auto& it : this->supportedEngines() ){
+	for( const auto& it : engines ){
 
-		if( !it->hasConfigFile() ){
+		if( function( it.get() ) ){
 
-			m.append( it->name() ) ;
+			const auto& e = it->displayName() ;
+
+			if( e.isEmpty() ){
+
+				m.append( it->name() ) ;
+			}else{
+				m.append( e ) ;
+			}
 		}
 	}
 
 	return m ;
 }
 
+QStringList engines::enginesWithNoConfigFile() const
+{
+	return _configs( this->supportedEngines(),[]( const engines::engine& engine ){
+
+		return !engine.hasConfigFile() ;
+	} ) ;
+}
+
 QStringList engines::enginesWithConfigFile() const
 {
-	QStringList m ;
+	return _configs( this->supportedEngines(),[]( const engines::engine& engine ){
 
-	for( const auto& it : this->supportedEngines() ){
-
-		if( it->hasConfigFile() ){
-
-			m.append( it->name() ) ;
-		}
-	}
-
-	return m ;
+		return engine.hasConfigFile() ;
+	} ) ;
 }
 
 const std::vector< engines::engine::Wrapper >& engines::supportedEngines() const
@@ -933,7 +952,13 @@ engines::engine::ownsCipherFolder engines::engine::ownsCipherPath( const QString
 {
 	auto a = this->name() + " " ;
 
-	if( cipherPath.startsWith( a,Qt::CaseInsensitive ) ){
+	auto m = this->displayName() + " " ;
+
+	if( cipherPath.startsWith( m,Qt::CaseInsensitive ) ){
+
+		return { true,cipherPath.mid( m.size() ),configFilePath } ;
+
+	}else if( cipherPath.startsWith( a,Qt::CaseInsensitive ) ){
 
 		return { true,cipherPath.mid( a.size() ),configFilePath } ;
 
@@ -1023,7 +1048,16 @@ const engines::engine& engines::getByName( const QString& e ) const
 
 		const auto& m = m_backends[ i ] ;
 
-		if( _found( m->names(),cmp ) ){
+		const auto& s = m->displayName() ;
+
+		if( s.isEmpty() ){
+
+			if( _found( m->names(),cmp ) ){
+
+				return *m ;
+			}
+
+		}else if( !s.compare( e,Qt::CaseInsensitive ) ){
 
 			return *m ;
 		}

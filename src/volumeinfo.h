@@ -33,17 +33,19 @@ class volumeInfo
 public:
 	struct FsEntry{
 
-		FsEntry( QString c,QString m,QString f,QString mm ) :
+		FsEntry( QString c,QString m,QString f,QString mm,QString mo = QString() ) :
 			cipherPath( std::move( c ) ),
 			mountPoint( std::move( m ) ),
 			fileSystem( std::move( f ) ),
-			mode( std::move( mm ) )
+			mode( std::move( mm ) ),
+			mountOptions( std::move( mo ) )
 		{
 		}
 		QString cipherPath ;
 		QString mountPoint ;
 		QString fileSystem ;
 		QString mode ;
+		QString mountOptions ;
 	} ;
 
 	using List = std::vector< volumeInfo::FsEntry > ;
@@ -57,7 +59,8 @@ public:
 			volumePath( std::move( e.cipherPath ) ),
 			mountPoint( std::move( e.mountPoint ) ),
 			fileSystem( std::move( e.fileSystem ) ),
-			mode( std::move( e.mode ) )
+			mode( std::move( e.mode ) ),
+			mountOptions( std::move( e.mountOptions ) )
 		{
 		}
 		mountinfo( const QStringList& e )

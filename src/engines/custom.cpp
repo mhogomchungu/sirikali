@@ -63,6 +63,7 @@ static void _parse( engines::engine::BaseOptions& s,const SirikaliJson& json )
 	s.windowsInstallPathRegistryKey   = json.getString( "windowsInstallPathRegistryKey" ) ;
 	s.windowsInstallPathRegistryValue = json.getString( "windowsInstallPathRegistryValue" ) ;
 	s.windowsExecutableFolderPath     = json.getString( "windowsExecutableFolderPath" ) ;
+	s.displayName                     = json.getString( "displayName" ) ;
 
 	s.windowsUnMountCommand           = json.getStringList( "windowsUnMountCommand" ) ;
 	s.unMountCommand                  = json.getStringList( "unMountCommand" ) ;

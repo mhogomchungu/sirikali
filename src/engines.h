@@ -498,6 +498,7 @@ public:
 			bool autoDeletesMountPoint ;
 
 			QByteArray passwordFormat ;
+			QString displayName ;
 			QString releaseURL ;
 			QString minimumVersion ;
 			QString reverseString ;
@@ -583,6 +584,7 @@ public:
 
 		const engines::version& installedVersion() const ;
 
+		const QString& displayName() const ;
 		const QString& sshOptions() const ;
 		const QString& executableFullPath() const ;
 		const QString& minimumVersion() const ;
