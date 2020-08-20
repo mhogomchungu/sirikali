@@ -121,7 +121,7 @@ private slots:
 private:
 	void windowsMonitor( void ) ;
 	void linuxMonitor( void ) ;
-	void osxMonitor( void ) ;
+	void qtMonitor( void ) ;
 	void updateVolume( void ) ;
 	void pbUpdate( void ) ;
 	void autoMount( const QString& ) ;

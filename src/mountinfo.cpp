@@ -73,7 +73,7 @@ static QString _getFileSystem( const QString& dev,const QString& fs )
 	return fs ;
 }
 
-static volumeInfo::List _macox_volumes()
+static volumeInfo::List _qt_volumes()
 {
 	volumeInfo::List s ;
 
@@ -138,11 +138,11 @@ static volumeInfo::List _unlocked_volumes()
 
 			return _linux_volumes() ;
 
-		}else if( utility::platformIsOSX() ){
+		}else if( utility::platformIsWindows() ){
 
-			return _macox_volumes() ;
-		}else{
 			return _windows_volumes() ;
+		}else{
+			return _qt_volumes() ;
 		}
 	}() ;
 
@@ -166,11 +166,11 @@ mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& quit ) :
 
 		this->linuxMonitor() ;
 
-	}else if( utility::platformIsOSX() ){
+	}else if( utility::platformIsWindows() ){
 
-		this->osxMonitor() ;
-	}else{
 		this->windowsMonitor() ;
+	}else{
+		this->qtMonitor() ;
 	}
 }
 
@@ -409,7 +409,7 @@ void mountinfo::pollForUpdates()
 	} ).then( std::move( m_quit ) ) ;
 }
 
-void mountinfo::osxMonitor()
+void mountinfo::qtMonitor()
 {
 	this->pollForUpdates() ;
 }
