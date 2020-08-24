@@ -281,7 +281,7 @@ public:
 		return s ;
 	}
 	Task::process::result add( const SiriKali::Windows::opts& ) ;
-	Task::process::result remove(const QStringList& unMountCommand,const QString& mountPoint ) ;
+	Task::process::result remove( const QStringList& unMountCommand,const QString& mountPoint ) ;
 	std::vector< QStringList > commands() const ;
 	QString volumeProperties( const QString& mountPath ) ;
 	void updateVolumeList( std::function< void() > ) ;

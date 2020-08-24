@@ -74,6 +74,7 @@ private :
 	void showUpdatedEntry( const favorites::entry& ) ;
 	void updateFavorite( bool );
 	void toggleAutoMount( void ) ;
+	void setCommand( QLineEdit * ) ;
 	void edit( void ) ;
 	void configPath( void ) ;
 	void removeEntryFromFavoriteList( void ) ;

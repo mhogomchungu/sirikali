@@ -165,39 +165,29 @@ favorites2::favorites2( QWidget * parent,
 		}
 	} ) ;
 
-	auto _setCommand = [ this ]( QLineEdit * lineEdit ){
-
-		auto path = this->getExistingFile( tr( "Select A Command Executable" ) ) ;
-
-		if( !path.isEmpty() ){
-
-			lineEdit->setText( path ) ;
-		}
-	} ;
-
 	connect( m_ui->tableWidgetWallet,&QTableWidget::currentItemChanged,[]( QTableWidgetItem * c,QTableWidgetItem * p ){
 
 		tablewidget::selectRow( c,p ) ;
 	} ) ;
 
-	connect( m_ui->pbPreMount,&QPushButton::clicked,[ = ](){
+	connect( m_ui->pbPreMount,&QPushButton::clicked,[ this ](){
 
-		_setCommand( m_ui->lineEditPreMount ) ;
+		this->setCommand( m_ui->lineEditPreMount ) ;
 	} ) ;
 
-	connect( m_ui->pbPreUnMount,&QPushButton::clicked,[ = ](){
+	connect( m_ui->pbPreUnMount,&QPushButton::clicked,[ this ](){
 
-		_setCommand( m_ui->lineEditPreUnMount ) ;
+		this->setCommand( m_ui->lineEditPreUnMount ) ;
 	} ) ;
 
-	connect( m_ui->pbPostMount,&QPushButton::clicked,[ = ](){
+	connect( m_ui->pbPostMount,&QPushButton::clicked,[ this ](){
 
-		_setCommand( m_ui->lineEditPostMount ) ;
+		this->setCommand( m_ui->lineEditPostMount ) ;
 	} ) ;
 
-	connect( m_ui->pbPostUnmount,&QPushButton::clicked,[ = ](){
+	connect( m_ui->pbPostUnmount,&QPushButton::clicked,[ this ](){
 
-		_setCommand( m_ui->lineEditPostUnmount ) ;
+		this->setCommand( m_ui->lineEditPostUnmount ) ;
 	} ) ;
 
 	connect( m_ui->pbEdit,&QPushButton::clicked,[ this ](){
@@ -275,11 +265,16 @@ favorites2::favorites2( QWidget * parent,
 
 	m_ui->rbNone->setEnabled( true ) ;
 
-	m_ui->rbInternalWallet->setEnabled( LXQt::Wallet::backEndIsSupported( bk::internal ) ) ;
-	m_ui->rbKWallet->setEnabled( LXQt::Wallet::backEndIsSupported( bk::kwallet ) ) ;
-	m_ui->rbLibSecret->setEnabled( LXQt::Wallet::backEndIsSupported( bk::libsecret ) ) ;
-	m_ui->rbMacOSKeyChain->setEnabled( LXQt::Wallet::backEndIsSupported( bk::osxkeychain ) ) ;
-	m_ui->rbWindowsDPAPI->setEnabled( LXQt::Wallet::backEndIsSupported( bk::windows_dpapi ) ) ;
+	auto _set_supported = []( QRadioButton * rb,LXQt::Wallet::BackEnd e ){
+
+		rb->setEnabled( LXQt::Wallet::backEndIsSupported( e ) ) ;
+	} ;
+
+	_set_supported( m_ui->rbInternalWallet,bk::internal ) ;
+	_set_supported( m_ui->rbKWallet,bk::kwallet ) ;
+	_set_supported( m_ui->rbLibSecret,bk::libsecret ) ;
+	_set_supported( m_ui->rbMacOSKeyChain,bk::osxkeychain ) ;
+	_set_supported( m_ui->rbWindowsDPAPI,bk::windows_dpapi ) ;
 
 	auto walletBk = m_settings.autoMountBackEnd() ;
 
@@ -606,6 +601,16 @@ favorites2::favorites2( QWidget * parent,
 favorites2::~favorites2()
 {
 	delete m_ui ;
+}
+
+void favorites2::setCommand( QLineEdit * lineEdit )
+{
+	auto path = this->getExistingFile( tr( "Select A Command Executable" ) ) ;
+
+	if( !path.isEmpty() ){
+
+		lineEdit->setText( path ) ;
+	}
 }
 
 void favorites2::addkeyToWallet()
