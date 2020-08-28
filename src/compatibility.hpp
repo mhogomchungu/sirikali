@@ -17,6 +17,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef SIRIKALI_COMPATIBILITY_H
+#define SIRIKALI_COMPATIBILITY_H
+
 #include <QtGlobal>
 
 #if QT_VERSION < QT_VERSION_CHECK( 5,4,0 )
@@ -91,6 +94,10 @@ struct pollfd {
 
 const static short POLLPRI = 0 ;
 
+const static int IN_CREATE = 0 ;
+
+const static int IN_DELETE = 0 ;
+
 static inline int poll( struct pollfd * a,int b,int c )
 {
 	Q_UNUSED( a )
@@ -110,11 +117,22 @@ typedef struct
 	int foo ;
 }fd_set ;
 
-struct timeval
+struct inotify_event
 {
-	int tv_sec ;
-	int tv_usec ;
+	int wd ;
+	size_t mask ;
+	const char * name ;
+	size_t len ;
 } ;
+
+static inline int inotify_add_watch( int a,const char * b,size_t c )
+{
+	Q_UNUSED( a )
+	Q_UNUSED( b )
+	Q_UNUSED( c )
+
+	return -1 ;
+}
 
 static inline int select( int a,fd_set * b,fd_set * c,fd_set * d,struct timeval * e )
 {
@@ -123,6 +141,8 @@ static inline int select( int a,fd_set * b,fd_set * c,fd_set * d,struct timeval 
 	Q_UNUSED( c )
 	Q_UNUSED( d )
 	Q_UNUSED( e )
+
+	return -1 ;
 }
 
 static inline void FD_ZERO( fd_set * e )
@@ -142,9 +162,9 @@ static inline void FD_SET( int fd,fd_set * e )
 #else
 
 #include <poll.h>
-
 #include <sys/inotify.h>
 #include <sys/select.h>
 
 #endif
 
+#endif

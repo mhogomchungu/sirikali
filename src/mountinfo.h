@@ -111,7 +111,6 @@ public:
 	} ;
 
 	class selectMonitor{
-
 	public:
 		selectMonitor( std::atomic_bool& s,int fd,int sec = 1,int usec = 0 ) :
 			m_exit( s ),
