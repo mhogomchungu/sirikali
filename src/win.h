@@ -32,6 +32,7 @@
 #include "siritask.h"
 #include "engines.h"
 #include "lxqt_wallet.h"
+#include "compatibility.hpp"
 
 namespace SiriKali{
 namespace Windows{
@@ -86,89 +87,5 @@ std::vector< mountOptions > getMountOptions() ;
 
 }
 }
-
-#if QT_VERSION < QT_VERSION_CHECK( 5,4,0 )
-
-/*
- * Debian 8 uses an old version of Qt that does not have this class.
- * Adding it here to make these old versions of Qt happy.
- *
- * This struct is used only in windows and MACOS version of the project and we use
- * much recent versions of Qt on these platforms.
- */
-struct QStorageInfo
-{
-	static QList<QStorageInfo> mountedVolumes()
-	{
-		return QList<QStorageInfo>() ;
-	}
-
-	bool operator==( const QStorageInfo& e )
-	{
-		Q_UNUSED( e ) ;
-		return false ;
-	}
-
-	QString rootPath() const
-	{
-		return QString() ;
-	}
-
-	QString displayName() const
-	{
-		return QString() ;
-	}
-
-	QByteArray device() const
-	{
-		return QByteArray() ;
-	}
-
-	QString name() const
-	{
-		return QString() ;
-	}
-
-	QByteArray fileSystemType() const
-	{
-		return QByteArray() ;
-	}
-
-	bool isReadOnly() const
-	{
-		return false ;
-	}
-} ;
-
-#else
-
-#include <QStorageInfo>
-
-#endif
-
-#ifdef Q_OS_WIN
-
-struct pollfd {
-    int   fd;         /* file descriptor */
-    short events;     /* requested events */
-    short revents;    /* returned events */
-};
-
-const static short POLLPRI = 0 ;
-
-static inline int poll( struct pollfd * a,int b,int c )
-{
-	Q_UNUSED( a )
-	Q_UNUSED( b )
-	Q_UNUSED( c )
-
-	return 0 ;
-}
-
-#else
-
-#include <poll.h>
-
-#endif
 
 #endif

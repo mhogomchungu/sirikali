@@ -158,6 +158,7 @@ mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& quit ) :
 	m_parent( parent ),
 	m_quit( std::move( quit ) ),
 	m_announceEvents( e ),
+	m_linuxMonitorExit( false ),
 	m_oldMountList( _unlocked_volumes() ),
 	m_dbusMonitor( [ this ]( const QString& e ){ this->autoMount( e ) ; } ),
 	m_folderMountEvents( [ this ]( const QString& e ){ this->autoMount( e ) ; } )
@@ -333,44 +334,48 @@ void mountinfo::announceEvents( bool s )
 
 void mountinfo::linuxMonitor()
 {
-	auto s = std::addressof( Task::run( [ this ](){
+	auto& s = Task::run( [ this ](){
 
 		QFile s( "/proc/self/mountinfo" ) ;
-		struct pollfd m ;
 
 		s.open( QIODevice::ReadOnly ) ;
-		m.fd     = s.handle() ;
-		m.events = POLLPRI ;
 
-		while( true ){
+		eventsMonitor::pollMonitor( m_linuxMonitorExit,s.handle() ).poll( [ this ]( int a ){
 
-			poll( &m,1,-1 ) ;
+			if( a > 0 ){
 
-			this->updateVolume() ;
-		}
-	} ) ) ;
+				this->updateVolume() ;
 
-	m_stop = [ s ](){ s->first_thread()->terminate() ; } ;
+			}else if( a == 0 ){
+
+				/*
+				 * Timout has occured
+				 */
+			}else{
+				utility::debug() << "Warning: poll() in mountinfo::linuxMonitor() failed" ;
+			}
+		} ) ;
+	} ) ;
+
+	m_stop = [ this ](){ m_linuxMonitorExit = true ; } ;
 
 	if( m_folderMountEvents.monitor() ){
 
-		auto e = std::addressof( Task::run( [ & ](){
+		Task::run( [ this ](){
 
 			m_folderMountEvents.start() ;
-		} ) ) ;
 
-		e->then( [ & ](){
+		} ).then( [ this ](){
 
-			m_folderMountEvents.stop() ;
 			m_quit() ;
 		} ) ;
 
-		s->then( [ = ](){
+		s.then( [ this ](){
 
-			e->first_thread()->terminate() ;
+			m_folderMountEvents.stop() ;
 		} ) ;
 	}else{
-		s->then( std::move( m_quit ) ) ;
+		s.then( std::move( m_quit ) ) ;
 	}
 }
 
@@ -419,181 +424,52 @@ void mountinfo::windowsMonitor()
 	SiriKali::Windows::updateVolumeList( [ this ]{ this->updateVolume() ; } ) ;
 }
 
-#ifdef Q_OS_LINUX
-
-#include <sys/inotify.h>
-#include <sys/select.h>
-
 mountinfo::folderMountEvents::folderMountEvents( std::function< void( const QString& ) > function ) :
-	m_inotify_fd( inotify_init() ),m_update( std::move( function ) )
+	m_update( std::move( function ) ),
+	m_folderMonitorExit( false ),
+	m_folderMonitor( m_folderMonitorExit )
 {
-	if( m_inotify_fd != -1 ){
+	if( m_folderMonitor.functional() ){
 
-		for( const auto& it : settings::instance().mountMonitorFolderPaths() ){
-
-			int e = inotify_add_watch( m_inotify_fd,it.toLatin1(),IN_CREATE ) ;
-
-			if( e != -1 ){
-
-				if( it.endsWith( "/" ) ){
-
-					auto s = it ;
-
-					while( s.endsWith( "/" ) ){
-
-						s = utility::removeLast( s,1 ) ;
-					}
-
-					m_fds.emplace_back( e,s ) ;
-				}else{
-					m_fds.emplace_back( e,it ) ;
-				}
-			}
-		}
+		m_folderMonitor.createList( settings::instance().mountMonitorFolderPaths() ) ;
+	}else{
+		utility::debug() << "Warning: inotify_init() failed" ;
 	}
+}
+
+mountinfo::folderMountEvents::~folderMountEvents()
+{
 }
 
 void mountinfo::folderMountEvents::start()
 {
-	const char * currentEvent ;
-	const char * end ;
-
-	std::vector< char > buffer( 10485760 ) ;
-
-	fd_set rfds ;
-
-	FD_ZERO( &rfds ) ;
-
-	struct timeval tv ;
-
-	int select_fd = m_inotify_fd + 1 ;
-
-	//int interval = settings::instance().mountMonitorFolderPollingInterval() ;
-	int interval = 0 ; //No longer listening for timeouts
-
-	auto _reset_variables = [ & ](){
-
-		FD_SET( m_inotify_fd,&rfds ) ;
-
-		tv.tv_sec = interval ;
-		tv.tv_usec = 0 ;
-	} ;
-
-	struct event{
-		bool eventReceived ;
-		bool timeout ;
-	} ;
-
-	auto _eventsReceived = [ & ]()->event{
-
-		_reset_variables() ;
-
-		int r = [ & ](){
-
-			if( tv.tv_sec > 0 ){
-
-				return select( select_fd,&rfds,nullptr,nullptr,&tv ) ;
-			}else{
-				return select( select_fd,&rfds,nullptr,nullptr,nullptr ) ;
-			}
-		}() ;
+	m_folderMonitor.event( [ & ]( int r,const eventsMonitor::folderMonitor::Entry& ent ){
 
 		if( r == 0 ){
-
-			return { false,true } ;
-
-		}else if( r > 0 ){
-
-			auto s = read( m_inotify_fd,buffer.data(),buffer.size() ) ;
-
-			if( s > 0 ){
-
-				end          = buffer.data() + s ;
-				currentEvent = buffer.data() ;
-
-				return { true,false } ;
-			}
-		}
-
-		return { false,false } ;
-	} ;
-
-	auto _processEvent = [ & ]( const struct inotify_event * event ){
-
-		if( event->mask & IN_CREATE ){
-
-			for( auto& it : m_fds ){
-
-				if( it.fd() == event->wd ){
-
-					m_update( it.path() + event->name ) ;
-
-					break ;
-				}
-			}
-		}
-	} ;
-
-	while( true ){
-
-		auto e = _eventsReceived() ;
-
-		if( e.eventReceived ){
-
-			while( currentEvent < end ){
-
-				auto event = reinterpret_cast< const struct inotify_event * >( currentEvent ) ;
-
-				_processEvent( event ) ;
-				currentEvent += sizeof( struct inotify_event ) + event->len ;
-			}
-
-		}else if( e.timeout ){
-
 			/*
-			 * Not listening to timeouts
+			 * Timeout
 			 */
+		}else if( r < 0 ){
+
+			utility::debug() << "Warning: select() in mountinfo::folderMountEvents::start() failed" ;
+		}else{
+			ent.created( [ this ]( const QString& e ){
+
+				m_update( e ) ;
+			} ) ;
 		}
-	}
+	} ) ;
 }
 
 void mountinfo::folderMountEvents::stop()
 {
-	close( m_inotify_fd ) ;
+	m_folderMonitorExit = true ;
 }
 
 bool mountinfo::folderMountEvents::monitor()
 {
-	return m_inotify_fd != -1 && m_fds.size() > 0 ;
+	return m_folderMonitor.working() ;
 }
-
-mountinfo::folderMountEvents::entry::~entry()
-{
-	close( m_fd ) ;
-}
-
-#else
-
-mountinfo::folderMountEvents::entry::~entry()
-{
-}
-
-mountinfo::folderMountEvents::folderMountEvents( std::function< void( const QString& ) > e )
-{
-	Q_UNUSED( e )
-}
-void mountinfo::folderMountEvents::start()
-{
-}
-void mountinfo::folderMountEvents::stop()
-{
-}
-bool mountinfo::folderMountEvents::monitor()
-{
-	return false ;
-}
-
-#endif
 
 static QString _gvfs_fuse_path()
 {
