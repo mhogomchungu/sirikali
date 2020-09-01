@@ -81,41 +81,22 @@ struct QStorageInfo
 
 #endif
 
-#ifdef Q_OS_WIN
+#ifdef Q_OS_LINUX
+
+#include <sys/inotify.h>
+
+#else
+
+const static int IN_CREATE = 0 ;
+const static int IN_DELETE = 0 ;
 
 extern "C"
 {
-
-struct pollfd {
-	int fd ;
-	short events ;
-	short revents ;
-} ;
-
-const static short POLLPRI = 0 ;
-
-const static int IN_CREATE = 0 ;
-
-const static int IN_DELETE = 0 ;
-
-static inline int poll( struct pollfd * a,int b,int c )
-{
-	Q_UNUSED( a )
-	Q_UNUSED( b )
-	Q_UNUSED( c )
-
-	return 0 ;
-}
 
 static inline int inotify_init()
 {
 	return -1 ;
 }
-
-typedef struct
-{
-	int foo ;
-}fd_set ;
 
 struct inotify_event
 {
@@ -133,6 +114,37 @@ static inline int inotify_add_watch( int a,const char * b,size_t c )
 
 	return -1 ;
 }
+
+} //extern C
+
+#endif
+
+#ifdef Q_OS_WIN
+
+extern "C"
+{
+
+struct pollfd {
+	int fd ;
+	short events ;
+	short revents ;
+} ;
+
+const static short POLLPRI = 0 ;
+
+static inline int poll( struct pollfd * a,int b,int c )
+{
+	Q_UNUSED( a )
+	Q_UNUSED( b )
+	Q_UNUSED( c )
+
+	return 0 ;
+}
+
+typedef struct
+{
+	int foo ;
+}fd_set ;
 
 static inline int select( int a,fd_set * b,fd_set * c,fd_set * d,struct timeval * e )
 {
@@ -162,7 +174,6 @@ static inline void FD_SET( int fd,fd_set * e )
 #else
 
 #include <poll.h>
-#include <sys/inotify.h>
 #include <sys/select.h>
 
 #endif

@@ -562,7 +562,7 @@ void sirikali::favoriteClicked( QAction * ac )
 
 			this->updateFavoritesInContextMenu() ;
 		} ) ;
-	}else{		
+	}else{
 		if( e == "Mount All" ){
 
 			auto v = favorites::instance().readVolumeList() ;
@@ -1102,7 +1102,7 @@ keyDialog::volumeList sirikali::autoUnlockVolumes( favorites::volumeList ss,
 	if( !m ){
 
 		return l ;
-	}	
+	}
 
 	if( !m.open() ){
 
@@ -1808,7 +1808,7 @@ void sirikali::updateFavoritesInContextMenu()
 
 void sirikali::runIntervalCustomCommand( const QString& cmd )
 {
-	this->processMountedVolumes( [ = ]( const sirikali::mountedEntry& s ){		
+	this->processMountedVolumes( [ = ]( const sirikali::mountedEntry& s ){
 
 		QStringList args{ s.cipherPath,s.mountPoint,s.volumeType } ;
 

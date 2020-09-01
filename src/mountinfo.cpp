@@ -159,11 +159,11 @@ mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& quit ) :
 	m_quit( std::move( quit ) ),
 	m_announceEvents( e ),
 	m_linuxMonitorExit( false ),
+	m_folderMonitorExit( false ),
 	m_oldMountList( _unlocked_volumes() ),
-	m_dbusMonitor( [ this ]( const QString& e ){ this->autoMount( e ) ; } ),
-	m_folderMountEvents( [ this ]( const QString& e ){ this->autoMount( e ) ; } )
+	m_dbusMonitor( [ this ]( const QString& e ){ this->autoMount( e ) ; } )
 {
-	if( utility::platformIsLinux() ){
+	if( utility::platformIsLinux() ){		
 
 		this->linuxMonitor() ;
 
@@ -340,9 +340,13 @@ void mountinfo::linuxMonitor()
 
 		s.open( QIODevice::ReadOnly ) ;
 
-		eventsMonitor::pollMonitor( m_linuxMonitorExit,s.handle() ).poll( [ this ]( int a ){
+		eventsMonitor::pollMonitor( s.handle() ).poll( [ this ]( int a ){
 
-			if( a > 0 ){
+			if( m_linuxMonitorExit ){
+
+				return true ;
+
+			}else if( a > 0 ){
 
 				this->updateVolume() ;
 
@@ -352,28 +356,60 @@ void mountinfo::linuxMonitor()
 				 * Timout has occured
 				 */
 			}else{
-				utility::debug() << "Warning: poll() in mountinfo::linuxMonitor() failed" ;
+				utility::debug() << "Warning: pollMonitor.poll failed" ;
 			}
+
+			return false ;
 		} ) ;
 	} ) ;
 
 	m_stop = [ this ](){ m_linuxMonitorExit = true ; } ;
 
-	if( m_folderMountEvents.monitor() ){
+	auto m = settings::instance().mountMonitorFolderPaths() ;
 
-		Task::run( [ this ](){
+	if( !m.isEmpty() ){
 
-			m_folderMountEvents.start() ;
+		Task::run( [ this,m = std::move( m ) ](){
 
-		} ).then( [ this ](){
+			using fm = eventsMonitor::folderMonitor ;
 
-			m_quit() ;
-		} ) ;
+			fm mm ;
 
-		s.then( [ this ](){
+			if( mm.functional() ){
 
-			m_folderMountEvents.stop() ;
-		} ) ;
+				mm.createList( m ) ;
+			}else{
+				utility::debug() << "Warning: failed to init folder monitor" ;
+			}
+
+			mm.poll( [ this ]( int r,const fm::entries& entries ){
+
+				if( m_folderMonitorExit ){
+
+					return true ;
+
+				}else if( r == 0 ){
+
+					/*
+					 * Timeout
+					 */
+
+				}else if( r < 0 ){
+
+					utility::debug() << "Warning: folderMonitor.poll failed" ;
+				}else{
+					entries.created( [ this ]( const QString& e ){
+
+						this->autoMount( e ) ;
+					} ) ;
+				}
+
+				return false ;
+			} ) ;
+
+		} ).then( std::move( m_quit ) ) ;
+
+		s.then( [ this ](){ m_folderMonitorExit = true ; } ) ;
 	}else{
 		s.then( std::move( m_quit ) ) ;
 	}
@@ -422,53 +458,6 @@ void mountinfo::qtMonitor()
 void mountinfo::windowsMonitor()
 {
 	SiriKali::Windows::updateVolumeList( [ this ]{ this->updateVolume() ; } ) ;
-}
-
-mountinfo::folderMountEvents::folderMountEvents( std::function< void( const QString& ) > function ) :
-	m_update( std::move( function ) ),
-	m_folderMonitorExit( false ),
-	m_folderMonitor( m_folderMonitorExit )
-{
-	if( m_folderMonitor.functional() ){
-
-		m_folderMonitor.createList( settings::instance().mountMonitorFolderPaths() ) ;
-	}else{
-		utility::debug() << "Warning: inotify_init() failed" ;
-	}
-}
-
-mountinfo::folderMountEvents::~folderMountEvents()
-{
-}
-
-void mountinfo::folderMountEvents::start()
-{
-	m_folderMonitor.event( [ & ]( int r,const eventsMonitor::folderMonitor::Entry& ent ){
-
-		if( r == 0 ){
-			/*
-			 * Timeout
-			 */
-		}else if( r < 0 ){
-
-			utility::debug() << "Warning: select() in mountinfo::folderMountEvents::start() failed" ;
-		}else{
-			ent.created( [ this ]( const QString& e ){
-
-				m_update( e ) ;
-			} ) ;
-		}
-	} ) ;
-}
-
-void mountinfo::folderMountEvents::stop()
-{
-	m_folderMonitorExit = true ;
-}
-
-bool mountinfo::folderMountEvents::monitor()
-{
-	return m_folderMonitor.working() ;
 }
 
 static QString _gvfs_fuse_path()
