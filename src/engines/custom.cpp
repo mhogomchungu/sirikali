@@ -174,9 +174,9 @@ public:
 		const QString& second ;
 	} ;
 	template< typename ... T >
-	resolve( const T& ... e )
+	resolve( T&& ... e )
 	{
-		this->set( e ... ) ;
+		this->set( std::forward< T >( e ) ... ) ;
 	}
 	QString option( QString a ) const
 	{
@@ -200,15 +200,15 @@ public:
 	}
 private:
 	template< typename T >
-	void set( const T& t )
+	void set( T&& t )
 	{
-		m_opts.emplace_back( t ) ;
+		m_opts.emplace_back( std::forward< T >( t ) ) ;
 	}
 	template< typename E,typename ... T >
-	void set( const E& e,const T& ... t )
+	void set( E&& e,T&& ... t )
 	{
-		this->set( e ) ;
-		this->set( t ... ) ;
+		this->set( std::forward< E >( e ) ) ;
+		this->set( std::forward< T >( t ) ... ) ;
 	}
 	std::vector< resolve::args > m_opts ;
 };
@@ -239,14 +239,14 @@ template< typename ... T >
 static void _resolve( QStringList& orgs,
 		      const QString& name,
 		      const QString& controlStructure,
-		      const T& ... rrr )
+		      T&& ... rrr )
 {	
 	if( controlStructure.isEmpty() ){
 
 		return ;
 	}
 
-	resolve rr( rrr ... ) ;
+	resolve rr( std::forward< T >( rrr ) ... ) ;
 
 	auto m = utility::split( controlStructure,' ' ) ;
 
