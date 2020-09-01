@@ -58,7 +58,7 @@ class sirikali : public QWidget
 {
 	Q_OBJECT
 public:	
-	sirikali( const QStringList& ) ;
+	sirikali() ;
 	int start( QApplication& ) ;
 	~sirikali() ;
 private slots:
@@ -196,7 +196,7 @@ private:
 
 	systemSignalHandler m_signalHandler ;
 
-	const QStringList& m_argumentList ;
+	const QStringList m_argumentList ;
 };
 
 #endif // MAINWINDOW_H

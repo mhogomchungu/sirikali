@@ -536,6 +536,8 @@ void utility::initGlobals()
 
 	utility::setGUIThread() ;
 
+	utility::enableDebug( settings::instance().showDebugWindowOnStartup() ) ;
+
 	#ifdef Q_OS_LINUX
 
 		auto uid = getuid() ;

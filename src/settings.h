@@ -148,6 +148,8 @@ public:
 	QString environmentalVariableVolumeKey() ;
 	bool enableHighDpiScaling() ;
 	void enableHighDpiScaling( bool ) ;
+	void showDebugWindowOnStartup( bool ) ;
+	bool showDebugWindowOnStartup( void ) ;
 	QByteArray enabledHighDpiScalingFactor() ;
 	void enabledHighDpiScalingFactor( const QString& ) ;
 	void removeKey( const QString& ) ;

@@ -252,6 +252,21 @@ void settings::enableHighDpiScaling( bool e )
 	m_settings.setValue( "EnableHighDpiScaling",e ) ;
 }
 
+void settings::showDebugWindowOnStartup( bool e )
+{
+	m_settings.setValue( "showDebugWindowOnStartup",e ) ;
+}
+
+bool settings::showDebugWindowOnStartup()
+{
+	if( !m_settings.contains( "showDebugWindowOnStartup" ) ){
+
+		m_settings.setValue( "showDebugWindowOnStartup",false ) ;
+	}
+
+	return m_settings.value( "showDebugWindowOnStartup" ).toBool() ;
+}
+
 QByteArray settings::enabledHighDpiScalingFactor()
 {
 	if( !m_settings.contains( "EnabledHighDpiScalingFactor" ) ){

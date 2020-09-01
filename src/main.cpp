@@ -29,17 +29,5 @@ int main( int argc,char * argv[] )
 
 	QCoreApplication::setApplicationName( "SiriKali" ) ;
 
-	auto m = QCoreApplication::arguments() ;
-
-	for( const auto& it : m ){
-
-		if( it.contains( "--debug" ) ){
-
-			utility::enableDebug( true ) ;
-
-			break ;
-		}
-	}
-
-	return sirikali( m ).start( srk ) ;
+	return sirikali().start( srk ) ;
 }

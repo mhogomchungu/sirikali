@@ -100,13 +100,13 @@ static keyDialog::volumeList _convert_lists( favorites::volumeList s,
 	return m ;
 }
 
-sirikali::sirikali( const QStringList& l ) :
+sirikali::sirikali() :
 	m_secrets( this ),
 	m_mountInfo( this,true,[ & ](){ QCoreApplication::exit( m_exitStatus ) ; } ),
 	m_checkUpdates( this,{ [ this ](){ this->disableAll() ; },[ this ](){ this->enableAll() ; } } ),
 	m_configOptions( this,m_secrets,&m_language_menu,this->configOption() ),
 	m_signalHandler( this,this->getEmergencyShutDown() ),
-	m_argumentList( l )
+	m_argumentList( QCoreApplication::arguments() )
 {
 	utility::setMainQWidget( this ) ;
 }
