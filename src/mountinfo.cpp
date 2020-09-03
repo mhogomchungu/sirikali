@@ -163,7 +163,7 @@ mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& quit ) :
 	m_oldMountList( _unlocked_volumes() ),
 	m_dbusMonitor( [ this ]( const QString& e ){ this->autoMount( e ) ; } )
 {
-	if( utility::platformIsLinux() ){		
+	if( utility::platformIsLinux() ){
 
 		this->linuxMonitor() ;
 
@@ -533,12 +533,12 @@ void folderMonitor::contentCountIncreased( folderMonitor::function& function )
 
 		auto e = s ;
 
-		for( const auto& it : m_folderList ){
+		for( const auto& it : utility::asConst( m_folderList ) ){
 
 			s.removeOne( it ) ;
 		}
 
-		for( const auto& it : s ){
+		for( const auto& it : utility::asConst( s ) ){
 
 			function( m_path + "/" + it ) ;
 		}
@@ -551,12 +551,12 @@ void folderMonitor::contentCountDecreased( folderMonitor::function& function )
 {
 	this->folderListSynced( [ & ]( QStringList s ){
 
-		for( const auto& it : s ){
+		for( const auto& it : utility::asConst( s ) ){
 
 			m_folderList.removeOne( it ) ;
 		}
 
-		for( const auto& it : m_folderList ){
+		for( const auto& it : utility::asConst( m_folderList ) ){
 
 			function( m_path + "/" + it ) ;
 		}

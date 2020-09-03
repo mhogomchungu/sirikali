@@ -72,6 +72,15 @@ class QEvent ;
 
 namespace utility
 {
+	template< typename T >
+	typename std::add_const<T>::type& asConst( T& t )
+	{
+		return t ;
+	}
+
+	template< typename T >
+	void asConst( const T&& ) = delete ;
+
 	using qstringlist_result = utility2::result< QStringList > ;
 	using qbytearray_result  = utility2::result< QByteArray > ;
 	using qstring_result     = utility2::result< QString > ;

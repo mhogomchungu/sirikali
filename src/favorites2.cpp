@@ -650,7 +650,7 @@ QStringList favorites2::readAllKeys()
 {
 	QStringList a ;
 
-	auto s = Task::await( [ & ](){ return m_wallet->readAllKeys() ; } ) ;
+	const auto s = Task::await( [ & ](){ return m_wallet->readAllKeys() ; } ) ;
 
 	for( const auto& it : s ){
 

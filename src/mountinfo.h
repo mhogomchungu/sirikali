@@ -235,9 +235,9 @@ public:
 		{
 			m_selectMonitor.poll( [ this,&function ]( int r ){
 
-				std::vector< char > buffer( 10485760 ) ;
-
 				if( r > 0 ){
+
+					std::vector< char > buffer( 10485760 ) ;
 
 					auto s = read( m_inotify_fd,buffer.data(),buffer.size() ) ;
 
