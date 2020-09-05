@@ -76,6 +76,33 @@ static QString _create_entry_path( const favorites::entry& e,bool newFormat )
 	}
 }
 
+static void _update_favorites( favorites::entry& m )
+{
+	if( m.mountOptions.contains( "IdentityAgent=" ) || m.mountOptions.contains( "IdentityFile=" ) ){
+
+		QStringList ss ;
+
+		for( const auto& it : utility::split( m.mountOptions,',' ) ){
+
+			if( it.startsWith( "IdentityAgent=" ) ){
+
+				m.identityAgent = utility::removeFirstAndLast( it.mid( 14 ),1,1 ) ;
+
+			}else if( it.startsWith( "IdentityFile=" ) ){
+
+				m.identityFile = utility::removeFirstAndLast( it.mid( 13 ),1,1 ) ;
+			}else{
+				ss.append( it ) ;
+			}
+		}
+
+		if( !ss.isEmpty() ){
+
+			m.mountOptions = ss.join( ',' ) ;
+		}
+	}
+}
+
 static favorites::entry _favorites( const QString& path )
 {
 	SirikaliJson json( QFile( path ),utility::jsonLogger() ) ;
@@ -92,14 +119,18 @@ static favorites::entry _favorites( const QString& path )
 		m.mountPointPath       = json.getString( "mountPointPath" ) ;
 		m.configFilePath       = json.getString( "configFilePath" ) ;
 		m.idleTimeOut          = json.getString( "idleTimeOut" ) ;
-		m.mountOptions         = json.getString( "mountOptions" ) ;
 		m.preMountCommand      = json.getString( "preMountCommand" ) ;
 		m.postMountCommand     = json.getString( "postMountCommand" ) ;
 		m.preUnmountCommand    = json.getString( "preUnmountCommand" ) ;
 		m.postUnmountCommand   = json.getString( "postUnmountCommand" ) ;
 		m.keyFile              = json.getString( "keyFilePath" ) ;
+		m.identityFile         = json.getString( "identityFile" ) ;
+		m.identityAgent        = json.getString( "identityAgent" ) ;
+		m.mountOptions         = json.getString( "mountOptions" ) ;
 
 		m.password             = json.getByteArray( "password" ) ;
+
+		_update_favorites( m ) ;
 
 		favorites::triState::readTriState( json,m.readOnlyMode,"mountReadOnly" ) ;
 		favorites::triState::readTriState( json,m.autoMount,"autoMountVolume" ) ;
@@ -166,6 +197,9 @@ favorites::error favorites::add( const favorites::entry& e )
 	json[ "postUnmountCommand" ]   = e.postUnmountCommand ;
 	json[ "reverseMode" ]          = e.reverseMode ;
 	json[ "volumeNeedNoPassword" ] = e.volumeNeedNoPassword ;
+	json[ "identityAgent" ]        = e.identityAgent ;
+	json[ "identityFile" ]         = e.identityFile ;
+
 	json[ "password" ]             = e.password ;
 
 	favorites::triState::writeTriState( json,e.readOnlyMode,"mountReadOnly" ) ;

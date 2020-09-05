@@ -860,10 +860,14 @@ void sirikali::unlockVolume( const QStringList& l )
 			mmm.unlockInReverseMode = reverse ;
 			mmm.unlockInReadOnly    = mode ;
 
+			QString empty ;
+
 			engines::engine::mountGUIOptions::mountOptions mm( idleTime,
 									   cPath,
 									   mOpt,
-									   QString(),
+									   empty,
+									   empty,
+									   empty,
 									   mmm ) ;
 
 			auto e = siritask::encryptedFolderMount( { volume,m,key,mm } ) ;

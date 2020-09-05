@@ -523,7 +523,7 @@ bool settings::readFavorites( QMenu * m )
 
 	m->addSeparator() ;
 
-	const auto favorites = favorites::instance().readFavorites() ;
+	const auto& favorites = favorites::instance().readFavorites() ;
 
 	bool cipherPathRepeatsInFavoritesList = false ;
 

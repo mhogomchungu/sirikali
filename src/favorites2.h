@@ -92,6 +92,8 @@ private :
 	void ShowUI() ;
 	void HideUI( void ) ;
 	void checkFavoritesConsistency() ;
+	void setUiLikeSsh( const QString& cipherPath,const engines::engine& engine ) ;
+	void setDefaultUI() ;
 	QStringList readAllKeys() ;
 	favorites::entry getEntry( int ) ;
 	QString getExistingFile( const QString& ) ;

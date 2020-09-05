@@ -408,11 +408,15 @@ public:
 					      const QString& configFile,
 					      const QString& mountOpes,
 					      const QString& keyFile,
+				              const QString& identityFile,
+				              const QString& identityAgent,
 					      const engines::engine::booleanOptions& opts ) ;
 				mountOptions() ;
 				QString idleTimeOut ;
 				QString configFile ;
 				QString keyFile ;
+				QString identityFile ;
+				QString identityAgent ;
 				QStringList mountOpts ;
 				engines::engine::booleanOptions opts ;
 				bool success = true ;
@@ -460,6 +464,8 @@ public:
 			QByteArray key ;
 			QString idleTimeout ;
 			QString configFilePath ;
+			QString identityFile ;
+			QString identityAgent ;
 			QStringList mountOptions ;
 			QStringList createOptions ;
 			QString keyFile ;

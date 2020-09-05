@@ -132,6 +132,11 @@ void sshfs::updateOptions( engines::engine::commandOptions& opts,
 		fuseOptions.add( "StrictHostKeyChecking=no" ) ;
 	}
 
+	if( !args.identityFile.isEmpty() ){
+
+		fuseOptions.add( "IdentityFile=\"" + args.identityFile + "\"" ) ;
+	}
+
 	auto s = fuseOptions.extractStartsWith( "UseNetworkDrive=" ) ;
 
 	if( utility::platformIsWindows() ){
@@ -152,15 +157,11 @@ void sshfs::updateOptions( engines::engine::commandOptions& opts,
 		}
 	}
 
-	if( fuseOptions.contains( "IdentityAgent" ) ){
+	if( !args.identityAgent.isEmpty() ){
 
-		auto m = "IdentityAgent=" ;
+		utility::debug() << "Sshfs: Setting Env Variable Of: SSH_AUTH_SOCK=" + args.identityAgent ;
 
-		auto n = fuseOptions.extractStartsWith( m ).replace( m,"" ) ;
-
-		m_environment.insert( "SSH_AUTH_SOCK",n ) ;
-
-		utility::debug() << "Sshfs: Setting Env Variable Of: SSH_AUTH_SOCK=" + n ;
+		m_environment.insert( "SSH_AUTH_SOCK",args.identityAgent ) ;
 	}else{
 		auto m = qgetenv( "SSH_AUTH_SOCK" ) ;
 
@@ -168,7 +169,7 @@ void sshfs::updateOptions( engines::engine::commandOptions& opts,
 
 			m_environment.remove( "SSH_AUTH_SOCK" ) ;
 		}else{
-			utility::debug() << "Sshfs: Setting Env Variable Of: SSH_AUTH_SOCK=" + m ;
+			utility::debug() << "Sshfs: From Env, Setting Env Variable Of: SSH_AUTH_SOCK=" + m ;
 
 			m_environment.insert( "SSH_AUTH_SOCK",m ) ;
 		}

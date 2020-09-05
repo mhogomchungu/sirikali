@@ -124,7 +124,9 @@ void options::pbSet()
 
 	auto keyFile = m_ui->lineEditKeyFile->text() ;
 
-	this->Hide( { idle,configFile,mountOpts,keyFile,opts } ) ;
+	QString empty ;
+
+	this->Hide( { idle,configFile,mountOpts,keyFile,empty,empty,opts } ) ;
 }
 
 void options::pbCancel()

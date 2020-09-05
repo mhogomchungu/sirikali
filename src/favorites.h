@@ -121,6 +121,8 @@ public:
 		QString configFilePath ;
 		QString keyFile ;
 		QString idleTimeOut ;
+		QString identityFile ;
+		QString identityAgent ;
 		QString mountOptions ;
 		QString preMountCommand ;
 		QString postMountCommand ;

@@ -1379,7 +1379,9 @@ engines::engine::mountGUIOptions::mountOptions::mountOptions( const volumeInfo& 
 engines::engine::mountGUIOptions::mountOptions::mountOptions( const favorites::entry& e ) :
 	idleTimeOut( e.idleTimeOut ),
 	configFile( e.configFilePath ),
-	keyFile( e.keyFile )
+	keyFile( e.keyFile ),
+	identityFile( e.identityFile ),
+	identityAgent( e.identityAgent )
 {
 	opts.unlockInReverseMode = e.reverseMode ;
 
@@ -1393,10 +1395,14 @@ engines::engine::mountGUIOptions::mountOptions::mountOptions( const QString& idl
 							      const QString& configFile,
 							      const QString& mountOptions,
 							      const QString& keyFile,
+							      const QString& identityFile,
+							      const QString& identityAgent,
 							      const engines::engine::booleanOptions& r ) :
 	idleTimeOut( idleTimeOut ),
 	configFile( configFile ),
 	keyFile( keyFile ),
+	identityFile( identityFile ),
+	identityAgent( identityAgent ),
 	opts( r )
 {
 	if( !mountOptions.isEmpty() ){
@@ -1415,6 +1421,8 @@ engines::engine::cmdArgsList::cmdArgsList( const favorites::entry& e,const QByte
 	key( volumeKey ),
 	idleTimeout( e.idleTimeOut ),
 	configFilePath( e.configFilePath ),
+	identityFile( e.identityFile ),
+	identityAgent( e.identityAgent ),
 	mountOptions( e.mountOptions )
 {
 	boolOptions.unlockInReadOnly    = e.readOnlyMode.defined() ? e.readOnlyMode.True() : false ;
@@ -1446,6 +1454,8 @@ engines::engine::cmdArgsList::cmdArgsList( const QString& cipher_folder,
 	key( volume_key ),
 	idleTimeout( e.idleTimeOut ),
 	configFilePath( e.configFile ),
+	identityFile( e.identityFile ),
+	identityAgent( e.identityAgent ),
 	mountOptions( e.mountOpts ),
 	createOptions( QString() ),
 	keyFile( e.keyFile ),

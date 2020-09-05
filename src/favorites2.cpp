@@ -107,7 +107,18 @@ favorites2::favorites2( QWidget * parent,
 
 		connect( m,&QMenu::triggered,[ this ]( QAction * ac ){
 
-			m_ui->lineEditVolumeType->setText( ac->objectName() ) ;
+			const auto& m = ac->objectName() ;
+
+			m_ui->lineEditVolumeType->setText( m ) ;
+
+			const auto& engine = engines::instance().getByName( m ) ;
+
+			if( engine.known() && engine.likeSsh() ){
+
+				this->setUiLikeSsh( QString(),engine ) ;
+			}else{
+				this->setDefaultUI() ;
+			}
 		} ) ;
 
 		return m ;
@@ -440,7 +451,7 @@ favorites2::favorites2( QWidget * parent,
 
 	connect( table,&QTableWidget::itemClicked,[ this ]( QTableWidgetItem * item ){
 
-		const auto volumes = favorites::instance().readFavorites() ;
+		const auto& volumes = favorites::instance().readFavorites() ;
 
 		this->setVolumeProperties( volumes[ size_t( item->row() ) ] ) ;
 	} ) ;
@@ -527,7 +538,7 @@ favorites2::favorites2( QWidget * parent,
 
 	this->checkFavoritesConsistency() ;
 
-	const auto volumes = favorites::instance().readFavorites() ;
+	const auto& volumes = favorites::instance().readFavorites() ;
 
 	this->updateVolumeList( volumes,0 ) ;
 
@@ -888,8 +899,7 @@ void favorites2::updateVolumeList( const std::vector<favorites::entry>& e,const 
 			}
 		}
 
-		static favorites::entry m ;
-		return m ;
+		return favorites::instance().unknown() ;
 	} ;
 
 	this->setVolumeProperties( _update() ) ;
@@ -949,7 +959,7 @@ void favorites2::edit()
 	m_editRow = table->currentRow() ;
 	m_editMode = true ;
 
-	const auto volumes = favorites::instance().readFavorites() ;
+	const auto& volumes = favorites::instance().readFavorites() ;
 
 	if( m_editRow >= 0 && m_editRow < int( volumes.size() ) ){
 
@@ -966,18 +976,6 @@ void favorites2::edit()
 		m_ui->lineEditPostUnmount->setText( entry.postUnmountCommand ) ;
 		m_ui->lineEditMountOptions->setText( entry.mountOptions ) ;
 
-		for( const auto& it : engines::instance().enginesWithNoConfigFile() ){
-
-			auto s = m_ui->lineEditEncryptedFolderPath->toPlainText() ;
-
-			if( s.startsWith( it + " ",Qt::CaseInsensitive ) ){
-
-				m_ui->lineEditEncryptedFolderPath->setText( s.mid( it.size() + 1 ) ) ;
-				m_ui->lineEditVolumeType->setText( it ) ;
-				break ;
-			}
-		}
-
 		m_ui->lineEditConfigFilePath->setText( entry.configFilePath ) ;
 		m_ui->lineEditIdleTimeOut->setText( entry.idleTimeOut ) ;
 
@@ -985,6 +983,32 @@ void favorites2::edit()
 		m_ui->cbVolumeNoPassword->setChecked( entry.volumeNeedNoPassword ) ;
 		m_ui->cbReadOnlyMode->setChecked( entry.readOnlyMode.True() ) ;
 		m_ui->cbVolumeNoPassword->setChecked( entry.volumeNeedNoPassword ) ;
+
+		auto ss = m_ui->lineEditEncryptedFolderPath->toPlainText() ;
+
+		const auto& engine = engines::instance().getByPaths( ss ) ;
+
+		if( engine->known() ){
+
+			if( engine->likeSsh() ){
+
+				this->setUiLikeSsh( engine.cipherFolder(),engine.get() ) ;
+
+				m_ui->lineEditConfigFilePath->setText( entry.identityAgent ) ;
+				m_ui->lineEditIdleTimeOut->setText( entry.identityFile ) ;
+			}else{
+				m_ui->lineEditEncryptedFolderPath->setText( engine.cipherFolder() ) ;
+
+				const auto& m = engine->displayName() ;
+
+				if( m.isEmpty() ){
+
+					m_ui->lineEditVolumeType->setText( engine->name() ) ;
+				}else{
+					m_ui->lineEditVolumeType->setText( m ) ;
+				}
+			}
+		}
 
 		m_ui->pbAdd->setEnabled( false ) ;
 		m_ui->tabWidget->setCurrentIndex( 1 ) ;
@@ -1011,7 +1035,7 @@ void favorites2::removeEntryFromFavoriteList()
 
 		favorites::instance().removeFavoriteEntry( this->getEntry( row ) ) ;
 
-		const auto volumes = favorites::instance().readFavorites() ;
+		const auto& volumes = favorites::instance().readFavorites() ;
 
 		this->updateVolumeList( volumes,int( volumes.size() ) - 1 ) ;
 	}
@@ -1025,7 +1049,6 @@ void favorites2::updateFavorite( bool edit )
 
 	auto dev = m_ui->lineEditEncryptedFolderPath->toPlainText() ;
 	auto path = m_ui->lineEditMountPath->toPlainText() ;
-	auto mOpts = m_ui->lineEditMountOptions->toPlainText() ;
 
 	if( dev.isEmpty() ){
 
@@ -1040,34 +1063,7 @@ void favorites2::updateFavorite( bool edit )
 
 	m_ui->tableWidget->setEnabled( false ) ;
 
-	auto configPath = m_ui->lineEditConfigFilePath->toPlainText() ;
-	auto idleTimeOUt = m_ui->lineEditIdleTimeOut->toPlainText() ;
-
-	if( m_engine.likeSsh() ){
-
-		if( !configPath.isEmpty() ){
-
-			if( mOpts.isEmpty() ){
-
-				mOpts = "IdentityAgent=\"" + configPath + "\"" ;
-			}else{
-				mOpts += ",IdentityAgent=\"" + configPath + "\"" ;
-			}
-		}
-
-		if( !idleTimeOUt.isEmpty() ){
-
-			if( mOpts.isEmpty() ){
-
-				mOpts = "IdentityFile=\"" + idleTimeOUt + "\"" ;
-			}else{
-				mOpts += ",IdentityFile=\"" + idleTimeOUt + "\"" ;
-			}
-		}
-
-		configPath.clear() ;
-		idleTimeOUt.clear() ;
-	}
+	bool likeSsh = false ;
 
 	auto dev_path = [ & ](){
 
@@ -1077,6 +1073,10 @@ void favorites2::updateFavorite( bool edit )
 
 			return dev ;
 		}else{
+			const auto& e = engines::instance().getByName( a ) ;
+
+			likeSsh = e.known() && e.likeSsh() ;
+
 			if( dev.startsWith( a + " ",Qt::CaseInsensitive ) ){
 
 				return dev ;
@@ -1091,14 +1091,21 @@ void favorites2::updateFavorite( bool edit )
 	e.volumePath           = dev_path ;
 	e.mountPointPath       = path ;
 	e.autoMount            = m_ui->cbAutoMount->isChecked() ;
-	e.configFilePath       = configPath ;
-	e.idleTimeOut          = idleTimeOUt ;
-	e.mountOptions         = mOpts ;
+	e.mountOptions         = m_ui->lineEditMountOptions->toPlainText() ;
 	e.volumeNeedNoPassword = m_ui->cbVolumeNoPassword->isChecked() ;
 	e.preMountCommand      = m_ui->lineEditPreMount->text() ;
 	e.preUnmountCommand    = m_ui->lineEditPreUnMount->text() ;
 	e.postMountCommand     = m_ui->lineEditPostMount->text() ;
 	e.postUnmountCommand   = m_ui->lineEditPostUnmount->text() ;
+
+	if( likeSsh ){
+
+		e.identityAgent = m_ui->lineEditConfigFilePath->toPlainText() ;
+		e.identityFile  = m_ui->lineEditIdleTimeOut->toPlainText() ;
+	}else{
+		e.configFilePath = m_ui->lineEditConfigFilePath->toPlainText() ;
+		e.idleTimeOut    = m_ui->lineEditIdleTimeOut->toPlainText() ;
+	}
 
 	if( edit ){
 
@@ -1241,7 +1248,7 @@ favorites::entry favorites2::getEntry( int row )
 {
 	size_t m = size_t( row ) ;
 
-	const auto volumes = favorites::instance().readFavorites() ;
+	const auto& volumes = favorites::instance().readFavorites() ;
 
 	if( m < volumes.size() ){
 
@@ -1275,6 +1282,11 @@ QString favorites2::getExistingDirectory( const QString& r )
 
 void favorites2::setVolumeProperties( const favorites::entry& e )
 {
+	if( !e.hasValue() ){
+
+		utility::debug() << "Warning: Unknown Favorite Entry Encountered" ;
+	}
+
 	m_ui->textEditMountPoint->setText( e.mountPointPath ) ;
 
 	if( e.autoMount.defined() ){
@@ -1284,9 +1296,28 @@ void favorites2::setVolumeProperties( const favorites::entry& e )
 		m_ui->textEditAutoMount->setText( QString() ) ;
 	}
 
-	m_ui->textEditConfigFilePath->setText( e.configFilePath ) ;
+	const auto& engine = engines::instance().getByPaths( e.volumePath ) ;
 
-	m_ui->textEditIdleTimeOut->setText( e.idleTimeOut ) ;
+	if( engine->known() && engine->likeSsh() ){
+
+		m_ui->label_3->setText( tr( "SSH_AUTH_SOCK Socket Path (Optional)" ) ) ;
+		m_ui->label_4->setText( tr( "IdentityFile Path (Optional)" ) ) ;
+
+		m_ui->textEditConfigFilePath->setText( e.identityAgent ) ;
+
+		m_ui->textEditIdleTimeOut->setText( e.identityFile ) ;
+
+		m_ui->pbIdentityFile->setVisible( true ) ;
+	}else{
+		m_ui->pbIdentityFile->setVisible( false ) ;
+
+		m_ui->label_3->setText( tr( "Config File Path" ) ) ;
+		m_ui->label_4->setText( tr( "Idle Time Out" ) ) ;
+
+		m_ui->textEditConfigFilePath->setText( e.configFilePath ) ;
+
+		m_ui->textEditIdleTimeOut->setText( e.idleTimeOut ) ;
+	}
 
 	m_ui->textEditMountOptions->setText( e.mountOptions ) ;
 
@@ -1297,6 +1328,39 @@ void favorites2::setVolumeProperties( const favorites::entry& e )
 	m_ui->textEditPreUnMount->setText( e.preUnmountCommand ) ;
 
 	m_ui->textEditPostUnmount->setText( e.postUnmountCommand ) ;
+}
+
+void favorites2::setUiLikeSsh( const QString& cipherPath,const engines::engine& engine )
+{
+	m_ui->lineEditEncryptedFolderPath->setText( cipherPath ) ;
+
+	const auto& d = engine.displayName() ;
+
+	if( d.isEmpty() ){
+
+		m_ui->lineEditVolumeType->setText( engine.name() ) ;
+	}else{
+		m_ui->lineEditVolumeType->setText( d ) ;
+	}
+
+	auto s = m_ui->lineEditMountOptions->toPlainText() ;
+
+	if( s.isEmpty() ){
+
+		m_ui->lineEditMountOptions->setText( engine.sshOptions() ) ;
+	}
+
+	m_ui->labelName ->setText( tr( "Remote Ssh Server Address\n(Example: woof@example.com:/remote/path)" ) ) ;
+	m_ui->labelCofigFilePath->setText( tr( "SSH_AUTH_SOCK Socket Path (Optional)" ) ) ;
+	m_ui->labelIdleTimeOut->setText( tr( "IdentityFile Path (Optional)" ) ) ;
+}
+
+void favorites2::setDefaultUI()
+{
+	m_ui->labelName ->setText( tr( "Encrypted Folder Path" ) ) ;
+	m_ui->labelCofigFilePath->setText( tr( "Config File Path (Optional)" ) ) ;
+	m_ui->labelIdleTimeOut->setText( tr( "Idle TimeOut (Optional)" ) ) ;
+	m_ui->lineEditMountOptions->clear() ;
 }
 
 void favorites2::ShowUI()
@@ -1314,13 +1378,8 @@ void favorites2::ShowUI()
 
 		m_ui->tabWidget->setCurrentIndex( 1 ) ;
 
-		m_ui->lineEditMountOptions->setText( m_engine.sshOptions() ) ;
+		this->setUiLikeSsh( m_cipherPath,m_engine ) ;
 
-		m_ui->lineEditEncryptedFolderPath->setText( m_cipherPath ) ;
-		m_ui->labelName ->setText( tr( "Remote Ssh Server Address\n(Example: woof@example.com:/remote/path)" ) ) ;
-		m_ui->labelCofigFilePath->setText( tr( "SSH_AUTH_SOCK Socket Path (Optional)" ) ) ;
-		m_ui->labelIdleTimeOut->setText( tr( "IdentityFile Path (Optional)" ) ) ;
-		m_ui->lineEditVolumeType->setText( m_engine.name() ) ;
 		m_ui->pbEdit->setEnabled( false ) ;
 	}else{
 		m_ui->pbIdentityFile->setVisible( false ) ;
