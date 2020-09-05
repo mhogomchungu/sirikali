@@ -521,7 +521,7 @@ options:
         <translation>Разблокируйте том Fscrypt с указанным 32-байтным (256-битным) KeyFile.</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="699"/>
+        <location filename="../src/favorites2.cpp" line="712"/>
         <source>The Password Is &quot;%1&quot;</source>
         <translation>Пароль &quot;%1&quot;</translation>
     </message>
@@ -939,373 +939,388 @@ p, li { white-space: pre-wrap; }
         <translation>Список Избранного</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="46"/>
+        <location filename="../src/favorites2.ui" line="49"/>
         <source>Volume ID</source>
         <translation>ID тома</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="78"/>
+        <location filename="../src/favorites2.ui" line="81"/>
         <source>Mount Point</source>
         <translation>Точка монтирования</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="110"/>
+        <location filename="../src/favorites2.ui" line="113"/>
         <source>Auto Mount</source>
         <translation>Автомонтирование</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="142"/>
+        <location filename="../src/favorites2.ui" line="145"/>
+        <location filename="../src/favorites2.cpp" line="1314"/>
         <source>Config File Path</source>
         <translation>Путь к файлу конфигурации</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="174"/>
+        <location filename="../src/favorites2.ui" line="177"/>
+        <location filename="../src/favorites2.cpp" line="1315"/>
         <source>Idle Time Out</source>
         <translation>Время ожидания</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="193"/>
+        <location filename="../src/favorites2.ui" line="196"/>
         <source>Mount Options</source>
         <translation>Параметры монтирования</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="238"/>
+        <location filename="../src/favorites2.ui" line="241"/>
         <source>Volume Properties</source>
         <translation>Свойства Тома</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="306"/>
-        <location filename="../src/favorites2.ui" line="846"/>
+        <location filename="../src/favorites2.ui" line="309"/>
+        <location filename="../src/favorites2.ui" line="849"/>
         <source>PreMount Command</source>
         <translation>Команда перед монтированием</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="325"/>
-        <location filename="../src/favorites2.ui" line="865"/>
+        <location filename="../src/favorites2.ui" line="328"/>
+        <location filename="../src/favorites2.ui" line="868"/>
         <source>PostMount Command</source>
         <translation>Команда после монтирования</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="344"/>
-        <location filename="../src/favorites2.ui" line="884"/>
+        <location filename="../src/favorites2.ui" line="347"/>
+        <location filename="../src/favorites2.ui" line="887"/>
         <source>PreUnMount Command</source>
         <translation>Команда перед размонтированием</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="363"/>
-        <location filename="../src/favorites2.ui" line="903"/>
+        <location filename="../src/favorites2.ui" line="366"/>
+        <location filename="../src/favorites2.ui" line="906"/>
         <source>PostUnMount Command</source>
         <translation>Команда после размонтирования</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="383"/>
+        <location filename="../src/favorites2.ui" line="386"/>
         <source>Options</source>
         <translation>Параметры</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="389"/>
+        <location filename="../src/favorites2.ui" line="392"/>
         <source>Add/Edit Favorite Entry</source>
         <translation>Добавить/Редактировать Избранную запись</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="446"/>
+        <location filename="../src/favorites2.ui" line="449"/>
         <source>General Options</source>
         <translation>Общие параметры</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="793"/>
+        <location filename="../src/favorites2.ui" line="796"/>
         <source>Reverse Mode (Gocryptfs and Encfs Only)</source>
         <translation>Режим &quot;reverse&quot; (только для Gocryptfs и Encfs)</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="761"/>
+        <location filename="../src/favorites2.ui" line="764"/>
         <source>Mount In Read Only Mode</source>
         <translation>Смонтировать в режиме &quot;только для чтения&quot;</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="729"/>
+        <location filename="../src/favorites2.ui" line="732"/>
         <source>Volume Does Not Use A Password</source>
         <translation>Том не использует пароль</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="697"/>
+        <location filename="../src/favorites2.ui" line="700"/>
         <source>Auto Mount Volume</source>
         <translation>Автомонтирование тома</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="668"/>
+        <location filename="../src/favorites2.ui" line="671"/>
         <source>Mount Options (Optional And Comma Separated)</source>
         <translation>Параметры монтирования (опционально и разделенные запятой)</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="416"/>
-        <location filename="../src/favorites2.cpp" line="557"/>
+        <location filename="../src/favorites2.ui" line="419"/>
+        <location filename="../src/favorites2.cpp" line="570"/>
         <source>Edit</source>
         <translation>Редактировать</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="429"/>
+        <location filename="../src/favorites2.ui" line="432"/>
         <source>Add</source>
         <translation>Добавить</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="626"/>
+        <location filename="../src/favorites2.ui" line="629"/>
+        <location filename="../src/favorites2.cpp" line="1362"/>
         <source>Idle TimeOut (Optional)</source>
         <translation>Время ожидания (опционально)</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="584"/>
+        <location filename="../src/favorites2.ui" line="587"/>
+        <location filename="../src/favorites2.cpp" line="1361"/>
         <source>Config File Path (Optional)</source>
         <translation>Путь к файлу конфигурации (опционально)</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="542"/>
-        <location filename="../src/favorites2.cpp" line="426"/>
+        <location filename="../src/favorites2.ui" line="545"/>
+        <location filename="../src/favorites2.cpp" line="439"/>
         <source>Mount Point Prefix</source>
         <translation>Префикс точки монтирования</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="458"/>
+        <location filename="../src/favorites2.ui" line="461"/>
+        <location filename="../src/favorites2.cpp" line="1360"/>
         <source>Encrypted Folder Path</source>
         <translation>Путь к зашифрованной папке</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="500"/>
+        <location filename="../src/favorites2.ui" line="503"/>
         <source>Volume Type (Required For Volumes That Do Not Use A Configuration File Like sshfs)</source>
         <translation>Тип тома (требуется для томов, которые не используют файл конфигурации, например sshfs)</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="825"/>
+        <location filename="../src/favorites2.ui" line="828"/>
         <source>Add Volume To Secure Wallets</source>
         <translation>Добавить том для защиты хранилищей ключей</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="834"/>
+        <location filename="../src/favorites2.ui" line="837"/>
         <source>Custom Commands</source>
         <translation>Пользовательские команды</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1010"/>
+        <location filename="../src/favorites2.ui" line="1013"/>
         <source>Manage Keys In Wallets</source>
         <translation>Управление ключами в хранилище ключей</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1037"/>
+        <location filename="../src/favorites2.ui" line="1040"/>
         <source>Set Default Wallet</source>
         <translation>Установить хранилище ключей по умолчанию</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1049"/>
+        <location filename="../src/favorites2.ui" line="1052"/>
         <source>Internal Wallet</source>
         <translation>Внутренее хранилище</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1062"/>
+        <location filename="../src/favorites2.ui" line="1065"/>
         <source>&amp;Libsecret</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1075"/>
+        <location filename="../src/favorites2.ui" line="1078"/>
         <source>&amp;KWallet</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1088"/>
+        <location filename="../src/favorites2.ui" line="1091"/>
         <source>&amp;MACOS Keychain</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1101"/>
+        <location filename="../src/favorites2.ui" line="1104"/>
         <source>&amp;None</source>
         <translation>&amp;Не использовать</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1114"/>
+        <location filename="../src/favorites2.ui" line="1117"/>
         <source>Windows&apos; DPAPI</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1135"/>
+        <location filename="../src/favorites2.ui" line="1138"/>
         <source>Volume Path</source>
         <translation>Путь к тому</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1152"/>
+        <location filename="../src/favorites2.ui" line="1155"/>
         <source>Enter Volume Path Below</source>
         <translation>Введите путь к тому ниже</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1181"/>
+        <location filename="../src/favorites2.ui" line="1184"/>
         <source>Enter Password Below</source>
         <translation>Введите пароль ниже</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1210"/>
+        <location filename="../src/favorites2.ui" line="1213"/>
         <source>Add Volume To Selected Wallet</source>
         <translation>Добавить том в выбранное хранилище ключей</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1236"/>
-        <location filename="../src/favorites2.cpp" line="301"/>
-        <location filename="../src/favorites2.cpp" line="344"/>
+        <location filename="../src/favorites2.ui" line="1239"/>
+        <location filename="../src/favorites2.cpp" line="314"/>
+        <location filename="../src/favorites2.cpp" line="357"/>
         <source>Change Internal Wallet Password</source>
         <translation>Изменить пароль внутренего хранилища</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1284"/>
+        <location filename="../src/favorites2.ui" line="1287"/>
         <source>TextLabel</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1306"/>
+        <location filename="../src/favorites2.ui" line="1309"/>
         <source>Ok</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1313"/>
+        <location filename="../src/favorites2.ui" line="1316"/>
         <source>Settings</source>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1351"/>
+        <location filename="../src/favorites2.ui" line="1354"/>
         <source>Auto Mount Favorites Volumes When Available</source>
         <translation>Автоматическое монтирование тома при его доступности</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1380"/>
+        <location filename="../src/favorites2.ui" line="1383"/>
         <source>Show Mount Dialog When Auto Mounting</source>
         <translation>Показывать диалог при автоматическом монтировании тома</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1396"/>
+        <location filename="../src/favorites2.ui" line="1399"/>
         <source>Allow External Tools To Get Passwords From Wallets</source>
         <translation>Разрешить внешние инструменты для получения паролей из хранилищей ключей</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1431"/>
+        <location filename="../src/favorites2.ui" line="1434"/>
         <source>Auto Mount Favorites Volumes At Startup</source>
         <translation>Автоматическое монтирование тома при старте</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1460"/>
+        <location filename="../src/favorites2.ui" line="1463"/>
         <source>Show Favorite List On Context Menu(Restart Required)</source>
         <translation>Показать список избранного в контекстном меню (требуется перезагрузка)</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1478"/>
+        <location filename="../src/favorites2.ui" line="1481"/>
         <source>&amp;Close</source>
         <translation>&amp;Закрыть</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="608"/>
+        <location filename="../src/favorites2.cpp" line="621"/>
         <source>Select A Command Executable</source>
         <translation>Выберите команду выполнения</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="217"/>
-        <location filename="../src/favorites2.cpp" line="994"/>
+        <location filename="../src/favorites2.cpp" line="230"/>
+        <location filename="../src/favorites2.cpp" line="1020"/>
         <source>Path To A Config File</source>
         <translation>Путь к файлу конфигурации</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="286"/>
-        <location filename="../src/favorites2.cpp" line="364"/>
+        <location filename="../src/favorites2.cpp" line="299"/>
+        <location filename="../src/favorites2.cpp" line="377"/>
         <source>Change Window&apos;s Wallet Password</source>
         <translation>Изменить пароль хранилища ключей Windows</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="310"/>
-        <location filename="../src/favorites2.cpp" line="319"/>
-        <location filename="../src/favorites2.cpp" line="328"/>
-        <location filename="../src/favorites2.cpp" line="335"/>
-        <location filename="../src/favorites2.cpp" line="377"/>
+        <location filename="../src/favorites2.cpp" line="323"/>
+        <location filename="../src/favorites2.cpp" line="332"/>
+        <location filename="../src/favorites2.cpp" line="341"/>
+        <location filename="../src/favorites2.cpp" line="348"/>
         <location filename="../src/favorites2.cpp" line="390"/>
-        <location filename="../src/favorites2.cpp" line="402"/>
-        <location filename="../src/favorites2.cpp" line="412"/>
+        <location filename="../src/favorites2.cpp" line="403"/>
+        <location filename="../src/favorites2.cpp" line="415"/>
+        <location filename="../src/favorites2.cpp" line="425"/>
         <source>Not Applicable</source>
         <translation>Не применим</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="422"/>
+        <location filename="../src/favorites2.cpp" line="435"/>
         <source>Mount Point Path</source>
         <translation>Путь к точке монтирования</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="550"/>
+        <location filename="../src/favorites2.cpp" line="563"/>
         <source>Toggle AutoMount</source>
         <translation>Изменить значение автомонтирования</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="564"/>
+        <location filename="../src/favorites2.cpp" line="577"/>
         <source>Remove Selected Entry</source>
         <translation>Удалить выбранную запись</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="571"/>
+        <location filename="../src/favorites2.cpp" line="584"/>
         <source>Add Entry To Default Wallet</source>
         <translation>Добавить запись в хранилище ключей по умолчанию</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="594"/>
+        <location filename="../src/favorites2.cpp" line="607"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="670"/>
+        <location filename="../src/favorites2.cpp" line="683"/>
         <source>Delete Entry</source>
         <translation>Удалить запись</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="684"/>
+        <location filename="../src/favorites2.cpp" line="697"/>
         <source>Show Password</source>
         <translation>Показать пароль</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="708"/>
+        <location filename="../src/favorites2.cpp" line="721"/>
         <source>Close Menu</source>
         <translation>Закрыть меню</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1031"/>
-        <location filename="../src/favorites2.cpp" line="1036"/>
+        <location filename="../src/favorites2.cpp" line="1056"/>
+        <location filename="../src/favorites2.cpp" line="1061"/>
         <source>ERROR!</source>
         <translation>ОШИБКА!</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1031"/>
+        <location filename="../src/favorites2.cpp" line="1056"/>
         <source>Encrypted Folder Address Field Is Empty</source>
         <translation>Поле &quot;Путь к зашифрованной папке&quot; пустое</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1036"/>
+        <location filename="../src/favorites2.cpp" line="1061"/>
         <source>Mount Point Path Field Is Empty</source>
         <translation>Поле &quot;Путь к точке монтирования&quot; пустое</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="256"/>
-        <location filename="../src/favorites2.cpp" line="1150"/>
+        <location filename="../src/favorites2.cpp" line="269"/>
+        <location filename="../src/favorites2.cpp" line="1159"/>
         <source>Path To An Encrypted Folder</source>
         <translation>Путь к зашифрованной папке</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1160"/>
+        <location filename="../src/favorites2.cpp" line="1169"/>
         <source>Path To Mount Folder</source>
         <translation>Путь к точке монтирования</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1318"/>
+        <location filename="../src/favorites2.cpp" line="1303"/>
+        <source>SSH_AUTH_SOCK Socket Path</source>
+        <translation>Путь сокета SSH_AUTH_SOCK</translation>
+    </message>
+    <message>
+        <location filename="../src/favorites2.cpp" line="1304"/>
+        <source>IdentityFile Path</source>
+        <translation>IdentityFile путь</translation>
+    </message>
+    <message>
+        <location filename="../src/favorites2.cpp" line="1353"/>
         <source>Remote Ssh Server Address
 (Example: woof@example.com:/remote/path)</source>
         <translation>Адрес удаленного SSH-сервера
 (Пример: woof@example.com:/remote/path)</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1319"/>
+        <location filename="../src/favorites2.cpp" line="1354"/>
         <source>SSH_AUTH_SOCK Socket Path (Optional)</source>
         <translation>Путь сокета SSH_AUTH_SOCK (опционально)</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1320"/>
+        <location filename="../src/favorites2.cpp" line="1355"/>
         <source>IdentityFile Path (Optional)</source>
         <translation>IdentityFile путь (опционально)</translation>
     </message>
@@ -2182,32 +2197,32 @@ The lite format has become the default on Unix-like operating systems as it is m
         <translation>ОШИБКА: Путь к тому не указан.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="947"/>
+        <location filename="../src/sirikali.cpp" line="951"/>
         <source>ERROR: Key Not Found In The Backend.</source>
         <translation>ОШИБКА: Ключ не найден.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="952"/>
+        <location filename="../src/sirikali.cpp" line="956"/>
         <source>ERROR: Failed To Unlock Requested Backend.</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="700"/>
         <location filename="../src/sirikali.cpp" line="739"/>
-        <location filename="../src/sirikali.cpp" line="1172"/>
-        <location filename="../src/sirikali.cpp" line="1937"/>
+        <location filename="../src/sirikali.cpp" line="1176"/>
+        <location filename="../src/sirikali.cpp" line="1941"/>
         <source>ERROR</source>
         <translation>ОШИБКА</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1172"/>
+        <location filename="../src/sirikali.cpp" line="1176"/>
         <source>Failed To Read Volume Properties</source>
         <translation>Не удалось прочитать Свойства тома</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1154"/>
-        <location filename="../src/sirikali.cpp" line="1174"/>
-        <location filename="../src/sirikali.cpp" line="1198"/>
+        <location filename="../src/sirikali.cpp" line="1158"/>
+        <location filename="../src/sirikali.cpp" line="1178"/>
+        <location filename="../src/sirikali.cpp" line="1202"/>
         <source>INFORMATION</source>
         <translation>ИНФОРМАЦИЯ</translation>
     </message>
@@ -2255,32 +2270,32 @@ Please Report This Serious Bug.</source>
         <translation>Папка &quot;%1&quot; должна быть доступна для записи</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1234"/>
+        <location filename="../src/sirikali.cpp" line="1238"/>
         <source>Unmount</source>
         <translation>Отмонтировать</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1238"/>
+        <location filename="../src/sirikali.cpp" line="1242"/>
         <source>Add To Favorites</source>
         <translation>Добавить в Избранное</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1653"/>
+        <location filename="../src/sirikali.cpp" line="1657"/>
         <source>Select A File To Be Mounted</source>
         <translation>Выберите файл для монтирования</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="2007"/>
+        <location filename="../src/sirikali.cpp" line="2011"/>
         <source>Failed To Unmount 1 Volume.</source>
         <translation>Не удалось размонтировать 1 том.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="2009"/>
+        <location filename="../src/sirikali.cpp" line="2013"/>
         <source>Failed To Unmount %1 Volumes.</source>
         <translation>Не удалось размонтировать %1 тома(ов).</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1232"/>
+        <location filename="../src/sirikali.cpp" line="1236"/>
         <source>Open Folder</source>
         <translation>Открыть директорию</translation>
     </message>
@@ -2290,35 +2305,35 @@ Please Report This Serious Bug.</source>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1236"/>
+        <location filename="../src/sirikali.cpp" line="1240"/>
         <source>Properties</source>
         <translation>Свойства</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1242"/>
+        <location filename="../src/sirikali.cpp" line="1246"/>
         <source>Close Menu</source>
         <translation>Закрыть меню</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="166"/>
-        <location filename="../src/sirikali.cpp" line="1340"/>
-        <location filename="../src/sirikali.cpp" line="2007"/>
-        <location filename="../src/sirikali.cpp" line="2009"/>
+        <location filename="../src/sirikali.cpp" line="1344"/>
+        <location filename="../src/sirikali.cpp" line="2011"/>
+        <location filename="../src/sirikali.cpp" line="2013"/>
         <source>WARNING</source>
         <translation>ПРЕДУПРЕЖДЕНИЕ</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1341"/>
+        <location filename="../src/sirikali.cpp" line="1345"/>
         <source>Could Not Open Mount Point Because &quot;%1&quot; Tool Does Not Appear To Be Working Correctly.</source>
         <translation>Не удалось открыть точку монтирования, потому что инструмент «%1» не работает корректно.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1390"/>
+        <location filename="../src/sirikali.cpp" line="1394"/>
         <source>&amp;Quit</source>
         <translation>&amp;Выход</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1650"/>
+        <location filename="../src/sirikali.cpp" line="1654"/>
         <source>Select An Encrypted Volume Directory</source>
         <translation>Выберите папку зашифрованного тома</translation>
     </message>

@@ -465,7 +465,7 @@ options:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="699"/>
+        <location filename="../src/favorites2.cpp" line="712"/>
         <source>The Password Is &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -869,372 +869,387 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="46"/>
+        <location filename="../src/favorites2.ui" line="49"/>
         <source>Volume ID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="78"/>
+        <location filename="../src/favorites2.ui" line="81"/>
         <source>Mount Point</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="110"/>
+        <location filename="../src/favorites2.ui" line="113"/>
         <source>Auto Mount</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="142"/>
+        <location filename="../src/favorites2.ui" line="145"/>
+        <location filename="../src/favorites2.cpp" line="1314"/>
         <source>Config File Path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="174"/>
+        <location filename="../src/favorites2.ui" line="177"/>
+        <location filename="../src/favorites2.cpp" line="1315"/>
         <source>Idle Time Out</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="193"/>
+        <location filename="../src/favorites2.ui" line="196"/>
         <source>Mount Options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="238"/>
+        <location filename="../src/favorites2.ui" line="241"/>
         <source>Volume Properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="306"/>
-        <location filename="../src/favorites2.ui" line="846"/>
+        <location filename="../src/favorites2.ui" line="309"/>
+        <location filename="../src/favorites2.ui" line="849"/>
         <source>PreMount Command</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="325"/>
-        <location filename="../src/favorites2.ui" line="865"/>
+        <location filename="../src/favorites2.ui" line="328"/>
+        <location filename="../src/favorites2.ui" line="868"/>
         <source>PostMount Command</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="344"/>
-        <location filename="../src/favorites2.ui" line="884"/>
+        <location filename="../src/favorites2.ui" line="347"/>
+        <location filename="../src/favorites2.ui" line="887"/>
         <source>PreUnMount Command</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="363"/>
-        <location filename="../src/favorites2.ui" line="903"/>
+        <location filename="../src/favorites2.ui" line="366"/>
+        <location filename="../src/favorites2.ui" line="906"/>
         <source>PostUnMount Command</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="383"/>
+        <location filename="../src/favorites2.ui" line="386"/>
         <source>Options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="389"/>
+        <location filename="../src/favorites2.ui" line="392"/>
         <source>Add/Edit Favorite Entry</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="446"/>
+        <location filename="../src/favorites2.ui" line="449"/>
         <source>General Options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="793"/>
+        <location filename="../src/favorites2.ui" line="796"/>
         <source>Reverse Mode (Gocryptfs and Encfs Only)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="761"/>
+        <location filename="../src/favorites2.ui" line="764"/>
         <source>Mount In Read Only Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="729"/>
+        <location filename="../src/favorites2.ui" line="732"/>
         <source>Volume Does Not Use A Password</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="697"/>
+        <location filename="../src/favorites2.ui" line="700"/>
         <source>Auto Mount Volume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="668"/>
+        <location filename="../src/favorites2.ui" line="671"/>
         <source>Mount Options (Optional And Comma Separated)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="416"/>
-        <location filename="../src/favorites2.cpp" line="557"/>
+        <location filename="../src/favorites2.ui" line="419"/>
+        <location filename="../src/favorites2.cpp" line="570"/>
         <source>Edit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="429"/>
+        <location filename="../src/favorites2.ui" line="432"/>
         <source>Add</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="626"/>
+        <location filename="../src/favorites2.ui" line="629"/>
+        <location filename="../src/favorites2.cpp" line="1362"/>
         <source>Idle TimeOut (Optional)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="584"/>
+        <location filename="../src/favorites2.ui" line="587"/>
+        <location filename="../src/favorites2.cpp" line="1361"/>
         <source>Config File Path (Optional)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="542"/>
-        <location filename="../src/favorites2.cpp" line="426"/>
+        <location filename="../src/favorites2.ui" line="545"/>
+        <location filename="../src/favorites2.cpp" line="439"/>
         <source>Mount Point Prefix</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="458"/>
+        <location filename="../src/favorites2.ui" line="461"/>
+        <location filename="../src/favorites2.cpp" line="1360"/>
         <source>Encrypted Folder Path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="500"/>
+        <location filename="../src/favorites2.ui" line="503"/>
         <source>Volume Type (Required For Volumes That Do Not Use A Configuration File Like sshfs)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="825"/>
+        <location filename="../src/favorites2.ui" line="828"/>
         <source>Add Volume To Secure Wallets</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="834"/>
+        <location filename="../src/favorites2.ui" line="837"/>
         <source>Custom Commands</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1010"/>
+        <location filename="../src/favorites2.ui" line="1013"/>
         <source>Manage Keys In Wallets</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1037"/>
+        <location filename="../src/favorites2.ui" line="1040"/>
         <source>Set Default Wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1049"/>
+        <location filename="../src/favorites2.ui" line="1052"/>
         <source>Internal Wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1062"/>
+        <location filename="../src/favorites2.ui" line="1065"/>
         <source>&amp;Libsecret</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1075"/>
+        <location filename="../src/favorites2.ui" line="1078"/>
         <source>&amp;KWallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1088"/>
+        <location filename="../src/favorites2.ui" line="1091"/>
         <source>&amp;MACOS Keychain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1101"/>
+        <location filename="../src/favorites2.ui" line="1104"/>
         <source>&amp;None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1114"/>
+        <location filename="../src/favorites2.ui" line="1117"/>
         <source>Windows&apos; DPAPI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1135"/>
+        <location filename="../src/favorites2.ui" line="1138"/>
         <source>Volume Path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1152"/>
+        <location filename="../src/favorites2.ui" line="1155"/>
         <source>Enter Volume Path Below</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1181"/>
+        <location filename="../src/favorites2.ui" line="1184"/>
         <source>Enter Password Below</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1210"/>
+        <location filename="../src/favorites2.ui" line="1213"/>
         <source>Add Volume To Selected Wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1236"/>
-        <location filename="../src/favorites2.cpp" line="301"/>
-        <location filename="../src/favorites2.cpp" line="344"/>
+        <location filename="../src/favorites2.ui" line="1239"/>
+        <location filename="../src/favorites2.cpp" line="314"/>
+        <location filename="../src/favorites2.cpp" line="357"/>
         <source>Change Internal Wallet Password</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1284"/>
+        <location filename="../src/favorites2.ui" line="1287"/>
         <source>TextLabel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1306"/>
+        <location filename="../src/favorites2.ui" line="1309"/>
         <source>Ok</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1313"/>
+        <location filename="../src/favorites2.ui" line="1316"/>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1351"/>
+        <location filename="../src/favorites2.ui" line="1354"/>
         <source>Auto Mount Favorites Volumes When Available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1380"/>
+        <location filename="../src/favorites2.ui" line="1383"/>
         <source>Show Mount Dialog When Auto Mounting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1396"/>
+        <location filename="../src/favorites2.ui" line="1399"/>
         <source>Allow External Tools To Get Passwords From Wallets</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1431"/>
+        <location filename="../src/favorites2.ui" line="1434"/>
         <source>Auto Mount Favorites Volumes At Startup</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1460"/>
+        <location filename="../src/favorites2.ui" line="1463"/>
         <source>Show Favorite List On Context Menu(Restart Required)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1478"/>
+        <location filename="../src/favorites2.ui" line="1481"/>
         <source>&amp;Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="608"/>
+        <location filename="../src/favorites2.cpp" line="621"/>
         <source>Select A Command Executable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="217"/>
-        <location filename="../src/favorites2.cpp" line="994"/>
+        <location filename="../src/favorites2.cpp" line="230"/>
+        <location filename="../src/favorites2.cpp" line="1020"/>
         <source>Path To A Config File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="286"/>
-        <location filename="../src/favorites2.cpp" line="364"/>
+        <location filename="../src/favorites2.cpp" line="299"/>
+        <location filename="../src/favorites2.cpp" line="377"/>
         <source>Change Window&apos;s Wallet Password</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="310"/>
-        <location filename="../src/favorites2.cpp" line="319"/>
-        <location filename="../src/favorites2.cpp" line="328"/>
-        <location filename="../src/favorites2.cpp" line="335"/>
-        <location filename="../src/favorites2.cpp" line="377"/>
+        <location filename="../src/favorites2.cpp" line="323"/>
+        <location filename="../src/favorites2.cpp" line="332"/>
+        <location filename="../src/favorites2.cpp" line="341"/>
+        <location filename="../src/favorites2.cpp" line="348"/>
         <location filename="../src/favorites2.cpp" line="390"/>
-        <location filename="../src/favorites2.cpp" line="402"/>
-        <location filename="../src/favorites2.cpp" line="412"/>
+        <location filename="../src/favorites2.cpp" line="403"/>
+        <location filename="../src/favorites2.cpp" line="415"/>
+        <location filename="../src/favorites2.cpp" line="425"/>
         <source>Not Applicable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="422"/>
+        <location filename="../src/favorites2.cpp" line="435"/>
         <source>Mount Point Path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="550"/>
+        <location filename="../src/favorites2.cpp" line="563"/>
         <source>Toggle AutoMount</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="564"/>
+        <location filename="../src/favorites2.cpp" line="577"/>
         <source>Remove Selected Entry</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="571"/>
+        <location filename="../src/favorites2.cpp" line="584"/>
         <source>Add Entry To Default Wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="594"/>
+        <location filename="../src/favorites2.cpp" line="607"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="670"/>
+        <location filename="../src/favorites2.cpp" line="683"/>
         <source>Delete Entry</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="684"/>
+        <location filename="../src/favorites2.cpp" line="697"/>
         <source>Show Password</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="708"/>
+        <location filename="../src/favorites2.cpp" line="721"/>
         <source>Close Menu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1031"/>
-        <location filename="../src/favorites2.cpp" line="1036"/>
+        <location filename="../src/favorites2.cpp" line="1056"/>
+        <location filename="../src/favorites2.cpp" line="1061"/>
         <source>ERROR!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1031"/>
+        <location filename="../src/favorites2.cpp" line="1056"/>
         <source>Encrypted Folder Address Field Is Empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1036"/>
+        <location filename="../src/favorites2.cpp" line="1061"/>
         <source>Mount Point Path Field Is Empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="256"/>
-        <location filename="../src/favorites2.cpp" line="1150"/>
+        <location filename="../src/favorites2.cpp" line="269"/>
+        <location filename="../src/favorites2.cpp" line="1159"/>
         <source>Path To An Encrypted Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1160"/>
+        <location filename="../src/favorites2.cpp" line="1169"/>
         <source>Path To Mount Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1318"/>
+        <location filename="../src/favorites2.cpp" line="1303"/>
+        <source>SSH_AUTH_SOCK Socket Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/favorites2.cpp" line="1304"/>
+        <source>IdentityFile Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/favorites2.cpp" line="1353"/>
         <source>Remote Ssh Server Address
 (Example: woof@example.com:/remote/path)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1319"/>
+        <location filename="../src/favorites2.cpp" line="1354"/>
         <source>SSH_AUTH_SOCK Socket Path (Optional)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1320"/>
+        <location filename="../src/favorites2.cpp" line="1355"/>
         <source>IdentityFile Path (Optional)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2059,32 +2074,32 @@ The lite format has become the default on Unix-like operating systems as it is m
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="947"/>
+        <location filename="../src/sirikali.cpp" line="951"/>
         <source>ERROR: Key Not Found In The Backend.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="952"/>
+        <location filename="../src/sirikali.cpp" line="956"/>
         <source>ERROR: Failed To Unlock Requested Backend.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="700"/>
         <location filename="../src/sirikali.cpp" line="739"/>
-        <location filename="../src/sirikali.cpp" line="1172"/>
-        <location filename="../src/sirikali.cpp" line="1937"/>
+        <location filename="../src/sirikali.cpp" line="1176"/>
+        <location filename="../src/sirikali.cpp" line="1941"/>
         <source>ERROR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1172"/>
+        <location filename="../src/sirikali.cpp" line="1176"/>
         <source>Failed To Read Volume Properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1154"/>
-        <location filename="../src/sirikali.cpp" line="1174"/>
-        <location filename="../src/sirikali.cpp" line="1198"/>
+        <location filename="../src/sirikali.cpp" line="1158"/>
+        <location filename="../src/sirikali.cpp" line="1178"/>
+        <location filename="../src/sirikali.cpp" line="1202"/>
         <source>INFORMATION</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2131,32 +2146,32 @@ Please Report This Serious Bug.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1234"/>
+        <location filename="../src/sirikali.cpp" line="1238"/>
         <source>Unmount</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1238"/>
+        <location filename="../src/sirikali.cpp" line="1242"/>
         <source>Add To Favorites</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1653"/>
+        <location filename="../src/sirikali.cpp" line="1657"/>
         <source>Select A File To Be Mounted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="2007"/>
+        <location filename="../src/sirikali.cpp" line="2011"/>
         <source>Failed To Unmount 1 Volume.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="2009"/>
+        <location filename="../src/sirikali.cpp" line="2013"/>
         <source>Failed To Unmount %1 Volumes.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1232"/>
+        <location filename="../src/sirikali.cpp" line="1236"/>
         <source>Open Folder</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2166,35 +2181,35 @@ Please Report This Serious Bug.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1236"/>
+        <location filename="../src/sirikali.cpp" line="1240"/>
         <source>Properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1242"/>
+        <location filename="../src/sirikali.cpp" line="1246"/>
         <source>Close Menu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="166"/>
-        <location filename="../src/sirikali.cpp" line="1340"/>
-        <location filename="../src/sirikali.cpp" line="2007"/>
-        <location filename="../src/sirikali.cpp" line="2009"/>
+        <location filename="../src/sirikali.cpp" line="1344"/>
+        <location filename="../src/sirikali.cpp" line="2011"/>
+        <location filename="../src/sirikali.cpp" line="2013"/>
         <source>WARNING</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1341"/>
+        <location filename="../src/sirikali.cpp" line="1345"/>
         <source>Could Not Open Mount Point Because &quot;%1&quot; Tool Does Not Appear To Be Working Correctly.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1390"/>
+        <location filename="../src/sirikali.cpp" line="1394"/>
         <source>&amp;Quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1650"/>
+        <location filename="../src/sirikali.cpp" line="1654"/>
         <source>Select An Encrypted Volume Directory</source>
         <translation type="unfinished"></translation>
     </message>
