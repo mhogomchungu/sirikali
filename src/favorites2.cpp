@@ -1300,8 +1300,8 @@ void favorites2::setVolumeProperties( const favorites::entry& e )
 
 	if( engine->known() && engine->likeSsh() ){
 
-		m_ui->label_3->setText( tr( "SSH_AUTH_SOCK Socket Path (Optional)" ) ) ;
-		m_ui->label_4->setText( tr( "IdentityFile Path (Optional)" ) ) ;
+		m_ui->label_3->setText( tr( "SSH_AUTH_SOCK Socket Path" ) ) ;
+		m_ui->label_4->setText( tr( "IdentityFile Path" ) ) ;
 
 		m_ui->textEditConfigFilePath->setText( e.identityAgent ) ;
 
