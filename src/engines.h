@@ -300,7 +300,7 @@ public:
 
 			cryfsMigrateFileSystem,
 			cryfsReplaceFileSystem,
-		        cryfsVersionTooOldToMigrateVolume,
+			cryfsVersionTooOldToMigrateVolume,
 			notSupportedMountPointFolderPath,
 			mountPointFolderNotEmpty,
 			IllegalPath,
@@ -644,7 +644,7 @@ public:
 
 		virtual const QProcessEnvironment& getProcessEnvironment() const ;
 
-		virtual bool requiresPolkit() const ;		
+		virtual bool requiresPolkit() const ;
 
 		virtual args command( const QByteArray& password,
 				      const engines::engine::cmdArgsList& args,
@@ -706,7 +706,7 @@ public:
 					}
 
 					return false ;
-				}			
+				}
 				const QStringList& get() const
 				{
 					return m_options ;
@@ -734,7 +734,7 @@ public:
 			public:
 				fuseOptions( QStringList& m ) : Options( m )
 				{
-				}				
+				}
 			} ;
 
 			class exeOptions : public Options

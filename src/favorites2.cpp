@@ -72,6 +72,8 @@ favorites2::favorites2( QWidget * parent,
 {
 	m_ui->setupUi( this ) ;
 
+	this->installEventFilter( this ) ;
+
 	this->setFont( parent->font() ) ;
 
 	this->setFixedSize( this->size() ) ;
