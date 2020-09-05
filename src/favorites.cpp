@@ -82,15 +82,30 @@ static void _update_favorites( favorites::entry& m )
 
 		QStringList ss ;
 
+		auto _remove_quotes = []( QString s ){
+
+			if( s.startsWith( '"' ) ){
+
+				s = s.mid( 1 ) ;
+			}
+
+			if( s.endsWith( '"' ) ){
+
+				s = utility::removeLast( s,1 ) ;
+			}
+
+			return s ;
+		} ;
+
 		for( const auto& it : utility::split( m.mountOptions,',' ) ){
 
-			if( it.startsWith( "IdentityAgent=" ) ){
+			if( it.startsWith( "IdentityAgent=" ) ){				
 
-				m.identityAgent = utility::removeFirstAndLast( it.mid( 14 ),1,1 ) ;
+				m.identityAgent = _remove_quotes( it.mid( 14 ) ) ;
 
 			}else if( it.startsWith( "IdentityFile=" ) ){
 
-				m.identityFile = utility::removeFirstAndLast( it.mid( 13 ),1,1 ) ;
+				m.identityFile = _remove_quotes( it.mid( 13 ) ) ;
 			}else{
 				ss.append( it ) ;
 			}
