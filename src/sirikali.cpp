@@ -126,39 +126,16 @@ static int _print_err( int s,const QString& m )
 	return s ;
 }
 
-int sirikali::run( const QStringList& args,int argc,char * argv[] )
+static int _run( const QString& mm,const QStringList& args,secrets& ss )
 {
-	auto mm = utility::cmdArgumentValue( args,"-b" ) ;
-
-	if( utility::equalsAtleastOne( mm,"internal","gnomewallet","libsecret",
-				       "kwallet","osxkeychain","windows_dpapi" ) ){
-
-		QApplication srk( argc,argv ) ;
-
-		miniSiriKali app( [ & ]( secrets& ss ){
-
-			return sirikali::unlockVolume( args,ss ) ;
-		} ) ;
-
-		QMetaObject::invokeMethod( &app,"start",Qt::QueuedConnection ) ;
-
-		return srk.exec() ;
-	}
-
-	QCoreApplication app( argc,argv ) ;
-
-	Q_UNUSED( app )
-
 	if( utility::equalsAtleastOne( mm,"stdin","keyfile" ) ){
-
-		secrets ss ;
 
 		return sirikali::unlockVolume( args,ss ) ;
 	}
 
 	if( args.contains( "-b" ) && mm.isEmpty() ){
 
-		return _print_err( 1,tr( "Unknown Wallet Option" ) ) ;
+		return _print_err( 1,QObject::tr( "Unknown Wallet Option" ) ) ;
 	}
 
 	if( utility::platformIsWindows() ){
@@ -225,7 +202,42 @@ int sirikali::run( const QStringList& args,int argc,char * argv[] )
 		return 0 ;
 	}
 
-	return _print_err( 1,tr( "Unknown Option" ) ) ;
+	return _print_err( 1,QObject::tr( "Unknown Option" ) ) ;
+}
+
+template< typename App,typename Function >
+static int _run( App& app,Function function )
+{
+	app.setApplicationName( "SiriKali" ) ;
+
+	miniSiriKali srk( std::move( function ) ) ;
+
+	QMetaObject::invokeMethod( &srk,"start",Qt::QueuedConnection ) ;
+
+	return app.exec() ;
+}
+
+int sirikali::run( const QStringList& args,int argc,char * argv[] )
+{
+	auto mm = utility::cmdArgumentValue( args,"-b" ) ;
+
+	if( utility::equalsAtleastOne( mm,"internal","windows_dpapi","gnomewallet",
+				       "libsecret","kwallet","osxkeychain" ) ){
+
+		QApplication srk( argc,argv ) ;
+
+		return _run( srk,[ & ]( secrets& ss ){
+
+			return sirikali::unlockVolume( args,ss ) ;
+		} ) ;
+	}else{
+		QCoreApplication srk( argc,argv ) ;
+
+		return _run( srk,[ & ]( secrets& ss ){
+
+			return _run( mm,args,ss ) ;
+		} ) ;
+	}
 }
 
 void miniSiriKali::start()
@@ -242,6 +254,8 @@ int sirikali::exec( const QStringList& args,int argc,char * argv[] )
 	utility::initGlobals() ;
 
 	QApplication srk( argc,argv ) ;
+
+	srk.setApplicationName( "SiriKali" ) ;
 
 	sirikali app( args ) ;
 

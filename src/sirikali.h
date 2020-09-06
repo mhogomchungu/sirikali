@@ -54,13 +54,13 @@ namespace Ui {
 class sirikali ;
 }
 
-class miniSiriKali : public QWidget
+class miniSiriKali : public QObject
 {
 	Q_OBJECT
 public:
 	miniSiriKali( std::function< int( secrets& ) > function ) :
 		m_function( std::move( function ) ),
-		m_secrets( this )
+		m_secrets( nullptr )
 	{
 	}
 private slots :
