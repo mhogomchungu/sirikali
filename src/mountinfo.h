@@ -306,7 +306,9 @@ public:
 class folderMonitor{
 public:
 	using function = std::function< void( const QString& ) > ;
-	folderMonitor( bool wait,const QString& path = QString() ) ;
+	folderMonitor( bool wait,
+		       std::function< void( const QString& ) >&,
+		       const QString& path = QString() ) ;
 	const QString& path() const ;
 	void contentCountIncreased( folderMonitor::function& function ) ;
 	void contentCountDecreased( folderMonitor::function& function ) ;
@@ -316,13 +318,15 @@ private:
 	QString m_path ;
 	QStringList m_folderList ;
 	bool m_waitForSynced ;
+	std::function< void( const QString& ) >& m_debug ;
 } ;
 
 class dbusMonitor : public QObject
 {
 	Q_OBJECT
 public:
-	dbusMonitor( folderMonitor::function function ) ;
+	dbusMonitor( folderMonitor::function function,
+		     std::function< void( const QString& ) >& ) ;
 private slots:
 	void volumeAdded() ;
 	void volumeRemoved() ;
@@ -330,6 +334,7 @@ private:
 	siriDBus m_dbus ;
 	folderMonitor m_folderMonitor ;
 	folderMonitor::function m_function ;
+	std::function< void( const QString& ) >& m_debug ;
 } ;
 
 class mountinfo : private QObject
@@ -338,7 +343,10 @@ class mountinfo : private QObject
 public:
 	static Task::future< std::vector< volumeInfo > >& unlockedVolumes() ;
 
-	mountinfo( QObject * parent,bool,std::function< void() >&& ) ;
+	mountinfo( QObject * parent,
+		   bool,
+		   std::function< void() >,
+		   std::function< void( const QString& ) > ) ;
 
 	void stop() ;
 
@@ -360,6 +368,7 @@ private:
 
 	std::function< void() > m_stop = nullptr ;
 	std::function< void() > m_quit ;
+	std::function< void( const QString& ) > m_debug ;
 
 	bool m_announceEvents ;
 

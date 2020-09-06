@@ -154,14 +154,18 @@ static volumeInfo::List _unlocked_volumes()
 	return a ;
 }
 
-mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& quit ) :
+mountinfo::mountinfo( QObject * parent,
+		      bool e,
+		      std::function< void() > quit,
+		      std::function< void( const QString& ) > debug ) :
 	m_parent( parent ),
 	m_quit( std::move( quit ) ),
+	m_debug( std::move( debug ) ),
 	m_announceEvents( e ),
 	m_linuxMonitorExit( false ),
 	m_folderMonitorExit( false ),
 	m_oldMountList( _unlocked_volumes() ),
-	m_dbusMonitor( [ this ]( const QString& e ){ this->autoMount( e ) ; } )
+	m_dbusMonitor( [ this ]( const QString& e ){ this->autoMount( e ) ; },m_debug )
 {
 	if( utility::platformIsLinux() ){
 
@@ -356,7 +360,7 @@ void mountinfo::linuxMonitor()
 				 * Timout has occured
 				 */
 			}else{
-				utility::debug() << "Warning: pollMonitor.poll failed" ;
+				m_debug( "Warning: pollMonitor.poll failed" ) ;
 			}
 
 			return false ;
@@ -379,7 +383,7 @@ void mountinfo::linuxMonitor()
 
 				mm.createList( m ) ;
 			}else{
-				utility::debug() << "Warning: failed to init folder monitor" ;
+				m_debug( "Warning: failed to init folder monitor" ) ;
 			}
 
 			mm.poll( [ this ]( int r,const fm::entries& entries ){
@@ -396,7 +400,7 @@ void mountinfo::linuxMonitor()
 
 				}else if( r < 0 ){
 
-					utility::debug() << "Warning: folderMonitor.poll failed" ;
+					m_debug( "Warning: folderMonitor.poll failed" ) ;
 				}else{
 					entries.created( [ this ]( const QString& e ){
 
@@ -478,12 +482,14 @@ static QString _gvfs_fuse_path()
 	return s ;
 }
 
-dbusMonitor::dbusMonitor( folderMonitor::function function ) :
+dbusMonitor::dbusMonitor( folderMonitor::function function,
+			  std::function< void( const QString& ) >& debug ) :
 	m_dbus( this ),
-	m_folderMonitor( true,_gvfs_fuse_path() ),
-	m_function( std::move( function ) )
+	m_folderMonitor( true,debug,_gvfs_fuse_path() ),
+	m_function( std::move( function ) ),
+	m_debug( debug )
 {
-	utility::debug() << "gvfs fuse path: " + m_folderMonitor.path() ;
+	m_debug( "gvfs fuse path: " + m_folderMonitor.path() ) ;
 
 	if( !m_folderMonitor.path().isEmpty() ){
 
@@ -493,9 +499,9 @@ dbusMonitor::dbusMonitor( folderMonitor::function function ) :
 
 void dbusMonitor::volumeRemoved()
 {
-	static folderMonitor::function ss = []( const QString& e ){
+	static folderMonitor::function ss = [ this ]( const QString& e ){
 
-		utility::debug() << "gvfs fuse unmount: " + e ;
+		m_debug( "gvfs fuse unmount: " + e ) ;
 	} ;
 
 	m_folderMonitor.contentCountDecreased( ss ) ;
@@ -503,9 +509,9 @@ void dbusMonitor::volumeRemoved()
 
 void dbusMonitor::volumeAdded()
 {
-	static folderMonitor::function ss = [ & ]( const QString& e ){
+	static folderMonitor::function ss = [ this ]( const QString& e ){
 
-		utility::debug() << "gvfs fuse mount: " + e ;
+		m_debug( "gvfs fuse mount: " + e ) ;
 
 		m_function( e ) ;
 	} ;
@@ -513,8 +519,12 @@ void dbusMonitor::volumeAdded()
 	m_folderMonitor.contentCountIncreased( ss ) ;
 }
 
-folderMonitor::folderMonitor( bool e,const QString& path ) :
-	m_path( path ),m_folderList( this->folderList() ),m_waitForSynced( e )
+folderMonitor::folderMonitor( bool e,
+			      std::function< void( const QString& ) >& debug,
+			      const QString& path ) :
+	m_path( path ),
+	m_folderList( this->folderList() ),m_waitForSynced( e ),
+	m_debug( debug )
 {
 	while( m_path.endsWith( "/" ) ){
 
@@ -580,7 +590,7 @@ void folderMonitor::folderListSynced( std::function< void( QStringList ) > funct
 
 			if( a != m_folderList ){
 
-				utility::debug() << "gvfs folder is up to date" ;
+				m_debug( "gvfs folder is up to date" ) ;
 
 				function( std::move( a ) ) ;
 
@@ -588,11 +598,11 @@ void folderMonitor::folderListSynced( std::function< void( QStringList ) > funct
 
 			}else if( counter == 5 ){
 
-				utility::debug() << "Timed out waiting for gvfs folder to update" ;
+				m_debug( "Timed out waiting for gvfs folder to update" ) ;
 
 				return true ;
 			}else{
-				utility::debug() << "Waiting for gvfs folder to update" ;
+				m_debug( "Waiting for gvfs folder to update" ) ;
 
 				return false ;
 			}

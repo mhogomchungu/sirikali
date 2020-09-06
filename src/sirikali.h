@@ -54,12 +54,33 @@ namespace Ui {
 class sirikali ;
 }
 
+class miniSiriKali : public QWidget
+{
+	Q_OBJECT
+public:
+	miniSiriKali( std::function< int( secrets& ) > function ) :
+		m_function( std::move( function ) ),
+		m_secrets( this )
+	{
+	}
+private slots :
+	void start() ;
+	virtual void silenceWarning() ;
+private:
+	std::function< int( secrets& ) > m_function ;
+	secrets m_secrets ;
+} ;
+
 class sirikali : public QWidget
 {
 	Q_OBJECT
-public:	
-	sirikali() ;
-	int start( QApplication& ) ;
+public:
+	static bool cmd( const QStringList& ) ;
+	static int run( const QStringList&,int argc,char * argv[] ) ;
+	static int exec( const QStringList&,int argc,char * argv[] ) ;
+	static int unlockVolume( const QStringList&,secrets& ) ;
+
+	sirikali( const QStringList& ) ;
 	~sirikali() ;
 private slots:
 	void addToFavorites( void ) ;
@@ -74,7 +95,6 @@ private slots:
 	void autoUpdateCheck( void ) ;
 	void volumeProperties() ;
 	void genericVolumeProperties( void ) ;
-	void unlockVolume( const QStringList& ) ;
 	void closeApplication( int = 0,const QString& = QString() ) ;
 	void unlockVolume( bool ) ;
 	void startGUI( const QString& ) ;
@@ -124,7 +144,6 @@ private:
 
 	void updateFavoritesInContextMenu( void ) ;
 	void runIntervalCustomCommand( const QString& ) ;
-	void cliCommand( const QStringList& ) ;
 	void updateVolumeList( const std::vector< volumeInfo >& ) ;
 	void openMountPoint( const QString& ) ;
 	void setLocalizationLanguage( bool ) ;
