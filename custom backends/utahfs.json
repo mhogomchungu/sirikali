@@ -8,29 +8,29 @@
         "backendRequireMountPath": true,
         "backendTimeout": 0,
         "configFileArgument": "-cfg %{cipherFolder}/%{configFileName}",
-        "configFileNames": [],
+        "configFileNames": [
+                "utahfs.yaml"
+        ],
         "createControlStructure": "",
         "displayName":"",
-        "executableName": "archivemount",
+        "executableName": "utahfs-client",
         "failedToMountTextList": [],
-        "fileExtensions": [
-                ".tar.xz",".tar.gz"
-        ],
+        "fileExtensions": [],
         "fuseNames": [
-                "fuse.archivemount"
+                "fuse.utahfs"
         ],
         "idleString": "--idle %{timeout}",
         "keyFileArgument": "--keyfile %{keyfile}",
         "likeSsh": false,
-        "mountControlStructure": "%{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}",
+        "mountControlStructure": "%{mountOptions} -mount %{mountPoint}",
         "names": [
-                "archivemount"
+                "utahfs"
         ],
         "passwordFormat": "%{password}",
         "requiresAPassword": false,
         "reverseString": "",
-        "runsInBackGround": true,
-        "setsCipherPath": true,
+        "runsInBackGround": false,
+        "setsCipherPath": false,
         "sshOptions": "idmap=user,StrictHostKeyChecking=no",
         "takesTooLongToUnlock": false,
         "unMountCommand": [],

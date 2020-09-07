@@ -1,8 +1,46 @@
 {
+        "acceptsSubType": true,
+        "acceptsVolName": true,
+        "autoCreatesMountPoint": false,
+        "autoDeletesMountPoint": false,
+        "autoMountsOnVolumeCreation": false,
+        "autorefreshOnMountUnMount": true,
+        "backendRequireMountPath": true,
+        "backendTimeout": 0,
+        "configFileArgument": "",
+        "configFileNames": [],
+        "createControlStructure": "",
+        "displayName":"",
         "executableName": "fuseiso",
-        "fileExtensions": [ ".iso",".nrg",".bin",".mdf",".img" ],
-        "fuseNames": [ "fuse.fuseiso" ],
-        "mountControlStructure": "-n %{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}",
-        "names": [ "fuseiso" ],
-        "requiresAPassword": false
+        "failedToMountTextList": [],
+        "fileExtensions": [
+                 ".iso"," .nrg"," .bin"," .mdf",".img"
+        ],
+        "fuseNames": [
+                "fuse.fuseiso"
+        ],
+        "idleString": "--idle %{timeout}",
+        "keyFileArgument": "--keyfile %{keyfile}",
+        "likeSsh": false,
+        "mountControlStructure": "%{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}",
+        "names": [
+                "fuseiso"
+        ],
+        "passwordFormat": "%{password}",
+        "requiresAPassword": false,
+        "reverseString": "",
+        "runsInBackGround": true,
+        "setsCipherPath": true,
+        "sshOptions": "idmap=user,StrictHostKeyChecking=no",
+        "takesTooLongToUnlock": false,
+        "unMountCommand": [],
+        "volumePropertiesCommands": [],
+        "windowsExecutableFolderPath": "",
+        "windowsInstallPathRegistryKey": "",
+        "windowsInstallPathRegistryValue": "",
+        "windowsSuccessfullyMountedList": [],
+        "windowsSupportsMountPointPaths": false,
+        "windowsUnMountCommand": [],
+        "wrongPasswordErrorCode": "",
+        "wrongPasswordText": ""
 }

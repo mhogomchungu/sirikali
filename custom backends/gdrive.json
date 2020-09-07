@@ -7,24 +7,22 @@
         "autorefreshOnMountUnMount": true,
         "backendRequireMountPath": true,
         "backendTimeout": 0,
-        "configFileArgument": "-cfg %{cipherFolder}/%{configFileName}",
+        "configFileArgument": "",
         "configFileNames": [],
         "createControlStructure": "",
-        "displayName":"",
-        "executableName": "archivemount",
+        "displayName":"gdrive",
+        "executableName": "google-drive-ocamlfuse",
         "failedToMountTextList": [],
-        "fileExtensions": [
-                ".tar.xz",".tar.gz"
-        ],
+        "fileExtensions": [],
         "fuseNames": [
-                "fuse.archivemount"
+                "fuse.google-drive-ocamlfuse"
         ],
         "idleString": "--idle %{timeout}",
         "keyFileArgument": "--keyfile %{keyfile}",
         "likeSsh": false,
-        "mountControlStructure": "%{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}",
+        "mountControlStructure": "%{cipherFolder} %{fuseOpts}",
         "names": [
-                "archivemount"
+                "google-drive-ocamlfuse"
         ],
         "passwordFormat": "%{password}",
         "requiresAPassword": false,
