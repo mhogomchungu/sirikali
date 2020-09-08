@@ -358,7 +358,7 @@ void utility::debug::showDebugWindow( const QString& e )
 
 void utility::debug::logErrorWhileStarting( const QString& e )
 {
-	utility::miscOptions::instance().appendLogs( "\n\n" + e ) ;
+	utility::miscOptions::instance().appendLog( "\n\n" + e ) ;
 }
 
 utility::debug utility::debug::operator<<( int e )
@@ -503,7 +503,7 @@ void utility::initGlobals()
 
 	m.setEnableDebug( settings::instance().showDebugWindowOnStartup() ) ;
 
-	#ifdef Q_OS_LINUX
+	if( utility::platformIsLinux() ){
 
 		auto uid = getuid() ;
 
@@ -524,7 +524,7 @@ void utility::initGlobals()
 
 		if( chown( s.constData(),uid,uid ) ){}
 		if( chmod( s.constData(),0700 ) ){}
-	#endif
+	}
 }
 
 void utility::quitHelper()
@@ -591,28 +591,6 @@ void utility::openPath( const QString& path,const QString& opener,
 			}
 		} ) ;
 	}
-}
-
-::Task::future< utility::fsInfo >& utility::fileSystemInfo( const QString& q )
-{
-	return ::Task::run( [ = ](){
-
-		Q_UNUSED( q )
-
-		utility::fsInfo s ;
-
-#ifndef Q_OS_WIN
-		struct statfs e ;
-
-		s.valid = statfs( q.toLatin1().constData(),&e ) == 0 ;
-
-		s.f_bavail = e.f_bavail ;
-		s.f_bfree  = e.f_bfree ;
-		s.f_blocks = e.f_blocks ;
-		s.f_bsize  = static_cast< decltype( s.f_bsize ) >( e.f_bsize ) ;
-#endif
-		return s ;
-	} ) ;
 }
 
 static bool _help()
@@ -1001,49 +979,14 @@ bool utility::removeFolder( const QString& e,int attempts )
 	}
 }
 
-#ifdef Q_OS_WIN
-
-QByteArray utility::readPassword( bool addNewLine )
-{
-	std::cout << "Password: " << std::flush ;
-
-	QByteArray s ;
-	int e ;
-
-	int m = settings::instance().readPasswordMaximumLength() ;
-
-	for( int i = 0 ; i < m ; i++ ){
-
-		e = std::getchar() ;
-
-		if( e == '\n' || e == -1 ){
-
-			break ;
-		}else{
-			s += static_cast< char >( e ) ;
-		}
-	}
-
-	if( addNewLine ){
-
-		std::cout << std::endl ;
-	}
-
-	return s ;
-}
-
-#else
-
-#include <termios.h>
-
-static inline bool _terminalEchoOff( struct termios * old,struct termios * current )
+static bool _terminalEchoOff( struct termios * old,struct termios * current )
 {
 	if( tcgetattr( 1,old ) != 0 ){
 
 		return false ;
 	}
 
-	*current = *old;
+	*current = *old ;
 	current->c_lflag &= static_cast< unsigned int >( ~ECHO ) ;
 
 	if( tcsetattr( 1,TCSAFLUSH,current ) != 0 ){
@@ -1056,41 +999,68 @@ static inline bool _terminalEchoOff( struct termios * old,struct termios * curre
 
 QByteArray utility::readPassword( bool addNewLine )
 {
-	std::cout << "Password: " << std::flush ;
+	if( utility::platformIsWindows() ){
 
-	struct termios old ;
-	struct termios current ;
+		std::cout << "Password: " << std::flush ;
 
-	_terminalEchoOff( &old,&current ) ;
+		QByteArray s ;
+		int e ;
 
-	QByteArray s ;
-	int e ;
+		int m = settings::instance().readPasswordMaximumLength() ;
 
-	int m = settings::instance().readPasswordMaximumLength() ;
+		for( int i = 0 ; i < m ; i++ ){
 
-	for( int i = 0 ; i < m ; i++ ){
+			e = std::getchar() ;
 
-		e = std::getchar() ;
+			if( e == '\n' || e == -1 ){
 
-		if( e == '\n' || e == -1 ){
-
-			break ;
-		}else{
-			s += static_cast< char >( e ) ;
+				break ;
+			}else{
+				s += static_cast< char >( e ) ;
+			}
 		}
+
+		if( addNewLine ){
+
+			std::cout << std::endl ;
+		}
+
+		return s ;
+	}else{
+		std::cout << "Password: " << std::flush ;
+
+		struct termios old ;
+		struct termios current ;
+
+		_terminalEchoOff( &old,&current ) ;
+
+		QByteArray s ;
+		int e ;
+
+		int m = settings::instance().readPasswordMaximumLength() ;
+
+		for( int i = 0 ; i < m ; i++ ){
+
+			e = std::getchar() ;
+
+			if( e == '\n' || e == -1 ){
+
+				break ;
+			}else{
+				s += static_cast< char >( e ) ;
+			}
+		}
+
+		tcsetattr( 1,TCSAFLUSH,&old ) ;
+
+		if( addNewLine ){
+
+			std::cout << std::endl ;
+		}
+
+		return s ;
 	}
-
-	tcsetattr( 1,TCSAFLUSH,&old ) ;
-
-	if( addNewLine ){
-
-		std::cout << std::endl ;
-	}
-
-	return s ;
 }
-
-#endif
 
 const QProcessEnvironment& utility::systemEnvironment()
 {

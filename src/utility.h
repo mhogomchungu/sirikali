@@ -132,7 +132,7 @@ namespace utility
 		{
 			return m_starting_error_logs ;
 		}
-		miscOptions& appendLogs( const QString& e )
+		miscOptions& appendLog( const QString& e )
 		{
 			m_starting_error_logs += e ;
 			return *this ;
@@ -278,17 +278,6 @@ namespace utility
 		utility::debug operator<<( const QString& ) ;
 		utility::debug operator<<( const QStringList& ) ;
 	};
-
-	struct fsInfo
-	{
-		bool valid ;
-		uint64_t f_blocks ;
-		uint64_t f_bavail ;
-		uint64_t f_bsize ;
-		uint64_t f_bfree ;
-	};
-
-	::Task::future< utility::fsInfo >& fileSystemInfo( const QString& ) ;
 
 	bool platformIsLinux() ;
 	bool platformIsOSX() ;

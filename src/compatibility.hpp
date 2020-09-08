@@ -169,12 +169,57 @@ static inline void FD_SET( int fd,fd_set * e )
 	Q_UNUSED( e )
 }
 
+static inline int getuid()
+{
+	return -1 ;
+}
+
+static inline int chown( const char * a,int b,int c )
+{
+	Q_UNUSED( a )
+
+	Q_UNUSED( b )
+
+	Q_UNUSED( c )
+
+	return -1 ;
+}
+
+struct termios
+{
+	unsigned int c_lflag ;
+};
+
+static inline int tcgetattr( int a,struct termios * b )
+{
+	Q_UNUSED( a )
+
+	Q_UNUSED( b )
+
+	return -1 ;
+}
+
+static inline int tcsetattr( int a,int b,struct termios * c )
+{
+	Q_UNUSED( a )
+
+	Q_UNUSED( b )
+
+	Q_UNUSED( c )
+
+	return -1 ;
+}
+
+#define ECHO 0
+#define TCSAFLUSH 0
+
 } //extern C
 
 #else
 
 #include <poll.h>
 #include <sys/select.h>
+#include <termios.h>
 
 #endif
 
