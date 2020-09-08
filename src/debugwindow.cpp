@@ -41,7 +41,7 @@ debugWindow::debugWindow( QWidget * parent ) :
 		this->Hide() ;
 	} ) ;
 
-	utility::setDebugWindow( this ) ;
+	utility::miscOptions::instance().setDebugWindow( this ) ;
 }
 
 debugWindow::~debugWindow()

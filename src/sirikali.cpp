@@ -272,7 +272,7 @@ sirikali::sirikali( const QStringList& args ) :
 	m_signalHandler( this,this->getEmergencyShutDown() ),
 	m_argumentList( args )
 {
-	utility::setMainQWidget( this ) ;
+	utility::miscOptions::instance().setMainQtWidget( this ) ;
 }
 
 std::function< void( systemSignalHandler::signal ) > sirikali::getEmergencyShutDown()
@@ -511,7 +511,7 @@ void sirikali::setUpApp( const QString& volume )
 		QTimer::singleShot( settings::instance().checkForUpdateInterval(),this,SLOT( autoUpdateCheck() ) ) ;
 	}
 
-	if( utility::debugEnabled() ){
+	if( utility::miscOptions::instance().debugEnabled() ){
 
 		this->showDebugWindow() ;
 	}
@@ -838,11 +838,6 @@ void sirikali::raiseWindow( const QString& volume )
 	this->autoMount( volume ) ;
 }
 
-void sirikali::polkitFailedWarning()
-{
-	DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "SiriKali Failed To Connect To siriPolkit.\nPlease Report This Serious Bug." ) ) ;
-}
-
 void sirikali::start()
 {
 	m_startHidden  = m_argumentList.contains( "-e" ) ;
@@ -853,11 +848,6 @@ void sirikali::start()
 	}
 
 	m_folderOpener = utility::cmdArgumentValue( m_argumentList,"-m",settings::instance().fileManager() ) ;
-
-	utility::polkitFailedWarning( [ this ](){
-
-		QMetaObject::invokeMethod( this,"polkitFailedWarning",Qt::QueuedConnection ) ;
-	} ) ;
 
 	auto s = utility::socketPath() ;
 
@@ -1145,7 +1135,9 @@ keyDialog::volumeList sirikali::autoUnlockVolumes( favorites::volumeList ss,
 						   bool autoOpenFolderOnMount,
 						   bool skipUnknown )
 {
-	auto l = _convert_lists( std::move( ss ),utility::earlyBoot(),skipUnknown ) ;
+	const auto& mm = utility::miscOptions::instance() ;
+
+	auto l = _convert_lists( std::move( ss ),mm.starting(),skipUnknown ) ;
 
 	if( l.empty() ){
 

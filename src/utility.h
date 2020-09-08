@@ -72,6 +72,121 @@ class QEvent ;
 
 namespace utility
 {
+	class miscOptions{
+	public:
+		static miscOptions& instance()
+		{
+			static miscOptions s ;
+			return s ;
+		}
+		const QByteArray& getCookie() const
+		{
+			return m_cookie ;
+		}
+		const QString& getSocketPath() const
+		{
+			return m_polkit_socket_path ;
+		}
+		bool usePolkit() const
+		{
+			return m_use_polkit ;
+		}
+		bool debugEnabled() const
+		{
+			return m_enable_debug ;
+		}
+		bool runningOnGUIThread()
+		{
+			return m_main_gui_thread == QThread::currentThread() ;
+		}
+		bool runningOnBackGroundThread()
+		{
+			return m_main_gui_thread != QThread::currentThread() ;
+		}
+		bool starting() const
+		{
+			return m_starting ;
+		}
+		QThread * getMainGUIThread() const
+		{
+			return m_main_gui_thread ;
+		}
+		QWidget * getMainQtWidget() const
+		{
+			return m_mainQWidget ;
+		}
+		utility2::result< debugWindow * > getDebugWindow() const
+		{
+			if( m_debugWindow ){
+
+				return m_debugWindow ;
+			}else{
+				return {} ;
+			}
+		}
+		void doneStarting()
+		{
+			m_starting = false ;
+		}
+		const QString& getStartingLogs() const
+		{
+			return m_starting_error_logs ;
+		}
+		miscOptions& appendLogs( const QString& e )
+		{
+			m_starting_error_logs += e ;
+			return *this ;
+		}
+		miscOptions& setCookie( const QByteArray& e )
+		{
+			m_cookie = e ;
+			return *this ;
+		}
+		miscOptions& setUsePolkit( bool e )
+		{
+			m_use_polkit = e ;
+			return *this ;
+		}
+		miscOptions& setDebugWindow( debugWindow * w )
+		{
+			m_debugWindow = w ;
+			return *this ;
+		}
+		miscOptions& setPolkitPath( const QString& w )
+		{
+			m_polkit_socket_path = w ;
+			return *this ;
+		}
+		miscOptions& setEnableDebug( bool w )
+		{
+			m_enable_debug = w ;
+			return *this ;
+		}
+		miscOptions& setMainQtWidget( QWidget * w )
+		{
+			m_mainQWidget = w ;
+			return *this ;
+		}
+		miscOptions& setCurrentThreadAsMain()
+		{
+			m_main_gui_thread = QThread::currentThread() ;
+			return *this ;
+		}
+	private:
+		QString m_polkit_socket_path ;
+		QString m_starting_error_logs ;
+
+		bool m_starting = true ;
+		bool m_use_polkit = false ;
+		bool m_enable_debug = false ;
+
+		QByteArray m_cookie ;
+
+		debugWindow * m_debugWindow = nullptr ;
+		QThread * m_main_gui_thread = nullptr ;
+		QWidget * m_mainQWidget = nullptr ;
+	};
+
 	template< typename T >
 	typename std::add_const<T>::type& asConst( T& t )
 	{
@@ -222,12 +337,6 @@ namespace utility
 
 	void scaleGUI( void ) ;
 
-	void setGUIThread( void ) ;
-
-	bool runningOnGUIThread( void ) ;
-
-	bool runningOnBackGroundThread( void ) ;
-
 	void runInUiThread( std::function< void() > function ) ;
 
 	void waitForOneSecond( void ) ;
@@ -236,13 +345,10 @@ namespace utility
 
 	bool waitForFinished( QProcess&,int timeOut = 5 ) ;
 
-	void setMainQWidget( QWidget * ) ;
-	QWidget * mainQWidget() ;
-
 	template< typename T >
 	static inline auto unwrap( Task::future< T >& x )
 	{
-		if( utility::runningOnGUIThread() ){
+		if( utility::miscOptions::instance().runningOnGUIThread() ){
 
 			return x.await() ;
 		}else{
@@ -328,9 +434,6 @@ namespace utility
 	QString securefsPath() ;
 	QString winFSPpath() ;
 
-	void enableDebug( bool ) ;
-	bool debugEnabled( void ) ;
-
 	const QProcessEnvironment& systemEnvironment() ;
 
 	QString userName() ;
@@ -354,19 +457,14 @@ namespace utility
 
 	std::function< void( const QString& ) > jsonLogger() ;
 
-	void setDebugWindow( debugWindow * ) ;
-	void polkitFailedWarning( std::function< void() > ) ;
-	bool useSiriPolkit( void ) ;
 	void quitHelper() ;
 	void initGlobals() ;
-	QString helperSocketPath() ;
 
 	QString getVolumeID( const QString&,bool = false ) ;
 	bool eventFilter( QObject * gui,QObject * watched,QEvent * event,std::function< void() > ) ;
 	void licenseInfo( QWidget * ) ;
 
 	void applicationStarted() ;
-	bool earlyBoot() ;
 
 	QString removeOption( const QStringList&,const QString& option ) ;
 	QString removeOption( const QString& commaSeparatedString,const QString& option ) ;

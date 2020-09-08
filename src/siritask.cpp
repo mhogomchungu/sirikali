@@ -486,7 +486,7 @@ engines::engine::cmdStatus siritask::encryptedFolderCreate( const siritask::crea
 {
 	if( utility::platformIsWindows() ){
 
-		if( utility::runningOnGUIThread() ){
+		if( utility::miscOptions::instance().runningOnGUIThread() ){
 
 			return _create( e ) ;
 		}else{
@@ -550,7 +550,7 @@ engines::engine::cmdStatus siritask::encryptedFolderMount( const siritask::mount
 
 		if( utility::platformIsWindows() ){
 
-			if( utility::runningOnGUIThread() ){
+			if( utility::miscOptions::instance().runningOnGUIThread() ){
 
 				return _mount( e ) ;
 			}else{

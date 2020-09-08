@@ -154,7 +154,7 @@ engines::engine::exe_args ecryptfs::wrapSU( const QString& s ) const
 
 engines::engine::status ecryptfs::unmount( const engines::engine::unMount& e ) const
 {
-	auto usePolkit = utility::useSiriPolkit() ;
+	auto usePolkit = utility::miscOptions::instance().usePolkit() ;
 
 	auto cmd = [ & ]()->engines::engine::exe_args{
 
@@ -192,7 +192,7 @@ engines::engine::args ecryptfs::command( const QByteArray& password,
 {
 	auto m = custom::set_command( *this,password,args,create ) ;
 
-	if( utility::useSiriPolkit() ){
+	if( utility::miscOptions::instance().usePolkit() ){
 
 		auto exe = this->executableFullPath() + " " + m.cmd_args.join( ' ' ) ;
 

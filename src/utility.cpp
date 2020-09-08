@@ -141,59 +141,25 @@ bool utility::platformIsNOTWindows()
 	return !utility::platformIsWindows() ;
 }
 
-static QByteArray _cookie ;
-static QString _polkit_socket_path ;
-
-static debugWindow * _debugWindow = nullptr ;
-
-static bool _use_polkit = false ;
-
-static std::function< void() > _failed_to_connect_to_zulupolkit ;
-
-static bool _enable_debug = false ;
-
-static QThread * _main_gui_thread ;
-
-static QWidget * _mainQWidget ;
-
-void utility::setMainQWidget( QWidget * m )
-{
-	_mainQWidget = m ;
-}
-
-QWidget * utility::mainQWidget()
-{
-	return _mainQWidget ;
-}
-
-void utility::enableDebug( bool e )
-{
-	_enable_debug = e ;
-}
-
-bool utility::debugEnabled()
-{
-	return _enable_debug ;
-}
-
-void utility::setDebugWindow( debugWindow * w )
-{
-	_debugWindow = w ;
-}
-
 static void _show_debug_window()
 {
-	if( _debugWindow ){
+	auto s = utility::miscOptions::instance().getDebugWindow() ;
 
-		_debugWindow->Show() ;
+	if( s.has_value() ){
+
+		s.value()->Show() ;
 	}
 }
 
 static void _set_debug_window_text( const QString& e )
 {
-	if( _debugWindow ){
+	const auto& m = utility::miscOptions::instance() ;
 
-		_debugWindow->UpdateOutPut( e,utility::debugEnabled() ) ;
+	auto s = m.getDebugWindow() ;
+
+	if( s.has_value() ){
+
+		s.value()->UpdateOutPut( e,m.debugEnabled() ) ;
 	}
 }
 
@@ -201,7 +167,7 @@ void windowsDebugWindow( const QString& e,bool s )
 {
 	if( s ){
 
-		utility::enableDebug( true ) ;
+		utility::miscOptions::instance().setEnableDebug( true ) ;
 		_show_debug_window() ;
 	}
 
@@ -217,11 +183,6 @@ utility::SocketPaths utility::socketPath()
 		auto a = QStandardPaths::writableLocation( QStandardPaths::RuntimeLocation ) ;
 		return { a,a + "/SiriKali.socket" } ;
 	}
-}
-
-void utility::polkitFailedWarning( std::function< void() > e )
-{
-	_failed_to_connect_to_zulupolkit = std::move( e ) ;
 }
 
 ::Task::future< utility::Task >& utility::Task::run( const QString& exe,
@@ -252,7 +213,9 @@ void utility::Task::execute( const QString& exe,
 			     bool polkit,
 			     bool runs_in_background )
 {
-	if( polkit && utility::useSiriPolkit() ){
+	const auto& m = utility::miscOptions::instance() ;
+
+	if( polkit && m.usePolkit() ){
 
 		auto _report_error = [ this ]( const char * msg ){
 
@@ -265,7 +228,7 @@ void utility::Task::execute( const QString& exe,
 
 		QLocalSocket s ;
 
-		s.connectToServer( utility::helperSocketPath() ) ;
+		s.connectToServer( m.getSocketPath() ) ;
 
 		for( int i = 0 ; ; i++ ){
 
@@ -290,7 +253,7 @@ void utility::Task::execute( const QString& exe,
 
 			SirikaliJson json( utility::jsonLogger() ) ;
 
-			json[ "cookie" ]   = _cookie ;
+			json[ "cookie" ]   = m.getCookie() ;
 			json[ "password" ] = password ;
 			json[ "command" ]  = exe ;
 			json[ "args" ]     = list ;
@@ -350,7 +313,7 @@ static void _build_debug_msg( const QString& b )
 	QString a = "***************************\n" ;
 	QString c = "\n***************************" ;
 
-	if( utility::debugEnabled() ){
+	if( utility::miscOptions::instance().debugEnabled() ){
 
 		utility::debug::cout() << b ;
 	}
@@ -365,41 +328,37 @@ utility::debug utility::debug::operator<<( const QString& e )
 	return utility::debug() ;
 }
 
-static QString _has_early_error_log ;
-static bool _early_boot = true ;
-
 void utility::applicationStarted()
 {
-	_early_boot = false ;
+	utility::miscOptions::instance().doneStarting() ;
 
-	if( !_has_early_error_log.isEmpty() ){
+	const auto& m = utility::miscOptions::instance() ;
 
-		utility::enableDebug( true ) ;
+	const auto& e = m.getStartingLogs() ;
+
+	if( !e.isEmpty() ){
+
+		utility::miscOptions::instance().setEnableDebug( true ) ;
 
 		QString a = "***********Start early logs************" ;
 		QString b = "\n\n***********End early logs*****************" ;
 
-		_set_debug_window_text( a + _has_early_error_log + b ) ;
+		_set_debug_window_text( a + e + b ) ;
 
 		_show_debug_window() ;
 	}
 }
 
-bool utility::earlyBoot()
-{
-	return _early_boot ;
-}
-
 void utility::debug::showDebugWindow( const QString& e )
 {
-	utility::enableDebug( true ) ;
+	utility::miscOptions::instance().setEnableDebug( true ) ;
 	_build_debug_msg( e ) ;
 	_show_debug_window() ;
 }
 
 void utility::debug::logErrorWhileStarting( const QString& e )
 {
-	_has_early_error_log += "\n\n" + e ;
+	utility::miscOptions::instance().appendLogs( "\n\n" + e ) ;
 }
 
 utility::debug utility::debug::operator<<( int e )
@@ -483,13 +442,15 @@ static engines::engine::exe_args siriPolkitExe()
 
 		return {} ;
 	}else{
-		return { exe,{ siriPolkitPath,utility::helperSocketPath(),"fork" } } ;
+		return { exe,{ siriPolkitPath,utility::miscOptions::instance().getSocketPath(),"fork" } } ;
 	}
 }
 
 static ::Task::future< utility::Task >& _start_siripolkit( const engines::engine::exe_args_const& e )
 {
-	_cookie = crypto::getRandomData( 16 ).toHex() ;
+	auto m = crypto::getRandomData( 16 ).toHex() ;
+
+	utility::miscOptions::instance().setCookie( m ) ;
 
 	return ::Task::run( [ = ]{
 
@@ -497,7 +458,7 @@ static ::Task::future< utility::Task >& _start_siripolkit( const engines::engine
 				      e.args,
 				      -1,
 				      utility::systemEnvironment(),
-				      _cookie,
+				      m,
 				      [](){},
 				      false ) ;
 	} ) ;
@@ -505,7 +466,9 @@ static ::Task::future< utility::Task >& _start_siripolkit( const engines::engine
 
 bool utility::enablePolkit()
 {
-	if( _use_polkit ){
+	const auto& m = utility::miscOptions::instance() ;
+
+	if( m.usePolkit() ){
 
 		return true ;
 	}
@@ -514,29 +477,31 @@ bool utility::enablePolkit()
 
 	if( !exe.exe.isEmpty() ){
 
-		auto socketPath = utility::helperSocketPath() ;
+		const auto& socketPath = m.getSocketPath() ;
 
 		if( utility::unwrap( _start_siripolkit( exe ) ).success() ){
 
-			_use_polkit = true ;
+			utility::miscOptions::instance().setUsePolkit( true ) ;
 
-			while( !utility::pathExists( socketPath ) ){
+			while( utility::pathNotExists( socketPath ) ){
 
 				utility::waitForOneSecond() ;
 			}
 		}
 	}
 
-	return _use_polkit ;
+	return m.usePolkit() ;
 }
 
 void utility::initGlobals()
 {
 	settings::instance().scaleGUI() ;
 
-	utility::setGUIThread() ;
+	auto& m = utility::miscOptions::instance() ;
 
-	utility::enableDebug( settings::instance().showDebugWindowOnStartup() ) ;
+	m.setCurrentThreadAsMain() ;
+
+	m.setEnableDebug( settings::instance().showDebugWindowOnStartup() ) ;
 
 	#ifdef Q_OS_LINUX
 
@@ -544,12 +509,14 @@ void utility::initGlobals()
 
 		QString a = "/tmp/SiriKali-" + QString::number( uid ) ;
 
-		_polkit_socket_path = a + "/siriPolkit.socket" ;
+		auto b = a + "/siriPolkit.socket" ;
+
+		utility::miscOptions::instance().setPolkitPath( b ) ;
 
 		QDir e ;
 
 		e.remove( a ) ;
-		e.rmdir( _polkit_socket_path ) ;
+		e.rmdir( b ) ;
 
 		e.mkpath( a ) ;
 
@@ -560,21 +527,13 @@ void utility::initGlobals()
 	#endif
 }
 
-QString utility::helperSocketPath()
-{
-	return _polkit_socket_path ;
-}
-
-bool utility::useSiriPolkit()
-{
-	return _use_polkit ;
-}
-
 void utility::quitHelper()
 {
-	#ifdef Q_OS_LINUX
+	if( utility::platformIsLinux() ){
 
-		auto e = utility::helperSocketPath() ;
+		const auto& w = utility::miscOptions::instance() ;
+
+		auto e = w.getSocketPath() ;
 
 		if( utility::pathExists( e ) ){
 
@@ -588,7 +547,7 @@ void utility::quitHelper()
 
 					SirikaliJson json( []( const QString& e ){ utility::debug() << e ; } ) ;
 
-					json[ "cookie" ]   = _cookie ;
+					json[ "cookie" ]   = w.getCookie() ;
 					json[ "password" ] = "" ;
 					json[ "command" ]  = "exit" ;
 					json[ "args" ]     = QStringList() ;
@@ -604,8 +563,8 @@ void utility::quitHelper()
 
 		QDir m ;
 		m.remove( a ) ;
-		m.rmdir( _polkit_socket_path ) ;
-	#endif
+		m.rmdir( w.getSocketPath() ) ;
+	}
 }
 
 ::Task::future<bool>& utility::openPath( const QString& path,const QString& opener )
@@ -1297,24 +1256,9 @@ void utility::setWindowsMountPointOptions( QWidget * obj,QLineEdit * e,QPushButt
 	_setWindowsMountMountOptions( obj,e,s ) ;
 }
 
-void utility::setGUIThread()
-{
-	_main_gui_thread = QThread::currentThread() ;
-}
-
-bool utility::runningOnGUIThread()
-{
-	return QThread::currentThread() == _main_gui_thread ;
-}
-
-bool utility::runningOnBackGroundThread()
-{
-	return QThread::currentThread() != _main_gui_thread ;
-}
-
 void utility::runInUiThread( std::function< void() > function )
 {
-	runInThread::instance( _main_gui_thread,std::move( function ) ) ;
+	runInThread::instance( utility::miscOptions::instance().getMainGUIThread(),std::move( function ) ) ;
 }
 
 void utility::waitForOneSecond()
@@ -1324,7 +1268,7 @@ void utility::waitForOneSecond()
 
 void utility::wait( int time )
 {
-	if( utility::runningOnBackGroundThread() ){
+	if( utility::miscOptions::instance().runningOnBackGroundThread() ){
 
 		utility::Task::wait( time ) ;
 	}else{
@@ -1354,7 +1298,7 @@ static bool _wait_for_finished( QProcess& e,int timeOut,Function wait )
 
 bool utility::waitForFinished( QProcess& e,int timeOut )
 {
-	if( utility::runningOnGUIThread() ){
+	if( utility::miscOptions::instance().runningOnGUIThread() ){
 
 		return _wait_for_finished( e,timeOut,[](){ utility::Task::suspendForOneSecond() ; } ) ;
 	}else{
@@ -1476,7 +1420,7 @@ std::function< void( const QString& ) > utility::jsonLogger()
 {
 	return []( const QString& e ){
 
-		if( utility::earlyBoot() ){
+		if( utility::miscOptions::instance().starting() ){
 
 			if( e.startsWith( "Error" ) ){
 
