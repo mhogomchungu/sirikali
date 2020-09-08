@@ -65,8 +65,8 @@ public:
 	}
 private slots :
 	void start() ;
-	virtual void silenceWarning() ;
 private:
+	virtual void silenceWarning() ;
 	std::function< int( secrets& ) > m_function ;
 	secrets m_secrets ;
 } ;

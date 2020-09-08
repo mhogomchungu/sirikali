@@ -243,3 +243,10 @@ version 1.4.2(December 18,2019)
    version 1.4.6(August 03,2020)
     [ALL]
 -- Fix a crash when trying to unlock volume by clicking the "mount volume" button.
+
+   version 1.4.7(Unreleased)
+   [ALL]
+-- Make the UI more user friendly to ssh based backends by using texts that make most sense
+   in this backend.
+-- Make CLI interface work when working in a none GUI environment by using
+   QCoreApplication instance instead of QApplication instance.
