@@ -95,7 +95,7 @@ private :
 	void setUiLikeSsh( const QString& cipherPath,const engines::engine& engine ) ;
 	void setDefaultUI() ;
 	QStringList readAllKeys() ;
-	favorites::entry getEntry( int ) ;
+	const favorites::entry& getEntry( int ) ;
 	QString getExistingFile( const QString& ) ;
 	QString getExistingDirectory( const QString& ) ;
 	void closeEvent( QCloseEvent * ) ;

@@ -941,7 +941,7 @@ void favorites2::toggleAutoMount()
 
 		auto row = table->currentRow() ;
 
-		auto e = this->getEntry( row ) ;
+		const auto& e = this->getEntry( row ) ;
 
 		if( !e.volumePath.isEmpty() ){
 
@@ -974,7 +974,7 @@ void favorites2::edit()
 
 		this->clearEditVariables() ;
 
-		auto entry = volumes[ size_t( m_editRow ) ] ;
+		const auto& entry = volumes[ size_t( m_editRow ) ] ;
 
 		m_ui->lineEditEncryptedFolderPath->setText( entry.volumePath ) ;
 		m_ui->lineEditMountPath->setText( entry.mountPointPath ) ;
@@ -1135,7 +1135,7 @@ void favorites2::updateFavorite( bool edit )
 
 	if( edit ){
 
-		auto f = this->getEntry( m_editRow ) ;
+		const auto& f = this->getEntry( m_editRow ) ;
 
 		favorites::instance().replaceFavorite( f,e ) ;
 	}else{
@@ -1270,17 +1270,19 @@ void favorites2::checkFavoritesConsistency()
 {	
 }
 
-favorites::entry favorites2::getEntry( int row )
+const favorites::entry& favorites2::getEntry( int row )
 {
 	size_t m = size_t( row ) ;
 
-	const auto& volumes = favorites::instance().readFavorites() ;
+	const auto& ff = favorites::instance() ;
+
+	const auto& volumes = ff.readFavorites() ;
 
 	if( m < volumes.size() ){
 
 		return volumes[ m ] ;
 	}else{
-		return {} ;
+		return ff.unknown() ;
 	}
 }
 
