@@ -814,14 +814,15 @@ void favorites2::tabChanged( int index )
 
 	}else if( index == 1 ){
 
+		/*
+		 * Add/Edit tab
+		 */
+
 		m_ui->lineEditVolumePath->clear() ;
 		m_ui->lineEditPassword->clear() ;
 
 		m_ui->pbAddToWallets->setEnabled( !m_ui->rbNone->isChecked() ) ;
 
-		/*
-		 * Add/Edit tab
-		 */
 		if( m_editMode ){
 
 			m_ui->pbEdit->setEnabled( true ) ;
@@ -863,11 +864,11 @@ void favorites2::tabChanged( int index )
 			this->setControlsAvailability( false,true ) ;
 		}
 	}else{
-		m_ui->lineEditVolumePath->clear() ;
-		m_ui->lineEditPassword->clear() ;
 		/*
 		 * Settings
 		 */
+		m_ui->lineEditVolumePath->clear() ;
+		m_ui->lineEditPassword->clear() ;
 	}
 }
 
@@ -1102,6 +1103,18 @@ void favorites2::updateFavorite( bool edit )
 
 		e.identityAgent = m_ui->lineEditConfigFilePath->toPlainText() ;
 		e.identityFile  = m_ui->lineEditIdleTimeOut->toPlainText() ;
+
+		auto a = m_ui->lineEditSshPortNumber->text() ;
+
+		if( !a.isEmpty() ){
+
+			if( e.mountOptions.isEmpty() ){
+
+				e.mountOptions = "port=" + a ;
+			}else{
+				e.mountOptions += ",port=" + a ;
+			}
+		}
 	}else{
 		e.configFilePath = m_ui->lineEditConfigFilePath->toPlainText() ;
 		e.idleTimeOut    = m_ui->lineEditIdleTimeOut->toPlainText() ;
@@ -1308,7 +1321,11 @@ void favorites2::setVolumeProperties( const favorites::entry& e )
 		m_ui->textEditIdleTimeOut->setText( e.identityFile ) ;
 
 		m_ui->pbIdentityFile->setVisible( true ) ;
+
+		this->setUiLikeSsh( engine.cipherFolder(),engine.get() ) ;
 	}else{
+		this->setDefaultUI() ;
+
 		m_ui->pbIdentityFile->setVisible( false ) ;
 
 		m_ui->label_3->setText( tr( "Config File Path" ) ) ;
@@ -1353,6 +1370,29 @@ void favorites2::setUiLikeSsh( const QString& cipherPath,const engines::engine& 
 	m_ui->labelName ->setText( tr( "Remote Ssh Server Address\n(Example: woof@example.com:/remote/path)" ) ) ;
 	m_ui->labelCofigFilePath->setText( tr( "SSH_AUTH_SOCK Socket Path (Optional)" ) ) ;
 	m_ui->labelIdleTimeOut->setText( tr( "IdentityFile Path (Optional)" ) ) ;
+
+	m_ui->lineEditSshPortNumber->setEnabled( true ) ;
+	m_ui->labelPortyNumber->setEnabled( true ) ;
+	m_ui->labelPortyNumber->setText( tr( "Ssh Port Number" ) ) ;
+
+	if( s.contains( "port=",Qt::CaseInsensitive ) ){
+
+		QStringList ss ;
+
+		for( const auto& it : utility::split( s,',' ) ){
+
+			if( it.startsWith( "port=",Qt::CaseInsensitive ) ){
+
+				m_ui->lineEditSshPortNumber->setText( it.mid( 5 ) ) ;
+			}else{
+				ss.append( it ) ;
+			}
+		}
+
+		m_ui->lineEditMountOptions->setText( ss.join( ',' ) ) ;
+	}else{
+		m_ui->lineEditSshPortNumber->setText( "22" ) ;
+	}
 }
 
 void favorites2::setDefaultUI()
@@ -1361,6 +1401,10 @@ void favorites2::setDefaultUI()
 	m_ui->labelCofigFilePath->setText( tr( "Config File Path (Optional)" ) ) ;
 	m_ui->labelIdleTimeOut->setText( tr( "Idle TimeOut (Optional)" ) ) ;
 	m_ui->lineEditMountOptions->clear() ;
+	m_ui->lineEditSshPortNumber->clear() ;
+	m_ui->lineEditSshPortNumber->setEnabled( false ) ;
+	m_ui->labelPortyNumber->setEnabled( false ) ;
+	m_ui->labelPortyNumber->setText( tr( "Not Used" ) ) ;
 }
 
 void favorites2::ShowUI()
