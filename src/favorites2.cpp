@@ -847,6 +847,8 @@ void favorites2::tabChanged( int index )
 				m_ui->lineEditMountPath->setText( m_settings.mountPath() ) ;
 			}
 
+			this->setDefaultUI() ;
+
 			m_ui->pbAdd->setFocus() ;
 		}
 
@@ -855,6 +857,9 @@ void favorites2::tabChanged( int index )
 		/*
 		 * Manage keys in wallets
 		 */
+
+		m_editMode = false ;
+
 		auto w = m_settings.autoMountBackEnd() ;
 
 		if( w.isValid() ){
@@ -867,6 +872,9 @@ void favorites2::tabChanged( int index )
 		/*
 		 * Settings
 		 */
+
+		m_editMode = false ;
+
 		m_ui->lineEditVolumePath->clear() ;
 		m_ui->lineEditPassword->clear() ;
 	}
@@ -987,7 +995,9 @@ void favorites2::edit()
 
 		auto ss = m_ui->lineEditEncryptedFolderPath->toPlainText() ;
 
-		const auto& engine = engines::instance().getByPaths( ss ) ;
+		const auto& engines = engines::instance() ;
+
+		const auto& engine = engines.getByPaths( ss ) ;
 
 		if( engine->known() ){
 
@@ -1000,13 +1010,16 @@ void favorites2::edit()
 			}else{
 				m_ui->lineEditEncryptedFolderPath->setText( engine.cipherFolder() ) ;
 
-				const auto& m = engine->displayName() ;
+				m_ui->lineEditVolumeType->clear() ;
 
-				if( m.isEmpty() ){
+				for( const auto& it : engines.enginesWithNoConfigFile() ){
 
-					m_ui->lineEditVolumeType->setText( engine->name() ) ;
-				}else{
-					m_ui->lineEditVolumeType->setText( m ) ;
+					if( it == engine->name() ){
+
+						m_ui->lineEditVolumeType->setText( engine->uiName() ) ;
+
+						break ;
+					}
 				}
 			}
 		}
@@ -1351,14 +1364,7 @@ void favorites2::setUiLikeSsh( const QString& cipherPath,const engines::engine& 
 {
 	m_ui->lineEditEncryptedFolderPath->setText( cipherPath ) ;
 
-	const auto& d = engine.displayName() ;
-
-	if( d.isEmpty() ){
-
-		m_ui->lineEditVolumeType->setText( engine.name() ) ;
-	}else{
-		m_ui->lineEditVolumeType->setText( d ) ;
-	}
+	m_ui->lineEditVolumeType->setText( engine.uiName() ) ;
 
 	auto s = m_ui->lineEditMountOptions->toPlainText() ;
 
@@ -1403,8 +1409,7 @@ void favorites2::setDefaultUI()
 	m_ui->lineEditMountOptions->clear() ;
 	m_ui->lineEditSshPortNumber->clear() ;
 	m_ui->lineEditSshPortNumber->setEnabled( false ) ;
-	m_ui->labelPortyNumber->setEnabled( false ) ;
-	m_ui->labelPortyNumber->setText( tr( "Not Used" ) ) ;
+	m_ui->labelPortyNumber->clear() ;
 }
 
 void favorites2::ShowUI()

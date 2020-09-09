@@ -590,7 +590,6 @@ public:
 
 		const engines::version& installedVersion() const ;
 
-		const QString& displayName() const ;
 		const QString& sshOptions() const ;
 		const QString& executableFullPath() const ;
 		const QString& minimumVersion() const ;
@@ -599,6 +598,8 @@ public:
 		const QString& releaseURL() const ;
 		const QString& executableName() const ;
 		const QString& name() const ;
+		const QString& displayName() const ;
+		const QString& uiName() const ;
 		const QString& configFileName() const ;
 		const QString& keyFileArgument() const ;
 		const QString& mountControlStructure() const ;

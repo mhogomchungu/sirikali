@@ -676,6 +676,18 @@ const QString& engines::engine::displayName() const
 	return m_Options.displayName ;
 }
 
+const QString& engines::engine::uiName() const
+{
+	const auto& s = this->displayName() ;
+
+	if( s.isEmpty() ){
+
+		return this->name() ;
+	}else {
+		return s ;
+	}
+}
+
 const QString& engines::engine::sshOptions() const
 {
 	return m_Options.sshOptions ;
