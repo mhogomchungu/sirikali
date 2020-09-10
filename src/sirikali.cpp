@@ -1159,7 +1159,35 @@ keyDialog::volumeList sirikali::autoUnlockVolumes( favorites::volumeList ss,
 
 	for( const auto& it : l ){
 
-		const auto key = m->readValue( it.volEntry.favorite.volumePath ) ;
+		auto key = [ & ](){
+
+			const auto& e = it.volEntry.favorite.volumePath ;
+
+			if( e.contains( ' ' ) ){
+
+				const auto& engine = engines::instance().getByPaths( e ) ;
+
+				if( engine->known() ){
+
+					auto ss = engine->name() + " " + engine.cipherFolder() ;
+
+					auto ee = m->readValue( ss ) ;
+
+					if( ee.isEmpty() ){
+
+						ss = engine->name().toLower() + " " + engine.cipherFolder() ;
+
+						ee = m->readValue( ss ) ;
+					}
+
+					return ee ;
+				}else{
+					return m->readValue( e ) ;
+				}
+			}else{
+				return m->readValue( e ) ;
+			}
+		}() ;
 
 		if( key.isEmpty() ){
 

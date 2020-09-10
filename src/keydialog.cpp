@@ -1013,7 +1013,7 @@ void keyDialog::pbOpen()
 
 		}else if( internal || win ){
 
-			w = m_secrets.walletBk( LXQt::Wallet::BackEnd::internal ).getKey( m_path,this ) ;
+			w = m_secrets.walletBk( bkwallet ).getKey( m_path,this ) ;
 
 			if( w.notConfigured ){
 
@@ -1338,6 +1338,7 @@ void keyDialog::setKeyInWallet()
 
 	auto w = [ & ](){
 
+
 		if( m_walletType == _kwallet() ){
 
 			return m_secrets.walletBk( LXQt::Wallet::BackEnd::kwallet ) ;
@@ -1346,9 +1347,13 @@ void keyDialog::setKeyInWallet()
 
 			return m_secrets.walletBk( LXQt::Wallet::BackEnd::libsecret ) ;
 
-		}else if ( m_walletType == _OSXKeyChain() ){
+		}else if( m_walletType == _OSXKeyChain() ){
 
 			return m_secrets.walletBk( LXQt::Wallet::BackEnd::osxkeychain ) ;
+
+		}else if( m_walletType == _windowsDPAPI() ){
+
+			return m_secrets.walletBk( LXQt::Wallet::BackEnd::windows_dpapi ) ;
 		}else{
 			return m_secrets.walletBk( LXQt::Wallet::BackEnd::internal ) ;
 		}
@@ -1356,7 +1361,8 @@ void keyDialog::setKeyInWallet()
 
 	auto m = [ & ](){
 
-		if( w->backEnd() == LXQt::Wallet::BackEnd::internal ){
+		if( w->backEnd() == LXQt::Wallet::BackEnd::internal ||
+		    w->backEnd() == LXQt::Wallet::BackEnd::windows_dpapi ){
 
 			return w.openSync( [](){ return true ; },
 					   [ this ](){ this->hide() ; },
@@ -1743,7 +1749,8 @@ void keyDialog::cbActicated( QString e )
 							 _t( _kwallet() ),
 							 _t( _gnomeWallet() ),
 							 _t( _internalWallet() ),
-							 _t( _OSXKeyChain() ) ) ){
+							 _t( _OSXKeyChain() ),
+							 _t( _windowsDPAPI() ) ) ){
 
 		if( m_ui->lineEditMountPoint->text().isEmpty() ){
 
@@ -1775,6 +1782,10 @@ void keyDialog::cbActicated( QString e )
 		}else if( e == _OSXKeyChain() ){
 
 			m_ui->lineEditKey->setText( _OSXKeyChain() ) ;
+
+		}else if( e == _windowsDPAPI() ){
+
+			m_ui->lineEditKey->setText( _windowsDPAPI() ) ;
 		}
 
 		_showVisibleKeyOption( false ) ;
