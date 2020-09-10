@@ -274,6 +274,16 @@ favorites2::favorites2( QWidget * parent,
 		}
 	} ) ;
 
+	connect( &m_volPathFav,&QMenu::triggered,[ this ]( QAction * ac ){
+
+		m_ui->lineEditVolumePath->setText( ac->objectName() ) ;
+	} ) ;
+
+	connect( m_ui->pbVolumePathFromFavorites,&QPushButton::clicked,[ this ](){
+
+		m_volPathFav.exec() ;
+	} ) ;
+
 	using bk = LXQt::Wallet::BackEnd ;
 
 	m_ui->rbNone->setEnabled( true ) ;
@@ -868,6 +878,17 @@ void favorites2::tabChanged( int index )
 		}else {
 			this->setControlsAvailability( false,true ) ;
 		}
+
+		m_volPathFav.clear() ;
+
+		for( const auto& it : favorites::instance().readFavorites() ){
+
+			const auto& s = it.volumePath ;
+
+			m_volPathFav.addAction( s )->setObjectName( s ) ;
+		}
+
+		m_ui->pbVolumePathFromFavorites->setMenu( &m_volPathFav ) ;
 	}else{
 		/*
 		 * Settings

@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="FavoritesList">
     <attribute name="title">
@@ -1189,7 +1189,7 @@
        <rect>
         <x>260</x>
         <y>340</y>
-        <width>421</width>
+        <width>411</width>
         <height>31</height>
        </rect>
       </property>
@@ -1218,7 +1218,7 @@
        <rect>
         <x>260</x>
         <y>400</y>
-        <width>421</width>
+        <width>411</width>
         <height>31</height>
        </rect>
       </property>
@@ -1231,7 +1231,7 @@
        <rect>
         <x>260</x>
         <y>432</y>
-        <width>421</width>
+        <width>411</width>
         <height>31</height>
        </rect>
       </property>
@@ -1242,7 +1242,20 @@
      <widget class="QPushButton" name="pbVolumePath">
       <property name="geometry">
        <rect>
-        <x>680</x>
+        <x>670</x>
+        <y>340</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pbVolumePathFromFavorites">
+      <property name="geometry">
+       <rect>
+        <x>700</x>
         <y>340</y>
         <width>31</width>
         <height>31</height>
@@ -1287,7 +1300,7 @@
      <widget class="QCheckBox" name="cbShowPassword">
       <property name="geometry">
        <rect>
-        <x>680</x>
+        <x>670</x>
         <y>400</y>
         <width>31</width>
         <height>31</height>
@@ -1303,7 +1316,7 @@
         <x>-10</x>
         <y>0</y>
         <width>761</width>
-        <height>471</height>
+        <height>481</height>
        </rect>
       </property>
       <property name="autoFillBackground">

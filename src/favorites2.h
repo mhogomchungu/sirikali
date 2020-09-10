@@ -104,6 +104,8 @@ private :
 	Ui::favorites2 * m_ui ;
 	secrets& m_secrets ;
 	QWidget * m_parentWidget ;
+	QMenu m_volPathFav ;
+
 	int m_editRow ;
 	bool m_reverseMode = false ;
 	bool m_volumeNeedNoPassword = false ;
