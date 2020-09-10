@@ -806,6 +806,7 @@ void favorites2::setControlsAvailability( bool e,bool m )
 	m_ui->lineEditVolumePath->setEnabled( e ) ;
 	m_ui->lineEditPassword->setEnabled( e ) ;
 	m_ui->pbVolumePath->setEnabled( e ) ;
+	m_ui->pbVolumePathFromFavorites->setEnabled( e ) ;
 	m_ui->cbShowPassword->setEnabled( e ) ;
 }
 
