@@ -1119,13 +1119,17 @@ void favorites2::updateFavorite( bool edit )
 
 		auto a = m_ui->lineEditSshPortNumber->text() ;
 
-		if( !a.isEmpty() ){
+		auto b = "port=" + a ;
+
+		if( !a.isEmpty() && a != "22" ){
+
+			e.volumePath = utility::likeSshaddPortNumber( e.volumePath,a ) ;
 
 			if( e.mountOptions.isEmpty() ){
 
-				e.mountOptions = "port=" + a ;
+				e.mountOptions = b ;
 			}else{
-				e.mountOptions += ",port=" + a ;
+				e.mountOptions += "," + b ;
 			}
 		}
 	}else{

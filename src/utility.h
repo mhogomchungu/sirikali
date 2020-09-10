@@ -425,6 +425,9 @@ namespace utility
 
 	const QProcessEnvironment& systemEnvironment() ;
 
+	QString likeSshaddPortNumber( const QString& path,const QString& port ) ;
+	QString likeSshRemovePortNumber( const QString& path ) ;
+
 	QString userName() ;
 
 	QString configFilePath( QWidget *,const QString& ) ;

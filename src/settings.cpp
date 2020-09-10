@@ -1049,6 +1049,16 @@ QString settings::ykchalrespArguments()
 	return m_settings.value( "YkchalrespArguments" ).toString() ;
 }
 
+QString settings::portSeparator()
+{
+	if( !m_settings.contains( "PortSeparator" ) ){
+
+		m_settings.setValue( "PortSeparator","####" ) ;
+	}
+
+	return m_settings.value( "PortSeparator" ).toString() ;
+}
+
 bool settings::yubikeyRemoveNewLine()
 {
 	if( !m_settings.contains( "yubikeyRemoveNewLine" ) ){

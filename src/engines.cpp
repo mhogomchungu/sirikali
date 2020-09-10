@@ -797,8 +797,10 @@ engines::engine::status engines::engine::passAllRequirenments( const engines::en
 
 void engines::engine::updateOptions( engines::engine::cmdArgsList& e,bool s ) const
 {
-	Q_UNUSED( e )
-	Q_UNUSED( s )
+	if( !s && this->likeSsh() ){
+
+		e.cipherFolder = utility::likeSshRemovePortNumber( e.cipherFolder ) ;
+	}
 }
 
 void engines::engine::updateOptions( engines::engine::commandOptions& opts,

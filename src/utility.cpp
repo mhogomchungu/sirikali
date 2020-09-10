@@ -1403,3 +1403,13 @@ std::function< void( const QString& ) > utility::jsonLogger()
 		}
 	} ;
 }
+
+QString utility::likeSshaddPortNumber( const QString& path,const QString& port )
+{
+	return path + settings::instance().portSeparator() + port ;
+}
+
+QString utility::likeSshRemovePortNumber( const QString& path )
+{
+	return utility::split( path,settings::instance().portSeparator() ).at( 0 ) ;
+}

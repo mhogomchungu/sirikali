@@ -135,6 +135,7 @@ public:
 	void windowsKeysStorageData( const QByteArray& ) ;
 	QString externalPluginExecutable() ;
 	QString ykchalrespArguments() ;
+	QString portSeparator() ;
 	bool yubikeyRemoveNewLine() ;
 	void setExternalPluginExecutable( const QString& ) ;
 	bool enableRevealingPasswords() ;
