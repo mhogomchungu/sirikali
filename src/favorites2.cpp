@@ -41,10 +41,9 @@ Task::future< void >& favorites2::deleteKey( secrets::wallet& wallet,const QStri
 
 Task::future< bool >& favorites2::addKey( secrets::wallet& wallet,
 					  const QString& id,
-					  const QString& key,
-					  const QString& comment )
+					  const QString& key )
 {
-	return Task::run( [ &wallet,id,key,comment ](){
+	return Task::run( [ &wallet,id,key ](){
 
 		if( wallet->addKey( id,key ) ){
 
@@ -648,7 +647,13 @@ void favorites2::addkeyToWallet()
 
 	m_ui->pbAddKeyToWallet->setEnabled( false ) ;
 
-	favorites2::addKey( m_wallet.get(),a,b,"Nil" ).then( [ this,a ]( bool s ){
+	m_ui->tableWidgetWallet->setEnabled( false ) ;
+	m_ui->pbAddKeyToWallet->setEnabled( false ) ;
+
+	favorites2::addKey( m_wallet.get(),a,b ).then( [ this,a ]( bool s ){
+
+		m_ui->tableWidgetWallet->setEnabled( true ) ;
+		m_ui->pbAddKeyToWallet->setEnabled( true ) ;
 
 		if( s ){
 
@@ -666,7 +671,11 @@ void favorites2::addkeyToWallet()
 
 void favorites2::deleteKeyFromWallet( const QString& id )
 {
+	m_ui->tableWidgetWallet->setEnabled( false ) ;
+	m_ui->pbAddKeyToWallet->setEnabled( false ) ;
 	favorites2::deleteKey( m_wallet.get(),id ).await() ;
+	m_ui->pbAddKeyToWallet->setEnabled( true ) ;
+	m_ui->tableWidgetWallet->setEnabled( true ) ;
 }
 
 QStringList favorites2::readAllKeys()

@@ -1385,7 +1385,7 @@ void keyDialog::setKeyInWallet()
 
 		if( w->readValue( id ).isEmpty() ){
 
-			if( favorites2::addKey( w,id,passphrase,"Nil" ).await() ){
+			if( favorites2::addKey( w,id,passphrase ).await() ){
 
 				m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
 				m_ui->lineEditKey->setText( passphrase ) ;

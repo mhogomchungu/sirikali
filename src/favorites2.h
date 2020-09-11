@@ -41,8 +41,7 @@ public:
 
 	static Task::future< bool >& addKey( secrets::wallet&,
 					     const QString& id,
-					     const QString& key,
-					     const QString& comment ) ;
+					     const QString& key ) ;
 
 	static favorites2& instance( QWidget * parent,
 				     secrets& wallet,
