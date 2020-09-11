@@ -309,7 +309,7 @@ void keyDialog::setUpInitUI()
 
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
 
-	m_ui->cbKeyType->addItem( tr( "Key" ) ) ;
+	m_ui->cbKeyType->addItem( tr( "Password" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "KeyFile" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "Key+KeyFile" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "HMAC+KeyFile" ) ) ;
@@ -1670,7 +1670,7 @@ void keyDialog::cbActicated( QString e )
 		m_ui->pbkeyOption->setVisible( !e ) ;
 	} ;
 
-	if( e == _t( tr( "Key" ) ) || e == _t( tr( "YubiKey Challenge/Response" ) ) ){
+	if( e == _t( tr( "Password" ) ) || e == _t( tr( "YubiKey Challenge/Response" ) ) ){
 
 		this->key() ;
 
@@ -1834,7 +1834,7 @@ void keyDialog::key()
 
 	m_ui->pbkeyOption->setIcon( QIcon( ":/passphrase.png" ) ) ;
 	m_ui->pbkeyOption->setEnabled( false ) ;
-	m_ui->label->setText( tr( "Key" ) ) ;
+	m_ui->label->setText( tr( "Password" ) ) ;
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
 	m_ui->checkBoxVisibleKey->setChecked( false ) ;
 	m_ui->lineEditKey->clear() ;
