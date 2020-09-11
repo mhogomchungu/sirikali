@@ -520,7 +520,7 @@ Il doit se terminer avec un des termes suivants : &quot;%1&quot;</translation>
         <translation>Déchiffrer le volume Fscrypt avec un fichier de clé 32 octets (256-Bit) spécifique.</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="722"/>
+        <location filename="../src/favorites2.cpp" line="729"/>
         <source>The Password Is &quot;%1&quot;</source>
         <translation>Le mot de passe est &quot;%1&quot;</translation>
     </message>
@@ -967,13 +967,13 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="145"/>
-        <location filename="../src/favorites2.cpp" line="1372"/>
+        <location filename="../src/favorites2.cpp" line="1384"/>
         <source>Config File Path</source>
         <translation>Chemin du fichier de configuration</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="177"/>
-        <location filename="../src/favorites2.cpp" line="1373"/>
+        <location filename="../src/favorites2.cpp" line="1385"/>
         <source>Idle Time Out</source>
         <translation>Délai d&apos;inactivité</translation>
     </message>
@@ -1053,7 +1053,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="419"/>
-        <location filename="../src/favorites2.cpp" line="580"/>
+        <location filename="../src/favorites2.cpp" line="577"/>
         <source>Edit</source>
         <translation>Éditer</translation>
     </message>
@@ -1064,25 +1064,25 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="629"/>
-        <location filename="../src/favorites2.cpp" line="1436"/>
+        <location filename="../src/favorites2.cpp" line="1448"/>
         <source>Idle TimeOut (Optional)</source>
         <translation>Délai d&apos;inactivité (optionnel)</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="587"/>
-        <location filename="../src/favorites2.cpp" line="1435"/>
+        <location filename="../src/favorites2.cpp" line="1447"/>
         <source>Config File Path (Optional)</source>
         <translation>Chemin du fichier de configuration (facultatif)</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="545"/>
-        <location filename="../src/favorites2.cpp" line="449"/>
+        <location filename="../src/favorites2.cpp" line="446"/>
         <source>Mount Point Prefix</source>
         <translation>Préfixe du point de montage</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="461"/>
-        <location filename="../src/favorites2.cpp" line="1434"/>
+        <location filename="../src/favorites2.cpp" line="1446"/>
         <source>Encrypted Folder Path</source>
         <translation>Chemin d&apos;accès du répertoire chiffré</translation>
     </message>
@@ -1098,7 +1098,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="854"/>
-        <location filename="../src/favorites2.cpp" line="1410"/>
+        <location filename="../src/favorites2.cpp" line="1422"/>
         <source>Ssh Port Number</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1169,8 +1169,8 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="1278"/>
-        <location filename="../src/favorites2.cpp" line="324"/>
-        <location filename="../src/favorites2.cpp" line="367"/>
+        <location filename="../src/favorites2.cpp" line="321"/>
+        <location filename="../src/favorites2.cpp" line="364"/>
         <source>Change Internal Wallet Password</source>
         <translation>Modifier le mot de passe interne du trousseau</translation>
     </message>
@@ -1220,125 +1220,125 @@ p, li { white-space: pre-wrap; }
         <translation>Fermer &amp;C</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="631"/>
+        <location filename="../src/favorites2.cpp" line="628"/>
         <source>Select A Command Executable</source>
         <translation>Sélectionner une commande à exécuter</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="230"/>
-        <location filename="../src/favorites2.cpp" line="1056"/>
+        <location filename="../src/favorites2.cpp" line="227"/>
+        <location filename="../src/favorites2.cpp" line="1068"/>
         <source>Path To A Config File</source>
         <translation>Chemin vers un fichier de configuration</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="309"/>
-        <location filename="../src/favorites2.cpp" line="387"/>
+        <location filename="../src/favorites2.cpp" line="306"/>
+        <location filename="../src/favorites2.cpp" line="384"/>
         <source>Change Window&apos;s Wallet Password</source>
         <translation>Modifier le mot de passe de trousseau de Windows</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="333"/>
-        <location filename="../src/favorites2.cpp" line="342"/>
-        <location filename="../src/favorites2.cpp" line="351"/>
-        <location filename="../src/favorites2.cpp" line="358"/>
-        <location filename="../src/favorites2.cpp" line="400"/>
-        <location filename="../src/favorites2.cpp" line="413"/>
-        <location filename="../src/favorites2.cpp" line="425"/>
-        <location filename="../src/favorites2.cpp" line="435"/>
+        <location filename="../src/favorites2.cpp" line="330"/>
+        <location filename="../src/favorites2.cpp" line="339"/>
+        <location filename="../src/favorites2.cpp" line="348"/>
+        <location filename="../src/favorites2.cpp" line="355"/>
+        <location filename="../src/favorites2.cpp" line="397"/>
+        <location filename="../src/favorites2.cpp" line="410"/>
+        <location filename="../src/favorites2.cpp" line="422"/>
+        <location filename="../src/favorites2.cpp" line="432"/>
         <source>Not Applicable</source>
         <translation>Non Applicable</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="445"/>
+        <location filename="../src/favorites2.cpp" line="442"/>
         <source>Mount Point Path</source>
         <translation>Chemin du point de montage</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="573"/>
+        <location filename="../src/favorites2.cpp" line="570"/>
         <source>Toggle AutoMount</source>
         <translation>Basculer Montage Auto</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="587"/>
+        <location filename="../src/favorites2.cpp" line="584"/>
         <source>Remove Selected Entry</source>
         <translation>Enlever l&apos;entrée sélectionnée</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="594"/>
+        <location filename="../src/favorites2.cpp" line="591"/>
         <source>Add Entry To Default Wallet</source>
         <translation>Ajouter l&apos;entrée de trousseau par défaut</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="617"/>
+        <location filename="../src/favorites2.cpp" line="614"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="693"/>
+        <location filename="../src/favorites2.cpp" line="700"/>
         <source>Delete Entry</source>
         <translation>Supprimer l&apos;entrée</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="707"/>
+        <location filename="../src/favorites2.cpp" line="714"/>
         <source>Show Password</source>
         <translation>Montrer le mot de passe</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="731"/>
+        <location filename="../src/favorites2.cpp" line="738"/>
         <source>Close Menu</source>
         <translation>Fermer le Menu</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1092"/>
-        <location filename="../src/favorites2.cpp" line="1097"/>
+        <location filename="../src/favorites2.cpp" line="1104"/>
+        <location filename="../src/favorites2.cpp" line="1109"/>
         <source>ERROR!</source>
         <translation>ERREUR!</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1092"/>
+        <location filename="../src/favorites2.cpp" line="1104"/>
         <source>Encrypted Folder Address Field Is Empty</source>
         <translation>Le champ d&apos;adresse du répertoire chiffré est vide</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1097"/>
+        <location filename="../src/favorites2.cpp" line="1109"/>
         <source>Mount Point Path Field Is Empty</source>
         <translation>Le champ du chemin du point de montage est vide</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="269"/>
-        <location filename="../src/favorites2.cpp" line="1211"/>
+        <location filename="../src/favorites2.cpp" line="266"/>
+        <location filename="../src/favorites2.cpp" line="1223"/>
         <source>Path To An Encrypted Folder</source>
         <translation>Chemin d&apos;accès au répertoire chiffré</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1221"/>
+        <location filename="../src/favorites2.cpp" line="1233"/>
         <source>Path To Mount Folder</source>
         <translation>Chemin d&apos;accès au répertoire de montage</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1357"/>
+        <location filename="../src/favorites2.cpp" line="1369"/>
         <source>SSH_AUTH_SOCK Socket Path</source>
         <translation>SSH_AUTH_SOCK Chemin du Socket</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1358"/>
+        <location filename="../src/favorites2.cpp" line="1370"/>
         <source>IdentityFile Path</source>
         <translation>Chemin d&apos;accès de l&apos;IdentityFile</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1404"/>
+        <location filename="../src/favorites2.cpp" line="1416"/>
         <source>Remote Ssh Server Address
 (Example: woof@example.com:/remote/path)</source>
         <translation>Adresse distante du serveur SSH
 (Exemple: woof@example.com:/remote/path)</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1405"/>
+        <location filename="../src/favorites2.cpp" line="1417"/>
         <source>SSH_AUTH_SOCK Socket Path (Optional)</source>
         <translation>SSH_AUTH_SOCK Chemin du Socket (Optionnel)</translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1406"/>
+        <location filename="../src/favorites2.cpp" line="1418"/>
         <source>IdentityFile Path (Optional)</source>
         <translation>Chemin d&apos;accès de l&apos;IdentityFile (Optionnel)</translation>
     </message>
@@ -1550,9 +1550,6 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/keydialog.ui" line="58"/>
-        <location filename="../src/keydialog.cpp" line="312"/>
-        <location filename="../src/keydialog.cpp" line="1673"/>
-        <location filename="../src/keydialog.cpp" line="1837"/>
         <source>Key</source>
         <translation>Clé</translation>
     </message>
@@ -1584,6 +1581,9 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/keydialog.ui" line="371"/>
+        <location filename="../src/keydialog.cpp" line="312"/>
+        <location filename="../src/keydialog.cpp" line="1673"/>
+        <location filename="../src/keydialog.cpp" line="1837"/>
         <source>Password</source>
         <translation>Mot de passe</translation>
     </message>
@@ -2195,20 +2195,20 @@ Le &quot;format allégé&quot; est devenu le mode par défaut des systèmes bas�
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="850"/>
-        <location filename="../src/sirikali.cpp" line="1244"/>
-        <location filename="../src/sirikali.cpp" line="2009"/>
+        <location filename="../src/sirikali.cpp" line="1237"/>
+        <location filename="../src/sirikali.cpp" line="2002"/>
         <source>ERROR</source>
         <translation>ERREUR</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1244"/>
+        <location filename="../src/sirikali.cpp" line="1237"/>
         <source>Failed To Read Volume Properties</source>
         <translation>Echec de la lecture des propriétés du volume</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1226"/>
-        <location filename="../src/sirikali.cpp" line="1246"/>
-        <location filename="../src/sirikali.cpp" line="1270"/>
+        <location filename="../src/sirikali.cpp" line="1219"/>
+        <location filename="../src/sirikali.cpp" line="1239"/>
+        <location filename="../src/sirikali.cpp" line="1263"/>
         <source>INFORMATION</source>
         <translation>INFORMATION</translation>
     </message>
@@ -2254,65 +2254,65 @@ Merci de reporter ce bug important.</translation>
         <translation>&quot;%1&quot; Répertoire devant être autorisé en écriture</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1306"/>
+        <location filename="../src/sirikali.cpp" line="1299"/>
         <source>Unmount</source>
         <translation>Démonter</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1310"/>
+        <location filename="../src/sirikali.cpp" line="1303"/>
         <source>Add To Favorites</source>
         <translation>Ajouter aux favoris</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1725"/>
+        <location filename="../src/sirikali.cpp" line="1718"/>
         <source>Select A File To Be Mounted</source>
         <translation>Sélectiionner un fichier à monter</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="2079"/>
+        <location filename="../src/sirikali.cpp" line="2072"/>
         <source>Failed To Unmount 1 Volume.</source>
         <translation>Echec de démontage d&apos;un volume.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="2081"/>
+        <location filename="../src/sirikali.cpp" line="2074"/>
         <source>Failed To Unmount %1 Volumes.</source>
         <translation>Echec de démontage de %1 volumes.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1304"/>
+        <location filename="../src/sirikali.cpp" line="1297"/>
         <source>Open Folder</source>
         <translation>Ouvrir Répertoire</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1308"/>
+        <location filename="../src/sirikali.cpp" line="1301"/>
         <source>Properties</source>
         <translation>Propriétés</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1314"/>
+        <location filename="../src/sirikali.cpp" line="1307"/>
         <source>Close Menu</source>
         <translation>Fermer le Menu</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="330"/>
-        <location filename="../src/sirikali.cpp" line="1412"/>
-        <location filename="../src/sirikali.cpp" line="2079"/>
-        <location filename="../src/sirikali.cpp" line="2081"/>
+        <location filename="../src/sirikali.cpp" line="1405"/>
+        <location filename="../src/sirikali.cpp" line="2072"/>
+        <location filename="../src/sirikali.cpp" line="2074"/>
         <source>WARNING</source>
         <translation>Attention</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1413"/>
+        <location filename="../src/sirikali.cpp" line="1406"/>
         <source>Could Not Open Mount Point Because &quot;%1&quot; Tool Does Not Appear To Be Working Correctly.</source>
         <translation>Impossible d&apos;ouvrir le point de montage parce que l&apos;outil &quot;%1&quot; ne semble pas fonctionner correctement.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1462"/>
+        <location filename="../src/sirikali.cpp" line="1455"/>
         <source>&amp;Quit</source>
         <translation>&amp;Quitter</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1722"/>
+        <location filename="../src/sirikali.cpp" line="1715"/>
         <source>Select An Encrypted Volume Directory</source>
         <translation>Sélectionner un répertoire de volume</translation>
     </message>
