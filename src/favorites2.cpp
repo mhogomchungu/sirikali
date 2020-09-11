@@ -79,9 +79,7 @@ favorites2::favorites2( QWidget * parent,
 
 	m_settings.setParent( parent,&m_parentWidget,this ) ;
 
-	auto table = m_ui->tableWidget ;
-
-	table->horizontalHeader()->setStretchLastSection( true ) ;
+	m_ui->tableWidget->horizontalHeader()->setStretchLastSection( true ) ;
 
 	m_ui->pbVolumePath->setIcon( QIcon( ":/sirikali" ) ) ;
 
@@ -458,14 +456,14 @@ favorites2::favorites2( QWidget * parent,
 		this->HideUI() ;
 	} ) ;
 
-	connect( table,&QTableWidget::itemClicked,[ this ]( QTableWidgetItem * item ){
+	connect( m_ui->tableWidget,&QTableWidget::itemClicked,[ this ]( QTableWidgetItem * item ){
 
 		const auto& volumes = favorites::instance().readFavorites() ;
 
 		this->setVolumeProperties( volumes[ size_t( item->row() ) ] ) ;
 	} ) ;
 
-	connect( table,&QTableWidget::currentItemChanged,[]( QTableWidgetItem * x,QTableWidgetItem * y ){
+	connect( m_ui->tableWidget,&QTableWidget::currentItemChanged,[]( QTableWidgetItem * x,QTableWidgetItem * y ){
 
 		tablewidget::selectRow( x,y ) ;
 	} ) ;
@@ -917,9 +915,12 @@ static void _updateList( QTableWidget * table,const QFont& font,
 {
 	tablewidget::clearTable( table ) ;
 
-	for( const auto& it : e ){
+	for( size_t i = 0 ; i < e.size() ; i++ ){
 
-		tablewidget::addRow( table,{ it.volumePath },font ) ;
+		const auto& s = e[ i ].volumePath ;
+
+		tablewidget::addRow( table,{ s },font ) ;
+		tablewidget::setRowToolTip( table,static_cast< int >( i ),s ) ;
 	}
 
 	tablewidget::selectRow( table,m ) ;
@@ -953,6 +954,8 @@ void favorites2::updateVolumeList( const std::vector< favorites::entry >& e,int 
 
 		this->setVolumeProperties( e[ size_t( row ) ] ) ;
 	}else{
+		utility::debug() << "Warning: size mismatch in favorites2::updateVolumeList" ;
+
 		this->setVolumeProperties( {} ) ;
 	}
 }
@@ -1491,11 +1494,6 @@ void favorites2::ShowUI()
 	this->show() ;
 	this->raise() ;
 	this->activateWindow() ;
-}
-
-void favorites2::addEntries( const QStringList& l )
-{
-	tablewidget::addRow( m_ui->tableWidget,l ) ;
 }
 
 bool favorites2::eventFilter( QObject * watched,QEvent * event )

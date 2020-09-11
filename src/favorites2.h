@@ -99,7 +99,6 @@ private :
 	QString getExistingDirectory( const QString& ) ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
-	void addEntries( const QStringList& ) ;
 	Ui::favorites2 * m_ui ;
 	secrets& m_secrets ;
 	QWidget * m_parentWidget ;
