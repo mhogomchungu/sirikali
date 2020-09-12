@@ -44,7 +44,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.hasConfigFile         = true ;
 	s.autoMountsOnCreate    = false ;
 	s.hasGUICreateOptions   = true ;
-	s.setsCipherPath        = false ;
+	s.setsCipherPath        = true ;
 	s.acceptsSubType        = true ;
 	s.acceptsVolName        = true ;
 	s.releaseURL            = "https://api.github.com/repos/netheril96/securefs/releases" ;

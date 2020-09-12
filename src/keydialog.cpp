@@ -72,6 +72,7 @@ keyDialog::keyDialog( QWidget * parent,
 		      secrets& s,
 		      bool o,
 		      const QString& q,
+		      favorites::favoriteContainer c,
 		      keyDialog::volumeList z,
 		      std::function< void() > f,
 		      std::function< void() > g ) :
@@ -84,6 +85,7 @@ keyDialog::keyDialog( QWidget * parent,
 	m_settings( settings::instance() ),
 	m_done( std::move( f ) ),
 	m_updateVolumeList( std::move( g ) ),
+	m_favoriteContainer( std::move( c ) ),
 	m_walletKey( s )
 {
 	m_ui->setupUi( this ) ;

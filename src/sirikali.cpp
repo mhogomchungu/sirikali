@@ -998,6 +998,11 @@ int sirikali::unlockVolume( const QStringList& l,secrets& secrets )
 
 void sirikali::mountMultipleVolumes( keyDialog::volumeList e )
 {
+	this->mountMultipleVolumes( favorites::favoriteContainer(),std::move( e ) ) ;
+}
+
+void sirikali::mountMultipleVolumes( favorites::favoriteContainer c,keyDialog::volumeList e )
+{
 	if( !e.empty() ){
 
 		m_disableEnableAll = true ;
@@ -1017,6 +1022,7 @@ void sirikali::mountMultipleVolumes( keyDialog::volumeList e )
 				     m_secrets,
 				     m_autoOpenFolderOnMount,
 				     m_folderOpener,
+				     std::move( c ),
 				     std::move( e ),
 				     std::move( done ),
 				     [ this ](){ this->updateList() ; } ) ;
@@ -1501,14 +1507,14 @@ void sirikali::dragEnterEvent( QDragEnterEvent * e )
 template< typename Function >
 struct Struct
 {
-	favorites::temporaryFavoriteEntries& tmpFe ;
+	favorites::favoriteContainer& tmpFe ;
 	const favorites& fentries ;
 	const Function& function ;
 } ;
 
 template< typename T >
 static struct Struct< T > _make_str( favorites& f,
-				     favorites::temporaryFavoriteEntries& e,
+				     favorites::favoriteContainer& e,
 				     const T& t )
 {
 	return Struct< T >{ e,f,t } ;
@@ -1595,7 +1601,7 @@ void sirikali::dropEvent( QDropEvent * e )
 {
 	auto& ff = favorites::instance() ;
 
-	auto& s = ff.getTmpFavoriteEntries() ;
+	favorites::favoriteContainer s ;
 
 	auto m = settings::instance().autoMountBackEnd() ;
 
@@ -1632,9 +1638,9 @@ void sirikali::dropEvent( QDropEvent * e )
 				return wallet->readValue( e ) ;
 			} ) ) ;
 
-			this->mountMultipleVolumes( this->autoUnlockVolumes( std::move( l ),false ) ) ;
+			auto mm = this->autoUnlockVolumes( std::move( l ),false ) ;
 
-			return ;
+			return this->mountMultipleVolumes( std::move( s ),std::move( mm ) ) ;
 		}
 	}
 
@@ -1644,7 +1650,9 @@ void sirikali::dropEvent( QDropEvent * e )
 		return QByteArray() ;
 	} ) ) ;
 
-	this->mountMultipleVolumes( this->autoUnlockVolumes( std::move( aa ),false ) ) ;
+	auto mm = this->autoUnlockVolumes( std::move( aa ),false ) ;
+
+	this->mountMultipleVolumes( std::move( s ),std::move( mm ) ) ;
 }
 
 void sirikali::createVolume( QAction * ac )
@@ -1685,6 +1693,8 @@ void sirikali::autoMount( const QString& volume )
 
 		auto s = settings::instance().autoOpenFolderOnMount() ;
 
+		favorites::favoriteContainer mm ;
+
 		auto m = [ & ](){
 
 			for( auto&& it : favorites.readVolumeList() ){
@@ -1695,12 +1705,10 @@ void sirikali::autoMount( const QString& volume )
 				}
 			}
 
-			auto& tmp = favorites.getTmpFavoriteEntries() ;
-
-			return this->autoUnlockVolumes( { { tmp.add( volume ) } },s ) ;
+			return this->autoUnlockVolumes( { { mm.add( volume ) } },s ) ;
 		}() ;
 
-		this->mountMultipleVolumes( std::move( m ) ) ;
+		this->mountMultipleVolumes( std::move( mm ),std::move( m ) ) ;
 	}
 }
 

@@ -159,12 +159,18 @@ public:
 		QByteArray password ;
 	};
 
-	class temporaryFavoriteEntries{
+	class favoriteContainer{
 	public:
-		void clear() ;
-		const favorites::entry& add( favorites::entry e ) ;
+		favoriteContainer() : m_iter( m_favoriteContainer.before_begin() )
+		{
+		}
+		const favorites::entry& add( favorites::entry e )
+		{
+			m_iter = m_favoriteContainer.emplace_after( m_iter,std::move( e ) ) ;
+			return *m_iter ;
+		}
 	private:
-		std::forward_list< favorites::entry > m_tmpFavoriteList ;
+		std::forward_list< favorites::entry > m_favoriteContainer ;
 		std::forward_list< favorites::entry >::iterator m_iter ;
 	} ;
 
@@ -190,14 +196,11 @@ public:
 	const favorites::entry& readFavorite( const QString& volumePath,
 					      const QString& mountPath = QString() ) const ;
 
-	favorites::temporaryFavoriteEntries& getTmpFavoriteEntries() ;
-
 	favorites() ;
 private:
 	void reload() ;
 	std::vector< favorites::entry > m_favorites ;
 	favorites::entry m_empty ;
-	favorites::temporaryFavoriteEntries m_tmpFe ;
 };
 
 #endif // FAVORITES_H

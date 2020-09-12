@@ -204,16 +204,25 @@ public:
 			      secrets& s,
 			      bool o,
 			      const QString& m,
+			      favorites::favoriteContainer f,
 			      keyDialog::volumeList e,
 			      std::function< void() > function,
 			      std::function< void() > updateList )
 	{
-		new keyDialog( parent,s,o,m,std::move( e ),std::move( function ),std::move( updateList ) ) ;
+		new keyDialog( parent,
+			       s,
+			       o,
+			       m,
+			       std::move( f ),
+			       std::move( e ),
+			       std::move( function ),
+			       std::move( updateList ) ) ;
 	}
 	keyDialog( QWidget * parent,
 		   secrets&,
 		   bool,
 		   const QString&,
+		   favorites::favoriteContainer,
 		   keyDialog::volumeList,
 		   std::function< void() >,
 		   std::function< void() > ) ;
@@ -333,7 +342,9 @@ private :
 
 	cryfsWarning m_warningLabel ;
 
-	decltype( m_volumes.size() ) m_counter = 0 ;
+	favorites::favoriteContainer m_favoriteContainer ;
+
+	size_t m_counter = 0 ;
 
 	struct walletKey
 	{

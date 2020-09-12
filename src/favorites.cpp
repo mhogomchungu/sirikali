@@ -303,12 +303,6 @@ const favorites::entry& favorites::readFavorite( const QString& volumePath,
 	return m_empty ;
 }
 
-favorites::temporaryFavoriteEntries& favorites::getTmpFavoriteEntries()
-{
-	m_tmpFe.clear() ;
-	return m_tmpFe ;
-}
-
 void favorites::replaceFavorite( const favorites::entry& old,const favorites::entry& New )
 {
 	this->removeFavoriteEntry( old ) ;
@@ -349,16 +343,4 @@ favorites::entry::entry()
 favorites::entry::entry( const QString& e,const QString& mountPath ) :
 	volumePath( e ),mountPointPath( mountPath )
 {
-}
-
-void favorites::temporaryFavoriteEntries::clear()
-{
-	m_tmpFavoriteList.clear() ;
-	m_iter = m_tmpFavoriteList.before_begin() ;
-}
-
-const favorites::entry& favorites::temporaryFavoriteEntries::add( favorites::entry e )
-{
-	m_iter = m_tmpFavoriteList.emplace_after( m_iter,std::move( e ) ) ;
-	return *m_iter ;
 }

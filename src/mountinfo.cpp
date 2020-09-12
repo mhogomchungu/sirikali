@@ -208,13 +208,19 @@ static volumeInfo::FsEntry _decode( const engines::engine& engine,volumeInfo::Fs
 		return false ;
 	} ;
 
-	if( _starts_with( engine,e.cipherPath ) ){
+	if( engine.setsCipherPath() ){
 
-		_decode( e.cipherPath,true ) ;
+		if( _starts_with( engine,e.cipherPath ) ){
 
-	}else if( engine.setsCipherPath() ){
+			_decode( e.cipherPath,true ) ;
+		}else{
+			if( e.cipherPath.compare( engine.name(),Qt::CaseInsensitive ) ){
 
-		_decode( e.cipherPath,false ) ;
+				_decode( e.cipherPath,false ) ;
+			}else{
+				e.cipherPath = crypto::sha256( e.mountPoint ).mid( 0,20 ) ;
+			}
+		}
 	}else{
 		e.cipherPath = crypto::sha256( e.mountPoint ).mid( 0,20 ) ;
 	}
