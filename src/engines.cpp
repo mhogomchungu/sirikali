@@ -1447,7 +1447,7 @@ engines::engine::cmdArgsList::cmdArgsList( const favorites::entry& e,const QByte
 	configFilePath( e.configFilePath ),
 	identityFile( e.identityFile ),
 	identityAgent( e.identityAgent ),
-	mountOptions( e.mountOptions )
+	mountOptions( e.mountOptions.isEmpty() ? QStringList() : utility::split( e.mountOptions,',' ) )
 {
 	boolOptions.unlockInReadOnly    = e.readOnlyMode.defined() ? e.readOnlyMode.True() : false ;
 	boolOptions.unlockInReverseMode = e.reverseMode ;
@@ -1462,7 +1462,6 @@ engines::engine::cmdArgsList::cmdArgsList( const QString& cipher_folder,
 	key( volume_key ),
 	idleTimeout( e.idleTimeOut ),
 	configFilePath( e.configFile ),
-	mountOptions( QString() ),
 	createOptions( e.createOpts ),
 	keyFile( e.keyFile ),
 	boolOptions( e.opts )
