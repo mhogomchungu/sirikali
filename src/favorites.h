@@ -67,6 +67,10 @@ public:
 		{
 			return !this->undefined() ;
 		}
+		operator bool() const
+		{
+			return this->True() ;
+		}
 		bool True() const
 		{
 			return m_state == STATES::TRUE ;

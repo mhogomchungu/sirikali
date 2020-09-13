@@ -1012,7 +1012,7 @@ void favorites2::edit()
 
 		m_ui->lineEditEncryptedFolderPath->setText( entry.volumePath ) ;
 		m_ui->lineEditMountPath->setText( entry.mountPointPath ) ;
-		m_ui->cbAutoMount->setChecked( entry.autoMount.True() ) ;
+		m_ui->cbAutoMount->setChecked( entry.autoMount ) ;
 		m_ui->lineEditPreMount->setText( entry.preMountCommand ) ;
 		m_ui->lineEditPreUnMount->setText( entry.preUnmountCommand ) ;
 		m_ui->lineEditPostMount->setText( entry.postMountCommand ) ;
@@ -1357,7 +1357,7 @@ void favorites2::setVolumeProperties( const favorites::entry& e )
 
 	if( e.autoMount.defined() ){
 
-		m_ui->textEditAutoMount->setText( e.autoMount.True() ? "true" : "false" ) ;
+		m_ui->textEditAutoMount->setText( e.autoMount ? "true" : "false" ) ;
 	}else{
 		m_ui->textEditAutoMount->setText( QString() ) ;
 	}

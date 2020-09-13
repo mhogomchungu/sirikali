@@ -97,28 +97,61 @@ keyDialog::keyDialog( QWidget * parent,
 
 	this->setUpInitUI() ;
 
+	keyDialog::volumeList bb ;
+	keyDialog::volumeList cc ;
+
 	/*
 	 * We are sorting in a way that makes all volumes that meet below two criteria to appear first.
 	 *
 	 * 1. Have auto mount option set.
-	 * 2. Have password.
+	 * 2. Do not require password.
+	 * 3. Have password.
 	 */
 
-	keyDialog::volumeList b ;
-
+	/*
+	 * We put first volumes that have auto mount option set and have password or don't need it.
+	 */
 	for( auto&& it : z ){
 
 		const auto& e = it.volEntry ;
 
-		if( e.favorite.autoMount.True() && !e.password.isEmpty() ){
+		if( e.favorite.autoMount ){
 
-			m_volumes.emplace_back( std::move( it ) ) ;
+			if( it.engine->requiresNoPassword() ){
+
+				m_volumes.emplace_back( std::move( it ) ) ;
+
+			}else if( !e.password.isEmpty() ){
+
+				m_volumes.emplace_back( std::move( it ) ) ;
+			}else{
+				bb.emplace_back( std::move( it ) ) ;
+			}
 		}else{
-			b.emplace_back( std::move( it ) ) ;
+			bb.emplace_back( std::move( it ) ) ;
 		}
 	}
 
-	for( auto&& it : b ){
+	/*
+	 * We put second volumes that have password or don't need it.
+	 */
+	for( auto&& it : bb ){
+
+		const auto& e = it.volEntry ;
+
+		if( it.engine->requiresNoPassword() ){
+
+			m_volumes.emplace_back( std::move( it ) ) ;
+
+		}else if( !e.password.isEmpty() ){
+
+			m_volumes.emplace_back( std::move( it ) ) ;
+		}else{
+			cc.emplace_back( std::move( it ) ) ;
+		}
+	}
+
+	for( auto&& it : cc ){
 
 		m_volumes.emplace_back( std::move( it ) ) ;
 	}
@@ -137,11 +170,17 @@ void keyDialog::autoMount( const keyDialog::entry& ee )
 {
 	const auto& e = ee.volEntry.favorite ;
 
-	if( e.volumeNeedNoPassword ){		
+	if( e.autoMount ){
 
-		this->openVolume() ;
-	}else{
-		if( e.autoMount.True() && !ee.volEntry.password.isEmpty() ){
+		if( e.volumeNeedNoPassword ){
+
+			this->openVolume() ;
+
+		}else if( !ee.volEntry.password.isEmpty() ){
+
+			this->openVolume() ;
+
+		}else if( ee.engine->requiresNoPassword() ){
 
 			this->openVolume() ;
 		}
@@ -494,7 +533,7 @@ void keyDialog::setUpVolumeProperties( const keyDialog::entry& ee )
 	const auto& e      = ee.volEntry.favorite ;
 	m_path             = e.volumePath ;
 	m_mountOptions     = e ;
-	m_favoriteReadOnly = e.readOnlyMode ;
+	m_favoriteReadOnly = e.readOnlyMode ;	
 
 	if( m_favoriteReadOnly.defined() ){
 
@@ -551,7 +590,18 @@ void keyDialog::setUpVolumeProperties( const keyDialog::entry& ee )
 
 		m->addSeparator() ;
 
+		m_enableUsingPassword = true ;
+
 		if( m_engine->known() ){
+
+			if( e.volumeNeedNoPassword || m_engine->requiresNoPassword() ){
+
+				m_enableUsingPassword = false ;
+			}
+
+			m_ui->cbKeyType->setEnabled( m_enableUsingPassword ) ;
+
+			m_ui->lineEditKey->setEnabled( m_enableUsingPassword ) ;
 
 			m_mountOptions.configFile = m_engine.configFilePath() ;
 
@@ -589,7 +639,7 @@ void keyDialog::setUpVolumeProperties( const keyDialog::entry& ee )
 
 		m_ui->pbOptions->setMenu( m ) ;
 
-		if( ee.volEntry.password.isEmpty() ){
+		if( m_ui->lineEditKey->isEnabled() && ee.volEntry.password.isEmpty() ){
 
 			m_ui->lineEditKey->setFocus() ;
 		}else{
@@ -828,11 +878,16 @@ void keyDialog::enableAll()
 	m_ui->pbCancel->setEnabled( true ) ;
 	m_ui->pbOpen->setEnabled( true ) ;
 	m_ui->label->setEnabled( true ) ;
-	m_ui->cbKeyType->setEnabled( true ) ;
+	m_ui->cbKeyType->setEnabled( m_enableUsingPassword ) ;
 
 	auto index = m_ui->cbKeyType->currentIndex() ;
 
-	m_ui->lineEditKey->setEnabled( this->keySelected( index ) ) ;
+	if( m_enableUsingPassword ){
+
+		m_ui->lineEditKey->setEnabled( this->keySelected( index ) ) ;
+	}else{
+		m_ui->lineEditKey->setEnabled( false ) ;
+	}
 
 	auto enable = index == keyDialog::keyfile || index == keyDialog::keyKeyFile ;
 
@@ -1340,7 +1395,6 @@ void keyDialog::setKeyInWallet()
 
 	auto w = [ & ](){
 
-
 		if( m_walletType == _kwallet() ){
 
 			return m_secrets.walletBk( LXQt::Wallet::BackEnd::kwallet ) ;
@@ -1504,7 +1558,7 @@ void keyDialog::setKeyEnabled( bool e )
 	m_ui->labelSetKeyPassword->setEnabled( e ) ;
 	m_ui->lineEditSetKeyKeyFile->setEnabled( e ) ;
 	m_ui->lineEditSetKeyPassword->setEnabled( e ) ;
-	m_ui->pbSetKey->setEnabled( e ) ;
+	m_ui->pbSetKey->setEnabled( m_enableUsingPassword ) ;
 	m_ui->pbSetKeyCancel->setEnabled( e ) ;
 	m_ui->pbSetKeyKeyFile->setEnabled( e ) ;
 	m_ui->labelSetKey->setEnabled( e ) ;

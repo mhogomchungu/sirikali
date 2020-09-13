@@ -133,9 +133,10 @@ private:
 
 	void mountMultipleVolumes( favorites::favoriteContainer,keyDialog::volumeList ) ;
 
+	keyDialog::volumeList autoMount( keyDialog::volumeList l,bool ) ;
+
 	void autoMount( keyDialog::volumeList&,
-			const keyDialog::entry&,
-			const QByteArray&,
+			keyDialog::entry&&,
 			bool,
 			bool ) ;
 

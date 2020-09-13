@@ -1039,7 +1039,7 @@ void sirikali::autoMountFavoritesOnAvailable( QString m )
 
 			const auto& s = it.favorite ;
 
-			if( s.volumePath.startsWith( m ) && s.autoMount.True() ){
+			if( s.volumePath.startsWith( m ) && s.autoMount ){
 
 				e.emplace_back( std::move( it ) ) ;
 			}
@@ -1070,7 +1070,7 @@ void sirikali::autoUnlockVolumes( const std::vector< volumeInfo >& s )
 
 		const auto& m = it.favorite ;
 
-		if( m.autoMount.True() && !_mounted( m.volumePath )){
+		if( m.autoMount && !_mounted( m.volumePath )){
 
 			e.emplace_back( std::move( it ) ) ;
 		}
@@ -1080,20 +1080,19 @@ void sirikali::autoUnlockVolumes( const std::vector< volumeInfo >& s )
 }
 
 void sirikali::autoMount( keyDialog::volumeList& q,
-			  const keyDialog::entry& ee,
-			  const QByteArray& key,
+			  keyDialog::entry&& ee,
 			  bool showMountDialog,
 			  bool autoOpenFolderOnMount )
 {
-	const favorites::volEntry& e = ee.volEntry ;
-
 	if( showMountDialog ){
 
-		q.emplace_back( e.favorite,key ) ;
+		q.emplace_back( std::move( ee ) ) ;
 	}else{
 		this->disableAll() ;
 
-		engines::engine::cmdArgsList aa( e.favorite,key ) ;
+		const favorites::volEntry& e = ee.volEntry ;
+
+		engines::engine::cmdArgsList aa( e.favorite,e.password ) ;
 
 		if( aa.mountPoint.isEmpty() ){
 
@@ -1118,12 +1117,56 @@ void sirikali::autoMount( keyDialog::volumeList& q,
 				this->updateList() ;
 			}
 		}else{
-			q.emplace_back( e.favorite,key ) ;
+			q.emplace_back( std::move( ee ) ) ;
 
 			utility::debug() << "Automounting has failed: " + s.toString() ;
 		}
 
 		this->enableAll() ;
+	}
+}
+
+keyDialog::volumeList sirikali::autoMount( keyDialog::volumeList l,bool autoOpenFolderOnMount ){
+
+	keyDialog::volumeList e ;
+
+	auto s = settings::instance().showMountDialogWhenAutoMounting() ;
+
+	for( auto&& it : l ){
+
+		const auto& m = it.volEntry.favorite ;
+
+		if( it.engine->requiresNoPassword() || m.volumeNeedNoPassword || !m.password.isEmpty() ){
+
+			this->autoMount( e,std::move( it ),s,autoOpenFolderOnMount ) ;
+		}else{
+			e.emplace_back( std::move( it ) ) ;
+		}
+	}
+
+	return e ;
+}
+
+QByteArray static _get_key( const keyDialog::entry& it,secrets::wallet& m ){
+
+	const auto& volumePath = it.volEntry.favorite.volumePath ;
+
+	const auto& name = it.engine->name() ;
+
+	if( volumePath.startsWith( name + " ",Qt::CaseInsensitive ) ){
+
+		auto ee = m->readValue( volumePath ) ;
+
+		if( ee.isEmpty() && !name.isLower() ){
+
+			auto ss = name.toLower() + " " + it.engine.cipherFolder() ;
+
+			ee = m->readValue( ss ) ;
+		}
+
+		return ee ;
+	}else{
+		return m->readValue( volumePath ) ;
 	}
 }
 
@@ -1144,55 +1187,37 @@ keyDialog::volumeList sirikali::autoUnlockVolumes( favorites::volumeList ss,
 
 	if( ee.isInvalid() ){
 
-		return l ;
+		utility::debug() << "Warning, Wallet Not Set" ;
+		return this->autoMount( std::move( l ),autoOpenFolderOnMount ) ;
 	}
 
 	auto m = m_secrets.walletBk( ee.bk() ) ;
 
 	if( !m ){
 
-		return l ;
+		utility::debug() << "Warning, Failed To Set Selected Wallet" ;
+		return this->autoMount( std::move( l ),autoOpenFolderOnMount ) ;
 	}
 
 	if( !m.open() ){
 
-		return l ;
+		utility::debug() << "Warning, Failed To Open Selected Wallet" ;
+		return this->autoMount( std::move( l ),autoOpenFolderOnMount ) ;
 	}
 
 	keyDialog::volumeList e ;
 
 	auto s = settings::instance().showMountDialogWhenAutoMounting() ;
 
-	for( const auto& it : l ){
+	for( auto&& it : l ){
 
-		auto key = [ & ](){
+		it.volEntry.password = _get_key( it,m ) ;
 
-			const auto& volumePath = it.volEntry.favorite.volumePath ;
+		if( it.volEntry.password.isEmpty() ){
 
-			const auto& name = it.engine->name() ;
-
-			if( volumePath.startsWith( name + " ",Qt::CaseInsensitive ) ){
-
-				auto ee = m->readValue( volumePath ) ;
-
-				if( ee.isEmpty() && !name.isLower() ){
-
-					auto ss = name.toLower() + " " + it.engine.cipherFolder() ;
-
-					ee = m->readValue( ss ) ;
-				}
-
-				return ee ;
-			}else{
-				return m->readValue( volumePath ) ;
-			}
-		}() ;
-
-		if( key.isEmpty() ){
-
-			e.emplace_back( it ) ;
+			e.emplace_back( std::move( it ) ) ;
 		}else{
-			this->autoMount( e,it,key,s,autoOpenFolderOnMount ) ;
+			this->autoMount( e,std::move( it ),s,autoOpenFolderOnMount ) ;
 		}
 	}
 

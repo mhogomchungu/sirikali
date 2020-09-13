@@ -43,7 +43,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.likeSsh               = true ;
 	s.requiresPolkit        = false ;
 	s.customBackend         = false ;
-	s.requiresAPassword     = false ;
+	s.requiresAPassword     = true ;
 	s.hasConfigFile         = false ;
 	s.autoMountsOnCreate    = true ;
 	s.hasGUICreateOptions   = false ;
@@ -83,8 +83,19 @@ static engines::engine::BaseOptions _setOptions()
 sshfs::sshfs() :
 	engines::engine( _setOptions() ),
 	m_environment( engines::engine::getProcessEnvironment() ),
-	m_version_greater_or_equal_minimum( false,*this,this->minimumVersion() )
+	m_version_greater_or_equal_minimum( false,*this,this->minimumVersion() ),
+	m_qgetenv( qgetenv( "SSH_AUTH_SOCK" ) )
 {
+}
+
+bool sshfs::requiresAPassword( const engines::engine::cmdArgsList& e ) const
+{
+	if( !m_qgetenv.isEmpty() || !e.identityFile.isEmpty() || !e.identityAgent.isEmpty() ){
+
+		return false ;
+	}else{
+		return engines::engine::requiresAPassword( e ) ;
+	}
 }
 
 engines::engine::status sshfs::passAllRequirenments( const engines::engine::cmdArgsList& opt ) const
@@ -104,7 +115,7 @@ engines::engine::status sshfs::passAllRequirenments( const engines::engine::cmdA
 			return engines::engine::status::backEndFailedToMeetMinimumRequirenment ;
 		}
 	}else{
-		return engines::engine::status::success ;
+		return engines::engine::passAllRequirenments( opt ) ;
 	}
 }
 
@@ -163,15 +174,13 @@ void sshfs::updateOptions( engines::engine::commandOptions& opts,
 
 		m_environment.insert( "SSH_AUTH_SOCK",args.identityAgent ) ;
 	}else{
-		auto m = qgetenv( "SSH_AUTH_SOCK" ) ;
-
-		if( m.isEmpty() ){
+		if( m_qgetenv.isEmpty() ){
 
 			m_environment.remove( "SSH_AUTH_SOCK" ) ;
 		}else{
-			utility::debug() << "Sshfs: From Env, Setting Env Variable Of: SSH_AUTH_SOCK=" + m ;
+			utility::debug() << "Sshfs: From Env, Setting Env Variable Of: SSH_AUTH_SOCK=" + m_qgetenv ;
 
-			m_environment.insert( "SSH_AUTH_SOCK",m ) ;
+			m_environment.insert( "SSH_AUTH_SOCK",m_qgetenv ) ;
 		}
 	}
 }

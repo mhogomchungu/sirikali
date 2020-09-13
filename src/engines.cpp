@@ -465,7 +465,17 @@ bool engines::engine::requiresAPassword( const engines::engine::cmdArgsList& opt
 {
 	Q_UNUSED( opts )
 
+	return this->requiresAPassword() ;
+}
+
+bool engines::engine::requiresAPassword() const
+{
 	return m_Options.requiresAPassword ;
+}
+
+bool engines::engine::requiresNoPassword() const
+{
+	return !this->requiresAPassword() ;
 }
 
 bool engines::engine::customBackend() const

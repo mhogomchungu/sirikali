@@ -575,6 +575,8 @@ public:
 		bool likeSsh() const ;
 		bool autoCreatesMountPoint() const ;
 		bool autoDeletesMountPoint() const ;
+		bool requiresAPassword() const ;
+		bool requiresNoPassword() const ;
 
 		engines::engine::status notFoundCode() const ;
 

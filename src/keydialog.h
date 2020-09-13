@@ -162,10 +162,6 @@ class keyDialog : public QDialog
 	Q_OBJECT
 public:
 	struct entry{
-		entry( const favorites::entry& e,QByteArray key ) :
-			volEntry( e,std::move( key ) )
-		{
-		}
 		entry( favorites::volEntry e ) :
 			volEntry( std::move( e ) ),
 			engine( volEntry.favorite.volumePath,volEntry.favorite.configFilePath )
@@ -313,6 +309,7 @@ private :
 	bool m_checked = false ;
 	bool m_hmac ;
 	bool m_closeGUI = false ;
+	bool m_enableUsingPassword = false ;
 
 	engines::engine::mOpts m_mountOptions ;
 	engines::engine::cOpts m_createOptions ;
