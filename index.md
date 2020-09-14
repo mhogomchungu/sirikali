@@ -10,7 +10,7 @@ SiriKali is a Qt/C++ GUI application that manages ecryptfs, cryfs, encfs, gocryp
  <a href="https://www.cryfs.org/">Cryfs</a>, <a href="https://github.com/netheril96/securefs">Securefs</a>, <a href="https://github.com/mhogomchungu/encfs/latest">Encfs</a> and <a href="https://github.com/billziss-gh/sshfs-win">Sshfs.</a>
 
 
-Users of Securefs should inform SiriKali of where Securefs binary is located on the system by setting the path at: ```Menu->Settings->Editable Options->Set Executables Search Path.```
+Users of Securefs should inform SiriKali of where Securefs binary is located on the system by setting the path at: ```Menu->Settings->External Commands->Set Executables Search Path.```
 
 #### Supported Backends on macOS:
 <a href="https://github.com/netheril96/securefs">Securefs, </a><a href="https://www.cryfs.org/">Cryfs, </a><a href="https://github.com/vgough/encfs">Encfs</a> and <a href="https://nuetzlich.net/gocryptfs">Gocryptfs.</a>
@@ -150,4 +150,4 @@ cv9jY9bZAbVaMUjF7dw/bsqgJ2HCJ33cf16GybRtozOE36YDB2omg58ngIrlmlea
 -----END PGP PUBLIC KEY BLOCK-----
 ```
 
-last update: Mon 03 Aug 2020 02:54:13 PM EAT
+last update: Mon 14 Sep 2020 04:29:32 PM EAT
