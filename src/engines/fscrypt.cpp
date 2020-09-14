@@ -551,6 +551,10 @@ static QString _setOption()
 fscrypt::unlockedVolumeList::unlockedVolumeList() :
 	m_configFilePath( _setOption() )
 {
+	if( utility::pathNotExists( m_configFilePath ) ){
+
+		this->updateList( QStringList() ) ;
+	}
 }
 
 QStringList fscrypt::unlockedVolumeList::getList() const

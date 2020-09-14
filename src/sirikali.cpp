@@ -1126,8 +1126,8 @@ void sirikali::autoMount( keyDialog::volumeList& q,
 	}
 }
 
-keyDialog::volumeList sirikali::autoMount( keyDialog::volumeList l,bool autoOpenFolderOnMount ){
-
+keyDialog::volumeList sirikali::autoMount( keyDialog::volumeList l,bool autoOpenFolderOnMount )
+{
 	keyDialog::volumeList e ;
 
 	auto s = settings::instance().showMountDialogWhenAutoMounting() ;
@@ -1136,7 +1136,9 @@ keyDialog::volumeList sirikali::autoMount( keyDialog::volumeList l,bool autoOpen
 
 		const auto& m = it.volEntry.favorite ;
 
-		if( it.engine->requiresNoPassword() || m.volumeNeedNoPassword || !m.password.isEmpty() ){
+		bool u = it.engine->known() && it.engine->requiresNoPassword() ;
+
+		if(  u || m.volumeNeedNoPassword || !m.password.isEmpty() ){
 
 			this->autoMount( e,std::move( it ),s,autoOpenFolderOnMount ) ;
 		}else{
