@@ -151,12 +151,25 @@ public:
 
 	class volEntry{
 	public:
-		volEntry( const favorites::entry& e,bool manage = false ) :
-			m_favorite( this->entry( e,manage ) ),m_password( e.password )
+		template< typename E,typename P >
+		volEntry( E&& e,P&& p,bool manage ) :
+			m_favorite( this->entry( std::forward< E >( e ),manage ) ),
+			m_password( std::forward< P >( p ) )
 		{
 		}
-		volEntry( const favorites::entry& e,QByteArray s,bool manage = false ) :
-			m_favorite( this->entry( e,manage ) ),m_password( std::move( s ) )
+		template< typename E >
+		volEntry( E&& e,bool manage ) :
+			m_favorite( this->entry( std::forward< E >( e ),manage ) ),
+			m_password( m_favorite.password )
+		{
+		}
+		volEntry( const favorites::entry& e ) :
+			m_favorite( e ),m_password( e.password )
+		{
+		}
+		template< typename P >
+		volEntry( const favorites::entry& e,P&& s ) :
+			m_favorite( e ),m_password( std::forward< P >( s ) )
 		{
 		}
 		const favorites::entry& favorite() const
@@ -173,16 +186,13 @@ public:
 			m_password = std::forward< T >( e ) ;
 		}
 	private:
-		const favorites::entry& entry( const favorites::entry& e,bool manage )
+		template< typename E >
+		const favorites::entry& entry( E&& e,bool manage )
 		{
-			if( manage ){
-
-				utility::debug() << "favorites managing temporary entry: " + e.volumePath ;
-				m_tmpFavorite = std::make_unique< favorites::entry >( e ) ;
-				return *m_tmpFavorite ;
-			}else{
-				return e ;
-			}
+			Q_UNUSED( manage )
+			utility::debug() << "favorites managing temporary entry: " + e.volumePath ;
+			m_tmpFavorite = std::make_unique< favorites::entry >( std::forward< E >( e ) ) ;
+			return *m_tmpFavorite ;
 		}
 		std::unique_ptr< favorites::entry > m_tmpFavorite ;
 		const favorites::entry& m_favorite ;

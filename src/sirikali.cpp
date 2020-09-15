@@ -1552,7 +1552,7 @@ static void _folder_entry( const QString& path,
 		}
 	}
 
-	volumeList.emplace_back( path,function( path ),true ) ;
+	volumeList.emplace_back( favorites::entry( path ),function( path ),true ) ;
 }
 
 template< typename Function >
@@ -1584,7 +1584,7 @@ static void _file_entry( const QString& path,
 			}
 		}
 	}else{
-		volumeList.emplace_back( path,true ) ;
+		volumeList.emplace_back( favorites::entry( path ),true ) ;
 	}
 }
 
@@ -1722,7 +1722,7 @@ void sirikali::autoMount( const QString& volume )
 			}
 
 			favorites::volumeList mm ;
-			mm.emplace_back( volume,true ) ;
+			mm.emplace_back( favorites::entry( volume ),true ) ;
 
 			return this->autoUnlockVolumes( std::move( mm ),s ) ;
 		}() ;
