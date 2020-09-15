@@ -131,8 +131,6 @@ private:
 
 	void mountMultipleVolumes( keyDialog::volumeList ) ;
 
-	void mountMultipleVolumes( favorites::favoriteContainer,keyDialog::volumeList ) ;
-
 	keyDialog::volumeList autoMount( keyDialog::volumeList l,bool ) ;
 
 	void autoMount( keyDialog::volumeList&,

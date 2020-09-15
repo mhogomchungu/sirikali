@@ -149,34 +149,45 @@ public:
 		return m ;
 	}
 
-	struct volEntry{
-
-		volEntry( const favorites::entry& e ) :
-			favorite( e ),password( e.password )
-		{
-		}
-		volEntry( const favorites::entry& e,QByteArray s ) :
-			favorite( e ),password( std::move( s ) )
-		{
-		}
-		const favorites::entry& favorite ;
-		QByteArray password ;
-	};
-
-	class favoriteContainer{
+	class volEntry{
 	public:
-		favoriteContainer() : m_iter( m_favoriteContainer.before_begin() )
+		volEntry( const favorites::entry& e,bool manage = false ) :
+			m_favorite( this->entry( e,manage ) ),m_password( e.password )
 		{
 		}
-		const favorites::entry& add( favorites::entry e )
+		volEntry( const favorites::entry& e,QByteArray s,bool manage = false ) :
+			m_favorite( this->entry( e,manage ) ),m_password( std::move( s ) )
 		{
-			m_iter = m_favoriteContainer.emplace_after( m_iter,std::move( e ) ) ;
-			return *m_iter ;
+		}
+		const favorites::entry& favorite() const
+		{
+			return m_favorite ;
+		}
+		const QByteArray& password() const
+		{
+			return m_password ;
+		}
+		template< typename T >
+		void setPassword( T&& e )
+		{
+			m_password = std::forward< T >( e ) ;
 		}
 	private:
-		std::forward_list< favorites::entry > m_favoriteContainer ;
-		std::forward_list< favorites::entry >::iterator m_iter ;
-	} ;
+		const favorites::entry& entry( const favorites::entry& e,bool manage )
+		{
+			if( manage ){
+
+				utility::debug() << "favorites managing temporary entry: " + e.volumePath ;
+				m_tmpFavorite = std::make_unique< favorites::entry >( e ) ;
+				return *m_tmpFavorite ;
+			}else{
+				return e ;
+			}
+		}
+		std::unique_ptr< favorites::entry > m_tmpFavorite ;
+		const favorites::entry& m_favorite ;
+		QByteArray m_password ;
+	};
 
 	using volumeList = std::vector< volEntry > ;
 

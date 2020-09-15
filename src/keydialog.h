@@ -164,7 +164,7 @@ public:
 	struct entry{
 		entry( favorites::volEntry e ) :
 			volEntry( std::move( e ) ),
-			engine( volEntry.favorite.volumePath,volEntry.favorite.configFilePath )
+			engine( volEntry.favorite().volumePath,volEntry.favorite().configFilePath )
 		{
 		}
 		entry( favorites::volEntry e,engines::engineWithPaths s ) :
@@ -200,7 +200,6 @@ public:
 			      secrets& s,
 			      bool o,
 			      const QString& m,
-			      favorites::favoriteContainer f,
 			      keyDialog::volumeList e,
 			      std::function< void() > function,
 			      std::function< void() > updateList )
@@ -209,7 +208,6 @@ public:
 			       s,
 			       o,
 			       m,
-			       std::move( f ),
 			       std::move( e ),
 			       std::move( function ),
 			       std::move( updateList ) ) ;
@@ -218,7 +216,6 @@ public:
 		   secrets&,
 		   bool,
 		   const QString&,
-		   favorites::favoriteContainer,
 		   keyDialog::volumeList,
 		   std::function< void() >,
 		   std::function< void() > ) ;
@@ -338,8 +335,6 @@ private :
 	keyDialog::volumeList m_volumes ;
 
 	cryfsWarning m_warningLabel ;
-
-	favorites::favoriteContainer m_favoriteContainer ;
 
 	size_t m_counter = 0 ;
 

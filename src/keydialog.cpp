@@ -72,7 +72,6 @@ keyDialog::keyDialog( QWidget * parent,
 		      secrets& s,
 		      bool o,
 		      const QString& q,
-		      favorites::favoriteContainer c,
 		      keyDialog::volumeList z,
 		      std::function< void() > f,
 		      std::function< void() > g ) :
@@ -85,7 +84,6 @@ keyDialog::keyDialog( QWidget * parent,
 	m_settings( settings::instance() ),
 	m_done( std::move( f ) ),
 	m_updateVolumeList( std::move( g ) ),
-	m_favoriteContainer( std::move( c ) ),
 	m_walletKey( s )
 {
 	m_ui->setupUi( this ) ;
@@ -115,13 +113,13 @@ keyDialog::keyDialog( QWidget * parent,
 
 		const auto& e = it.volEntry ;
 
-		if( e.favorite.autoMount ){
+		if( e.favorite().autoMount ){
 
 			if( it.engine->requiresNoPassword() ){
 
 				m_volumes.emplace_back( std::move( it ) ) ;
 
-			}else if( !e.password.isEmpty() ){
+			}else if( !e.password().isEmpty() ){
 
 				m_volumes.emplace_back( std::move( it ) ) ;
 			}else{
@@ -143,7 +141,7 @@ keyDialog::keyDialog( QWidget * parent,
 
 			m_volumes.emplace_back( std::move( it ) ) ;
 
-		}else if( !e.password.isEmpty() ){
+		}else if( !e.password().isEmpty() ){
 
 			m_volumes.emplace_back( std::move( it ) ) ;
 		}else{
@@ -168,7 +166,7 @@ keyDialog::keyDialog( QWidget * parent,
 
 void keyDialog::autoMount( const keyDialog::entry& ee )
 {
-	const auto& e = ee.volEntry.favorite ;
+	const auto& e = ee.volEntry.favorite() ;
 
 	if( e.autoMount ){
 
@@ -176,7 +174,7 @@ void keyDialog::autoMount( const keyDialog::entry& ee )
 
 			this->openVolume() ;
 
-		}else if( !ee.volEntry.password.isEmpty() ){
+		}else if( !ee.volEntry.password().isEmpty() ){
 
 			this->openVolume() ;
 
@@ -530,7 +528,7 @@ QString keyDialog::mountPointPath( const engines::engine& engine,
 void keyDialog::setUpVolumeProperties( const keyDialog::entry& ee )
 {
 	m_working          = false ;
-	const auto& e      = ee.volEntry.favorite ;
+	const auto& e      = ee.volEntry.favorite() ;
 	m_path             = e.volumePath ;
 	m_mountOptions     = e ;
 	m_favoriteReadOnly = e.readOnlyMode ;	
@@ -548,7 +546,7 @@ void keyDialog::setUpVolumeProperties( const keyDialog::entry& ee )
 		}
 	}
 
-	m_ui->lineEditKey->setText( ee.volEntry.password ) ;
+	m_ui->lineEditKey->setText( ee.volEntry.password() ) ;
 
 	this->setUIVisible( true ) ;
 
@@ -639,7 +637,7 @@ void keyDialog::setUpVolumeProperties( const keyDialog::entry& ee )
 
 		m_ui->pbOptions->setMenu( m ) ;
 
-		if( m_ui->lineEditKey->isEnabled() && ee.volEntry.password.isEmpty() ){
+		if( m_ui->lineEditKey->isEnabled() && ee.volEntry.password().isEmpty() ){
 
 			m_ui->lineEditKey->setFocus() ;
 		}else{
