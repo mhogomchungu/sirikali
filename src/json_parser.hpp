@@ -114,6 +114,11 @@ public:
 			return t ;
 		}
 	}
+	template< typename E >
+	std::vector< E > getVector( const char * key,const std::vector< E > e = {} ) const
+	{
+		return this->get< std::vector< E > >( key,e ) ;
+	}
 	QStringList getStringList( const char * key,const QStringList& l ) const
 	{
 		std::vector< std::string > m ;

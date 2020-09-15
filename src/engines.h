@@ -506,7 +506,7 @@ public:
 			QByteArray passwordFormat ;
 			QString displayName ;
 			QString releaseURL ;
-			QString minimumVersion ;
+			QString versionMinimum ;
 			QString reverseString ;
 			QString idleString ;
 			QString executableName ;

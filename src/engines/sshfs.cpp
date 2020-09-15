@@ -69,7 +69,7 @@ static engines::engine::BaseOptions _setOptions()
 		s.autoCreatesMountPoint = true ;
 		s.autoDeletesMountPoint = true ;
 
-		s.minimumVersion = "3.5.2" ;
+		s.versionMinimum = "3.5.2" ;
 		s.sshOptions = "create_file_umask=0000,create_dir_umask=0000,umask=0000,idmap=user,StrictHostKeyChecking=no,UseNetworkDrive=no" ;
 	}else{
 		s.autoCreatesMountPoint = false ;

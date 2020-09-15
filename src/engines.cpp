@@ -705,7 +705,7 @@ const QString& engines::engine::sshOptions() const
 
 const QString& engines::engine::minimumVersion() const
 {
-	return m_Options.minimumVersion ;
+	return m_Options.versionMinimum ;
 }
 
 static bool _contains( const QString& e,const QStringList& m )
@@ -799,6 +799,25 @@ engines::engine::status engines::engine::passAllRequirenments( const engines::en
 				utility::debug() << a.second ;
 				return engines::engine::status::notSupportedMountPointFolderPath ;
 			}
+		}
+	}
+
+	const auto& v = this->minimumVersion() ;
+
+	if( this->customBackend() && !v.isEmpty() ){
+
+		auto s = this->installedVersion().greaterOrEqual( v ) ;
+
+		if( s.has_value() ){
+
+			if( s.value() ){
+
+				return engines::engine::status::success ;
+			}else{
+				return engine::engine::status::backEndFailedToMeetMinimumRequirenment ;
+			}
+		}else{
+			utility::debug() << "Trouble ahead, failed to get backend's version" ;
 		}
 	}
 
