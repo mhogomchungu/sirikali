@@ -23,6 +23,7 @@
         "keyFileArgument": "--keyfile %{keyfile}",
         "likeSsh": false,
         "mountControlStructure": "%{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}",
+        "minimumVersion":"",
         "names": [
                 "archivemount"
         ],
@@ -35,6 +36,10 @@
         "takesTooLongToUnlock": false,
         "unMountCommand": [],
         "volumePropertiesCommands": [],
+        "versionArgumentString": "--version",
+        "versionMinimum":"",
+        "versionOutputStdOut": false,
+        "versionStringTextPosition": [ 0,2 ],
         "windowsExecutableFolderPath": "",
         "windowsInstallPathRegistryKey": "",
         "windowsInstallPathRegistryValue": "",

@@ -177,7 +177,7 @@ void createBackendWIndow::save()
 	config[ "versionArgumentString" ]       = "" ;
 	config[ "versionMinimum" ]              = "" ;
 	config[ "versionOutputStdOut" ]         = true ;
-	config[ "versionStringTextPosition" ]   = std::vector< int >() ;
+	config[ "versionStringTextPosition" ]   = std::vector< int >( { 0,0 } ) ;
 
 	if( config.passed() ){
 
