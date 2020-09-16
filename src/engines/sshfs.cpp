@@ -145,7 +145,7 @@ void sshfs::updateOptions( engines::engine::commandOptions& opts,
 
 	if( !args.identityFile.isEmpty() ){
 
-		fuseOptions.add( "IdentityFile=\"" + args.identityFile + "\"" ) ;
+		fuseOptions.add( "IdentityFile=" + args.identityFile ) ;
 	}
 
 	auto s = fuseOptions.extractStartsWith( "UseNetworkDrive=" ) ;
