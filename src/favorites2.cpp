@@ -1377,13 +1377,9 @@ void favorites2::setVolumeProperties( const favorites::entry& e )
 
 		m_ui->textEditIdleTimeOut->setText( e.identityFile ) ;
 
-		m_ui->pbIdentityFile->setVisible( true ) ;
-
 		this->setUiLikeSsh( engine.cipherFolder(),engine.get() ) ;
 	}else{
 		this->setDefaultUI() ;
-
-		m_ui->pbIdentityFile->setVisible( false ) ;
 
 		m_ui->label_3->setText( tr( "Config File Path" ) ) ;
 		m_ui->label_4->setText( tr( "Idle Time Out" ) ) ;
@@ -1425,6 +1421,8 @@ void favorites2::setUiLikeSsh( const QString& cipherPath,const engines::engine& 
 	m_ui->labelPortyNumber->setEnabled( true ) ;
 	m_ui->labelPortyNumber->setText( tr( "Ssh Port Number" ) ) ;
 
+	m_ui->pbIdentityFile->setVisible( true ) ;
+
 	if( s.contains( "port=",Qt::CaseInsensitive ) ){
 
 		QStringList ss ;
@@ -1453,6 +1451,7 @@ void favorites2::setDefaultUI()
 	m_ui->lineEditMountOptions->clear() ;
 	m_ui->lineEditSshPortNumber->clear() ;
 	m_ui->lineEditSshPortNumber->setEnabled( false ) ;
+	m_ui->pbIdentityFile->setVisible( false ) ;
 	m_ui->labelPortyNumber->clear() ;
 }
 
