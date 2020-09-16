@@ -392,7 +392,23 @@ QString settings::mountPath()
 {
 	_set_mount_default( *this ) ;
 
-	return m_settings.value( "MountPrefix" ).toString() ;
+	auto e = m_settings.value( "MountPrefix" ).toString() ;
+
+	while( true ){
+
+		if( e == "/" ){
+
+			break ;
+
+		}else if( e.endsWith( '/' ) ){
+
+			e.truncate( e.length() - 1 ) ;
+		}else{
+			break ;
+		}
+	}
+
+	return e ;
 }
 
 QString settings::mountPath( const QString& path )

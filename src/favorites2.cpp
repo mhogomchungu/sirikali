@@ -950,17 +950,18 @@ void favorites2::updateVolumeList( const std::vector< favorites::entry >& e,int 
 {
 	if( e.size() == 0 ){
 
+		tablewidget::clearTable( m_ui->tableWidget) ;
+
 		utility::debug() << "Information: Favorites list is empty" ;
-		return ;
-	}
-
-	_updateList( m_ui->tableWidget,this->font(),e,row ) ;
-
-	if( size_t( row ) < e.size() ){
-
-		this->setVolumeProperties( e[ size_t( row ) ] ) ;
 	}else{
-		utility::debug() << "Warning: size mismatch in favorites2::updateVolumeList" ;
+		_updateList( m_ui->tableWidget,this->font(),e,row ) ;
+
+		if( size_t( row ) < e.size() ){
+
+			this->setVolumeProperties( e[ size_t( row ) ] ) ;
+		}else{
+			utility::debug() << "Warning: size mismatch in favorites2::updateVolumeList" ;
+		}
 	}
 }
 
