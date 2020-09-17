@@ -363,7 +363,7 @@ void mountinfo::linuxMonitor()
 			}else if( a == 0 ){
 
 				/*
-				 * Timout has occured
+				 * Timout has occurred
 				 */
 			}else{
 				m_debug( "Warning: pollMonitor.poll failed" ) ;

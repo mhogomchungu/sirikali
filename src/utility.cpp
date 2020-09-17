@@ -1311,7 +1311,7 @@ utility::qbytearray_result utility::yubiKey( const QByteArray& challenge )
 
 			return m ;
 		}else{
-			utility::debug() << "Failed to get a responce from ykchalresp" ;
+			utility::debug() << "Failed to get a response from ykchalresp" ;
 			utility::debug() << "StdOUt:" << s.std_out() ;
 			utility::debug() << "StdError:" << s.std_error() ;
 		}

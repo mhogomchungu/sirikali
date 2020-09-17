@@ -289,7 +289,7 @@ int main( int argc,char * argv[] )
 			if( r == lxqt_wallet_wrong_password ){
 				puts( "wrong password" ) ;
 			}else{
-				puts( "general error has occured" ) ;
+				puts( "general error has occurred" ) ;
 			}
 		}else{
 			f = argv[ 3 ] ;
@@ -315,7 +315,7 @@ int main( int argc,char * argv[] )
 			if( r == lxqt_wallet_wrong_password ){
 				puts( "wrong password" ) ;
 			}else{
-				puts( "general error has occured" ) ;
+				puts( "general error has occurred" ) ;
 			}
 		}else{
 			f = argv[ 3 ] ;
@@ -353,7 +353,7 @@ int main( int argc,char * argv[] )
 			if( r == lxqt_wallet_wrong_password ){
 				puts( "wrong password" ) ;
 			}else{
-				puts( "general error has occured" ) ;
+				puts( "general error has occurred" ) ;
 			}
 		}
 	}else if( stringsAreEqual( command,"delete" ) ){
@@ -377,7 +377,7 @@ int main( int argc,char * argv[] )
 			if( r == lxqt_wallet_wrong_password ){
 				puts( "wrong password" ) ;
 			}else{
-				puts( "general error has occured" ) ;
+				puts( "general error has occurred" ) ;
 			}
 		}
 	}else if( stringsAreEqual( command,"change" ) ){
@@ -401,7 +401,7 @@ int main( int argc,char * argv[] )
 			if( r == lxqt_wallet_wrong_password ){
 				puts( "wrong password" ) ;
 			}else{
-				puts( "general error has occured" ) ;
+				puts( "general error has occurred" ) ;
 			}
 		}
 	}else if( stringsAreEqual( command,"value" ) ){
@@ -429,7 +429,7 @@ int main( int argc,char * argv[] )
 			if( r == lxqt_wallet_wrong_password ){
 				puts( "wrong password" ) ;
 			}else{
-				puts( "general error has occured" ) ;
+				puts( "general error has occurred" ) ;
 			}
 		}
 	}else if( stringsAreEqual( command,"version" ) ){
