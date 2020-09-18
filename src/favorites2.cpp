@@ -79,6 +79,8 @@ favorites2::favorites2( QWidget * parent,
 
 	m_settings.setParent( parent,&m_parentWidget,this ) ;
 
+	m_ui->lineEditVolumeType->setEnabled( false ) ;
+
 	m_ui->tableWidget->horizontalHeader()->setStretchLastSection( true ) ;
 
 	m_ui->pbVolumePath->setIcon( QIcon( ":/sirikali" ) ) ;
@@ -1403,6 +1405,8 @@ void favorites2::setVolumeProperties( const favorites::entry& e )
 
 void favorites2::setUiLikeSsh( const QString& cipherPath,const engines::engine& engine )
 {
+	m_ui->pbFolderPath->setEnabled( false ) ;
+
 	m_ui->lineEditEncryptedFolderPath->setText( cipherPath ) ;
 
 	m_ui->lineEditVolumeType->setText( engine.uiName() ) ;
@@ -1452,6 +1456,7 @@ void favorites2::setDefaultUI()
 	m_ui->lineEditMountOptions->clear() ;
 	m_ui->lineEditSshPortNumber->clear() ;
 	m_ui->lineEditSshPortNumber->setEnabled( false ) ;
+	m_ui->pbFolderPath->setEnabled( true ) ;
 	m_ui->pbIdentityFile->setVisible( false ) ;
 	m_ui->labelPortyNumber->clear() ;
 }
