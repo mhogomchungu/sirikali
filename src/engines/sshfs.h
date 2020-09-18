@@ -46,5 +46,5 @@ public:
 private:
 	mutable QProcessEnvironment m_environment ;
 	const engines::versionGreaterOrEqual m_version_greater_or_equal_minimum ;
-	const QString m_qgetenv ;
+	const QString m_sshAuthSock ;
 } ;

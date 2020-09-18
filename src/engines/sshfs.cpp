@@ -84,13 +84,13 @@ sshfs::sshfs() :
 	engines::engine( _setOptions() ),
 	m_environment( engines::engine::getProcessEnvironment() ),
 	m_version_greater_or_equal_minimum( false,*this,this->minimumVersion() ),
-	m_qgetenv( qgetenv( "SSH_AUTH_SOCK" ) )
+	m_sshAuthSock( qgetenv( "SSH_AUTH_SOCK" ) )
 {
 }
 
 bool sshfs::requiresAPassword( const engines::engine::cmdArgsList& e ) const
 {
-	if( !m_qgetenv.isEmpty() || !e.identityFile.isEmpty() || !e.identityAgent.isEmpty() ){
+	if( !m_sshAuthSock.isEmpty() || !e.identityFile.isEmpty() || !e.identityAgent.isEmpty() ){
 
 		return false ;
 	}else{
@@ -133,22 +133,10 @@ void sshfs::updateOptions( engines::engine::commandOptions& opts,
 	auto fuseOptions = opts.fuseOpts() ;
 	auto exeOptions  = opts.exeOptions() ;
 
-	if( !args.key.isEmpty() ){
-
-		fuseOptions.add( "password_stdin" ) ;
-	}
-
 	if( fuseOptions.doesNotContain( "StrictHostKeyChecking=" ) ){
 
 		fuseOptions.add( "StrictHostKeyChecking=no" ) ;
 	}
-
-	if( !args.identityFile.isEmpty() ){
-
-		fuseOptions.add( "IdentityFile=" + args.identityFile ) ;
-	}
-
-	auto s = fuseOptions.extractStartsWith( "UseNetworkDrive=" ) ;
 
 	if( utility::platformIsWindows() ){
 
@@ -166,20 +154,33 @@ void sshfs::updateOptions( engines::engine::commandOptions& opts,
 		}
 	}
 
-	if( !args.identityAgent.isEmpty() ){
+	if( args.key.isEmpty() ){
 
-		utility::debug() << "Sshfs: Setting Env Variable Of: SSH_AUTH_SOCK=" + args.identityAgent ;
+		fuseOptions.add( "PreferredAuthentications=publickey" ) ;
 
-		m_environment.insert( "SSH_AUTH_SOCK",args.identityAgent ) ;
-	}else{
-		if( m_qgetenv.isEmpty() ){
+		if( args.identityFile.isEmpty() ){
 
-			m_environment.remove( "SSH_AUTH_SOCK" ) ;
+			if( args.identityAgent.isEmpty() ){
+
+				if( m_sshAuthSock.isEmpty() ){
+
+					utility::debug() << "Sshfs: identityAgent Not Set" ;
+					m_environment.remove( "SSH_AUTH_SOCK" ) ;
+				}else{
+					utility::debug() << "Sshfs: From Env, Setting Env Variable Of: SSH_AUTH_SOCK=" + m_sshAuthSock ;
+
+					m_environment.insert( "SSH_AUTH_SOCK",m_sshAuthSock ) ;
+				}
+			}else{
+				utility::debug() << "Sshfs: Setting Env Variable Of: SSH_AUTH_SOCK=" + args.identityAgent ;
+				m_environment.insert( "SSH_AUTH_SOCK",args.identityAgent ) ;
+			}
 		}else{
-			utility::debug() << "Sshfs: From Env, Setting Env Variable Of: SSH_AUTH_SOCK=" + m_qgetenv ;
-
-			m_environment.insert( "SSH_AUTH_SOCK",m_qgetenv ) ;
+			fuseOptions.add( "IdentityFile=" + args.identityFile ) ;
 		}
+	}else{
+		fuseOptions.add( "PreferredAuthentications=password" ) ;
+		fuseOptions.add( "password_stdin" ) ;
 	}
 }
 
