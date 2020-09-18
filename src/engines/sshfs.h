@@ -30,6 +30,8 @@ public:
 
 	const QProcessEnvironment& getProcessEnvironment() const override ;
 
+	engine::engine::error errorCode( const QString& ) const override ;
+
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 
 	engines::engine::args command( const QByteArray& password,

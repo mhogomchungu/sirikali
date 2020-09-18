@@ -1152,6 +1152,7 @@ void favorites2::updateFavorite( bool edit )
 	e.preUnmountCommand    = m_ui->lineEditPreUnMount->text() ;
 	e.postMountCommand     = m_ui->lineEditPostMount->text() ;
 	e.postUnmountCommand   = m_ui->lineEditPostUnmount->text() ;
+	e.reverseMode          = m_ui->cbReverseMode->isChecked() ;
 
 	if( likeSsh ){
 
@@ -1418,6 +1419,8 @@ void favorites2::setUiLikeSsh( const QString& cipherPath,const engines::engine& 
 		m_ui->lineEditMountOptions->setText( engine.sshOptions() ) ;
 	}
 
+	m_ui->label_15->setText( tr( "Create Network Drive" ) ) ;
+
 	m_ui->labelName ->setText( tr( "Remote Ssh Server Address\n(Example: woof@example.com:/remote/path)" ) ) ;
 	m_ui->labelCofigFilePath->setText( tr( "SSH_AUTH_SOCK Socket Path (Optional)" ) ) ;
 	m_ui->labelIdleTimeOut->setText( tr( "IdentityFile Path (Optional)" ) ) ;
@@ -1450,6 +1453,7 @@ void favorites2::setUiLikeSsh( const QString& cipherPath,const engines::engine& 
 
 void favorites2::setDefaultUI()
 {
+	m_ui->label_15->setText( tr( "Reverse Mode (Gocryptfs and Encfs Only)" ) ) ;
 	m_ui->labelName ->setText( tr( "Encrypted Folder Path" ) ) ;
 	m_ui->labelCofigFilePath->setText( tr( "Config File Path (Optional)" ) ) ;
 	m_ui->labelIdleTimeOut->setText( tr( "Idle TimeOut (Optional)" ) ) ;

@@ -78,43 +78,52 @@ static QString _create_entry_path( const favorites::entry& e,bool newFormat )
 
 static void _update_favorites( favorites::entry& m )
 {
-	if( m.mountOptions.contains( "IdentityAgent=" ) || m.mountOptions.contains( "IdentityFile=" ) ){
+	const auto mOpts = utility::split( m.mountOptions,',' ) ;
 
-		QStringList ss ;
+	QStringList ss ;
 
-		auto _remove_quotes = []( QString s ){
+	auto _remove_quotes = []( QString s ){
 
-			if( s.startsWith( '"' ) ){
+		if( s.startsWith( '"' ) ){
 
-				s = s.mid( 1 ) ;
-			}
-
-			if( s.endsWith( '"' ) ){
-
-				s = utility::removeLast( s,1 ) ;
-			}
-
-			return s ;
-		} ;
-
-		for( const auto& it : utility::split( m.mountOptions,',' ) ){
-
-			if( it.startsWith( "IdentityAgent=" ) ){				
-
-				m.identityAgent = _remove_quotes( it.mid( 14 ) ) ;
-
-			}else if( it.startsWith( "IdentityFile=" ) ){
-
-				m.identityFile = _remove_quotes( it.mid( 13 ) ) ;
-			}else{
-				ss.append( it ) ;
-			}
+			s = s.mid( 1 ) ;
 		}
 
-		if( !ss.isEmpty() ){
+		if( s.endsWith( '"' ) ){
 
-			m.mountOptions = ss.join( ',' ) ;
+			s = utility::removeLast( s,1 ) ;
 		}
+
+		return s ;
+	} ;
+
+	for( const auto& it : mOpts ){
+
+		if( it.startsWith( "IdentityAgent=" ) ){
+
+			m.identityAgent = _remove_quotes( it.mid( 14 ) ) ;
+
+		}else if( it.startsWith( "IdentityFile=" ) ){
+
+			m.identityFile = _remove_quotes( it.mid( 13 ) ) ;
+
+		}else if( it.contains( "UseNetworkDrive=no",Qt::CaseInsensitive ) ){
+
+			m.reverseMode = false ;
+
+		}else if( it.contains( "UseNetworkDrive=yes",Qt::CaseInsensitive ) ){
+
+			m.reverseMode = true ;
+
+		}else if( !it.isEmpty() ){
+
+			ss.append( it ) ;
+		}
+	}
+
+	if( !ss.isEmpty() ){
+
+		m.mountOptions = ss.join( ',' ) ;
 	}
 }
 

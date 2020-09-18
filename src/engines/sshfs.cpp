@@ -70,7 +70,7 @@ static engines::engine::BaseOptions _setOptions()
 		s.autoDeletesMountPoint = true ;
 
 		s.versionMinimum = "3.5.2" ;
-		s.sshOptions = "create_file_umask=0000,create_dir_umask=0000,umask=0000,idmap=user,StrictHostKeyChecking=no,UseNetworkDrive=no" ;
+		s.sshOptions = "create_file_umask=0000,create_dir_umask=0000,umask=0000,idmap=user,StrictHostKeyChecking=no" ;
 	}else{
 		s.autoCreatesMountPoint = false ;
 		s.autoDeletesMountPoint = false ;
@@ -156,14 +156,12 @@ void sshfs::updateOptions( engines::engine::commandOptions& opts,
 
 		if( utility::isDriveLetter( args.mountPoint ) ){
 
-			if( !exeOptions.contains( "--VolumePrefix=" ) ){
+			if( !exeOptions.contains( "--VolumePrefix=" ) &&
+					args.boolOptions.unlockInReverseMode ){
 
-				if( utility::endsWithAtLeastOne( s,"yes","Yes","YES" ) ){
-
-					auto x = args.cipherFolder ;
-					x.replace( ":",";" ) ;
-					exeOptions.add ( "--VolumePrefix=\\mysshfs\\" + x ) ;
-				}
+				auto x = args.cipherFolder ;
+				x.replace( ":",";" ) ;
+				exeOptions.add( "--VolumePrefix=\\mysshfs\\" + x ) ;
 			}
 		}
 	}
@@ -190,6 +188,16 @@ engines::engine::args sshfs::command( const QByteArray& password,
 				      bool create ) const
 {
 	return custom::set_command( *this,password,args,create ) ;
+}
+
+engines::engine::error sshfs::errorCode( const QString& e ) const
+{
+	if( e.contains( "invalid argument" ) ){
+
+		return engines::engine::error::Failed ;
+	}else{
+		return engines::engine::errorCode( e ) ;
+	}
 }
 
 engines::engine::status sshfs::errorCode( const QString& e,int s ) const

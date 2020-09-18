@@ -383,6 +383,8 @@ static QStringList _resolve( const resolveStruct& r )
 		s.set( opts ) ;
 	} ) ;
 
+	//mm.removeAll( QString() ) ;
+
 	return mm ;
 }
 

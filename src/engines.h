@@ -613,13 +613,13 @@ public:
 		const QString& windowsInstallPathRegistryValue() const ;
 		const QString& windowsExecutableFolderPath() const ;
 
-		engine::engine::error errorCode( const QString& ) const ;
-
 		QByteArray setPassword( const QByteArray& ) const ;
 
 		engine( BaseOptions ) ;
 
 		virtual ~engine() ;
+
+		virtual engine::engine::error errorCode( const QString& ) const ;
 
 		virtual void updateVolumeList( const engines::engine::cmdArgsList& ) const ;
 
