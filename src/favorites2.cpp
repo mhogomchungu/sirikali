@@ -1419,7 +1419,10 @@ void favorites2::setUiLikeSsh( const QString& cipherPath,const engines::engine& 
 		m_ui->lineEditMountOptions->setText( engine.sshOptions() ) ;
 	}
 
-	m_ui->label_15->setText( tr( "Create Network Drive" ) ) ;
+	if( utility::platformIsWindows() ){
+
+		m_ui->label_15->setText( tr( "Create Network Drive" ) ) ;
+	}
 
 	m_ui->labelName ->setText( tr( "Remote Ssh Server Address\n(Example: woof@example.com:/remote/path)" ) ) ;
 	m_ui->labelCofigFilePath->setText( tr( "SSH_AUTH_SOCK Socket Path (Optional)" ) ) ;
