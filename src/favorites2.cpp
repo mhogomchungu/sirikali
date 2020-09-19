@@ -79,6 +79,10 @@ favorites2::favorites2( QWidget * parent,
 
 	m_settings.setParent( parent,&m_parentWidget,this ) ;
 
+	m_ui->pbFailedToCreateFavorite->setVisible( false ) ;
+
+	m_ui->labelFailedToCreateFavorite->setVisible( false ) ;
+
 	m_ui->lineEditVolumeType->setEnabled( false ) ;
 
 	m_ui->tableWidget->horizontalHeader()->setStretchLastSection( true ) ;
@@ -163,6 +167,17 @@ favorites2::favorites2( QWidget * parent,
 	connect( m_ui->pbFolderPath,&QPushButton::clicked,[ this ](){
 
 		this->folderPath() ;
+	} ) ;
+
+	connect( m_ui->pbFailedToCreateFavorite,&QPushButton::clicked,[ this ](){
+
+		m_ui->pbFailedToCreateFavorite->setVisible( false ) ;
+
+		m_ui->labelFailedToCreateFavorite->setVisible( false ) ;
+
+		m_ui->pbAdd->setEnabled( true ) ;
+
+		m_ui->pbAdd->setFocus() ;
 	} ) ;
 
 	connect( m_ui->tableWidgetWallet,&QTableWidget::customContextMenuRequested,[ this ]( QPoint s ){
@@ -1195,7 +1210,29 @@ void favorites2::updateFavorite( bool edit )
 			e.mountPointPath = path + "/" + utility::split( dev,'/' ).last() ;
 		}
 
-		favorites::instance().add( e ) ;
+		auto a = favorites::instance().add( e ) ;
+
+		if( a != favorites::error::SUCCESS ){
+
+			m_ui->pbFailedToCreateFavorite->setVisible( true ) ;
+
+			m_ui->labelFailedToCreateFavorite->setVisible( true ) ;
+
+			m_ui->pbAdd->setEnabled( false ) ;
+
+			m_ui->pbFailedToCreateFavorite->setFocus() ;
+
+			if( a == favorites::error::ENTRY_ALREADY_EXISTS ){
+
+				m_ui->labelFailedToCreateFavorite->setText( tr( "Entry Already Exist" ) ) ;
+
+			}else{
+				m_ui->labelFailedToCreateFavorite->setText( tr( "Failed To Create Entry" ) ) ;
+			}
+
+			return ;
+		}
+
 	}
 
 	m_ui->lineEditPreMount->clear() ;
