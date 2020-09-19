@@ -22,19 +22,21 @@
   <translation type="qt">sirikali</translation>
   <screenshots>
     <screenshot type="default">
-      <image>https://raw.githubusercontent.com/mhogomchungu/sirikali/master/images/Screenshot_20160810_215609.png</image>
+      <image>https://raw.githubusercontent.com/mhogomchungu/sirikali/master/images/Screenshot_20190912_114700.png</image>
       <caption>Manage encrypted directories</caption>
     </screenshot>
     <screenshot>
-      <image>https://raw.githubusercontent.com/mhogomchungu/sirikali/master/images/Screenshot_20160810_215641.png</image>
+      <image>https://raw.githubusercontent.com/mhogomchungu/sirikali/master/images/Screenshot_20190912_113930.png</image>
     </screenshot>
     <screenshot>
-      <image>https://raw.githubusercontent.com/mhogomchungu/sirikali/master/images/Screenshot_20160810_220122.png</image>
+      <image>https://raw.githubusercontent.com/mhogomchungu/sirikali/master/images/Screenshot_20190912_114512.png</image>
     </screenshot>
   </screenshots>
   <releases>
     <!-- Get timestamp with 'date +%s' -->
-
+    <release version="1.4.6" timestamp="1596453789"></release>
+    <release version="1.4.5" timestamp="1596304029"></release>
+    <release version="1.4.4" timestamp="1590982845"></release>
     <release version="1.4.3" timestamp="1585718929"></release>
     <release version="1.4.2" timestamp="1576640518"></release>
     <release version="1.4.1" timestamp="1571142210"></release>

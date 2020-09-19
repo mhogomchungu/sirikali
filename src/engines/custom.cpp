@@ -26,127 +26,111 @@
 
 #include <QDir>
 
-static void _parse_v1( custom::opts& s,const SirikaliJson& json )
+static void _parse( engines::engine::BaseOptions& s,const SirikaliJson& json )
 {
-	s.baseOpts.backendTimeout            = 0 ;
-	s.baseOpts.backendRequireMountPath   = true ;
-	s.baseOpts.autorefreshOnMountUnMount = true ;
-	s.baseOpts.takesTooLongToUnlock      = false ;
-	/*
-	 * Above options are are for v1.1 and are autoset here to be overridden later
-	 */
-	s.baseOpts.requiresPolkit              = false ;
-	s.baseOpts.hasGUICreateOptions         = true ;
-	s.baseOpts.customBackend               = true ;
-	s.baseOpts.passwordFormat              = json.getByteArray( "passwordFormat" ) ;
-	s.baseOpts.requiresAPassword           = json.getBool( "requiresAPassword" ) ;
-	s.baseOpts.autoMountsOnCreate          = json.getBool( "autoMountsOnVolumeCreation" ) ;
-	s.baseOpts.supportsMountPathsOnWindows = json.getBool( "supportsMountPointPaths" ) ;
-	s.mountControlStructure                = json.getString( "mountControlStructure" ) ;
-	s.createControlStructure               = json.getString( "createControlStructure" ) ;
-	s.baseOpts.reverseString               = json.getString( "reverseString" ) ;
-	s.baseOpts.idleString                  = json.getString( "idleString" ) ;
-	s.baseOpts.executableName              = json.getString( "executableName" ) ;
-	s.baseOpts.incorrectPasswordText       = json.getString( "wrongPasswordText" ) ;
-	s.baseOpts.incorrectPassWordCode       = json.getString( "wrongPasswordErrorCode" ) ;
-	s.baseOpts.unMountCommand              = json.getString( "unMountCommand" ) ;
-	s.baseOpts.configFileArgument          = json.getString( "configFileArgument" ) ;
-	s.baseOpts.windowsUnMountCommand       = json.getString( "windowsUnMountCommand" ) ;
-	s.baseOpts.failedToMountList           = json.getStringList( "failedToMountTextList" ) ;
-	s.baseOpts.successfulMountedList       = json.getStringList( "successfullyMountedList" ) ;
-	s.baseOpts.configFileNames             = json.getStringList( "configFileNames" ) ;
-	s.baseOpts.names                       = json.getStringList( "names" ) ;
-	s.baseOpts.fuseNames                   = json.getStringList( "fuseNames" ) ;
-	s.baseOpts.fileExtensions              = json.getStringList( "fileExtensions" ) ;
-	s.baseOpts.volumePropertiesCommands    = json.getStringList( "volumePropertiesCommands" ) ;
-	s.baseOpts.windowsInstallPathRegistryKey   = json.getString( "windowsInstallPathRegistryKey" ) ;
-	s.baseOpts.windowsInstallPathRegistryValue = json.getString( "windowsInstallPathRegistryValue" ) ;
-	s.baseOpts.hasConfigFile                   = s.baseOpts.configFileNames.size() > 0 ;
-	s.baseOpts.notFoundCode                    = engines::engine::status::customCommandNotFound ;
-}
+	s.requiresPolkit                  = false ;
+	s.hasGUICreateOptions             = true ;
+	s.customBackend                   = true ;
 
-static void _parse_v11( custom::opts& s,const SirikaliJson& json )
-{
-	s.baseOpts.backendTimeout            = json.getInterger( "backendTimeout" ) ;
-	s.baseOpts.backendRequireMountPath   = json.getBool( "backendRequireMountPath" ) ;
-	s.baseOpts.autorefreshOnMountUnMount = json.getBool( "autorefreshOnMountUnMount" ) ;
-	s.baseOpts.takesTooLongToUnlock      = json.getBool( "takesTooLongToUnlock" ) ;
-}
+	s.setsCipherPath                  = json.getBool( "setsCipherPath",true ) ;
+	s.backendRunsInBackGround         = json.getBool( "runsInBackGround",true ) ;
+	s.backendRequireMountPath         = json.getBool( "backendRequireMountPath",true ) ;
+	s.autorefreshOnMountUnMount       = json.getBool( "autorefreshOnMountUnMount",true ) ;
+	s.takesTooLongToUnlock            = json.getBool( "takesTooLongToUnlock",false ) ;
+	s.requiresAPassword               = json.getBool( "requiresAPassword",true ) ;
+	s.autoMountsOnCreate              = json.getBool( "autoMountsOnVolumeCreation",true ) ;
+	s.supportsMountPathsOnWindows     = json.getBool( "windowsSupportsMountPointPaths",false ) ;
+	s.acceptsSubType                  = json.getBool( "acceptsSubType",true ) ;
+	s.acceptsVolName                  = json.getBool( "acceptsVolName",true ) ;
+	s.likeSsh                         = json.getBool( "likeSsh",false ) ;
+	s.autoCreatesMountPoint           = json.getBool( "autoCreatesMountPoint",false ) ;
+	s.autoDeletesMountPoint           = json.getBool( "autoDeletesMountPoint",false ) ;
 
-static QString _getVersion( const SirikaliJson& json )
-{
-	try{
-		return json.getString( "versionNumber" ) ;
+	s.backendTimeout                  = json.getInterger( "backendTimeout",0 ) ;
 
-	}catch( ... ){
+	s.passwordFormat                  = json.getByteArray( "passwordFormat","%{password}" ) ;
 
-		return "1.0" ;
+	s.sshOptions                      = json.getString( "sshOptions" ) ;
+	s.mountControlStructure           = json.getString( "mountControlStructure","%{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ) ;
+	s.createControlStructure          = json.getString( "createControlStructure" ) ;
+	s.reverseString                   = json.getString( "reverseString" ) ;
+	s.idleString                      = json.getString( "idleString" ) ;
+	s.executableName                  = json.getString( "executableName" ) ;
+	s.incorrectPasswordText           = json.getString( "wrongPasswordText" ) ;
+	s.incorrectPassWordCode           = json.getString( "wrongPasswordErrorCode" ) ;
+	s.configFileArgument              = json.getString( "configFileArgument" ) ;
+	s.keyFileArgument                 = json.getString( "keyFileArgument" ) ;
+	s.windowsInstallPathRegistryKey   = json.getString( "windowsInstallPathRegistryKey" ) ;
+	s.windowsInstallPathRegistryValue = json.getString( "windowsInstallPathRegistryValue" ) ;
+	s.windowsExecutableFolderPath     = json.getString( "windowsExecutableFolderPath" ) ;
+	s.displayName                     = json.getString( "displayName" ) ;
+	s.versionMinimum                  = json.getString( "versionMinimum" ) ;
+
+	s.windowsUnMountCommand           = json.getStringList( "windowsUnMountCommand" ) ;
+	s.unMountCommand                  = json.getStringList( "unMountCommand" ) ;
+	s.failedToMountList               = json.getStringList( "failedToMountTextList" ) ;
+	s.successfulMountedList           = json.getStringList( "windowsSuccessfullyMountedList" ) ;
+	s.configFileNames                 = json.getStringList( "configFileNames" ) ;
+	s.names                           = json.getStringList( "names" ) ;
+	s.fuseNames                       = json.getStringList( "fuseNames" ) ;
+	s.fileExtensions                  = json.getStringList( "fileExtensions" ) ;
+	s.volumePropertiesCommands        = json.getStringList( "volumePropertiesCommands" ) ;
+	s.hasConfigFile                   = s.configFileNames.size() > 0 ;
+
+	s.notFoundCode                    = engines::engine::status::customCommandNotFound ;
+
+	auto versionArgumentString        = json.getString( "versionArgumentString" ) ;
+	auto versionOutputStdOut          = json.getBool( "versionOutputStdOut",true ) ;
+	auto versionStringTextPosition    = json.getVector< int >( "versionStringTextPosition" ) ;
+
+	if( !versionArgumentString.isEmpty() && versionStringTextPosition.size() > 1 ){
+
+		engines::engine::BaseOptions::vInfo ss ;
+
+		ss.versionArgument = std::move( versionArgumentString ) ;
+		ss.readFromStdOut  = versionOutputStdOut ;
+		ss.argumentLine    = versionStringTextPosition[ 0 ] ;
+		ss.argumentNumber  = versionStringTextPosition[ 1 ] ;
+
+		s.versionInfo.emplace_back( std::move( ss ) ) ;
 	}
 }
 
-static utility::result< custom::opts > _getOptions( const QByteArray& e,const QString& s )
+static utility2::result< engines::engine::BaseOptions > _getOptions( QFile& f )
 {
-	auto _log_error = []( const QString& msg,const QString& path ){
+	engines::engine::BaseOptions s ;
 
-		auto a = "\nFailed to parse file for reading: " + path ;
+	SirikaliJson json( f,utility::jsonLogger() ) ;
 
-		utility::debug::logErrorWhileStarting( msg + a ) ;
-	} ;
+	if( json.passed() ){
 
-	try{
-		custom::opts s ;
-
-		SirikaliJson json( e,SirikaliJson::type::CONTENTS ) ;
-
-		auto a = _getVersion( json ) ;
-
-		if( a == "1.1" ){
-
-			_parse_v1( s,json ) ;
-			_parse_v11( s,json ) ;
-		}else{
-			_parse_v1( s,json ) ;
-		}
+		_parse( s,json ) ;
 
 		return s ;
-
-	}catch( const SirikaliJson::exception& e ){
-
-		_log_error( e.what(),s ) ;
-
-	}catch( const std::exception& e ){
-
-		_log_error( e.what(),s ) ;
-
-	}catch( ... ){
-
-		_log_error( "Unknown error has occured",s ) ;
+	}else{
+		return {} ;
 	}
-
-	return {} ;
 }
 
 static void _add_engines( const QString& path,
-			  std::vector< std::unique_ptr< engines::engine >>& engines )
+			  std::vector< std::unique_ptr< engines::engine > >& engines )
 {
-	const auto s = QDir( path ).entryList( QDir::Filter::Files ) ;
-
 	QFile file ;
 
-	for( const auto& it : s ){
+	for( const auto& it : QDir( path ).entryList( QDir::Filter::Files ) ){
 
 		auto c = path + it ;
 		file.setFileName( c ) ;
 
 		if( file.open( QIODevice::ReadOnly ) ){
 
-			auto s = _getOptions( file.readAll(),c ) ;
+			auto s = _getOptions( file ) ;
 
 			if( s.has_value() ){
 
 				const auto& m = s.value() ;
 
-				if( m.baseOpts.names.size() > 0 && m.baseOpts.fuseNames.size() > 0 ){
+				if( m.names.size() > 0 && m.fuseNames.size() > 0 ){
 
 					auto n = QString( it ).replace( ".json","" ) ;
 
@@ -162,6 +146,8 @@ static void _add_engines( const QString& path,
 			}
 
 			file.close() ;
+		}else{
+			utility::debug::logErrorWhileStarting( QString( "Warning, Failed To Open File For Reading: %1" ).arg( path ) ) ;
 		}
 	}
 }
@@ -183,65 +169,261 @@ void custom::addEngines( std::vector< std::unique_ptr< engines::engine >>& engin
 	}
 }
 
-custom::custom( custom::opts s ) :
-	engines::engine( std::move( s.baseOpts ) ),
-	m_mountControlStructure( s.mountControlStructure ),
-	m_createControlStructure( s.createControlStructure )
+custom::custom( engines::engine::BaseOptions baseOpts ) :
+	engines::engine( std::move( baseOpts ) )
 {
 }
 
-engines::engine::args custom::command( const QByteArray& password,
-				       const engines::engine::cmdArgsList& args ) const
-{
-	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
+struct resolveStruct{
+	const engines::engine& engine ;
+	const QString& controlStructure ;
+	const engines::engine::cmdArgsList& args ;
+	const QByteArray& password ;
+	const QStringList& opts ;
+	const QStringList& fuseOpts ;
+} ;
 
-	if( args.create ){
-
-		auto exeOptions = m.exeOptions() ;
-
-		if( !args.configFilePath.isEmpty() ){
-
-			exeOptions.add( args.configFilePath ) ;
-		}
-
-		exeOptions.add( args.opt.createOptions ) ;
-
-		QString cmd = m_createControlStructure ;
-
-		cmd.replace( "%{mountOptions}",exeOptions.get(),Qt::CaseInsensitive ) ;
-		cmd.replace( "%{cipherFolder}",args.cipherFolder,Qt::CaseInsensitive ) ;
-		cmd.replace( "%{mountPoint}",args.mountPoint,Qt::CaseInsensitive ) ;
-		cmd.replace( "%{password}",password ) ;
-
-		return { args,m,args.exe + " " + cmd } ;
-	}else{
-		QString cmd = m_mountControlStructure ;
-
-		auto exeOptions = m.exeOptions() ;
-
-		if( !args.configFilePath.isEmpty() ){
-
-			exeOptions.add( args.configFilePath ) ;
-		}
-
-		if( args.opt.boolOptions.unlockInReverseMode ){
-
-			exeOptions.add( this->reverseString() ) ;
-		}
-
-		if( !args.opt.idleTimeout.isEmpty() && !this->idleString().isEmpty() ){
-
-			exeOptions.addPair( this->idleString(),args.opt.idleTimeout ) ;
-		}
-
-		cmd.replace( "%{mountOptions}",exeOptions.get(),Qt::CaseInsensitive ) ;
-		cmd.replace( "%{cipherFolder}",args.cipherFolder,Qt::CaseInsensitive ) ;
-		cmd.replace( "%{mountPoint}",args.mountPoint,Qt::CaseInsensitive ) ;
-		cmd.replace( "%{fuseOpts}",m.fuseOpts().get(),Qt::CaseInsensitive ) ;
-		cmd.replace( "%{password}",password ) ;
-
-		return { args,m,args.exe + " " + cmd } ;
+class resolve{
+public:
+	struct args{
+		const char * first ;
+		const QString& second ;
+	} ;
+	template< typename ... T >
+	resolve( T&& ... e )
+	{
+		this->set( std::forward< T >( e ) ... ) ;
 	}
+	QString option( QString a ) const
+	{
+		for( const auto& it : m_opts ){
+
+			if( !it.second.isEmpty() ){
+
+				a.replace( it.first,it.second ) ;
+			}
+		}
+
+		for( const auto& it : m_opts ){
+
+			if( a.contains( it.first ) ) {
+
+				return {} ;
+			}
+		}
+
+		return a ;
+	}
+private:
+	template< typename T >
+	void set( T&& t )
+	{
+		m_opts.emplace_back( std::forward< T >( t ) ) ;
+	}
+	template< typename E,typename ... T >
+	void set( E&& e,T&& ... t )
+	{
+		this->set( std::forward< E >( e ) ) ;
+		this->set( std::forward< T >( t ) ... ) ;
+	}
+	std::vector< resolve::args > m_opts ;
+};
+
+class replace{
+public:
+	replace( QStringList& s,int position ) :
+		m_stringList( s ),m_position( position )
+	{
+	}
+	void set( const QString& e )
+	{
+		m_stringList.insert( m_position,e ) ;
+	}
+	void set( const QStringList& e )
+	{
+		for( int i = e.size() - 1 ; i >= 0 ; i-- ){
+
+			m_stringList.insert( m_position,e.at( i ) ) ;
+		}
+	}
+private:
+	QStringList& m_stringList ;
+	int m_position ;
+};
+
+template< typename ... T >
+static void _resolve( QStringList& orgs,
+		      const QString& name,
+		      const QString& controlStructure,
+		      T&& ... rrr )
+{	
+	if( controlStructure.isEmpty() ){
+
+		return ;
+	}
+
+	resolve rr( std::forward< T >( rrr ) ... ) ;
+
+	auto m = utility::split( controlStructure,' ' ) ;
+
+	if( m.size() == 1 ){
+
+		auto a = rr.option( m.at( 0 ) ) ;
+
+		if( !a.isEmpty() ){
+
+			orgs.append( a ) ;
+		}
+
+	}else if( m.size() == 2 ){		
+
+		auto a = rr.option( m.at( 1 ) ) ;
+
+		if( !a.isEmpty() ){
+
+			orgs.append( m.at( 0 ) ) ;
+			orgs.append( a ) ;
+		}
+	}else{
+		auto s = QString( "Wrong control structure detected in custom backend named \"%1\"." ) ;
+		utility::debug::logErrorWhileStarting( s.arg( name ) ) ;
+	}
+}
+
+static QStringList _replace_opts( const resolveStruct& r )
+{
+	auto opts = r.opts ;
+
+	_resolve( opts,
+		  r.engine.name(),
+		  r.engine.configFileArgument(),
+		  resolve::args{ "%{cipherFolder}",r.args.cipherFolder },
+		  resolve::args{ "%{configFileName}",r.engine.configFileName() },
+		  resolve::args{ "%{configFilePath}",r.args.configFilePath } ) ;
+
+	_resolve( opts,
+		  r.engine.name(),
+		  r.engine.keyFileArgument(),
+		  resolve::args{ "%{keyfile}",r.args.keyFile } ) ;
+
+	_resolve( opts,
+		  r.engine.name(),
+		  r.engine.idleString(),
+		  resolve::args{ "%{timeout}",r.args.idleTimeout } ) ;
+
+	return opts ;
+}
+
+template< typename Function >
+static void _replace_opts( QStringList& mm,
+			    const char * controlStructure,
+			    Function function )
+{
+	for( int i = 0 ; i < mm.size() ; i++ ){
+
+		auto& it = mm[ i ] ;
+
+		if( it == controlStructure ){
+
+			mm.removeAt( i ) ;
+
+			function( { mm,i } ) ;
+
+			break ;
+		}
+	}
+}
+
+static QStringList _resolve( const resolveStruct& r )
+{
+	auto mm = utility::split( r.controlStructure,' ' ) ;
+
+	_replace_opts( mm,"%{cipherFolder}",[ & ]( replace s ){
+
+		s.set( r.args.cipherFolder )  ;
+	} ) ;
+
+	_replace_opts( mm,"%{mountPoint}",[ & ]( replace s ){
+
+		s.set( r.args.mountPoint ) ;
+	} ) ;
+
+	_replace_opts( mm,"%{password}",[ & ]( replace s ){
+
+		s.set( r.password ) ;
+	} ) ;
+
+	_replace_opts( mm,"%{fuseOpts}",[ & ]( replace s ){
+
+		if( !r.fuseOpts.isEmpty() ){
+
+			if( r.args.fuseOptionsSeparator.isEmpty() ){
+
+				s.set( { "-o",r.fuseOpts.join( ',' ) } ) ;
+			}else{
+				s.set( { r.args.fuseOptionsSeparator,"-o",r.fuseOpts.join( ',' ) } ) ;
+			}
+		}
+	} ) ;
+
+	_replace_opts( mm,"%{createOptions}",[ & ]( replace s ){
+
+		s.set( _replace_opts( r ) ) ;
+	} ) ;
+
+	_replace_opts( mm,"%{mountOptions}",[ & ]( replace s ){
+
+		auto opts = _replace_opts( r ) ;
+
+		if( r.args.boolOptions.unlockInReverseMode ){
+
+			opts.append( r.engine.reverseString() ) ;
+		}
+
+		s.set( opts ) ;
+	} ) ;
+
+	mm.removeAll( QString() ) ;
+
+	return mm ;
+}
+
+engines::engine::args custom::set_command( const engines::engine& engine,
+					   const QByteArray& password,
+					   const engines::engine::cmdArgsList& args,
+					   bool create )
+{
+	engines::engine::commandOptions m( create,engine,args ) ;
+
+	if( create ){
+
+		auto opts = args.createOptions + m.exeOptions().get() ;
+
+		auto s = _resolve( { engine,
+				     engine.createControlStructure(),
+				     args,
+				     password,
+				     opts,
+				     m.fuseOpts().get() } ) ;
+
+		return { args,m,engine.executableFullPath(),s } ;
+	}else{
+		auto s = _resolve( { engine,
+				     engine.mountControlStructure(),
+				     args,
+				     password,
+				     m.exeOptions().get(),
+				     m.fuseOpts().get() } ) ;
+
+		return { args,m,engine.executableFullPath(),s } ;
+	}
+}
+
+engines::engine::args custom::command( const QByteArray& password,
+				       const engines::engine::cmdArgsList& args,
+				       bool create ) const
+{
+	return custom::set_command( *this,password,args,create ) ;
 }
 
 engines::engine::status custom::errorCode( const QString& e,int s ) const

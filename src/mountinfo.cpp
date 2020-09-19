@@ -34,29 +34,6 @@
 #include <vector>
 #include <utility>
 
-QString mountinfo::mountProperties( const QString& mountPoint,
-				    const QString& mode,
-				    const QString& fileSystem,
-				    const QString& cipherPath )
-{
-	return QString( "x x x:x x %1 %2,x - %3 %4 x" ).arg( mountPoint,mode,fileSystem,cipherPath ) ;
-}
-
-QString mountinfo::encodeMountPath( const QString& e )
-{
-	auto m = e ;
-	/*
-	 * linux's /proc/self/mountinfo makes these substitutions and we make
-	 * them too to be consistent with linux
-	 */
-	//m.replace( "\n","\\012" ) ;
-	m.replace( " ","\\040" ) ;
-	//m.replace( "\\","\\134" ) ;
-	//m.replace( "\\t","\\011" ) ;
-
-	return m ;
-}
-
 static QString _getFileSystem( const QString& dev,const QString& fs )
 {
 	/*
@@ -96,36 +73,29 @@ static QString _getFileSystem( const QString& dev,const QString& fs )
 	return fs ;
 }
 
-static QStringList _macox_volumes()
+static volumeInfo::List _qt_volumes()
 {
-	QStringList s ;
-	QStringList m ;
-
-	QString e = "(mp:%1)(dev:%2)(fs:%3)(dn:%4)(nm:%5)" ;
+	volumeInfo::List s ;
 
 	for( const auto& it : QStorageInfo::mountedVolumes() ){
 
-		auto dev = mountinfo::encodeMountPath( it.device() ) ;
+		auto dev = engines::engine::encodeMountPath( it.device() ) ;
 
-		auto mp = mountinfo::encodeMountPath( it.rootPath() ) ;
+		auto mp = engines::engine::encodeMountPath( it.rootPath() ) ;
 
 		auto fs = _getFileSystem( dev,it.fileSystemType() ) ;
 
-		s.append( mountinfo::mountProperties( mp,it.isReadOnly() ? "ro" : "rw",fs,dev ) ) ;
+		auto mode = it.isReadOnly() ? "ro" : "rw" ;
 
-		m.append( e.arg( it.rootPath(),it.device(),it.fileSystemType(),it.displayName(),it.name() ) ) ;
+		s.emplace_back( std::move( dev ),std::move( mp ),std::move( fs ),mode ) ;
 	}
-
-	utility::debug() << s ;
-
-	utility::debug() << m ;
 
 	return s ;
 }
 
-static QStringList _windows_volumes()
+static volumeInfo::List _windows_volumes()
 {
-	QStringList s ;
+	volumeInfo::List s ;
 
 	for( const auto& e : SiriKali::Windows::getMountOptions() ){
 
@@ -133,48 +103,79 @@ static QStringList _windows_volumes()
 
 		auto m = e.subtype + "@" + e.cipherFolder ;
 
-		s.append( mountinfo::mountProperties( e.mountPointPath,e.mode,fs,m ) ) ;
+		s.emplace_back( std::move( m ),e.mountPointPath,std::move( fs ),e.mode ) ;
 	}
 
 	return s ;
 }
 
-static QStringList _unlocked_volumes()
+static volumeInfo::List _linux_volumes()
+{
+	volumeInfo::List s ;
+
+	for( const auto& e : utility::split( utility::fileContents( "/proc/self/mountinfo" ) ) ){
+
+		const auto k = utility::split( e,' ' ) ;
+
+		const auto m = k.size() ;
+
+		if( m > 5 ){
+
+			const auto& q = k.at( 5 ) ;
+
+			s.emplace_back( k.at( m - 2 ),k.at( 4 ),k.at( m - 3 ),q.mid( 0,2 ),q ) ;
+		}
+	}
+
+	return s ;
+}
+
+static volumeInfo::List _unlocked_volumes()
 {
 	auto a = [](){
 
 		if( utility::platformIsLinux() ){
 
-			return utility::split( utility::fileContents( "/proc/self/mountinfo" ) ) ;
+			return _linux_volumes() ;
 
-		}else if( utility::platformIsOSX() ){
+		}else if( utility::platformIsWindows() ){
 
-			return _macox_volumes() ;
-		}else{
 			return _windows_volumes() ;
+		}else{
+			return _qt_volumes() ;
 		}
 	}() ;
 
-	return a + engines::instance().mountInfo( a ) ;
+	for( auto&& it : engines::instance().mountInfo( a ) ){
+
+		a.emplace_back( std::move( it ) ) ;
+	}
+
+	return a ;
 }
 
-mountinfo::mountinfo( QObject * parent,bool e,std::function< void() >&& quit ) :
+mountinfo::mountinfo( QObject * parent,
+		      bool e,
+		      std::function< void() > quit,
+		      std::function< void( const QString& ) > debug ) :
 	m_parent( parent ),
 	m_quit( std::move( quit ) ),
+	m_debug( std::move( debug ) ),
 	m_announceEvents( e ),
+	m_linuxMonitorExit( false ),
+	m_folderMonitorExit( false ),
 	m_oldMountList( _unlocked_volumes() ),
-	m_dbusMonitor( [ this ]( const QString& e ){ this->autoMount( e ) ; } ),
-	m_folderMountEvents( [ this ]( const QString& e ){ this->autoMount( e ) ; } )
+	m_dbusMonitor( [ this ]( const QString& e ){ this->autoMount( e ) ; },m_debug )
 {
 	if( utility::platformIsLinux() ){
 
 		this->linuxMonitor() ;
 
-	}else if( utility::platformIsOSX() ){
+	}else if( utility::platformIsWindows() ){
 
-		this->osxMonitor() ;
-	}else{
 		this->windowsMonitor() ;
+	}else{
+		this->qtMonitor() ;
 	}
 }
 
@@ -182,91 +183,84 @@ mountinfo::~mountinfo()
 {
 }
 
+static volumeInfo::FsEntry _decode( const engines::engine& engine,volumeInfo::FsEntry e )
+{
+	auto _decode = []( QString& path,bool set_offset ){
+
+		engines::engine::decodeSpecialCharacters( path ) ;
+
+		if( set_offset ){
+
+			path = path.mid( path.indexOf( '@' ) + 1 ) ;
+		}
+	} ;
+
+	auto _starts_with = []( const engines::engine& e,const QString& s ){
+
+		for( const auto& it : e.names() ){
+
+			if( s.startsWith( it + "@",Qt::CaseInsensitive ) ){
+
+				return true ;
+			}
+		}
+
+		return false ;
+	} ;
+
+	if( engine.setsCipherPath() ){
+
+		if( _starts_with( engine,e.cipherPath ) ){
+
+			_decode( e.cipherPath,true ) ;
+		}else{
+			if( e.cipherPath.compare( engine.name(),Qt::CaseInsensitive ) ){
+
+				_decode( e.cipherPath,false ) ;
+			}else{
+				e.cipherPath = crypto::sha256( e.mountPoint ).mid( 0,20 ) ;
+			}
+		}
+	}else{
+		e.cipherPath = crypto::sha256( e.mountPoint ).mid( 0,20 ) ;
+	}
+
+	_decode( e.mountPoint,false ) ;
+
+	const auto& n = engine.displayName() ;
+
+	if( n.isEmpty() ){
+
+		e.fileSystem.replace( "fuse.","" ) ;
+
+		if( !e.fileSystem.isEmpty() ){
+
+			e.fileSystem.replace( 0,1,e.fileSystem.at( 0 ).toUpper() ) ;
+		}
+	}else{
+		e.fileSystem = n ;
+
+		e.fileSystem.replace( 0,1,e.fileSystem.at( 0 ).toUpper() ) ;
+	}
+
+	return e ;
+}
+
 Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 {
 	return Task::run( [](){
 
-		auto _decode = []( QString path,bool set_offset ){
-
-			engines::engine::decodeSpecialCharacters( path ) ;
-
-			if( set_offset ){
-
-				return path.mid( path.indexOf( '@' ) + 1 ) ;
-			}else{
-				return path ;
-			}
-		} ;
-
-		auto _starts_with = []( const engines::engine& e,const QString& s ){
-
-			for( const auto& it : e.names() ){
-
-				if( s.startsWith( it + "@" ) ){
-
-					return true ;
-				}
-			}
-
-			return false ;
-		} ;
-
-		auto _fs = []( QString e ){
-
-			e.replace( "fuse.","" ) ;
-
-			return e ;
-		} ;
-
-		auto _ro = []( const QStringList& l ){
-
-			return l.at( 5 ).mid( 0,2 ) ;
-		} ;
-
 		std::vector< volumeInfo > e ;
-
-		volumeInfo::mountinfo info ;
 
 		const auto& engines = engines::instance() ;
 
-		for( const auto& it : _unlocked_volumes() ){
+		for( auto&& it : _unlocked_volumes() ){
 
-			const auto k = utility::split( it,' ' ) ;
-
-			const auto s = k.size() ;
-
-			if( s < 8 ){
-
-				continue ;
-			}
-
-			const auto& cf = k.at( s - 2 ) ;
-
-			const auto& m = k.at( 4 ) ;
-
-			const auto& fs = k.at( s - 3 ) ;
-
-			const auto& engine = engines.getByFuseName( fs ) ;
+			const auto& engine = engines.getByFsName( it.fileSystem ) ;
 
 			if( engine.known() ){
 
-				if( _starts_with( engine,cf ) ){
-
-					info.volumePath = _decode( cf,true ) ;
-
-				}else if( engine.setsCipherPath() ){
-
-					info.volumePath = _decode( cf,false ) ;
-				}else{
-					info.volumePath = crypto::sha256( m ).mid( 0,20 ) ;
-				}
-
-				info.mountPoint   = _decode( m,false ) ;
-				info.fileSystem   = _fs( fs ) ;
-				info.mode         = _ro( k ) ;
-				info.mountOptions = k.last() ;
-
-				e.emplace_back( info ) ;
+				e.emplace_back( _decode( engine,std::move( it ) ) ) ;
 			}
 		}
 
@@ -295,7 +289,15 @@ void mountinfo::volumeUpdate()
 
 	auto _mountedVolume = [ & ]( const QString& e ){
 
-		return !m_oldMountList.contains( e ) ;
+		for( const auto& it : m_oldMountList ){
+
+			if( it.cipherPath == e ){
+
+				return false ;
+			}
+		}
+
+		return true ;
 	} ;
 
 	if( m_announceEvents ){
@@ -306,11 +308,9 @@ void mountinfo::volumeUpdate()
 
 			for( const auto& it : m_newMountList ){
 
-				const auto e = utility::split( it,' ' ) ;
+				if( _mountedVolume( it.cipherPath ) ){
 
-				if( _mountedVolume( it ) && e.size() > 4 ){
-
-					this->autoMount( e.at( 4 ) ) ;
+					this->autoMount( it.mountPoint ) ;
 				}
 			}
 		}
@@ -344,44 +344,84 @@ void mountinfo::announceEvents( bool s )
 
 void mountinfo::linuxMonitor()
 {
-	auto s = std::addressof( Task::run( [ this ](){
+	auto& s = Task::run( [ this ](){
 
 		QFile s( "/proc/self/mountinfo" ) ;
-		struct pollfd m ;
 
 		s.open( QIODevice::ReadOnly ) ;
-		m.fd     = s.handle() ;
-		m.events = POLLPRI ;
 
-		while( true ){
+		eventsMonitor::pollMonitor( s.handle() ).poll( [ this ]( int a ){
 
-			poll( &m,1,-1 ) ;
+			if( m_linuxMonitorExit ){
 
-			this->updateVolume() ;
-		}
-	} ) ) ;
+				return true ;
 
-	m_stop = [ s ](){ s->first_thread()->terminate() ; } ;
+			}else if( a > 0 ){
 
-	if( m_folderMountEvents.monitor() ){
+				this->updateVolume() ;
 
-		auto e = std::addressof( Task::run( [ & ](){
+			}else if( a == 0 ){
 
-			m_folderMountEvents.start() ;
-		} ) ) ;
+				/*
+				 * Timout has occurred
+				 */
+			}else{
+				m_debug( "Warning: pollMonitor.poll failed" ) ;
+			}
 
-		e->then( [ & ](){
-
-			m_folderMountEvents.stop() ;
-			m_quit() ;
+			return false ;
 		} ) ;
+	} ) ;
 
-		s->then( [ = ](){
+	m_stop = [ this ](){ m_linuxMonitorExit = true ; } ;
 
-			e->first_thread()->terminate() ;
-		} ) ;
+	auto m = settings::instance().mountMonitorFolderPaths() ;
+
+	if( !m.isEmpty() ){
+
+		Task::run( [ this,m = std::move( m ) ](){
+
+			using fm = eventsMonitor::folderMonitor ;
+
+			fm mm ;
+
+			if( mm.functional() ){
+
+				mm.createList( m ) ;
+			}else{
+				m_debug( "Warning: failed to init folder monitor" ) ;
+			}
+
+			mm.poll( [ this ]( int r,const fm::entries& entries ){
+
+				if( m_folderMonitorExit ){
+
+					return true ;
+
+				}else if( r == 0 ){
+
+					/*
+					 * Timeout
+					 */
+
+				}else if( r < 0 ){
+
+					m_debug( "Warning: folderMonitor.poll failed" ) ;
+				}else{
+					entries.created( [ this ]( const QString& e ){
+
+						this->autoMount( e ) ;
+					} ) ;
+				}
+
+				return false ;
+			} ) ;
+
+		} ).then( std::move( m_quit ) ) ;
+
+		s.then( [ this ](){ m_folderMonitorExit = true ; } ) ;
 	}else{
-		s->then( std::move( m_quit ) ) ;
+		s.then( std::move( m_quit ) ) ;
 	}
 }
 
@@ -420,7 +460,7 @@ void mountinfo::pollForUpdates()
 	} ).then( std::move( m_quit ) ) ;
 }
 
-void mountinfo::osxMonitor()
+void mountinfo::qtMonitor()
 {
 	this->pollForUpdates() ;
 }
@@ -430,182 +470,6 @@ void mountinfo::windowsMonitor()
 	SiriKali::Windows::updateVolumeList( [ this ]{ this->updateVolume() ; } ) ;
 }
 
-#ifdef Q_OS_LINUX
-
-#include <sys/inotify.h>
-#include <sys/select.h>
-
-mountinfo::folderMountEvents::folderMountEvents( std::function< void( const QString& ) > function ) :
-	m_inotify_fd( inotify_init() ),m_update( std::move( function ) )
-{
-	if( m_inotify_fd != -1 ){
-
-		for( const auto& it : settings::instance().mountMonitorFolderPaths() ){
-
-			int e = inotify_add_watch( m_inotify_fd,it.toLatin1(),IN_CREATE ) ;
-
-			if( e != -1 ){
-
-				if( it.endsWith( "/" ) ){
-
-					auto s = it ;
-
-					while( s.endsWith( "/" ) ){
-
-						s = utility::removeLast( s,1 ) ;
-					}
-
-					m_fds.emplace_back( e,s ) ;
-				}else{
-					m_fds.emplace_back( e,it ) ;
-				}
-			}
-		}
-	}
-}
-
-void mountinfo::folderMountEvents::start()
-{
-	const char * currentEvent ;
-	const char * end ;
-
-	std::vector< char > buffer( 10485760 ) ;
-
-	fd_set rfds ;
-
-	FD_ZERO( &rfds ) ;
-
-	struct timeval tv ;
-
-	int select_fd = m_inotify_fd + 1 ;
-
-	//int interval = settings::instance().mountMonitorFolderPollingInterval() ;
-	int interval = 0 ; //No longer listening for timeouts
-
-	auto _reset_variables = [ & ](){
-
-		FD_SET( m_inotify_fd,&rfds ) ;
-
-		tv.tv_sec = interval ;
-		tv.tv_usec = 0 ;
-	} ;
-
-	struct event{
-		bool eventReceived ;
-		bool timeout ;
-	} ;
-
-	auto _eventsReceived = [ & ]()->event{
-
-		_reset_variables() ;
-
-		int r = [ & ](){
-
-			if( tv.tv_sec > 0 ){
-
-				return select( select_fd,&rfds,nullptr,nullptr,&tv ) ;
-			}else{
-				return select( select_fd,&rfds,nullptr,nullptr,nullptr ) ;
-			}
-		}() ;
-
-		if( r == 0 ){
-
-			return { false,true } ;
-
-		}else if( r > 0 ){
-
-			auto s = read( m_inotify_fd,buffer.data(),buffer.size() ) ;
-
-			if( s > 0 ){
-
-				end          = buffer.data() + s ;
-				currentEvent = buffer.data() ;
-
-				return { true,false } ;
-			}
-		}
-
-		return { false,false } ;
-	} ;
-
-	auto _processEvent = [ & ]( const struct inotify_event * event ){
-
-		if( event->mask & IN_CREATE ){
-
-			for( auto& it : m_fds ){
-
-				if( it.fd() == event->wd ){
-
-					m_update( it.path() + event->name ) ;
-
-					break ;
-				}
-			}
-		}
-	} ;
-
-	while( true ){
-
-		auto e = _eventsReceived() ;
-
-		if( e.eventReceived ){
-
-			while( currentEvent < end ){
-
-				auto event = reinterpret_cast< const struct inotify_event * >( currentEvent ) ;
-
-				_processEvent( event ) ;
-				currentEvent += sizeof( struct inotify_event ) + event->len ;
-			}
-
-		}else if( e.timeout ){
-
-			/*
-			 * Not listening to timeouts
-			 */
-		}
-	}
-}
-
-void mountinfo::folderMountEvents::stop()
-{
-	close( m_inotify_fd ) ;
-}
-
-bool mountinfo::folderMountEvents::monitor()
-{
-	return m_inotify_fd != -1 && m_fds.size() > 0 ;
-}
-
-mountinfo::folderMountEvents::entry::~entry()
-{
-	close( m_fd ) ;
-}
-
-#else
-
-mountinfo::folderMountEvents::entry::~entry()
-{
-}
-
-mountinfo::folderMountEvents::folderMountEvents( std::function< void( const QString& ) > e )
-{
-	Q_UNUSED( e )
-}
-void mountinfo::folderMountEvents::start()
-{
-}
-void mountinfo::folderMountEvents::stop()
-{
-}
-bool mountinfo::folderMountEvents::monitor()
-{
-	return false ;
-}
-
-#endif
-
 static QString _gvfs_fuse_path()
 {
 	auto s = settings::instance().gvfsFuseMonitorPath() ;
@@ -614,14 +478,9 @@ static QString _gvfs_fuse_path()
 
 		for( const auto& it : _unlocked_volumes() ){
 
-			if( it.contains( " fuse.gvfsd-fuse " ) ){
+			if( it.fileSystem == "fuse.gvfsd-fuse" ){
 
-				auto m = utility::split( it," " ) ;
-
-				if( m.size() > 4 ){
-
-					return m.at( 4 ) ;
-				}
+				return it.mountPoint ;
 			}
 		}
 	}
@@ -629,12 +488,14 @@ static QString _gvfs_fuse_path()
 	return s ;
 }
 
-dbusMonitor::dbusMonitor( folderMonitor::function function ) :
+dbusMonitor::dbusMonitor( folderMonitor::function function,
+			  std::function< void( const QString& ) >& debug ) :
 	m_dbus( this ),
-	m_folderMonitor( true,_gvfs_fuse_path() ),
-	m_function( std::move( function ) )
+	m_folderMonitor( true,debug,_gvfs_fuse_path() ),
+	m_function( std::move( function ) ),
+	m_debug( debug )
 {
-	utility::debug() << "gvfs fuse path: " + m_folderMonitor.path() ;
+	m_debug( "gvfs fuse path: " + m_folderMonitor.path() ) ;
 
 	if( !m_folderMonitor.path().isEmpty() ){
 
@@ -644,9 +505,9 @@ dbusMonitor::dbusMonitor( folderMonitor::function function ) :
 
 void dbusMonitor::volumeRemoved()
 {
-	static folderMonitor::function ss = []( const QString& e ){
+	static folderMonitor::function ss = [ this ]( const QString& e ){
 
-		utility::debug() << "gvfs fuse unmount: " + e ;
+		m_debug( "gvfs fuse unmount: " + e ) ;
 	} ;
 
 	m_folderMonitor.contentCountDecreased( ss ) ;
@@ -654,9 +515,9 @@ void dbusMonitor::volumeRemoved()
 
 void dbusMonitor::volumeAdded()
 {
-	static folderMonitor::function ss = [ & ]( const QString& e ){
+	static folderMonitor::function ss = [ this ]( const QString& e ){
 
-		utility::debug() << "gvfs fuse mount: " + e ;
+		m_debug( "gvfs fuse mount: " + e ) ;
 
 		m_function( e ) ;
 	} ;
@@ -664,8 +525,12 @@ void dbusMonitor::volumeAdded()
 	m_folderMonitor.contentCountIncreased( ss ) ;
 }
 
-folderMonitor::folderMonitor( bool e,const QString& path ) :
-	m_path( path ),m_folderList( this->folderList() ),m_waitForSynced( e )
+folderMonitor::folderMonitor( bool e,
+			      std::function< void( const QString& ) >& debug,
+			      const QString& path ) :
+	m_path( path ),
+	m_folderList( this->folderList() ),m_waitForSynced( e ),
+	m_debug( debug )
 {
 	while( m_path.endsWith( "/" ) ){
 
@@ -680,48 +545,40 @@ const QString& folderMonitor::path() const
 
 void folderMonitor::contentCountIncreased( folderMonitor::function& function )
 {
-	auto ss = this->folderListSynced() ;
-
-	if( ss.has_value() && ss.value() != m_folderList ){
-
-		auto s = ss.value() ;
+	this->folderListSynced( [ & ]( QStringList s ){
 
 		auto e = s ;
 
-		for( const auto& it : m_folderList ){
+		for( const auto& it : utility::asConst( m_folderList ) ){
 
 			s.removeOne( it ) ;
 		}
 
-		for( const auto& it : s ){
+		for( const auto& it : utility::asConst( s ) ){
 
 			function( m_path + "/" + it ) ;
 		}
 
 		m_folderList = std::move( e ) ;
-	}
+	} ) ;
 }
 
 void folderMonitor::contentCountDecreased( folderMonitor::function& function )
 {
-	auto s = this->folderListSynced() ;
+	this->folderListSynced( [ & ]( QStringList s ){
 
-	if( s.has_value() && s.value() != m_folderList ){
-
-		auto e = s.RValue() ;
-
-		for( const auto& it : e ){
+		for( const auto& it : utility::asConst( s ) ){
 
 			m_folderList.removeOne( it ) ;
 		}
 
-		for( const auto& it : m_folderList ){
+		for( const auto& it : utility::asConst( m_folderList ) ){
 
 			function( m_path + "/" + it ) ;
 		}
 
-		m_folderList = std::move( e ) ;
-	}
+		m_folderList = std::move( s ) ;
+	} ) ;
 }
 
 QStringList folderMonitor::folderList() const
@@ -729,30 +586,34 @@ QStringList folderMonitor::folderList() const
 	return QDir( m_path ).entryList( QDir::NoDotAndDotDot | QDir::Dirs ) ;
 }
 
-utility::result< QStringList > folderMonitor::folderListSynced() const
+void folderMonitor::folderListSynced( std::function< void( QStringList ) > function ) const
 {
 	if( m_waitForSynced ){
 
-		for( int i = 0 ; i < 6 ; i++ ){
+		utility::Timer( 1000,[ &,function = std::move( function ) ]( int counter ){
 
 			auto a = this->folderList() ;
 
 			if( a != m_folderList ){
 
-				utility::debug() << "gvfs folder is up to date" ;
+				m_debug( "gvfs folder is up to date" ) ;
 
-				return a ;
+				function( std::move( a ) ) ;
+
+				return true ;
+
+			}else if( counter == 5 ){
+
+				m_debug( "Timed out waiting for gvfs folder to update" ) ;
+
+				return true ;
 			}else{
-				utility::debug() << "Waiting for gvfs folder to update" ;
+				m_debug( "Waiting for gvfs folder to update" ) ;
 
-				utility::Task::suspendForOneSecond() ;
+				return false ;
 			}
-		}
-
-		utility::debug() << "Timed out waiting for gvfs folder to update" ;
-
-		return {} ;
+		} ) ;
 	}else{
-		return this->folderList() ;
+		function( this->folderList() ) ;
 	}
 }

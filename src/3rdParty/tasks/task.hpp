@@ -981,7 +981,7 @@ namespace Task
 		};
 
 		static inline Task::future< result >& run( const QString& cmd,
-							   const QStringList& args = QStringList(),
+		                                           const QStringList& args,
 							   int waitTime = -1,
 							   const QByteArray& password = QByteArray(),
 							   const QProcessEnvironment& env = QProcessEnvironment(),
@@ -1009,7 +1009,11 @@ namespace Task
 
 				if( args.isEmpty() ){
 
-					exe.start( cmd ) ;
+					#if QT_VERSION < QT_VERSION_CHECK( 5,15,0 )
+						exe.start( cmd ) ;
+					#else
+						exe.start( cmd,args ) ;
+					#endif
 				}else{
 					exe.start( cmd,args ) ;
 				}

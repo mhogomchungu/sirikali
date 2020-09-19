@@ -17,29 +17,25 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QApplication>
-
 #include "sirikali.h"
 
 int main( int argc,char * argv[] )
 {
-	utility::initGlobals() ;
+	QStringList args ;
 
-	QApplication srk( argc,argv ) ;
+	for( int i = 0 ; i < argc ; i++ ){
 
-	QCoreApplication::setApplicationName( "SiriKali" ) ;
-
-	auto m = QCoreApplication::arguments() ;
-
-	for( const auto& it : m ){
-
-		if( it.contains( "--debug" ) ){
-
-			utility::enableDebug( true ) ;
-
-			break ;
-		}
+		args.append( argv[ i ] ) ;
 	}
 
-	return sirikali( m ).start( srk ) ;
+	if( utility::printVersionOrHelpInfo( args ) ){
+
+		return 0 ;
+
+	}else if( sirikali::cmd( args ) ){
+
+		return sirikali::run( args,argc,argv ) ;
+	}else{
+		return sirikali::exec( args,argc,argv ) ;
+	}
 }

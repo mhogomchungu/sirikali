@@ -29,6 +29,11 @@ else()
 	file( WRITE ${PROJECT_BINARY_DIR}/osx_keychain.h "#define OSX_KEYCHAIN 0" )
 endif()
 
+file( WRITE ${PROJECT_BINARY_DIR}/translations_path.h
+"
+#define TRANSLATIONS_PATH \"${CMAKE_INSTALL_PREFIX}/share/lxqt/translations/lxqt-wallet/\"
+")
+
 if(QT5)
 	find_package(Qt5Widgets REQUIRED)
 	find_package(Qt5Core REQUIRED)
@@ -54,6 +59,10 @@ else()
 	INCLUDE(${QT_USE_FILE})
 endif()
 
+if( APPLE )
+	SET(NOSECRETSUPPORT "true")
+endif()
+
 if(NOSECRETSUPPORT)
 	SET(SECRET_SUPPORT "false")
 	file(WRITE  ${PROJECT_BINARY_DIR}/storage_manager.h "\n#define HAS_SECRET_SUPPORT 0\n")
@@ -70,7 +79,7 @@ else()
 	endif()
 endif()
 
-add_definitions(-std=c++11)
+add_definitions(-std=c++14)
 
 if(NOKDESUPPORT)
 	SET(KDE_SUPPORT "false")
@@ -80,6 +89,8 @@ else()
 	if(KF5)
 		find_package(Qt5Widgets REQUIRED)
 		find_package(Qt5Core REQUIRED)
+
+		cmake_policy(SET CMP0012 NEW)
 
 		find_package(KF5Wallet QUIET)
 		find_package(KF5Notifications QUIET)
@@ -184,10 +195,18 @@ set(MOC_FILES_1 changepassworddialog.h password_dialog.h lxqt_kwallet.h task.h)
 set(MOC_FILES_2 changepassworddialog.h password_dialog.h lxqt_kwallet.h task.h)
 set(MOC_FILES_3 changepassworddialog.h password_dialog.h task.h)
 
-set(SRC 	lxqt_windows_dpapi.cpp lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp)
-set(SRC_1 	lxqt_windows_dpapi.cpp lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp lxqt_kwallet.cpp)
-set(SRC_2 	lxqt_windows_dpapi.cpp lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp lxqt_kwallet.cpp lxqt_libsecret.cpp)
-set(SRC_3 	lxqt_windows_dpapi.cpp lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp lxqt_libsecret.cpp)
+if( WIN32 )
+	set(SRC 	lxqt_windows_dpapi.cpp lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_wallet.cpp)
+	set(SRC_1 	lxqt_windows_dpapi.cpp lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_wallet.cpp lxqt_kwallet.cpp)
+	set(SRC_2 	lxqt_windows_dpapi.cpp lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_wallet.cpp lxqt_kwallet.cpp lxqt_libsecret.cpp)
+	set(SRC_3 	lxqt_windows_dpapi.cpp lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_wallet.cpp lxqt_libsecret.cpp)
+else()
+	set(SRC 	lxqt_windows_dpapi.cpp lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp)
+	set(SRC_1 	lxqt_windows_dpapi.cpp lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp lxqt_kwallet.cpp)
+	set(SRC_2 	lxqt_windows_dpapi.cpp lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp lxqt_kwallet.cpp lxqt_libsecret.cpp)
+	set(SRC_3 	lxqt_windows_dpapi.cpp lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp lxqt_libsecret.cpp)
+
+endif()
 
 if(BUILD_SHARED)
 	set( LIBRARY_TYPE "SHARED")
@@ -299,7 +318,7 @@ set_target_properties(lxqt-wallet PROPERTIES SOVERSION "${LIBRARY_VERSION}")
 
 if( WIN32 )
 
-	TARGET_LINK_LIBRARIES(lxqt-wallet -lcrypt32 ${Qt5Network_LIBRARIES} "${link_libraries}" lxqt-wallet-backend)
+	TARGET_LINK_LIBRARIES(lxqt-wallet -lcrypt32 -lbcrypt "${link_libraries}" lxqt-wallet-backend)
 else()
 	TARGET_LINK_LIBRARIES(lxqt-wallet "${link_libraries}" lxqt-wallet-backend)
 endif()

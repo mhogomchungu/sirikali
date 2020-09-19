@@ -73,9 +73,9 @@ cryfscreateoptions::cryfscreateoptions( const engines::engine& engine,
 		return m ;
 	}() ) ;
 
-	auto exe = engine.executableFullPath() + " --show-ciphers" ;
+	auto& exe = engine.executableFullPath() ;
 
-	utility::Task::run( exe ).then( [ this ]( const utility::Task& e ){
+	utility::Task::run( exe,{ "--show-ciphers" } ).then( [ this ]( const utility::Task& e ){
 
 		if( e.success() ){
 
@@ -122,9 +122,9 @@ void cryfscreateoptions::pbOK()
 
 		if( m.isEmpty() ){
 
-			return QString( "--blocksize %2" ).arg( s ) ;
+			return QString( "--blocksize,%2" ).arg( s ) ;
 		}else{
-			return QString( "--cipher %1 --blocksize %2" ).arg( m,s ) ;
+			return QString( "--cipher,%1,--blocksize,%2" ).arg( m,s ) ;
 		}
 	}() ;
 

@@ -29,6 +29,10 @@
 #include <type_traits>
 #include <utility>
 
+#include "utility2.h"
+
+void windowsDebugWindow( const QString& e,bool s ) ;
+
 class secrets
 {
 public:
@@ -36,7 +40,6 @@ public:
 	{
 	public:
 		wallet( LXQt::Wallet::Wallet * ) ;
-		wallet( LXQt::Wallet::Wallet ** ) ;
 		wallet() ;
 
 		~wallet() ;
@@ -58,23 +61,21 @@ public:
 			return m_wallet ;
 		}
 
-		template< typename T >
-		struct walletResult
-		{
-			bool opened ;
-			T result ;
-		} ;
-
 		template< typename Function,typename Before,typename After >
-		walletResult< std::result_of_t< Function() > > openSync( Function&& function,
-									 Before&& b = [](){},
-									 After&& a = [](){} )
+		utility2::result< std::result_of_t< Function() > > openSync( Function&& function,
+									     Before&& b = [](){},
+									     After&& a = [](){} )
 		{
 			if( m_wallet->opened() ){
 
-				return { true,function() } ;
+				return function() ;
 			}else{
 				m_wallet->setImage( QIcon( ":/sirikali" ) ) ;
+
+				m_wallet->log( []( QString e ){
+
+					windowsDebugWindow( e,e.contains( "CRITICAL" ) ) ;
+				} );
 
 				auto s = this->walletInfo() ;
 
@@ -86,17 +87,22 @@ public:
 
 				if( m ){
 
-					return { true,function() } ;
+					return function() ;
 				}else{
-					return { false,{} } ;
+					return {} ;
 				}
 			}
 		}
 
 		template< typename Function >
-		walletResult< std::result_of_t< Function() > > open( Function&& function )
+		utility2::result< std::result_of_t< Function() > > open( Function&& function )
 		{
 			return this->openSync( std::move( function ),[](){},[](){} ) ;
+		}
+
+		bool open()
+		{
+			return this->openSync( []{ return true ; },[](){},[](){} ).has_value() ;
 		}
 
 		template< typename Opened,typename Before,typename After >
@@ -109,6 +115,13 @@ public:
 				b() ;
 
 				auto s = this->walletInfo() ;
+
+				m_wallet->setImage( QIcon( ":/sirikali" ) ) ;
+
+				m_wallet->log( []( QString e ){
+
+					windowsDebugWindow( e,e.contains( "CRITICAL" ) ) ;
+				} );
 
 				m_wallet->open( s.walletName,s.appName,std::move( a ) ) ;
 			}
@@ -147,7 +160,6 @@ public:
 	void changeInternalWalletPassword( const QString&,const QString&,std::function< void( bool ) > ) ;
 	void changeWindowsDPAPIWalletPassword( const QString&,const QString&,std::function< void( bool ) > ) ;
 
-	void setParent( QWidget * ) ;
 	void close() ;
 	secrets( QWidget * parent = nullptr ) ;
 	secrets( const secrets& ) = delete ;
@@ -156,11 +168,28 @@ public:
 
 	~secrets() ;
 private:
-	LXQt::Wallet::Wallet ** internalWallet() const ;
-	LXQt::Wallet::Wallet * windows_dpapiBackend() const ;
 	QWidget * m_parent = nullptr ;
-	mutable LXQt::Wallet::Wallet * m_internalWallet = nullptr ;
-	mutable LXQt::Wallet::Wallet * m_windows_dpapi = nullptr ;
-};
+
+	class backends{
+	public:
+		backends( QWidget * ) ;
+		LXQt::Wallet::Wallet * get( LXQt::Wallet::BackEnd ) ;
+		void close() ;
+	private:
+		struct bks{
+
+			bks( LXQt::Wallet::BackEnd e,LXQt::Wallet::Wallet * s ) :
+				bk( e ),wallet( s )
+			{
+			}
+			LXQt::Wallet::BackEnd bk ;
+			LXQt::Wallet::Wallet * wallet ;
+		} ;
+
+		std::vector< bks > m_backends ;
+		QWidget * m_parent ;
+
+	} mutable m_backends ;
+} ;
 
 #endif

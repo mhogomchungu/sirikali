@@ -27,13 +27,20 @@ public:
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 
 	engines::engine::args command( const QByteArray& password,
-				       const engines::engine::cmdArgsList& args ) const override ;
+				       const engines::engine::cmdArgsList& args,
+				       bool create ) const override ;
 
-	bool requiresAPassword( const engines::engine::cmdArgsList::options& ) const override ;
+	bool requiresAPassword( const engines::engine::cmdArgsList& ) const override ;
 
 	void GUICreateOptions( const engines::engine::createGUIOptions& ) const override ;
 
 	void GUIMountOptions( const engines::engine::mountGUIOptions& ) const override ;
+
+	void updateOptions( engines::engine::cmdArgsList&,bool creating ) const override ;
+
+	void updateOptions( engines::engine::commandOptions& opts,
+			    const engines::engine::cmdArgsList& args,
+			    bool creating ) const override ;
 private:
 	const engines::versionGreaterOrEqual m_version_greater_or_equal_0_11_1 ;
 } ;

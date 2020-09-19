@@ -27,7 +27,7 @@
 #include <QFile>
 #include <QCryptographicHash>
 
-static utility::result< QString > _config_path()
+static utility::qstring_result _config_path()
 {
 	QString m = settings::instance().ConfigLocation() + "/favorites/" ;
 
@@ -44,7 +44,7 @@ static utility::result< QString > _config_path()
 	}
 }
 
-static QString _create_path( const QString& m,const favorites::entry& e )
+static QString _create_path( const QString& m,const favorites::entry& e,bool newFormat )
 {
 	auto a = utility::split( e.volumePath,'@' ).last() ;
 
@@ -52,197 +52,145 @@ static QString _create_path( const QString& m,const favorites::entry& e )
 
 	a.replace( ":","" ) ;
 
-	auto b = a + e.mountPointPath ;
+	if( newFormat ){
 
-	return m + a + "-" + crypto::sha256( b ) + ".json" ;
+		auto b = e.volumePath + e.mountPointPath ;
+
+		return m + a + "-" + crypto::sha256( b ) + ".json" ;
+	}else{
+		auto b = a + e.mountPointPath ;
+
+		return m + a + "-" + crypto::sha256( b ) + ".json" ;
+	}
 }
 
-static QString _create_path( const favorites::entry& e )
+static QString _create_entry_path( const favorites::entry& e,bool newFormat )
 {
 	auto s = _config_path() ;
 
 	if( s.has_value() ){
 
-		return _create_path( s.value(),e ) ;
+		return _create_path( s.value(),e,newFormat ) ;
 	}else{
 		return {} ;
 	}
 }
 
-static void _move_favorites_to_new_system( const QStringList& m )
+static void _update_favorites( favorites::entry& m )
 {
-	favorites::entry s ;
+	const auto mOpts = utility::split( m.mountOptions,',' ) ;
 
-	QString autoMountVolume ;
+	QStringList ss ;
 
-	utility2::stringListToStrings( m,
-				       s.volumePath,
-				       s.mountPointPath,
-				       autoMountVolume,
-				       s.configFilePath,
-				       s.idleTimeOut,
-				       s.mountOptions ) ;
+	auto _remove_quotes = []( QString s ){
 
-	if( autoMountVolume != "N/A" ){
+		if( s.startsWith( '"' ) ){
 
-		if( autoMountVolume == "true" ){
+			s = s.mid( 1 ) ;
+		}
 
-			s.autoMount = true ;
-		}else{
-			s.autoMount = false ;
+		if( s.endsWith( '"' ) ){
+
+			s = utility::removeLast( s,1 ) ;
+		}
+
+		return s ;
+	} ;
+
+	for( const auto& it : mOpts ){
+
+		if( it.startsWith( "IdentityAgent=" ) ){
+
+			m.identityAgent = _remove_quotes( it.mid( 14 ) ) ;
+
+		}else if( it.startsWith( "IdentityFile=" ) ){
+
+			m.identityFile = _remove_quotes( it.mid( 13 ) ) ;
+
+		}else if( it.contains( "UseNetworkDrive=no",Qt::CaseInsensitive ) ){
+
+			m.reverseMode = false ;
+
+		}else if( it.contains( "UseNetworkDrive=yes",Qt::CaseInsensitive ) ){
+
+			m.reverseMode = true ;
+
+		}else if( !it.isEmpty() ){
+
+			ss.append( it ) ;
 		}
 	}
 
-	if( s.configFilePath == "N/A" ){
+	if( !ss.isEmpty() ){
 
-		s.configFilePath.clear() ;
+		m.mountOptions = ss.join( ',' ) ;
 	}
-
-	if( s.idleTimeOut == "N/A" ){
-
-		s.idleTimeOut.clear() ;
-	}
-
-	if( s.mountOptions == "N/A" ){
-
-		s.mountOptions.clear() ;
-	}
-
-	s.reverseMode          = s.mountOptions.contains( "-SiriKaliReverseMode" ) ;
-	s.volumeNeedNoPassword = s.mountOptions.contains( "-SiriKaliVolumeNeedNoPassword" ) ;
-
-	if( s.mountOptions.contains( "-SiriKaliMountReadOnly" ) ){
-
-		s.readOnlyMode = true ;
-	}
-
-	s.mountOptions.replace( "-SiriKaliMountReadOnly","" ) ;
-	s.mountOptions.replace( "-SiriKaliVolumeNeedNoPassword","" ) ;
-	s.mountOptions.replace( "-SiriKaliReverseMode","" ) ;
-
-	favorites::instance().add( s ) ;
 }
 
-static void _log_error( const QString& msg,const QString& path )
+static favorites::entry _favorites( const QString& path )
 {
-	auto a = "\nFailed to parse file for reading: " + path ;
+	SirikaliJson json( QFile( path ),utility::jsonLogger() ) ;
 
-	utility::debug::showDebugWindow( msg + a ) ;
-}
+	favorites::entry m ;
 
-utility::result< favorites::entry > favorites::readFavoriteByPath( const QString& path ) const
-{
-	try {
-		SirikaliJson json( path,SirikaliJson::type::PATH ) ;
+	if( json.passed() ){
 
-		favorites::entry m ;
+		m.internalConfigPath   = QDir( path ).absolutePath() ;
 
+		m.reverseMode          = json.getBool( "reverseMode" ) ;
+		m.volumeNeedNoPassword = json.getBool( "volumeNeedNoPassword" ) ;
 		m.volumePath           = json.getString( "volumePath" ) ;
 		m.mountPointPath       = json.getString( "mountPointPath" ) ;
 		m.configFilePath       = json.getString( "configFilePath" ) ;
 		m.idleTimeOut          = json.getString( "idleTimeOut" ) ;
-		m.mountOptions         = json.getString( "mountOptions" ) ;
 		m.preMountCommand      = json.getString( "preMountCommand" ) ;
 		m.postMountCommand     = json.getString( "postMountCommand" ) ;
 		m.preUnmountCommand    = json.getString( "preUnmountCommand" ) ;
 		m.postUnmountCommand   = json.getString( "postUnmountCommand" ) ;
-		m.reverseMode          = json.getBool( "reverseMode" ) ;
-		m.volumeNeedNoPassword = json.getBool( "volumeNeedNoPassword" ) ;
+		m.keyFile              = json.getString( "keyFilePath" ) ;
+		m.identityFile         = json.getString( "identityFile" ) ;
+		m.identityAgent        = json.getString( "identityAgent" ) ;
+		m.mountOptions         = json.getString( "mountOptions" ) ;
 
-		try {
-			m.keyFile      = json.getString( "keyFilePath" ) ;
+		m.password             = json.getByteArray( "password" ) ;
 
-		}catch( ... ) {
-
-		}
+		_update_favorites( m ) ;
 
 		favorites::triState::readTriState( json,m.readOnlyMode,"mountReadOnly" ) ;
 		favorites::triState::readTriState( json,m.autoMount,"autoMountVolume" ) ;
-
-		return m ;
-
-	}catch( const SirikaliJson::exception& e ){
-
-		_log_error( e.what(),path ) ;
-
-	}catch( const std::exception& e ){
-
-		_log_error( e.what(),path ) ;
-
-	}catch( ... ){
-
-		_log_error( "Unknown error has occured",path ) ;
 	}
 
-	return {} ;
+	return m ;
 }
 
-std::vector<favorites::entry> favorites::readFavorites() const
+favorites::favorites()
 {
+	this->reload() ;
+}
+
+void favorites::reload()
+{
+	m_favorites.clear() ;
+
 	const auto m = _config_path() ;
 
-	if( !m.has_value() ){
+	if( m.has_value() ){
 
-		return {} ;
-	}
+		const auto& a = m.value() ;
 
-	const auto& a = m.value() ;
+		const auto s = QDir( a ).entryList( QDir::Filter::Files | QDir::Filter::Hidden ) ;
 
-	const auto s = QDir( a ).entryList( QDir::Filter::Files | QDir::Filter::Hidden ) ;
+		for( const auto& it : s ){
 
-	std::vector< favorites::entry > e ;
+			auto m = _favorites( a + it ) ;
 
-	for( const auto& it : s ){
+			if( m.hasValue() ){
 
-		auto mm = this->readFavoriteByPath( a + it ) ;
-
-		if( mm ){
-
-			e.emplace_back( mm.RValue() ) ;
-		}
-	}
-
-	return e ;
-}
-
-utility::result< favorites::entry > favorites::readFavorite( const QString& e,const QString& s ) const
-{
-	if( s.isEmpty() ){
-
-		for( const auto& it : favorites::readFavorites() ){
-
-			if( it.volumePath == e ){
-
-				return it ;
+				m_favorites.emplace_back( std::move( m ) ) ;
 			}
 		}
 	}else{
-		for( const auto& it : favorites::readFavorites() ){
-
-			if( it.volumePath == e && it.mountPointPath == s ){
-
-				return it ;
-			}
-		}
-	}
-
-	return {} ;
-}
-
-void favorites::updateFavorites()
-{
-	auto& m = settings::instance().backend() ;
-
-	if( m.contains( "FavoritesVolumes" ) ){
-
-		const auto a = m.value( "FavoritesVolumes" ).toStringList() ;
-
-		m.remove( "FavoritesVolumes" ) ;
-
-		for( const auto& it : a ){
-
-			_move_favorites_to_new_system( utility::split( it,'\t' ) ) ;
-		}
+		utility::debug() << "Failed To Get Favorites List" ;
 	}
 }
 
@@ -252,71 +200,148 @@ favorites::error favorites::add( const favorites::entry& e )
 
 	if( !m.has_value() ){
 
+		utility::debug() << "Failed To Get Favorites Path" ;
+
 		return error::FAILED_TO_CREATE_ENTRY ;
 	}
 
-	auto a = _create_path( m.value(),e ) ;
+	auto a = _create_path( m.value(),e,true ) ;
 
-	try{
-		SirikaliJson json ;
+	SirikaliJson json( utility::jsonLogger() ) ;
 
-		json[ "volumePath" ]           = e.volumePath ;
-		json[ "mountPointPath" ]       = e.mountPointPath ;
-		json[ "configFilePath" ]       = e.configFilePath ;
-		json[ "keyFilePath" ]          = e.keyFile ;
-		json[ "idleTimeOut" ]          = e.idleTimeOut ;
-		json[ "mountOptions" ]         = e.mountOptions ;
-		json[ "preMountCommand" ]      = e.preMountCommand ;
-		json[ "postMountCommand" ]     = e.postMountCommand ;
-		json[ "preUnmountCommand" ]    = e.preUnmountCommand ;
-		json[ "postUnmountCommand" ]   = e.postUnmountCommand ;
-		json[ "reverseMode" ]          = e.reverseMode ;
-		json[ "volumeNeedNoPassword" ] = e.volumeNeedNoPassword ;
+	json[ "volumePath" ]           = e.volumePath ;
+	json[ "mountPointPath" ]       = e.mountPointPath ;
+	json[ "configFilePath" ]       = e.configFilePath ;
+	json[ "keyFilePath" ]          = e.keyFile ;
+	json[ "idleTimeOut" ]          = e.idleTimeOut ;
+	json[ "mountOptions" ]         = e.mountOptions ;
+	json[ "preMountCommand" ]      = e.preMountCommand ;
+	json[ "postMountCommand" ]     = e.postMountCommand ;
+	json[ "preUnmountCommand" ]    = e.preUnmountCommand ;
+	json[ "postUnmountCommand" ]   = e.postUnmountCommand ;
+	json[ "reverseMode" ]          = e.reverseMode ;
+	json[ "volumeNeedNoPassword" ] = e.volumeNeedNoPassword ;
+	json[ "identityAgent" ]        = e.identityAgent ;
+	json[ "identityFile" ]         = e.identityFile ;
 
-		favorites::triState::writeTriState( json,e.readOnlyMode,"mountReadOnly" ) ;
-		favorites::triState::writeTriState( json,e.autoMount,"autoMountVolume" ) ;
+	json[ "password" ]             = e.password ;
 
-		if( utility::pathExists( a ) ){
+	favorites::triState::writeTriState( json,e.readOnlyMode,"mountReadOnly" ) ;
+	favorites::triState::writeTriState( json,e.autoMount,"autoMountVolume" ) ;
 
-			return error::ENTRY_ALREADY_EXISTS ;
+	if( utility::pathExists( a ) ){
+
+		utility::debug() << "Favorite Entry Already Exist" ;
+		return error::ENTRY_ALREADY_EXISTS ;
+	}else{
+		if( json.passed() && json.toFile( a ) ){
+
+			this->reload() ;
+			return error::SUCCESS ;
 		}else{
-			if( json.toFile( a ) ){
-
-				return error::SUCCESS ;
-			}else{
-				return error::FAILED_TO_CREATE_ENTRY ;
-			}
+			utility::debug() << "Failed To Create Favorite Entry" ;
+			return error::FAILED_TO_CREATE_ENTRY ;
 		}
+	}
+}
 
-	}catch( const SirikaliJson::exception& e ){
+const std::vector< favorites::entry >& favorites::readFavorites() const
+{
+	return m_favorites ;
+}
 
-		_log_error( e.what(),a ) ;
+favorites::volumeList favorites::readVolumeList() const
+{
+	favorites::volumeList e ;
 
-	}catch( const std::exception& e ){
+	for( const auto& it : m_favorites ){
 
-		_log_error( e.what(),a ) ;
-
-	}catch( ... ){
-
-		_log_error( "Unknown error has occured",a ) ;
+		e.emplace_back( it ) ;
 	}
 
-	return error::FAILED_TO_CREATE_ENTRY ;
+	return e ;
+}
+
+const favorites::entry& favorites::readFavoriteByPath( const QString& configPath ) const
+{
+	auto path = QDir( configPath ).absolutePath() ;
+
+	for( const auto& it : m_favorites ){
+
+		if( it.internalConfigPath == path ){
+
+			return it ;
+		}
+	}
+
+	return m_empty ;
+}
+
+favorites::entry favorites::readFavoriteByFileSystemPath( const QString& path ) const
+{
+	return _favorites( path ) ;
+}
+
+const favorites::entry& favorites::unknown() const
+{
+	return m_empty ;
+}
+
+const favorites::entry& favorites::readFavorite( const QString& volumePath,
+						 const QString& mountPath ) const
+{
+	if( mountPath.isEmpty() ){
+
+		for( const auto& it : m_favorites ){
+
+			if( it.volumePath == volumePath ){
+
+				return it ;
+			}
+		}
+	}else{
+		for( const auto& it : m_favorites ){
+
+			if( it.volumePath == volumePath && it.mountPointPath == mountPath ){
+
+				return it ;
+			}
+		}
+	}
+
+	return m_empty ;
 }
 
 void favorites::replaceFavorite( const favorites::entry& old,const favorites::entry& New )
 {
-	favorites::removeFavoriteEntry( old ) ;
-	favorites::add( New ) ;
+	this->removeFavoriteEntry( old ) ;
+	this->add( New ) ;
+}
+
+template< typename Function >
+static bool _remove( const favorites::entry& e,Function function,bool newFormat )
+{
+	auto s = function( e,newFormat ) ;
+
+	if( !s.isEmpty() && utility::pathExists( s ) ){
+
+		return QFile::remove( s ) ;
+	}else{
+		return false ;
+	}
 }
 
 void favorites::removeFavoriteEntry( const favorites::entry& e )
 {
-	auto s = _create_path( e ) ;
+	if( _remove( e,_create_entry_path,false ) ){
 
-	if( !s.isEmpty() ){
+		this->reload() ;
 
-		QFile( s ).remove() ;
+	}else if( _remove( e,_create_entry_path,true ) ){
+
+		this->reload() ;
+	}else{
+		utility::debug() << "Failed To Remove Favorite Entry: " + e.volumePath ;
 	}
 }
 
@@ -324,7 +349,7 @@ favorites::entry::entry()
 {
 }
 
-favorites::entry::entry( const QString& e )
+favorites::entry::entry( const QString& e,const QString& mountPath ) :
+	volumePath( e ),mountPointPath( mountPath )
 {
-	volumePath = e ;
 }

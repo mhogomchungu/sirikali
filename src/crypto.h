@@ -26,8 +26,9 @@
 class crypto
 {
 public:
-        static QByteArray getRandomData( int s ) ;
-        static QByteArray hmac_key( const QString& keyFile,const QString& password ) ;
+	static QByteArray getRandomData( int s ) ;
+	static QByteArray hmac_key( const QString& keyFile,const QString& password ) ;
+	static QByteArray hmac_key( const QString& password ) ;
 	static QByteArray sha256( const QString& ) ;
 	static QByteArray sha256( const QByteArray& ) ;
 };

@@ -127,13 +127,11 @@ void plugin::pbSetKey()
 
 				return QByteArray() ;
 			}else{
-				exe = exe + " " + utility::Task::makePath( keyFile ) ;
-
 				auto env = utility::systemEnvironment() ;
 
 				env.insert( "PATH",utility::executableSearchPaths( env.value( "PATH" ) ) ) ;
 
-				return utility::Task( exe,20000,env,passphrase ).stdOut() ;
+				return utility::Task( exe,{ keyFile },20000,env,passphrase ).stdOut() ;
 			}
 		}else{
 			return QByteArray() ;

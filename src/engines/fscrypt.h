@@ -25,18 +25,18 @@ class fscrypt : public engines::engine
 public:
 	fscrypt() ;
 
-	engines::engine::status unmount( const QString& cipherFolder,
-					 const QString& mountPoint,
-					 int maxCount ) const override ;
+	engines::engine::status unmount( const engines::engine::unMount& e ) const override ;
 
-	QStringList mountInfo( const QStringList& ) const override ;
+	volumeInfo::List mountInfo( const volumeInfo::List& ) const override ;
 
 	engines::engine::ownsCipherFolder ownsCipherPath( const QString& cipherPath,
 							  const QString& configPath ) const override ;
 
-	bool requiresAPassword( const engines::engine::cmdArgsList::options& ) const override ;
+	bool requiresAPassword( const engines::engine::cmdArgsList& ) const override ;
 
-	void updateVolumeList( const engines::engine::cmdArgsList::options& ) const override ;
+	void updateOptions( engines::engine::cmdArgsList&,bool ) const override ;
+
+	void updateVolumeList( const engines::engine::cmdArgsList& ) const override ;
 
 	Task::future< QString >& volumeProperties( const QString& cipherFolder,
 						   const QString& mountPoint ) const override ;
@@ -44,7 +44,8 @@ public:
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 
 	engines::engine::args command( const QByteArray& password,
-				       const engines::engine::cmdArgsList& args ) const override ;
+				       const engines::engine::cmdArgsList& args,
+				       bool create ) const override ;
 
 	void GUICreateOptions( const engines::engine::createGUIOptions& ) const override ;
 

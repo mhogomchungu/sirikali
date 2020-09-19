@@ -27,13 +27,16 @@ public:
 
 	const QProcessEnvironment& getProcessEnvironment() const override ;
 
+	void updateOptions( engines::engine::cmdArgsList&,bool ) const override ;
+
 	engines::engine::args command( const QByteArray& password,
-				       const engines::engine::cmdArgsList& args ) const override ;
+				       const engines::engine::cmdArgsList& args,
+				       bool create ) const override ;
 
 	void GUICreateOptions( const engines::engine::createGUIOptions& ) const override ;
 
 	void GUIMountOptions( const engines::engine::mountGUIOptions& ) const override ;
 private:
+	mutable QString m_configPathThroughEnv ;
 	mutable QProcessEnvironment m_environment ;
-	const engines::versionGreaterOrEqual m_versionGreatorOrEqual_1_9_5 ;
 } ;

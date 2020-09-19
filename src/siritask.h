@@ -33,14 +33,6 @@
 
 namespace siritask
 {
-	utility::result< utility::Task > unmountVolume( const QString& exe,
-							const QString& mountPoint,
-							bool usePolkit ) ;
-
-	engines::engine::status unmountVolume( const QString& mountPoint,
-					       const QString& unMountCommand,
-					       int maxCount ) ;
-
 	bool deleteMountFolder( const QString& ) ;
 
 	struct unmount{
@@ -53,14 +45,14 @@ namespace siritask
 
 	struct mount{
 
-		const engines::engine::cmdArgsList::options& options ;
+		const engines::engine::cmdArgsList& options ;
 		bool reUseMP ;
 		const engines::engineWithPaths& engine ;
 	} ;
 
 	struct create{
 
-		const engines::engine::cmdArgsList::options& options ;
+		const engines::engine::cmdArgsList& options ;
 		const engines::engine& engine ;
 	} ;
 
@@ -68,7 +60,7 @@ namespace siritask
 
 	engines::engine::cmdStatus encryptedFolderMount( const siritask::mount& ) ;
 
-	engines::engine::cmdStatus encryptedFolderMount( const engines::engine::cmdArgsList::options& s ) ;
+	engines::engine::cmdStatus encryptedFolderMount( const engines::engine::cmdArgsList& s ) ;
 
 	engines::engine::cmdStatus encryptedFolderCreate( const siritask::create& ) ;
 }

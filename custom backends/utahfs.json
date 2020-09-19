@@ -1,0 +1,50 @@
+{
+        "acceptsSubType": true,
+        "acceptsVolName": true,
+        "autoCreatesMountPoint": false,
+        "autoDeletesMountPoint": false,
+        "autoMountsOnVolumeCreation": false,
+        "autorefreshOnMountUnMount": true,
+        "backendRequireMountPath": true,
+        "backendTimeout": 0,
+        "configFileArgument": "-cfg %{cipherFolder}/%{configFileName}",
+        "configFileNames": [
+                "utahfs.yaml"
+        ],
+        "createControlStructure": "",
+        "displayName":"",
+        "executableName": "utahfs-client",
+        "failedToMountTextList": [],
+        "fileExtensions": [],
+        "fuseNames": [
+                "fuse.utahfs"
+        ],
+        "idleString": "--idle %{timeout}",
+        "keyFileArgument": "--keyfile %{keyfile}",
+        "likeSsh": false,
+        "mountControlStructure": "%{mountOptions} -mount %{mountPoint}",
+        "names": [
+                "utahfs"
+        ],
+        "passwordFormat": "%{password}",
+        "requiresAPassword": false,
+        "reverseString": "",
+        "runsInBackGround": false,
+        "setsCipherPath": false,
+        "sshOptions": "idmap=user,StrictHostKeyChecking=no",
+        "takesTooLongToUnlock": false,
+        "unMountCommand": [],
+        "versionArgumentString": "",
+        "versionMinimum": "",
+        "versionOutputStdOut": true,
+        "versionStringTextPosition": [],
+        "volumePropertiesCommands": [],
+        "windowsExecutableFolderPath": "",
+        "windowsInstallPathRegistryKey": "",
+        "windowsInstallPathRegistryValue": "",
+        "windowsSuccessfullyMountedList": [],
+        "windowsSupportsMountPointPaths": false,
+        "windowsUnMountCommand": [],
+        "wrongPasswordErrorCode": "",
+        "wrongPasswordText": ""
+}

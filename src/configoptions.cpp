@@ -199,6 +199,11 @@ configOptions::configOptions( QWidget * parent,
 
 		m_ui->lineEditHiDPI->setEnabled( e ) ;
 	} ) ;
+
+	connect( m_ui->chShowDebugWindowOnStartup,&QCheckBox::toggled,[ this ]( bool e ){
+
+		m_settings.showDebugWindowOnStartup( e ) ;
+	} ) ;
 }
 
 configOptions::~configOptions()
@@ -248,6 +253,8 @@ void configOptions::ShowUI()
 	m_ui->lineEditHiDPI->setText( m_settings.enabledHighDpiScalingFactor() ) ;
 
 	m_ui->lineEditHiDPI->setEnabled( m_ui->cbHiDPI->isChecked() ) ;
+
+	m_ui->chShowDebugWindowOnStartup->setChecked( m_settings.showDebugWindowOnStartup() ) ;
 
 	if( utility::platformIsWindows() ){
 

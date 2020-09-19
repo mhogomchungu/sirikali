@@ -43,87 +43,91 @@
 
 #include <functional>
 
-namespace Ui {
+namespace Ui
+{
 class changePassWordDialog;
 }
 
-namespace LXQt{
+namespace LXQt
+{
 
-namespace Wallet{
+namespace Wallet
+{
 
 class changePassWordDialog : public QDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	struct changeArgs{
-		bool failedToUnlock ;
-		bool failedToChange ;
-	};
+    struct changeArgs
+    {
+	bool failedToUnlock;
+	bool failedToChange;
+    };
 
-	using changeFunction = std::function< changeArgs( const QString& old,const QString& New,bool ) > ;
-	using createFunction = std::function< void( const QString&,bool ) > ;
+    using changeFunction = std::function< changeArgs(const QString &old, const QString &New, bool) >;
+    using createFunction = std::function< void(const QString &, bool) >;
 
-	static changePassWordDialog& createInstance( QWidget * parent,
-						     const QString& walletName,
-						     const QString& applicationName,
-						     createFunction&& function )
-	{
-		auto& e = *( new changePassWordDialog( parent,walletName,applicationName ) ) ;
+    static changePassWordDialog &createInstance(QWidget *parent,
+						const QString &walletName,
+						const QString &applicationName,
+						createFunction && function)
+    {
+	auto &e = *(new changePassWordDialog(parent, walletName, applicationName));
 
-		e.createShowUI( std::move( function ) ) ;
+	e.createShowUI(std::move(function));
 
-		return e ;
-	}
-	static changePassWordDialog& changeInstance( QWidget * parent,
-						     const QString& walletName,
-						     const QString& applicationName,
-						     changeFunction&& function )
-	{
-		auto& e = *( new changePassWordDialog( parent,walletName,applicationName ) ) ;
+	return e;
+    }
+    static changePassWordDialog &changeInstance(QWidget *parent,
+						const QString &walletName,
+						const QString &applicationName,
+						changeFunction && function)
+    {
+	auto &e = *(new changePassWordDialog(parent, walletName, applicationName));
 
-		e.changeShowUI( std::move( function ) ) ;
+	e.changeShowUI(std::move(function));
 
-		return e ;
-	}
-	explicit changePassWordDialog( QWidget * parent = 0,
-				       const QString& walletName = QString(),
-				       const QString& applicationName = QString() ) ;
+	return e;
+    }
+    explicit changePassWordDialog(QWidget *parent = 0,
+                                  const QString &walletName = QString(),
+				  const QString &applicationName = QString());
 
-	void createShowUI( createFunction&& ) ;
-	void changeShowUI( changeFunction&& ) ;
+    void createShowUI(createFunction &&);
+    void changeShowUI(changeFunction &&);
 
-	~changePassWordDialog() ;
+    ~changePassWordDialog();
 signals:
-	void walletpassWordChanged( bool ) ;
+    void walletpassWordChanged(bool);
 private slots:
-	void create( void ) ;
-	void change( void ) ;
-	void cancel( void ) ;
-	void ok( void ) ;
-	void ok_1( void ) ;
+    void create(void);
+    void change(void);
+    void cancel(void);
+    void ok(void);
+    void ok_1(void);
 private:
-	void HideUI( void ) ;
-	void closeEvent( QCloseEvent * ) ;
-	bool eventFilter ( QObject * watched,QEvent * event ) ;
-	Ui::changePassWordDialog * m_ui ;
-	lxqt_wallet_t m_wallet ;
-	QString m_walletName ;
-	QString m_applicationName ;
-	QString m_banner ;
+    void HideUI(void);
+    void closeEvent(QCloseEvent *);
+    bool eventFilter(QObject *watched, QEvent *event);
+    Ui::changePassWordDialog *m_ui;
+    lxqt_wallet_t m_wallet;
+    QString m_walletName;
+    QString m_applicationName;
+    QString m_banner;
 
-	std::function< void( const QString&,bool ) > m_create = []( const QString& e,bool f ){
+    std::function< void(const QString &, bool) > m_create = [](const QString &e, bool f)
+    {
+        Q_UNUSED(e)
+        Q_UNUSED(f)
+    };
 
-		Q_UNUSED( e )
-		Q_UNUSED( f )
-	} ;
+    std::function< changeArgs(const QString &old, const QString &New, bool) > m_change = [](const QString &old, const QString &New, bool)
+    {
+        Q_UNUSED(old)
+        Q_UNUSED(New)
 
-	std::function< changeArgs( const QString& old,const QString& New,bool ) > m_change = []( const QString& old,const QString& New,bool ){
-
-		Q_UNUSED( old )
-		Q_UNUSED( New )
-
-		return changeArgs{ false,false } ;
-	} ;
+	return changeArgs {false, false};
+    };
 };
 
 }

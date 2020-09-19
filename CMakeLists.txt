@@ -4,7 +4,7 @@ set_property( GLOBAL PROPERTY ALLOW_DUPLICATE_CUSTOM_TARGETS ON )
 
 project( sirikali )
 
-set( PGR_VERSION "1.4.3" )
+set( PGR_VERSION "1.4.6" )
 set( COPYRIGHT_YEARS "2016-2020" )
 
 add_definitions( -Wextra -Wall -pedantic )
@@ -155,15 +155,9 @@ file( WRITE ${PROJECT_BINARY_DIR}/version.h "
 
 if( INTERNAL_LXQT_WALLET )
 
-        if( WIN32 )
                 message( STATUS "---------------------------------------------------------------------------" )
-                message( STATUS "lxqt wallet support is disabled on Windows" )
+	message( STATUS "lxqt wallet support will be provided by an internal library" )
                 message( STATUS "---------------------------------------------------------------------------" )
-        else()
-                message( STATUS "---------------------------------------------------------------------------" )
-                message( STATUS "lxqt wallet support will be provided by an internal library" )
-                message( STATUS "---------------------------------------------------------------------------" )
-        endif()
 
 	ADD_SUBDIRECTORY( src/3rdParty/lxqt_wallet )
 	include_directories( ${PROJECT_SOURCE_DIR}/src/3rdParty/lxqt_wallet/frontend )
@@ -182,7 +176,7 @@ else()
 		include_directories( ${PROJECT_SOURCE_DIR}/src/3rdParty/lxqt_wallet/frontend )
 		include_directories( ${PROJECT_BINARY_DIR}/src/3rdParty/lxqt_wallet/frontend )
 	else()
-		if( LXQT_WALLET_VERSION VERSION_GREATER "3.0.0" AND QT5 )
+		if( LXQT_WALLET_VERSION VERSION_GREATER "3.1.0"  )
 
 			include_directories( ${LXQT_WALLET_INCLUDEDIR} )
 			link_directories( ${LXQT_WALLET_LIBDIR} )
@@ -192,14 +186,9 @@ else()
 			message( STATUS "---------------------------------------------------------------------------" )
 		else()
 			message( STATUS "---------------------------------------------------------------------------" )
-			message( STATUS "lxqt wallet support will be provided by an internal library" )
-			message( STATUS "because external library is too old(<= 2.0.0) or cant build " )
-			message( STATUS "with external lxqt_wallet while building with Qt4" )
-			message( STATUS "---------------------------------------------------------------------------" )
 
-			ADD_SUBDIRECTORY( src/3rdParty/lxqt_wallet )
-			include_directories( ${PROJECT_SOURCE_DIR}/src/3rdParty/lxqt_wallet/frontend )
-			include_directories( ${PROJECT_BINARY_DIR}/src/3rdParty/lxqt_wallet/frontend )
+			message( FATAL_ERROR "---------------------------------------------------------------------------\nInstalled version of lxqt_wallet is too old(<3.2.0)\nPlease install a more receant version from: https://github.com/lxqt/lxqt_wallet\n---------------------------------------------------------------------------" )
+
 		endif()
 	endif()
 endif()
@@ -394,7 +383,7 @@ endif()
 
 if( UNIX AND NOT APPLE )
 
-    TARGET_LINK_LIBRARIES( sirikali ${Qt5DBus_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task mhogomchungu_network -L${GCRYPT_LIBRARY_PATH})
+    TARGET_LINK_LIBRARIES( sirikali ${Qt5DBus_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task mhogomchungu_network -L${GCRYPT_LIBRARY_PATH} -Wl,-znow)
 else()
 
 endif()

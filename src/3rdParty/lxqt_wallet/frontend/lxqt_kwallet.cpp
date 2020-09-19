@@ -31,210 +31,215 @@
 #include "lxqt_kwallet.h"
 #include "task.h"
 
-LXQt::Wallet::kwallet::kwallet() : m_kwallet( nullptr )
+LXQt::Wallet::kwallet::kwallet() : m_kwallet(nullptr)
 {
 }
 
 LXQt::Wallet::kwallet::~kwallet()
 {
-	if( m_kwallet ){
-
-		m_kwallet->sync() ;
-		m_kwallet->deleteLater() ;
-	}
+    if (m_kwallet)
+    {
+        m_kwallet->sync();
+        m_kwallet->deleteLater();
+    }
 }
 
-void LXQt::Wallet::kwallet::setImage( const QIcon& image )
+void LXQt::Wallet::kwallet::setImage(const QIcon &image)
 {
-	Q_UNUSED( image )
+    Q_UNUSED(image)
 }
 
-bool LXQt::Wallet::kwallet::addKey( const QString& key,const QByteArray& value )
+bool LXQt::Wallet::kwallet::addKey(const QString &key, const QByteArray &value)
 {
-	return m_kwallet->writePassword( key,value ) == 0 ;
+    return m_kwallet->writePassword(key, value) == 0;
 }
 
-bool LXQt::Wallet::kwallet::open( const QString& walletName,
-				  const QString& applicationName,
-				  QWidget * parent,
-				  const QString& password,
-				  const QString& displayApplicationName )
+
+bool LXQt::Wallet::kwallet::open(const QString &walletName,
+				 const QString &applicationName,
+				 QWidget *parent,
+				 const QString &password,
+				 const QString &displayApplicationName)
 {
-	if( walletName == "default" ){
-
-		m_walletName = KWallet::Wallet::LocalWallet() ;
-	}else{
-		m_walletName = walletName ;
-	}
-
-	m_applicationName   = applicationName ;
-	m_password          = password ;
-
-	if( parent ){
-
-		this->setParent( parent ) ;
-	}
-
-	Q_UNUSED( displayApplicationName )
-
-	m_kwallet = LXQt::Wallet::Task::await< KWallet::Wallet * >( [ this ](){
-
-		return KWallet::Wallet::openWallet( m_walletName,0,KWallet::Wallet::Synchronous ) ;
-	} ) ;
-
-	this->openedWallet( m_kwallet ) ;
-
-	return m_kwallet ;
+	QEventLoop loop;
+	bool opened;
+	this->open(walletName,
+		   applicationName,
+		   [&](bool e) {opened = e;loop.exit();},
+		   parent,
+		   password,
+		   displayApplicationName);
+	loop.exec();
+	return opened;
 }
 
-void LXQt::Wallet::kwallet::openedWallet( bool e )
+void LXQt::Wallet::kwallet::openedWallet(bool e)
 {
-	if( e ){
+    if (e)
+    {
+        if (m_applicationName.isEmpty())
+        {
+            m_kwallet->createFolder(m_kwallet->PasswordFolder());
+            m_kwallet->setFolder(m_kwallet->PasswordFolder());
+        }
+        else
+        {
+            m_kwallet->createFolder(m_applicationName);
+            m_kwallet->setFolder(m_applicationName);
+        }
+    }
 
-		if( m_applicationName.isEmpty() ){
-
-			m_kwallet->createFolder( m_kwallet->PasswordFolder() ) ;
-			m_kwallet->setFolder( m_kwallet->PasswordFolder() ) ;
-		}else{
-			m_kwallet->createFolder( m_applicationName ) ;
-			m_kwallet->setFolder( m_applicationName ) ;
-		}
-	}
-
-	m_walletOpened( e ) ;
+    m_walletOpened(e);
 }
 
-void LXQt::Wallet::kwallet::open( const QString& walletName,
-				  const QString& applicationName,
-				  std::function< void( bool ) > function,
-				  QWidget * parent,
-				  const QString& password,
-				  const QString& displayApplicationName )
+void LXQt::Wallet::kwallet::open(const QString &walletName,
+                                 const QString &applicationName,
+                                 std::function< void(bool) > function,
+                                 QWidget *parent,
+                                 const QString &password,
+                                 const QString &displayApplicationName)
 {
-	if( walletName == "default" ){
+    if (walletName == "default")
+    {
+        m_walletName = KWallet::Wallet::LocalWallet();
+    }
+    else
+    {
+        m_walletName = walletName;
+    }
 
-		m_walletName = KWallet::Wallet::LocalWallet() ;
-	}else{
-		m_walletName = walletName ;
-	}
+    this->setParent(parent);
 
-	this->setParent( parent ) ;
+    m_applicationName   = applicationName;
+    m_password          = password;
 
-	m_applicationName   = applicationName ;
-	m_password          = password ;
+    m_walletOpened = std::move(function);
 
-	m_walletOpened = std::move( function ) ;
+    Q_UNUSED(displayApplicationName)
 
-	Q_UNUSED( displayApplicationName )
+    m_kwallet = KWallet::Wallet::openWallet(m_walletName, 0, KWallet::Wallet::Asynchronous);
 
-	m_kwallet = KWallet::Wallet::openWallet( m_walletName,0,KWallet::Wallet::Asynchronous ) ;
-
-	connect( m_kwallet,SIGNAL( walletOpened( bool ) ),this,SLOT( walletOpened( bool ) ) ) ;
+    if (m_kwallet)
+    {
+	connect(m_kwallet, SIGNAL(walletOpened(bool)), this, SLOT(walletOpened(bool)));
+    }
+    else
+    {
+	m_log("LXQt:Wallet::kwallet: Failed to get a handle to kwallet, is it enabled?");
+	QMetaObject::invokeMethod(this, "walletOpened", Qt::QueuedConnection,Q_ARG(bool, false));
+    }
 }
 
-void LXQt::Wallet::kwallet::walletOpened( bool opened )
+void LXQt::Wallet::kwallet::walletOpened(bool opened)
 {
-	this->openedWallet( opened ) ;
+    this->openedWallet(opened);
 }
 
-QByteArray LXQt::Wallet::kwallet::readValue( const QString& key )
+QByteArray LXQt::Wallet::kwallet::readValue(const QString &key)
 {
-	QString value ;
+    QString value;
 
-	m_kwallet->readPassword( key,value ) ;
+    m_kwallet->readPassword(key, value);
 
-	return value.toLatin1() ;
+    return value.toLatin1();
 }
 
-QVector< std::pair< QString,QByteArray > > LXQt::Wallet::kwallet::readAllKeyValues( void )
+QVector<std::pair<QString, QByteArray>> LXQt::Wallet::kwallet::readAllKeyValues(void)
 {
-	QVector< std::pair< QString,QByteArray > > p ;
+    QVector<std::pair<QString, QByteArray>> p;
 
-	auto l = m_kwallet->entryList() ;
+    auto l = m_kwallet->entryList();
 
-	QString value ;
+    QString value;
 
-	auto j = l.size() ;
+    auto j = l.size();
 
-	for( decltype( j ) i = 0 ; i < j ; i++ ){
+    for (decltype(j) i = 0; i < j; i++)
+    {
+        const auto &e = l.at(i);
 
-		const auto& e = l.at( i ) ;
+        m_kwallet->readPassword(e, value);
 
-		m_kwallet->readPassword( e,value ) ;
+	p.append({ e, value.toLatin1() });
+    }
 
-		p.append( { e,value.toLatin1() } ) ;
-	}
-
-	return p ;
+    return p;
 }
 
-QStringList LXQt::Wallet::kwallet::readAllKeys( void )
+void LXQt::Wallet::kwallet::log(std::function<void(QString)> f)
 {
-	return m_kwallet->entryList() ;
+    m_log = std::move(f);
 }
 
-void LXQt::Wallet::kwallet::deleteKey( const QString& key )
+QStringList LXQt::Wallet::kwallet::readAllKeys(void)
 {
-	m_kwallet->removeEntry( key ) ;
+    return m_kwallet->entryList();
 }
 
-int LXQt::Wallet::kwallet::walletSize( void )
+void LXQt::Wallet::kwallet::deleteKey(const QString &key)
 {
-	return m_kwallet->entryList().size() ;
+    m_kwallet->removeEntry(key);
 }
 
-void LXQt::Wallet::kwallet::closeWallet( bool b )
+int LXQt::Wallet::kwallet::walletSize(void)
 {
-	m_kwallet->closeWallet( m_walletName,b ) ;
+    return m_kwallet->entryList().size();
 }
 
-LXQt::Wallet::BackEnd LXQt::Wallet::kwallet::backEnd( void )
+void LXQt::Wallet::kwallet::closeWallet(bool b)
 {
-	return LXQt::Wallet::BackEnd::kwallet ;
+    m_kwallet->closeWallet(m_walletName, b);
 }
 
-bool LXQt::Wallet::kwallet::opened( void )
+LXQt::Wallet::BackEnd LXQt::Wallet::kwallet::backEnd(void)
 {
-	if( m_kwallet ){
-
-		return m_kwallet->isOpen() ;
-	}else{
-		return false ;
-	}
+    return LXQt::Wallet::BackEnd::kwallet;
 }
 
-QObject * LXQt::Wallet::kwallet::qObject( void )
+bool LXQt::Wallet::kwallet::opened(void)
 {
-	return this ;
+    if (m_kwallet)
+    {
+        return m_kwallet->isOpen();
+    }
+    else
+    {
+        return false;
+    }
+}
+
+QObject *LXQt::Wallet::kwallet::qObject(void)
+{
+    return this;
 }
 
 QString LXQt::Wallet::kwallet::storagePath()
 {
-	return m_kwallet->PasswordFolder() ;
+    return m_kwallet->PasswordFolder();
 }
 
-void LXQt::Wallet::kwallet::changeWalletPassWord( const QString& walletName,
-						  const QString& applicationName,
-						  std::function< void( bool ) > function )
+void LXQt::Wallet::kwallet::changeWalletPassWord(const QString &walletName,
+        const QString &applicationName,
+        std::function< void(bool) > function)
 {
-	Q_UNUSED( applicationName )
-	Q_UNUSED( function )
+    Q_UNUSED(applicationName)
+    Q_UNUSED(function)
 
-	m_kwallet->changePassword( walletName,0 ) ;
+    m_kwallet->changePassword(walletName, 0);
 }
 
 QStringList LXQt::Wallet::kwallet::managedWalletList()
 {
-	return m_kwallet->walletList() ;
+    return m_kwallet->walletList();
 }
 
 QString LXQt::Wallet::kwallet::localDefaultWalletName()
 {
-	return m_kwallet->LocalWallet() ;
+    return m_kwallet->LocalWallet();
 }
 
 QString LXQt::Wallet::kwallet::networkDefaultWalletName()
 {
-	return m_kwallet->NetworkWallet() ;
+    return m_kwallet->NetworkWallet();
 }
 

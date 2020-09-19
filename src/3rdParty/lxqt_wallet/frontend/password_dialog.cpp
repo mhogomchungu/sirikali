@@ -31,147 +31,147 @@
 #include "password_dialog.h"
 #include "ui_password_dialog.h"
 
-LXQt::Wallet::password_dialog::password_dialog( QWidget * parent,
-						const QString& walletName,
-						const QString& appName,
-						std::function< void( const QString& ) > && p,
-						std::function< void() >&& q,
-						std::function< void( bool ) > * z ) :
-	QDialog( parent ),m_ui( new Ui::password_dialog ),m_password( std::move( p ) ),m_cancel( std::move( q ) )
+LXQt::Wallet::password_dialog::password_dialog(QWidget *parent,
+        const QString &walletName,
+        const QString &appName,
+        std::function< void(const QString &) > && p,
+        std::function< void() > && q,
+        std::function< void(bool) > * z) :
+    QDialog(parent), m_ui(new Ui::password_dialog), m_password(std::move(p)), m_cancel(std::move(q))
 {
-	m_ui->setupUi( this ) ;
+    m_ui->setupUi(this);
 
-	this->setFixedSize( this->size() ) ;
+    this->setFixedSize(this->size());
 
-	this->setWindowFlags( this->windowFlags() | Qt::WindowStaysOnTopHint ) ;
+    this->setWindowFlags(this->windowFlags()|Qt::WindowStaysOnTopHint);
 
-	if( parent ){
+    if (parent)
+    {
+        this->setWindowIcon(parent->windowIcon());
+    }
 
-		this->setWindowIcon( parent->windowIcon() ) ;
-	}
+    connect(m_ui->pushButtonSend, SIGNAL(clicked()), this, SLOT(pbSend()));
+    connect(m_ui->pushButtonCancel, SIGNAL(clicked()), this, SLOT(pbCancel()));
+    connect(m_ui->pushButtonOK_2, SIGNAL(clicked()), this, SLOT(pbOK_2()));
 
-	connect( m_ui->pushButtonSend,SIGNAL( clicked() ),this,SLOT( pbSend() ) ) ;
-	connect( m_ui->pushButtonCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
-	connect( m_ui->pushButtonOK_2,SIGNAL( clicked() ),this,SLOT( pbOK_2() ) ) ;
+    m_ui->pushButtonOK_2->setVisible(false);
+    m_ui->textEdit_2->setVisible(false);
+    m_ui->textEdit->setVisible(false);
+    m_ui->pushButtonOK->setVisible(false);
 
-	m_ui->pushButtonOK_2->setVisible( false ) ;
-	m_ui->textEdit_2->setVisible( false ) ;
-	m_ui->textEdit->setVisible( false ) ;
-	m_ui->pushButtonOK->setVisible( false ) ;
+    m_banner = m_ui->textEdit->toHtml().arg(appName, walletName);
+    m_ui->labelWalletDoesNotExist->setVisible(false);
+    m_ui->labelHeader->setText(m_banner);
 
-	m_banner = m_ui->textEdit->toHtml().arg( appName,walletName ) ;
-	m_ui->labelWalletDoesNotExist->setVisible( false ) ;
-	m_ui->labelHeader->setText( m_banner ) ;
+    *z = [this](bool correctPassword)
+    {
+        if (correctPassword)
+        {
+            this->HideUI();
+        }
+        else
+        {
+            m_ui->labelHeader->setText(tr("Wallet could not be opened with the presented key"));
+            m_ui->textEdit->setVisible(false);
+            m_ui->labelWalletDoesNotExist->setVisible(false);
+            m_ui->labelHeader->setVisible(true);
+            m_ui->lineEditKey->setVisible(true);
+            m_ui->lineEditKey->setEnabled(false);
+            m_ui->pushButtonSend->setVisible(false);
+            m_ui->pushButtonCancel->setVisible(false);
+            m_ui->pushButtonOK->setVisible(false);
+            m_ui->pushButtonOK_2->setVisible(true);
+            m_ui->pushButtonOK_2->setFocus();
+        }
+    };
 
-	*z = [ this ]( bool correctPassword ){
+    this->installEventFilter(this);
 
-		if( correctPassword ){
-
-			this->HideUI() ;
-		}else{
-			m_ui->labelHeader->setText( tr( "Wallet could not be opened with the presented key" ) ) ;
-			m_ui->textEdit->setVisible( false ) ;
-			m_ui->labelWalletDoesNotExist->setVisible( false ) ;
-			m_ui->labelHeader->setVisible( true ) ;
-			m_ui->lineEditKey->setVisible( true ) ;
-			m_ui->lineEditKey->setEnabled( false ) ;
-			m_ui->pushButtonSend->setVisible( false ) ;
-			m_ui->pushButtonCancel->setVisible( false ) ;
-			m_ui->pushButtonOK->setVisible( false ) ;
-			m_ui->pushButtonOK_2->setVisible( true ) ;
-			m_ui->pushButtonOK_2->setFocus() ;
-		}
-	} ;
-
-	this->installEventFilter( this ) ;
-
-	this->show() ;
-	this->raise() ;
-	this->activateWindow() ;
+    this->show();
 }
 
-bool LXQt::Wallet::password_dialog::eventFilter( QObject * watched,QEvent * event )
+bool LXQt::Wallet::password_dialog::eventFilter(QObject *watched, QEvent *event)
 {
-	if( watched == this ){
+    if (watched == this)
+    {
+        if (event->type() == QEvent::KeyPress)
+        {
+            auto keyEvent = static_cast< QKeyEvent * >(event);
 
-		if( event->type() == QEvent::KeyPress ){
+            if (keyEvent->key() == Qt::Key_Escape)
+            {
+                this->HideUI();
 
-			auto keyEvent = static_cast< QKeyEvent* >( event ) ;
+                return true;
+            }
+        }
+    }
 
-			if( keyEvent->key() == Qt::Key_Escape ){
-
-				this->HideUI() ;
-
-				return true ;
-			}
-		}
-	}
-
-	return false ;
+    return false;
 }
 
 LXQt::Wallet::password_dialog::~password_dialog()
 {
-	delete m_ui ;
+    delete m_ui;
 }
 
 void LXQt::Wallet::password_dialog::pbSend()
 {
-	m_ui->textEdit->setEnabled( false ) ;
-	m_ui->labelHeader->setEnabled( true ) ;
-	m_ui->lineEditKey->setEnabled( false ) ;
-	m_ui->lineEditKey->setEnabled( false ) ;
-	m_ui->pushButtonSend->setEnabled( false ) ;
-	m_ui->pushButtonCancel->setEnabled( false ) ;
-	m_ui->pushButtonOK->setEnabled( false ) ;
-	m_ui->pushButtonOK_2->setEnabled( true ) ;
+    m_ui->textEdit->setEnabled(false);
+    m_ui->labelHeader->setEnabled(true);
+    m_ui->lineEditKey->setEnabled(false);
+    m_ui->lineEditKey->setEnabled(false);
+    m_ui->pushButtonSend->setEnabled(false);
+    m_ui->pushButtonCancel->setEnabled(false);
+    m_ui->pushButtonOK->setEnabled(false);
+    m_ui->pushButtonOK_2->setEnabled(true);
 
-	m_password( m_ui->lineEditKey->text() ) ;
+    m_password(m_ui->lineEditKey->text());
 }
 
 void LXQt::Wallet::password_dialog::pbCancel()
 {
-	m_cancel() ;
-	this->HideUI() ;
+    m_cancel();
+    this->HideUI();
 }
 
 void LXQt::Wallet::password_dialog::pbOK()
 {
-	this->HideUI() ;
+    this->HideUI();
 }
 
 void LXQt::Wallet::password_dialog::pbOK_2()
 {
-	m_ui->labelHeader->setText( m_banner ) ;
-	m_ui->textEdit->setVisible( false ) ;
-	m_ui->labelWalletDoesNotExist->setVisible( false ) ;
-	m_ui->labelHeader->setVisible( true ) ;
-	m_ui->lineEditKey->setVisible( true ) ;
-	m_ui->lineEditKey->setEnabled( true ) ;
-	m_ui->pushButtonSend->setVisible( true ) ;
-	m_ui->pushButtonCancel->setVisible( true ) ;
-	m_ui->pushButtonOK->setVisible( false ) ;
-	m_ui->pushButtonOK_2->setVisible( false ) ;
-	m_ui->lineEditKey->clear() ;
-	m_ui->lineEditKey->setFocus() ;
-	m_ui->textEdit->setEnabled( true ) ;
-	m_ui->labelHeader->setEnabled( true ) ;
-	m_ui->lineEditKey->setEnabled( true ) ;
-	m_ui->lineEditKey->setEnabled( true ) ;
-	m_ui->pushButtonSend->setEnabled( true ) ;
-	m_ui->pushButtonCancel->setEnabled( true ) ;
-	m_ui->pushButtonOK->setEnabled( true ) ;
-	m_ui->pushButtonOK_2->setEnabled( true ) ;
+    m_ui->labelHeader->setText(m_banner);
+    m_ui->textEdit->setVisible(false);
+    m_ui->labelWalletDoesNotExist->setVisible(false);
+    m_ui->labelHeader->setVisible(true);
+    m_ui->lineEditKey->setVisible(true);
+    m_ui->lineEditKey->setEnabled(true);
+    m_ui->pushButtonSend->setVisible(true);
+    m_ui->pushButtonCancel->setVisible(true);
+    m_ui->pushButtonOK->setVisible(false);
+    m_ui->pushButtonOK_2->setVisible(false);
+    m_ui->lineEditKey->clear();
+    m_ui->lineEditKey->setFocus();
+    m_ui->textEdit->setEnabled(true);
+    m_ui->labelHeader->setEnabled(true);
+    m_ui->lineEditKey->setEnabled(true);
+    m_ui->lineEditKey->setEnabled(true);
+    m_ui->pushButtonSend->setEnabled(true);
+    m_ui->pushButtonCancel->setEnabled(true);
+    m_ui->pushButtonOK->setEnabled(true);
+    m_ui->pushButtonOK_2->setEnabled(true);
 }
 
 void LXQt::Wallet::password_dialog::HideUI()
 {
-	this->hide() ;
-	this->deleteLater() ;
+    this->hide();
+    this->deleteLater();
 }
 
-void LXQt::Wallet::password_dialog::closeEvent( QCloseEvent * e )
+void LXQt::Wallet::password_dialog::closeEvent(QCloseEvent *e)
 {
-	e->ignore() ;
-	this->HideUI() ;
+    e->ignore();
+    this->HideUI();
 }

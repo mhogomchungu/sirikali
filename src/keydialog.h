@@ -32,7 +32,6 @@ class QAction ;
 class QTableWidgetItem ;
 class QTableWidget ;
 
-#include "sirikali.h"
 #include "volumeinfo.h"
 #include "utility.h"
 #include "siritask.h"
@@ -162,46 +161,71 @@ class keyDialog : public QDialog
 {
 	Q_OBJECT
 public:
+	struct entry{
+		entry( favorites::volEntry e ) :
+			volEntry( std::move( e ) ),
+			engine( volEntry.favorite().volumePath,volEntry.favorite().configFilePath )
+		{
+		}
+		entry( favorites::volEntry e,engines::engineWithPaths s ) :
+			volEntry( std::move( e ) ),engine( std::move( s ) )
+		{
+		}
+		favorites::volEntry volEntry ;
+		engines::engineWithPaths engine ;
+	} ;
+
+	using volumeList = std::vector< entry > ;
+
 	static QString keyFileError() ;
+
+	static QString mountPointPath( const engines::engine& engine,
+				       const QString& cipherPath,
+				       const QString& moutPointPath,
+				       settings& settings,
+				       bool reUseMountPoint,
+				       const std::function< void() >& function = [](){} ) ;
 
 	static void instance( QWidget * parent,
 			      secrets& s,
-			      const volumeInfo& v,
 			      std::function< void() > cancel,
 			      std::function< void() > updateList,
 			      bool o,
 			      const QString& m,
-			      const QString& exe = QString(),
-			      const QByteArray& key = QByteArray() )
+			      const QString& exe )
 	{
-		new keyDialog( parent,s,v,std::move( cancel ),std::move( updateList),o,m,exe,key ) ;
+		new keyDialog( parent,s,std::move( cancel ),std::move( updateList),o,m,exe ) ;
 	}
 	static void instance( QWidget * parent,
 			      secrets& s,
 			      bool o,
 			      const QString& m,
-			      favorites::volumeList e,
+			      keyDialog::volumeList e,
 			      std::function< void() > function,
 			      std::function< void() > updateList )
 	{
-		new keyDialog( parent,s,o,m,std::move( e ),std::move( function ),std::move( updateList ) ) ;
+		new keyDialog( parent,
+			       s,
+			       o,
+			       m,
+			       std::move( e ),
+			       std::move( function ),
+			       std::move( updateList ) ) ;
 	}
 	keyDialog( QWidget * parent,
 		   secrets&,
 		   bool,
 		   const QString&,
-		   favorites::volumeList,
+		   keyDialog::volumeList,
 		   std::function< void() >,
 		   std::function< void() > ) ;
 	keyDialog( QWidget * parent,
 		   secrets&,
-		   const volumeInfo&,
 		   std::function< void() >,
 		   std::function< void() >,
 		   bool,
 		   const QString&,
-		   const QString&,
-		   const QByteArray& ) ;
+		   const QString& ) ;
 	~keyDialog() ;
 signals:
 	void mounted( QString ) ;
@@ -230,10 +254,10 @@ private slots:
 	void pbSetKey( void ) ;
 	void pbSetKeyCancel( void ) ;
 private :	
-	void autoMount( const favorites::entry& e,const QByteArray& key ) ;
+	void autoMount( const keyDialog::entry& ee ) ;
 	void unlockVolume( void ) ;
 	void setVolumeToUnlock() ;
-	void setUpVolumeProperties( const volumeInfo& e,const QByteArray& ) ;
+	void setUpVolumeProperties( const keyDialog::entry& e ) ;
 	void setUpInitUI() ;
 	void setKeyEnabled( bool ) ;
 	void setDefaultUI( void ) ;
@@ -282,6 +306,7 @@ private :
 	bool m_checked = false ;
 	bool m_hmac ;
 	bool m_closeGUI = false ;
+	bool m_enableUsingPassword = false ;
 
 	engines::engine::mOpts m_mountOptions ;
 	engines::engine::cOpts m_createOptions ;
@@ -307,11 +332,11 @@ private :
 	std::function< void() > m_done = [](){} ;
 	std::function< void() > m_updateVolumeList ;
 
-	favorites::volumeList m_volumes ;
+	keyDialog::volumeList m_volumes ;
 
 	cryfsWarning m_warningLabel ;
 
-	decltype( m_volumes.size() ) m_counter = 0 ;
+	size_t m_counter = 0 ;
 
 	struct walletKey
 	{

@@ -32,79 +32,79 @@
 #ifndef LXQT_OSX_KEYCHAIN_PRIVATE_H
 #define LXQT_OSX_KEYCHAIN_PRIVATE_H
 
-using OSStatus = int ;
+using OSStatus = int;
 
-class foo ;
-using SecKeychainItemRef = foo * ;
+class foo;
+using SecKeychainItemRef = foo *;
 
 #define noErr 0
 #define errSecSuccess 0
 
-void SecKeychainItemFreeContent( void * e,void * f )
+void SecKeychainItemFreeContent(void *e, void *f)
 {
-	Q_UNUSED( e ) ;
-	Q_UNUSED( f ) ;
+    Q_UNUSED(e);
+    Q_UNUSED(f);
 }
 
-void CFRelease( void * e )
+void CFRelease(void *e)
 {
-	Q_UNUSED( e ) ;
+    Q_UNUSED(e);
 }
 
-OSStatus SecKeychainItemDelete( void * e )
+OSStatus SecKeychainItemDelete(void *e)
 {
-	Q_UNUSED( e ) ;
-	return 0 ;
+    Q_UNUSED(e);
+    return 0;
 }
 
-OSStatus SecKeychainFindGenericPassword( void * foo,
-					 quint32 serviceNameLength,
-					 const char * serviceName,
-					 quint32 accountNameLength,
-					 const char *accountName,
-					 quint32 * passwordLength,
-					 void ** passwordData,
-					 SecKeychainItemRef * itemRef )
+OSStatus SecKeychainFindGenericPassword(void *foo,
+                                        quint32 serviceNameLength,
+                                        const char *serviceName,
+                                        quint32 accountNameLength,
+                                        const char *accountName,
+                                        quint32 *passwordLength,
+                                        void **passwordData,
+                                        SecKeychainItemRef *itemRef)
 {
-	Q_UNUSED( foo ) ;
-	Q_UNUSED( serviceNameLength ) ;
-	Q_UNUSED( serviceName ) ;
-	Q_UNUSED( passwordLength ) ;
-	Q_UNUSED( passwordData ) ;
-	Q_UNUSED( accountName ) ;
-	Q_UNUSED( accountNameLength ) ;
-	Q_UNUSED( itemRef ) ;
+    Q_UNUSED(foo);
+    Q_UNUSED(serviceNameLength);
+    Q_UNUSED(serviceName);
+    Q_UNUSED(passwordLength);
+    Q_UNUSED(passwordData);
+    Q_UNUSED(accountName);
+    Q_UNUSED(accountNameLength);
+    Q_UNUSED(itemRef);
 
-	return 0 ;
+    return 0;
 }
 
-OSStatus SecKeychainAddGenericPassword( void * foo,
-					quint32 serviceNameLength,
-					const char * serviceName,
-					quint32 accountNameLength,
-					const char * accountName,
-					quint32 passwordLength,
-					const void * passwordData,
-					SecKeychainItemRef * itemRef )
+OSStatus SecKeychainAddGenericPassword(void *foo,
+                                       quint32 serviceNameLength,
+                                       const char *serviceName,
+                                       quint32 accountNameLength,
+                                       const char *accountName,
+                                       quint32 passwordLength,
+                                       const void *passwordData,
+                                       SecKeychainItemRef *itemRef)
 {
-	Q_UNUSED( foo ) ;
-	Q_UNUSED( serviceNameLength ) ;
-	Q_UNUSED( serviceName ) ;
-	Q_UNUSED( passwordLength ) ;
-	Q_UNUSED( passwordData ) ;
-	Q_UNUSED( accountName ) ;
-	Q_UNUSED( accountNameLength ) ;
-	Q_UNUSED( itemRef ) ;
+    Q_UNUSED(foo);
+    Q_UNUSED(serviceNameLength);
+    Q_UNUSED(serviceName);
+    Q_UNUSED(passwordLength);
+    Q_UNUSED(passwordData);
+    Q_UNUSED(accountName);
+    Q_UNUSED(accountNameLength);
+    Q_UNUSED(itemRef);
 
-	return 0 ;
+    return 0;
 }
 
-void SecKeychainItemModifyContent( void * a,void * b,quint32 c,const void * d )
+void SecKeychainItemModifyContent(void *a, void *b, quint32 c, const void *d)
 {
-	Q_UNUSED( a ) ;
-	Q_UNUSED( b ) ;
-	Q_UNUSED( c ) ;
-	Q_UNUSED( d ) ;
+    Q_UNUSED(a);
+    Q_UNUSED(b);
+    Q_UNUSED(c);
+    Q_UNUSED(d);
 }
 
 #endif

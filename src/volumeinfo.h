@@ -26,12 +26,41 @@
 #include "utility.h"
 #include "favorites.h"
 
+#include <vector>
+
 class volumeInfo
 {
 public:
+	struct FsEntry{
+
+		FsEntry( QString c,QString m,QString f,QString mm,QString mo = QString() ) :
+			cipherPath( std::move( c ) ),
+			mountPoint( std::move( m ) ),
+			fileSystem( std::move( f ) ),
+			mode( std::move( mm ) ),
+			mountOptions( std::move( mo ) )
+		{
+		}
+		QString cipherPath ;
+		QString mountPoint ;
+		QString fileSystem ;
+		QString mode ;
+		QString mountOptions ;
+	} ;
+
+	using List = std::vector< volumeInfo::FsEntry > ;
+
 	struct mountinfo
 	{
 		mountinfo()
+		{
+		}
+		mountinfo( volumeInfo::FsEntry e ) :
+			volumePath( std::move( e.cipherPath ) ),
+			mountPoint( std::move( e.mountPoint ) ),
+			fileSystem( std::move( e.fileSystem ) ),
+			mode( std::move( e.mode ) ),
+			mountOptions( std::move( e.mountOptions ) )
 		{
 		}
 		mountinfo( const QStringList& e )
@@ -83,32 +112,16 @@ public:
 	}
 	volumeInfo( const favorites::entry& e )
 	{
-		m_mountinfo.volumePath = e.volumePath ;
-		m_mountinfo.mountPoint = e.mountPointPath ;
-		m_reverseMode          = e.reverseMode ;
-		m_readOnlyMode         = e.readOnlyMode ;
-		m_volumeNeedNoPassword = e.volumeNeedNoPassword ;
-		m_autoMount            = e.autoMount ;
-
-		if( e.configFilePath != "N/A" ){
-
-			m_mountinfo.configPath = e.configFilePath ;
-		}
-
-		if( e.keyFile != "N/A" ){
-
-			m_mountinfo.keyFile = e.keyFile ;
-		}
-
-		if( e.idleTimeOut != "N/A" ){
-
-			m_mountinfo.idleTimeout = e.idleTimeOut ;
-		}
-
-		if( e.mountOptions != "N/A" ){
-
-			m_mountinfo.mountOptions = e.mountOptions ;
-		}
+		m_mountinfo.volumePath   = e.volumePath ;
+		m_mountinfo.mountPoint   = e.mountPointPath ;
+		m_reverseMode            = e.reverseMode ;
+		m_readOnlyMode           = e.readOnlyMode ;
+		m_volumeNeedNoPassword   = e.volumeNeedNoPassword ;
+		m_autoMount              = e.autoMount ;
+		m_mountinfo.configPath   = e.configFilePath ;
+		m_mountinfo.keyFile      = e.keyFile ;
+		m_mountinfo.idleTimeout  = e.idleTimeOut ;
+		m_mountinfo.mountOptions = e.mountOptions ;
 	}
 	const favorites::triState& mountReadOnly() const
 	{

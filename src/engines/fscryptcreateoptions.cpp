@@ -97,7 +97,7 @@ fscryptcreateoptions::fscryptcreateoptions( const engines::engine::createGUIOpti
 
 				m = opt ;
 			}else{
-				m += "\\040" + opt ;
+				m += "," + opt ;
 			}
 		} ;
 
@@ -121,7 +121,7 @@ fscryptcreateoptions::fscryptcreateoptions( const engines::engine::createGUIOpti
 
 		if( !mm.isEmpty() ){
 
-			_add( "--key=" + utility::Task::makePath( mm ) ) ;
+			_add( "--key=" + mm ) ;
 		}
 
 		this->HideUI( { m,QString(),QString() } ) ;

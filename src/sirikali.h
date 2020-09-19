@@ -41,6 +41,7 @@
 #include "debugwindow.h"
 #include "settings.h"
 #include "systemsignalhandler.h"
+#include "keydialog.h"
 
 #include <vector>
 
@@ -53,12 +54,33 @@ namespace Ui {
 class sirikali ;
 }
 
+class miniSiriKali : public QObject
+{
+	Q_OBJECT
+public:
+	miniSiriKali( std::function< int( secrets& ) > function ) :
+		m_function( std::move( function ) ),
+		m_secrets( nullptr )
+	{
+	}
+private slots :
+	void start() ;
+private:
+	virtual void silenceWarning() ;
+	std::function< int( secrets& ) > m_function ;
+	secrets m_secrets ;
+} ;
+
 class sirikali : public QWidget
 {
 	Q_OBJECT
 public:
+	static bool cmd( const QStringList& ) ;
+	static int run( const QStringList&,int argc,char * argv[] ) ;
+	static int exec( const QStringList&,int argc,char * argv[] ) ;
+	static int unlockVolume( const QStringList&,secrets& ) ;
+
 	sirikali( const QStringList& ) ;
-	int start( QApplication& ) ;
 	~sirikali() ;
 private slots:
 	void addToFavorites( void ) ;
@@ -66,18 +88,15 @@ private slots:
 	void showDebugWindow( void ) ;
 	void configurationOptions( void ) ;
 	void FAQ( void ) ;
-	void showTrayIconWhenReady( void ) ;
-	void polkitFailedWarning( void ) ;
 	void hideWindow( void ) ;
 	void setUpApp( const QString& ) ;
 	void start() ;
 	void autoUpdateCheck( void ) ;
 	void volumeProperties() ;
 	void genericVolumeProperties( void ) ;
-	void unlockVolume( const QStringList& ) ;
 	void closeApplication( int = 0,const QString& = QString() ) ;
 	void unlockVolume( bool ) ;
-	void startGUI( const std::vector< volumeInfo >& ) ;
+	void startGUI( const QString& ) ;
 	void autoMount( const QString& ) ;
 	void defaultButton( void ) ;
 	void itemClicked( QTableWidgetItem * ) ;
@@ -100,6 +119,7 @@ private slots:
 	void removeEntryFromTable( QString ) ;
 	void showFavorites( void ) ;
 	void favoriteClicked( QAction * ) ;
+	void favoriteClicked() ;
 	void openMountPointPath( const QString& ) ;
 	void licenseInfo( void ) ;
 	void updateCheck( void ) ;
@@ -109,7 +129,14 @@ private:
 
 	void showTrayIcon() ;
 
-	void mountMultipleVolumes( favorites::volumeList ) ;
+	void mountMultipleVolumes( keyDialog::volumeList ) ;
+
+	keyDialog::volumeList autoMount( keyDialog::volumeList l,bool ) ;
+
+	void autoMount( keyDialog::volumeList&,
+			keyDialog::entry&&,
+			bool,
+			bool ) ;
 
 	QString resolveFavoriteMountPoint( const QString& ) ;
 
@@ -117,7 +144,6 @@ private:
 
 	void updateFavoritesInContextMenu( void ) ;
 	void runIntervalCustomCommand( const QString& ) ;
-	void cliCommand( const QStringList& ) ;
 	void updateVolumeList( const std::vector< volumeInfo >& ) ;
 	void openMountPoint( const QString& ) ;
 	void setLocalizationLanguage( bool ) ;
@@ -130,9 +156,12 @@ private:
 	void closeEvent( QCloseEvent * e ) ;
 	void setUpFont( void ) ;
 	void setUpShortCuts( void ) ;
+	void showMainWindow( void ) ;
 	void raiseWindow( const QString& = QString() ) ;
 	void autoUnlockVolumes( const std::vector< volumeInfo >& ) ;	
-	favorites::volumeList autoUnlockVolumes( favorites::volumeList,bool = false ) ;
+	keyDialog::volumeList autoUnlockVolumes( favorites::volumeList,
+						 bool autoOpenFolderOnMount = false,
+						 bool skipUnknown = false ) ;
 
 	struct mountedEntry{
 		const QString& cipherPath ;
@@ -145,6 +174,8 @@ private:
 	engines::engine::cmdStatus unMountVolume( const sirikali::mountedEntry& ) ;
 
 	Ui::sirikali * m_ui = nullptr ;
+
+	debugWindow m_debugWindow ;
 
 	secrets m_secrets ;
 
@@ -182,11 +213,9 @@ private:
 
 	configOptions m_configOptions ;
 
-	debugWindow m_debugWindow ;
-
 	systemSignalHandler m_signalHandler ;
 
-	const QStringList& m_argumentList ;
+	const QStringList m_argumentList ;
 };
 
 #endif // MAINWINDOW_H

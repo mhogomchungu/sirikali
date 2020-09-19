@@ -252,6 +252,21 @@ void settings::enableHighDpiScaling( bool e )
 	m_settings.setValue( "EnableHighDpiScaling",e ) ;
 }
 
+void settings::showDebugWindowOnStartup( bool e )
+{
+	m_settings.setValue( "showDebugWindowOnStartup",e ) ;
+}
+
+bool settings::showDebugWindowOnStartup()
+{
+	if( !m_settings.contains( "showDebugWindowOnStartup" ) ){
+
+		m_settings.setValue( "showDebugWindowOnStartup",false ) ;
+	}
+
+	return m_settings.value( "showDebugWindowOnStartup" ).toBool() ;
+}
+
 QByteArray settings::enabledHighDpiScalingFactor()
 {
 	if( !m_settings.contains( "EnabledHighDpiScalingFactor" ) ){
@@ -377,7 +392,23 @@ QString settings::mountPath()
 {
 	_set_mount_default( *this ) ;
 
-	return m_settings.value( "MountPrefix" ).toString() ;
+	auto e = m_settings.value( "MountPrefix" ).toString() ;
+
+	while( true ){
+
+		if( e == "/" ){
+
+			break ;
+
+		}else if( e.endsWith( '/' ) ){
+
+			e.truncate( e.length() - 1 ) ;
+		}else{
+			break ;
+		}
+	}
+
+	return e ;
 }
 
 QString settings::mountPath( const QString& path )
@@ -508,7 +539,7 @@ bool settings::readFavorites( QMenu * m )
 
 	m->addSeparator() ;
 
-	const auto favorites = favorites::instance().readFavorites() ;
+	const auto& favorites = favorites::instance().readFavorites() ;
 
 	bool cipherPathRepeatsInFavoritesList = false ;
 
@@ -895,7 +926,7 @@ void settings::autoMountBackEnd( const settings::walletBackEnd& e )
 
 			return "osxkeychain" ;
 
-		}else if( e == SiriKali::Windows::windowsWalletBackend() ){
+		}else if( e == LXQt::Wallet::BackEnd::windows_dpapi ){
 
 			return "windows_DPAPI" ;
 		}else{
@@ -933,7 +964,7 @@ settings::walletBackEnd settings::autoMountBackEnd()
 
 		}else if( e == "windows_DPAPI" ){
 
-			return SiriKali::Windows::windowsWalletBackend() ;
+			return LXQt::Wallet::BackEnd::windows_dpapi ;
 		}else{
 			return settings::walletBackEnd() ;
 		}
@@ -1032,6 +1063,16 @@ QString settings::ykchalrespArguments()
 	}
 
 	return m_settings.value( "YkchalrespArguments" ).toString() ;
+}
+
+QString settings::portSeparator()
+{
+	if( !m_settings.contains( "PortSeparator" ) ){
+
+		m_settings.setValue( "PortSeparator","####" ) ;
+	}
+
+	return m_settings.value( "PortSeparator" ).toString() ;
 }
 
 bool settings::yubikeyRemoveNewLine()

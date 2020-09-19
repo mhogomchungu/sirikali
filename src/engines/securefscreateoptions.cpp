@@ -69,9 +69,9 @@ void securefscreateoptions::pbOK()
 
 	if( m_ui->comboBox->currentIndex() == 1 ){
 
-		this->HideUI( { "--format 2",m_ui->lineEdit->text(),m_ui->lineEdit_2->text() } ) ;
+		this->HideUI( { "--format,2",m_ui->lineEdit->text(),m_ui->lineEdit_2->text() } ) ;
 	}else{
-		this->HideUI( { "--format 4",m_ui->lineEdit->text(),m_ui->lineEdit_2->text() } ) ;
+		this->HideUI( { "--format,4",m_ui->lineEdit->text(),m_ui->lineEdit_2->text() } ) ;
 	}
 }
 

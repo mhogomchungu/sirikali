@@ -61,7 +61,7 @@ options::options( const engines::engine& engine,const engines::engine::mountGUIO
 
 	m_ui->lineEditIdleTime->setText( m_setGUIOptions.mOpts.idleTimeOut ) ;
 	m_ui->lineEditConfigFilePath->setText( m_setGUIOptions.mOpts.configFile ) ;
-	m_ui->lineEditMountOptions->setText( m_setGUIOptions.mOpts.mountOpts ) ;
+	m_ui->lineEditMountOptions->setText( m_setGUIOptions.mOpts.mountOpts.join( ',' ) ) ;
 	m_ui->lineEditKeyFile->setText( m_setGUIOptions.mOpts.keyFile ) ;
 
 	const auto& name = m_engine.name() ;
@@ -124,7 +124,9 @@ void options::pbSet()
 
 	auto keyFile = m_ui->lineEditKeyFile->text() ;
 
-	this->Hide( { idle,configFile,mountOpts,keyFile,opts } ) ;
+	QString empty ;
+
+	this->Hide( { idle,configFile,mountOpts,keyFile,empty,empty,opts } ) ;
 }
 
 void options::pbCancel()

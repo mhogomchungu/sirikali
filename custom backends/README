@@ -1,0 +1,70 @@
+
+To create a custom backend using a GUI, press "CTRL+B" while SiriKali has focus to
+get a GUI window that will allow you to create a custom backend confuguration file.
+The file will be created in user's home folder in Linux and Macos in user's desktop
+folder in Windows.
+
+Manual changes to the configuration file may be necessary to further customise
+the backend since the GUI window does not expose all available options.
+
+On startup, SiriKail checks for custom backend in "$HOME/.config/SiriKali/backends"
+and in "$INSTALL_PREFIX/share/SiriKali/backends".
+
+Explanations for different options on the GUI.
+
+1. Plugin Name.
+This option sets the file name of the generated config file.
+
+2. Backend Names.
+This option sets the name of a backend and ideally, it should have the same
+value as plug in name. Its possible for a backend to have more than one name
+and gocryptfs is an example since it has "gocryptfs" and "gocryptfs.reverse" names.
+
+3. Executable Name.
+This option takes a name of a program to call to run the file system.
+
+4. Config File Names.
+This option takes a name of a config file the backend uses to store information
+about the file system like password and other informations.
+
+5. Fuse Names.
+This option takes a file system name as reported in "/proc/self/mountinfo".
+Ideally, the name should be "fuse.XYZ" where "XYZ" is the plugin name.
+
+6. Config File Argument.
+This option controls how to format configuration file argument passed to the backend
+if the backend supports custom configuration file path.
+
+7. Create Control Structure.
+This option controls how to format arguments passed to the backend when creating
+a file system.
+
+8. Mount Control Structure.
+This option controls how to format arguments passed to the backend when mounting
+a file system.
+
+9. Wrong Password Text.
+Most backends requires a password before they can mount a file system and reports a
+problem when wrong password was entered and this option informs Sirikali of what
+text to look for when reporting a wrong password.
+
+10. Wrong Password Error Code.
+Most backends requires a password before they can mount a file system and
+reports a problem using error code when wrong password was entered and
+this option informs SiriKali of what error code to use to know a wrong
+password was entered.
+
+11. Successfully Mounted Text.
+This option informs SiriKali of what string to look for to know a file system was
+successfully started in Windows.
+
+12. Require A Password.
+Some backends requires a password and some don't and set this option for backends that do.
+
+13. Support Mount Point Path.
+All backends use drive letters on windows and some optionally support folder paths.
+Set this option if the backend also supports folder paths.
+
+14. AutoMounts on Volume Creation.
+Some backend automatically mounts a file system after they are created and some do not.
+Set this option appropriately based on how the backend creates its file systems.

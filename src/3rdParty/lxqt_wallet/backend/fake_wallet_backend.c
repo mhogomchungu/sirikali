@@ -39,6 +39,5 @@ void lxqt_wallet_application_wallet_path( char * path_buffer,
 					  const char * application_name )
 {
 	if( path_buffer && path_buffer_size && application_name ){}
-
 }
 

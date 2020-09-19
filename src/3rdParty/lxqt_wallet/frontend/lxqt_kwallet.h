@@ -39,69 +39,74 @@
 
 #include <kwallet.h>
 
-class QWidget ;
+class QWidget;
 
-namespace LXQt{
+namespace LXQt
+{
 
-namespace Wallet{
+namespace Wallet
+{
 
 class kwallet : public LXQt::Wallet::Wallet
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	kwallet() ;
-	~kwallet() ;
+    kwallet();
+    ~kwallet();
 
-	void open( const QString& walletName,
-		   const QString& applicationName,
-		   std::function< void( bool ) >,
-		   QWidget * = nullptr,
-		   const QString& password = QString(),
-		   const QString& displayApplicationName = QString() ) ;
+    void open(const QString &walletName,
+              const QString &applicationName,
+              std::function< void(bool) >,
+              QWidget * = nullptr,
+              const QString &password = QString(),
+              const QString &displayApplicationName = QString());
 
-	bool open( const QString& walletName,
-		   const QString& applicationName,
-		   QWidget * = nullptr,
-		   const QString& password = QString(),
-		   const QString& displayApplicationName = QString() ) ;
+    bool open(const QString &walletName,
+	      const QString &applicationName,
+	      QWidget * = nullptr,
+	      const QString &password = QString(),
+	      const QString &displayApplicationName = QString());
 
-	bool addKey( const QString& key,const QByteArray& value ) ;
-	bool opened( void ) ;
+    bool addKey(const QString &key, const QByteArray &value);
+    bool opened(void);
 
-	QByteArray readValue( const QString& key ) ;
+    QByteArray readValue(const QString &key);
 
-	QVector< std::pair< QString,QByteArray > > readAllKeyValues( void ) ;
+    QVector<std::pair<QString, QByteArray>> readAllKeyValues(void);
 
-	QStringList readAllKeys( void ) ;
-	QStringList managedWalletList( void ) ;
+    QStringList readAllKeys(void);
+    QStringList managedWalletList(void);
 
-	QString storagePath( void ) ;
-	QString localDefaultWalletName( void ) ;
-	QString networkDefaultWalletName( void ) ;
+    QString storagePath(void);
+    QString localDefaultWalletName(void);
+    QString networkDefaultWalletName(void);
 
-	void deleteKey( const QString& key ) ;
-	void closeWallet( bool ) ;
-	void changeWalletPassWord( const QString& walletName,
-				   const QString& applicationName = QString(),
-				   std::function< void( bool ) > = []( bool e ){ Q_UNUSED( e ) } ) ;
-	void setImage( const QIcon& ) ;
+    void deleteKey(const QString &key);
+    void closeWallet(bool);
+    void changeWalletPassWord(const QString &walletName,
+                              const QString &applicationName = QString(),
+                              std::function<void(bool)> = [](bool e) { Q_UNUSED(e); });
+    void setImage(const QIcon &);
 
-	int walletSize( void ) ;
+    int walletSize(void) ;
 
-	LXQt::Wallet::BackEnd backEnd( void ) ;
-	QObject * qObject( void ) ;
+    void log(std::function<void(QString)>);
+
+    LXQt::Wallet::BackEnd backEnd(void);
+    QObject *qObject(void);
 
 private slots:
-	void walletOpened( bool ) ;
+    void walletOpened(bool);
 private:
-	void openedWallet( bool ) ;
+    void openedWallet(bool);
 
-	KWallet::Wallet * m_kwallet ;
-	QString m_walletName ;
-	QString m_applicationName ;
-	QString m_password ;
+    KWallet::Wallet *m_kwallet;
+    QString m_walletName;
+    QString m_applicationName;
+    QString m_password;
 
-	std::function< void( bool ) > m_walletOpened = []( bool e ){ Q_UNUSED( e ) } ;
+    std::function< void(bool) > m_walletOpened = [](bool e) { Q_UNUSED(e); };
+    std::function<void(QString)> m_log;
 };
 
 }

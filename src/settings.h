@@ -135,6 +135,7 @@ public:
 	void windowsKeysStorageData( const QByteArray& ) ;
 	QString externalPluginExecutable() ;
 	QString ykchalrespArguments() ;
+	QString portSeparator() ;
 	bool yubikeyRemoveNewLine() ;
 	void setExternalPluginExecutable( const QString& ) ;
 	bool enableRevealingPasswords() ;
@@ -148,6 +149,8 @@ public:
 	QString environmentalVariableVolumeKey() ;
 	bool enableHighDpiScaling() ;
 	void enableHighDpiScaling( bool ) ;
+	void showDebugWindowOnStartup( bool ) ;
+	bool showDebugWindowOnStartup( void ) ;
 	QByteArray enabledHighDpiScalingFactor() ;
 	void enabledHighDpiScalingFactor( const QString& ) ;
 	void removeKey( const QString& ) ;

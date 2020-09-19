@@ -19,28 +19,29 @@
 
 #include "../engines.h"
 
+#include "../siritask.h"
+
 struct ecryptfs : public engines::engine
 {
 	ecryptfs() ;
 
 	bool requiresPolkit() const override ;
 
-	void updateOptions( engines::engine::cmdArgsList::options&,bool ) const override ;
+	void updateOptions( engines::engine::cmdArgsList&,bool ) const override ;
 
-	engines::engine::status unmount( const QString& cipherFolder,
-					 const QString& mountPoint,
-					 int maxCount ) const override ;
+	engines::engine::status unmount( const engines::engine::unMount& e ) const override ;
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 
 	engines::engine::args command( const QByteArray& password,
-				       const engines::engine::cmdArgsList& args ) const override ;
+				       const engines::engine::cmdArgsList& args,
+				       bool create ) const override ;
 
 	void GUICreateOptions( const engines::engine::createGUIOptions& ) const override ;
 
 	void GUIMountOptions( const engines::engine::mountGUIOptions& ) const override ;
 private:
-	QString wrapSU( const QString& s ) const ;
+	engines::engine::exe_args wrapSU( const QString& s ) const ;
 	const bool m_requirePolkit ;
 	const engines::exeFullPath m_exeSUFullPath ;
 } ;

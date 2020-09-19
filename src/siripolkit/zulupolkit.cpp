@@ -75,7 +75,7 @@ static bool _terminalEchoOff( struct termios * old,struct termios * current )
 	}
 
 	*current = *old ;
-	current->c_lflag &= ~ECHO ;
+	current->c_lflag &= static_cast< tcflag_t >( ~ECHO ) ;
 
 	if( tcsetattr( 1,TCSAFLUSH,current ) != 0 ){
 
@@ -125,6 +125,10 @@ void zuluPolkit::start()
 
 		m_socketPath = m_arguments.at( 1 ) ;
 
+		m_suCmd = executableFullPath( "su" ) ;
+
+		m_ecryptfs_simpleCmd = executableFullPath( "ecryptfs-simple" ) ;
+
 		bool ok ;
 
 		auto uid = QProcessEnvironment::systemEnvironment().value( "PKEXEC_UID" ).toInt( &ok ) ;
@@ -136,7 +140,9 @@ void zuluPolkit::start()
 
 			auto s = e.toLatin1() ;
 
-			if( chown( s.constData(),uid,uid ) ){}
+			auto id = static_cast< unsigned int >( uid ) ;
+
+			if( chown( s.constData(),id,id ) ){}
 			if( chmod( s.constData(),0700 ) ){}
 		}
 
@@ -169,7 +175,7 @@ static void _respond( QLocalSocket& s,const char * e )
 
 static void _respond( QLocalSocket& s,const Task::process::result& e )
 {
-	SirikaliJson json ;
+	SirikaliJson json( []( const QString& e ){ Q_UNUSED( e ) } ) ;
 
 	json[ "stdOut" ]     = e.std_out() ;
 	json[ "stdError" ]   = e.std_error() ;
@@ -182,48 +188,56 @@ static void _respond( QLocalSocket& s,const Task::process::result& e )
 	s.waitForBytesWritten() ;
 }
 
+bool zuluPolkit::passSanityCheck( const QString& cmd,const QStringList& s )
+{
+	if( cmd == m_suCmd ){
+
+		if( s.size() > 2 ){
+
+			if( s.at( 0 ) == "-" && s.at( 1 ) == "-c" && s.at( 2 ).startsWith( m_ecryptfs_simpleCmd ) ){
+
+				return true ;
+			}
+		}
+	}
+
+	return false ;
+}
+
 void zuluPolkit::gotConnection()
 {
 	std::unique_ptr< QLocalSocket > s( m_server.nextPendingConnection() ) ;
 
 	auto& m = *s ;
 
-	try{
-		m.waitForReadyRead() ;
+	m.waitForReadyRead() ;
 
-		auto json = SirikaliJson( m.readAll(),SirikaliJson::type::CONTENTS ) ;
+	auto json = SirikaliJson( m.readAll() ) ;
 
-		auto password = json.getString( "password" ) ;
-		auto cookie   = json.getString( "cookie" ) ;
-		auto command  = json.getString( "command" ) ;
+	if( json.failed() ){
 
-		auto su = executableFullPath( "su" ) ;
+		_respond( m,"SiriPolkit: Failed To Parse Data" ) ;
+	}
 
-		auto e = su + " - -c \"'" + executableFullPath( "ecryptfs-simple" ) ;
-		auto f = su + " - -c \"" + executableFullPath( "ecryptfs-simple" ) ;
-		auto g = executableFullPath( "fscrypt" ) ;
+	auto password = json.getString( "password" ) ;
+	auto cookie   = json.getString( "cookie" ) ;
+	auto command  = json.getString( "command" ) ;
+	auto args     = json.getStringList( "args" ) ;
 
-		if( cookie == m_cookie ){
+	if( cookie == m_cookie ){
 
-			if( command == "exit" ){
+		if( command == "exit" ){
 
-				return QCoreApplication::quit() ;
+			return QCoreApplication::quit() ;
 
-			}else if( command.startsWith( e ) ||
-				  command.startsWith( f ) ||
-				  command.startsWith( g ) ||
-				  command.startsWith( "\"" + g ) ){
+		}else if( this->passSanityCheck( command,args ) ){
 
-				return _respond( m,Task::process::run( command,password.toLatin1() ).get() ) ;
-			}else{
-				_respond( m,"SiriPolkit: Invalid Command" ) ;
-			}
+			return _respond( m,Task::process::run( command,args,password.toUtf8() ).get() ) ;
 		}else{
-			_respond( m,"SiriPolkit: Failed To Authenticate Request" ) ;
+			_respond( m,"SiriPolkit: Invalid Command" ) ;
 		}
-	}catch( ... ){
-
-		_respond( m,"SiriPolkit: Failed To Parse Request" ) ;
+	}else{
+		_respond( m,"SiriPolkit: Failed To Authenticate Request" ) ;
 	}
 }
 

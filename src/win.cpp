@@ -185,17 +185,7 @@ std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path )
 	}
 }
 
-LXQt::Wallet::BackEnd windowsWalletBackend()
-{
-	return LXQt::Wallet::BackEnd::windows_DPAPI ;
-}
-
 #else
-
-LXQt::Wallet::BackEnd windowsWalletBackend()
-{
-	return LXQt::Wallet::BackEnd( 255 ) ;
-}
 
 QString lastError()
 {
@@ -291,7 +281,7 @@ public:
 		return s ;
 	}
 	Task::process::result add( const SiriKali::Windows::opts& ) ;
-	Task::process::result remove(const QString& unMountCommand,const QString& mountPoint ) ;
+	Task::process::result remove( const QStringList& unMountCommand,const QString& mountPoint ) ;
 	std::vector< QStringList > commands() const ;
 	QString volumeProperties( const QString& mountPath ) ;
 	void updateVolumeList( std::function< void() > ) ;
@@ -361,7 +351,7 @@ std::vector< QStringList > SiriKali::Windows::volumes::commands() const
 
 		for( auto& m : e ){
 
-			m = mountinfo::encodeMountPath( m ) ;
+			m = engines::engine::encodeMountPath( m ) ;
 		}
 
 		s.emplace_back( std::move( e ) ) ;
@@ -466,31 +456,49 @@ struct terminate_process{
 	QProcess& exe ;
 	const QProcessEnvironment& env ;
 	const QString& mountPath ;
-	const QString& unMountCommand ;
+	const QStringList& unMountCommand ;
 };
 
-static std::pair< Task::process::result,QString > _terminate_process( const terminate_process& e )
-{
+struct terminate_result{
+
+	Task::process::result result ;
 	QString exe ;
+	QStringList args ;
+} ;
 
-	if( e.unMountCommand == "sirikali.exe -T" ){
+static terminate_result _terminate_process( const terminate_process& e )
+{
+	if( e.unMountCommand.isEmpty() ){
 
-		exe = e.unMountCommand + QString::number( e.exe.processId() ) ;
+		auto a = "SiriKali Error: Unmount Command Not Set" ;
+		auto b = Task::process::result( a,QByteArray(),-1,0,true ) ;
 
-	}else if( e.unMountCommand.isEmpty() || e.mountPath.isEmpty() ){
-
-		exe = "taskkill /F /PID " + QString::number( e.exe.processId() ) ;
-	}else{
-		exe = utility::Task::makePath( e.unMountCommand ) + " " + e.mountPath ;
+		return { std::move( b ),{},{} } ;
 	}
 
-	auto m = utility::unwrap( Task::process::run( exe,{},-1,"",e.env ) ) ;
+	auto args = e.unMountCommand ;
+
+	QString exe = args.takeAt( 0 ) ;
+
+	for( auto& it : args ){
+
+		if( it == "%{PID}" ){
+
+			it = QString::number( e.exe.processId() ) ;
+
+		}else if( it == "%{mountPoint}" ){
+
+			it = e.mountPath ;
+		}
+	}
+
+	auto m = utility::unwrap( Task::process::run( exe,args,-1,"",e.env ) ) ;
 
 	if( m.success() ){
 
 		if( utility::waitForFinished( e.exe ) ){
 
-			return { std::move( m ),std::move( exe ) } ;
+			return { std::move( m ),std::move( exe ),std::move( args ) } ;
 		}else{
 			auto a = Task::process::result( SiriKali::Windows::_backEndFailedToFinish,
 							QByteArray(),
@@ -498,10 +506,10 @@ static std::pair< Task::process::result,QString > _terminate_process( const term
 							0,
 							true ) ;
 
-			return { std::move( a ),std::move( exe ) } ;
+			return { std::move( a ),std::move( exe ),std::move( args ) } ;
 		}
 	}else{
-		return { std::move( m ),std::move( exe ) } ;
+		return { std::move( m ),std::move( exe ),std::move( args ) } ;
 	}
 }
 
@@ -511,24 +519,28 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 
 	exe->setProcessEnvironment( opts.engine.getProcessEnvironment() ) ;
 	exe->setProcessChannelMode( QProcess::MergedChannels ) ;
-	exe->start( opts.args.cmd ) ;
+	exe->start( opts.args.cmd,opts.args.cmd_args ) ;
 	exe->waitForStarted() ;
 	exe->write( opts.password + "\n" ) ;
 	exe->closeWriteChannel() ;
 
 	auto m = _getProcessOutput( *exe,opts.engine ) ;
 
+	auto error = []( const QByteArray& e ){
+
+		return Task::process::result( e,QByteArray(),-1,0,true ) ;
+	} ;
+
 	auto s = [ & ](){
 
 		if( m.type == engines::engine::error::Timeout ){
 
-			_terminate_process( { *exe,opts.engine.getProcessEnvironment(),QString(),QString() } ) ;
+			const auto& ee = opts.engine.unMountCommand() ;
+			const auto& ss = opts.args.mountPath ;
 
-			return Task::process::result( SiriKali::Windows::_backEndTimedOut,
-						      QByteArray(),
-						      -1,
-						      0,
-						      true ) ;
+			_terminate_process( { *exe,opts.engine.getProcessEnvironment(),ss,ee } ) ;
+
+			return error( SiriKali::Windows::_backEndTimedOut ) ;
 
 		}else if( m.type == engines::engine::error::Success ){
 
@@ -551,25 +563,16 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 
 				QString c = "std out\n----------------------\n" + exe->readAllStandardOutput() + "\n----------------------\n" ;
 
-				return Task::process::result( QString( "%1%2%3" ).arg( a,b,c ).toLatin1(),
-							      QByteArray(),
-							      -1,
-							      0,
-							      true ) ;
+				return error( QString( "%1%2%3" ).arg( a,b,c ).toLatin1() ) ;
 			}
-
 		}else{
 			utility::waitForFinished( *exe ) ;
 
-			return Task::process::result( QByteArray(),
-						      m.outPut,
-						      exe->exitCode(),
-						      exe->exitStatus(),
-						      true ) ;
+			return error( m.outPut ) ;
 		}
 	}() ;
 
-	utility::logCommandOutPut( s,opts.args.cmd ) ;
+	utility::logCommandOutPut( s,opts.args.cmd,opts.args.cmd_args ) ;
 
 	return s ;
 }
@@ -589,14 +592,14 @@ static QString _make_path( QString e,encode s )
 
 	if( s == encode::True ){
 
-		return mountinfo::encodeMountPath( e ) ;
+		return engines::engine::encodeMountPath( e ) ;
 	}else{
 		return e ;
 	}
 }
 
 Task::process::result
-SiriKali::Windows::volumes::remove( const QString& unMountCommand,const QString& mountPoint )
+SiriKali::Windows::volumes::remove( const QStringList& unMountCommand,const QString& mountPoint )
 {
 	for( auto it = m_instances.begin() ; it != m_instances.end() ; it++ ){
 
@@ -608,7 +611,7 @@ SiriKali::Windows::volumes::remove( const QString& unMountCommand,const QString&
 
 			auto r = [ & ](){
 
-				if( m.first.success() ) {
+				if( m.result.success() ) {
 
 					m_instances.erase( it ) ;
 
@@ -620,7 +623,7 @@ SiriKali::Windows::volumes::remove( const QString& unMountCommand,const QString&
 				}
 			}() ;
 
-			utility::logCommandOutPut( r,m.second ) ;
+			utility::logCommandOutPut( r,m.exe,m.args ) ;
 
 			return r ;
 		}
@@ -631,13 +634,11 @@ SiriKali::Windows::volumes::remove( const QString& unMountCommand,const QString&
 
 QString SiriKali::Windows::volumes::volumeProperties( const QString& mm )
 {
-	auto mountPath = "\"" + mm + "\"" ;
-
 	for( size_t i = 0 ; i < m_instances.size() ; i++ ){
 
 		const auto& e = m_instances[ i ] ;
 
-		if( mountPath == e.mountPoint() ){
+		if( mm == e.mountPoint() ){
 
 			auto m = QObject::tr( "Mount Options:\n\n" ) ;
 
@@ -715,7 +716,7 @@ std::vector< SiriKali::Windows::mountOptions > SiriKali::Windows::getMountOption
 	return volumes::get().mountOptions() ;
 }
 
-Task::process::result SiriKali::Windows::unmount( const QString& unMountCommand,const QString& m )
+Task::process::result SiriKali::Windows::unmount( const QStringList& unMountCommand,const QString& m )
 {
 	return volumes::get().remove( unMountCommand,m ) ;
 }
@@ -728,9 +729,9 @@ Task::process::result SiriKali::Windows::run( const opts& s )
 
 			return SiriKali::Windows::volumes::get().add( s ) ;
 		}else{
-			auto m = utility::unwrap( Task::process::run( s.args.cmd,s.password ) ) ;
+			auto m = utility::unwrap( Task::process::run( s.args.cmd,s.args.cmd_args,-1,s.password ) ) ;
 
-			utility::logCommandOutPut( m,s.args.cmd ) ;
+			utility::logCommandOutPut( m,s.args.cmd,s.args.cmd_args ) ;
 
 			return m ;
 		}

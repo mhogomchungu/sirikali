@@ -22,6 +22,8 @@
 #include "encfscreateoptions.h"
 #include "options.h"
 
+#include "custom.h"
+
 static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
@@ -31,22 +33,27 @@ static engines::engine::BaseOptions _setOptions()
 	s.supportsMountPathsOnWindows = true ;
 	s.autorefreshOnMountUnMount   = true ;
 	s.backendRequireMountPath     = true ;
+	s.backendRunsInBackGround     = true ;
+	s.likeSsh               = false ;
 	s.requiresPolkit        = false ;
 	s.customBackend         = false ;
 	s.requiresAPassword     = true ;
 	s.hasConfigFile         = true ;
 	s.autoMountsOnCreate    = true ;
 	s.hasGUICreateOptions   = true ;
-	s.setsCipherPath        = false ;
+	s.setsCipherPath        = true ;
+	s.acceptsSubType        = true ;
+	s.acceptsVolName        = true ;
 	s.releaseURL            = "https://api.github.com/repos/vgough/encfs/releases" ;
 	s.passwordFormat        = "%{password}\n%{password}" ;
 	s.reverseString         = "--reverse" ;
-	s.idleString            = "-i" ;
+	s.idleString            = "--idle=%{timeout}" ;
 	s.executableName        = "encfs" ;
 	s.incorrectPasswordText = "Error decoding volume key, password incorrect" ;
-	s.configFileArgument    = "--config" ;
+	s.configFileArgument    = "--config=%{configFilePath}" ;
 	s.windowsInstallPathRegistryKey   = "SOFTWARE\\ENCFS" ;
 	s.windowsInstallPathRegistryValue = "InstallDir" ;
+	s.windowsUnMountCommand           = QStringList{ "taskkill","/F","/PID","%{PID}" } ;
 	s.volumePropertiesCommands        = QStringList{ "encfsctl %{cipherFolder}" } ;
 	s.configFileNames       = QStringList{ ".encfs6.xml","encfs6.xml",".encfs5",".encfs4" } ;
 	s.fuseNames             = QStringList{ "fuse.encfs" } ;
@@ -56,88 +63,44 @@ static engines::engine::BaseOptions _setOptions()
 	s.notFoundCode          = engines::engine::status::encfsNotFound ;
 	s.versionInfo           = { { "--version",false,2,0 } } ;
 
+	if( utility::platformIsWindows() ){
+
+		s.autoCreatesMountPoint = true ;
+		s.autoDeletesMountPoint = true ;
+
+		s.mountControlStructure  = "-f --stdinpass %{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
+		s.createControlStructure = "-f --stdinpass --standard %{createOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
+	}else{
+		s.autoCreatesMountPoint  = false ;
+		s.autoDeletesMountPoint  = false ;
+
+		s.mountControlStructure  = "--stdinpass %{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
+		s.createControlStructure = "--stdinpass --standard %{createOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
+	}
+
 	return s ;
 }
 
 encfs::encfs() :
 	engines::engine( _setOptions() ),
-	m_environment( engines::engine::getProcessEnvironment() ),
-	m_versionGreatorOrEqual_1_9_5( true,*this,1,9,5 )
+	m_environment( engines::engine::getProcessEnvironment() )
 {	
 }
 
 engines::engine::args encfs::command( const QByteArray& password,
-				      const engines::engine::cmdArgsList& args ) const
+				      const engines::engine::cmdArgsList& args,
+				      bool create ) const
 {
-	Q_UNUSED( password )
-
-	QString e = "%1 %2 %3 %4 %5" ;
-
-	engines::engine::commandOptions m( args,this->name(),this->name() ) ;
-
-	auto exeOptions = m.exeOptions() ;
-
-	if( args.create ){
-
-		exeOptions.add( args.opt.createOptions,"--stdinpass","--standard" ) ;
-	}else{
-		exeOptions.add( "--stdinpass" ) ;
-	}
-
-	if( args.opt.boolOptions.unlockInReverseMode ){
-
-		exeOptions.add( this->reverseString() ) ;
-	}
-
-	if( utility::platformIsWindows() ){
-
-		exeOptions.add( "-f" ) ;
-
-		auto m = utility::removeFirstAndLast( args.mountPoint,1,1 ) ;
-
-		if( !utility::isDriveLetter( m ) ){
-
-			/*
-			 * A user is trying to use a folder as a mount path and cryfs
-			 * requires the mount path to not exist and we are deleting
-			 * it because SiriKali created it previously.
-			 */
-			utility::removeFolder( m,5 ) ;
-		}
-	}
-
 	m_environment.remove( "ENCFS6_CONFIG" ) ;
 
-	if( !args.configFilePath.isEmpty() ){
+	if( !m_configPathThroughEnv.isEmpty() ){
 
-		if( m_versionGreatorOrEqual_1_9_5 ){
-
-			exeOptions.add( args.configFilePath ) ;
-		}else{
-			/*
-			 * args.configFilePath will contain something
-			 * like --config "/foo/bar" and we only want
-			 * the /foo/bar part without quotation marks.
-			 */
-			auto a = utility::removeFirstAndLast( args.configFilePath,10,1 ) ;
-
-			utility::debug() << "Encfs: Setting Env Variable Of: ENCFS6_CONFIG=" + a ;
-			m_environment.insert( "ENCFS6_CONFIG",a ) ;
-		}
+		auto a = "Encfs: Setting Env Variable Of: ENCFS6_CONFIG=" ;
+		utility::debug() << a + m_configPathThroughEnv ;
+		m_environment.insert( "ENCFS6_CONFIG",m_configPathThroughEnv ) ;
 	}
 
-	if( !args.opt.idleTimeout.isEmpty() ){
-
-		exeOptions.addPair( this->idleString(),args.opt.idleTimeout ) ;
-	}
-
-	auto cmd = e.arg( args.exe,
-			  exeOptions.get(),
-			  args.cipherFolder,
-			  args.mountPoint,
-			  m.fuseOpts().get() ) ;
-
-	return { args,m,cmd } ;
+	return custom::set_command( *this,password,args,create ) ;
 }
 
 engines::engine::status encfs::errorCode( const QString& e,int s ) const
@@ -159,6 +122,18 @@ engines::engine::status encfs::errorCode( const QString& e,int s ) const
 const QProcessEnvironment& encfs::getProcessEnvironment() const
 {
 	return m_environment ;
+}
+
+void encfs::updateOptions( engines::engine::cmdArgsList& args,bool creating ) const
+{
+	if( creating && args.boolOptions.unlockInReverseMode ){
+
+		args.createOptions.append( this->reverseString() ) ;
+	}
+
+	m_configPathThroughEnv = args.configFilePath ;
+
+	args.configFilePath.clear() ;
 }
 
 void encfs::GUICreateOptions( const engines::engine::createGUIOptions& s ) const

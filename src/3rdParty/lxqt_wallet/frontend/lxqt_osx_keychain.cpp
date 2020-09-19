@@ -32,12 +32,12 @@
 #include "lxqt_osx_keychain.h"
 #include "osx_keychain.h"
 
+#if OSX_KEYCHAIN
+
 /*
  * https://developer.apple.com/library/content/documentation/Security/Conceptual/keychainServConcepts/03tasks/tasks.html#//apple_ref/doc/uid/TP30000897-CH205-TP9
  *
  */
-
-#if OSX_KEYCHAIN
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <Security/Security.h>
@@ -48,8 +48,8 @@
 
 #endif
 
-static const char * WALLET_KEYS = "LXQt.Wallet.WalletKeys" ;
-static const char * _walletPrefix = "LXQt.Wallet." ;
+static const char *WALLET_KEYS = "LXQt.Wallet.WalletKeys";
+static const char *_walletPrefix = "LXQt.Wallet.";
 
 LXQt::Wallet::osxKeyChain::osxKeyChain()
 {
@@ -59,261 +59,277 @@ LXQt::Wallet::osxKeyChain::~osxKeyChain()
 {
 }
 
-void LXQt::Wallet::osxKeyChain::open( const QString& walletName,
-				      const QString& applicationName,
-				      std::function< void( bool ) > function,
-				      QWidget * widget,
-				      const QString& password,
-				      const QString& displayApplicationName )
+void LXQt::Wallet::osxKeyChain::open(const QString &walletName,
+                                     const QString &applicationName,
+                                     std::function< void(bool) > function,
+                                     QWidget *widget,
+                                     const QString &password,
+                                     const QString &displayApplicationName)
 {
-	Q_UNUSED( widget )
-	Q_UNUSED( password )
-	Q_UNUSED( displayApplicationName )
+    Q_UNUSED(widget);
+    Q_UNUSED(password);
+    Q_UNUSED(displayApplicationName);
 
-	m_walletName = _walletPrefix + walletName.toLatin1() + "." + applicationName.toLatin1() ;
+    m_walletName = _walletPrefix + walletName.toLatin1() + "." + applicationName.toLatin1();
 
-	m_opened = true ;
+    m_opened = true;
 
-	function( m_opened ) ;
+    function(m_opened);
 }
 
-bool LXQt::Wallet::osxKeyChain::open( const QString& walletName,
-				      const QString& applicationName,
-				      QWidget * widget,
-				      const QString& password,
-				      const QString& displayApplicationName )
+bool LXQt::Wallet::osxKeyChain::open(const QString &walletName,
+                                     const QString &applicationName,
+                                     QWidget *widget,
+                                     const QString &password,
+                                     const QString &displayApplicationName)
 {
-	Q_UNUSED( widget )
-	Q_UNUSED( password )
-	Q_UNUSED( displayApplicationName )
+    Q_UNUSED(widget);
+    Q_UNUSED(password);
+    Q_UNUSED(displayApplicationName);
 
-	m_walletName = _walletPrefix + walletName.toLatin1() + "." + applicationName.toLatin1() ;
+    m_walletName = _walletPrefix + walletName.toLatin1() + "." + applicationName.toLatin1();
 
-	m_opened = true ;
+    m_opened = true;
 
-	return m_opened ;
+    return m_opened;
 }
 
 struct passwordData
 {
-	passwordData() = default ;
+    passwordData() = default;
 
-	passwordData( passwordData&& other )
-	{
-		this->init( std::move( other ) ) ;
-	}
+    passwordData(passwordData &&other)
+    {
+        this->init(std::move(other));
+    }
 
-	passwordData& operator=( passwordData&& other )
-	{
-		return this->init( std::move( other ) ) ;
-	}
+    passwordData& operator=(passwordData &&other)
+    {
+        return this->init(std::move(other));
+    }
 
-	~passwordData()
-	{
-		if( data ){
-
-			SecKeychainItemFreeContent( nullptr,data ) ;
-		}
-		if( ref ){
-
-			CFRelease( ref ) ;
-		}
-	}
-	OSStatus status = 0 ;
-	void * data = nullptr ;
-	quint32 len = 0 ;
-	SecKeychainItemRef ref = nullptr ;
-
+    ~passwordData()
+    {
+        if (data)
+        {
+            SecKeychainItemFreeContent(nullptr, data);
+        }
+        if (ref)
+        {
+            CFRelease(ref);
+        }
+    }
+    OSStatus status = 0;
+    void *data = nullptr;
+    quint32 len = 0;
+    SecKeychainItemRef ref = 0;
 private:
-	passwordData& init( passwordData&& other )
-	{
-		status = other.status ;
+    passwordData& init( passwordData&& other )
+    {
+        status = other.status;
 
-		len    = other.len ;
+        len    = other.len;
 
-		data   = other.data ;
-		other.data = nullptr ;
+        data   = other.data;
+        other.data = nullptr;
 
-		ref = other.ref ;
-		other.ref = nullptr ;
+        ref = other.ref;
+        other.ref = nullptr;
 
-		return *this ;
-	}
+        return *this;
+    }
 };
 
-static bool _status( OSStatus e )
+static bool _status(OSStatus e)
 {
-	return e == noErr || e == errSecSuccess ;
+    return e == noErr || e == errSecSuccess;
 }
 
-static passwordData _find_password( const QString& key,const QByteArray& walletName )
+static passwordData _find_password(const QString &key, const QByteArray &walletName)
 {
-	passwordData s ;
+    passwordData s;
 
-	s.status = SecKeychainFindGenericPassword( nullptr,
-						   walletName.size(),
-						   walletName.constData(),
-						   key.size(),
-						   key.toLatin1().constData(),
-						   &s.len,
-						   &s.data,
-						   &s.ref ) ;
-	return s ;
+    s.status = SecKeychainFindGenericPassword(nullptr,
+               walletName.size(),
+               walletName.constData(),
+               key.size(),
+               key.toLatin1().constData(),
+               &s.len,
+               &s.data,
+               &s.ref);
+    return s;
 }
 
-static bool _delete_key( const QString& key,const QByteArray& walletName )
+static bool _delete_key(const QString &key, const QByteArray &walletName)
 {
-	auto s = _find_password( key,walletName ) ;
+    auto s = _find_password(key, walletName);
 
-	if( s.ref ){
-
-		return _status( SecKeychainItemDelete( s.ref ) ) ;
-	}else{
-		return false ;
-	}
+    if (s.ref)
+    {
+        return _status(SecKeychainItemDelete(s.ref));
+    }
+    else
+    {
+        return false;
+    }
 }
 
-static bool _add_key( const QString& key,const QByteArray& value,const QByteArray& walletName )
+static bool _add_key(const QString &key, const QByteArray &value, const QByteArray &walletName)
 {
-	auto status = SecKeychainAddGenericPassword( nullptr,
-						     walletName.size(),
-						     walletName.constData(),
-						     key.size(),
-						     key.toLatin1().constData(),
-						     value.size(),
-						     value.constData(),
-						     nullptr ) ;
-	return _status( status ) ;
+    auto status = SecKeychainAddGenericPassword(nullptr,
+                  walletName.size(),
+                  walletName.constData(),
+                  key.size(),
+                  key.toLatin1().constData(),
+                  value.size(),
+                  value.constData(),
+                  nullptr);
+    return _status(status);
 }
 
-static void _update_wallet_keys( const QStringList& e,const QByteArray& walletName )
+static void _update_wallet_keys(const QStringList &e, const QByteArray &walletName)
 {
-	auto s = _find_password( WALLET_KEYS,walletName ) ;
+    auto s = _find_password(WALLET_KEYS, walletName);
 
-	auto z = e.join( "\n" ).toLatin1() ;
+    auto z = e.join("\n").toLatin1();
 
-	if( s.ref ){
-
-		SecKeychainItemModifyContent( s.ref,nullptr,z.size(),z.constData() ) ;
-	}else{
-		_add_key( WALLET_KEYS,z,walletName ) ;
-	}
+    if (s.ref)
+    {
+        SecKeychainItemModifyContent(s.ref, nullptr, z.size(), z.constData());
+    }
+    else
+    {
+        _add_key(WALLET_KEYS, z, walletName);
+    }
 }
 
-void LXQt::Wallet::osxKeyChain::deleteKey( const QString& key )
+void LXQt::Wallet::osxKeyChain::log(std::function<void(QString)>)
 {
-	if( _delete_key( key,m_walletName ) ){
-
-		QString s = this->readValue( WALLET_KEYS ) ;
-
-		auto e = s.split( '\n',QString::SkipEmptyParts ) ;
-
-		e.removeOne( key ) ;
-
-		_update_wallet_keys( e,m_walletName ) ;
-	}
 }
 
-bool LXQt::Wallet::osxKeyChain::addKey( const QString& key,const QByteArray& value )
+void LXQt::Wallet::osxKeyChain::deleteKey(const QString &key)
 {
-	if( _add_key( key,value,m_walletName ) ){
+    if (_delete_key(key, m_walletName))
+    {
+        QString s = this->readValue(WALLET_KEYS);
+#if QT_VERSION < QT_VERSION_CHECK( 5,15,0 )
+        auto e = s.split('\n', QString::SkipEmptyParts);
+#else
+	auto e = s.split('\n', Qt::SkipEmptyParts);
+#endif
+        e.removeOne(key);
 
-		QString s = this->readValue( WALLET_KEYS ) ;
+        _update_wallet_keys(e, m_walletName);
+    }
+}
 
-		s += "\n" + key ;
+bool LXQt::Wallet::osxKeyChain::addKey(const QString &key, const QByteArray &value)
+{
+    if (_add_key(key, value, m_walletName))
+    {
+        QString s = this->readValue(WALLET_KEYS);
 
-		_update_wallet_keys( s.split( "\n",QString::SkipEmptyParts ),m_walletName ) ;
-
-		return true ;
-	}else{
-		return false ;
-	}
+        s += "\n" + key;
+#if QT_VERSION < QT_VERSION_CHECK( 5,15,0 )
+        _update_wallet_keys(s.split("\n", QString::SkipEmptyParts), m_walletName);
+#else
+	_update_wallet_keys(s.split("\n", Qt::SkipEmptyParts), m_walletName);
+#endif
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 bool LXQt::Wallet::osxKeyChain::opened()
 {
-	return m_opened ;
+    return m_opened;
 }
 
-QByteArray LXQt::Wallet::osxKeyChain::readValue( const QString& key )
+QByteArray LXQt::Wallet::osxKeyChain::readValue(const QString &key)
 {
-	auto s = _find_password( key,m_walletName ) ;
+    auto s = _find_password(key, m_walletName);
 
-	auto e = reinterpret_cast< const char * >( s.data ) ;
-	auto z = static_cast< int >( s.len ) ;
+    auto e = reinterpret_cast< const char * >(s.data);
+    auto z = static_cast< int >(s.len);
 
-	return QByteArray( e,z ) ;
+    return QByteArray(e, z);
 }
 
-QVector< std::pair< QString,QByteArray > > LXQt::Wallet::osxKeyChain::readAllKeyValues()
+QVector< std::pair< QString, QByteArray > > LXQt::Wallet::osxKeyChain::readAllKeyValues()
 {
-	QVector< std::pair< QString,QByteArray > > e ;
+    QVector< std::pair< QString, QByteArray > > e;
 
-	for( const auto& it : this->readAllKeys() ){
+for (const auto & it : this->readAllKeys())
+    {
+        e.append( { it, this->readValue(it) });
+    }
 
-		e.append( { it,this->readValue( it ) } ) ;
-	}
-
-	return e ;
+    return e;
 }
 
 QStringList LXQt::Wallet::osxKeyChain::readAllKeys()
 {
-	QString s = this->readValue( WALLET_KEYS ) ;
-
-	return s.split( '\n',QString::SkipEmptyParts ) ;
+    QString s = this->readValue(WALLET_KEYS);
+#if QT_VERSION < QT_VERSION_CHECK( 5,15,0 )
+    return s.split('\n', QString::SkipEmptyParts);
+#else
+    return s.split('\n', Qt::SkipEmptyParts);
+#endif
 }
 
 QStringList LXQt::Wallet::osxKeyChain::managedWalletList()
 {
-	return QStringList() ;
+    return QStringList();
 }
 
 QString LXQt::Wallet::osxKeyChain::storagePath()
 {
-	return QString() ;
+    return QString();
 }
 
 QString LXQt::Wallet::osxKeyChain::localDefaultWalletName()
 {
-	return QString() ;
+    return QString();
 }
 
 QString LXQt::Wallet::osxKeyChain::networkDefaultWalletName()
 {
-	return QString() ;
+    return QString();
 }
 
-void LXQt::Wallet::osxKeyChain::closeWallet( bool e )
+void LXQt::Wallet::osxKeyChain::closeWallet(bool e)
 {
-	Q_UNUSED( e )
+    Q_UNUSED(e);
 }
 
-void LXQt::Wallet::osxKeyChain::changeWalletPassWord( const QString& walletName,
-						      const QString& applicationName,
-						      std::function< void( bool )> function )
+void LXQt::Wallet::osxKeyChain::changeWalletPassWord(const QString &walletName,
+        const QString &applicationName,
+        std::function< void(bool)> function)
 {
-	Q_UNUSED( walletName )
-	Q_UNUSED( applicationName )
-	Q_UNUSED( function )
+    Q_UNUSED(walletName);
+    Q_UNUSED(applicationName);
+    Q_UNUSED(function);
 }
 
-void LXQt::Wallet::osxKeyChain::setImage( const QIcon& e )
+void LXQt::Wallet::osxKeyChain::setImage(const QIcon &e)
 {
-	Q_UNUSED( e )
+    Q_UNUSED(e);
 }
 
 int LXQt::Wallet::osxKeyChain::walletSize()
 {
-	return this->readAllKeys().size() ;
+    return this->readAllKeys().size();
 }
 
 LXQt::Wallet::BackEnd LXQt::Wallet::osxKeyChain::backEnd()
 {
-	return LXQt::Wallet::BackEnd::osxkeychain ;
+    return LXQt::Wallet::BackEnd::osxkeychain;
 }
 
-QObject * LXQt::Wallet::osxKeyChain::qObject()
+QObject *LXQt::Wallet::osxKeyChain::qObject()
 {
-	return nullptr ;
+    return nullptr;
 }
