@@ -528,12 +528,12 @@ options:
     <message>
         <location filename="../src/sirikali.cpp" line="138"/>
         <source>Unknown Wallet Option</source>
-        <translation type="unfinished"></translation>
+        <translation>Неизвестная опция хранилища</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="205"/>
         <source>Unknown Option</source>
-        <translation type="unfinished"></translation>
+        <translation>Неизвестная опция</translation>
     </message>
 </context>
 <context>
@@ -703,7 +703,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configoptions.ui" line="265"/>
         <source>Show Debug Window On Startup</source>
-        <translation type="unfinished"></translation>
+        <translation>Показывать окно отладки при запуске</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="271"/>
@@ -1099,7 +1099,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/favorites2.ui" line="854"/>
         <location filename="../src/favorites2.cpp" line="1433"/>
         <source>Ssh Port Number</source>
-        <translation type="unfinished"></translation>
+        <translation>Номер порта ssh</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="863"/>
@@ -1327,7 +1327,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.cpp" line="1424"/>
         <source>Create Network Drive</source>
-        <translation type="unfinished"></translation>
+        <translation>Создать сетевой диск</translation>
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="1427"/>
@@ -1702,19 +1702,19 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.cpp" line="428"/>
         <source>(%1/%2) Connecting To &quot;%3&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>(%1/%2) Подключается до &quot;%3&quot;</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="430"/>
         <location filename="../src/keydialog.cpp" line="443"/>
         <source>Connect</source>
-        <translation type="unfinished"></translation>
+        <translation>Подключение</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="432"/>
         <location filename="../src/keydialog.cpp" line="445"/>
         <source>Open</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="434"/>
@@ -1724,7 +1724,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.cpp" line="441"/>
         <source>Connecting To &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Подключение до &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="703"/>
