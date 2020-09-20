@@ -1225,14 +1225,14 @@ void favorites2::updateFavorite( bool edit )
 			if( a == favorites::error::ENTRY_ALREADY_EXISTS ){
 
 				m_ui->labelFailedToCreateFavorite->setText( tr( "Entry Already Exist" ) ) ;
-
 			}else{
 				m_ui->labelFailedToCreateFavorite->setText( tr( "Failed To Create Entry" ) ) ;
 			}
 
+			m_ui->tableWidget->setEnabled( true ) ;
+
 			return ;
 		}
-
 	}
 
 	m_ui->lineEditPreMount->clear() ;
