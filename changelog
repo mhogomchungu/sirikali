@@ -252,3 +252,5 @@ version 1.4.2(December 18,2019)
    QCoreApplication instance instead of QApplication instance.
 -- Add a GUI way to add port number to sshfs connections and make it possible to set different wallet
    passwords based on connection's port number.
+-- Do not silently fail when a user attempt to add a favorite entry and its name collide with an
+   existing entry.
