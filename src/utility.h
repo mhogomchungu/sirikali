@@ -366,12 +366,14 @@ namespace utility
 		QWidget * m_widget ;
 	};
 
-	static inline void Timer( int interval,std::function< bool( int ) > function )
+	//Function must take an int and return a bool
+	template< typename Function >
+	static inline void Timer( int interval,Function&& function )
 	{
 		class Timer{
 		public:
-			Timer( int interval,std::function< bool( int ) > function ) :
-				m_function( std::move( function ) )
+			Timer( int interval,Function&& function ) :
+				m_function( std::forward< Function >( function ) )
 			{
 				auto timer = new QTimer() ;
 
@@ -393,17 +395,19 @@ namespace utility
 			}
 		private:
 			int m_counter = 0 ;
-			std::function< bool( int ) > m_function ;
+			Function m_function ;
 		} ;
 
-		new Timer( interval,std::move( function ) ) ;
+		new Timer( interval,std::forward< Function >( function ) ) ;
 	}
 
-	static inline void Timer( int interval,std::function< bool( void ) > function )
+	static inline void Timer( int interval,std::function< bool( void ) >&& function )
 	{
-		utility::Timer( interval,[ function = std::move( function ) ]( int s ){
+		using ff = std::function< bool( void ) > ;
 
-			Q_UNUSED( s ) ;
+		utility::Timer( interval,[ function = std::forward< ff >( function ) ]( int s ){
+
+			Q_UNUSED( s )
 
 			return function() ;
 		} ) ;
