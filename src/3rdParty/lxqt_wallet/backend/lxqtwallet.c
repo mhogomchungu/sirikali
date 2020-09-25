@@ -304,8 +304,6 @@ lxqt_wallet_error lxqt_wallet_create( const char * password,uint32_t password_le
 	}else{
 		_create_magic_string_header( buffer ) ;
 
-		r = gcry_cipher_encrypt( handle,buffer,MAGIC_STRING_BUFFER_SIZE + BLOCK_SIZE,NULL,0 ) ;
-
 		_create_application_wallet_path( application_name ) ;
 
 		_wallet_full_path( path,PATH_MAX,wallet_name,application_name ) ;
