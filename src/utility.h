@@ -95,11 +95,11 @@ namespace utility
 		{
 			return m_enable_debug ;
 		}
-		bool runningOnGUIThread()
+		bool runningOnGUIThread() const
 		{
 			return m_main_gui_thread == QThread::currentThread() ;
 		}
-		bool runningOnBackGroundThread()
+		bool runningOnBackGroundThread() const
 		{
 			return m_main_gui_thread != QThread::currentThread() ;
 		}

@@ -395,7 +395,7 @@ void utility::logCommandOutPut( const QString& e )
 
 void utility::logCommandOutPut( const ::Task::process::result& m,const QString& exe,const QStringList& args )
 {
-	if( exe.contains( "fscrypt status" ) ){
+	if( exe.endsWith( "fscrypt" ) && args.contains( "status" ) ){
 
 		return ;
 	}
