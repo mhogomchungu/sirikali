@@ -80,6 +80,7 @@ private :
 	void add( void ) ;
 	void cancel( void ) ;
 	void folderPath( void ) ;
+	void filePath( void ) ;
 	void mountPointPath( void ) ;
 	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
 	void itemClicked( QTableWidgetItem * current,bool ) ;
@@ -92,7 +93,7 @@ private :
 	void HideUI( void ) ;
 	void checkFavoritesConsistency() ;
 	void setUiLikeSsh( const QString& cipherPath,const engines::engine& engine ) ;
-	void setDefaultUI() ;
+	void setDefaultUI( const engines::engine& ) ;
 	QStringList readAllKeys() ;
 	const favorites::entry& getEntry( int ) ;
 	QString getExistingFile( const QString& ) ;

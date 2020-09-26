@@ -176,6 +176,7 @@ void createBackendWIndow::save()
 	config[ "likeSsh" ]                     = false ;
 	config[ "autoCreatesMountPoint" ]       = false ;
 	config[ "autoDeletesMountPoint" ]       = false ;
+	config[ "usesOnlyMountPoint" ]          = false ;
 	config[ "versionArgumentString" ]       = "" ;
 	config[ "versionMinimum" ]              = "" ;
 	config[ "versionOutputStdOut" ]         = true ;

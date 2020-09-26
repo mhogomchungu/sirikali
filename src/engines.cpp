@@ -478,6 +478,11 @@ bool engines::engine::requiresNoPassword() const
 	return !this->requiresAPassword() ;
 }
 
+bool engines::engine::usesOnlyMountPoint() const
+{
+	return m_Options.usesOnlyMountPoint ;
+}
+
 bool engines::engine::customBackend() const
 {
 	return m_Options.customBackend ;

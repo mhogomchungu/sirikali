@@ -120,7 +120,7 @@ favorites2::favorites2( QWidget * parent,
 
 				this->setUiLikeSsh( QString(),engine ) ;
 			}else{
-				this->setDefaultUI() ;
+				this->setDefaultUI( engine ) ;
 			}
 		} ) ;
 
@@ -164,9 +164,16 @@ favorites2::favorites2( QWidget * parent,
 		this->updateFavorite( false ) ;
 	} ) ;
 
+	m_ui->pbFolderPath->setObjectName( "FolderHandle" ) ;
+
 	connect( m_ui->pbFolderPath,&QPushButton::clicked,[ this ](){
 
-		this->folderPath() ;
+		if( m_ui->pbFolderPath->objectName() == "FolderHandle" ){
+
+			this->folderPath() ;
+		}else{
+			this->filePath() ;
+		}
 	} ) ;
 
 	connect( m_ui->pbFailedToCreateFavorite,&QPushButton::clicked,[ this ](){
@@ -456,11 +463,11 @@ favorites2::favorites2( QWidget * parent,
 	if( utility::platformIsWindows() ){
 
 		utility::setWindowsMountPointOptions( this,m_ui->lineEditMountPath,m_ui->pbMountPointPath ) ;
-		m_ui->labelDeviceAddress->setText( tr( "Mount Point Path" ) ) ;
+		m_ui->labelMountPointPrefix->setText( tr( "Mount Point Path" ) ) ;
 	}else{
 		m_ui->pbMountPointPath->setIcon( QIcon( ":/folder.png" ) ) ;
 
-		m_ui->labelDeviceAddress->setText( tr( "Mount Point Prefix" ) ) ;
+		m_ui->labelMountPointPrefix->setText( tr( "Mount Point Prefix" ) ) ;
 
 		connect( m_ui->pbMountPointPath,&QPushButton::clicked, [ this ](){
 
@@ -863,7 +870,11 @@ void favorites2::tabChanged( int index )
 			m_ui->pbEdit->setEnabled( true ) ;
 			m_ui->pbAdd->setEnabled( false ) ;
 			m_ui->pbEdit->setFocus() ;
+
+			m_ui->labelMountPointPrefix->setText( tr( "Mount Point Path" ) ) ;
 		}else{
+			m_ui->labelMountPointPrefix->setText( tr( "Mount Point Prefix" ) ) ;
+
 			this->clearEditVariables() ;
 
 			if( !m_cipherPath.isEmpty() ){
@@ -882,7 +893,7 @@ void favorites2::tabChanged( int index )
 				m_ui->lineEditMountPath->setText( m_settings.mountPath() ) ;
 			}
 
-			this->setDefaultUI() ;
+			this->setDefaultUI( m_engine ) ;
 
 			m_ui->pbAdd->setFocus() ;
 		}
@@ -1070,7 +1081,7 @@ void favorites2::edit()
 
 				for( const auto& it : engines.enginesWithNoConfigFile() ){
 
-					if( it == engine->name() ){
+					if( it == engine->name() || it == engine->displayName() ){
 
 						m_ui->lineEditVolumeType->setText( engine->uiName() ) ;
 
@@ -1117,8 +1128,11 @@ void favorites2::updateFavorite( bool edit )
 
 	utility::hideQWidget thisWidget( this ) ;
 
-	auto dev = m_ui->lineEditEncryptedFolderPath->toPlainText() ;
-	auto path = m_ui->lineEditMountPath->toPlainText() ;
+	const auto type = m_ui->lineEditVolumeType->toPlainText() ;
+	const auto dev  = m_ui->lineEditEncryptedFolderPath->toPlainText() ;
+	const auto path = m_ui->lineEditMountPath->toPlainText() ;
+
+	const auto& engine = engines::instance().getByName( type ) ;
 
 	if( dev.isEmpty() ){
 
@@ -1135,23 +1149,19 @@ void favorites2::updateFavorite( bool edit )
 
 	bool likeSsh = false ;
 
-	auto dev_path = [ & ](){
+	auto dev_path = [ & ](){		
 
-		auto a = m_ui->lineEditVolumeType->toPlainText() ;
-
-		if( a.isEmpty() ){
+		if( type.isEmpty() ){
 
 			return dev ;
 		}else{
-			const auto& e = engines::instance().getByName( a ) ;
+			likeSsh = engine.known() && engine.likeSsh() ;
 
-			likeSsh = e.known() && e.likeSsh() ;
-
-			if( dev.startsWith( a + " ",Qt::CaseInsensitive ) ){
+			if( dev.startsWith( type + " ",Qt::CaseInsensitive ) ){
 
 				return dev ;
 			}else{
-				return a + " " + dev ;
+				return type + " " + dev ;
 			}
 		}
 	}() ;
@@ -1197,6 +1207,11 @@ void favorites2::updateFavorite( bool edit )
 	if( edit ){
 
 		const auto& f = this->getEntry( m_editRow ) ;
+
+		if( engine.known() && engine.usesOnlyMountPoint() ){
+
+			e.mountPointPath = dev ;
+		}
 
 		favorites::instance().replaceFavorite( f,e ) ;
 	}else{
@@ -1266,6 +1281,16 @@ void favorites2::cancel()
 void favorites2::folderPath()
 {
 	auto e = this->getExistingDirectory( tr( "Path To An Encrypted Folder" ) ) ;
+
+	if( !e.isEmpty() ){
+
+		m_ui->lineEditEncryptedFolderPath->setText( e ) ;
+	}
+}
+
+void favorites2::filePath()
+{
+	auto e = utility::getExistingFile( this,tr( "Select A File" ),QDir::homePath() ) ;
 
 	if( !e.isEmpty() ){
 
@@ -1420,7 +1445,7 @@ void favorites2::setVolumeProperties( const favorites::entry& e )
 
 		this->setUiLikeSsh( engine.cipherFolder(),engine.get() ) ;
 	}else{
-		this->setDefaultUI() ;
+		this->setDefaultUI( engine.get() ) ;
 
 		m_ui->label_3->setText( tr( "Config File Path" ) ) ;
 		m_ui->label_4->setText( tr( "Idle Time Out" ) ) ;
@@ -1443,6 +1468,10 @@ void favorites2::setVolumeProperties( const favorites::entry& e )
 
 void favorites2::setUiLikeSsh( const QString& cipherPath,const engines::engine& engine )
 {
+	m_ui->pbFolderPath->setObjectName( "likeSshHandle" ) ;
+
+	m_ui->pbFolderPath->setIcon( QIcon( ":/sirikali.png" ) ) ;
+
 	m_ui->pbFolderPath->setEnabled( false ) ;
 
 	m_ui->lineEditEncryptedFolderPath->setText( cipherPath ) ;
@@ -1491,10 +1520,9 @@ void favorites2::setUiLikeSsh( const QString& cipherPath,const engines::engine& 
 	}
 }
 
-void favorites2::setDefaultUI()
+void favorites2::setDefaultUI( const engines::engine& engine )
 {
 	m_ui->label_15->setText( tr( "Reverse Mode (Gocryptfs and Encfs Only)" ) ) ;
-	m_ui->labelName ->setText( tr( "Encrypted Folder Path" ) ) ;
 	m_ui->labelCofigFilePath->setText( tr( "Config File Path (Optional)" ) ) ;
 	m_ui->labelIdleTimeOut->setText( tr( "Idle TimeOut (Optional)" ) ) ;
 	m_ui->lineEditMountOptions->clear() ;
@@ -1503,6 +1531,39 @@ void favorites2::setDefaultUI()
 	m_ui->pbFolderPath->setEnabled( true ) ;
 	m_ui->pbIdentityFile->setVisible( false ) ;
 	m_ui->labelPortyNumber->clear() ;
+
+	if( engine.known() ){
+
+		if( engine.usesOnlyMountPoint() ){
+
+			m_ui->pbFolderPath->setIcon( QIcon( ":/folder.png" ) ) ;
+
+			m_ui->pbFolderPath->setObjectName( "FolderHandle" ) ;
+			m_ui->labelName->setText( tr( "Mount Point Path" ) ) ;
+
+			if( m_ui->lineEditEncryptedFolderPath->toPlainText().isEmpty() ){
+
+				m_ui->lineEditEncryptedFolderPath->setText( m_settings.mountPath( engine.uiName() ) ) ;
+			}
+
+			return ;
+
+		}else if( engine.fileExtensions().size() > 0 ){
+
+			m_ui->pbFolderPath->setObjectName( "FileHandle" ) ;
+
+			m_ui->pbFolderPath->setIcon( QIcon( ":/file.png" ) ) ;
+
+			m_ui->labelName ->setText( tr( "File Path" ) ) ;
+
+			return ;
+		}
+	}
+
+	m_ui->pbFolderPath->setIcon( QIcon( ":/folder.png" ) ) ;
+	m_ui->pbFolderPath->setObjectName( "FolderHandle" ) ;
+
+	m_ui->labelName ->setText( tr( "Encrypted Folder Path" ) ) ;
 }
 
 void favorites2::ShowUI()
@@ -1532,6 +1593,11 @@ void favorites2::ShowUI()
 	if( !m_cipherPath.isEmpty() ){
 
 		m_ui->tabWidget->setCurrentIndex( 1 ) ;
+
+		if( !m_engine.hasConfigFile() ){
+
+			m_ui->lineEditVolumeType->setText( m_engine.uiName() ) ;
+		}
 	}
 
 	m_ui->tableWidget->setFocus() ;

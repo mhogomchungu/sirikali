@@ -1369,11 +1369,15 @@ void sirikali::addToFavorites()
 
 	if( cp.size() > 0 ){
 
+		const auto& engine = engines::instance().getByName( cp.at( 2 ) ) ;
+
+		bool m = engine.known() && engine.usesOnlyMountPoint() ;
+
 		favorites2::instance( this,m_secrets,[ this ](){
 
 			this->updateFavoritesInContextMenu() ;
 
-		},engines::instance().getByName( cp.at( 2 ) ),cp.at( 0 ) ) ;
+		},engine,m ? cp.at( 1 ) : cp.at( 0 ) ) ;
 	}
 }
 

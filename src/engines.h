@@ -502,6 +502,7 @@ public:
 			bool likeSsh ;
 			bool autoCreatesMountPoint ;
 			bool autoDeletesMountPoint ;
+			bool usesOnlyMountPoint ;
 
 			QByteArray passwordFormat ;
 			QString displayName ;
@@ -577,6 +578,7 @@ public:
 		bool autoDeletesMountPoint() const ;
 		bool requiresAPassword() const ;
 		bool requiresNoPassword() const ;
+		bool usesOnlyMountPoint() const ;
 
 		engines::engine::status notFoundCode() const ;
 

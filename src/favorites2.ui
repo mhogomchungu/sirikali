@@ -532,7 +532,7 @@
          <string/>
         </property>
        </widget>
-       <widget class="QLabel" name="labelDeviceAddress">
+       <widget class="QLabel" name="labelMountPointPrefix">
         <property name="geometry">
          <rect>
           <x>10</x>

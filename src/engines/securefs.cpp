@@ -37,6 +37,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.backendRunsInBackGround     = true ;
 	s.autoCreatesMountPoint       = false ;
 	s.autoDeletesMountPoint       = false ;
+	s.usesOnlyMountPoint          = false ;
 	s.likeSsh               = false ;
 	s.requiresPolkit        = false ;
 	s.customBackend         = false ;
