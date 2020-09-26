@@ -1541,10 +1541,7 @@ void favorites2::setDefaultUI( const engines::engine& engine )
 			m_ui->pbFolderPath->setObjectName( "FolderHandle" ) ;
 			m_ui->labelName->setText( tr( "Mount Point Path" ) ) ;
 
-			if( m_ui->lineEditEncryptedFolderPath->toPlainText().isEmpty() ){
-
-				m_ui->lineEditEncryptedFolderPath->setText( m_settings.mountPath( engine.uiName() ) ) ;
-			}
+			m_ui->lineEditEncryptedFolderPath->setText( m_settings.mountPath( engine.uiName() ) ) ;
 
 			return ;
 
@@ -1556,9 +1553,13 @@ void favorites2::setDefaultUI( const engines::engine& engine )
 
 			m_ui->labelName ->setText( tr( "File Path" ) ) ;
 
+			m_ui->lineEditEncryptedFolderPath->clear() ;
+
 			return ;
 		}
 	}
+
+	m_ui->lineEditEncryptedFolderPath->clear() ;
 
 	m_ui->pbFolderPath->setIcon( QIcon( ":/folder.png" ) ) ;
 	m_ui->pbFolderPath->setObjectName( "FolderHandle" ) ;
