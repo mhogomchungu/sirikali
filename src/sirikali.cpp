@@ -1922,6 +1922,10 @@ void sirikali::runIntervalCustomCommand( const QString& cmd )
 
 			const auto& e = utility::systemEnvironment() ;
 
+			utility::logger logger ;
+
+			logger.showText( cmd,args ) ;
+
 			auto r = [ & ](){
 
 				if( key.isEmpty() ){
@@ -1936,7 +1940,7 @@ void sirikali::runIntervalCustomCommand( const QString& cmd )
 				}
 			}() ;
 
-			utility::logCommandOutPut( r,cmd,args ) ;
+			logger.showText( r ) ;
 		} ) ;
 	} ) ;
 }

@@ -187,6 +187,23 @@ namespace utility
 		QWidget * m_mainQWidget = nullptr ;
 	};
 
+	class logger{
+	public:
+		static QString starLine() ;
+		logger() ;
+		std::function< void( const QString& ) > function() ;
+		logger& showText( const QString& cmd,const QStringList& args ) ;
+		logger& showText( const QString& e ) ;
+		logger& showLine() ;
+		logger& appendLog( const QString& e ) ;
+		logger& showText( const ::Task::process::result& m ) ;
+		logger& showTextWithLines( const QString& b ) ;
+		logger& showDebugWindow() ;
+		logger& enableDebug() ;
+	private:
+		utility::miscOptions& m_miscOptions ;
+	};
+
 	template< typename T >
 	typename std::add_const<T>::type& asConst( T& t )
 	{
@@ -447,11 +464,6 @@ namespace utility
 	QString removeLast( const QString&,int lastChars ) ;
 	QString removeFirstAndLast( const QString&,int firstChars,int lastChars ) ;
 	QString removeLastPathComponent( const QString& path,char separator = '/' ) ;
-
-	void logCommandOutPut( const ::Task::process::result&,const QString&,const QStringList& ) ;
-	void logCommandOutPut( const QString& ) ;
-
-	std::function< void( const QString& ) > jsonLogger() ;
 
 	void quitHelper() ;
 	void initGlobals() ;

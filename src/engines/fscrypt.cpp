@@ -562,7 +562,9 @@ fscrypt::unlockedVolumeList::unlockedVolumeList() :
 
 QStringList fscrypt::unlockedVolumeList::getList() const
 {
-	SirikaliJson json( QFile( m_configFilePath ),utility::jsonLogger() ) ;
+	utility::logger logger ;
+
+	SirikaliJson json( QFile( m_configFilePath ),logger.function() ) ;
 
 	if( json.passed() ){
 
@@ -574,7 +576,9 @@ QStringList fscrypt::unlockedVolumeList::getList() const
 
 void fscrypt::unlockedVolumeList::updateList( const QStringList& e )
 {
-	SirikaliJson json( utility::jsonLogger() ) ;
+	utility::logger logger ;
+
+	SirikaliJson json( logger.function() ) ;
 
 	json[ m_keyName ] = e ;
 

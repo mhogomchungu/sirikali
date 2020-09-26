@@ -100,7 +100,9 @@ static utility2::result< engines::engine::BaseOptions > _getOptions( QFile& f )
 {
 	engines::engine::BaseOptions s ;
 
-	SirikaliJson json( f,utility::jsonLogger() ) ;
+	utility::logger logger ;
+
+	SirikaliJson json( f,logger.function() ) ;
 
 	if( json.passed() ){
 

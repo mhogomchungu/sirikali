@@ -492,7 +492,13 @@ static terminate_result _terminate_process( const terminate_process& e )
 		}
 	}
 
+	utility::logger logger ;
+
+	logger.showText( exe,args ) ;
+
 	auto m = utility::unwrap( Task::process::run( exe,args,-1,"",e.env ) ) ;
+
+	logger.showText( m ) ;
 
 	if( m.success() ){
 
@@ -523,6 +529,10 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 	exe->waitForStarted() ;
 	exe->write( opts.password + "\n" ) ;
 	exe->closeWriteChannel() ;
+
+	utility::logger logger ;
+
+	logger.showText( opts.args.cmd,opts.args.cmd_args ) ;
 
 	auto m = _getProcessOutput( *exe,opts.engine ) ;
 
@@ -572,7 +582,7 @@ Task::process::result SiriKali::Windows::volumes::add( const SiriKali::Windows::
 		}
 	}() ;
 
-	utility::logCommandOutPut( s,opts.args.cmd,opts.args.cmd_args ) ;
+	logger.showText( s ) ;
 
 	return s ;
 }
@@ -622,8 +632,6 @@ SiriKali::Windows::volumes::remove( const QStringList& unMountCommand,const QStr
 					return Task::process::result( "","Failed To Terminate A Process",1,0,true ) ;
 				}
 			}() ;
-
-			utility::logCommandOutPut( r,m.exe,m.args ) ;
 
 			return r ;
 		}
@@ -729,9 +737,13 @@ Task::process::result SiriKali::Windows::run( const opts& s )
 
 			return SiriKali::Windows::volumes::get().add( s ) ;
 		}else{
+			utility::logger logger ;
+
+			logger.showText( s.args.cmd,s.args.cmd_args ) ;
+
 			auto m = utility::unwrap( Task::process::run( s.args.cmd,s.args.cmd_args,-1,s.password ) ) ;
 
-			utility::logCommandOutPut( m,s.args.cmd,s.args.cmd_args ) ;
+			logger.showText( m ) ;
 
 			return m ;
 		}
