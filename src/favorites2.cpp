@@ -1564,8 +1564,6 @@ void favorites2::setDefaultUI( const engines::engine& engine )
 		}
 	}
 
-	m_ui->lineEditEncryptedFolderPath->clear() ;
-
 	m_ui->pbFolderPath->setIcon( QIcon( ":/folder.png" ) ) ;
 	m_ui->pbFolderPath->setObjectName( "FolderHandle" ) ;
 
