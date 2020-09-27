@@ -240,6 +240,17 @@ favorites::error favorites::add( const favorites::entry& e )
 	}else{
 		if( json.passed() && json.toFile( a ) ){
 
+			while( true ){
+
+				if( utility::pathExists( a ) ){
+
+					break ;
+				}else{
+					utility::debug() << "Waiting for a file to show up to the file system" ;
+					utility::Task::suspendForOneSecond() ;
+				}
+			}
+
 			this->reload() ;
 			return error::SUCCESS ;
 		}else{

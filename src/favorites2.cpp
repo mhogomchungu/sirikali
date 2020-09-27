@@ -484,7 +484,14 @@ favorites2::favorites2( QWidget * parent,
 
 		const auto& volumes = favorites::instance().readFavorites() ;
 
-		this->setVolumeProperties( volumes[ size_t( item->row() ) ] ) ;
+		auto s = static_cast< size_t >( item->row() ) ;
+
+		if( s < volumes.size() ){
+
+			this->setVolumeProperties( volumes[ s ] ) ;
+		}else{
+			utility::debug() << "Warning: Invalid row number, not updating in favorites2::favorites2" ;
+		}
 	} ) ;
 
 	connect( m_ui->tableWidget,&QTableWidget::currentItemChanged,[]( QTableWidgetItem * x,QTableWidgetItem * y ){
@@ -974,7 +981,7 @@ void favorites2::updateVolumeList( const std::vector<favorites::entry>& e,const 
 	this->setVolumeProperties( _update() ) ;
 }
 
-void favorites2::updateVolumeList( const std::vector< favorites::entry >& e,int row )
+void favorites2::updateVolumeList( const std::vector< favorites::entry >& e,size_t row )
 {
 	if( e.size() == 0 ){
 
@@ -982,13 +989,13 @@ void favorites2::updateVolumeList( const std::vector< favorites::entry >& e,int 
 
 		utility::debug() << "Information: Favorites list is empty" ;
 	}else{
-		_updateList( m_ui->tableWidget,this->font(),e,row ) ;
+		_updateList( m_ui->tableWidget,this->font(),e,static_cast< int >( row ) ) ;
 
-		if( size_t( row ) < e.size() ){
+		if( row < e.size() ){
 
-			this->setVolumeProperties( e[ size_t( row ) ] ) ;
+			this->setVolumeProperties( e[ row ] ) ;
 		}else{
-			utility::debug() << "Warning: size mismatch in favorites2::updateVolumeList" ;
+			utility::debug() << "Warning: Row count mismatch in favorites2::updateVolumeList" ;
 		}
 	}
 }
@@ -1118,7 +1125,7 @@ void favorites2::removeEntryFromFavoriteList()
 
 		const auto& volumes = favorites::instance().readFavorites() ;
 
-		this->updateVolumeList( volumes,int( volumes.size() ) - 1 ) ;
+		this->updateVolumeList( volumes,volumes.size() - 1 ) ;
 	}
 }
 
@@ -1380,7 +1387,7 @@ void favorites2::checkFavoritesConsistency()
 
 const favorites::entry& favorites2::getEntry( int row )
 {
-	size_t m = size_t( row ) ;
+	auto m = static_cast< size_t >( row ) ;
 
 	const auto& ff = favorites::instance() ;
 
@@ -1420,7 +1427,7 @@ void favorites2::setVolumeProperties( const favorites::entry& e )
 {
 	if( !e.hasValue() ){
 
-		utility::debug() << "Warning: Unknown Favorite Entry Encountered" ;
+		utility::debug() << "Warning: Unknown Favorite Entry Encountered in favorites2::setVolumeProperties" ;
 	}
 
 	m_ui->textEditMountPoint->setText( e.mountPointPath ) ;
@@ -1552,8 +1559,6 @@ void favorites2::setDefaultUI( const engines::engine& engine )
 			m_ui->pbFolderPath->setIcon( QIcon( ":/file.png" ) ) ;
 
 			m_ui->labelName ->setText( tr( "File Path" ) ) ;
-
-			m_ui->lineEditEncryptedFolderPath->clear() ;
 
 			return ;
 		}

@@ -69,7 +69,7 @@ private :
 	void setControlsAvailability( bool,bool clearTable ) ;
 	void tabChanged( int ) ;
 	void updateVolumeList( const std::vector< favorites::entry >&,const QString& ) ;
-	void updateVolumeList( const std::vector< favorites::entry >&,int ) ;
+	void updateVolumeList( const std::vector< favorites::entry >&,size_t ) ;
 	void showUpdatedEntry( const favorites::entry& ) ;
 	void updateFavorite( bool );
 	void toggleAutoMount( void ) ;
