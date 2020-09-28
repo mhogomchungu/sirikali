@@ -1106,7 +1106,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/favorites2.ui" line="873"/>
         <location filename="../src/favorites2.cpp" line="1242"/>
         <source>Entry Already Exist</source>
-        <translation type="unfinished"></translation>
+        <translation>Запись уже существует</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="885"/>
@@ -1116,7 +1116,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.ui" line="1067"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="1074"/>
@@ -1320,7 +1320,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.cpp" line="1554"/>
         <source>File Path</source>
-        <translation type="unfinished"></translation>
+        <translation>Путь к файлу</translation>
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="290"/>
@@ -1331,12 +1331,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.cpp" line="1244"/>
         <source>Failed To Create Entry</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось создать запись</translation>
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="1293"/>
         <source>Select A File</source>
-        <translation type="unfinished"></translation>
+        <translation>Выберите файл</translation>
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="1303"/>
