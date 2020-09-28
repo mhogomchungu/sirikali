@@ -1369,11 +1369,15 @@ void sirikali::addToFavorites()
 
 	if( cp.size() > 0 ){
 
+		const auto& engine = engines::instance().getByName( cp.at( 2 ) ) ;
+
+		bool m = engine.known() && engine.usesOnlyMountPoint() ;
+
 		favorites2::instance( this,m_secrets,[ this ](){
 
 			this->updateFavoritesInContextMenu() ;
 
-		},engines::instance().getByName( cp.at( 2 ) ),cp.at( 0 ) ) ;
+		},engine,m ? cp.at( 1 ) : cp.at( 0 ) ) ;
 	}
 }
 
@@ -1922,6 +1926,10 @@ void sirikali::runIntervalCustomCommand( const QString& cmd )
 
 			const auto& e = utility::systemEnvironment() ;
 
+			utility::logger logger ;
+
+			logger.showText( cmd,args ) ;
+
 			auto r = [ & ](){
 
 				if( key.isEmpty() ){
@@ -1936,7 +1944,7 @@ void sirikali::runIntervalCustomCommand( const QString& cmd )
 				}
 			}() ;
 
-			utility::logCommandOutPut( r,cmd,args ) ;
+			logger.showText( r ) ;
 		} ) ;
 	} ) ;
 }

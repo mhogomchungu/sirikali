@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="FavoritesList">
     <attribute name="title">
@@ -532,7 +532,7 @@
          <string/>
         </property>
        </widget>
-       <widget class="QLabel" name="labelDeviceAddress">
+       <widget class="QLabel" name="labelMountPointPrefix">
         <property name="geometry">
          <rect>
           <x>10</x>
@@ -857,6 +857,28 @@
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
+       <widget class="QLabel" name="labelFailedToCreateFavorite">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>711</width>
+          <height>381</height>
+         </rect>
+        </property>
+        <property name="autoFillBackground">
+         <bool>true</bool>
+        </property>
+        <property name="text">
+         <string>Entry Already Exist</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
       </widget>
       <widget class="QWidget" name="tabCustomCommands">
        <attribute name="title">
@@ -1031,6 +1053,19 @@
         </property>
        </widget>
       </widget>
+     </widget>
+     <widget class="QPushButton" name="pbFailedToCreateFavorite">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>430</y>
+        <width>341</width>
+        <height>33</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>OK</string>
+      </property>
      </widget>
     </widget>
    </widget>

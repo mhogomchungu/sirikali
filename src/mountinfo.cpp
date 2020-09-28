@@ -495,9 +495,9 @@ dbusMonitor::dbusMonitor( folderMonitor::function function,
 	m_function( std::move( function ) ),
 	m_debug( debug )
 {
-	m_debug( "gvfs fuse path: " + m_folderMonitor.path() ) ;
-
 	if( !m_folderMonitor.path().isEmpty() ){
+
+		m_debug( "gvfs fuse path: " + m_folderMonitor.path() ) ;
 
 		m_dbus.monitor() ;
 	}

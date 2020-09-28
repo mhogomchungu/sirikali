@@ -95,11 +95,11 @@ namespace utility
 		{
 			return m_enable_debug ;
 		}
-		bool runningOnGUIThread()
+		bool runningOnGUIThread() const
 		{
 			return m_main_gui_thread == QThread::currentThread() ;
 		}
-		bool runningOnBackGroundThread()
+		bool runningOnBackGroundThread() const
 		{
 			return m_main_gui_thread != QThread::currentThread() ;
 		}
@@ -185,6 +185,23 @@ namespace utility
 		debugWindow * m_debugWindow = nullptr ;
 		QThread * m_main_gui_thread = nullptr ;
 		QWidget * m_mainQWidget = nullptr ;
+	};
+
+	class logger{
+	public:
+		static QString starLine() ;
+		logger() ;
+		std::function< void( const QString& ) > function() ;
+		logger& showText( const QString& cmd,const QStringList& args ) ;
+		logger& showText( const QString& e ) ;
+		logger& showLine() ;
+		logger& appendLog( const QString& e ) ;
+		logger& showText( const ::Task::process::result& m ) ;
+		logger& showTextWithLines( const QString& b ) ;
+		logger& showDebugWindow() ;
+		logger& enableDebug() ;
+	private:
+		utility::miscOptions& m_miscOptions ;
 	};
 
 	template< typename T >
@@ -366,12 +383,14 @@ namespace utility
 		QWidget * m_widget ;
 	};
 
-	static inline void Timer( int interval,std::function< bool( int ) > function )
+	//Function must take an int and return a bool
+	template< typename Function >
+	static inline void Timer( int interval,Function&& function )
 	{
 		class Timer{
 		public:
-			Timer( int interval,std::function< bool( int ) > function ) :
-				m_function( std::move( function ) )
+			Timer( int interval,Function&& function ) :
+				m_function( std::forward< Function >( function ) )
 			{
 				auto timer = new QTimer() ;
 
@@ -393,17 +412,19 @@ namespace utility
 			}
 		private:
 			int m_counter = 0 ;
-			std::function< bool( int ) > m_function ;
+			Function m_function ;
 		} ;
 
-		new Timer( interval,std::move( function ) ) ;
+		new Timer( interval,std::forward< Function >( function ) ) ;
 	}
 
-	static inline void Timer( int interval,std::function< bool( void ) > function )
+	static inline void Timer( int interval,std::function< bool( void ) >&& function )
 	{
-		utility::Timer( interval,[ function = std::move( function ) ]( int s ){
+		using ff = std::function< bool( void ) > ;
 
-			Q_UNUSED( s ) ;
+		utility::Timer( interval,[ function = std::forward< ff >( function ) ]( int s ){
+
+			Q_UNUSED( s )
 
 			return function() ;
 		} ) ;
@@ -443,11 +464,6 @@ namespace utility
 	QString removeLast( const QString&,int lastChars ) ;
 	QString removeFirstAndLast( const QString&,int firstChars,int lastChars ) ;
 	QString removeLastPathComponent( const QString& path,char separator = '/' ) ;
-
-	void logCommandOutPut( const ::Task::process::result&,const QString&,const QStringList& ) ;
-	void logCommandOutPut( const QString& ) ;
-
-	std::function< void( const QString& ) > jsonLogger() ;
 
 	void quitHelper() ;
 	void initGlobals() ;

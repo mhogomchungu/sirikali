@@ -76,16 +76,19 @@ static QString _get_fs_mode( const volumeInfo::List& s,const QString& m )
 	return "rw" ;
 }
 
-static utility::Task _run( const QString& cmd,const QStringList& list )
+static utility::Task _run( const QString& cmd,const QStringList& list,bool debug = false )
 {
-	auto exe = cmd ;
+	if( debug ){
 
-	for( const auto& it : list ){
+		auto exe = cmd ;
 
-		exe += " \"" + it + "\"" ;
+		for( const auto& it : list ){
+
+			exe += " \"" + it + "\"" ;
+		}
+
+		utility::debug() << exe ;
 	}
-
-	utility::debug() << exe ;
 
 	return utility::unwrap( utility::Task::run( cmd,list ) ) ;
 }
@@ -297,6 +300,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.backendRunsInBackGround     = true ;
 	s.autoCreatesMountPoint       = false ;
 	s.autoDeletesMountPoint       = false ;
+	s.usesOnlyMountPoint          = false ;
 	s.likeSsh               = false ;
 	s.requiresPolkit        = false ;
 	s.customBackend         = false ;
@@ -559,7 +563,9 @@ fscrypt::unlockedVolumeList::unlockedVolumeList() :
 
 QStringList fscrypt::unlockedVolumeList::getList() const
 {
-	SirikaliJson json( QFile( m_configFilePath ),utility::jsonLogger() ) ;
+	utility::logger logger ;
+
+	SirikaliJson json( QFile( m_configFilePath ),logger.function() ) ;
 
 	if( json.passed() ){
 
@@ -571,7 +577,9 @@ QStringList fscrypt::unlockedVolumeList::getList() const
 
 void fscrypt::unlockedVolumeList::updateList( const QStringList& e )
 {
-	SirikaliJson json( utility::jsonLogger() ) ;
+	utility::logger logger ;
+
+	SirikaliJson json( logger.function() ) ;
 
 	json[ m_keyName ] = e ;
 

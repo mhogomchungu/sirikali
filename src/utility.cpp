@@ -141,34 +141,11 @@ bool utility::platformIsNOTWindows()
 	return !utility::platformIsWindows() ;
 }
 
-static void _show_debug_window()
-{
-	auto s = utility::miscOptions::instance().getDebugWindow() ;
-
-	if( s.has_value() ){
-
-		s.value()->Show() ;
-	}
-}
-
-static void _set_debug_window_text( const QString& e )
-{
-	const auto& m = utility::miscOptions::instance() ;
-
-	auto s = m.getDebugWindow() ;
-
-	if( s.has_value() ){
-
-		s.value()->UpdateOutPut( e,m.debugEnabled() ) ;
-	}
-}
-
 void windowsDebugWindow( const QString& e,bool s )
 {
 	if( s ){
 
-		utility::miscOptions::instance().setEnableDebug( true ) ;
-		_show_debug_window() ;
+		utility::logger().enableDebug().showDebugWindow() ;
 	}
 
 	utility::debug() << e ;
@@ -205,7 +182,7 @@ utility::SocketPaths utility::socketPath()
 }
 
 void utility::Task::execute( const QString& exe,
-			     const QStringList& list,
+			     const QStringList& args,
 			     int waitTime,
 			     const QProcessEnvironment& env,
 			     const QByteArray& password,
@@ -249,14 +226,18 @@ void utility::Task::execute( const QString& exe,
 			}
 		}
 
+		utility::logger logger ;
+
+		logger.showText( exe,args ) ;
+
 		s.write( [ & ]()->QByteArray{
 
-			SirikaliJson json( utility::jsonLogger() ) ;
+			SirikaliJson json( logger.function() ) ;
 
 			json[ "cookie" ]   = m.getCookie() ;
 			json[ "password" ] = password ;
 			json[ "command" ]  = exe ;
-			json[ "args" ]     = list ;
+			json[ "args" ]     = args ;
 
 			return json.structure() ;
 		}() ) ;
@@ -265,7 +246,7 @@ void utility::Task::execute( const QString& exe,
 
 		s.waitForReadyRead() ;
 
-		SirikaliJson json( s.readAll(),utility::jsonLogger() ) ;
+		SirikaliJson json( s.readAll(),logger.function() ) ;
 
 		m_finished   = json.getBool( "finished" ) ;
 		m_exitCode   = json.getInterger( "exitCode" ) ;
@@ -273,11 +254,25 @@ void utility::Task::execute( const QString& exe,
 		m_stdError   = json.getByteArray( "stdError" ) ;
 		m_stdOut     = json.getByteArray( "stdOut" ) ;
 
-		utility::logCommandOutPut( { m_stdOut,m_stdError,m_exitCode,m_exitStatus,m_finished },exe,list ) ;
+		logger.showText( { m_stdOut,m_stdError,m_exitCode,m_exitStatus,m_finished } ) ;
 	}else{
 		if( runs_in_background ){
 
-			auto& ss = ::Task::process::run( exe,list,waitTime,password,env,std::move( function ) ) ;
+			bool log = true ;
+
+			if( exe.endsWith( "fscrypt" ) && args.size() > 0 && args.at( 0 ) == "status" ){
+
+				log = false ;
+			}
+
+			utility::logger logger ;
+
+			if( log ){
+
+				logger.showText( exe,args ) ;
+			}
+
+			auto& ss = ::Task::process::run( exe,args,waitTime,password,env,std::move( function ) ) ;
 
 			auto s = utility::unwrap( ss ) ;
 
@@ -287,11 +282,16 @@ void utility::Task::execute( const QString& exe,
 			m_stdOut     = s.std_out() ;
 			m_stdError   = s.std_error() ;
 
-			utility::logCommandOutPut( s,exe,list ) ;
-		}else{
-			utility::debug() << "Starting detached process" ;
+			if( log ){
 
-			if( QProcess::startDetached( exe,list ) ){
+				logger.showText( s ) ;
+			}
+		}else{
+			utility::debug() << "Warning, Starting a detached process" ;
+
+			utility::logger().showText( exe,args ).showLine() ;
+
+			if( QProcess::startDetached( exe,args ) ){
 
 				m_exitCode = 0 ;
 			}else{
@@ -300,30 +300,13 @@ void utility::Task::execute( const QString& exe,
 
 			m_finished   = true ;
 			m_exitStatus = 0 ;
-
-			::Task::process::result m{ m_stdError,m_stdOut,m_exitCode,m_exitStatus,m_finished } ;
-
-			utility::logCommandOutPut( m,exe,list ) ;
 		}
 	}
 }
 
-static void _build_debug_msg( const QString& b )
-{
-	QString a = "***************************\n" ;
-	QString c = "\n***************************" ;
-
-	if( utility::miscOptions::instance().debugEnabled() ){
-
-		utility::debug::cout() << b ;
-	}
-
-	_set_debug_window_text( a + b + c ) ;
-}
-
 utility::debug utility::debug::operator<<( const QString& e )
 {
-	_build_debug_msg( e ) ;
+	utility::logger().showTextWithLines( e ) ;
 
 	return utility::debug() ;
 }
@@ -338,101 +321,49 @@ void utility::applicationStarted()
 
 	if( !e.isEmpty() ){
 
-		utility::miscOptions::instance().setEnableDebug( true ) ;
-
 		QString a = "***********Start early logs************" ;
 		QString b = "\n\n***********End early logs*****************" ;
 
-		_set_debug_window_text( a + e + b ) ;
-
-		_show_debug_window() ;
+		utility::logger().enableDebug().showText( a + e + b ).showDebugWindow() ;
 	}
 }
 
 void utility::debug::showDebugWindow( const QString& e )
 {
-	utility::miscOptions::instance().setEnableDebug( true ) ;
-	_build_debug_msg( e ) ;
-	_show_debug_window() ;
+	utility::logger().enableDebug().showTextWithLines( e ).showDebugWindow() ;
 }
 
 void utility::debug::logErrorWhileStarting( const QString& e )
 {
-	utility::miscOptions::instance().appendLog( "\n\n" + e ) ;
+	utility::logger().appendLog( "\n\n" + e ) ;
 }
 
 utility::debug utility::debug::operator<<( int e )
 {
-	_build_debug_msg( QString::number( e ) ) ;
+	utility::logger().showTextWithLines( QString::number( e ) ) ;
 
 	return utility::debug() ;
 }
 
 utility::debug utility::debug::operator<<( const char * e )
 {
-	_build_debug_msg( e ) ;
+	utility::logger().showTextWithLines( e ) ;
 
 	return utility::debug() ;
 }
 
 utility::debug utility::debug::operator<<( const QByteArray& e )
 {
-	_build_debug_msg( e ) ;
+	utility::logger().showTextWithLines( e ) ;
 
 	return utility::debug() ;
 }
 
 utility::debug utility::debug::operator<<( const QStringList& e )
 {
-	_build_debug_msg( e.join( "\n" ) ) ;
+	utility::logger().showTextWithLines( e.join( "\n" ) ) ;
 	return utility::debug() ;
 }
-
-void utility::logCommandOutPut( const QString& e )
-{
-	_set_debug_window_text( "---------\n" + e + "\n---------\n" ) ;
-}
-
-void utility::logCommandOutPut( const ::Task::process::result& m,const QString& exe,const QStringList& args )
-{
-	if( exe.contains( "fscrypt status" ) ){
-
-		return ;
-	}
-
-	auto _trim = []( QString e ){
-
-		while( true ){
-
-			if( e.endsWith( '\n' ) ){
-
-				e.truncate( e.size() - 1 ) ;
-			}else{
-				break ;
-			}
-		}
-
-		return e ;
-	} ;
-
-	QString s = "Exit Code: %1\nExit Status: %2\n-------\nStdOut: %3\n-------\nStdError: %4\n-------\nCommand: %5\n-------\n" ;
-
-	QString r ;
-
-	for( const auto& it : args ){
-
-		r += " \"" + it + "\"" ;
-	}
-
-	auto e = s.arg( QString::number( m.exit_code() ),
-			QString::number( m.exit_status() ),
-			_trim( m.std_out() ),
-			_trim( m.std_error() ),
-			"\"" + exe + "\" " + r ) ;
-
-	_set_debug_window_text( e ) ;
-}
-
 
 static engines::engine::exe_args siriPolkitExe()
 {
@@ -1296,9 +1227,13 @@ utility::qbytearray_result utility::yubiKey( const QByteArray& challenge )
 
 		auto args = utility::split( settings::instance().ykchalrespArguments(),' ' );
 
+		utility::logger logger ;
+
+		logger.showText( exe,args ) ;
+
 		auto s = utility::unwrap( ::Task::process::run( exe,args,-1,challenge ) ) ;
 
-		utility::logCommandOutPut( s,exe,args ) ;
+		logger.showText( s ) ;
 
 		if( s.success() ){
 
@@ -1386,11 +1321,31 @@ QString utility::removeLastPathComponent( const QString& e,char separator )
 	return separator + s.join( separator ) ;
 }
 
-std::function< void( const QString& ) > utility::jsonLogger()
-{
-	return []( const QString& e ){
 
-		if( utility::miscOptions::instance().starting() ){
+QString utility::likeSshaddPortNumber( const QString& path,const QString& port )
+{
+	return path + settings::instance().portSeparator() + port ;
+}
+
+QString utility::likeSshRemovePortNumber( const QString& path )
+{
+	return utility::split( path,settings::instance().portSeparator() ).at( 0 ) ;
+}
+
+QString utility::logger::starLine()
+{
+	return "*************************************" ;
+}
+
+utility::logger::logger() : m_miscOptions( utility::miscOptions::instance() )
+{
+}
+
+std::function< void( const QString& ) > utility::logger::function()
+{
+	return [ this ]( const QString& e ){
+
+		if( m_miscOptions.starting() ){
 
 			if( e.startsWith( "Error" ) ){
 
@@ -1404,12 +1359,119 @@ std::function< void( const QString& ) > utility::jsonLogger()
 	} ;
 }
 
-QString utility::likeSshaddPortNumber( const QString& path,const QString& port )
+utility::logger& utility::logger::showText( const QString& cmd,const QStringList& args )
 {
-	return path + settings::instance().portSeparator() + port ;
+	QString exe = "Command: \"" + cmd + "\"" ;
+
+	for( const auto& it : args ){
+
+		exe += " \"" + it + "\"" ;
+	}
+
+	this->showText( exe ) ;
+
+	return *this ;
 }
 
-QString utility::likeSshRemovePortNumber( const QString& path )
+utility::logger& utility::logger::showText( const QString& e )
 {
-	return utility::split( path,settings::instance().portSeparator() ).at( 0 ) ;
+	auto s = m_miscOptions.getDebugWindow() ;
+
+	if( s.has_value() ){
+
+		s.value()->UpdateOutPut( e,m_miscOptions.debugEnabled() ) ;
+	}
+
+	return *this ;
+}
+
+utility::logger& utility::logger::showLine()
+{
+	this->showText( logger::starLine() ) ;
+	return *this ;
+}
+
+utility::logger& utility::logger::appendLog( const QString& e )
+{
+	m_miscOptions.appendLog( e ) ;
+	return *this ;
+}
+
+utility::logger& utility::logger::showText( const ::Task::process::result& m )
+{
+	auto _trim = []( QString e,bool s )->QString{
+
+		while( true ){
+
+			if( e.endsWith( '\n' ) ){
+
+				e.truncate( e.size() - 1 ) ;
+			}else{
+				break ;
+			}
+		}
+
+		if( e.isEmpty() ){
+
+			if( s ){
+
+				return "\n" ;
+			}else{
+				return "";
+			}
+		}else{
+			if( s ){
+
+				return "\n" + e + "\n" ;
+			}else{
+				return "\n" + e ;
+			}
+		}
+	} ;
+
+	QString s = "-------\nExit Code: %1\nExit Status: %2\n-------\nStdOut:%3-------\nStdError:%4" ;
+
+	auto e = s.arg( QString::number( m.exit_code() ),
+			QString::number( m.exit_status() ),
+			_trim( m.std_out(),true ),
+			_trim( m.std_error(),false ) ) ;
+
+	this->showText( e ) ;
+
+	this->showLine() ;
+
+	return *this ;
+}
+
+utility::logger& utility::logger::showTextWithLines( const QString& b )
+{
+	auto m = logger::starLine() ;
+
+	if( m_miscOptions.debugEnabled() ){
+
+		utility::debug::cout() << b ;
+	}
+
+	this->showText( m + "\n" + b + "\n" + m ) ;
+
+	return *this ;
+}
+
+utility::logger& utility::logger::showDebugWindow()
+{
+	auto s = m_miscOptions.getDebugWindow() ;
+
+	if( s.has_value() ){
+
+		s.value()->Show() ;
+	}
+
+	return *this ;
+}
+
+utility::logger& utility::logger::enableDebug()
+{
+	m_miscOptions.setEnableDebug( true ) ;
+
+	return *this ;
 }

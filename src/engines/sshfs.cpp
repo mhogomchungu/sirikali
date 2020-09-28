@@ -40,6 +40,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.autorefreshOnMountUnMount   = true ;
 	s.backendRequireMountPath     = true ;
 	s.backendRunsInBackGround     = true ;
+	s.usesOnlyMountPoint          = false ;
 	s.likeSsh               = true ;
 	s.requiresPolkit        = false ;
 	s.customBackend         = false ;
@@ -158,7 +159,7 @@ void sshfs::updateOptions( engines::engine::commandOptions& opts,
 
 		fuseOptions.add( "PreferredAuthentications=publickey" ) ;
 
-		if( args.identityFile.isEmpty() ){
+		auto _set_identity_agent = [ & ](){
 
 			if( args.identityAgent.isEmpty() ){
 
@@ -175,7 +176,14 @@ void sshfs::updateOptions( engines::engine::commandOptions& opts,
 				utility::debug() << "Sshfs: Setting Env Variable Of: SSH_AUTH_SOCK=" + args.identityAgent ;
 				m_environment.insert( "SSH_AUTH_SOCK",args.identityAgent ) ;
 			}
+		} ;
+
+		if( args.identityFile.isEmpty() ){
+
+			_set_identity_agent() ;
 		}else{
+			_set_identity_agent() ;
+
 			fuseOptions.add( "IdentityFile=" + args.identityFile ) ;
 		}
 	}else{

@@ -517,6 +517,10 @@ static void _run_command_on_mount( const siritask::mount& e )
 
 		Task::exec( [ = ](){
 
+			utility::logger logger ;
+
+			logger.showText( s,opts ) ;
+
 			auto r = [ & ](){
 
 				if( settings::instance().allowExternalToolsToReadPasswords() ){
@@ -534,7 +538,7 @@ static void _run_command_on_mount( const siritask::mount& e )
 				}
 			}() ;
 
-			utility::logCommandOutPut( r,s,opts ) ;
+			logger.showText( r ) ;
 		} ) ;
 	}
 }

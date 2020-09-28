@@ -69,7 +69,7 @@ private :
 	void setControlsAvailability( bool,bool clearTable ) ;
 	void tabChanged( int ) ;
 	void updateVolumeList( const std::vector< favorites::entry >&,const QString& ) ;
-	void updateVolumeList( const std::vector< favorites::entry >&,int ) ;
+	void updateVolumeList( const std::vector< favorites::entry >&,size_t ) ;
 	void showUpdatedEntry( const favorites::entry& ) ;
 	void updateFavorite( bool );
 	void toggleAutoMount( void ) ;
@@ -80,6 +80,7 @@ private :
 	void add( void ) ;
 	void cancel( void ) ;
 	void folderPath( void ) ;
+	void filePath( void ) ;
 	void mountPointPath( void ) ;
 	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
 	void itemClicked( QTableWidgetItem * current,bool ) ;
@@ -88,11 +89,12 @@ private :
 	void devicePathTextChange( QString ) ;
 	void clearEditVariables() ;
 	void setVolumeProperties( const favorites::entry& e ) ;
+	void clearVolumeProperties() ;
 	void ShowUI() ;
 	void HideUI( void ) ;
 	void checkFavoritesConsistency() ;
 	void setUiLikeSsh( const QString& cipherPath,const engines::engine& engine ) ;
-	void setDefaultUI() ;
+	void setDefaultUI( const engines::engine& ) ;
 	QStringList readAllKeys() ;
 	const favorites::entry& getEntry( int ) ;
 	QString getExistingFile( const QString& ) ;

@@ -129,7 +129,9 @@ static void _update_favorites( favorites::entry& m )
 
 static favorites::entry _favorites( const QString& path )
 {
-	SirikaliJson json( QFile( path ),utility::jsonLogger() ) ;
+	utility::logger logger ;
+
+	SirikaliJson json( QFile( path ),logger.function() ) ;
 
 	favorites::entry m ;
 
@@ -207,7 +209,9 @@ favorites::error favorites::add( const favorites::entry& e )
 
 	auto a = _create_path( m.value(),e,true ) ;
 
-	SirikaliJson json( utility::jsonLogger() ) ;
+	utility::logger logger ;
+
+	SirikaliJson json( logger.function() ) ;
 
 	json[ "volumePath" ]           = e.volumePath ;
 	json[ "mountPointPath" ]       = e.mountPointPath ;
@@ -235,6 +239,17 @@ favorites::error favorites::add( const favorites::entry& e )
 		return error::ENTRY_ALREADY_EXISTS ;
 	}else{
 		if( json.passed() && json.toFile( a ) ){
+
+			while( true ){
+
+				if( utility::pathExists( a ) ){
+
+					break ;
+				}else{
+					utility::debug() << "Waiting for a file to show up to the file system" ;
+					utility::Task::suspendForOneSecond() ;
+				}
+			}
 
 			this->reload() ;
 			return error::SUCCESS ;
