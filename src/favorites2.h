@@ -89,6 +89,7 @@ private :
 	void devicePathTextChange( QString ) ;
 	void clearEditVariables() ;
 	void setVolumeProperties( const favorites::entry& e ) ;
+	void clearVolumeProperties() ;
 	void ShowUI() ;
 	void HideUI( void ) ;
 	void checkFavoritesConsistency() ;

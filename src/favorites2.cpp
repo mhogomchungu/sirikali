@@ -900,7 +900,7 @@ void favorites2::tabChanged( int index )
 				m_ui->lineEditMountPath->setText( m_settings.mountPath() ) ;
 			}
 
-			this->setDefaultUI( m_engine ) ;
+			this->setDefaultUI( engines::instance().getUnKnown() ) ;
 
 			m_ui->pbAdd->setFocus() ;
 		}
@@ -985,7 +985,9 @@ void favorites2::updateVolumeList( const std::vector< favorites::entry >& e,size
 {
 	if( e.size() == 0 ){
 
-		tablewidget::clearTable( m_ui->tableWidget) ;
+		tablewidget::clearTable( m_ui->tableWidget ) ;
+
+		this->clearVolumeProperties() ;
 
 		utility::debug() << "Information: Favorites list is empty" ;
 	}else{
@@ -1471,6 +1473,27 @@ void favorites2::setVolumeProperties( const favorites::entry& e )
 	m_ui->textEditPreUnMount->setText( e.preUnmountCommand ) ;
 
 	m_ui->textEditPostUnmount->setText( e.postUnmountCommand ) ;
+}
+
+void favorites2::clearVolumeProperties()
+{
+	m_ui->textEditAutoMount->clear() ;
+
+	m_ui->textEditMountPoint->clear() ;
+
+	m_ui->textEditConfigFilePath->clear() ;
+
+	m_ui->textEditIdleTimeOut->clear() ;
+
+	m_ui->textEditMountOptions->clear() ;
+
+	m_ui->textEditPreMount->clear() ;
+
+	m_ui->textEditPostMount->clear() ;
+
+	m_ui->textEditPreUnMount->clear() ;
+
+	m_ui->textEditPostUnmount->clear() ;
 }
 
 void favorites2::setUiLikeSsh( const QString& cipherPath,const engines::engine& engine )
