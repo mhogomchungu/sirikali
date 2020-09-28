@@ -1154,7 +1154,7 @@ QByteArray static _get_key( const keyDialog::entry& it,secrets::wallet& m ){
 
 		auto ee = m->readValue( volumePath ) ;
 
-		if( ee.isEmpty() && !name.isLower() ){
+		if( ee.isEmpty() ){
 
 			auto ss = name.toLower() + " " + it.engine.cipherFolder() ;
 
