@@ -31,11 +31,7 @@ int main( int argc,char * argv[] )
 	if( utility::printVersionOrHelpInfo( args ) ){
 
 		return 0 ;
-
-	}else if( sirikali::cmd( args ) ){
-
-		return sirikali::run( args,argc,argv ) ;
 	}else{
-		return sirikali::exec( args,argc,argv ) ;
+		return sirikali::run( args,argc,argv ) ;
 	}
 }

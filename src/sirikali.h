@@ -75,9 +75,7 @@ class sirikali : public QWidget
 {
 	Q_OBJECT
 public:
-	static bool cmd( const QStringList& ) ;
 	static int run( const QStringList&,int argc,char * argv[] ) ;
-	static int exec( const QStringList&,int argc,char * argv[] ) ;
 	static int unlockVolume( const QStringList&,secrets& ) ;
 
 	sirikali( const QStringList& ) ;

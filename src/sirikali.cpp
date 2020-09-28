@@ -107,11 +107,6 @@ static std::function< void( const QString& ) > _debug()
 	return []( const QString& e ){ utility::debug() << e ; } ;
 }
 
-bool sirikali::cmd( const QStringList& l )
-{
-	return utility::containsAtleastOne( l,"-s","-u","-p","-T","-b" ) ;
-}
-
 static int _print( int s,const QString& m )
 {
 	std::cout << m.toStdString() << std::endl ;
@@ -219,24 +214,39 @@ static int _run( App& app,Function function )
 
 int sirikali::run( const QStringList& args,int argc,char * argv[] )
 {
-	auto mm = utility::cmdArgumentValue( args,"-b" ) ;
+	if( utility::containsAtleastOne( args,"-s","-u","-p","-T","-b" ) ){
 
-	if( utility::equalsAtleastOne( mm,"internal","windows_dpapi","gnomewallet",
-				       "libsecret","kwallet","osxkeychain" ) ){
+		auto mm = utility::cmdArgumentValue( args,"-b" ) ;
+
+		if( utility::equalsAtleastOne( mm,"internal","windows_dpapi","gnomewallet",
+					       "libsecret","kwallet","osxkeychain" ) ){
+
+			QApplication srk( argc,argv ) ;
+
+			return _run( srk,[ & ]( secrets& ss ){
+
+				return sirikali::unlockVolume( args,ss ) ;
+			} ) ;
+		}else{
+			QCoreApplication srk( argc,argv ) ;
+
+			return _run( srk,[ & ]( secrets& ss ){
+
+				return _run( mm,args,ss ) ;
+			} ) ;
+		}
+	}else{
+		utility::initGlobals() ;
 
 		QApplication srk( argc,argv ) ;
 
-		return _run( srk,[ & ]( secrets& ss ){
+		srk.setApplicationName( "SiriKali" ) ;
 
-			return sirikali::unlockVolume( args,ss ) ;
-		} ) ;
-	}else{
-		QCoreApplication srk( argc,argv ) ;
+		sirikali app( args ) ;
 
-		return _run( srk,[ & ]( secrets& ss ){
+		QMetaObject::invokeMethod( &app,"start",Qt::QueuedConnection ) ;
 
-			return _run( mm,args,ss ) ;
-		} ) ;
+		return srk.exec() ;
 	}
 }
 
@@ -247,21 +257,6 @@ void miniSiriKali::start()
 
 void miniSiriKali::silenceWarning()
 {
-}
-
-int sirikali::exec( const QStringList& args,int argc,char * argv[] )
-{
-	utility::initGlobals() ;
-
-	QApplication srk( argc,argv ) ;
-
-	srk.setApplicationName( "SiriKali" ) ;
-
-	sirikali app( args ) ;
-
-	QMetaObject::invokeMethod( &app,"start",Qt::QueuedConnection ) ;
-
-	return srk.exec() ;
 }
 
 sirikali::sirikali( const QStringList& args ) :
