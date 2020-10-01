@@ -22,7 +22,7 @@ Steps to setup SiriKali to connect to an ssh server are documented <a href="http
 
 Encrypted container ```folders``` have an advantage over encrypted container ```files``` like the ones that are created by <a href="http://mhogomchungu.github.io/zuluCrypt/">zuluCrypt</a>,TrueCrypt,VeraCrypt among other projects that use file based encrypted containers.
 
-SiriKali now has an extension system and it can support pretty much any fuse based backend and a sample list of custom backend is <a href="https://github.com/mhogomchungu/sirikali/tree/master/custom%20backends">here.</a>
+SiriKali now has an extension system and it can support pretty much any fuse based backend and a small list of custom backends is <a href="https://github.com/mhogomchungu/sirikali/tree/master/custom%20backends">here.</a>
 #### Advantages are:
 
 The encrypted container folder can freely grow and shrink as files are added,removed,grow or shrink. File based encrypted containers are limited to the size of the container and the size is set when the container is created and does not change to reflect the amount of data the container is hosting.
