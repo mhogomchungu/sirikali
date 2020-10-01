@@ -22,6 +22,7 @@ Steps to setup SiriKali to connect to an ssh server are documented <a href="http
 
 Encrypted container ```folders``` have an advantage over encrypted container ```files``` like the ones that are created by <a href="http://mhogomchungu.github.io/zuluCrypt/">zuluCrypt</a>,TrueCrypt,VeraCrypt among other projects that use file based encrypted containers.
 
+SiriKali now has an extension system and it can support pretty much any fuse based backend and a sample list of custom backend is <a href="https://github.com/mhogomchungu/sirikali/tree/master/custom%20backends">here.</a>
 #### Advantages are:
 
 The encrypted container folder can freely grow and shrink as files are added,removed,grow or shrink. File based encrypted containers are limited to the size of the container and the size is set when the container is created and does not change to reflect the amount of data the container is hosting.
@@ -51,13 +52,13 @@ Send me an email through mhogomchungu at Gmail Dot coM for transfer details.
 
 ## Source download link.
 
-Latest released version is 1.4.6 and its source code can be downloaded by clicking below link.
+Latest released version is 1.4.7 and its source code can be downloaded by clicking below link.
 
-<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.4.6/SiriKali-1.4.6.tar.xz">SiriKali-1.4.6.tar.xz</a>
+<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.4.7/SiriKali-1.4.7.tar.xz">SiriKali-1.4.7.tar.xz</a>
 
 ## Download links for Microsoft Windows Operating System.
 
-There are two packages for Windows Windows, the one with an installer is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.4.6/SiriKali-1.4.6.setup.exe">here</a> and the one without an installer(portable version) is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.4.6/SiriKali-1.4.6.exe.zip">here.</a>
+There are two packages for Windows Windows, the one with an installer is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.4.7/SiriKali-1.4.7.setup.exe">here</a> and the one without an installer(portable version) is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.4.7/SiriKali-1.4.7.exe.zip">here.</a>
 
 The installer is not signed and expect to get a warning from windows saying the installer is from an unknown publisher.
 We recommend using the installer version.
@@ -150,4 +151,4 @@ cv9jY9bZAbVaMUjF7dw/bsqgJ2HCJ33cf16GybRtozOE36YDB2omg58ngIrlmlea
 -----END PGP PUBLIC KEY BLOCK-----
 ```
 
-last update: Mon 14 Sep 2020 04:29:32 PM EAT
+last update: Thu 01 Oct 2020 09:24:28 AM EAT
