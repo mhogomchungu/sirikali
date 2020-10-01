@@ -17,19 +17,19 @@
         "fuseNames": [
                 "fuse.google-drive-ocamlfuse"
         ],
-        "idleString": "--idle %{timeout}",
-        "keyFileArgument": "--keyfile %{keyfile}",
+        "idleString": "",
+        "keyFileArgument": "",
         "likeSsh": false,
         "mountControlStructure": "%{mountPoint} %{fuseOpts}",
         "names": [
                 "google-drive-ocamlfuse"
         ],
-        "passwordFormat": "%{password}",
+        "passwordFormat": "",
         "requiresAPassword": false,
         "reverseString": "",
         "runsInBackGround": true,
         "setsCipherPath": false,
-        "sshOptions": "idmap=user,StrictHostKeyChecking=no",
+        "sshOptions": "",
         "takesTooLongToUnlock": false,
         "unMountCommand": [],
         "usesOnlyMountPoint": true,

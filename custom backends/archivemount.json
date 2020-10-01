@@ -7,7 +7,7 @@
         "autorefreshOnMountUnMount": true,
         "backendRequireMountPath": true,
         "backendTimeout": 0,
-        "configFileArgument": "-cfg %{cipherFolder}/%{configFileName}",
+        "configFileArgument": "",
         "configFileNames": [],
         "createControlStructure": "",
         "displayName":"",
@@ -19,20 +19,20 @@
         "fuseNames": [
                 "fuse.archivemount"
         ],
-        "idleString": "--idle %{timeout}",
-        "keyFileArgument": "--keyfile %{keyfile}",
+        "idleString": "",
+        "keyFileArgument": "",
         "likeSsh": false,
         "mountControlStructure": "%{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}",
         "minimumVersion":"",
         "names": [
                 "archivemount"
         ],
-        "passwordFormat": "%{password}",
+        "passwordFormat": "",
         "requiresAPassword": false,
         "reverseString": "",
         "runsInBackGround": true,
         "setsCipherPath": true,
-        "sshOptions": "idmap=user,StrictHostKeyChecking=no",
+        "sshOptions": "",
         "takesTooLongToUnlock": false,
         "unMountCommand": [],
         "volumePropertiesCommands": [],
