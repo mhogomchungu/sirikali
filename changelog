@@ -244,7 +244,7 @@ version 1.4.2(December 18,2019)
     [ALL]
 -- Fix a crash when trying to unlock volume by clicking the "mount volume" button.
 
-   version 1.4.7(Unreleased)
+   version 1.4.7(October 01,2020)
    [ALL]
 -- Make the UI more user friendly to ssh based backends by using texts that make most sense
    in this backend.
@@ -254,3 +254,5 @@ version 1.4.2(December 18,2019)
    passwords based on connection's port number.
 -- Do not silently fail when a user attempt to add a favorite entry and its name collide with an
    existing entry.
+-- Add explicit support for extensions that do not use cipher path and use "google-drive-ocamlfuse"
+   as a reference program.
