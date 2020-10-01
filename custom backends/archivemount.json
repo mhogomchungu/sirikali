@@ -35,6 +35,7 @@
         "sshOptions": "",
         "takesTooLongToUnlock": false,
         "unMountCommand": [],
+        "usesOnlyMountPoint": false,
         "volumePropertiesCommands": [],
         "versionArgumentString": "--version",
         "versionMinimum":"",
