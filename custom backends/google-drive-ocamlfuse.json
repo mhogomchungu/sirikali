@@ -20,7 +20,7 @@
         "idleString": "--idle %{timeout}",
         "keyFileArgument": "--keyfile %{keyfile}",
         "likeSsh": false,
-        "mountControlStructure": "%{cipherFolder} %{fuseOpts}",
+        "mountControlStructure": "%{mountPoint} %{fuseOpts}",
         "names": [
                 "google-drive-ocamlfuse"
         ],
