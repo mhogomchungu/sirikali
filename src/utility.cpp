@@ -1475,3 +1475,8 @@ utility::logger& utility::logger::enableDebug()
 
 	return *this ;
 }
+
+QString utility::SiriKaliVersion()
+{
+	return THIS_VERSION ;
+}

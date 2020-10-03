@@ -30,6 +30,7 @@
         "runsInBackGround": true,
         "setsCipherPath": false,
         "sshOptions": "",
+        "sirikaliMinimumVersion": "1.4.7",
         "takesTooLongToUnlock": false,
         "unMountCommand": [],
         "usesOnlyMountPoint": true,

@@ -305,6 +305,7 @@ public:
 			mountPointFolderNotEmpty,
 			IllegalPath,
 
+		        backendFailedToMeetSiriKaliMinimumVersion,
 			fscryptPartialVolumeClose,
 			failedToLoadWinfsp,
 			fscryptKeyFileRequired,
@@ -508,6 +509,7 @@ public:
 			QString displayName ;
 			QString releaseURL ;
 			QString versionMinimum ;
+			QString sirikaliMinimumVersion ;
 			QString reverseString ;
 			QString idleString ;
 			QString executableName ;
@@ -597,6 +599,7 @@ public:
 		const QString& sshOptions() const ;
 		const QString& executableFullPath() const ;
 		const QString& minimumVersion() const ;
+		const QString& sirikaliMinimumVersion() const ;
 		const QString& reverseString() const ;
 		const QString& idleString() const ;
 		const QString& releaseURL() const ;

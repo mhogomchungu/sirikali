@@ -60,6 +60,7 @@
 #include "secrets.h"
 #include "utility2.h"
 #include "debugwindow.h"
+#include "version.h"
 
 #include <QObject>
 #include <QLabel>
@@ -319,6 +320,8 @@ namespace utility
 	QIcon getIcon( iconType ) ;
 
 	QStringList directoryList( const QString& e ) ;
+
+	QString SiriKaliVersion() ;
 
 	QString freeWindowsDriveLetter() ;
 	bool isDriveLetter( const QString& ) ;

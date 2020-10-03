@@ -153,6 +153,7 @@ void createBackendWIndow::save()
 	config[ "windowsInstallPathRegistryValue" ] = "" ;
 	config[ "windowsExecutableFolderPath" ]     = "" ;
 	config[ "displayName" ]                     = "" ;
+	config[ "sirikaliMinimumVersion" ]          = "" ;
 	config[ "windowsSupportsMountPointPaths" ]  = m_ui->cbSupportsMountPointPaths->isChecked() ;
 	config[ "windowsSuccessfullyMountedList" ]  = _addList( m_ui->lineEditSuccessfullyMountedText->text() ) ;
 	config[ "executableName" ]              = executable ;

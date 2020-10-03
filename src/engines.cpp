@@ -713,6 +713,11 @@ const QString& engines::engine::minimumVersion() const
 	return m_Options.versionMinimum ;
 }
 
+const QString& engines::engine::sirikaliMinimumVersion() const
+{
+	return m_Options.sirikaliMinimumVersion ;
+}
+
 static bool _contains( const QString& e,const QStringList& m )
 {
 	for( const auto& it : m ){
@@ -807,22 +812,52 @@ engines::engine::status engines::engine::passAllRequirenments( const engines::en
 		}
 	}
 
-	const auto& v = this->minimumVersion() ;
+	if( this->customBackend() ){
 
-	if( this->customBackend() && !v.isEmpty() ){
+		const auto& e = this->sirikaliMinimumVersion() ;
 
-		auto s = this->installedVersion().greaterOrEqual( v ) ;
+		if( !e.isEmpty() ){
 
-		if( s.has_value() ){
+			engines::engineVersion m( e ) ;
 
-			if( s.value() ){
+			if( m.valid() ){
 
-				return engines::engine::status::success ;
+				if( m < utility::SiriKaliVersion() ){
+
+					return engines::engine::status::backendFailedToMeetSiriKaliMinimumVersion ;
+				}
 			}else{
-				return engine::engine::status::backEndFailedToMeetMinimumRequirenment ;
+				QString s = "Warning, failed to get sirikali required minimum version for backend \"%1\"" ;
+				utility::debug() << s.arg( this->name() ) ;
 			}
-		}else{
-			utility::debug() << "Trouble ahead, failed to get backend's version" ;
+		}
+
+		const auto& v = this->minimumVersion() ;
+
+		if( !v.isEmpty() ){
+
+			engines::engineVersion engineRequiredMinimum( v ) ;
+
+			const auto& engineInstalledVersion = this->installedVersion().get() ;
+
+			if( engineInstalledVersion.valid() ){
+
+				if( engineRequiredMinimum.valid() ){
+
+					if( engineInstalledVersion < engineRequiredMinimum ){
+
+						return engine::engine::status::backEndFailedToMeetMinimumRequirenment ;
+					}
+				}else{
+					QString s = "Warning, failed to get required minimum version for backend \"%1\"" ;
+
+					utility::debug() << s.arg( this->name() ) ;
+				}
+			}else{
+				QString s = "Warning, failed to get installed version for backend \"%1\"" ;
+
+				utility::debug() << s.arg( this->name() ) ;
+			}
 		}
 	}
 
@@ -1331,6 +1366,10 @@ QString engines::engine::cmdStatus::toString() const
 	case engines::engine::status::unknown :
 
 		return QObject::tr( "Failed To Unlock The Volume.\nNot Supported Volume Encountered." ) ;
+
+	case engines::engine::status::backendFailedToMeetSiriKaliMinimumVersion :
+
+		return QObject::tr( "Backend Requires Atleast Version \"%1\" Of SiriKali." ).arg( utility::SiriKaliVersion() ) ;
 
 	case engines::engine::status::backEndFailedToMeetMinimumRequirenment :
 

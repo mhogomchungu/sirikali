@@ -29,7 +29,6 @@
 #include "utility.h"
 #include "dialogmsg.h"
 #include "siritask.h"
-#include "version.h"
 #include "json.h"
 #include "checkforupdateswindow.h"
 #include "engines.h"

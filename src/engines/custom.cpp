@@ -66,6 +66,7 @@ static void _parse( engines::engine::BaseOptions& s,const SirikaliJson& json )
 	s.windowsExecutableFolderPath     = json.getString( "windowsExecutableFolderPath" ) ;
 	s.displayName                     = json.getString( "displayName" ) ;
 	s.versionMinimum                  = json.getString( "versionMinimum" ) ;
+	s.sirikaliMinimumVersion          = json.getString( "sirikaliMinimumVersion" ) ;
 
 	s.windowsUnMountCommand           = json.getStringList( "windowsUnMountCommand" ) ;
 	s.unMountCommand                  = json.getStringList( "unMountCommand" ) ;

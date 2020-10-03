@@ -125,7 +125,7 @@ QString checkUpdates::InstalledVersion( const engines::engine& e )
 {
 	if( e.unknown() ){
 
-		return THIS_VERSION ;
+		return utility::SiriKaliVersion() ;
 	}else{
 		auto s = e.installedVersion().get() ;
 
