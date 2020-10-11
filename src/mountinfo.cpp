@@ -25,6 +25,7 @@
 #include "settings.h"
 #include "engines.h"
 #include "crypto.h"
+#include "processManager.h"
 
 #include <QMetaObject>
 #include <QtGlobal>
@@ -97,7 +98,7 @@ static volumeInfo::List _windows_volumes()
 {
 	volumeInfo::List s ;
 
-	for( const auto& e : SiriKali::Windows::getMountOptions() ){
+	for( const auto& e : processManager::get().mountOptions() ){
 
 		auto fs = "fuse." + e.subtype ;
 
@@ -467,7 +468,7 @@ void mountinfo::qtMonitor()
 
 void mountinfo::windowsMonitor()
 {
-	SiriKali::Windows::updateVolumeList( [ this ]{ this->updateVolume() ; } ) ;
+	processManager::get().updateVolumeList( [ this ]{ this->updateVolume() ; } ) ;
 }
 
 static QString _gvfs_fuse_path()

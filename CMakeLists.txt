@@ -309,6 +309,7 @@ set( SRC 	src/dialogok.cpp
 		src/filemanager.cpp
 		src/utility2.cpp
 		src/win.cpp
+		src/processManager.cpp
 		src/settings.cpp
 		src/engines/options.cpp
 		src/engines/cryfs.cpp

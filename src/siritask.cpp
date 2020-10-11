@@ -23,6 +23,7 @@
 #include "win.h"
 #include "settings.h"
 #include "sirikali.h"
+#include "processManager.h"
 
 #include <QDir>
 #include <QString>
@@ -190,7 +191,7 @@ static engines::engine::cmdStatus _unmount( const engines::engine::unMount& e )
 
 		auto m = engine.windowsUnMountCommand() ;
 
-		auto s = SiriKali::Windows::unmount( m,e.mountPoint ) ;
+		auto s = processManager::get().remove( m,e.mountPoint ) ;
 
 		if( s.success() ){
 
@@ -267,7 +268,7 @@ static utility::Task _run_task_0( const run_task& e )
 {
 	if( utility::platformIsWindows() ){
 
-		return SiriKali::Windows::run( { e.create,e.args,e.opts,e.engine,e.password } ) ;
+		return processManager::get().run( { e.create,e.args,e.opts,e.engine,e.password } ) ;
 	}else{
 		const auto& s = e.engine.getProcessEnvironment() ;
 
@@ -334,7 +335,7 @@ static engines::engine::cmdStatus _cmd( const cmd_args& e )
 	}else{
 		if( utility::platformIsWindows() ){
 
-			if( SiriKali::Windows::backEndTimedOut( s.stdOut() ) ){
+			if( processManager::backEndTimedOut( s.stdOut() ) ){
 
 				return { engines::engine::status::backendTimedOut,engine } ;
 			}

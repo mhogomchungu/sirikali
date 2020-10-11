@@ -65,6 +65,7 @@
 #include "json.h"
 #include "settings.h"
 #include "engines.h"
+#include "processManager.h"
 
 #include "favorites2.h"
 #include "favorites.h"
@@ -1258,7 +1259,7 @@ void sirikali::genericVolumeProperties()
 
 		auto row = table->currentRow() ;
 
-		auto m = SiriKali::Windows::volumeProperties( table->item( row,1 )->text() ) ;
+		auto m = processManager::get().volumeProperties( table->item( row,1 )->text() ) ;
 
 		if( m.isEmpty() ){
 

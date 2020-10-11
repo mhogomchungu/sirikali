@@ -37,21 +37,6 @@
 namespace SiriKali{
 namespace Windows{
 
-struct opts{
-
-	bool create ;
-	const engines::engine::args& args ;
-	const engines::engine::cmdArgsList& options ;
-	const engines::engine& engine ;
-	const QByteArray& password ;
-} ;
-
-Task::process::result run( const SiriKali::Windows::opts& ) ;
-
-Task::process::result unmount( const QStringList& unMountCommand,const QString& mountPath ) ;
-
-QString volumeProperties( const QString& mountPath ) ;
-
 int terminateProcess( unsigned long pid ) ;
 
 QString engineInstalledDir( const engines::engine& ) ;
@@ -63,29 +48,8 @@ QString lastError() ;
 
 std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path ) ;
 
-bool mountPointTaken( const QString& ) ;
-
-void updateVolumeList( std::function< void() > ) ;
-
-bool backEndTimedOut( const QString& ) ;
-
-struct mountOptions
-{
-	mountOptions( const QString& a,const QString& b,const QString& c,
-		      const QString& d,const QStringList& e ) :
-		mode( a ),subtype( b ),cipherFolder( c ),mountPointPath( d ),fuseOptions( e )
-	{
-	}
-	QString mode ;
-	QString subtype ;
-	QString cipherFolder ;
-	QString mountPointPath ;
-	QStringList fuseOptions ;
-};
-
-std::vector< mountOptions > getMountOptions() ;
-
 }
+
 }
 
 #endif

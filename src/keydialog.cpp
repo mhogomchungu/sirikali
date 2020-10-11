@@ -37,6 +37,7 @@
 #include "plugin.h"
 #include "crypto.h"
 #include "configfileoption.h"
+#include "processManager.h"
 
 static QString _kwallet()
 {
@@ -1204,7 +1205,7 @@ void keyDialog::encryptedFolderCreate()
 
 			m = m_settings.windowsMountPointPath() + m ;
 
-			if( SiriKali::Windows::mountPointTaken( m ) ){
+			if( processManager::get().mountPointTaken( m ) ){
 
 				return this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
 			}
@@ -1299,7 +1300,7 @@ void keyDialog::encryptedFolderMount()
 
 	if( utility::platformIsWindows() ){
 
-		if( SiriKali::Windows::mountPointTaken( m ) ){
+		if( processManager::get().mountPointTaken( m ) ){
 
 			return this->showErrorMessage( tr( "Mount Point Path Already Taken." ) ) ;
 		}
