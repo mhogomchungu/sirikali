@@ -45,7 +45,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.hasConfigFile         = true ;
 	s.autoMountsOnCreate    = false ;
 	s.hasGUICreateOptions   = false ;
-	s.setsCipherPath        = false ;
+	s.setsCipherPath        = true ;
 	s.acceptsSubType        = true ;
 	s.acceptsVolName        = false ;
 	s.releaseURL            = "https://api.github.com/repos/cryptomator/cli/releases" ;
