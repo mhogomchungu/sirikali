@@ -286,7 +286,9 @@ public:
 			securefsBadPassword,
 			ecryptfsBadPassword,
 			fscryptBadPassword,
+			cryptomatorBadPassword,
 
+			cryptomatorNotFound,
 			sshfsNotFound,
 			cryfsNotFound,
 			encfsNotFound,
@@ -656,9 +658,19 @@ public:
 
 		virtual void updateOptions( engines::engine::cmdArgsList&,bool creating ) const ;
 
+		virtual void updateOptions( QStringList&,
+					    const engines::engine::cmdArgsList&,
+					    bool creating ) const ;
+
 		virtual const QProcessEnvironment& getProcessEnvironment() const ;
 
 		virtual bool requiresPolkit() const ;
+
+		virtual bool createMountPath( const QString& ) const ;
+
+		virtual bool createCipherPath( const QString& ) const ;
+
+		virtual bool deleteFolder( const QString&,int = 1 ) const ;
 
 		virtual args command( const QByteArray& password,
 				      const engines::engine::cmdArgsList& args,

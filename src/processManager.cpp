@@ -19,8 +19,8 @@
 
 #include "processManager.h"
 
-static const char * _backEndTimedOut       = "SiriKali::Windows::BackendTimedOut" ;
-static const char * _backEndFailedToFinish = "SiriKali::Windows::BackendFailedToFinisht" ;
+static const char * _backEndTimedOut       = "BackendTimedOut" ;
+static const char * _backEndFailedToFinish = "BackendFailedToFinish" ;
 
 struct result
 {
@@ -150,6 +150,17 @@ struct terminate_result{
 	QStringList args ;
 } ;
 
+static terminate_result _failed_to_finish( QString exe,QStringList args )
+{
+	auto a = Task::process::result( _backEndFailedToFinish,
+					QByteArray(),
+					-1,
+					0,
+					true ) ;
+
+	return { std::move( a ),std::move( exe ),std::move( args ) } ;
+}
+
 static terminate_result _terminate_process( const terminate_process& e )
 {
 	if( e.unMountCommand.isEmpty() ){
@@ -163,6 +174,24 @@ static terminate_result _terminate_process( const terminate_process& e )
 	auto args = e.unMountCommand ;
 
 	QString exe = args.takeAt( 0 ) ;
+
+	if( exe == "SIGTERM" ){
+
+		e.exe.terminate() ;
+
+		if( utility::waitForFinished( e.exe ) ){
+
+			auto a = Task::process::result( QByteArray(),
+							QByteArray(),
+							0,
+							0,
+							true ) ;
+
+			return { std::move( a ),std::move( exe ),std::move( args ) } ;
+		}else{
+			return _failed_to_finish( std::move( exe ),std::move( args ) ) ;
+		}
+	}
 
 	for( auto& it : args ){
 
@@ -190,13 +219,7 @@ static terminate_result _terminate_process( const terminate_process& e )
 
 			return { std::move( m ),std::move( exe ),std::move( args ) } ;
 		}else{
-			auto a = Task::process::result( _backEndFailedToFinish,
-							QByteArray(),
-							-1,
-							0,
-							true ) ;
-
-			return { std::move( a ),std::move( exe ),std::move( args ) } ;
+			return _failed_to_finish( std::move( exe ),std::move( args ) ) ;
 		}
 	}else{
 		return { std::move( m ),std::move( exe ),std::move( args ) } ;
@@ -348,6 +371,18 @@ std::vector<QStringList> processManager::commands() const
 	}
 
 	return s ;
+}
+
+std::vector< engines::engine::Wrapper > processManager::enginesList() const
+{
+	std::vector< engines::engine::Wrapper > m ;
+
+	for( size_t i = 0 ; i < m_instances.size() ; i++ ){
+
+		m.emplace_back( m_instances[ i ].engine() ) ;
+	}
+
+	return m ;
 }
 
 QString processManager::volumeProperties( const QString& mm )

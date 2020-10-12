@@ -328,6 +328,7 @@ set( SRC 	src/dialogok.cpp
 		src/engines/cryfscreateoptions.cpp
 		src/engines/fscrypt.cpp
 		src/engines/fscryptcreateoptions.cpp
+		src/engines/cryptomator.cpp
 )
 
 if( APPLE )

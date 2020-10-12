@@ -318,12 +318,31 @@ void sirikali::closeApplication( int s,const QString& e )
 {
 	m_secrets.close() ;
 
-	if( utility::platformIsWindows() && m_ui && !m_emergencyShuttingDown ){
+	if( m_ui && !m_emergencyShuttingDown ){
 
-		if( m_ui->tableWidget->rowCount() > 0 ){
+		auto m = processManager::get().enginesList() ;
 
-			auto m = tr( "Close All Volumes Before Quitting The Application" ) ;
-			return DialogMsg( this ).ShowUIOK( tr( "WARNING" ),m ) ;
+		if( utility::platformIsWindows() ){
+
+			if( m.size() > 0 ){
+
+				auto m = tr( "Close All Volumes Before Quitting The Application" ) ;
+				return DialogMsg( this ).ShowUIOK( tr( "WARNING" ),m ) ;
+			}
+		}else{
+			if( m.size() > 0 ){
+
+				QString s = m[ 0 ]->name() ;
+
+				for( size_t i = 1 ; i < m.size() ; i++ ){
+
+					s += "," + m[ i ]->name() ;
+				}
+
+				auto m = tr( "Close The Following File System(s) Before Quitting The Application\n\"%1\"" ) ;
+
+				return DialogMsg( this ).ShowUIOK( tr( "WARNING" ),m.arg( s ) ) ;
+			}
 		}
 	}
 
@@ -1253,11 +1272,13 @@ void sirikali::genericVolumeProperties()
 {
 	this->disableAll() ;
 
-	if( utility::platformIsWindows() ){
+	auto table = m_ui->tableWidget ;
 
-		auto table = m_ui->tableWidget ;
+	auto row = table->currentRow() ;
 
-		auto row = table->currentRow() ;
+	const auto& engine = engines::instance().getByName( table->item( row,2 )->text() ) ;
+
+	if( utility::platformIsWindows() || !engine.backendRunsInBackGround() ){
 
 		auto m = processManager::get().volumeProperties( table->item( row,1 )->text() ) ;
 

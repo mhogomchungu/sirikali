@@ -94,7 +94,7 @@ static volumeInfo::List _qt_volumes()
 	return s ;
 }
 
-static volumeInfo::List _windows_volumes()
+static volumeInfo::List _processManager_volumes()
 {
 	volumeInfo::List s ;
 
@@ -137,11 +137,18 @@ static volumeInfo::List _unlocked_volumes()
 
 		if( utility::platformIsLinux() ){
 
-			return _linux_volumes() ;
+			auto s = _linux_volumes() ;
+
+			for( auto&& it : _processManager_volumes() ){
+
+				s.emplace_back( std::move( it ) ) ;
+			}
+
+			return s ;
 
 		}else if( utility::platformIsWindows() ){
 
-			return _windows_volumes() ;
+			return _processManager_volumes() ;
 		}else{
 			return _qt_volumes() ;
 		}
@@ -168,6 +175,11 @@ mountinfo::mountinfo( QObject * parent,
 	m_oldMountList( _unlocked_volumes() ),
 	m_dbusMonitor( [ this ]( const QString& e ){ this->autoMount( e ) ; },m_debug )
 {
+	processManager::get().updateVolumeList( [ this ](){
+
+		this->updateVolume() ;
+	} ) ;
+
 	if( utility::platformIsLinux() ){
 
 		this->linuxMonitor() ;
@@ -468,7 +480,6 @@ void mountinfo::qtMonitor()
 
 void mountinfo::windowsMonitor()
 {
-	processManager::get().updateVolumeList( [ this ]{ this->updateVolume() ; } ) ;
 }
 
 static QString _gvfs_fuse_path()

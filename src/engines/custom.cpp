@@ -399,27 +399,40 @@ engines::engine::args custom::set_command( const engines::engine& engine,
 {
 	engines::engine::commandOptions m( create,engine,args ) ;
 
-	if( create ){
+	auto s = [ & ](){
 
-		auto opts = args.createOptions + m.exeOptions().get() ;
+		if( create ){
 
-		auto s = _resolve( { engine,
-				     engine.createControlStructure(),
-				     args,
-				     password,
-				     opts,
-				     m.fuseOpts().get() } ) ;
+			auto opts = args.createOptions + m.exeOptions().get() ;
 
-		return { args,m,engine.executableFullPath(),s } ;
+			return _resolve( { engine,
+					   engine.createControlStructure(),
+					   args,
+					   password,
+					   opts,
+					   m.fuseOpts().get() } ) ;
+		}else{
+			return _resolve( { engine,
+					   engine.mountControlStructure(),
+					   args,
+					   password,
+					   m.exeOptions().get(),
+					   m.fuseOpts().get() } ) ;
+		}
+	}() ;
+
+	engine.updateOptions( s,args,create ) ;
+
+	const auto& exe = engine.executableFullPath() ;
+
+	if( exe.endsWith( ".jar" ) ){
+
+		s.insert( 0,exe ) ;
+		s.insert( 0,"-jar" ) ;
+
+		return { args,m,"java",s } ;
 	}else{
-		auto s = _resolve( { engine,
-				     engine.mountControlStructure(),
-				     args,
-				     password,
-				     m.exeOptions().get(),
-				     m.fuseOpts().get() } ) ;
-
-		return { args,m,engine.executableFullPath(),s } ;
+		return { args,m,exe,s } ;
 	}
 }
 

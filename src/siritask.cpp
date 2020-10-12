@@ -30,27 +30,6 @@
 #include <QDebug>
 #include <QFile>
 
-static bool _create_folder( const QString& m )
-{
-	if( utility::pathExists( m ) ){
-
-		return settings::instance().reUseMountPoint() ;
-	}else{
-		return utility::createFolder( m ) ;
-	}
-}
-
-template< typename ... T >
-static void _deleteFolders( const T& ... m )
-{
-	QDir e ;
-
-	for( const auto& it : { m ... } ){
-
-		utility::removeFolder( it,1 ) ;
-	}
-}
-
 bool siritask::deleteMountFolder( const QString& m )
 {
 	if( settings::instance().reUseMountPoint() ){
@@ -187,9 +166,17 @@ static engines::engine::cmdStatus _unmount( const engines::engine::unMount& e )
 		return { engines::engine::status::unknown,engine } ;
 	}
 
-	if( utility::platformIsWindows() ){
+	if( utility::platformIsWindows() || !engine.backendRunsInBackGround() ){
 
-		auto m = engine.windowsUnMountCommand() ;
+		auto m = [ & ](){
+
+			if( utility::platformIsWindows() ){
+
+				return engine.windowsUnMountCommand() ;
+			}else{
+				return engine.unMountCommand() ;
+			}
+		}() ;
 
 		auto s = processManager::get().remove( m,e.mountPoint ) ;
 
@@ -266,7 +253,7 @@ struct run_task{
 
 static utility::Task _run_task_0( const run_task& e )
 {
-	if( utility::platformIsWindows() ){
+	if( utility::platformIsWindows() || !e.engine.backendRunsInBackGround() ){
 
 		return processManager::get().run( { e.create,e.args,e.opts,e.engine,e.password } ) ;
 	}else{
@@ -385,7 +372,7 @@ static engines::engine::cmdStatus _mount( const siritask::mount& s )
 
 			if( engine.backendRequireMountPath() ){
 
-				if( !( _create_folder( opt.mountPoint ) || s.reUseMP ) ){
+				if( !( engine.createMountPath( opt.mountPoint ) || s.reUseMP ) ){
 
 					return { engines::engine::status::failedToCreateMountPoint,engine } ;
 				}
@@ -394,7 +381,7 @@ static engines::engine::cmdStatus _mount( const siritask::mount& s )
 
 				if( e != engines::engine::status::success ){
 
-					utility::removeFolder( opt.mountPoint,5 ) ;
+					engine.deleteFolder( opt.mountPoint,5 ) ;
 				}
 
 				return e ;
@@ -426,16 +413,16 @@ static engines::engine::cmdStatus _create( const siritask::create& s )
 		return { mm,engine } ;
 	}
 
-	if( !_create_folder( opt.cipherFolder ) ){
+	if( !engine.createCipherPath( opt.cipherFolder ) ){
 
 		return { engines::engine::status::failedToCreateMountPoint,engine } ;
 	}
 
 	if( engine.backendRequireMountPath() ){
 
-		if( !_create_folder( opt.mountPoint ) ){
+		if( !engine.createMountPath( opt.mountPoint ) ){
 
-			_deleteFolders( opt.cipherFolder ) ;
+			engine.deleteFolder( opt.cipherFolder ) ;
 
 			return { engines::engine::status::failedToCreateMountPoint,engine } ;
 		}
@@ -457,18 +444,20 @@ static engines::engine::cmdStatus _create( const siritask::create& s )
 
 				if( e.engine().backendRequireMountPath() ){
 
-					_deleteFolders( opt.mountPoint,opt.cipherFolder ) ;
+					engine.deleteFolder( opt.cipherFolder ) ;
+					engine.deleteFolder( opt.mountPoint ) ;
 				}else{
-					_deleteFolders( opt.cipherFolder ) ;
+					engine.deleteFolder( opt.cipherFolder ) ;
 				}
 			}
 		}
 	}else{
 		if( e.engine().backendRequireMountPath() ){
 
-			_deleteFolders( opt.mountPoint,opt.cipherFolder ) ;
+			engine.deleteFolder( opt.cipherFolder ) ;
+			engine.deleteFolder( opt.mountPoint ) ;
 		}else{
-			_deleteFolders( opt.cipherFolder ) ;
+			engine.deleteFolder( opt.cipherFolder ) ;
 		}
 	}
 

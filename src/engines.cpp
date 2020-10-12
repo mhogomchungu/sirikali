@@ -28,6 +28,7 @@
 #include "engines/securefs.h"
 #include "engines/fscrypt.h"
 #include "engines/custom.h"
+#include "engines/cryptomator.h"
 
 #include "utility.h"
 #include "settings.h"
@@ -538,6 +539,31 @@ bool engines::engine::requiresPolkit() const
 	return m_Options.requiresPolkit ;
 }
 
+static bool _create_folder( const QString& m )
+{
+	if( utility::pathExists( m ) ){
+
+		return settings::instance().reUseMountPoint() ;
+	}else{
+		return utility::createFolder( m ) ;
+	}
+}
+
+bool engines::engine::createMountPath( const QString& e ) const
+{
+	return _create_folder( e ) ;
+}
+
+bool engines::engine::createCipherPath( const QString& e ) const
+{
+	return _create_folder( e ) ;
+}
+
+bool engines::engine::deleteFolder( const QString& e,int count ) const
+{
+	return utility::removeFolder( e,count ) ;
+}
+
 void engines::engine::GUICreateOptions( const engines::engine::createGUIOptions& e ) const
 {
 	Q_UNUSED( e )
@@ -872,6 +898,15 @@ void engines::engine::updateOptions( engines::engine::cmdArgsList& e,bool s ) co
 	}
 }
 
+void engines::engine::updateOptions( QStringList& opts,
+				     const engines::engine::cmdArgsList& args,
+				     bool creating ) const
+{
+	Q_UNUSED( creating )
+	Q_UNUSED( opts )
+	Q_UNUSED( args )
+}
+
 void engines::engine::updateOptions( engines::engine::commandOptions& opts,
 				     const engines::engine::cmdArgsList& args,
 				     bool creating ) const
@@ -1006,6 +1041,7 @@ engines::engines()
 		m_backends.emplace_back( std::make_unique< ecryptfs >() ) ;
 		m_backends.emplace_back( std::make_unique< sshfs >() ) ;
 		m_backends.emplace_back( std::make_unique< fscrypt >() ) ;
+		m_backends.emplace_back( std::make_unique< cryptomator >() ) ;
 	}
 
 	custom::addEngines( m_backends ) ;
@@ -1267,6 +1303,10 @@ QString engines::engine::cmdStatus::toString() const
 
 		return QObject::tr( "Failed To Unlock An Encfs Volume.\nWrong Password Entered." ) ;
 
+	case engines::engine::status::cryptomatorBadPassword :
+
+		return QObject::tr( "Failed To Unlock A Cryptomator Volume.\nWrong Password Entered." ) ;
+
 	case engines::engine::status::gocryptfsBadPassword :
 
 		return QObject::tr( "Failed To Unlock A Gocryptfs Volume.\nWrong Password Entered." ) ;
@@ -1298,6 +1338,10 @@ QString engines::engine::cmdStatus::toString() const
 	case engines::engine::status::customCommandBadPassword :
 
 		return QObject::tr( "Failed To Unlock A Custom Volume.\nWrong Password Entered." ) ;
+
+	case engines::engine::status::cryptomatorNotFound :
+
+		return QObject::tr( "Failed To Complete The Request.\nCryptomator Executable Could Not Be Found." ) ;
 
 	case engines::engine::status::sshfsNotFound :
 

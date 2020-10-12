@@ -65,6 +65,7 @@ public:
 	Task::process::result add( const processManager::opts& ) ;
 	Task::process::result remove( const QStringList& unMountCommand,const QString& mountPoint ) ;
 	std::vector< QStringList > commands() const ;
+	std::vector< engines::engine::Wrapper > enginesList() const ;
 	QString volumeProperties( const QString& mountPath ) ;
 	void updateVolumeList( std::function< void() > ) ;
 	std::vector< processManager::mountOpts > mountOptions() ;

@@ -1182,6 +1182,8 @@ static bool _wait_for_finished( QProcess& e,int timeOut,Function wait )
 {
 	for( int i = 0 ; i < timeOut ; i++ ){
 
+		e.waitForFinished( 1000 ) ;
+
 		if( e.state() == QProcess::Running ){
 
 			utility::debug() << "Waiting For A Process To Finish" ;
