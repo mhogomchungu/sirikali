@@ -118,11 +118,6 @@ engines::engine::status cryptomator::errorCode( const QString& e,int s ) const
 	}
 }
 
-bool cryptomator::requiresAPassword( const engines::engine::cmdArgsList& opt ) const
-{
-	return engines::engine::requiresAPassword( opt ) ;
-}
-
 void cryptomator::GUIMountOptions( const engines::engine::mountGUIOptions& s ) const
 {
 	auto& e = options::instance( *this,s ) ;

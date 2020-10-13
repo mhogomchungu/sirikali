@@ -71,7 +71,7 @@ static result _read( QProcess& exe,Function function )
 
 				notRunningCounter++ ;
 			}else{
-				m = m + "\n-------------\n\nSiriKali::Error Backend Disappeared For Some Reason (It Probably Crashed)." ;
+				m = m + "\n-------------\n\nSiriKali::Error Backend Disappeared Unexpectedly." ;
 
 				r = engines::engine::error::Failed ;
 

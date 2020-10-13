@@ -29,8 +29,6 @@ struct cryptomator : public engines::engine
 				       const engines::engine::cmdArgsList& args,
 				       bool create ) const override ;
 
-	bool requiresAPassword( const engines::engine::cmdArgsList& ) const override ;
-
 	void GUIMountOptions( const engines::engine::mountGUIOptions& ) const override ;
 
 	void updateOptions( QStringList&,
