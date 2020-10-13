@@ -150,7 +150,14 @@ static volumeInfo::List _unlocked_volumes()
 
 			return _processManager_volumes() ;
 		}else{
-			return _qt_volumes() ;
+			auto s = _qt_volumes() ;
+
+			for( auto&& it : _processManager_volumes() ){
+
+				s.emplace_back( std::move( it ) ) ;
+			}
+
+			return s ;
 		}
 	}() ;
 
@@ -177,7 +184,10 @@ mountinfo::mountinfo( QObject * parent,
 {
 	processManager::get().updateVolumeList( [ this ](){
 
-		this->updateVolume() ;
+		if( utility::platformIsWindows() ){
+
+			this->updateVolume() ;
+		}
 	} ) ;
 
 	if( utility::platformIsLinux() ){

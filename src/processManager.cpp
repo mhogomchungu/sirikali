@@ -423,7 +423,11 @@ std::vector< processManager::mountOpts > processManager::mountOptions()
 
 		for( auto it = m_instances.begin() ; it != m_instances.end() ; it++ ){
 
-			if( ( *it ).notRunning() ){
+			auto& p = *it ;
+
+			p.exe().waitForFinished( 100 ) ;
+
+			if( p.notRunning() ){
 
 				m_instances.erase( it ) ;
 
