@@ -32,6 +32,7 @@
 #include "lxqt_internal_wallet.h"
 #include "../backend/lxqtwallet.h"
 #include "translations_path.h"
+#include "lxqt_kwallet-dbus.h"
 
 #include "storage_manager.h"
 
@@ -84,7 +85,11 @@ std::unique_ptr<LXQt::Wallet::Wallet> LXQt::Wallet::getWalletBackend(LXQt::Walle
 #if HAS_KWALLET_SUPPORT
 	return std::unique_ptr<LXQt::Wallet::Wallet>(new LXQt::Wallet::kwallet());
 #else
-        return nullptr;
+	if (LXQt::Wallet::kwallet_dbus::has_functionality()){
+	    return std::unique_ptr<LXQt::Wallet::Wallet>(new LXQt::Wallet::kwallet_dbus());
+	}else{
+	    return nullptr;
+	}
 #endif
     }
 
@@ -126,7 +131,15 @@ bool LXQt::Wallet::backEndIsSupported(LXQt::Wallet::BackEnd bk)
 
     if (bk == LXQt::Wallet::BackEnd::kwallet)
     {
-        return HAS_KWALLET_SUPPORT;
+	if (HAS_KWALLET_SUPPORT){
+	    return true;
+	}else{
+#ifdef Q_OS_LINUX
+	    return LXQt::Wallet::kwallet_dbus::has_functionality();
+#else
+	    return false;
+#endif
+	}
     }
 
     if (bk == LXQt::Wallet::BackEnd::libsecret)

@@ -41,6 +41,7 @@ if(QT5)
 
 	set(CMAKE_INCLUDE_CURRENT_DIR ON)
 	include_directories(${Qt5Widgets_INCLUDE_DIRS})
+	include_directories(${Qt5DBus_INCLUDE_DIRS})
 
 	add_definitions(${Qt5Widgets_DEFINITIONS})
 
@@ -174,7 +175,7 @@ if(KWALLET_SUPPORT)
 	message(STATUS "-----------------------------------------------------------------------")
 else()
 	message(STATUS "\n--------------------------------------------------------------------------")
-	message(STATUS "kwallet support NOT found,will not build kwallet functionality")
+	message(STATUS "kwallet support NOT found, support will be discovered at runtime through dbus")
 	message(STATUS "-----------------------------------------------------------------------")
 endif()
 
@@ -190,10 +191,10 @@ endif()
 
 set(UI_FILES 	changepassworddialog.ui password_dialog.ui)
 
-set(MOC_FILES 	changepassworddialog.h password_dialog.h task.h)
+set(MOC_FILES 	changepassworddialog.h password_dialog.h task.h lxqt_kwallet-dbus.h)
 set(MOC_FILES_1 changepassworddialog.h password_dialog.h lxqt_kwallet.h task.h)
 set(MOC_FILES_2 changepassworddialog.h password_dialog.h lxqt_kwallet.h task.h)
-set(MOC_FILES_3 changepassworddialog.h password_dialog.h task.h)
+set(MOC_FILES_3 changepassworddialog.h password_dialog.h task.h lxqt_kwallet-dbus.h)
 
 if( WIN32 )
 	set(SRC 	lxqt_windows_dpapi.cpp lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_wallet.cpp)
@@ -201,10 +202,10 @@ if( WIN32 )
 	set(SRC_2 	lxqt_windows_dpapi.cpp lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_wallet.cpp lxqt_kwallet.cpp lxqt_libsecret.cpp)
 	set(SRC_3 	lxqt_windows_dpapi.cpp lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_wallet.cpp lxqt_libsecret.cpp)
 else()
-	set(SRC 	lxqt_windows_dpapi.cpp lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp)
-	set(SRC_1 	lxqt_windows_dpapi.cpp lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp lxqt_kwallet.cpp)
+        set(SRC 	lxqt_windows_dpapi.cpp lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp lxqt_kwallet-dbus.cpp )
+	set(SRC_1 	lxqt_windows_dpapi.cpp lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp lxqt_kwallet.cpp )
 	set(SRC_2 	lxqt_windows_dpapi.cpp lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp lxqt_kwallet.cpp lxqt_libsecret.cpp)
-	set(SRC_3 	lxqt_windows_dpapi.cpp lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp lxqt_libsecret.cpp)
+	set(SRC_3 	lxqt_windows_dpapi.cpp lxqt_osx_keychain.cpp changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp lxqt_libsecret.cpp lxqt_kwallet-dbus.cpp )
 
 endif()
 
