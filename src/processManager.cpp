@@ -294,7 +294,7 @@ Task::process::result processManager::add( const processManager::opts& opts )
 				exe->closeReadChannel( QProcess::StandardError ) ;
 				exe->closeReadChannel( QProcess::StandardOutput ) ;
 
-				m_instances.emplace_back( opts,std::move( exe ) ) ;
+				this->addEntry( opts,std::move( exe ) ) ;
 
 				m_updateVolumeList() ;
 
@@ -325,42 +325,41 @@ Task::process::result processManager::add( const processManager::opts& opts )
 Task::process::result processManager::remove( const QStringList& unMountCommand,
 					      const QString& mountPoint)
 {
-	for( auto it = m_instances.begin() ; it != m_instances.end() ; it++ ){
+	Task::process::result r ;
 
-		const auto& s = *it ;
+	this->ProcessEntriesAndRemove( [ & ]( const processManager::Process& s )->result{
 
 		if( s.mountPoint() == mountPoint ){
 
 			auto m = _terminate_process( { s.exe(),s.env(),s.mountPoint(),unMountCommand } ) ;
 
-			auto r = [ & ](){
+			if( m.result.success() ) {
 
-				if( m.result.success() ) {
+				m_updateVolumeList() ;
 
-					m_instances.erase( it ) ;
+				r = Task::process::result( 0 ) ;
 
-					m_updateVolumeList() ;
+				return { true,true } ;
+			}else{
+				r = Task::process::result( "","Failed To Terminate A Process",1,0,true ) ;
 
-					return Task::process::result( 0 ) ;
-				}else{
-					return Task::process::result( "","Failed To Terminate A Process",1,0,true ) ;
-				}
-			}() ;
-
-			return r ;
+				return { true,false } ;
+			}
+		}else{
+			return { false,false } ;
 		}
-	}
+	} ) ;
 
-	return Task::process::result() ;
+	return r ;
 }
 
 std::vector<QStringList> processManager::commands() const
 {
 	std::vector< QStringList > s ;
 
-	for( const auto& it : m_instances ){
+	this->ProcessEntries( [ & ]( const processManager::Process& p ){
 
-		auto e = it.arguments() ;
+		auto e = p.exe().arguments() ;
 
 		for( auto& m : e ){
 
@@ -368,7 +367,9 @@ std::vector<QStringList> processManager::commands() const
 		}
 
 		s.emplace_back( std::move( e ) ) ;
-	}
+
+		return false ;
+	} ) ;
 
 	return s ;
 }
@@ -377,23 +378,25 @@ std::vector< engines::engine::Wrapper > processManager::enginesList() const
 {
 	std::vector< engines::engine::Wrapper > m ;
 
-	for( size_t i = 0 ; i < m_instances.size() ; i++ ){
+	this->ProcessEntries( [ & ]( const processManager::Process& p ){
 
-		m.emplace_back( m_instances[ i ].engine() ) ;
-	}
+		m.emplace_back( p.engine() ) ;
+
+		return false ;
+	} ) ;
 
 	return m ;
 }
 
-QString processManager::volumeProperties( const QString& mm )
+QString processManager::volumeProperties( const QString& mm ) const
 {
-	for( size_t i = 0 ; i < m_instances.size() ; i++ ){
+	QString m ;
 
-		const auto& e = m_instances[ i ] ;
+	this->ProcessEntries( [ & ]( const processManager::Process& e ){
 
 		if( mm == e.mountPoint() ){
 
-			auto m = QObject::tr( "Mount Options:\n\n" ) ;
+			m = QObject::tr( "Mount Options:\n\n" ) ;
 
 			for( const auto& it : e.arguments() ){
 
@@ -403,11 +406,13 @@ QString processManager::volumeProperties( const QString& mm )
 				}
 			}
 
-			return m ;
+			return true ;
+		}else{
+			return false ;
 		}
-	}
+	} ) ;
 
-	return QString() ;
+	return m ;
 }
 
 void processManager::updateVolumeList( std::function< void() > function )
@@ -415,55 +420,65 @@ void processManager::updateVolumeList( std::function< void() > function )
 	m_updateVolumeList = std::move( function ) ;
 }
 
-std::vector< processManager::mountOpts > processManager::mountOptions()
+std::vector< processManager::mountOpts > processManager::mountOptions() const
 {
 	std::vector< processManager::mountOpts > mOpts ;
 
-	auto _remove_inactive = [ & ]{
+	this->ProcessEntries( [ & ]( const processManager::Process& p ){
 
-		for( auto it = m_instances.begin() ; it != m_instances.end() ; it++ ){
-
-			auto& p = *it ;
-
-			p.exe().waitForFinished( 100 ) ;
-
-			if( p.notRunning() ){
-
-				m_instances.erase( it ) ;
-
-				return true ;
-			}
-		}
-
-		return false ;
-	} ;
-
-	while( _remove_inactive() ){}
-
-	for( const auto& it : m_instances ){
-
-		const auto& m = it.args() ;
+		const auto& m = p.args() ;
 
 		auto a = _make_path( m.cipherPath,encode::True ) ;
 		auto b = _make_path( m.mountPath,encode::True ) ;
 
 		mOpts.emplace_back( m.mode,m.subtype,a,b,m.fuseOptions ) ;
-	}
+
+		return false ;
+	} ) ;
 
 	return mOpts ;
 }
 
-bool processManager::mountPointTaken( const QString& ee )
+bool processManager::mountPointTaken( const QString& ee ) const
 {
+	bool m = false ;
+
 	auto e = "\"" + QDir::toNativeSeparators( ee ) + "\"" ;
 
-	for( const auto& it : m_instances ){
+	this->ProcessEntries( [ & ]( const processManager::Process& p ){
 
-		if( QDir::toNativeSeparators( it.mountPoint() ) == e ){
+		if( QDir::toNativeSeparators( p.mountPoint() ) == e ){
 
+			m = true ;
 			return true ;
+		}else{
+			return false ;
 		}
-	}
+	} ) ;
 
-	return false ;
+	return m ;
+}
+
+void processManager::removeInActive()
+{
+	auto _remove_inactive = [ & ]{
+
+		bool entryRemoved = false ;
+
+		this->ProcessEntriesAndRemove( [ & ]( const processManager::Process& p )->result{
+
+			if( p.notRunning() ){
+
+				entryRemoved = true ;
+
+				return { true,true } ;
+			}else{
+				return { false,false } ;
+			}
+		} ) ;
+
+		return entryRemoved ;
+	} ;
+
+	while( _remove_inactive() ){}
 }

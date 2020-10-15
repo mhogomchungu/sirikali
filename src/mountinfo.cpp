@@ -98,7 +98,11 @@ static volumeInfo::List _processManager_volumes()
 {
 	volumeInfo::List s ;
 
-	for( const auto& e : processManager::get().mountOptions() ){
+	auto& m = processManager::get() ;
+
+	m.removeInActive() ;
+
+	for( const auto& e : m.mountOptions() ){
 
 		auto fs = "fuse." + e.subtype ;
 
@@ -184,10 +188,7 @@ mountinfo::mountinfo( QObject * parent,
 {
 	processManager::get().updateVolumeList( [ this ](){
 
-		if( utility::platformIsWindows() ){
-
-			this->updateVolume() ;
-		}
+		this->updateVolume() ;
 	} ) ;
 
 	if( utility::platformIsLinux() ){
