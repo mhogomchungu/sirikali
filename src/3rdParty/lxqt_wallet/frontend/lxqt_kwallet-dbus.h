@@ -101,7 +101,7 @@ private slots:
 private:
     void openedWallet(bool);
 
-    int m_handle;
+    int m_handle = -1;
     QString m_walletName;
     QString m_applicationName;
     QString m_password;
