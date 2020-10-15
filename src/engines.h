@@ -574,7 +574,8 @@ public:
 		bool customBackend() const ;
 		bool autorefreshOnMountUnMount() const ;
 		bool backendRequireMountPath() const ;
-		bool backendRunsInBackGround() const ;
+		bool runsInBackGround() const ;
+		bool runsInForeGround() const ;
 		bool acceptsSubType() const ;
 		bool acceptsVolName() const ;
 		bool likeSsh() const ;

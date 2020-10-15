@@ -499,9 +499,14 @@ bool engines::engine::backendRequireMountPath() const
 	return m_Options.backendRequireMountPath ;
 }
 
-bool engines::engine::backendRunsInBackGround() const
+bool engines::engine::runsInBackGround() const
 {
 	return m_Options.backendRunsInBackGround ;
+}
+
+bool engines::engine::runsInForeGround() const
+{
+	return !this->runsInBackGround() ;
 }
 
 bool engines::engine::acceptsSubType() const

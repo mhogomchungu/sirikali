@@ -166,7 +166,7 @@ static engines::engine::cmdStatus _unmount( const engines::engine::unMount& e )
 		return { engines::engine::status::unknown,engine } ;
 	}
 
-	if( utility::platformIsWindows() || !engine.backendRunsInBackGround() ){
+	if( utility::platformIsWindows() || engine.runsInForeGround() ){
 
 		auto m = [ & ](){
 
@@ -253,7 +253,7 @@ struct run_task{
 
 static utility::Task _run_task_0( const run_task& e )
 {
-	if( utility::platformIsWindows() || !e.engine.backendRunsInBackGround() ){
+	if( utility::platformIsWindows() || e.engine.runsInForeGround() ){
 
 		return processManager::get().run( { e.create,e.args,e.opts,e.engine,e.password } ) ;
 	}else{
@@ -266,7 +266,7 @@ static utility::Task _run_task_0( const run_task& e )
 				      e.password,
 				      [](){},
 				      e.engine.requiresPolkit(),
-				      e.engine.backendRunsInBackGround() ) ;
+				      e.engine.runsInBackGround() ) ;
 	}
 }
 

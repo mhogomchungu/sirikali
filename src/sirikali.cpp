@@ -932,7 +932,16 @@ int sirikali::unlockVolume( const QStringList& l,secrets& secrets )
 									   empty,
 									   mmm ) ;
 
-			auto e = siritask::encryptedFolderMount( { volume,m,key,mm } ) ;
+			engines::engine::cmdArgsList ss{ volume,m,key,mm } ;
+
+			siritask::mount sss{ ss,false,{ ss.cipherFolder,ss.configFilePath } } ;
+
+			if( utility::platformIsWindows() || sss.engine->runsInForeGround() ){
+
+				return _print_err( 1,"This Action Is Not Supported On Windows Or With Backends That Do Not Run In Background" ) ;
+			}
+
+			auto e = siritask::encryptedFolderMount( sss ) ;
 
 			if( e == engines::engine::status::success ){
 
@@ -1278,7 +1287,7 @@ void sirikali::genericVolumeProperties()
 
 	const auto& engine = engines::instance().getByName( table->item( row,2 )->text() ) ;
 
-	if( utility::platformIsWindows() || !engine.backendRunsInBackGround() ){
+	if( utility::platformIsWindows() || engine.runsInForeGround() ){
 
 		auto m = processManager::get().volumeProperties( table->item( row,1 )->text() ) ;
 
