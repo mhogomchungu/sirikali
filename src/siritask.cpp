@@ -336,6 +336,55 @@ static engines::engine::cmdStatus _cmd( const cmd_args& e )
 	}
 }
 
+struct result_create_mp{
+
+	engines::engine::status status ;
+	bool deleteMp ;
+} ;
+
+static result_create_mp _create_mount_point( const engines::engine& engine,
+					     const engines::engine::cmdArgsList& opt,
+					     bool reUseMP )
+{
+	QString m = "1. Mounting at: " + opt.mountPoint ;
+
+	utility2::raii raii( [ & ](){
+
+		utility::debug() << m ;
+	} ) ;
+
+	if( utility::pathExists( opt.mountPoint ) ){
+
+		if( reUseMP ){
+
+			m += "\n2. Mount point path exists, using it" ;
+
+		}else if( settings::instance().reUseMountPoint() ){
+
+			m += "\n2. Mount point path exists, re using it" ;
+		}else{
+			m += "\n2. Error: Mount point path already exists" ;
+
+			return { engines::engine::status::failedToCreateMountPoint,false } ;
+		}
+
+		return { engines::engine::status::success,false } ;
+	}else{
+		m += "\n2. Mount point path does not exist, creating it" ;
+
+		if( engine.createMountPath( opt.mountPoint ) ){
+
+			m += "\n3. Mount point path created successfully" ;
+
+			return { engines::engine::status::success,true } ;
+		}else{
+			m += "\n3. Error: Failed to create mount point" ;
+
+			return { engines::engine::status::failedToCreateMountPoint,true } ;
+		}
+	}
+}
+
 static engines::engine::cmdStatus _mount( const siritask::mount& s )
 {
 	const auto& Engine = s.engine ;
@@ -372,14 +421,16 @@ static engines::engine::cmdStatus _mount( const siritask::mount& s )
 
 			if( engine.backendRequireMountPath() ){
 
-				if( !( engine.createMountPath( opt.mountPoint ) || s.reUseMP ) ){
+				auto m = _create_mount_point( engine,opt,s.reUseMP ) ;
 
-					return { engines::engine::status::failedToCreateMountPoint,engine } ;
+				if( m.status != engines::engine::status::success ){
+
+					return { m.status,engine } ;
 				}
 
 				auto e = _cmd( { engine,false,opt,opt.key } ) ;
 
-				if( e != engines::engine::status::success ){
+				if( e != engines::engine::status::success && m.deleteMp ){
 
 					engine.deleteFolder( opt.mountPoint,5 ) ;
 				}
