@@ -82,6 +82,7 @@ std::unique_ptr<LXQt::Wallet::Wallet> LXQt::Wallet::getWalletBackend(LXQt::Walle
 
     if (bk == LXQt::Wallet::BackEnd::kwallet)
     {
+#ifdef Q_OS_LINUX
 #if HAS_KWALLET_SUPPORT
 	return std::unique_ptr<LXQt::Wallet::Wallet>(new LXQt::Wallet::kwallet());
 #else
@@ -90,6 +91,9 @@ std::unique_ptr<LXQt::Wallet::Wallet> LXQt::Wallet::getWalletBackend(LXQt::Walle
 	}else{
 	    return nullptr;
 	}
+#endif
+#else
+    return nullptr;
 #endif
     }
 
