@@ -144,10 +144,11 @@ namespace utility2
 
 namespace utility2
 {
+	template< typename Function >
 	class raii
 	{
 	public:
-		raii( std::function< void() > s ) : m_function( std::move( s ) )
+		raii( Function s ) : m_function( std::move( s ) )
 		{
 		}
 		~raii()
@@ -163,8 +164,14 @@ namespace utility2
 		}
 	private:
 		bool m_run = true ;
-		std::function< void() > m_function ;
+		Function m_function ;
 	};
+
+	template< typename Function >
+	static utility2::raii< Function > make_raii( Function function )
+	{
+		return raii< Function >( std::move( function ) ) ;
+	}
 
 	template< typename T >
 	class result

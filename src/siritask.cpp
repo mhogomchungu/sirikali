@@ -348,10 +348,7 @@ static result_create_mp _create_mount_point( const engines::engine& engine,
 {
 	QString m = "1. Mounting at: " + opt.mountPoint ;
 
-	utility2::raii raii( [ & ](){
-
-		utility::debug() << m ;
-	} ) ;
+	auto raii = utility2::make_raii( [ & ](){ utility::debug() << m ; } ) ;
 
 	if( utility::pathExists( opt.mountPoint ) ){
 
