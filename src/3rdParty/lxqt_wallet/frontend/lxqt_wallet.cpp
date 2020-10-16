@@ -65,18 +65,18 @@ std::unique_ptr<LXQt::Wallet::Wallet> LXQt::Wallet::getWalletBackend(LXQt::Walle
     if( bk == LXQt::Wallet::BackEnd::windows_dpapi )
     {
 #ifdef Q_OS_WIN
-	return std::unique_ptr<LXQt::Wallet::Wallet>(new LXQt::Wallet::windows_dpapi());
+        return std::unique_ptr<LXQt::Wallet::Wallet>(new LXQt::Wallet::windows_dpapi());
 #else
-	return nullptr;
+        return nullptr;
 #endif
     }
 
     if (bk == LXQt::Wallet::BackEnd::internal)
     {
 #ifdef Q_OS_WIN
-	return nullptr;
+        return nullptr;
 #else
-	return std::unique_ptr<LXQt::Wallet::Wallet>(new LXQt::Wallet::internalWallet());
+        return std::unique_ptr<LXQt::Wallet::Wallet>(new LXQt::Wallet::internalWallet());
 #endif
     }
 
@@ -84,13 +84,13 @@ std::unique_ptr<LXQt::Wallet::Wallet> LXQt::Wallet::getWalletBackend(LXQt::Walle
     {
 #ifdef Q_OS_LINUX
 #if HAS_KWALLET_SUPPORT
-	return std::unique_ptr<LXQt::Wallet::Wallet>(new LXQt::Wallet::kwallet());
+        return std::unique_ptr<LXQt::Wallet::Wallet>(new LXQt::Wallet::kwallet());
 #else
-	if (LXQt::Wallet::kwallet_dbus::has_functionality()){
-	    return std::unique_ptr<LXQt::Wallet::Wallet>(new LXQt::Wallet::kwallet_dbus());
-	}else{
-	    return nullptr;
-	}
+        if (LXQt::Wallet::kwallet_dbus::has_functionality()){
+            return std::unique_ptr<LXQt::Wallet::Wallet>(new LXQt::Wallet::kwallet_dbus());
+        }else{
+            return nullptr;
+        }
 #endif
 #else
     return nullptr;
@@ -100,7 +100,7 @@ std::unique_ptr<LXQt::Wallet::Wallet> LXQt::Wallet::getWalletBackend(LXQt::Walle
     if (bk == LXQt::Wallet::BackEnd::libsecret)
     {
 #if HAS_SECRET_SUPPORT
-	return std::unique_ptr<LXQt::Wallet::Wallet>(new LXQt::Wallet::libsecret());
+        return std::unique_ptr<LXQt::Wallet::Wallet>(new LXQt::Wallet::libsecret());
 #else
         return nullptr;
 #endif
@@ -108,7 +108,7 @@ std::unique_ptr<LXQt::Wallet::Wallet> LXQt::Wallet::getWalletBackend(LXQt::Walle
     if (bk == LXQt::Wallet::BackEnd::osxkeychain)
     {
 #if OSX_KEYCHAIN
-	return std::unique_ptr<LXQt::Wallet::Wallet>(new LXQt::Wallet::osxKeyChain());
+        return std::unique_ptr<LXQt::Wallet::Wallet>(new LXQt::Wallet::osxKeyChain());
 #endif
     }
     return nullptr;
@@ -118,30 +118,30 @@ bool LXQt::Wallet::backEndIsSupported(LXQt::Wallet::BackEnd bk)
 {
     if( bk == LXQt::Wallet::BackEnd::windows_dpapi ){
 #ifdef Q_OS_WIN
-	return true;
+        return true;
 #else
-	return false;
+        return false;
 #endif
     }
 
     if (bk == LXQt::Wallet::BackEnd::internal)
     {
 #ifdef Q_OS_WIN
-	return false;
+        return false;
 #else
-	return true;
+        return true;
 #endif
     }
 
     if (bk == LXQt::Wallet::BackEnd::kwallet)
     {
-	if (HAS_KWALLET_SUPPORT){
-	    return true;
-	}else{
+        if (HAS_KWALLET_SUPPORT){
+            return true;
+        }else{
 #ifdef Q_OS_LINUX
-	    return LXQt::Wallet::kwallet_dbus::has_functionality();
+            return LXQt::Wallet::kwallet_dbus::has_functionality();
 #else
-	    return false;
+            return false;
 #endif
 	}
     }
@@ -241,7 +241,7 @@ QStringList LXQt::Wallet::walletList(LXQt::Wallet::BackEnd bk)
 {
     if (bk == LXQt::Wallet::BackEnd::internal)
     {
-	char path[4096];
+        char path[4096];
 
         lxqt_wallet_application_wallet_path(path, 4096, "");
 
@@ -283,8 +283,8 @@ QStringList LXQt::Wallet::translations()
 
     for (auto& it : l)
     {
-	it.remove("lxqt-wallet_");
-	it.remove(".qm");
+        it.remove("lxqt-wallet_");
+        it.remove(".qm");
     }
 
     return l;
@@ -296,11 +296,11 @@ void LXQt::Wallet::setTranslationLanguage(const QString &language)
 
     if (QFile::exists(TRANSLATIONS_PATH + l))
     {
-	QCoreApplication::installTranslator([&]()
-	{
-	    auto e = new QTranslator();
-	    e->load(l, TRANSLATIONS_PATH);
-	    return e;
-	}());
+        QCoreApplication::installTranslator([&]()
+        {
+            auto e = new QTranslator();
+            e->load(l, TRANSLATIONS_PATH);
+            return e;
+        }());
     }
 }
