@@ -82,7 +82,7 @@ void cryptomator::updateOptions( QStringList& opts,
 {
 	Q_UNUSED( creating )
 
-	auto vaultName = crypto::getRandomData( 8 ).toHex() ;
+	auto vaultName = crypto::sha256( e.mountPoint ).mid( 0,16 ) ;
 
 	for( int i = 0 ; i < opts.size() ; i++ ){
 

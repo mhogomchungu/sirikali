@@ -94,9 +94,15 @@ static volumeInfo::List _qt_volumes()
 	return s ;
 }
 
-static volumeInfo::List _processManager_volumes()
+struct volumes{
+
+	const engines::engine& engine ;
+	volumeInfo::FsEntry fsEntry ;
+} ;
+
+static std::vector< volumes > _processManager_volumes()
 {
-	volumeInfo::List s ;
+	std::vector< volumes > s ;
 
 	auto& m = processManager::get() ;
 
@@ -108,7 +114,9 @@ static volumeInfo::List _processManager_volumes()
 
 		auto m = e.subtype + "@" + e.cipherFolder ;
 
-		s.emplace_back( std::move( m ),e.mountPointPath,std::move( fs ),e.mode ) ;
+		volumes a{ e.engine,{ std::move( m ),e.mountPointPath,std::move( fs ),e.mode } } ;
+
+		s.emplace_back( std::move( a ) ) ;
 	}
 
 	return s ;
@@ -141,27 +149,20 @@ static volumeInfo::List _unlocked_volumes()
 
 		if( utility::platformIsLinux() ){
 
-			auto s = _linux_volumes() ;
-
-			for( auto&& it : _processManager_volumes() ){
-
-				s.emplace_back( std::move( it ) ) ;
-			}
-
-			return s ;
+			return _linux_volumes() ;
 
 		}else if( utility::platformIsWindows() ){
 
-			return _processManager_volumes() ;
-		}else{
-			auto s = _qt_volumes() ;
+			volumeInfo::List s ;
 
 			for( auto&& it : _processManager_volumes() ){
 
-				s.emplace_back( std::move( it ) ) ;
+				s.emplace_back( std::move( it.fsEntry ) ) ;
 			}
 
 			return s ;
+		}else{
+			return _qt_volumes() ;
 		}
 	}() ;
 
@@ -284,7 +285,22 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 
 			if( engine.known() ){
 
-				e.emplace_back( _decode( engine,std::move( it ) ) ) ;
+				if( utility::platformIsWindows() ){
+
+					e.emplace_back( _decode( engine,std::move( it ) ) ) ;
+
+				}else if( engine.runsInBackGround() ){
+
+					e.emplace_back( _decode( engine,std::move( it ) ) ) ;
+				}
+			}
+		}
+
+		if( utility::platformIsNOTWindows() ){
+
+			for( auto&& it : _processManager_volumes() ){
+
+				e.emplace_back( _decode( it.engine,std::move( it.fsEntry ) ) ) ;
 			}
 		}
 

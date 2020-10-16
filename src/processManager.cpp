@@ -431,7 +431,7 @@ std::vector< processManager::mountOpts > processManager::mountOptions() const
 		auto a = _make_path( m.cipherPath,encode::True ) ;
 		auto b = _make_path( m.mountPath,encode::True ) ;
 
-		mOpts.emplace_back( m.mode,m.subtype,a,b,m.fuseOptions ) ;
+		mOpts.emplace_back( m.mode,m.subtype,a,b,m.fuseOptions,p.engine() ) ;
 
 		return false ;
 	} ) ;

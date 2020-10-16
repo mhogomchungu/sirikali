@@ -33,8 +33,8 @@ public:
 	struct mountOpts
 	{
 	        mountOpts( const QString& a,const QString& b,const QString& c,
-		       const QString& d,const QStringList& e ) :
-		mode( a ),subtype( b ),cipherFolder( c ),mountPointPath( d ),fuseOptions( e )
+		       const QString& d,const QStringList& e,const engines::engine& ee ) :
+		mode( a ),subtype( b ),cipherFolder( c ),mountPointPath( d ),fuseOptions( e ),engine( ee )
 		{
 		}
 		QString mode ;
@@ -42,6 +42,7 @@ public:
 		QString cipherFolder ;
 		QString mountPointPath ;
 		QStringList fuseOptions ;
+		const engines::engine& engine ;
 	} ;
 
 	struct opts{
