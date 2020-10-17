@@ -168,7 +168,7 @@ static engines::engine::cmdStatus _unmount( const engines::engine::unMount& e )
 
 	if( utility::platformIsWindows() || engine.runsInForeGround() ){
 
-		auto m = [ & ](){
+		const auto& m = [ & ](){
 
 			if( utility::platformIsWindows() ){
 
@@ -349,6 +349,8 @@ static result_create_mp _create_mount_point( const engines::engine& engine,
 	QString m = "1. Mounting at: " + opt.mountPoint ;
 
 	auto raii = utility2::make_raii( [ & ](){ utility::debug() << m ; } ) ;
+
+	Q_UNUSED( raii )
 
 	if( utility::pathExists( opt.mountPoint ) ){
 
