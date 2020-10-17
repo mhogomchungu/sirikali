@@ -544,24 +544,14 @@ bool engines::engine::requiresPolkit() const
 	return m_Options.requiresPolkit ;
 }
 
-static bool _create_folder( const QString& m )
-{
-	if( utility::pathExists( m ) ){
-
-		return settings::instance().reUseMountPoint() ;
-	}else{
-		return utility::createFolder( m ) ;
-	}
-}
-
 bool engines::engine::createMountPath( const QString& e ) const
 {
-	return _create_folder( e ) ;
+	return utility::createFolder( e ) ;
 }
 
 bool engines::engine::createCipherPath( const QString& e ) const
 {
-	return _create_folder( e ) ;
+	return utility::createFolder( e ) ;
 }
 
 bool engines::engine::deleteFolder( const QString& e,int count ) const

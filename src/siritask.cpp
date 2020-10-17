@@ -346,7 +346,7 @@ static result_create_mp _create_mount_point( const engines::engine& engine,
 					     const engines::engine::cmdArgsList& opt,
 					     bool reUseMP )
 {
-	QString m = "1. Mounting at: " + opt.mountPoint ;
+	QString m = "1. Creating mount point at: " + opt.mountPoint ;
 
 	auto raii = utility2::make_raii( [ & ](){ utility::debug() << m ; } ) ;
 
@@ -356,13 +356,13 @@ static result_create_mp _create_mount_point( const engines::engine& engine,
 
 		if( reUseMP ){
 
-			m += "\n2. Mount point path exists, using it" ;
+			m += "\n2. Mount point exists, using it" ;
 
 		}else if( settings::instance().reUseMountPoint() ){
 
-			m += "\n2. Mount point path exists, re using it" ;
+			m += "\n2. Mount point exists, re using it" ;
 		}else{
-			m += "\n2. Error: Mount point path already exists" ;
+			m += "\n2. Error: Mount point already exists" ;
 
 			return { engines::engine::status::failedToCreateMountPoint,false } ;
 		}
@@ -373,7 +373,7 @@ static result_create_mp _create_mount_point( const engines::engine& engine,
 
 		if( engine.createMountPath( opt.mountPoint ) ){
 
-			m += "\n3. Mount point path created successfully" ;
+			m += "\n3. Mount point created successfully" ;
 
 			return { engines::engine::status::success,true } ;
 		}else{
@@ -470,7 +470,9 @@ static engines::engine::cmdStatus _create( const siritask::create& s )
 
 	if( engine.backendRequireMountPath() ){
 
-		if( !engine.createMountPath( opt.mountPoint ) ){
+		auto m = _create_mount_point( engine,opt,false ) ;
+
+		if( m.status != engines::engine::status::success ){
 
 			engine.deleteFolder( opt.cipherFolder ) ;
 
