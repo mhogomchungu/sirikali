@@ -56,7 +56,7 @@ password was entered.
 
 11. Successfully Mounted Text.
 This option informs SiriKali of what string to look for to know a file system was
-successfully started in Windows.
+successfully started in Windows or it other platforms if it runs in the foreground..
 
 12. Require A Password.
 Some backends requires a password and some don't and set this option for backends that do.

@@ -31,7 +31,7 @@
         "reverseString": "",
         "runsInBackGround": true,
         "setsCipherPath": true,
-        "sshOptions": "",
+        "defaultFavoritesMountOptions": "",
         "sirikaliMinimumVersion":"",
         "takesTooLongToUnlock": false,
         "unMountCommand": [],

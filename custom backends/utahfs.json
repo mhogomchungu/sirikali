@@ -31,7 +31,7 @@
         "reverseString": "",
         "runsInBackGround": false,
         "setsCipherPath": false,
-        "sshOptions": "",
+        "defaultFavoritesMountOptions": "",
         "sirikaliMinimumVersion":"",
         "takesTooLongToUnlock": false,
         "unMountCommand": [ "fusermount","-u","%{mountPoint}"],

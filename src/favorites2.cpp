@@ -1512,7 +1512,7 @@ void favorites2::setUiLikeSsh( const QString& cipherPath,const engines::engine& 
 
 	if( s.isEmpty() ){
 
-		m_ui->lineEditMountOptions->setText( engine.sshOptions() ) ;
+		m_ui->lineEditMountOptions->setText( engine.defaultFavoritesMountOptions() ) ;
 	}
 
 	if( utility::platformIsWindows() ){
@@ -1563,6 +1563,13 @@ void favorites2::setDefaultUI( const engines::engine& engine )
 	m_ui->labelPortyNumber->clear() ;
 
 	if( engine.known() ){
+
+		auto s = m_ui->lineEditMountOptions->toPlainText() ;
+
+		if( s.isEmpty() ){
+
+			m_ui->lineEditMountOptions->setText( engine.defaultFavoritesMountOptions() ) ;
+		}
 
 		if( engine.usesOnlyMountPoint() ){
 

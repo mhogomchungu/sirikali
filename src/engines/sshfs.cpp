@@ -71,11 +71,11 @@ static engines::engine::BaseOptions _setOptions()
 		s.autoDeletesMountPoint = true ;
 
 		s.versionMinimum = "3.5.2" ;
-		s.sshOptions = "create_file_umask=0000,create_dir_umask=0000,umask=0000,idmap=user,StrictHostKeyChecking=no" ;
+		s.defaultFavoritesMountOptions = "create_file_umask=0000,create_dir_umask=0000,umask=0000,idmap=user,StrictHostKeyChecking=no" ;
 	}else{
 		s.autoCreatesMountPoint = false ;
 		s.autoDeletesMountPoint = false ;
-		s.sshOptions = "idmap=user,StrictHostKeyChecking=no" ;
+		s.defaultFavoritesMountOptions = "idmap=user,StrictHostKeyChecking=no" ;
 	}
 
 	return s ;

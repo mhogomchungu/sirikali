@@ -369,7 +369,7 @@ static result_create_mp _create_mount_point( const engines::engine& engine,
 
 		return { engines::engine::status::success,false } ;
 	}else{
-		m += "\n2. Mount point path does not exist, creating it" ;
+		m += "\n2. Mount point does not exist, creating it" ;
 
 		if( engine.createMountPath( opt.mountPoint ) ){
 

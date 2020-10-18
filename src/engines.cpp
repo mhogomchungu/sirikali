@@ -724,9 +724,9 @@ const QString& engines::engine::uiName() const
 	}
 }
 
-const QString& engines::engine::sshOptions() const
+const QString& engines::engine::defaultFavoritesMountOptions() const
 {
-	return m_Options.sshOptions ;
+	return m_Options.defaultFavoritesMountOptions ;
 }
 
 const QString& engines::engine::minimumVersion() const

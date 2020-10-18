@@ -51,7 +51,7 @@ static void _parse( engines::engine::BaseOptions& s,const SirikaliJson& json )
 
 	s.passwordFormat                  = json.getByteArray( "passwordFormat","%{password}" ) ;
 
-	s.sshOptions                      = json.getString( "sshOptions" ) ;
+	s.defaultFavoritesMountOptions    = json.getString( "defaultFavoritesMountOptions" ) ;
 	s.mountControlStructure           = json.getString( "mountControlStructure","%{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ) ;
 	s.createControlStructure          = json.getString( "createControlStructure" ) ;
 	s.reverseString                   = json.getString( "reverseString" ) ;
