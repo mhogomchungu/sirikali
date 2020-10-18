@@ -12,7 +12,8 @@
         "createControlStructure": "",
         "displayName":"",
         "executableName": "google-drive-ocamlfuse",
-        "failedToMountTextList": [],
+        "stringsToCheckForFailedMount": [],
+        "stringsToCheckForSuccessfulMount": [],
         "fileExtensions": [],
         "fuseNames": [
                 "fuse.google-drive-ocamlfuse"
@@ -42,7 +43,6 @@
         "windowsExecutableFolderPath": "",
         "windowsInstallPathRegistryKey": "",
         "windowsInstallPathRegistryValue": "",
-        "windowsSuccessfullyMountedList": [],
         "windowsSupportsMountPointPaths": false,
         "windowsUnMountCommand": [],
         "wrongPasswordErrorCode": "",

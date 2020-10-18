@@ -70,8 +70,8 @@ static void _parse( engines::engine::BaseOptions& s,const SirikaliJson& json )
 
 	s.windowsUnMountCommand           = json.getStringList( "windowsUnMountCommand" ) ;
 	s.unMountCommand                  = json.getStringList( "unMountCommand" ) ;
-	s.failedToMountList               = json.getStringList( "failedToMountTextList" ) ;
-	s.successfulMountedList           = json.getStringList( "windowsSuccessfullyMountedList" ) ;
+	s.failedToMountList               = json.getStringList( "stringsToCheckForFailedMount" ) ;
+	s.successfulMountedList           = json.getStringList( "stringsToCheckForSuccessfulMount" ) ;
 	s.configFileNames                 = json.getStringList( "configFileNames" ) ;
 	s.names                           = json.getStringList( "names" ) ;
 	s.fuseNames                       = json.getStringList( "fuseNames" ) ;

@@ -14,7 +14,8 @@
         "createControlStructure": "",
         "displayName":"",
         "executableName": "utahfs-client",
-        "failedToMountTextList": [],
+        "stringsToCheckForFailedMount": [],
+        "stringsToCheckForSuccessfulMount": ["filesystem successfully mounted"],
         "fileExtensions": [],
         "fuseNames": [
                 "fuse.utahfs"
@@ -44,7 +45,6 @@
         "windowsExecutableFolderPath": "",
         "windowsInstallPathRegistryKey": "",
         "windowsInstallPathRegistryValue": "",
-        "windowsSuccessfullyMountedList": ["filesystem successfully mounted"],
         "windowsSupportsMountPointPaths": false,
         "windowsUnMountCommand": [],
         "wrongPasswordErrorCode": "",

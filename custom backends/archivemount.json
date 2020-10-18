@@ -12,7 +12,6 @@
         "createControlStructure": "",
         "displayName":"",
         "executableName": "archivemount",
-        "failedToMountTextList": [],
         "fileExtensions": [
                 ".tar.xz",".tar.gz"
         ],
@@ -32,6 +31,8 @@
         "reverseString": "",
         "runsInBackGround": true,
         "setsCipherPath": true,
+        "stringsToCheckForFailedMount": [],
+        "stringsToCheckForSuccessfulMount": [],
         "defaultFavoritesMountOptions": "",
         "sirikaliMinimumVersion":"",
         "takesTooLongToUnlock": false,
@@ -45,7 +46,6 @@
         "windowsExecutableFolderPath": "",
         "windowsInstallPathRegistryKey": "",
         "windowsInstallPathRegistryValue": "",
-        "windowsSuccessfullyMountedList": [],
         "windowsSupportsMountPointPaths": false,
         "windowsUnMountCommand": [],
         "wrongPasswordErrorCode": "",

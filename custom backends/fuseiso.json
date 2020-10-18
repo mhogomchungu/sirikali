@@ -12,7 +12,8 @@
         "createControlStructure": "",
         "displayName":"",
         "executableName": "fuseiso",
-        "failedToMountTextList": [],
+        "stringsToCheckForFailedMount": [],
+        "stringsToCheckForSuccessfulMount": [],
         "fileExtensions": [
                  ".iso"," .nrg"," .bin"," .mdf",".img"
         ],
@@ -44,7 +45,6 @@
         "windowsExecutableFolderPath": "",
         "windowsInstallPathRegistryKey": "",
         "windowsInstallPathRegistryValue": "",
-        "windowsSuccessfullyMountedList": [],
         "windowsSupportsMountPointPaths": false,
         "windowsUnMountCommand": [],
         "wrongPasswordErrorCode": "",
