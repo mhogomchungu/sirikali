@@ -1242,20 +1242,19 @@ keyDialog::volumeList sirikali::autoUnlockVolumes( favorites::volumeList ss,
 		if( it.volEntry.password().isEmpty() ){
 
 			e.emplace_back( std::move( it ) ) ;
+
+		}else if( it.engine->takesTooLongToUnlock() ){
+
+			QString a = "Information: Unconditionally showing mount dialog window" ;
+			QString b = "\nbecause the backend takes too long to unlock" ;
+
+			utility::debug() << a + b ;
+
+			it.volEntry.setAutoMount( true ) ;
+
+			e.emplace_back( std::move( it ) ) ;
 		}else{
-			if( !s && it.volEntry.favorite().autoMount.False() && it.engine->takesTooLongToUnlock() ){
-
-				QString a = "Information: Unconditionally showing mount dialog window" ;
-				QString b = "\nbecause the backend takes too long to unlock" ;
-
-				utility::debug() << a + b ;
-
-				it.volEntry.setAutoMount( true ) ;
-
-				e.emplace_back( std::move( it ) ) ;
-			}else{
-				this->autoMount( e,std::move( it ),s,autoOpenFolderOnMount ) ;
-			}
+			this->autoMount( e,std::move( it ),s,autoOpenFolderOnMount ) ;
 		}
 	}
 
