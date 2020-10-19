@@ -160,21 +160,23 @@ public:
 		template< typename E >
 		volEntry( E&& e,bool manage ) :
 			m_favorite( this->entry( std::forward< E >( e ),manage ) ),
-			m_password( m_favorite.password )
+			m_password( m_favorite->password )
 		{
 		}
 		volEntry( const favorites::entry& e ) :
-			m_favorite( e ),m_password( e.password )
+			m_favorite( std::addressof( e ) ),
+			m_password( e.password )
 		{
 		}
 		template< typename P >
 		volEntry( const favorites::entry& e,P&& s ) :
-			m_favorite( e ),m_password( std::forward< P >( s ) )
+			m_favorite( std::addressof( e ) ),
+			m_password( std::forward< P >( s ) )
 		{
 		}
 		const favorites::entry& favorite() const
 		{
-			return m_favorite ;
+			return *m_favorite ;
 		}
 		const QByteArray& password() const
 		{
@@ -185,17 +187,35 @@ public:
 		{
 			m_password = std::forward< T >( e ) ;
 		}
+		void setAutoMount( bool s )
+		{
+			auto m = m_tmpFavorite.get() ;
+
+			if( m ){
+
+				utility::debug() << "Changing a setting of a temporary favorite" ;
+
+				m->autoMount = s ;
+			}else{
+				utility::debug() << "Creating a temporary favorite to change its setting" ;
+
+				auto a = *m_favorite ;
+				a.autoMount = s ;
+
+				m_favorite = this->entry( std::move( a ),true ) ;
+			}
+		}
 	private:
 		template< typename E >
-		const favorites::entry& entry( E&& e,bool manage )
+		const favorites::entry * entry( E&& e,bool manage )
 		{
 			Q_UNUSED( manage )
-			utility::debug() << "favorites managing temporary entry: " + e.volumePath ;
+			utility::debug() << "Favorites managing temporary entry: " + e.volumePath ;
 			m_tmpFavorite = std::make_unique< favorites::entry >( std::forward< E >( e ) ) ;
-			return *m_tmpFavorite ;
+			return m_tmpFavorite.get() ;
 		}
 		std::unique_ptr< favorites::entry > m_tmpFavorite ;
-		const favorites::entry& m_favorite ;
+		const favorites::entry * m_favorite ;
 		QByteArray m_password ;
 	};
 

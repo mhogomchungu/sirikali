@@ -42,6 +42,7 @@
 #include "settings.h"
 #include "systemsignalhandler.h"
 #include "keydialog.h"
+#include "tablewidget.h"
 
 #include <vector>
 
@@ -167,7 +168,22 @@ private:
 		const QString& volumeType ;
 	};
 
-	void processMountedVolumes( std::function< void( const sirikali::mountedEntry& ) > function ) ;
+	template< typename Function >
+	void processMountedVolumes( QTableWidget * table,Function function )
+	{
+		const auto cipherFolders = tablewidget::columnEntries( table,0 ) ;
+		const auto mountPoints   = tablewidget::columnEntries( table,1 ) ;
+		const auto fileSystems   = tablewidget::columnEntries( table,2 ) ;
+
+		for( auto r = cipherFolders.size() - 1 ; r >= 0 ; r-- ){
+
+			const auto& a = cipherFolders.at( r ) ;
+			const auto& b = mountPoints.at( r ) ;
+			const auto& c = fileSystems.at( r ) ;
+
+			function( { a,b,c } ) ;
+		}
+	}
 
 	engines::engine::cmdStatus unMountVolume( const sirikali::mountedEntry& ) ;
 

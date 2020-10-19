@@ -1243,7 +1243,19 @@ keyDialog::volumeList sirikali::autoUnlockVolumes( favorites::volumeList ss,
 
 			e.emplace_back( std::move( it ) ) ;
 		}else{
-			this->autoMount( e,std::move( it ),s,autoOpenFolderOnMount ) ;
+			if( !s && it.volEntry.favorite().autoMount.False() && it.engine->takesTooLongToUnlock() ){
+
+				QString a = "Information: Unconditionally showing mount dialog window" ;
+				QString b = "\nbecause the backend takes too long to unlock" ;
+
+				utility::debug() << a + b ;
+
+				it.volEntry.setAutoMount( true ) ;
+
+				e.emplace_back( std::move( it ) ) ;
+			}else{
+				this->autoMount( e,std::move( it ),s,autoOpenFolderOnMount ) ;
+			}
 		}
 	}
 
@@ -1930,7 +1942,7 @@ void sirikali::updateFavoritesInContextMenu()
 
 void sirikali::runIntervalCustomCommand( const QString& cmd )
 {
-	this->processMountedVolumes( [ = ]( const sirikali::mountedEntry& s ){
+	this->processMountedVolumes( m_ui->tableWidget,[ & ]( const sirikali::mountedEntry& s ){
 
 		QStringList args{ s.cipherPath,s.mountPoint,s.volumeType } ;
 
@@ -2072,24 +2084,6 @@ void sirikali::pbUmount()
 	}
 }
 
-void sirikali::processMountedVolumes( std::function< void( const sirikali::mountedEntry& ) > function )
-{
-	auto table = m_ui->tableWidget ;
-
-	const auto cipherFolders = tablewidget::columnEntries( table,0 ) ;
-	const auto mountPoints   = tablewidget::columnEntries( table,1 ) ;
-	const auto fileSystems   = tablewidget::columnEntries( table,2 ) ;
-
-	for( auto r = cipherFolders.size() - 1 ; r >= 0 ; r-- ){
-
-		const auto& a = cipherFolders.at( r ) ;
-		const auto& b = mountPoints.at( r ) ;
-		const auto& c = fileSystems.at( r ) ;
-
-		function( { a,b,c } ) ;
-	}
-}
-
 void sirikali::emergencyShutDown()
 {
 	m_emergencyShuttingDown = true ;
@@ -2098,7 +2092,7 @@ void sirikali::emergencyShutDown()
 
 	m_mountInfo.announceEvents( false ) ;
 
-	this->processMountedVolumes( [ this ]( const sirikali::mountedEntry& e ){
+	this->processMountedVolumes( m_ui->tableWidget,[ this ]( const sirikali::mountedEntry& e ){
 
 		this->unMountVolume( e ) ;
 	} ) ;
@@ -2114,7 +2108,7 @@ void sirikali::unMountAll()
 
 	utility::waitForOneSecond() ;
 
-	this->processMountedVolumes( [ this ]( const mountedEntry& e ){
+	this->processMountedVolumes( m_ui->tableWidget,[ this ]( const mountedEntry& e ){
 
 		if( this->unMountVolume( e ).success() ){
 
