@@ -822,6 +822,8 @@ void sirikali::startGUI( const QString& volume )
 
 	if( settings::instance().autoMountFavoritesOnStartUp() ){
 
+		m_disableEnableAll = true ;
+
 		this->autoUnlockVolumes( m ) ;
 	}
 
@@ -1050,6 +1052,9 @@ void sirikali::mountMultipleVolumes( keyDialog::volumeList e )
 				     std::move( e ),
 				     std::move( done ),
 				     [ this ](){ this->updateList() ; } ) ;
+	}else{
+		m_disableEnableAll = false ;
+		this->enableAll() ;
 	}
 }
 
