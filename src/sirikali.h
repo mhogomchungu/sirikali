@@ -124,6 +124,9 @@ private slots:
 	void updateCheck( void ) ;
 	void autoMountFavoritesOnAvailable( QString ) ;
 private:
+	void mountAll() ;
+	void mountFavorite( const QString& ) ;
+
 	configOptions::functions configOption() ;
 
 	void showTrayIcon() ;
