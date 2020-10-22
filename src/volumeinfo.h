@@ -22,6 +22,8 @@
 #include <QString>
 #include <QStringList>
 
+#include <vector>
+
 class volumeInfo{
 public:
 	using List = std::vector< volumeInfo > ;
