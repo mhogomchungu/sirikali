@@ -33,6 +33,7 @@
 
 #include "volumeinfo.h"
 #include "compatibility.hpp"
+#include "engines.h"
 
 #ifdef Q_OS_LINUX
 
@@ -341,7 +342,27 @@ class mountinfo : private QObject
 {
 	Q_OBJECT
 public:
-	static Task::future< std::vector< volumeInfo > >& unlockedVolumes() ;
+	struct volumeEntry{
+
+		const engines::engine& engine ;
+		volumeInfo vInfo ;
+	} ;
+
+	using List = std::vector< volumeEntry > ;
+
+	static volumeInfo::List toVolumeInfoList( mountinfo::List m )
+	{
+		volumeInfo::List s ;
+
+		for( auto&& it : m ){
+
+			s.emplace_back( std::move( it.vInfo ) ) ;
+		}
+
+		return s ;
+	}
+
+	static Task::future< mountinfo::List >& unlockedVolumes() ;
 
 	mountinfo( QObject * parent,
 		   bool,

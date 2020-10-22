@@ -70,39 +70,6 @@
 #include "favorites2.h"
 #include "favorites.h"
 
-static keyDialog::volumeList _convert_lists( favorites::volumeList s,
-					     bool earlyBoot,
-					     bool skipUnknown )
-{
-	keyDialog::volumeList m ;
-
-	for( auto&& it : s ){
-
-		const auto& f = it.favorite() ;
-
-		engines::engineWithPaths e( f.volumePath,f.configFilePath ) ;
-
-		if( e->known() ){
-
-			m.emplace_back( std::move( it ),std::move( e ) ) ;
-
-		}else if( skipUnknown ){
-
-			utility::debug() << "Not Adding Not Available Volume: " + f.volumePath ;
-
-		}else if( !earlyBoot ){
-
-			utility::debug() << "Unknown Volume Type Detected: " + f.volumePath ;
-
-			m.emplace_back( std::move( it ),std::move( e ) ) ;
-		}else{
-			utility::debug() << "Skipping Not Available Volume: " + f.volumePath ;
-		}
-	}
-
-	return m ;
-}
-
 static std::function< void( const QString& ) > _debug()
 {
 	return []( const QString& e ){ utility::debug() << e ; } ;
@@ -168,9 +135,11 @@ static int _run( const QString& mm,const QStringList& args,secrets& ss )
 
 		for( const auto& it : mountinfo::unlockedVolumes().await() ){
 
-			const auto& a = it.volumePath() ;
-			const auto& b = it.mountPoint() ;
-			const auto& c = it.fileSystem() ;
+			const auto& m = it.vInfo ;
+
+			const auto& a = m.cipherPath() ;
+			const auto& b = m.mountPoint();
+			const auto& c = m.fileSystem() ;
 
 			if( a == volume || b == volume ){
 
@@ -192,7 +161,7 @@ static int _run( const QString& mm,const QStringList& args,secrets& ss )
 
 		for( const auto& it : mountinfo::unlockedVolumes().await() ){
 
-			it.printVolumeInfo() ;
+			std::cout << it.vInfo.toString().toStdString() << std::endl ;
 		}
 
 		return 0 ;
@@ -743,7 +712,7 @@ void sirikali::mountAll()
 		} ) ;
 	}
 
-	this->mountMultipleVolumes( _convert_lists( std::move( v ),false,false ) ) ;
+	this->mountMultipleVolumes( keyDialog::fromFavoritesList( std::move( v ),false,false ) ) ;
 }
 
 void sirikali::mountFavorite( const QString& e )
@@ -1102,28 +1071,37 @@ void sirikali::autoMountFavoritesOnAvailable( QString m )
 	}
 }
 
-void sirikali::autoUnlockVolumes( const std::vector< volumeInfo >& s )
+void sirikali::autoUnlockVolumes( const mountinfo::List& s )
 {
 	favorites::volumeList e ;
 
-	auto _mounted = [ & ]( const QString& e ){
+	auto _not_mounted = [ & ]( const favorites::entry& e ){
 
 		for( const auto& it : s ){
 
-			if( it.volumePath() == e ){
+			const auto& m = it.vInfo ;
 
-				return true ;
+			if( it.engine.setsCipherPath() ){
+
+				if( m.cipherPath() == e.volumePath ){
+
+					return false ;
+				}
+
+			}else if( m.mountPoint() == e.mountPointPath ){
+
+				return false ;
 			}
 		}
 
-		return false ;
+		return true ;
 	} ;
 
 	for( auto&& it : favorites::instance().readVolumeList() ){
 
 		const auto& m = it.favorite() ;
 
-		if( m.autoMount && !_mounted( m.volumePath ) ){
+		if( m.autoMount && _not_mounted( m ) ){
 
 			e.emplace_back( std::move( it ) ) ;
 		}
@@ -1231,7 +1209,7 @@ keyDialog::volumeList sirikali::autoUnlockVolumes( favorites::volumeList ss,
 {
 	const auto& mm = utility::miscOptions::instance() ;
 
-	auto l = _convert_lists( std::move( ss ),mm.starting(),skipUnknown ) ;
+	auto l = keyDialog::fromFavoritesList( std::move( ss ),mm.starting(),skipUnknown ) ;
 
 	if( l.empty() ){
 
@@ -1240,25 +1218,31 @@ keyDialog::volumeList sirikali::autoUnlockVolumes( favorites::volumeList ss,
 
 	auto ee = settings::instance().autoMountBackEnd() ;
 
-	if( ee.isInvalid() ){
+	auto m = [ & ](){
 
-		utility::debug() << "Warning, Wallet Not Set" ;
-		return this->autoMount( std::move( l ),autoOpenFolderOnMount ) ;
-	}
+		if( ee.isInvalid() ){
 
-	auto m = m_secrets.walletBk( ee.bk() ) ;
+			utility::debug() << "Warning, Wallet Not Set" ;
 
-	if( !m ){
+			return secrets::wallet() ;
+		}else{
+			auto m = m_secrets.walletBk( ee.bk() ) ;
 
-		utility::debug() << "Warning, Failed To Set Selected Wallet" ;
-		return this->autoMount( std::move( l ),autoOpenFolderOnMount ) ;
-	}
+			if( !m ){
 
-	if( !m.open() ){
+				utility::debug() << "Warning, Failed To Set Selected Wallet" ;
+				return secrets::wallet() ;
+			}
 
-		utility::debug() << "Warning, Failed To Open Selected Wallet" ;
-		return this->autoMount( std::move( l ),autoOpenFolderOnMount ) ;
-	}
+			if( m.open() ){
+
+				return m ;
+			}else{
+				utility::debug() << "Warning, Failed To Open Selected Wallet" ;
+				return secrets::wallet() ;
+			}
+		}
+	}() ;
 
 	keyDialog::volumeList e ;
 
@@ -1278,7 +1262,10 @@ keyDialog::volumeList sirikali::autoUnlockVolumes( favorites::volumeList ss,
 
 	for( auto&& it : l ){
 
-		it.volEntry.setPassword( _get_key( it,m ) ) ;
+		if( m && it.volEntry.password().isEmpty() ){
+
+			it.volEntry.setPassword( _get_key( it,m ) ) ;
+		}
 
 		if( it.volEntry.password().isEmpty() ){
 
@@ -1373,11 +1360,11 @@ void sirikali::genericVolumeProperties()
 
 	for( const auto& it : mountinfo::unlockedVolumes().await() ){
 
-		if( it.mountPoint() == s ){
+		if( it.vInfo.mountPoint() == s ){
 
 			DialogMsg( this ).ShowUIInfo( tr( "INFORMATION" ),true,[ & ](){
 
-				auto s = it.mountOptions() ;
+				auto s = it.vInfo.mountOptions() ;
 
 				s.replace( ",","\n\n" ) ;
 				s.replace( "ro\n\n","mode=read only\n\n" ) ;
@@ -2040,7 +2027,7 @@ void sirikali::addEntryToTable( const QStringList& l )
 
 void sirikali::addEntryToTable( const volumeInfo& e )
 {
-	this->addEntryToTable( e.mountInfo().minimalList() ) ;
+	this->addEntryToTable( e.toStringList() ) ;
 }
 
 void sirikali::removeEntryFromTable( QString volume )
@@ -2058,20 +2045,20 @@ void sirikali::removeEntryFromTable( QString volume )
 	}
 }
 
-void sirikali::updateList( const volumeInfo& entry )
+void sirikali::updateList( const volumeInfo& e )
 {
-	if( entry.isValid() ){
+	if( e.isValid() ){
 
 		auto table = m_ui->tableWidget ;
 
-		auto row = tablewidget::columnHasEntry( table,entry.mountPoint(),1 ) ;
+		auto row = tablewidget::columnHasEntry( table,e.mountPoint(),1 ) ;
 
 		if( row == -1 ){
 
 			row = tablewidget::addRow( table ) ;
 		}
 
-		tablewidget::updateRow( table,entry.mountInfo().minimalList(),row,this->font() ) ;
+		tablewidget::updateRow( table,e.toStringList(),row,this->font() ) ;
 
 		tablewidget::selectRow( table,row ) ;
 	}
@@ -2212,13 +2199,13 @@ void sirikali::pbUpdate()
 	this->updateList() ;
 }
 
-void sirikali::updateVolumeList( const std::vector< volumeInfo >& r )
+void sirikali::updateVolumeList( const mountinfo::List& r )
 {
 	tablewidget::clearTable( m_ui->tableWidget ) ;
 
 	for( const auto& it : r ){
 
-		this->updateList( it ) ;
+		this->updateList( it.vInfo ) ;
 	}
 
 	this->enableAll() ;

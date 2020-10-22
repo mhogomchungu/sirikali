@@ -177,6 +177,39 @@ public:
 
 	using volumeList = std::vector< entry > ;
 
+	static volumeList fromFavoritesList( favorites::volumeList s,
+					     bool earlyBoot,
+					     bool skipUnknown )
+	{
+		keyDialog::volumeList m ;
+
+		for( auto&& it : s ){
+
+			const auto& f = it.favorite() ;
+
+			engines::engineWithPaths e( f.volumePath,f.configFilePath ) ;
+
+			if( e->known() ){
+
+				m.emplace_back( std::move( it ),std::move( e ) ) ;
+
+			}else if( skipUnknown ){
+
+				utility::debug() << "Not Adding Not Available Volume: " + f.volumePath ;
+
+			}else if( !earlyBoot ){
+
+				utility::debug() << "Unknown Volume Type Detected: " + f.volumePath ;
+
+				m.emplace_back( std::move( it ),std::move( e ) ) ;
+			}else{
+				utility::debug() << "Skipping Not Available Volume: " + f.volumePath ;
+			}
+		}
+
+		return m ;
+	}
+
 	static QString keyFileError() ;
 
 	static QString mountPointPath( const engines::engine& engine,

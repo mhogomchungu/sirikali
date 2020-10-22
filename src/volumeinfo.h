@@ -22,162 +22,64 @@
 #include <QString>
 #include <QStringList>
 
-#include "utility2.h"
-#include "utility.h"
-#include "favorites.h"
-
-#include <vector>
-
-class volumeInfo
-{
+class volumeInfo{
 public:
-	struct FsEntry{
+	using List = std::vector< volumeInfo > ;
 
-		FsEntry( QString c,QString m,QString f,QString mm,QString mo = QString() ) :
-			cipherPath( std::move( c ) ),
-			mountPoint( std::move( m ) ),
-			fileSystem( std::move( f ) ),
-			mode( std::move( mm ) ),
-			mountOptions( std::move( mo ) )
-		{
-		}
-		QString cipherPath ;
-		QString mountPoint ;
-		QString fileSystem ;
-		QString mode ;
-		QString mountOptions ;
-	} ;
-
-	using List = std::vector< volumeInfo::FsEntry > ;
-
-	struct mountinfo
-	{
-		mountinfo()
-		{
-		}
-		mountinfo( volumeInfo::FsEntry e ) :
-			volumePath( std::move( e.cipherPath ) ),
-			mountPoint( std::move( e.mountPoint ) ),
-			fileSystem( std::move( e.fileSystem ) ),
-			mode( std::move( e.mode ) ),
-			mountOptions( std::move( e.mountOptions ) )
-		{
-		}
-		mountinfo( const QStringList& e )
-		{
-			utility2::stringListToStrings( e,
-						      volumePath,
-						      mountPoint,
-						      fileSystem,
-						      mode,
-						      idleTimeout,
-						      mountOptions,
-						      keyFile ) ;
-		}
-		QStringList minimalList() const
-		{
-			return { volumePath,
-				 mountPoint,
-				 fileSystem,
-				 mode } ;
-		}
-		QStringList fullList() const
-		{
-			return { volumePath,
-				 mountPoint,
-				 fileSystem,
-				 mode,
-				 idleTimeout,
-				 mountOptions,
-				 configPath,
-				 keyFile } ;
-		}
-		QString volumePath ;
-		QString mountPoint ;
-		QString fileSystem ;
-		QString mode ;
-		QString idleTimeout ;
-		QString mountOptions ;
-		QString configPath ;
-		QString keyFile ;
-	};
 	volumeInfo()
 	{
 	}
-	volumeInfo( const QStringList& e ) : m_mountinfo( e )
+	volumeInfo( QString c,QString m,QString f,QString mm,QString mo = QString() ) :
+		m_cipherPath( std::move( c ) ),
+		m_mountPoint( std::move( m ) ),
+		m_fileSystem( std::move( f ) ),
+		m_mode( std::move( mm ) ),
+		m_mountOptions( std::move( mo ) )
 	{
 	}
-	volumeInfo( const volumeInfo::mountinfo& e ) : m_mountinfo( e )
+	QStringList toStringList() const
 	{
+		return { m_cipherPath,
+			 m_mountPoint,
+			 m_fileSystem,
+			 m_mode } ;
 	}
-	volumeInfo( const favorites::entry& e )
+	QString toString() const
 	{
-		m_mountinfo.volumePath   = e.volumePath ;
-		m_mountinfo.mountPoint   = e.mountPointPath ;
-		m_reverseMode            = e.reverseMode ;
-		m_readOnlyMode           = e.readOnlyMode ;
-		m_volumeNeedNoPassword   = e.volumeNeedNoPassword ;
-		m_autoMount              = e.autoMount ;
-		m_mountinfo.configPath   = e.configFilePath ;
-		m_mountinfo.keyFile      = e.keyFile ;
-		m_mountinfo.idleTimeout  = e.idleTimeOut ;
-		m_mountinfo.mountOptions = e.mountOptions ;
+		QString a = "\"%1\" \"%2\" \"%3\" \"%4\"" ;
+		return a.arg( m_cipherPath,m_mountPoint,m_fileSystem,m_mode ) ;
 	}
-	const favorites::triState& mountReadOnly() const
+	const QString& cipherPath() const
 	{
-		return m_readOnlyMode ;
-	}
-	const favorites::triState& autoMount() const
-	{
-		return m_autoMount ;
-	}
-	bool reverseMode() const
-	{
-		return m_reverseMode ;
-	}
-	bool volumeNeedNoPassword() const
-	{
-		return m_volumeNeedNoPassword ;
-	}
-	const QString& volumePath() const
-	{
-		return m_mountinfo.volumePath ;
+		return m_cipherPath ;
 	}
 	const QString& mountPoint() const
 	{
-		return m_mountinfo.mountPoint ;
+		return m_mountPoint ;
 	}
 	const QString& fileSystem() const
 	{
-		return m_mountinfo.fileSystem ;
+		return m_fileSystem ;
 	}
-	const QString& configFilePath() const
+	QString& cipherPath()
 	{
-		return m_mountinfo.configPath ;
+		return m_cipherPath ;
 	}
-	const QString& keyFile() const
+	QString& mountPoint()
 	{
-		return m_mountinfo.keyFile ;
+		return m_mountPoint ;
 	}
-	const QString& idleTimeOut() const
+	QString& fileSystem()
 	{
-		return m_mountinfo.idleTimeout ;
+		return m_fileSystem ;
+	}
+	const QString& mode() const
+	{
+		return m_mode ;
 	}
 	const QString& mountOptions() const
 	{
-		return m_mountinfo.mountOptions ;
-	}
-	const volumeInfo::mountinfo& mountInfo() const
-	{
-		return m_mountinfo ;
-	}
-	void printVolumeInfo() const
-	{
-		std::cout << "\"" +
-			     m_mountinfo.volumePath.toStdString() +
-			     "\" \"" + m_mountinfo.mountPoint.toStdString() +
-			     "\" \"" + m_mountinfo.fileSystem.toStdString() +
-			     "\"" << std::endl ;
+		return m_mountOptions ;
 	}
 	bool isValid() const
 	{
@@ -185,14 +87,14 @@ public:
 	}
 	bool isNotValid() const
 	{
-		return this->volumePath().isEmpty() ;
+		return m_cipherPath.isEmpty() ;
 	}
 private:
-	volumeInfo::mountinfo m_mountinfo ;
-	bool m_reverseMode = false ;
-	bool m_volumeNeedNoPassword = false ;
-	favorites::triState m_readOnlyMode ;
-	favorites::triState m_autoMount ;
-};
+	QString m_cipherPath ;
+	QString m_mountPoint ;
+	QString m_fileSystem ;
+	QString m_mode ;
+	QString m_mountOptions ;
+} ;
 
 #endif // VOLUMEENTRYPROPERTIES_H

@@ -1489,19 +1489,6 @@ engines::engine::createGUIOptions::createOptions::createOptions() : success( fal
 {
 }
 
-engines::engine::mountGUIOptions::mountOptions::mountOptions( const volumeInfo& e ) :
-	idleTimeOut( e.idleTimeOut() ),
-	configFile( e.configFilePath() ),
-	keyFile( e.keyFile() )
-{
-	opts.unlockInReverseMode = e.reverseMode() ;
-
-	if( !e.mountOptions().isEmpty() ){
-
-		mountOpts = utility::split( e.mountOptions(),',' ) ;
-	}
-}
-
 engines::engine::mountGUIOptions::mountOptions::mountOptions( const favorites::entry& e ) :
 	idleTimeOut( e.idleTimeOut ),
 	configFile( e.configFilePath ),

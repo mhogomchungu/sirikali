@@ -403,7 +403,6 @@ public:
 		struct mountGUIOptions{
 
 			struct mountOptions{
-				mountOptions( const volumeInfo& ) ;
 
 				mountOptions( const favorites::entry& ) ;
 

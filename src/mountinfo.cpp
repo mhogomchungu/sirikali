@@ -23,7 +23,6 @@
 #include "task.hpp"
 #include "win.h"
 #include "settings.h"
-#include "engines.h"
 #include "crypto.h"
 #include "processManager.h"
 
@@ -94,15 +93,9 @@ static volumeInfo::List _qt_volumes()
 	return s ;
 }
 
-struct volumes{
-
-	const engines::engine& engine ;
-	volumeInfo::FsEntry fsEntry ;
-} ;
-
-static std::vector< volumes > _processManager_volumes()
+static mountinfo::List _processManager_volumes()
 {
-	std::vector< volumes > s ;
+	mountinfo::List s ;
 
 	auto& m = processManager::get() ;
 
@@ -112,11 +105,11 @@ static std::vector< volumes > _processManager_volumes()
 
 		auto fs = "fuse." + e.subtype ;
 
-		auto m = e.subtype + "@" + e.cipherFolder ;
+		auto mm = e.subtype + "@" + e.cipherFolder ;
 
-		volumes a{ e.engine,{ std::move( m ),e.mountPointPath,std::move( fs ),e.mode } } ;
+		volumeInfo aa{ std::move( mm ),e.mountPointPath,std::move( fs ),e.mode } ;
 
-		s.emplace_back( std::move( a ) ) ;
+		s.emplace_back( mountinfo::volumeEntry{ e.engine,std::move( aa ) } ) ;
 	}
 
 	return s ;
@@ -153,14 +146,7 @@ static volumeInfo::List _unlocked_volumes()
 
 		}else if( utility::platformIsWindows() ){
 
-			volumeInfo::List s ;
-
-			for( auto&& it : _processManager_volumes() ){
-
-				s.emplace_back( std::move( it.fsEntry ) ) ;
-			}
-
-			return s ;
+			return mountinfo::toVolumeInfoList( _processManager_volumes() ) ;
 		}else{
 			return _qt_volumes() ;
 		}
@@ -208,7 +194,7 @@ mountinfo::~mountinfo()
 {
 }
 
-static volumeInfo::FsEntry _decode( const engines::engine& engine,volumeInfo::FsEntry e )
+static mountinfo::volumeEntry _decode( const engines::engine& engine,volumeInfo&& e )
 {
 	auto _decode = []( QString& path,bool set_offset ){
 
@@ -233,55 +219,59 @@ static volumeInfo::FsEntry _decode( const engines::engine& engine,volumeInfo::Fs
 		return false ;
 	} ;
 
+	auto& cipherPath = e.cipherPath() ;
+	auto& mountPoint = e.mountPoint() ;
+	auto& fileSystem = e.fileSystem() ;
+
 	if( engine.setsCipherPath() ){
 
-		if( _starts_with( engine,e.cipherPath ) ){
+		if( _starts_with( engine,cipherPath ) ){
 
-			_decode( e.cipherPath,true ) ;
+			_decode( cipherPath,true ) ;
 		}else{
-			if( e.cipherPath.compare( engine.name(),Qt::CaseInsensitive ) ){
+			if( cipherPath.compare( engine.name(),Qt::CaseInsensitive ) ){
 
-				_decode( e.cipherPath,false ) ;
+				_decode( cipherPath,false ) ;
 			}else{
-				e.cipherPath = crypto::sha256( e.mountPoint ).mid( 0,20 ) ;
+				cipherPath = crypto::sha256( e.mountPoint() ).mid( 0,20 ) ;
 			}
 		}
 	}else{
-		e.cipherPath = crypto::sha256( e.mountPoint ).mid( 0,20 ) ;
+		cipherPath = crypto::sha256( mountPoint ).mid( 0,20 ) ;
 	}
 
-	_decode( e.mountPoint,false ) ;
+	_decode( mountPoint,false ) ;
 
 	const auto& n = engine.displayName() ;
 
 	if( n.isEmpty() ){
 
-		e.fileSystem.replace( "fuse.","" ) ;
+		fileSystem.replace( "fuse.","" ) ;
 
-		if( !e.fileSystem.isEmpty() ){
+		if( !fileSystem.isEmpty() ){
 
-			e.fileSystem.replace( 0,1,e.fileSystem.at( 0 ).toUpper() ) ;
+			fileSystem.replace( 0,1,fileSystem.at( 0 ).toUpper() ) ;
 		}
 	}else{
-		e.fileSystem = n ;
+		fileSystem = n ;
 
-		e.fileSystem.replace( 0,1,e.fileSystem.at( 0 ).toUpper() ) ;
+		fileSystem.replace( 0,1,fileSystem.at( 0 ).toUpper() ) ;
 	}
 
-	return e ;
+	return { engine,std::move( e ) } ;
 }
 
-Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
+Task::future< mountinfo::List >& mountinfo::unlockedVolumes()
 {
 	return Task::run( [](){
 
-		std::vector< volumeInfo > e ;
+		mountinfo::List e ;
 
 		const auto& engines = engines::instance() ;
 
 		for( auto&& it : _unlocked_volumes() ){
 
-			const auto& engine = engines.getByFsName( it.fileSystem ) ;
+			const auto& engine = engines.getByFsName( it.fileSystem() ) ;
 
 			if( engine.known() ){
 
@@ -300,7 +290,7 @@ Task::future< std::vector< volumeInfo > >& mountinfo::unlockedVolumes()
 
 			for( auto&& it : _processManager_volumes() ){
 
-				e.emplace_back( _decode( it.engine,std::move( it.fsEntry ) ) ) ;
+				e.emplace_back( _decode( it.engine,std::move( it.vInfo ) ) ) ;
 			}
 		}
 
@@ -331,7 +321,7 @@ void mountinfo::volumeUpdate()
 
 		for( const auto& it : m_oldMountList ){
 
-			if( it.cipherPath == e ){
+			if( it.cipherPath() == e ){
 
 				return false ;
 			}
@@ -348,9 +338,9 @@ void mountinfo::volumeUpdate()
 
 			for( const auto& it : m_newMountList ){
 
-				if( _mountedVolume( it.cipherPath ) ){
+				if( _mountedVolume( it.cipherPath() ) ){
 
-					this->autoMount( it.mountPoint ) ;
+					this->autoMount( it.mountPoint() ) ;
 				}
 			}
 		}
@@ -517,9 +507,9 @@ static QString _gvfs_fuse_path()
 
 		for( const auto& it : _unlocked_volumes() ){
 
-			if( it.fileSystem == "fuse.gvfsd-fuse" ){
+			if( it.fileSystem() == "fuse.gvfsd-fuse" ){
 
-				return it.mountPoint ;
+				return it.mountPoint() ;
 			}
 		}
 	}

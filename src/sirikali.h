@@ -146,7 +146,7 @@ private:
 
 	void updateFavoritesInContextMenu( void ) ;
 	void runIntervalCustomCommand( const QString& ) ;
-	void updateVolumeList( const std::vector< volumeInfo >& ) ;
+	void updateVolumeList( const mountinfo::List& ) ;
 	void openMountPoint( const QString& ) ;
 	void setLocalizationLanguage( bool ) ;
 	void dragEnterEvent( QDragEnterEvent * ) ;
@@ -160,7 +160,7 @@ private:
 	void setUpShortCuts( void ) ;
 	void showMainWindow( void ) ;
 	void raiseWindow( const QString& = QString() ) ;
-	void autoUnlockVolumes( const std::vector< volumeInfo >& ) ;	
+	void autoUnlockVolumes( const mountinfo::List& ) ;
 	keyDialog::volumeList autoUnlockVolumes( favorites::volumeList,
 						 bool autoOpenFolderOnMount = false,
 						 bool skipUnknown = false ) ;

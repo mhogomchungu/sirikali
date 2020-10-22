@@ -67,9 +67,9 @@ static QString _get_fs_mode( const volumeInfo::List& s,const QString& m )
 {
 	for( const auto& it : s ){
 
-		if( m.startsWith( it.mountPoint ) ){
+		if( m.startsWith( it.mountPoint() ) ){
 
-			return it.mode ;
+			return it.mode() ;
 		}
 	}
 
