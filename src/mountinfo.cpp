@@ -28,7 +28,7 @@
 
 #include <QMetaObject>
 #include <QtGlobal>
-
+#include <QFileInfo>
 #include <QFile>
 
 #include <vector>
@@ -261,6 +261,13 @@ static mountinfo::volumeEntry _decode( const engines::engine& engine,volumeInfo&
 	return { engine,std::move( e ) } ;
 }
 
+static bool _owned_by_user( const engines::engine& engine,const volumeInfo& vInfo )
+{
+	Q_UNUSED( engine )
+
+	return QFileInfo( vInfo.mountPoint() ).isReadable() ;
+}
+
 Task::future< mountinfo::List >& mountinfo::unlockedVolumes()
 {
 	return Task::run( [](){
@@ -281,7 +288,12 @@ Task::future< mountinfo::List >& mountinfo::unlockedVolumes()
 
 				}else if( engine.runsInBackGround() ){
 
-					e.emplace_back( _decode( engine,std::move( it ) ) ) ;
+					if( _owned_by_user( engine,it ) ){
+
+						e.emplace_back( _decode( engine,std::move( it ) ) ) ;
+					}else{
+						utility::debug() << "Skipping a known engine because it was unlocked by a different user: " + it.cipherPath() ;
+					}
 				}
 			}
 		}
