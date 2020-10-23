@@ -1482,3 +1482,28 @@ QString utility::SiriKaliVersion()
 {
 	return THIS_VERSION ;
 }
+
+#ifdef Q_OS_WIN
+
+QString utility::userName()
+{
+	return {} ;
+}
+
+#else
+
+#include <pwd.h>
+
+QString utility::userName()
+{
+	auto m = getpwuid( getuid() ) ;
+
+	if( m ){
+
+		return m->pw_name ;
+	}else{
+		return {} ;
+	}
+}
+
+#endif

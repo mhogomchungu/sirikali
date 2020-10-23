@@ -444,8 +444,7 @@ namespace utility
 	bool pathIsReadable( const QString&,bool isFolder = true ) ;
 	bool pathIsWritable( const QString&,bool isFolder = true ) ;
 
-	QString securefsPath() ;
-	QString winFSPpath() ;
+	QString userName() ;
 
 	const QProcessEnvironment& systemEnvironment() ;
 

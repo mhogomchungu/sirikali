@@ -261,11 +261,36 @@ static mountinfo::volumeEntry _decode( const engines::engine& engine,volumeInfo&
 	return { engine,std::move( e ) } ;
 }
 
-static bool _owned_by_user( const engines::engine& engine,const volumeInfo& vInfo )
+static bool _owned_by_user( const engines::engine& engine,
+			    const QString& volPrefix,
+			    volumeInfo& vInfo )
 {
-	Q_UNUSED( engine )
+	auto& m = vInfo.cipherPath() ;
 
-	return QFileInfo( vInfo.mountPoint() ).isReadable() ;
+	auto a = engines::engine::encodeMountPath( volPrefix ) ;
+
+	auto b = a + engine.name() + "@" ;
+
+	if( m.toLower().startsWith( b.toLower() ) ){
+
+		/*
+		 * "m" should contain something like $USER@gocryptfs@/woof/cipherPath
+		 * and we are sure this entry was created by this user.
+		 */
+
+		/*
+		 * remove the username part
+		 */
+		m = m.mid( a.size() ) ;
+
+		return true ;
+	}else{
+		/*
+		 * We dont know what is in "m" therefore we assume this user created the mount point
+		 * by checking if we have access to it.
+		 */
+		return QFileInfo( vInfo.mountPoint() ).isReadable() ;
+	}
 }
 
 Task::future< mountinfo::List >& mountinfo::unlockedVolumes()
@@ -275,6 +300,8 @@ Task::future< mountinfo::List >& mountinfo::unlockedVolumes()
 		mountinfo::List e ;
 
 		const auto& engines = engines::instance() ;
+
+		auto volPrefix = utility::userName() + "@" ;
 
 		for( auto&& it : _unlocked_volumes() ){
 
@@ -288,7 +315,7 @@ Task::future< mountinfo::List >& mountinfo::unlockedVolumes()
 
 				}else if( engine.runsInBackGround() ){
 
-					if( _owned_by_user( engine,it ) ){
+					if( _owned_by_user( engine,volPrefix,it ) ){
 
 						e.emplace_back( _decode( engine,std::move( it ) ) ) ;
 					}else{
