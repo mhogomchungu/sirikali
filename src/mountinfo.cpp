@@ -261,35 +261,88 @@ static mountinfo::volumeEntry _decode( const engines::engine& engine,volumeInfo&
 	return { engine,std::move( e ) } ;
 }
 
+static bool _has_access_to_mount_point( const volumeInfo& e,const engines::engine& engine )
+{
+	/*
+	 * We do not know who unlocked the volume so we assume this user did it by checking
+	 * if they have access to the mount point path
+	 */
+	if( QFileInfo( e.mountPoint() ).isReadable() ){
+
+		auto m = "Adding a known engine \"%1\" at \"%2\"\nbecause its mount point is accessible" ;
+		utility::debug() << QString( m ).arg( engine.name(),e.cipherPath() ) ;
+		return true ;
+	}else{
+		auto m = "Skipping a known engine \"%1\" at \"%2\"\nbecause its mount point is inaccessible" ;
+		utility::debug() << QString( m ).arg( engine.name(),e.cipherPath() ) ;
+		return false ;
+	}
+}
+
 static bool _owned_by_user( const engines::engine& engine,
-			    const QString& volPrefix,
+			    const QString& userNameSection,
 			    volumeInfo& vInfo )
 {
 	auto& m = vInfo.cipherPath() ;
 
-	auto a = engines::engine::encodeMountPath( volPrefix ) ;
+	/*
+	 * A properly formatted cipherPath will be in the format of
+	 * @USER@ENGINE@CIPHER_PATH
+	 */
 
-	auto b = a + engine.name() + "@" ;
+	auto usrNameSection = engines::engine::encodeMountPath( userNameSection ) ;
 
-	if( m.toLower().startsWith( b.toLower() ) ){
+	auto engineSection = engine.name() + "@" ;
+
+	if( m.startsWith( usrNameSection + engineSection,Qt::CaseInsensitive ) ){
 
 		/*
-		 * "m" should contain something like $USER@gocryptfs@/woof/cipherPath
-		 * and we are sure this entry was created by this user.
+		 * CIPHER_PATH is properly formatted and the volume was unlocked by this user
 		 */
 
 		/*
-		 * remove the username part
+		 * remove the username section part
 		 */
-		m = m.mid( a.size() ) ;
+		m = m.mid( usrNameSection.size() ) ;
 
 		return true ;
 	}else{
-		/*
-		 * We dont know what is in "m" therefore we assume this user created the mount point
-		 * by checking if we have access to it.
-		 */
-		return QFileInfo( vInfo.mountPoint() ).isReadable() ;
+		auto a = m.indexOf( '@' ) ;
+
+		if( a == -1 ){
+			/*
+			 * Malformed entry, could not find a single entry for '@'.
+			 *
+			 * We will get here is "m" contains only cipherPath component.
+			 */
+			return _has_access_to_mount_point( vInfo,engine ) ;
+		}else{
+			auto usrName = m.mid( 0,a ) ;
+
+			auto engSection = m.mid( a + 1 ) ;
+
+			if( engSection.startsWith( engineSection,Qt::CaseInsensitive ) ){
+
+				/*
+				 * CIPHER_PATH is properly formatted and the volume was unlocked by another user
+				 */
+				/*
+				 * We will get here is "m" contains something like "$OTHERUSER@gocryptfs@/woof/cipherPath"
+				 * and we are sure this entry was created by another user.
+				 */
+
+				auto msg = "Skipping a known engine at \"%1\"\nbecause it was opened by user \"%2\"" ;
+
+				utility::debug() << QString( msg ).arg( m,usrName ) ;
+
+				return false ;
+			}else{
+				/*
+				 * We will get here is "m" contains something like "gocryptfs@/woof/cipherPath"
+				 */
+				return _has_access_to_mount_point( vInfo,engine ) ;
+			}
+		}
 	}
 }
 
@@ -301,7 +354,7 @@ Task::future< mountinfo::List >& mountinfo::unlockedVolumes()
 
 		const auto& engines = engines::instance() ;
 
-		auto volPrefix = utility::userName() + "@" ;
+		auto userNameSection = utility::userName() + "@" ;
 
 		for( auto&& it : _unlocked_volumes() ){
 
@@ -315,11 +368,9 @@ Task::future< mountinfo::List >& mountinfo::unlockedVolumes()
 
 				}else if( engine.runsInBackGround() ){
 
-					if( _owned_by_user( engine,volPrefix,it ) ){
+					if( _owned_by_user( engine,userNameSection,it ) ){
 
 						e.emplace_back( _decode( engine,std::move( it ) ) ) ;
-					}else{
-						utility::debug() << "Skipping a known engine because it was unlocked by a different user: " + it.cipherPath() ;
 					}
 				}
 			}
