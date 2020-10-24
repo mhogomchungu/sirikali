@@ -1757,13 +1757,18 @@ engines::engine::commandOptions::commandOptions( bool creating,
 
 	m_fuseOptions.insert( 0,[ & ](){
 
-		auto s = utility::userName() ;
+		if( utility::platformIsLinux() ){
 
-		if( s.isEmpty() ){
+			auto s = utility::userName() ;
 
-			return QString( "fsname=%1@%2" ).arg( name,cipherFolder( e.cipherFolder ) ) ;
+			if( s.isEmpty() ){
+
+				return QString( "fsname=%1@%2" ).arg( name,cipherFolder( e.cipherFolder ) ) ;
+			}else{
+				return QString( "fsname=%1@%2@%3" ).arg( s,name,cipherFolder( e.cipherFolder ) ) ;
+			}
 		}else{
-			return QString( "fsname=%1@%2@%3" ).arg( s,name,cipherFolder( e.cipherFolder ) ) ;
+			return QString( "fsname=%1@%2" ).arg( name,cipherFolder( e.cipherFolder ) ) ;
 		}
 	}() ) ;
 
