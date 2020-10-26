@@ -163,6 +163,8 @@ static volumeInfo::List _mountInfo( const mountInfo& e,Function removeEntry )
 	const auto& a = e.fuseNames.at( 0 ) ;
 	const auto& b = e.fuseNames.at( 1 ) ;
 
+	auto userID = "user_id=" + utility::userIDAsString() ;
+
 	for( const auto& it : e.mountedVolumes ){
 
 		auto tt = engines::engine::decodeSpecialCharactersConst( it ) ;
@@ -175,11 +177,11 @@ static volumeInfo::List _mountInfo( const mountInfo& e,Function removeEntry )
 
 			if( s == "Yes" ){
 
-				l.emplace_back( it,it,a,md ) ;
+				l.emplace_back( it,it,a,md,userID ) ;
 
 			}else if( s.startsWith( "Partially" ) ){
 
-				l.emplace_back( it,it,b,md ) ;
+				l.emplace_back( it,it,b,md,userID ) ;
 			}else{
 				removeEntry( it ) ;
 			}

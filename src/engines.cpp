@@ -1755,22 +1755,9 @@ engines::engine::commandOptions::commandOptions( bool creating,
 		m_fuseOptions.insert( 0,"subtype=" + m_subtype ) ;
 	}
 
-	m_fuseOptions.insert( 0,[ & ](){
+	auto m = QString( "fsname=%1@%2" ).arg( name,cipherFolder( e.cipherFolder ) ) ;
 
-		if( utility::platformIsLinux() ){
-
-			auto s = utility::userName() ;
-
-			if( s.isEmpty() ){
-
-				return QString( "fsname=%1@%2" ).arg( name,cipherFolder( e.cipherFolder ) ) ;
-			}else{
-				return QString( "fsname=%1@%2@%3" ).arg( s,name,cipherFolder( e.cipherFolder ) ) ;
-			}
-		}else{
-			return QString( "fsname=%1@%2" ).arg( name,cipherFolder( e.cipherFolder ) ) ;
-		}
-	}() ) ;
+	m_fuseOptions.insert( 0,m ) ;
 
 	if( e.boolOptions.unlockInReadOnly ){
 

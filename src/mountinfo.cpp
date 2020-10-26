@@ -127,7 +127,26 @@ static volumeInfo::List _linux_volumes()
 
 		if( m > 5 ){
 
-			const auto& q = k.at( 5 ) ;
+			/*
+			 * contains generic mount options
+			 */
+			auto q = k.at( 5 ) ;
+
+			/*
+			 * contains file system specific mount options
+			 */
+			const auto u = utility::split( k.at( m - 1 ),',' ) ;
+
+			/*
+			 * Combine the two mount options
+			 */
+			for( const auto& it : u ){
+
+				if( !q.contains( it ) ){
+
+					q.append( it ) ;
+				}
+			}
 
 			s.emplace_back( k.at( m - 2 ),k.at( 4 ),k.at( m - 3 ),q.mid( 0,2 ),q ) ;
 		}
@@ -261,88 +280,36 @@ static mountinfo::volumeEntry _decode( const engines::engine& engine,volumeInfo&
 	return { engine,std::move( e ) } ;
 }
 
-static bool _has_access_to_mount_point( const volumeInfo& e,const engines::engine& engine )
+static bool _unlocked_by_this_user( const engines::engine& engine,
+				    volumeInfo& e,
+				    const QString& userID )
 {
-	/*
-	 * We do not know who unlocked the volume so we assume this user did it by checking
-	 * if they have access to the mount point path
-	 */
-	if( QFileInfo( e.mountPoint() ).isReadable() ){
+	const auto& m = e.mountOptions() ;
 
-		auto m = "Adding a known engine \"%1\" at \"%2\"\nbecause its mount point is accessible" ;
-		utility::debug() << QString( m ).arg( engine.name(),e.cipherPath() ) ;
-		return true ;
-	}else{
-		auto m = "Skipping a known engine \"%1\" at \"%2\"\nbecause its mount point is inaccessible" ;
-		utility::debug() << QString( m ).arg( engine.name(),e.cipherPath() ) ;
-		return false ;
-	}
-}
+	if( utility::platformIsLinux() ){
 
-static bool _owned_by_user( const engines::engine& engine,
-			    const QString& userNameSection,
-			    volumeInfo& vInfo )
-{
-	auto& m = vInfo.cipherPath() ;
+		if( m.contains( "user_id=" ) ){
 
-	/*
-	 * A properly formatted cipherPath will be in the format of
-	 * @USER@ENGINE@CIPHER_PATH
-	 */
+			if( m.contains( userID ) ){
 
-	auto usrNameSection = engines::engine::encodeMountPath( userNameSection ) ;
-
-	auto engineSection = engine.name() + "@" ;
-
-	if( m.startsWith( usrNameSection + engineSection,Qt::CaseInsensitive ) ){
-
-		/*
-		 * CIPHER_PATH is properly formatted and the volume was unlocked by this user
-		 */
-
-		/*
-		 * remove the username section part
-		 */
-		m = m.mid( usrNameSection.size() ) ;
-
-		return true ;
-	}else{
-		auto a = m.indexOf( '@' ) ;
-
-		if( a == -1 ){
-			/*
-			 * Malformed entry, could not find a single entry for '@'.
-			 *
-			 * We will get here is "m" contains only cipherPath component.
-			 */
-			return _has_access_to_mount_point( vInfo,engine ) ;
-		}else{
-			auto usrName = m.mid( 0,a ) ;
-
-			auto engSection = m.mid( a + 1 ) ;
-
-			if( engSection.startsWith( engineSection,Qt::CaseInsensitive ) ){
-
-				/*
-				 * CIPHER_PATH is properly formatted and the volume was unlocked by another user
-				 */
-				/*
-				 * We will get here is "m" contains something like "$OTHERUSER@gocryptfs@/woof/cipherPath"
-				 * and we are sure this entry was created by another user.
-				 */
-
-				auto msg = "Skipping a known engine at \"%1\"\nbecause it was opened by user \"%2\"" ;
-
-				utility::debug() << QString( msg ).arg( m,usrName ) ;
-
-				return false ;
+				return true ;
 			}else{
-				/*
-				 * We will get here is "m" contains something like "gocryptfs@/woof/cipherPath"
-				 */
-				return _has_access_to_mount_point( vInfo,engine ) ;
+				auto msg = "Skipping a known engine of \"%1\"\nbecause it was opened by a different user" ;
+				utility::debug() << QString( msg ).arg( engine.name() ) ;
+				return false ;
 			}
+		}else{
+			auto msg = "Showing an unlocked volume because we could not figure out who unlocked it" ;
+
+			utility::debug() << msg ;
+
+			return true ;
 		}
+	}else{
+		/*
+		 * Feature is only enabled in linux.
+		 */
+		return true ;
 	}
 }
 
@@ -354,7 +321,8 @@ Task::future< mountinfo::List >& mountinfo::unlockedVolumes()
 
 		const auto& engines = engines::instance() ;
 
-		auto userNameSection = utility::userName() + "@" ;
+		auto showFromAllUsers = settings::instance().showUnlockedVolumesFromAllUsers() ;
+		auto userID = "user_id=" + utility::userIDAsString() ;
 
 		for( auto&& it : _unlocked_volumes() ){
 
@@ -368,7 +336,14 @@ Task::future< mountinfo::List >& mountinfo::unlockedVolumes()
 
 				}else if( engine.runsInBackGround() ){
 
-					if( _owned_by_user( engine,userNameSection,it ) ){
+					/*
+					 * This path handles volumes that run in the background
+					 */
+					if( showFromAllUsers ){
+
+						e.emplace_back( _decode( engine,std::move( it ) ) ) ;
+
+					}else if( _unlocked_by_this_user( engine,it,userID ) ){
 
 						e.emplace_back( _decode( engine,std::move( it ) ) ) ;
 					}
@@ -378,6 +353,12 @@ Task::future< mountinfo::List >& mountinfo::unlockedVolumes()
 
 		if( utility::platformIsNOTWindows() ){
 
+			/*
+			 * This path handles volumes that run in the foreground.
+			 *
+			 * Windows volumes always run in the foreground and they are handled
+			 * in the above loop.
+			 */
 			for( auto&& it : _processManager_volumes() ){
 
 				e.emplace_back( _decode( it.engine,std::move( it.vInfo ) ) ) ;

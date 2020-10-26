@@ -445,6 +445,8 @@ namespace utility
 	bool pathIsWritable( const QString&,bool isFolder = true ) ;
 
 	QString userName() ;
+	QString userIDAsString() ;
+	int userID() ;
 
 	const QProcessEnvironment& systemEnvironment() ;
 

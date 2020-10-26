@@ -1490,6 +1490,11 @@ QString utility::userName()
 	return {} ;
 }
 
+int utility::userID()
+{
+	return -1 ;
+}
+
 #else
 
 #include <pwd.h>
@@ -1506,4 +1511,21 @@ QString utility::userName()
 	}
 }
 
+int utility::userID()
+{
+	auto m = getpwuid( getuid() ) ;
+
+	if( m ){
+
+		return static_cast< int >( m->pw_uid ) ;
+	}else{
+		return {} ;
+	}
+}
+
 #endif
+
+QString utility::userIDAsString()
+{
+	return QString::number( utility::userID() ) ;
+}

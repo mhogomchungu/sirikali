@@ -1028,6 +1028,16 @@ bool settings::showMountDialogWhenAutoMounting()
 	}
 }
 
+bool settings::showUnlockedVolumesFromAllUsers()
+{
+	if( !m_settings.contains( "ShowUnlockedVolumesFromAllUsers" ) ){
+
+		m_settings.setValue( "ShowUnlockedVolumesFromAllUsers",false ) ;
+	}
+
+	return m_settings.value( "ShowUnlockedVolumesFromAllUsers" ).toBool() ;
+}
+
 void settings::showMountDialogWhenAutoMounting( bool e )
 {
 	m_settings.setValue( "ShowMountDialogWhenAutoMounting",e ) ;
