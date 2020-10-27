@@ -177,6 +177,8 @@ static terminate_result _terminate_process( const terminate_process& e )
 
 	if( exe == "SIGTERM" ){
 
+		utility::debug() << "Terminating a process by sending it SIGTERM" ;
+
 		e.exe.terminate() ;
 
 		if( utility::waitForFinished( e.exe ) ){

@@ -59,7 +59,7 @@ static QString _getFileSystem( const QString& dev,const QString& fs )
 		 */
 		for( const auto& it : engines::instance().supportedEngines() ){
 
-			if( it->name() == dev ){
+			if( it->name().compare( dev,Qt::CaseInsensitive ) == 0 ){
 				/*
 				 * "dev" has a name of a backend we support, return it.
 				 */
@@ -294,8 +294,8 @@ static bool _unlocked_by_this_user( const engines::engine& engine,
 
 				return true ;
 			}else{
-				auto msg = "Skipping a known engine of \"%1\"\nbecause it was opened by a different user" ;
-				utility::debug() << QString( msg ).arg( engine.name() ) ;
+				auto msg = "Skipping a \"%1\" volume at %2\nbecause it was opened by a different user" ;
+				utility::debug() << QString( msg ).arg( engine.name(),e.cipherPath() ) ;
 				return false ;
 			}
 		}else{
@@ -315,29 +315,31 @@ static bool _unlocked_by_this_user( const engines::engine& engine,
 
 Task::future< mountinfo::List >& mountinfo::unlockedVolumes()
 {
-	return Task::run( [](){
+	return Task::run( [ m = _processManager_volumes() ]()mutable{
 
 		mountinfo::List e ;
 
-		const auto& engines = engines::instance() ;
+		if( utility::platformIsWindows() ){
 
-		auto showFromAllUsers = settings::instance().showUnlockedVolumesFromAllUsers() ;
-		auto userID = "user_id=" + utility::userIDAsString() ;
+			/*
+			 *  All engines in windows run in the foreground
+			 */
+			for( auto&& it : m ){
 
-		for( auto&& it : _unlocked_volumes() ){
+				e.emplace_back( _decode( it.engine,std::move( it.vInfo ) ) ) ;
+			}
+		}else{
+			const auto& engines   = engines::instance() ;
+			auto showFromAllUsers = settings::instance().showUnlockedVolumesFromAllUsers() ;
+			auto userID           = "user_id=" + utility::userIDAsString() ;
 
-			const auto& engine = engines.getByFsName( it.fileSystem() ) ;
+			for( auto&& it : _unlocked_volumes() ){
 
-			if( engine.known() ){
+				const auto& engine = engines.getByFsName( it.fileSystem() ) ;
 
-				if( utility::platformIsWindows() ){
-
-					e.emplace_back( _decode( engine,std::move( it ) ) ) ;
-
-				}else if( engine.runsInBackGround() ){
-
+				if( engine.known() && engine.runsInBackGround() ){
 					/*
-					 * This path handles volumes that run in the background
+					 *  Add engines that run in the background
 					 */
 					if( showFromAllUsers ){
 
@@ -349,17 +351,11 @@ Task::future< mountinfo::List >& mountinfo::unlockedVolumes()
 					}
 				}
 			}
-		}
-
-		if( utility::platformIsNOTWindows() ){
 
 			/*
-			 * This path handles volumes that run in the foreground.
-			 *
-			 * Windows volumes always run in the foreground and they are handled
-			 * in the above loop.
+			 *  Add engines that run in the foreground
 			 */
-			for( auto&& it : _processManager_volumes() ){
+			for( auto&& it : m ){
 
 				e.emplace_back( _decode( it.engine,std::move( it.vInfo ) ) ) ;
 			}
