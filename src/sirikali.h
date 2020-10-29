@@ -146,7 +146,7 @@ private:
 
 	void updateFavoritesInContextMenu( void ) ;
 	void runIntervalCustomCommand( const QString& ) ;
-	void updateVolumeList( const mountinfo::List& ) ;
+	void updateVolumeList( const mountinfo::List&,bool enableAll = true ) ;
 	void openMountPoint( const QString& ) ;
 	void setLocalizationLanguage( bool ) ;
 	void dragEnterEvent( QDragEnterEvent * ) ;

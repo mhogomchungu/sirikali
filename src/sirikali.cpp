@@ -790,25 +790,26 @@ void sirikali::setLocalizationLanguage( bool translate )
 
 void sirikali::startGUI( const QString& volume )
 {
-	auto m = mountinfo::unlockedVolumes().await() ;
+	mountinfo::unlockedVolumes().then( [ this,volume ]( const mountinfo::List& m ){
 
-	this->updateVolumeList( m ) ;
+		this->updateVolumeList( m,false ) ;
 
-	if( !m_startHidden ){
+		if( !m_startHidden ){
 
-		this->showMainWindow() ;
-	}
+			this->showMainWindow() ;
+		}
 
-	if( settings::instance().autoMountFavoritesOnStartUp() ){
+		if( settings::instance().autoMountFavoritesOnStartUp() ){
 
-		m_disableEnableAll = true ;
+			m_disableEnableAll = true ;
 
-		this->autoUnlockVolumes( m ) ;
-	}
+			this->autoUnlockVolumes( m ) ;
+		}
 
-	this->autoMount( volume ) ;
+		this->autoMount( volume ) ;
 
-	utility::applicationStarted() ;
+		utility::applicationStarted() ;
+	} ) ;
 }
 
 void sirikali::createbackendwindow()
@@ -1169,7 +1170,7 @@ keyDialog::volumeList sirikali::autoMount( keyDialog::volumeList l,bool autoOpen
 
 		bool u = it.engine->known() && it.engine->requiresNoPassword() ;
 
-		if(  u || m.volumeNeedNoPassword || !m.password.isEmpty() ){
+		if( u || m.volumeNeedNoPassword || !m.password.isEmpty() ){
 
 			this->autoMount( e,std::move( it ),s,autoOpenFolderOnMount ) ;
 		}else{
@@ -2199,7 +2200,7 @@ void sirikali::pbUpdate()
 	this->updateList() ;
 }
 
-void sirikali::updateVolumeList( const mountinfo::List& r )
+void sirikali::updateVolumeList( const mountinfo::List& r,bool enableAll )
 {
 	tablewidget::clearTable( m_ui->tableWidget ) ;
 
@@ -2208,7 +2209,10 @@ void sirikali::updateVolumeList( const mountinfo::List& r )
 		this->updateList( it.vInfo ) ;
 	}
 
-	this->enableAll() ;
+	if( enableAll ){
+
+		this->enableAll() ;
+	}
 }
 
 void sirikali::slotCurrentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous )
