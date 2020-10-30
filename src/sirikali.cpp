@@ -1172,7 +1172,7 @@ keyDialog::volumeList sirikali::autoMount( keyDialog::volumeList l,bool autoOpen
 	return e ;
 }
 
-QByteArray static _get_key( const keyDialog::entry& it,secrets::wallet& m ){
+QByteArray static _get_key( QString& debug,const keyDialog::entry& it,secrets::wallet& m ){
 
 	const auto& volumePath = it.volEntry.favorite().volumePath ;
 
@@ -1180,11 +1180,15 @@ QByteArray static _get_key( const keyDialog::entry& it,secrets::wallet& m ){
 
 	if( volumePath.startsWith( name + " ",Qt::CaseInsensitive ) ){
 
+		debug += "\n3. Trying to get password from wallet for path: " + volumePath ;
+
 		auto ee = m->readValue( volumePath ) ;
 
 		if( ee.isEmpty() ){
 
 			auto ss = name.toLower() + " " + it.engine.cipherFolder() ;
+
+			debug += "\n3.1 Rerying to get password from wallet for path: " + ss ;
 
 			ee = m->readValue( ss ) ;
 		}
@@ -1243,7 +1247,7 @@ keyDialog::volumeList sirikali::autoUnlockVolumes( favorites::volumeList ss,
 
 	auto _mountTooLong = [ & ]( QString& s,keyDialog::entry&& m ){
 
-		s += "\n5. Unconditionally showing mount dialog window" ;
+		s += "\n6. Unconditionally showing mount dialog window" ;
 		s += " because the backend takes too long to unlock" ;
 
 		m.volEntry.setAutoMount( true ) ;
@@ -1268,13 +1272,16 @@ keyDialog::volumeList sirikali::autoUnlockVolumes( favorites::volumeList ss,
 
 			if( m ){
 
-				it.volEntry.setPassword( _get_key( it,m ) ) ;
+				/*
+				 * _get_key sets entry 3.
+				 */
+				it.volEntry.setPassword( _get_key( debug,it,m ) ) ;
 
 				if( it.volEntry.password().isEmpty() ){
 
-					debug += "\n3. Favorite entry does not exist in the wallet" ;
+					debug += "\n4. Favorite entry does not exist in the wallet" ;
 				}else{
-					debug += "\n3. Retrieving favorite's password from wallet" ;
+					debug += "\n4. Password obtained from wallet" ;
 				}
 			}else{
 				debug += "\n3. Failed to read password from wallet" ;
@@ -1287,7 +1294,7 @@ keyDialog::volumeList sirikali::autoUnlockVolumes( favorites::volumeList ss,
 
 			if( it.engine->requiresNoPassword() || it.volEntry.favorite().volumeNeedNoPassword ){
 
-				debug += "\n4. Engine requires no password or favorite need no password" ;
+				debug += "\n5. Engine requires no password or favorite need no password" ;
 
 				if( it.engine->takesTooLongToUnlock() ){
 
