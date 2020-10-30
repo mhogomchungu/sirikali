@@ -1188,7 +1188,7 @@ QByteArray static _get_key( QString& debug,const keyDialog::entry& it,secrets::w
 
 			auto ss = name.toLower() + " " + it.engine.cipherFolder() ;
 
-			debug += "\n3.1 Rerying to get password from wallet for path: " + ss ;
+			debug += "\n3.1 Retrying to get password from wallet for path: " + ss ;
 
 			ee = m->readValue( ss ) ;
 		}

@@ -260,8 +260,12 @@ version 1.4.2(December 18,2019)
    version 1.4.8(unreleased)
    [ALL]
 -- Mounting items in Favorites now respects Re Use Mount Point setting.
+
    [LINUX]
 -- Add cryptomator CLI backend(https://github.com/cryptomator/cli). SiriKali expects the backend
    to be FUSE based and named simply "cryptomator-cli".
 -- Kwallet now works when it was not build in at compile time by accessing it through dbus.
 -- Only show volumes unlocked by the current user by default.
+
+   [WINDOWS]
+-- Update Qt to version 5.15.1
