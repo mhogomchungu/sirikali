@@ -160,10 +160,11 @@ private:
 	void setUpShortCuts( void ) ;
 	void showMainWindow( void ) ;
 	void raiseWindow( const QString& = QString() ) ;
-	void autoUnlockVolumes( const mountinfo::List& ) ;
+	void autoUnlockVolumes( const mountinfo::List&,bool autoSetAutoMount = false ) ;
 	keyDialog::volumeList autoUnlockVolumes( favorites::volumeList,
 						 bool autoOpenFolderOnMount = false,
-						 bool skipUnknown = false ) ;
+						 bool skipUnknown = false,
+						 bool autoSetAutoMount = false ) ;
 
 	struct mountedEntry{
 		const QString& cipherPath ;

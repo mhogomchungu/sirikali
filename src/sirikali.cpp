@@ -688,31 +688,14 @@ void sirikali::favoriteClicked()
 
 void sirikali::mountAll()
 {
-	auto v = favorites::instance().readVolumeList() ;
+	mountinfo::unlockedVolumes().then( [ this ]( const mountinfo::List& m ){
 
-	auto e = settings::instance().autoMountBackEnd() ;
+		this->updateVolumeList( m,false ) ;
 
-	if( e.isValid() ){
+		m_disableEnableAll = true ;
 
-		auto m = m_secrets.walletBk( e.bk() ) ;
-
-		m.open( [ & ](){
-
-			for( auto& it : v ){
-
-				auto s = m->readValue( it.favorite().volumePath ) ;
-
-				if( !s.isEmpty() ){
-
-					it.setPassword( std::move( s ) ) ;
-				}
-			}
-
-			return true ;
-		} ) ;
-	}
-
-	this->mountMultipleVolumes( keyDialog::fromFavoritesList( std::move( v ),false,false ) ) ;
+		this->autoUnlockVolumes( m,true ) ;
+	} ) ;
 }
 
 void sirikali::mountFavorite( const QString& e )
@@ -1072,7 +1055,7 @@ void sirikali::autoMountFavoritesOnAvailable( QString m )
 	}
 }
 
-void sirikali::autoUnlockVolumes( const mountinfo::List& s )
+void sirikali::autoUnlockVolumes( const mountinfo::List& s,bool autoSetAutoMount )
 {
 	favorites::volumeList e ;
 
@@ -1102,13 +1085,21 @@ void sirikali::autoUnlockVolumes( const mountinfo::List& s )
 
 		const auto& m = it.favorite() ;
 
-		if( m.autoMount && _not_mounted( m ) ){
+		if( autoSetAutoMount ){
 
-			e.emplace_back( std::move( it ) ) ;
+			if( _not_mounted( m ) ){
+
+				e.emplace_back( std::move( it ) ) ;
+			}
+		}else{
+			if( m.autoMount && _not_mounted( m ) ){
+
+				e.emplace_back( std::move( it ) ) ;
+			}
 		}
 	}
 
-	this->mountMultipleVolumes( this->autoUnlockVolumes( std::move( e ) ) ) ;
+	this->mountMultipleVolumes( this->autoUnlockVolumes( std::move( e ),false,false,autoSetAutoMount ) ) ;
 }
 
 void sirikali::autoMount( keyDialog::volumeList& q,
@@ -1206,7 +1197,8 @@ QByteArray static _get_key( const keyDialog::entry& it,secrets::wallet& m ){
 
 keyDialog::volumeList sirikali::autoUnlockVolumes( favorites::volumeList ss,
 						   bool autoOpenFolderOnMount,
-						   bool skipUnknown )
+						   bool skipUnknown,
+						   bool autoSetAutoMount )
 {
 	const auto& mm = utility::miscOptions::instance() ;
 
@@ -1249,43 +1241,73 @@ keyDialog::volumeList sirikali::autoUnlockVolumes( favorites::volumeList ss,
 
 	auto s = settings::instance().showMountDialogWhenAutoMounting() ;
 
-	auto _mountTooLong = [ & ]( keyDialog::entry&& m ){
+	auto _mountTooLong = [ & ]( QString& s,keyDialog::entry&& m ){
 
-		QString a = "Information: Unconditionally showing mount dialog window" ;
-		QString b = "\nbecause the backend takes too long to unlock" ;
-
-		utility::debug() << a + b ;
+		s += "\n5. Unconditionally showing mount dialog window" ;
+		s += " because the backend takes too long to unlock" ;
 
 		m.volEntry.setAutoMount( true ) ;
 
 		e.emplace_back( std::move( m ) ) ;
 	} ;
 
+	QString debug ;
+
 	for( auto&& it : l ){
 
-		if( m && it.volEntry.password().isEmpty() ){
+		debug = "1. Process favorite entry: " + it.volEntry.favorite().volumePath ;
 
-			it.volEntry.setPassword( _get_key( it,m ) ) ;
+		if( autoSetAutoMount ){
+
+			it.volEntry.setAutoMount( true ) ;
+		}
+
+		if( it.volEntry.password().isEmpty() ){
+
+			debug += "\n2. Favorite entry does not have a password" ;
+
+			if( m ){
+
+				it.volEntry.setPassword( _get_key( it,m ) ) ;
+
+				if( it.volEntry.password().isEmpty() ){
+
+					debug += "\n3. Favorite entry does not exist in the wallet" ;
+				}else{
+					debug += "\n3. Retrieving favorite's password from wallet" ;
+				}
+			}else{
+				debug += "\n3. Failed to read password from wallet" ;
+			}
+		}else{
+			debug += "\n2. Favorite entry already has a password" ;
 		}
 
 		if( it.volEntry.password().isEmpty() ){
 
 			if( it.engine->requiresNoPassword() || it.volEntry.favorite().volumeNeedNoPassword ){
 
+				debug += "\n4. Engine requires no password or favorite need no password" ;
+
 				if( it.engine->takesTooLongToUnlock() ){
 
-					_mountTooLong( std::move( it ) ) ;
+					_mountTooLong( debug,std::move( it ) ) ;
+					utility::debug() << debug ;
 				}else{
+					utility::debug() << debug ;
 					this->autoMount( e,std::move( it ),s,autoOpenFolderOnMount ) ;
 				}
 			}else{
+				utility::debug() << debug ;
 				e.emplace_back( std::move( it ) ) ;
 			}
 		}else{
 			if( it.engine->takesTooLongToUnlock() ){
 
-				_mountTooLong( std::move( it ) ) ;
+				_mountTooLong( debug,std::move( it ) ) ;
+				utility::debug() << debug ;
 			}else{
+				utility::debug() << debug ;
 				this->autoMount( e,std::move( it ),s,autoOpenFolderOnMount ) ;
 			}
 		}

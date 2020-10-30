@@ -346,13 +346,26 @@ static result_create_mp _create_mount_point( const engines::engine& engine,
 					     const engines::engine::cmdArgsList& opt,
 					     bool reUseMP )
 {
-	QString m = "1. Creating mount point at: " + opt.mountPoint ;
+	QString m ;
+
+	auto isDriveLetter = utility::isDriveLetter( opt.mountPoint ) ;
+
+	if( isDriveLetter ){
+
+		m = "1. Using a drive letter: " + opt.mountPoint ;
+	}else{
+		m = "1. Creating mount point at: " + opt.mountPoint ;
+	}
 
 	auto raii = utility2::make_raii( [ & ](){ utility::debug() << m ; } ) ;
 
 	Q_UNUSED( raii )
 
-	if( utility::pathExists( opt.mountPoint ) ){
+	if( isDriveLetter ){
+
+		return { engines::engine::status::success,false } ;
+
+	}else if( utility::pathExists( opt.mountPoint ) ){
 
 		if( reUseMP ){
 

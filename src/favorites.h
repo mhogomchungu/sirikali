@@ -193,11 +193,13 @@ public:
 
 			if( m ){
 
-				utility::debug() << "Changing a setting of a temporary favorite" ;
+				utility::debug() << "Changing a setting of a temporary favorite: " + m->volumePath ;
 
 				m->autoMount = s ;
 			}else{
-				utility::debug() << "Creating a temporary favorite to change its setting" ;
+				QString aa = "Creating a copy of a favorite at: %1\nto change a setting" ;
+
+				utility::debug() << aa.arg( m_favorite->volumePath ) ;
 
 				auto a = *m_favorite ;
 				a.autoMount = s ;
