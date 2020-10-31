@@ -217,6 +217,7 @@ public:
 	QStringList supportedFileSystemsOnMountPaths( void ) ;
 	QString gvfsFuseMonitorPath( void ) ;
 	int mountMonitorFolderPollingInterval( void ) ;
+	int delayBeforeAutoMountAtStartup() ;
 private:
 	QSettings m_settings ;
 };

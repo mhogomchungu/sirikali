@@ -48,6 +48,7 @@
 #include <array>
 #include <utility>
 #include <vector>
+#include <type_traits>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -386,8 +387,11 @@ namespace utility
 		QWidget * m_widget ;
 	};
 
-	//Function must take an int and return a bool
-	template< typename Function >
+	/*
+	 * Function must take an int and must return bool
+	 */
+	template< typename Function,
+		  std::enable_if_t< std::is_same< std::result_of_t< Function( int ) >,bool >::value,int > = 0 >
 	static inline void Timer( int interval,Function&& function )
 	{
 		class Timer{
@@ -421,15 +425,21 @@ namespace utility
 		new Timer( interval,std::forward< Function >( function ) ) ;
 	}
 
-	static inline void Timer( int interval,std::function< bool( void ) >&& function )
+	/*
+	 * Function must takes no argument and must returns void and it will
+	 * be called once when the interval pass
+	 */
+	template< typename Function,
+		  std::enable_if_t< std::is_void< std::result_of_t< Function() > >::value,int > = 0 >
+	static inline void Timer( int interval,Function&& function )
 	{
-		using ff = std::function< bool( void ) > ;
-
-		utility::Timer( interval,[ function = std::forward< ff >( function ) ]( int s ){
+		utility::Timer( interval,[ function = std::forward< Function >( function ) ]( int s ){
 
 			Q_UNUSED( s )
 
-			return function() ;
+			function() ;
+
+			return true ;
 		} ) ;
 	}
 

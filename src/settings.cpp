@@ -520,6 +520,16 @@ int settings::mountMonitorFolderPollingInterval()
 	return m_settings.value( "MountMonitorFolderPollingInterval" ).toInt() ;
 }
 
+int settings::delayBeforeAutoMountAtStartup()
+{
+	if( !m_settings.contains( "DelayBeforeAutoMountAtStartup" ) ){
+
+		m_settings.setValue( "DelayBeforeAutoMountAtStartup",1 ) ;
+	}
+
+	return m_settings.value( "DelayBeforeAutoMountAtStartup" ).toInt() ;
+}
+
 bool settings::readFavorites( QMenu * m )
 {
 	m->clear() ;

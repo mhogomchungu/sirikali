@@ -773,7 +773,7 @@ void sirikali::setLocalizationLanguage( bool translate )
 
 void sirikali::startGUI( const QString& volume )
 {
-	mountinfo::unlockedVolumes().then( [ this,volume ]( const mountinfo::List& m ){
+	mountinfo::unlockedVolumes().then( [ this,volume ]( mountinfo::List m ){
 
 		this->updateVolumeList( m,false ) ;
 
@@ -786,12 +786,36 @@ void sirikali::startGUI( const QString& volume )
 
 			m_disableEnableAll = true ;
 
-			this->autoUnlockVolumes( m ) ;
+			auto s = settings::instance().delayBeforeAutoMountAtStartup() ;
+
+			if( s == 0 ){
+
+				this->autoUnlockVolumes( m ) ;
+
+				this->autoMount( volume ) ;
+
+				utility::applicationStarted() ;
+			}else{
+				this->disableAll() ;
+
+				QString a = "Waiting for %1 seconds before auto mounting" ;
+
+				utility::debug() << a.arg( QString::number( s ) ) ;
+
+				utility::Timer( s * 1000,[ this,volume,m = std::move( m ) ](){
+
+					this->autoUnlockVolumes( m ) ;
+
+					this->autoMount( volume ) ;
+
+					utility::applicationStarted() ;
+				} ) ;
+			}
+		}else{
+			this->autoMount( volume ) ;
+
+			utility::applicationStarted() ;
 		}
-
-		this->autoMount( volume ) ;
-
-		utility::applicationStarted() ;
 	} ) ;
 }
 
