@@ -99,13 +99,6 @@ void cryptomator::updateOptions( QStringList& opts,
 	}
 }
 
-engines::engine::args cryptomator::command( const QByteArray& password,
-					    const engines::engine::cmdArgsList& args,
-					    bool create ) const
-{
-	return custom::set_command( *this,password,args,create ) ;
-}
-
 engines::engine::status cryptomator::errorCode( const QString& e,int s ) const
 {
 	Q_UNUSED( s )

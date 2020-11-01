@@ -108,13 +108,6 @@ const QProcessEnvironment& cryfs::getProcessEnvironment() const
 	return m_env ;
 }
 
-engines::engine::args cryfs::command( const QByteArray& password,
-				      const engines::engine::cmdArgsList& args,
-				      bool create ) const
-{
-	return custom::set_command( *this,password,args,create ) ;
-}
-
 engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 {
 	if( m_version_greater_or_equal_0_9_9 ){

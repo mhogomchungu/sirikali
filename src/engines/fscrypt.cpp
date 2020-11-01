@@ -503,13 +503,6 @@ void fscrypt::updateOptions( engines::engine::cmdArgsList& args,bool creating ) 
 	}
 }
 
-engines::engine::args fscrypt::command( const QByteArray& password,
-					const engines::engine::cmdArgsList& args,
-					bool create ) const
-{
-	return custom::set_command( *this,password,args,create ) ;
-}
-
 engines::engine::status fscrypt::errorCode( const QString& e,int s ) const
 {
 	Q_UNUSED( s )

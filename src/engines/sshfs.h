@@ -34,10 +34,6 @@ public:
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 
-	engines::engine::args command( const QByteArray& password,
-				       const engines::engine::cmdArgsList& args,
-				       bool create ) const override ;
-
 	void updateOptions( engines::engine::commandOptions& opts,
 			    const engines::engine::cmdArgsList& args,
 			    bool creating ) const override ;

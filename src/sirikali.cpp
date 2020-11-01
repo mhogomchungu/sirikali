@@ -1283,7 +1283,7 @@ keyDialog::volumeList sirikali::autoUnlockVolumes( favorites::volumeList ss,
 
 	for( auto&& it : l ){
 
-		debug = "1. Process favorite entry: " + it.volEntry.favorite().volumePath ;
+		debug = "1. Processing favorite entry: " + it.volEntry.favorite().volumePath ;
 
 		if( autoSetAutoMount ){
 

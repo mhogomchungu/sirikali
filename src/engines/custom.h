@@ -31,20 +31,11 @@
 class custom : public engines::engine
 {
 public:
-	static engines::engine::args set_command( const engines::engine& engine,
-						  const QByteArray& password,
-						  const engines::engine::cmdArgsList& args,
-						  bool create ) ;
-
 	static void addEngines( std::vector< std::unique_ptr< engines::engine > >& ) ;
 
 	custom( engines::engine::BaseOptions baseOpts ) ;
 
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
-
-	engines::engine::args command( const QByteArray& password,
-				       const engines::engine::cmdArgsList& args,
-				       bool create ) const override ;
 
 	void GUICreateOptions( const engines::engine::createGUIOptions& ) const override ;
 private:

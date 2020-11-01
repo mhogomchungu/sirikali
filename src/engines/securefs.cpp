@@ -133,13 +133,6 @@ void securefs::updateOptions( engines::engine::commandOptions& opts,
 	}
 }
 
-engines::engine::args securefs::command( const QByteArray& password,
-					 const engines::engine::cmdArgsList& args,
-					 bool create ) const
-{
-	return custom::set_command( *this,password,args,create ) ;
-}
-
 engines::engine::status securefs::errorCode( const QString& e,int s ) const
 {
 	Q_UNUSED( s )

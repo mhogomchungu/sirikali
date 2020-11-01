@@ -119,13 +119,6 @@ void gocryptfs::updateOptions( engines::engine::cmdArgsList& opt,bool creating )
 	}
 }
 
-engines::engine::args gocryptfs::command( const QByteArray& password,
-					  const engines::engine::cmdArgsList& args,
-					  bool create ) const
-{
-	return custom::set_command( *this,password,args,create ) ;
-}
-
 engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const
 {
 	if( m_version_has_error_codes ){

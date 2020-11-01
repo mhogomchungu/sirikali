@@ -101,7 +101,7 @@ engines::engine::args encfs::command( const QByteArray& password,
 		m_environment.insert( "ENCFS6_CONFIG",m_configPathThroughEnv ) ;
 	}
 
-	return custom::set_command( *this,password,args,create ) ;
+	return engines::engine::command( password,args,create ) ;
 }
 
 engines::engine::status encfs::errorCode( const QString& e,int s ) const

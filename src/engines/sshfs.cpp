@@ -192,13 +192,6 @@ void sshfs::updateOptions( engines::engine::commandOptions& opts,
 	}
 }
 
-engines::engine::args sshfs::command( const QByteArray& password,
-				      const engines::engine::cmdArgsList& args,
-				      bool create ) const
-{
-	return custom::set_command( *this,password,args,create ) ;
-}
-
 engines::engine::error sshfs::errorCode( const QString& e ) const
 {
 	if( e.contains( "invalid argument" ) ){

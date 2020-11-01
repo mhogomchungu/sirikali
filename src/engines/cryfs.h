@@ -34,10 +34,6 @@ public:
 
 	engines::engine::status passAllRequirenments( const engines::engine::cmdArgsList& opt ) const override ;
 
-	engines::engine::args command( const QByteArray& password,
-				       const engines::engine::cmdArgsList& args,
-				       bool create ) const override ;
-
 	void GUICreateOptions( const createGUIOptions& ) const override ;
 
 	void GUIMountOptions( const mountGUIOptions& ) const override ;

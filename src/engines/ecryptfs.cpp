@@ -191,7 +191,7 @@ engines::engine::args ecryptfs::command( const QByteArray& password,
 					 const engines::engine::cmdArgsList& args,
 					 bool create ) const
 {
-	auto m = custom::set_command( *this,password,args,create ) ;
+	auto m = engines::engine::command( password,args,create ) ;
 
 	if( utility::miscOptions::instance().usePolkit() ){
 
