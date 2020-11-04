@@ -215,7 +215,6 @@ private:
 
 	bool m_startHidden ;
 	bool m_autoOpenFolderOnMount ;
-	bool m_disableEnableAll = false ;
 	bool m_emergencyShuttingDown = false ;
 
 	QString m_sharedFolderPath ;
@@ -234,6 +233,25 @@ private:
 	systemSignalHandler m_signalHandler ;
 
 	const QStringList m_argumentList ;
+
+	class allowEnableAll{
+
+	public:
+		operator bool() const
+		{
+			return m_allowEnableAll ;
+		}
+		void setTrue()
+		{
+			m_allowEnableAll = true ;
+		}
+		void setFalse()
+		{
+			m_allowEnableAll = false ;
+		}
+	private:
+		bool m_allowEnableAll = true ;
+	} m_allowEnableAll ;
 };
 
 #endif // MAINWINDOW_H

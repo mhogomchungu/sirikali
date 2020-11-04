@@ -1029,14 +1029,14 @@ void sirikali::mountMultipleVolumes( keyDialog::volumeList e )
 {
 	if( !e.empty() ){
 
-		m_disableEnableAll = true ;
+		m_allowEnableAll.setFalse() ;
 
 		this->disableAll() ;
 
 		auto done = [ this ](){
 
 			this->setAcceptDrops( true ) ;
-			m_disableEnableAll = false ;
+			m_allowEnableAll.setTrue() ;
 			this->enableAll() ;
 		} ;
 
@@ -1050,7 +1050,7 @@ void sirikali::mountMultipleVolumes( keyDialog::volumeList e )
 				     std::move( done ),
 				     [ this ](){ this->updateList() ; } ) ;
 	}else{
-		m_disableEnableAll = false ;
+		m_allowEnableAll.setTrue() ;
 		this->enableAll() ;
 	}
 }
@@ -1277,9 +1277,9 @@ keyDialog::volumeList sirikali::autoUnlockVolumes( favorites::volumeList ss,
 
 	QString debug ;
 
-	m_disableEnableAll = true ;
+	m_allowEnableAll.setFalse() ;
 
-	auto disableAllRaii = utility2::make_raii( [ this ](){ m_disableEnableAll = false ; } ) ;
+	auto disableAllRaii = utility2::make_raii( [ this ](){ m_allowEnableAll.setTrue() ; } ) ;
 
 	for( auto&& it : l ){
 
@@ -2288,7 +2288,7 @@ void sirikali::disableAll()
 
 void sirikali::enableAll()
 {
-	if( !m_disableEnableAll ){
+	if( m_allowEnableAll ){
 
 		m_ui->pbmenu->setEnabled( true ) ;
 		m_ui->pbupdate->setEnabled( true ) ;
