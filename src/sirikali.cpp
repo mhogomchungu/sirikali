@@ -692,8 +692,6 @@ void sirikali::mountAll()
 
 		this->updateVolumeList( m,false ) ;
 
-		m_disableEnableAll = true ;
-
 		this->autoUnlockVolumes( m,true ) ;
 	} ) ;
 }
@@ -783,8 +781,6 @@ void sirikali::startGUI( const QString& volume )
 		}
 
 		if( settings::instance().autoMountFavoritesOnStartUp() ){
-
-			m_disableEnableAll = true ;
 
 			auto s = settings::instance().delayBeforeAutoMountAtStartup() ;
 
@@ -1280,6 +1276,10 @@ keyDialog::volumeList sirikali::autoUnlockVolumes( favorites::volumeList ss,
 	} ;
 
 	QString debug ;
+
+	m_disableEnableAll = true ;
+
+	auto disableAllRaii = utility2::make_raii( [ this ](){ m_disableEnableAll = false ; } ) ;
 
 	for( auto&& it : l ){
 

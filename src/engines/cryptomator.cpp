@@ -32,7 +32,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.backendTimeout              = 0 ;
 	s.takesTooLongToUnlock        = false ;
 	s.supportsMountPathsOnWindows = false ;
-	s.autorefreshOnMountUnMount   = false ;
+	s.autorefreshOnMountUnMount   = true ;
 	s.backendRequireMountPath     = true ;
 	s.backendRunsInBackGround     = false ;
 	s.autoCreatesMountPoint       = false ;
@@ -42,7 +42,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.requiresPolkit        = false ;
 	s.customBackend         = false ;
 	s.requiresAPassword     = true ;
-	s.hasConfigFile         = true ;
+	s.hasConfigFile         = false ;
 	s.autoMountsOnCreate    = false ;
 	s.hasGUICreateOptions   = false ;
 	s.setsCipherPath        = true ;
@@ -52,7 +52,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.passwordFormat        = "" ;
 	s.executableName        = "cryptomator-cli.jar" ;
 	s.incorrectPasswordText = "InvalidPassphraseException" ;
-	s.configFileArgument    = "%{unused}" ;
+	s.configFileArgument    = "" ;
 	s.keyFileArgument       = "" ;
 	s.volumePropertiesCommands = QStringList{} ;
 	s.windowsUnMountCommand    = QStringList{} ;
@@ -74,6 +74,14 @@ static engines::engine::BaseOptions _setOptions()
 cryptomator::cryptomator() :
 	engines::engine( _setOptions() )
 {
+}
+
+engines::engine::ownsCipherFolder cryptomator::ownsCipherPath( const QString& cipherPath,
+							       const QString& configPath ) const
+{
+	bool s = utility::pathExists( cipherPath + "/masterkey.cryptomator" ) ;
+
+	return { s,cipherPath,configPath } ;
 }
 
 void cryptomator::updateOptions( QStringList& opts,

@@ -23,6 +23,9 @@ struct cryptomator : public engines::engine
 {
 	cryptomator() ;
 
+	engines::engine::ownsCipherFolder ownsCipherPath( const QString& cipherPath,
+							  const QString& configPath ) const override ;
+
 	engines::engine::status errorCode( const QString& e,int s ) const override ;
 
 	void GUIMountOptions( const engines::engine::mountGUIOptions& ) const override ;

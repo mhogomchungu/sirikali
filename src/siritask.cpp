@@ -359,8 +359,6 @@ static result_create_mp _create_mount_point( const engines::engine& engine,
 
 	auto raii = utility2::make_raii( [ & ](){ utility::debug() << m ; } ) ;
 
-	Q_UNUSED( raii )
-
 	if( isDriveLetter ){
 
 		return { engines::engine::status::success,false } ;
