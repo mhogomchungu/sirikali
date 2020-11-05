@@ -814,8 +814,8 @@ public:
 		const BaseOptions m_Options ;
 		const QProcessEnvironment m_processEnvironment ;
 		const engines::exeFullPath m_exeFullPath ;
-		const engines::exeFullPath m_exeJavaFullPath ;
 		const engines::version m_version ;
+		static engines::exeFullPath m_exeJavaFullPath ;
 	} ;
 
 	engines() ;

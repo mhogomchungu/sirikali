@@ -653,21 +653,15 @@ static engines::engine::BaseOptions _update( engines::engine::BaseOptions m )
 	return m ;
 }
 
-static std::function< QString() > _java_full_path( const QString& exeName )
-{
-	if( exeName.endsWith( ".jar" ) ){
+engines::exeFullPath engines::engine::m_exeJavaFullPath( [](){
 
-		return [](){ return engines::executableFullPath( "java" ) ; } ;
-	}else{
-		return [](){ return QString() ; } ;
-	}
-}
+	return engines::executableFullPath( "java" ) ;
+} ) ;
 
 engines::engine::engine( engines::engine::BaseOptions o ) :
 	m_Options( _update( std::move( o ) ) ),
 	m_processEnvironment( _set_env( *this ) ),
 	m_exeFullPath( [ this ](){ return engines::executableFullPath( this->executableName(),*this ) ; } ),
-	m_exeJavaFullPath( _java_full_path( this->executableName() ) ),
 	m_version( this->name(),[ this ](){ return _installedVersion( *this,m_processEnvironment,m_Options.versionInfo ) ; } )
 {
 }
