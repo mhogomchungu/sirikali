@@ -50,10 +50,10 @@ static engines::engine::BaseOptions _setOptions()
 	s.acceptsVolName        = false ;
 	s.releaseURL            = "https://api.github.com/repos/cryptomator/cli/releases" ;
 	s.passwordFormat        = "" ;
-	s.executableName        = "cryptomator-cli.jar" ;
 	s.incorrectPasswordText = "InvalidPassphraseException" ;
 	s.configFileArgument    = "" ;
 	s.keyFileArgument       = "" ;
+	s.executableNames          = QStringList{ "cryptomator-cli","cryptomator-cli.jar" } ;
 	s.volumePropertiesCommands = QStringList{} ;
 	s.windowsUnMountCommand    = QStringList{} ;
 	s.configFileNames          = QStringList{ "masterkey.cryptomator" } ;

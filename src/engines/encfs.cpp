@@ -49,7 +49,6 @@ static engines::engine::BaseOptions _setOptions()
 	s.passwordFormat        = "%{password}\n%{password}" ;
 	s.reverseString         = "--reverse" ;
 	s.idleString            = "--idle=%{timeout}" ;
-	s.executableName        = "encfs" ;
 	s.incorrectPasswordText = "Error decoding volume key, password incorrect" ;
 	s.configFileArgument    = "--config=%{configFilePath}" ;
 	s.windowsInstallPathRegistryKey   = "SOFTWARE\\ENCFS" ;
@@ -58,6 +57,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.volumePropertiesCommands        = QStringList{ "encfsctl %{cipherFolder}" } ;
 	s.configFileNames       = QStringList{ ".encfs6.xml","encfs6.xml",".encfs5",".encfs4" } ;
 	s.fuseNames             = QStringList{ "fuse.encfs" } ;
+	s.executableNames       = QStringList{ "encfs" } ;
 	s.names                 = QStringList{ "encfs","encfsctl" } ;
 	s.failedToMountList     = QStringList{ "Error" } ;
 	s.successfulMountedList = QStringList{ "has been started" } ;

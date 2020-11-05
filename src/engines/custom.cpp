@@ -56,7 +56,6 @@ static void _parse( engines::engine::BaseOptions& s,const SirikaliJson& json )
 	s.createControlStructure          = json.getString( "createControlStructure" ) ;
 	s.reverseString                   = json.getString( "reverseString" ) ;
 	s.idleString                      = json.getString( "idleString" ) ;
-	s.executableName                  = json.getString( "executableName" ) ;
 	s.incorrectPasswordText           = json.getString( "wrongPasswordText" ) ;
 	s.incorrectPassWordCode           = json.getString( "wrongPasswordErrorCode" ) ;
 	s.configFileArgument              = json.getString( "configFileArgument" ) ;
@@ -67,6 +66,8 @@ static void _parse( engines::engine::BaseOptions& s,const SirikaliJson& json )
 	s.displayName                     = json.getString( "displayName" ) ;
 	s.versionMinimum                  = json.getString( "versionMinimum" ) ;
 	s.sirikaliMinimumVersion          = json.getString( "sirikaliMinimumVersion" ) ;
+
+	s.executableNames                 = QStringList{ json.getString( "executableName" ) } ;
 
 	s.windowsUnMountCommand           = json.getStringList( "windowsUnMountCommand" ) ;
 	s.unMountCommand                  = json.getStringList( "unMountCommand" ) ;

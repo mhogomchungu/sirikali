@@ -56,7 +56,6 @@ static engines::engine::BaseOptions _setOptions()
 	s.acceptsVolName        = true ;
 	s.passwordFormat        = "%{password}" ;
 	s.idleString            = "--unmount-idle %{timeout}" ;
-	s.executableName        = "cryfs" ;
 	s.incorrectPasswordText = "Could not load config file. Did you enter the correct password?" ;
 	s.configFileArgument    = "--config %{configFilePath}" ;
 	s.releaseURL            = "https://api.github.com/repos/cryfs/cryfs/releases" ;
@@ -65,6 +64,8 @@ static engines::engine::BaseOptions _setOptions()
 	s.fuseNames             = QStringList{ "fuse.cryfs" } ;
 	s.failedToMountList     = QStringList{ "Error" } ;
 	s.names                 = QStringList{ "cryfs" } ;
+	s.executableNames       = QStringList{ "cryfs" } ;
+
 	s.notFoundCode          = engines::engine::status::cryfsNotFound ;
 	s.versionInfo           = { { "--version",true,2,0 } } ;
 

@@ -51,7 +51,6 @@ static engines::engine::BaseOptions _setOptions()
 	s.setsCipherPath        = true ;
 	s.acceptsSubType        = true ;
 	s.acceptsVolName        = true ;
-	s.executableName        = "sshfs" ;
 	s.releaseURL            = "https://api.github.com/repos/libfuse/sshfs/releases" ;
 	s.windowsInstallPathRegistryKey = "SOFTWARE\\SSHFS-Win" ;
 	s.windowsInstallPathRegistryValue = "InstallDir" ;
@@ -60,6 +59,8 @@ static engines::engine::BaseOptions _setOptions()
 	s.successfulMountedList = QStringList{ "has been started" } ;
 	s.fuseNames             = QStringList{ "fuse.sshfs" } ;
 	s.names                 = QStringList{ "sshfs" } ;
+	s.executableNames       = QStringList{ "sshfs" } ;
+
 	s.notFoundCode          = engines::engine::status::sshfsNotFound ;
 	s.versionInfo           = { { "--version",true,2,0 } } ;
 

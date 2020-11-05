@@ -52,9 +52,9 @@ static engines::engine::BaseOptions _setOptions()
 						  "gocryptfs -info %{plainFolder}" } ;
 	s.reverseString         = "-reverse" ;
 	s.idleString            = "-idle %{timeout}" ;
-	s.executableName        = "gocryptfs" ;
 	s.incorrectPasswordText = "Password incorrect." ;
 	s.configFileArgument    = "--config %{configFilePath}" ;
+	s.executableNames       = QStringList{ "gocryptfs" } ;
 	s.configFileNames       = QStringList{ "gocryptfs.conf",
 					       ".gocryptfs.conf",
 					       ".gocryptfs.reverse.conf",

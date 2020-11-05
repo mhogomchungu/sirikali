@@ -514,7 +514,6 @@ public:
 			QString sirikaliMinimumVersion ;
 			QString reverseString ;
 			QString idleString ;
-			QString executableName ;
 			QString incorrectPasswordText ;
 			QString incorrectPassWordCode ;
 			QString configFileArgument ;
@@ -526,6 +525,7 @@ public:
 			QString createControlStructure ;
 			QString defaultFavoritesMountOptions ;
 
+			QStringList executableNames ;
 			QStringList windowsUnMountCommand ;
 			QStringList unMountCommand ;
 			QStringList volumePropertiesCommands ;

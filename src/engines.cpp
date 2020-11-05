@@ -37,6 +37,8 @@
 
 #include <QCoreApplication>
 
+static QString _emptyQString ;
+
 static QStringList _search_path_0( const QString& e )
 {
 	QStringList s = { e,e + "\\bin\\",e + "\\.bin\\" };
@@ -658,10 +660,28 @@ engines::exeFullPath engines::engine::m_exeJavaFullPath( [](){
 	return engines::executableFullPath( "java" ) ;
 } ) ;
 
+static std::function< QString() > _exe_full_path( const QStringList& exe,const engines::engine& engine )
+{
+	return [ & ](){
+
+		for( const auto& it : exe ){
+
+			auto s = engines::executableFullPath( it,engine ) ;
+
+			if( !s.isEmpty() ){
+
+				return s ;
+			}
+		}
+
+		return QString() ;
+	} ;
+}
+
 engines::engine::engine( engines::engine::BaseOptions o ) :
 	m_Options( _update( std::move( o ) ) ),
 	m_processEnvironment( _set_env( *this ) ),
-	m_exeFullPath( [ this ](){ return engines::executableFullPath( this->executableName(),*this ) ; } ),
+	m_exeFullPath( _exe_full_path( m_Options.executableNames,*this ) ),
 	m_version( this->name(),[ this ](){ return _installedVersion( *this,m_processEnvironment,m_Options.versionInfo ) ; } )
 {
 }
@@ -678,7 +698,7 @@ const QString& engines::engine::javaFullPath() const
 
 bool engines::engine::needsJava() const
 {
-	return this->executableName().endsWith( ".jar" ) ;
+	return this->executableFullPath().endsWith( ".jar" ) ;
 }
 
 bool engines::engine::isInstalled() const
@@ -881,15 +901,19 @@ const QString& engines::engine::releaseURL() const
 
 const QString& engines::engine::executableName() const
 {
-	return m_Options.executableName ;
+	if( m_Options.executableNames.isEmpty() ){
+
+		return _emptyQString ;
+	}else{
+		return m_Options.executableNames.at( 0 ) ;
+	}
 }
 
 const QString& engines::engine::name() const
 {
 	if( m_Options.names.isEmpty() ){
 
-		static QString s ;
-		return s ;
+		return _emptyQString ;
 	}else{
 		return m_Options.names.first() ;
 	}
@@ -899,8 +923,7 @@ const QString& engines::engine::configFileName() const
 {
 	if( m_Options.configFileNames.isEmpty() ){
 
-		static QString s ;
-		return s ;
+		return _emptyQString ;
 	}else{
 		return m_Options.configFileNames.first() ;
 	}
