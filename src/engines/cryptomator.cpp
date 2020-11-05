@@ -59,7 +59,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.configFileNames          = QStringList{ "masterkey.cryptomator" } ;
 	s.fuseNames                = QStringList{ "fuse.cryptomator" } ;
 	s.names                    = QStringList{ "cryptomator" } ;
-	s.failedToMountList        = QStringList{ " ERROR " } ;
+	s.failedToMountList        = QStringList{ " ERROR ","Exception " } ;
 	s.successfulMountedList    = QStringList{ "Mounted to" } ;
 	s.unMountCommand           = QStringList{ "SIGTERM" } ;
 	s.notFoundCode             = engines::engine::status::cryptomatorNotFound ;
