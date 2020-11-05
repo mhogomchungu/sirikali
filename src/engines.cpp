@@ -419,12 +419,12 @@ engines::engine::args engines::engine::command( const QByteArray& password,
 
 	const auto& exe = engine.executableFullPath() ;
 
-	if( exe.endsWith( ".jar" ) ){
+	if( engine.needsJava() ){
 
 		s.insert( 0,exe ) ;
 		s.insert( 0,"-jar" ) ;
 
-		return { args,m,"java",s } ;
+		return { args,m,engine.javaFullPath(),s } ;
 	}else{
 		return { args,m,exe,s } ;
 	}
@@ -653,10 +653,21 @@ static engines::engine::BaseOptions _update( engines::engine::BaseOptions m )
 	return m ;
 }
 
+static std::function< QString() > _java_full_path( const QString& exeName )
+{
+	if( exeName.endsWith( ".jar" ) ){
+
+		return [](){ return engines::executableFullPath( "java" ) ; } ;
+	}else{
+		return [](){ return QString() ; } ;
+	}
+}
+
 engines::engine::engine( engines::engine::BaseOptions o ) :
 	m_Options( _update( std::move( o ) ) ),
 	m_processEnvironment( _set_env( *this ) ),
 	m_exeFullPath( [ this ](){ return engines::executableFullPath( this->executableName(),*this ) ; } ),
+	m_exeJavaFullPath( _java_full_path( this->executableName() ) ),
 	m_version( this->name(),[ this ](){ return _installedVersion( *this,m_processEnvironment,m_Options.versionInfo ) ; } )
 {
 }
@@ -664,6 +675,16 @@ engines::engine::engine( engines::engine::BaseOptions o ) :
 const QString& engines::engine::executableFullPath() const
 {
 	return m_exeFullPath.get() ;
+}
+
+const QString& engines::engine::javaFullPath() const
+{
+	return m_exeJavaFullPath.get() ;
+}
+
+bool engines::engine::needsJava() const
+{
+	return this->executableName().endsWith( ".jar" ) ;
 }
 
 bool engines::engine::isInstalled() const
@@ -1035,6 +1056,11 @@ engines::engine::status engines::engine::passAllRequirenments( const engines::en
 	if( this->executableFullPath().isEmpty() ){
 
 		return this->notFoundCode() ;
+	}
+
+	if( this->needsJava() && this->javaFullPath().isEmpty() ){
+
+		return engines::engine::status::javaNotFound ;
 	}
 
 	if( opt.key.isEmpty() && this->requiresAPassword( opt ) ){
@@ -1634,6 +1660,10 @@ QString engines::engine::cmdStatus::toString() const
 	case engines::engine::status::ecryptfs_simpleNotFound :
 
 		return QObject::tr( "Failed To Complete The Request.\nEcryptfs-simple Executable Could Not Be Found." ) ;
+
+	case engines::engine::status::javaNotFound :
+
+		return QObject::tr( "Failed To Complete The Request.\nJava Executable Could Not Be Found." ) ;
 
 	case engines::engine::status::gocryptfsNotFound :
 

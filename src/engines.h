@@ -296,6 +296,7 @@ public:
 			securefsNotFound,
 			gocryptfsNotFound,
 			ecryptfs_simpleNotFound,
+		        javaNotFound,
 
 			customCommandNotFound,
 			customCommandBadPassword,
@@ -583,6 +584,7 @@ public:
 		bool requiresAPassword() const ;
 		bool requiresNoPassword() const ;
 		bool usesOnlyMountPoint() const ;
+		bool needsJava() const ;
 
 		engines::engine::status notFoundCode() const ;
 
@@ -600,6 +602,8 @@ public:
 
 		const QString& defaultFavoritesMountOptions() const ;
 		const QString& executableFullPath() const ;
+		const QString& javaFullPath() const ;
+
 		const QString& minimumVersion() const ;
 		const QString& sirikaliMinimumVersion() const ;
 		const QString& reverseString() const ;
@@ -810,6 +814,7 @@ public:
 		const BaseOptions m_Options ;
 		const QProcessEnvironment m_processEnvironment ;
 		const engines::exeFullPath m_exeFullPath ;
+		const engines::exeFullPath m_exeJavaFullPath ;
 		const engines::version m_version ;
 	} ;
 
