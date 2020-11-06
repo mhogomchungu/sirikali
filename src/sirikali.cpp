@@ -2126,7 +2126,10 @@ engines::engine::cmdStatus sirikali::unMountVolume( const sirikali::mountedEntry
 
 	if( s.success() && m.backendRequireMountPath() ){
 
-		siritask::deleteMountFolder( e.mountPoint ) ;
+		utility::Timer( 1000,[ s = e.mountPoint ](){
+
+			siritask::deleteMountFolder( s ) ;
+		} ) ;
 	}
 
 	return s ;
