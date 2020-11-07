@@ -61,7 +61,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.names                 = QStringList{ "encfs","encfsctl" } ;
 	s.failedToMountList     = QStringList{ "Error" } ;
 	s.successfulMountedList = QStringList{ "has been started" } ;
-	s.notFoundCode          = engines::engine::status::encfsNotFound ;
+	s.notFoundCode          = engines::engine::status::engineExecutableNotFound ;
 	s.versionInfo           = { { "--version",false,2,0 } } ;
 
 	if( utility::platformIsWindows() ){
@@ -110,7 +110,7 @@ engines::engine::status encfs::errorCode( const QString& e,int s ) const
 
 	if( e.contains( this->incorrectPasswordText() ) ){
 
-		return engines::engine::status::encfsBadPassword ;
+		return engines::engine::status::badPassword ;
 
 	}else if( e.contains( "cygfuse: initialization failed: winfsp" ) ){
 

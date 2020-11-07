@@ -1578,33 +1578,9 @@ QString engines::engine::cmdStatus::toString() const
 
 		return QObject::tr( "Backend Requires A Password." ) ;
 
-	case engines::engine::status::cryfsBadPassword :
+	case engines::engine::status::badPassword :
 
-		return QObject::tr( "Failed To Unlock A Cryfs Volume.\nWrong Password Entered." ) ;
-
-	case engines::engine::status::sshfsBadPassword :
-
-		return QObject::tr( "Failed To Connect To The Remote Computer.\nWrong Password Entered." ) ;
-
-	case engines::engine::status::encfsBadPassword :
-
-		return QObject::tr( "Failed To Unlock An Encfs Volume.\nWrong Password Entered." ) ;
-
-	case engines::engine::status::cryptomatorBadPassword :
-
-		return QObject::tr( "Failed To Unlock A Cryptomator Volume.\nWrong Password Entered." ) ;
-
-	case engines::engine::status::gocryptfsBadPassword :
-
-		return QObject::tr( "Failed To Unlock A Gocryptfs Volume.\nWrong Password Entered." ) ;
-
-	case engines::engine::status::ecryptfsBadPassword :
-
-		return QObject::tr( "Failed To Unlock An Ecryptfs Volume.\nWrong Password Entered." ) ;
-
-	case engines::engine::status::fscryptBadPassword :
-
-		return QObject::tr( "Failed To Unlock An Fscrypt Volume.\nWrong Password Entered." ) ;
+		return QObject::tr( "Failed To Unlock \"%1\" Volume.\nWrong Password Entered." ).arg( m_engine->name() ) ;
 
 	case engines::engine::status::fscryptKeyFileRequired :
 
@@ -1618,33 +1594,13 @@ QString engines::engine::cmdStatus::toString() const
 
 		return QObject::tr( "A Space Character Is Not Allowed In Paths When Using Ecryptfs Backend And Polkit." ) ;
 
-	case engines::engine::status::securefsBadPassword :
-
-		return QObject::tr( "Failed To Unlock A Securefs Volume.\nWrong Password Entered." ) ;
-
-	case engines::engine::status::customCommandBadPassword :
-
-		return QObject::tr( "Failed To Unlock A Custom Volume.\nWrong Password Entered." ) ;
-
-	case engines::engine::status::cryptomatorNotFound :
-
-		return QObject::tr( "Failed To Complete The Request.\nCryptomator Executable Could Not Be Found." ) ;
-
-	case engines::engine::status::sshfsNotFound :
-
-		return QObject::tr( "Failed To Complete The Request.\nSshfs Executable Could Not Be Found." ) ;
-
-	case engines::engine::status::fscryptNotFound :
-
-		return QObject::tr( "Failed To Complete The Request.\nFscrypt Executable Could Not Be Found." ) ;
-
 	case engines::engine::status::backEndDoesNotSupportCustomConfigPath :
 
 		return QObject::tr( "Backend Does Not Support Custom Configuration File Path." ) ;
 
-	case engines::engine::status::cryfsNotFound :
+	case engines::engine::status::engineExecutableNotFound :
 
-		return QObject::tr( "Failed To Complete The Request.\nCryfs Executable Could Not Be Found." ) ;
+		return QObject::tr( "Failed To Complete The Request.\n%1 Executable Could Not Be Found." ).arg( m_engine->name() ) ;
 
 	case engines::engine::status::backendTimedOut :
 
@@ -1670,10 +1626,6 @@ QString engines::engine::cmdStatus::toString() const
 
 		return QObject::tr( "Mount Point Folder Path Is Not Empty." ) ;
 
-	case engines::engine::status::encfsNotFound :
-
-		return QObject::tr( "Failed To Complete The Request.\nEncfs Executable Could Not Be Found." ) ;
-
 	case engines::engine::status::ecryptfs_simpleNotFound :
 
 		return QObject::tr( "Failed To Complete The Request.\nEcryptfs-simple Executable Could Not Be Found." ) ;
@@ -1681,14 +1633,6 @@ QString engines::engine::cmdStatus::toString() const
 	case engines::engine::status::javaNotFound :
 
 		return QObject::tr( "Failed To Complete The Request.\nJava Executable Could Not Be Found." ) ;
-
-	case engines::engine::status::gocryptfsNotFound :
-
-		return QObject::tr( "Failed To Complete The Request.\nGocryptfs Executable Could Not Be Found." ) ;
-
-	case engines::engine::status::securefsNotFound :
-
-		return QObject::tr( "Failed To Complete The Request.\nSecurefs Executable Could Not Be Found." ) ;
 
 	case engines::engine::status::failedToCreateMountPoint :
 
@@ -1720,10 +1664,6 @@ QString engines::engine::cmdStatus::toString() const
 	case engines::engine::status::fscryptPartialVolumeClose :
 
 		return QObject::tr( "Folder Not Fully Locked Because Some Files Are Still In Use." ) ;
-
-	case engines::engine::status::customCommandNotFound :
-
-		return QObject::tr( "Failed To Complete The Request.\nThe Executable For This Backend Could Not Be Found." ) ;
 
 	case engines::engine::status::invalidConfigFileName :
 

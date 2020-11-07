@@ -59,10 +59,10 @@ static engines::engine::BaseOptions _setOptions()
 	s.configFileNames          = QStringList{ "masterkey.cryptomator" } ;
 	s.fuseNames                = QStringList{ "fuse.cryptomator" } ;
 	s.names                    = QStringList{ "cryptomator" } ;
-	s.failedToMountList        = QStringList{ " ERROR ","Exception " } ;
+	s.failedToMountList        = QStringList{ " ERROR ","Exception" } ;
 	s.successfulMountedList    = QStringList{ "Mounted to" } ;
 	s.unMountCommand           = QStringList{ "SIGTERM" } ;
-	s.notFoundCode             = engines::engine::status::cryptomatorNotFound ;
+	s.notFoundCode             = engines::engine::status::engineExecutableNotFound ;
 	s.versionInfo              = { {} } ;
 
 	s.mountControlStructure    = "--vault %{cipherFolder} -fusemount %{mountPoint}" ;
@@ -113,7 +113,7 @@ engines::engine::status cryptomator::errorCode( const QString& e,int s ) const
 
 	if( e.contains( this->incorrectPasswordText() ) ){
 
-		return engines::engine::status::cryptomatorBadPassword ;
+		return engines::engine::status::badPassword ;
 	}else{
 		return engines::engine::status::backendFail ;
 	}

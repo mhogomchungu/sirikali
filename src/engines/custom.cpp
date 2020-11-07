@@ -80,7 +80,7 @@ static void _parse( engines::engine::BaseOptions& s,const SirikaliJson& json )
 	s.volumePropertiesCommands        = json.getStringList( "volumePropertiesCommands" ) ;
 	s.hasConfigFile                   = s.configFileNames.size() > 0 ;
 
-	s.notFoundCode                    = engines::engine::status::customCommandNotFound ;
+	s.notFoundCode                    = engines::engine::status::engineExecutableNotFound ;
 
 	auto versionArgumentString        = json.getString( "versionArgumentString" ) ;
 	auto versionOutputStdOut          = json.getBool( "versionOutputStdOut",true ) ;
@@ -191,7 +191,7 @@ engines::engine::status custom::errorCode( const QString& e,int s ) const
 
 		if( ok && n == s ){
 
-			return engines::engine::status::customCommandBadPassword ;
+			return engines::engine::status::badPassword ;
 		}else{
 			return engines::engine::status::backendFail ;
 		}
@@ -200,7 +200,7 @@ engines::engine::status custom::errorCode( const QString& e,int s ) const
 
 		if( !s.isEmpty() && e.contains( s ) ){
 
-			return engines::engine::status::customCommandBadPassword ;
+			return engines::engine::status::badPassword ;
 
 		}else if( e.contains( "cannot load WinFsp" ) ){
 

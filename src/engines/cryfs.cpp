@@ -66,7 +66,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.names                 = QStringList{ "cryfs" } ;
 	s.executableNames       = QStringList{ "cryfs" } ;
 
-	s.notFoundCode          = engines::engine::status::cryfsNotFound ;
+	s.notFoundCode          = engines::engine::status::engineExecutableNotFound ;
 	s.versionInfo           = { { "--version",true,2,0 } } ;
 
 	if( utility::platformIsWindows() ){
@@ -121,7 +121,7 @@ engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 
 		if( s == 11 ){
 
-			return engines::engine::status::cryfsBadPassword ;
+			return engines::engine::status::badPassword ;
 
 		}else if( s == 14 ){
 
@@ -137,7 +137,7 @@ engines::engine::status cryfs::errorCode( const QString& e,int s ) const
 		 */
 		if( utility::containsAtleastOne( e,"Error 11:",this->incorrectPasswordText() ) ){
 
-			return engines::engine::status::cryfsBadPassword ;
+			return engines::engine::status::badPassword ;
 
 		}else if( e.contains( "This filesystem is for CryFS" ) &&
 			  e.contains( "It has to be migrated" ) ){

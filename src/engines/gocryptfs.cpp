@@ -61,7 +61,7 @@ static engines::engine::BaseOptions _setOptions()
 					       "gocryptfs.reverse.conf" } ;
 	s.fuseNames             = QStringList{ "fuse.gocryptfs","fuse.gocryptfs-reverse" } ;
 	s.names                 = QStringList{ "gocryptfs","gocryptfs.reverse","gocryptfs-reverse" } ;
-	s.notFoundCode          = engines::engine::status::gocryptfsNotFound ;
+	s.notFoundCode          = engines::engine::status::engineExecutableNotFound ;
 	s.versionInfo           = { { "--version",true,1,0 } } ;
 
 	s.createControlStructure = "-q --init %{createOptions} %{cipherFolder}" ;
@@ -129,12 +129,12 @@ engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const
 
 		if( s == 12 ){
 
-			return engines::engine::status::gocryptfsBadPassword ;
+			return engines::engine::status::badPassword ;
 		}
 	}else{
 		if( e.contains( this->incorrectPasswordText() ) ){
 
-			return engines::engine::status::gocryptfsBadPassword ;
+			return engines::engine::status::badPassword ;
 		}
 	}
 

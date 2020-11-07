@@ -319,7 +319,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.failedToMountList     = QStringList{ "Error" } ;
 	s.names                 = QStringList{ "fscrypt","fscrypt*" } ;
 	s.volumePropertiesCommands = QStringList{ "fscrypt status %{plainFolder}" } ;
-	s.notFoundCode             = engines::engine::status::fscryptNotFound ;
+	s.notFoundCode             = engines::engine::status::engineExecutableNotFound ;
 	s.versionInfo              = { { "--version",true,2,0 },    // for fscrypt >= 0.2.7
 				       { "--version",true,0,2 } } ; // for fscrypt < 0.2.7
 
@@ -509,7 +509,7 @@ engines::engine::status fscrypt::errorCode( const QString& e,int s ) const
 
 	if( e.contains( this->incorrectPasswordText() ) ){
 
-		return engines::engine::status::fscryptBadPassword ;
+		return engines::engine::status::badPassword ;
 
 	}else if( e.contains( "fscrypt unlock: no key file specified" ) ){
 

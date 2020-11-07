@@ -62,7 +62,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.successfulMountedList = QStringList{ "has been started","init" } ;
 	s.executableNames       = QStringList{ "securefs" } ;
 
-	s.notFoundCode          = engines::engine::status::securefsNotFound ;
+	s.notFoundCode          = engines::engine::status::engineExecutableNotFound ;
 	s.versionInfo           = { { "version",true,1,0 } } ;
 
 	if( utility::platformIsWindows() ){
@@ -140,7 +140,7 @@ engines::engine::status securefs::errorCode( const QString& e,int s ) const
 
 	if( e.contains( this->incorrectPasswordText() ) ){
 
-		return engines::engine::status::securefsBadPassword ;
+		return engines::engine::status::badPassword ;
 
 	}else if( e.contains( "SecureFS cannot load WinFsp" ) ){
 

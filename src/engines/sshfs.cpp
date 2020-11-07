@@ -61,7 +61,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.names                 = QStringList{ "sshfs" } ;
 	s.executableNames       = QStringList{ "sshfs" } ;
 
-	s.notFoundCode          = engines::engine::status::sshfsNotFound ;
+	s.notFoundCode          = engines::engine::status::engineExecutableNotFound ;
 	s.versionInfo           = { { "--version",true,2,0 } } ;
 
 	s.mountControlStructure = "%{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;

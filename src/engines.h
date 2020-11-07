@@ -278,45 +278,32 @@ public:
 			volumeCreatedSuccessfully,
 
 			backendRequiresPassword,
+			badPassword,
 
-			cryfsBadPassword,
-			encfsBadPassword,
-			sshfsBadPassword,
-			gocryptfsBadPassword,
-			securefsBadPassword,
-			ecryptfsBadPassword,
-			fscryptBadPassword,
-			cryptomatorBadPassword,
-
-			cryptomatorNotFound,
-			sshfsNotFound,
-			cryfsNotFound,
-			encfsNotFound,
-			fscryptNotFound,
-			securefsNotFound,
-			gocryptfsNotFound,
 			ecryptfs_simpleNotFound,
-		        javaNotFound,
-
-			customCommandNotFound,
-			customCommandBadPassword,
+			engineExecutableNotFound,
+			javaNotFound,
 
 			cryfsMigrateFileSystem,
 			cryfsReplaceFileSystem,
 			cryfsVersionTooOldToMigrateVolume,
+
+			backEndDoesNotSupportCustomConfigPath,
 			notSupportedMountPointFolderPath,
 			mountPointFolderNotEmpty,
 			IllegalPath,
 
 		        backendFailedToMeetSiriKaliMinimumVersion,
+			backEndFailedToMeetMinimumRequirenment,
+
 			fscryptPartialVolumeClose,
 			failedToLoadWinfsp,
 			fscryptKeyFileRequired,
-			backEndFailedToMeetMinimumRequirenment,
+
 			failedToStartPolkit,
 			failedToUnMount,
-			backEndDoesNotSupportCustomConfigPath,
 			failedToCreateMountPoint,
+
 			invalidConfigFileName,
 			backendFail,
 			backendTimedOut,

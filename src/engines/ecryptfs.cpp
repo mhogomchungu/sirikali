@@ -221,7 +221,7 @@ engines::engine::status ecryptfs::errorCode( const QString& e,int s ) const
 
 	}else if( e.contains( this->incorrectPasswordText() ) ){
 
-		return engines::engine::status::ecryptfsBadPassword ;
+		return engines::engine::status::badPassword ;
 	}else{
 		return engines::engine::status::backendFail ;
 	}
