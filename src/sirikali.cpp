@@ -1827,8 +1827,15 @@ void sirikali::createVolume( QAction * ac )
 	}
 }
 
-void sirikali::autoMount( const QString& volume )
+void sirikali::autoMount( const QString& vv )
 {
+	auto volume = vv ;
+
+	while( volume.endsWith( '/' ) ) {
+
+		volume = utility::removeLast( volume,1 ) ;
+	}
+
 	if( volume.isEmpty() ){
 
 		return ;
