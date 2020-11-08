@@ -144,7 +144,7 @@ static volumeInfo::List _linux_volumes()
 
 				if( !q.contains( it ) ){
 
-					q.append( it ) ;
+					q.append( ',' + it ) ;
 				}
 			}
 
