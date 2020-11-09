@@ -771,47 +771,39 @@ void sirikali::setLocalizationLanguage( bool translate )
 
 void sirikali::startGUI( const QString& volume )
 {
-	mountinfo::unlockedVolumes().then( [ this,volume ]( mountinfo::List m ){
+	auto m = settings::instance().autoMountFavoritesOnStartUp() ;
+
+	if( m_startHidden ){
+
+		this->startGUI( volume,m ) ;
+	}else{
+		this->disableAll() ;
+
+		this->showMainWindow() ;
+
+		auto s = settings::instance().delayBeforeAutoMountAtStartup() ;
+
+		utility::Timer( s * 1000,[ this,volume,m ](){
+
+			this->startGUI( volume,m ) ;
+		} ) ;
+	}
+}
+
+void sirikali::startGUI( const QString& volume,bool autoMountAtStartUp )
+{
+	mountinfo::unlockedVolumes().then( [ = ]( mountinfo::List m ){
 
 		this->updateVolumeList( m,false ) ;
 
-		if( !m_startHidden ){
+		if( autoMountAtStartUp ){
 
-			this->showMainWindow() ;
+			this->autoUnlockVolumes( m ) ;
 		}
 
-		if( settings::instance().autoMountFavoritesOnStartUp() ){
+		this->autoMount( volume ) ;
 
-			auto s = settings::instance().delayBeforeAutoMountAtStartup() ;
-
-			if( s == 0 ){
-
-				this->autoUnlockVolumes( m ) ;
-
-				this->autoMount( volume ) ;
-
-				utility::applicationStarted() ;
-			}else{
-				this->disableAll() ;
-
-				QString a = "Waiting for %1 seconds before auto mounting" ;
-
-				utility::debug() << a.arg( QString::number( s ) ) ;
-
-				utility::Timer( s * 1000,[ this,volume,m = std::move( m ) ](){
-
-					this->autoUnlockVolumes( m ) ;
-
-					this->autoMount( volume ) ;
-
-					utility::applicationStarted() ;
-				} ) ;
-			}
-		}else{
-			this->autoMount( volume ) ;
-
-			utility::applicationStarted() ;
-		}
+		utility::applicationStarted() ;
 	} ) ;
 }
 
@@ -1838,7 +1830,7 @@ void sirikali::autoMount( const QString& vv )
 
 	if( volume.isEmpty() ){
 
-		return ;
+		return this->enableAll() ;
 	}
 
 	auto& favorites = favorites::instance() ;

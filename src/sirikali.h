@@ -96,6 +96,7 @@ private slots:
 	void closeApplication( int = 0,const QString& = QString() ) ;
 	void unlockVolume( bool ) ;
 	void startGUI( const QString& ) ;
+	void startGUI( const QString&,bool ) ;
 	void autoMount( const QString& ) ;
 	void defaultButton( void ) ;
 	void itemClicked( QTableWidgetItem * ) ;
