@@ -76,6 +76,37 @@ cryptomator::cryptomator() :
 {
 }
 
+engines::engine::terminate_result
+cryptomator::terminateProcess( const engines::engine::terminate_process& e ) const
+{
+	QStringList args{ "-u",e.mountPath } ;
+
+	/*
+	 * First we unmount the file system and then we terminate the process
+	 * to make sure the file system is not in use before terminating its
+	 * process.
+	 */
+
+	utility::logger().showText( "fusermount",args ) ;
+
+	auto m = utility::unwrap( Task::process::run( "fusermount",args ) ) ;
+
+	if( m.success() ){
+
+		return engines::engine::terminateProcess( e ) ;
+	}else{
+		utility::debug() << "Failed To Unmount file system, is it still in use?" ;
+
+		auto a = Task::process::result( "SiriKali Error: File system is still in use",
+						QByteArray(),
+						-1,
+						0,
+						true ) ;
+
+		return { std::move( a ),"fusermount",std::move( args ) } ;
+	}
+}
+
 engines::engine::ownsCipherFolder cryptomator::ownsCipherPath( const QString& cipherPath,
 							       const QString& configPath ) const
 {

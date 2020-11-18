@@ -23,6 +23,8 @@ struct cryptomator : public engines::engine
 {
 	cryptomator() ;
 
+	terminate_result terminateProcess( const terminate_process& e ) const override ;
+
 	engines::engine::ownsCipherFolder ownsCipherPath( const QString& cipherPath,
 							  const QString& configPath ) const override ;
 

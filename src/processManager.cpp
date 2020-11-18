@@ -20,7 +20,6 @@
 #include "processManager.h"
 
 static const char * _backEndTimedOut       = "BackendTimedOut" ;
-static const char * _backEndFailedToFinish = "BackendFailedToFinish" ;
 
 struct result
 {
@@ -135,99 +134,6 @@ static result _getProcessOutput( QProcess& exe,const engines::engine& engine )
 	}
 }
 
-struct terminate_process{
-
-	QProcess& exe ;
-	const QProcessEnvironment& env ;
-	const QString& mountPath ;
-	const QStringList& unMountCommand ;
-};
-
-struct terminate_result{
-
-	Task::process::result result ;
-	QString exe ;
-	QStringList args ;
-} ;
-
-static terminate_result _failed_to_finish( QString exe,QStringList args )
-{
-	auto a = Task::process::result( _backEndFailedToFinish,
-					QByteArray(),
-					-1,
-					0,
-					true ) ;
-
-	return { std::move( a ),std::move( exe ),std::move( args ) } ;
-}
-
-static terminate_result _terminate_process( const terminate_process& e )
-{
-	if( e.unMountCommand.isEmpty() ){
-
-		auto a = "SiriKali Error: Unmount Command Not Set" ;
-		auto b = Task::process::result( a,QByteArray(),-1,0,true ) ;
-
-		return { std::move( b ),{},{} } ;
-	}
-
-	auto args = e.unMountCommand ;
-
-	QString exe = args.takeAt( 0 ) ;
-
-	if( exe == "SIGTERM" ){
-
-		utility::debug() << "Terminating a process by sending it SIGTERM" ;
-
-		e.exe.terminate() ;
-
-		if( utility::waitForFinished( e.exe ) ){
-
-			auto a = Task::process::result( QByteArray(),
-							QByteArray(),
-							0,
-							0,
-							true ) ;
-
-			return { std::move( a ),std::move( exe ),std::move( args ) } ;
-		}else{
-			return _failed_to_finish( std::move( exe ),std::move( args ) ) ;
-		}
-	}
-
-	for( auto& it : args ){
-
-		if( it == "%{PID}" ){
-
-			it = QString::number( e.exe.processId() ) ;
-
-		}else if( it == "%{mountPoint}" ){
-
-			it = e.mountPath ;
-		}
-	}
-
-	utility::logger logger ;
-
-	logger.showText( exe,args ) ;
-
-	auto m = utility::unwrap( Task::process::run( exe,args,-1,"",e.env ) ) ;
-
-	logger.showText( m ) ;
-
-	if( m.success() ){
-
-		if( utility::waitForFinished( e.exe ) ){
-
-			return { std::move( m ),std::move( exe ),std::move( args ) } ;
-		}else{
-			return _failed_to_finish( std::move( exe ),std::move( args ) ) ;
-		}
-	}else{
-		return { std::move( m ),std::move( exe ),std::move( args ) } ;
-	}
-}
-
 Task::process::result processManager::run( const processManager::opts& s )
 {
 	if( s.create ){
@@ -282,10 +188,7 @@ Task::process::result processManager::add( const processManager::opts& opts )
 
 		if( m.type == engines::engine::error::Timeout ){
 
-			const auto& ee = opts.engine.unMountCommand() ;
-			const auto& ss = opts.args.mountPath ;
-
-			_terminate_process( { *exe,opts.engine.getProcessEnvironment(),ss,ee } ) ;
+			opts.engine.terminateProcess( { *exe,opts.args.mountPath  } ) ;
 
 			return error( _backEndTimedOut ) ;
 
@@ -324,8 +227,7 @@ Task::process::result processManager::add( const processManager::opts& opts )
 	return s ;
 }
 
-Task::process::result processManager::remove( const QStringList& unMountCommand,
-					      const QString& mountPoint)
+Task::process::result processManager::remove( const QString& mountPoint )
 {
 	Task::process::result r ;
 
@@ -333,7 +235,7 @@ Task::process::result processManager::remove( const QStringList& unMountCommand,
 
 		if( s.mountPoint() == mountPoint ){
 
-			auto m = _terminate_process( { s.exe(),s.env(),s.mountPoint(),unMountCommand } ) ;
+			auto m = s.engine().terminateProcess( { s.exe(),s.mountPoint() } ) ;
 
 			if( m.result.success() ) {
 

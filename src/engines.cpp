@@ -637,6 +637,99 @@ engines::engine::~engine()
 {
 }
 
+static engines::engine::terminate_result _failed_to_finish( QString exe,QStringList args )
+{
+	auto a = Task::process::result( "BackendFailedToFinish",
+					QByteArray(),
+					-1,
+					0,
+					true ) ;
+
+	return { std::move( a ),std::move( exe ),std::move( args ) } ;
+}
+
+engines::engine::terminate_result
+engines::engine::terminateProcess( const engines::engine::terminate_process& e ) const
+{
+	auto args = [ & ](){
+
+		if( utility::platformIsWindows() ){
+
+			return this->windowsUnMountCommand() ;
+		}else{
+			return this->unMountCommand() ;
+		}
+	}() ;
+
+	if( args.isEmpty() ){
+
+		auto a = "SiriKali Error: Unmount Command Not Set" ;
+		auto b = Task::process::result( a,QByteArray(),-1,0,true ) ;
+
+		return { std::move( b ),{},{} } ;
+	}
+
+	QString exe = args.takeAt( 0 ) ;
+
+	if( exe == "SIGTERM" ){
+
+		utility::debug() << "Terminating a process by sending it SIGTERM" ;
+
+		e.exe.terminate() ;
+
+		if( utility::waitForFinished( e.exe ) ){
+
+			auto a = Task::process::result( QByteArray(),
+							QByteArray(),
+							0,
+							0,
+							true ) ;
+
+			return { std::move( a ),std::move( exe ),std::move( args ) } ;
+		}else{
+			return _failed_to_finish( std::move( exe ),std::move( args ) ) ;
+		}
+	}
+
+	for( auto& it : args ){
+
+		if( it == "%{PID}" ){
+
+			it = QString::number( e.exe.processId() ) ;
+
+		}else if( it == "%{mountPoint}" ){
+
+			it = e.mountPath ;
+		}
+	}
+
+	utility::logger logger ;
+
+	logger.showText( exe,args ) ;
+
+	auto m = utility::unwrap( Task::process::run( exe,args,-1,"",this->getProcessEnvironment() ) ) ;
+
+	logger.showText( m ) ;
+
+	if( m.success() ){
+
+		if( utility::waitForFinished( e.exe ) ){
+
+			return { std::move( m ),std::move( exe ),std::move( args ) } ;
+		}else{
+			return _failed_to_finish( std::move( exe ),std::move( args ) ) ;
+		}
+	}else{
+		return { std::move( m ),std::move( exe ),std::move( args ) } ;
+	}
+}
+
+engines::engine::terminate_result engines::engine::terminateProcess( const QString& mountPath ) const
+{
+	Q_UNUSED( mountPath )
+	return engines::engine::terminate_result() ;
+}
+
 static engines::engine::BaseOptions _update( engines::engine::BaseOptions m )
 {
 	for( auto& it : m.names ){

@@ -151,7 +151,7 @@ static void _run_preUnmountCommand( const engines::engine::unMount& e )
 
 		s.append( e.cipherFolder ) ;
 		s.append( e.mountPoint ) ;
-		s.append( e.fileSystem ) ;
+		s.append( e.engine.name() ) ;
 
 		utility::Task::run( cmd,s,timeOut,false ).get() ;
 	}
@@ -159,7 +159,7 @@ static void _run_preUnmountCommand( const engines::engine::unMount& e )
 
 static engines::engine::cmdStatus _unmount( const engines::engine::unMount& e )
 {
-	const auto& engine = engines::instance().getByName( e.fileSystem ) ;
+	const auto& engine = e.engine ;
 
 	if( engine.unknown() ){
 
@@ -168,17 +168,7 @@ static engines::engine::cmdStatus _unmount( const engines::engine::unMount& e )
 
 	if( utility::platformIsWindows() || engine.runsInForeGround() ){
 
-		const auto& m = [ & ](){
-
-			if( utility::platformIsWindows() ){
-
-				return engine.windowsUnMountCommand() ;
-			}else{
-				return engine.unMountCommand() ;
-			}
-		}() ;
-
-		auto s = processManager::get().remove( m,e.mountPoint ) ;
+		auto s = processManager::get().remove( e.mountPoint ) ;
 
 		if( s.success() ){
 
@@ -207,6 +197,8 @@ engines::engine::cmdStatus siritask::encryptedFolderUnMount( const siritask::unm
 {
 	const auto& fav = favorites::instance().readFavorite( e.cipherFolder,e.mountPoint ) ;
 
+	const auto& fileSystem = e.engine.name() ;
+
 	if( fav.hasValue() ){
 
 		const auto& m = fav ;
@@ -214,18 +206,18 @@ engines::engine::cmdStatus siritask::encryptedFolderUnMount( const siritask::unm
 		auto& a = e.cipherFolder ;
 		auto& b = e.mountPoint ;
 
-		_run_command( { m.preUnmountCommand,a,b,e.fileSystem,"pre unmount",QByteArray() } ) ;
+		_run_command( { m.preUnmountCommand,a,b,fileSystem,"pre unmount",QByteArray() } ) ;
 
-		auto s = _unmount( { e.cipherFolder,e.mountPoint,e.fileSystem,e.numberOfAttempts } ) ;
+		auto s = _unmount( { e.cipherFolder,e.mountPoint,e.engine,e.numberOfAttempts } ) ;
 
 		if( s.success() ){
 
-			_run_command( { m.postUnmountCommand,a,b,e.fileSystem,"post unmount",QByteArray() } ) ;
+			_run_command( { m.postUnmountCommand,a,b,fileSystem,"post unmount",QByteArray() } ) ;
 		}
 
 		return s ;
 	}else{
-		return _unmount( { e.cipherFolder,e.mountPoint,e.fileSystem,e.numberOfAttempts }  ) ;
+		return _unmount( { e.cipherFolder,e.mountPoint,e.engine,e.numberOfAttempts }  ) ;
 	}
 }
 

@@ -39,7 +39,7 @@ namespace siritask
 
 		const QString& cipherFolder ;
 		const QString& mountPoint ;
-		const QString& fileSystem ;
+		const engines::engine& engine ;
 		int numberOfAttempts ;
 	} ;
 

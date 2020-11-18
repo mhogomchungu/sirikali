@@ -64,7 +64,7 @@ public:
 
 	Task::process::result run( const processManager::opts& ) ;
 	Task::process::result add( const processManager::opts& ) ;
-	Task::process::result remove( const QStringList& unMountCommand,const QString& mountPoint ) ;
+	Task::process::result remove( const QString& mountPoint ) ;
 	void removeInActive() ;
 	void updateVolumeList( std::function< void() > ) ;
 	std::vector< QStringList > commands() const ;

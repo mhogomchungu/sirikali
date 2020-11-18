@@ -143,7 +143,9 @@ static int _run( const QString& mm,const QStringList& args,secrets& ss )
 
 			if( a == volume || b == volume ){
 
-				if( siritask::encryptedFolderUnMount( { a,b,c,5 } ).success() ){
+				const auto& engine = engines::instance().getByName( c ) ;
+
+				if( siritask::encryptedFolderUnMount( { a,b,engine,5 } ).success() ){
 
 					siritask::deleteMountFolder( b ) ;
 
@@ -2119,11 +2121,21 @@ void sirikali::updateList( const volumeInfo& e )
 
 engines::engine::cmdStatus sirikali::unMountVolume( const sirikali::mountedEntry& e )
 {
-	auto s = siritask::encryptedFolderUnMount( { e.cipherPath,e.mountPoint,e.volumeType,5 } ) ;
+	const auto& engine = engines::instance().getByName( e.volumeType ) ;
 
-	const auto& m = s.engine() ;
+	auto mm = utility2::make_raii( [ this ](){
 
-	if( s.success() && m.backendRequireMountPath() ){
+		m_mountInfo.announceEvents( true ) ;
+	} ) ;
+
+	if( utility::platformIsLinux() && engine.runsInForeGround() ){
+
+		m_mountInfo.announceEvents( false ) ;
+	}
+
+	auto s = siritask::encryptedFolderUnMount( { e.cipherPath,e.mountPoint,engine,5 } ) ;
+
+	if( s.success() && engine.backendRequireMountPath() ){
 
 		utility::Timer( 1000,[ s = e.mountPoint ](){
 

@@ -212,7 +212,7 @@ public:
 
 			const QString& cipherFolder ;
 			const QString& mountPoint ;
-			const QString& fileSystem ;
+			const engines::engine& engine ;
 			int numberOfAttempts ;
 		} ;
 
@@ -616,6 +616,23 @@ public:
 		engine( BaseOptions ) ;
 
 		virtual ~engine() ;
+
+		struct terminate_process{
+
+			QProcess& exe ;
+			const QString& mountPath ;
+		};
+
+		struct terminate_result{
+
+			Task::process::result result ;
+			QString exe ;
+			QStringList args ;
+		} ;
+
+		virtual terminate_result terminateProcess( const terminate_process& ) const ;
+
+		virtual terminate_result terminateProcess( const QString& mountPath ) const ;
 
 		virtual engine::engine::error errorCode( const QString& ) const ;
 
