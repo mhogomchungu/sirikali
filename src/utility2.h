@@ -230,4 +230,32 @@ namespace utility2
 	} ;
 }
 
+namespace utility2
+{
+	template< typename Object,typename MemberFunction >
+	class mem_fn{
+	public:
+		mem_fn()
+		{
+		}
+		mem_fn( Object t,MemberFunction m ) : m_object( t ),m_memberFunction( m )
+		{
+		}
+		template< typename ... Args >
+		auto operator()( Args&& ... args )
+		{
+			return ( m_object->*m_memberFunction )( std::forward< Args >( args ) ... ) ;
+		}
+	private:
+		Object m_object ;
+		MemberFunction m_memberFunction ;
+	} ;
+
+	template< typename Object,typename MemberFunction >
+	mem_fn< Object,MemberFunction > make_mem_fn( Object t,MemberFunction m )
+	{
+		return mem_fn< Object,MemberFunction >( t,m ) ;
+	}
+}
+
 #endif

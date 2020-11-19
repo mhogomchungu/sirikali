@@ -313,8 +313,7 @@ private :
 	bool upgradingFileSystem( void ) ;
 	bool replaceFileSystem( void ) ;
 
-	void activateOptions() ;
-	void activateOptionsImpl() ;
+	void keyTypeChanged() ;
 
 	bool mountedAll() ;
 	bool completed( const engines::engine::cmdStatus&,const QString& m ) ;
@@ -384,7 +383,6 @@ private :
 				 yubikey,
 				 externalExecutable } ;
 
-		void setKeyUI( QComboBox * s ) ;
 		void setType( keyType::name s ) ;
 		bool key() const ;
 		void setAsKey() ;
@@ -418,7 +416,7 @@ private :
 			}
 		}
 		bool containsSecretStorage() const ;
-		void optionActivated( std::function< void() > function ) ;
+		void keyOptions( QComboBox *,keyDialog *,void( keyDialog::* )() ) ;
 	private:
 		size_t currentIndex() const ;
 		void addItem( keyType::name,const QString& ) ;
@@ -430,7 +428,7 @@ private :
 		} ;
 		std::vector< position > m_entries ;
 		QComboBox * m_comboBox ;
-		std::function< void() > m_function ;
+		utility2::mem_fn< keyDialog *,void( keyDialog::* )() > m_function ;
 	} m_keyType ;
 
 	struct walletKey

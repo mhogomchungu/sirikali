@@ -64,8 +64,6 @@ keyDialog::keyDialog( QWidget * parent,
 {
 	m_ui->setupUi( this ) ;
 
-	m_keyType.setKeyUI( m_ui->cbKeyType ) ;
-
 	m_settings.setParent( parent,&m_parentWidget,this ) ;
 	utility::setWindowOptions( this ) ;
 
@@ -199,8 +197,6 @@ keyDialog::keyDialog( QWidget * parent,secrets& s,
 {
 	m_ui->setupUi( this ) ;
 
-	m_keyType.setKeyUI( m_ui->cbKeyType ) ;
-
 	m_settings.setParent( parent,&m_parentWidget,this ) ;
 	utility::setWindowOptions( this ) ;
 
@@ -219,7 +215,7 @@ void keyDialog::setUpInitUI()
 {
 	this->setUIVisible( true ) ;
 
-	this->activateOptions() ;
+	m_keyType.keyOptions( m_ui->cbKeyType,this,&keyDialog::keyTypeChanged ) ;
 
 	if( utility::platformIsWindows() ){
 
@@ -599,7 +595,7 @@ void keyDialog::setUpVolumeProperties( const keyDialog::entry& ee )
 	} ;
 
 	auto s = keyDialog::mountPointPath( m_engine.get(),m_path,e.mountPointPath,
-					    m_settings,m_reUseMountPoint,function ) ;
+					    m_settings,m_reUseMountPoint,std::move( function ) ) ;
 
 	m_ui->lineEditMountPoint->setText( s ) ;
 }
@@ -1546,7 +1542,7 @@ bool keyDialog::replaceFileSystem()
 	return m_status == engines::engine::status::cryfsReplaceFileSystem ;
 }
 
-void keyDialog::activateOptionsImpl()
+void keyDialog::keyTypeChanged()
 {
 	m_walletType.clear() ;
 
@@ -1659,14 +1655,6 @@ void keyDialog::activateOptionsImpl()
 
 		_showVisibleKeyOption( true ) ;
 	}
-}
-
-void keyDialog::activateOptions()
-{
-	m_keyType.optionActivated( [ this ](){
-
-		this->activateOptionsImpl() ;
-	} ) ;
 }
 
 void keyDialog::openVolume()
@@ -1856,55 +1844,6 @@ keyDialog::keyType::keyType()
 {
 }
 
-void keyDialog::keyType::setKeyUI( QComboBox * s )
-{
-	m_comboBox = s ;
-
-	this->addItem( keyType::name::Key,tr( "Password" ) ) ;
-	this->addItem( keyType::name::keyfile,tr( "KeyFile" ) ) ;
-	this->addItem( keyType::name::keyKeyFile,tr( "Key+KeyFile" ) ) ;
-	this->addItem( keyType::name::hmacKeyFile,tr( "HMAC+KeyFile" ) ) ;
-	this->addItem( keyType::name::yubikey,tr( "YubiKey Challenge/Response" ) ) ;
-	this->addItem( keyType::name::externalExecutable,tr( "ExternalExecutable" ) ) ;
-
-	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::internal ) ){
-
-		this->addItem( keyType::name::internalWallet,tr( "Internal Wallet" ) ) ;
-	}
-
-	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::libsecret ) ){
-
-		this->addItem( keyType::name::libsecret,tr( "Gnome Wallet" ) ) ;
-	}
-
-	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::kwallet ) ){
-
-		this->addItem( keyType::name::kdewallet,tr( "Kde Wallet" ) ) ;
-	}
-
-	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::osxkeychain ) ){
-
-		this->addItem( keyType::name::kdewallet,tr( "OSX KeyChain" ) ) ;
-	}
-
-	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::windows_dpapi ) ){
-
-		this->addItem( keyType::name::windowsdpapi,tr( "Windows DPAPI" ) ) ;
-	}
-
-	this->setAsKey() ;
-
-	using fs = void( QComboBox::* )( int ) ;
-
-	connect( m_comboBox,static_cast< fs >( &QComboBox::currentIndexChanged ),[ this ]( int e ){
-
-		if( e >= 0 && e < static_cast< int >( m_entries.size() ) ){			
-
-			m_function() ;
-		}
-	} ) ;
-}
-
 void keyDialog::keyType::setType( keyDialog::keyType::name s )
 {
 	for( const auto& it : m_entries ){
@@ -1994,9 +1933,55 @@ bool keyDialog::keyType::containsSecretStorage() const
 		m == keyType::name::windowsdpapi ;
 }
 
-void keyDialog::keyType::optionActivated( std::function< void () >function )
+void keyDialog::keyType::keyOptions( QComboBox * s,keyDialog * object,void( keyDialog::*method )() )
 {
-	m_function = std::move( function ) ;
+	m_function = utility2::make_mem_fn( object,method ) ;
+
+	m_comboBox = s ;
+
+	this->addItem( keyType::name::Key,tr( "Password" ) ) ;
+	this->addItem( keyType::name::keyfile,tr( "KeyFile" ) ) ;
+	this->addItem( keyType::name::keyKeyFile,tr( "Key+KeyFile" ) ) ;
+	this->addItem( keyType::name::hmacKeyFile,tr( "HMAC+KeyFile" ) ) ;
+	this->addItem( keyType::name::yubikey,tr( "YubiKey Challenge/Response" ) ) ;
+	this->addItem( keyType::name::externalExecutable,tr( "ExternalExecutable" ) ) ;
+
+	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::internal ) ){
+
+		this->addItem( keyType::name::internalWallet,tr( "Internal Wallet" ) ) ;
+	}
+
+	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::libsecret ) ){
+
+		this->addItem( keyType::name::libsecret,tr( "Gnome Wallet" ) ) ;
+	}
+
+	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::kwallet ) ){
+
+		this->addItem( keyType::name::kdewallet,tr( "Kde Wallet" ) ) ;
+	}
+
+	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::osxkeychain ) ){
+
+		this->addItem( keyType::name::kdewallet,tr( "OSX KeyChain" ) ) ;
+	}
+
+	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::windows_dpapi ) ){
+
+		this->addItem( keyType::name::windowsdpapi,tr( "Windows DPAPI" ) ) ;
+	}
+
+	this->setAsKey() ;
+
+	using fs = void( QComboBox::* )( int ) ;
+
+	connect( m_comboBox,static_cast< fs >( &QComboBox::currentIndexChanged ),[ this ]( int e ){
+
+		if( e >= 0 && e < static_cast< int >( m_entries.size() ) ){
+
+			m_function() ;
+		}
+	} ) ;
 }
 
 size_t keyDialog::keyType::currentIndex() const
