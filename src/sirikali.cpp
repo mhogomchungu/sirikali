@@ -480,7 +480,7 @@ void sirikali::setUpApp( const QString& volume )
 
 	this->showTrayIcon() ;
 
-	if( utility::platformIsNOTWindows() ){
+	if( utility::platformIsNOTWindows() && checkUpdates::hasNetworkSupport() ){
 
 		QTimer::singleShot( settings::instance().checkForUpdateInterval(),this,SLOT( autoUpdateCheck() ) ) ;
 	}
@@ -609,8 +609,12 @@ void sirikali::setUpAppMenu()
 
 	if( utility::platformIsNOTWindows() ){
 
-		m->addAction( _addAction( false,false,tr( "Check For Updates" ),"Check For Updates",
-					  SLOT( updateCheck() ) ) ) ;
+		auto ac = _addAction( false,false,tr( "Check For Updates" ),"Check For Updates",
+				      SLOT( updateCheck() ) ) ;
+
+		ac->setEnabled( checkUpdates::hasNetworkSupport() ) ;
+
+		m->addAction( ac ) ;
 	}
 	m->addAction( _addAction( false,false,tr( "Unmount All" ),
 				  "Unmount All",SLOT( unMountAll() ) ) ) ;

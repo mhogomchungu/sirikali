@@ -17,7 +17,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 #include "checkforupdates.h"
+
+#if HAS_NETWORK_SUPPORT
+
 #include "settings.h"
 #include "json_parser.hpp"
 #include "engines.h"
@@ -227,3 +231,5 @@ void checkUpdates::checkForUpdate( size_t position )
 		}
 	}
 }
+
+#endif
