@@ -428,7 +428,6 @@ private :
 		} ;
 		std::vector< position > m_entries ;
 		QComboBox * m_comboBox ;
-		utility2::mem_fn< keyDialog,void( keyDialog::* )() > m_function ;
 	} m_keyType ;
 
 	struct walletKey

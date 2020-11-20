@@ -243,7 +243,7 @@ namespace utility2
 		{
 		}
 		template< typename ... Args >
-		auto operator()( Args&& ... args )
+		auto operator()( Args&& ... args ) const
 		{
 			return ( m_object->*m_memberFunction )( std::forward< Args >( args ) ... ) ;
 		}

@@ -1935,8 +1935,6 @@ bool keyDialog::keyType::containsSecretStorage() const
 
 void keyDialog::keyType::keyOptions( QComboBox * s,keyDialog * object,void( keyDialog::*method )() )
 {
-	m_function = utility2::make_mem_fn( object,method ) ;
-
 	m_comboBox = s ;
 
 	this->addItem( keyType::name::Key,tr( "Password" ) ) ;
@@ -1973,13 +1971,12 @@ void keyDialog::keyType::keyOptions( QComboBox * s,keyDialog * object,void( keyD
 
 	this->setAsKey() ;
 
-	using fs = void( QComboBox::* )( int ) ;
-
-	connect( m_comboBox,static_cast< fs >( &QComboBox::currentIndexChanged ),[ this ]( int e ){
+	connect( m_comboBox,static_cast< void( QComboBox::* )( int ) >( &QComboBox::currentIndexChanged ),
+		 [ this,function = utility2::make_mem_fn( object,method ) ]( int e ){
 
 		if( e >= 0 && e < static_cast< int >( m_entries.size() ) ){
 
-			m_function() ;
+			function() ;
 		}
 	} ) ;
 }
