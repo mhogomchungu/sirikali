@@ -238,7 +238,8 @@ namespace utility2
 		mem_fn()
 		{
 		}
-		mem_fn( Object t,MemberFunction m ) : m_object( t ),m_memberFunction( m )
+		mem_fn( Object * pointerToObject,MemberFunction objectMemberFunction ) :
+			m_object( pointerToObject ),m_memberFunction( objectMemberFunction )
 		{
 		}
 		template< typename ... Args >
@@ -247,14 +248,14 @@ namespace utility2
 			return ( m_object->*m_memberFunction )( std::forward< Args >( args ) ... ) ;
 		}
 	private:
-		Object m_object ;
+		Object * m_object ;
 		MemberFunction m_memberFunction ;
 	} ;
 
 	template< typename Object,typename MemberFunction >
-	mem_fn< Object,MemberFunction > make_mem_fn( Object t,MemberFunction m )
+	auto make_mem_fn( Object t,MemberFunction m )
 	{
-		return mem_fn< Object,MemberFunction >( t,m ) ;
+		return utility2::mem_fn< std::remove_pointer_t< Object >,MemberFunction >( t,m ) ;
 	}
 }
 
