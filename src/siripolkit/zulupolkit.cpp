@@ -87,7 +87,10 @@ static bool _terminalEchoOff( struct termios * old,struct termios * current )
 
 zuluPolkit::zuluPolkit( const QStringList& s ) : m_arguments( s )
 {
-	connect( &m_server,SIGNAL( newConnection() ),this,SLOT( gotConnection() ) ) ;
+	connect( &m_server,&QLocalServer::newConnection,[ this ](){
+
+		this->gotConnection() ;
+	} ) ;
 }
 
 zuluPolkit::~zuluPolkit()

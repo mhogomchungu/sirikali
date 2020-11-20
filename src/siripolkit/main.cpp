@@ -20,6 +20,8 @@
 #include <QCoreApplication>
 #include <QMetaObject>
 #include <QProcess>
+#include <QTimer>
+#include <QObject>
 
 #include "zulupolkit.h"
 
@@ -46,7 +48,18 @@ int main( int argc,char * argv[] )
 	}else{
 		zuluPolkit e( s ) ;
 
-		QMetaObject::invokeMethod( &e,"start",Qt::QueuedConnection ) ;
+		auto m = new QTimer() ;
+
+		m->setSingleShot( true ) ;
+
+		QObject::connect( m,&QTimer::timeout,[ & ](){
+
+			e.start() ;
+
+			m->deleteLater() ;
+		} ) ;
+
+		m->start( 100 ) ;
 
 		return a.exec() ;
 	}

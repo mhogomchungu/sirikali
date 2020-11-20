@@ -28,14 +28,12 @@
 
 class zuluPolkit : public QObject
 {
-	Q_OBJECT
 public:
 	zuluPolkit( const QStringList& ) ;
-	~zuluPolkit() ;
-private slots:
 	void start() ;
-	void gotConnection() ;
+	~zuluPolkit() ;
 private:
+	void gotConnection() ;
 	bool passSanityCheck( const QString& cmd,const QStringList& s ) ;
 	QStringList m_arguments ;
 	QString readStdin() ;
