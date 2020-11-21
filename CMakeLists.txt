@@ -202,9 +202,10 @@ else()
 		message( STATUS "lxqt wallet support will be provided by an internal library" )
 		message( STATUS "---------------------------------------------------------------------------" )
 
-		ADD_SUBDIRECTORY( src/3rdParty/lxqt_wallet )
 		include_directories( ${PROJECT_SOURCE_DIR}/src/3rdParty/lxqt_wallet/frontend )
 		include_directories( ${PROJECT_BINARY_DIR}/src/3rdParty/lxqt_wallet/frontend )
+
+		ADD_SUBDIRECTORY( src/3rdParty/lxqt_wallet )
 	else()
 	        if( LXQT_WALLET_VERSION VERSION_GREATER "3.1.0"  )
 

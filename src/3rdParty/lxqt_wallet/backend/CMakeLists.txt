@@ -18,7 +18,7 @@ else()
     MESSAGE(STATUS "Found gcrypt library: ${GCRYPT_LIBRARY}")
 endif()
 
-add_library(lxqtwallet-backend STATIC lxqtwallet.c)
+add_library(lxqtwallet-backend STATIC lxqtwallet.cpp)
 if( CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7.0 )
         set_target_properties(lxqtwallet-backend PROPERTIES COMPILE_FLAGS "-Wall -s -fPIC -pedantic -Wformat-truncation=0")
 else()
@@ -27,14 +27,3 @@ endif()
 set_target_properties(lxqtwallet-backend PROPERTIES LINK_FLAGS "-pie")
 
 target_link_libraries(lxqtwallet-backend "${GCRYPT_LIBRARY}")
-
-install(FILES lxqtwallet.h DESTINATION "${CMAKE_INSTALL_PREFIX}/include/lxqt")
-
-add_executable(lxqt_wallet-cli lxqt_wallet-cli.c lxqtwallet.c)
-if( CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7.0 )
-	set_target_properties(lxqt_wallet-cli PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIE -pthread  -pedantic -Wformat-truncation=0")
-else()
-	set_target_properties(lxqt_wallet-cli PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIE -pthread  -pedantic")
-endif()
-set_target_properties(lxqt_wallet-cli PROPERTIES LINK_FLAGS "-pie")
-TARGET_LINK_LIBRARIES(lxqt_wallet-cli "${GCRYPT_LIBRARY}")
