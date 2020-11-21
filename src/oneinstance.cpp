@@ -51,6 +51,8 @@ oneinstance::oneinstance( QObject * parent,
 		} ) ;
 
 #if QT_VERSION < QT_VERSION_CHECK( 5,15,0 )
+		using cs = void( QLocalSocket::* )( QLocalSocket::LocalSocketError ) ;
+
 		connect( &m_localSocket,static_cast< cs >( &QLocalSocket::error ),[ this ]( QLocalSocket::LocalSocketError e ){
 
 			Q_UNUSED( e )

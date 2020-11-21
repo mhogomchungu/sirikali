@@ -47,6 +47,9 @@ class NetworkAccessManagerTimeOutManager : public QObject
 {
 	Q_OBJECT
 public:
+	NetworkAccessManagerTimeOutManager()
+	{
+	}
 	NetworkAccessManagerTimeOutManager( std::function< bool( QNetworkReply * ) > e,
 					    std::function< void() > s,
 					    QNetworkReply * m,
