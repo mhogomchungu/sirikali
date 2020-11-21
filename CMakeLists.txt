@@ -124,16 +124,15 @@ endif()
 
 if( UNIX AND NOT APPLE )
 
-	find_package( Qt5Widgets REQUIRED )
-	find_package( Qt5Core REQUIRED )
-	find_package( Qt5Network REQUIRED )
-	find_package( Qt5DBus REQUIRED )
+        find_package( Qt5 COMPONENTS Core Widgets Network DBus REQUIRED )
 
 	message( STATUS "Found Qt5Widgets, version  ${Qt5Widgets_VERSION}" )
 	message( STATUS "Found Qt5Core, version  ${Qt5Core_VERSION}" )
 	message( STATUS "Found Qt5Network, version  ${Qt5Network_VERSION}" )
 	message( STATUS "Found Qt5DBus, version  ${Qt5DBus_VERSION}" )
 else()
+        find_package( Qt5 COMPONENTS Core Widgets Network REQUIRED )
+
 	find_package( Qt5Widgets REQUIRED )
 	find_package( Qt5Core REQUIRED )
 	find_package( Qt5Network REQUIRED )

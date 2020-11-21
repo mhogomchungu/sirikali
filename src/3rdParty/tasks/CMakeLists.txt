@@ -15,8 +15,6 @@ INCLUDE( GNUInstallDirs )
 
 INCLUDE( CMakeDependentOption )
 
-find_package( Qt5Core REQUIRED )
-
 QT5_WRAP_CPP( MOC_LIBRARY task.hpp )
 
 include_directories( ${Qt5Core_INCLUDE_DIRS} )
