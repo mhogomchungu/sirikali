@@ -133,16 +133,12 @@ if( UNIX AND NOT APPLE )
 else()
         find_package( Qt5 COMPONENTS Core Widgets Network REQUIRED )
 
-	find_package( Qt5Widgets REQUIRED )
-	find_package( Qt5Core REQUIRED )
-	find_package( Qt5Network REQUIRED )
-
 	message( STATUS "Found Qt5Widgets, version  ${Qt5Widgets_VERSION}" )
 	message( STATUS "Found Qt5Core, version  ${Qt5Core_VERSION}" )
 	message( STATUS "Found Qt5Network, version  ${Qt5Network_VERSION}" )
 endif()
 
-pkg_check_modules( MCHUNGU_NETWORK mhogomchungu_network )
+#pkg_check_modules( MCHUNGU_NETWORK mhogomchungu_network )
 pkg_check_modules( MCHUNGU_TASK mhogomchungu_task )
 
 file( WRITE ${PROJECT_BINARY_DIR}/version.h "
@@ -158,9 +154,9 @@ file( WRITE ${PROJECT_BINARY_DIR}/version.h "
 
 if( INTERNAL_LXQT_WALLET )
 
-                message( STATUS "---------------------------------------------------------------------------" )
+        message( STATUS "---------------------------------------------------------------------------" )
 	message( STATUS "lxqt wallet support will be provided by an internal library" )
-                message( STATUS "---------------------------------------------------------------------------" )
+	message( STATUS "---------------------------------------------------------------------------" )
 
 	ADD_SUBDIRECTORY( src/3rdParty/lxqt_wallet )
 	include_directories( ${PROJECT_SOURCE_DIR}/src/3rdParty/lxqt_wallet/frontend )
@@ -204,21 +200,11 @@ if(NONETWORKSUPPORT)
 else()
 	file(WRITE  ${PROJECT_BINARY_DIR}/network_support.h "\n#define HAS_NETWORK_SUPPORT 1\n")
 
-	if( MCHUNGU_NETWORK_FOUND )
-
-		message( STATUS "---------------------------------------------------------------------------" )
-		message( STATUS "mhogomchungu_network library will be provided by an external library" )
-		message( STATUS "---------------------------------------------------------------------------" )
-
-		include_directories( "${MCHUNGU_NETWORK_INCLUDEDIR}" )
-		link_directories( "${MCHUNGU_NETWORK_LIBDIR}" )
-	else()
-		message( STATUS "---------------------------------------------------------------------------" )
-		message( STATUS "mhogomchungu_network library will be provided by an internal library" )
-		message( STATUS "---------------------------------------------------------------------------" )
-		ADD_SUBDIRECTORY( src/3rdParty/NetworkAccessManager )
-		include_directories( src/3rdParty/NetworkAccessManager )
-	endif()
+	message( STATUS "---------------------------------------------------------------------------" )
+	message( STATUS "mhogomchungu_network library will be provided by an internal library" )
+	message( STATUS "---------------------------------------------------------------------------" )
+	ADD_SUBDIRECTORY( src/3rdParty/NetworkAccessManager )
+	include_directories( src/3rdParty/NetworkAccessManager )
 endif()
 
 if( MCHUNGU_TASK_FOUND )
@@ -266,13 +252,12 @@ set( UI_FILES 	src/sirikali.ui
 set( MOC_FILES
 		src/configoptions.h
 		src/configfileoption.h
-		src/checkforupdates.h
 		src/dialogok.h
 		src/help.h
 		src/createbackendwindow.h
 		src/sirikali.h
-		src/keydialog.h
 		src/oneinstance.h
+		src/keydialog.h
 		src/dialogmsg.h
 		src/plugin.h
 		src/favorites2.h
@@ -386,24 +371,15 @@ endif()
 link_directories( ${GCRYPT_LIBRARY_PATH} )
 
 if( WIN32 )
-
-    TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} lxqt-wallet mhogomchungu_task mhogomchungu_network)
+    TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} lxqt-wallet mhogomchungu_task mhogomchungu_network )
 endif()
 
 if( APPLE )
-    if(NONETWORKSUPPORT)
-        TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task  -L${GCRYPT_LIBRARY_PATH})
-    else()
-        TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task mhogomchungu_network -L${GCRYPT_LIBRARY_PATH})
-    endif()
+    TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task mhogomchungu_network -L${GCRYPT_LIBRARY_PATH})
 endif()
 
 if( UNIX AND NOT APPLE )
-    if(NONETWORKSUPPORT)
-        TARGET_LINK_LIBRARIES( sirikali ${Qt5DBus_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task -L${GCRYPT_LIBRARY_PATH} -Wl,-znow)
-    else()
-        TARGET_LINK_LIBRARIES( sirikali ${Qt5DBus_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task mhogomchungu_network -L${GCRYPT_LIBRARY_PATH} -Wl,-znow)
-    endif()
+    TARGET_LINK_LIBRARIES( sirikali ${Qt5DBus_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task mhogomchungu_network -L${GCRYPT_LIBRARY_PATH} -Wl,-znow)
 else()
 
 endif()

@@ -51,30 +51,30 @@ public:
 					    std::function< void() > s,
 					    QNetworkReply * m,
 					    int w,
-					    QObject * n ) :
+					    QNetworkAccessManager * n ) :
 		m_object( n ),
 		m_reply( m ),
 		m_cancel( std::move( e ) ),
 		m_timeout( std::move( s ) )
 	{
-		connect( &m_timer,SIGNAL( timeout() ),
-			 this,SLOT( timeout() ),Qt::QueuedConnection ) ;
+		connect( &m_timer,&QTimer::timeout,this,[ this ](){
+
+			m_timer.stop() ;
+
+			disconnect( m_object,
+				    &QNetworkAccessManager::finished,
+				    this,
+				    &NetworkAccessManagerTimeOutManager::networkReply ) ;
+
+			m_cancel( m_reply ) ;
+
+			m_timeout() ;
+
+			this->deleteLater() ;
+
+		},Qt::QueuedConnection ) ;
 
 		m_timer.start( 1000 * w ) ;
-	}
-private slots:
-	void timeout()
-	{
-		m_timer.stop() ;
-
-		disconnect( m_object,SIGNAL( finished( QNetworkReply * ) ),
-			    this,SLOT( networkReply( QNetworkReply * ) ) ) ;
-
-		m_cancel( m_reply ) ;
-
-		m_timeout() ;
-
-		this->deleteLater() ;
 	}
 	void networkReply( QNetworkReply * e )
 	{
@@ -85,14 +85,14 @@ private slots:
 		}
 	}
 private:
-	QObject * m_object ;
+	QNetworkAccessManager * m_object ;
 	QNetworkReply * m_reply ;
 	QTimer m_timer ;
 	std::function< bool( QNetworkReply * ) > m_cancel ;
 	std::function< void() > m_timeout ;
 } ;
 
-class NetworkAccessManager : public QObject
+class SirikaliNetworkAccessManager : public QObject
 {
 	Q_OBJECT
 public:
@@ -105,10 +105,10 @@ private:
 
 	using position_t = decltype( m_entries.size() ) ;
 public:
-	NetworkAccessManager()
+	SirikaliNetworkAccessManager()
 	{
-		connect( &m_manager,SIGNAL( finished( QNetworkReply * ) ),
-			 this,SLOT( networkReply( QNetworkReply * ) ),Qt::QueuedConnection ) ;
+		connect( &m_manager,&QNetworkAccessManager::finished,
+			 this,&SirikaliNetworkAccessManager::networkReply,Qt::QueuedConnection ) ;
 	}
 	QNetworkAccessManager& QtNAM()
 	{
@@ -213,7 +213,7 @@ public:
 				e.deleteLater() ;
 			}
 
-			m_entries.erase( m_entries.begin() + s ) ;
+			m_entries.erase( m_entries.begin() + static_cast< int >( s ) ) ;
 
 			e.close() ;
 			e.abort() ;
@@ -230,8 +230,10 @@ private:
 									 std::move( m ),
 									 e,s,&m_manager ) ;
 
-			connect( &m_manager,SIGNAL( finished( QNetworkReply * ) ),
-				 u,SLOT( networkReply( QNetworkReply * ) ),Qt::QueuedConnection ) ;
+			connect( &m_manager,&QNetworkAccessManager::finished,
+				 u,
+				 &NetworkAccessManagerTimeOutManager::networkReply,
+				 Qt::QueuedConnection ) ;
 		}
 	}
 	bool find_network_reply( QNetworkReply * e,std::function< void( QNetworkReply&,position_t ) > function )
@@ -248,7 +250,7 @@ private:
 
 		return false ;
 	}
-private slots:
+private:
 	void networkReply( QNetworkReply * e )
 	{
 		this->find_network_reply( e,[ this ]( QNetworkReply& e,position_t s ){
@@ -260,7 +262,7 @@ private slots:
 				e.deleteLater() ;
 			}
 
-			m_entries.erase( m_entries.begin() + s ) ;
+			m_entries.erase( m_entries.begin() + static_cast< int >( s ) ) ;
 		} ) ;
 	}
 };

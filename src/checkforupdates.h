@@ -40,9 +40,8 @@
 #include <utility>
 #include <vector>
 
-class checkUpdates : public QObject
+class checkUpdates
 {
-	Q_OBJECT
 public:
 	static bool hasNetworkSupport()
 	{
@@ -66,7 +65,7 @@ private:
 
 	QNetworkRequest m_networkRequest ;
 
-	NetworkAccessManager m_network ;
+	SirikaliNetworkAccessManager m_network ;
 
 	QVector< QStringList > m_results ;
 

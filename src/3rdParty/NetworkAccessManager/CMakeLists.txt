@@ -15,13 +15,13 @@ INCLUDE( GNUInstallDirs )
 
 INCLUDE( CMakeDependentOption )
 
-QT5_WRAP_CPP( MOC_LIBRARY network_access_manager.hpp )
-
 include_directories( ${Qt5Core_INCLUDE_DIRS} )
+
+QT5_WRAP_CPP( MOC_LIBRARY network_access_manager.hpp )
 
 if( MHOGOMCHUNGU_NETWORK_INSTALL )
 
-	add_library( mhogomchungu_network SHARED ${MOC_LIBRARY} )
+	add_library( mhogomchungu_network SHARED ${MOC_LIBRARY})
 	set_target_properties(mhogomchungu_network PROPERTIES SOVERSION "${SO_VERSION}")
 else()
 	add_library( mhogomchungu_network STATIC ${MOC_LIBRARY} )

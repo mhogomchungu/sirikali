@@ -47,10 +47,6 @@ public:
 	oneinstance( QObject *,const QString&,
 		     const QString&,oneinstance::callbacks ) ;
 	~oneinstance() ;
-private slots:
-	void connected( void ) ;
-	void gotConnection( void ) ;
-	void errorOnConnect( QLocalSocket::LocalSocketError ) ;
 private:
 	void start( void ) ;
 	QLocalServer m_localServer ;

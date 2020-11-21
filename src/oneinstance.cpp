@@ -35,10 +35,38 @@ oneinstance::oneinstance( QObject * parent,
 {
 	if( QFile::exists( m_serverPath ) ){
 
-		connect( &m_localSocket,SIGNAL( connected() ),this,SLOT( connected() ) ) ;
-		connect( &m_localSocket,SIGNAL( error( QLocalSocket::LocalSocketError ) ),
-			 this,SLOT( errorOnConnect( QLocalSocket::LocalSocketError ) ) ) ;
+		connect( &m_localSocket,&QLocalSocket::connected,this,[ this ](){
 
+			utility::debug() << tr( "There seem to be another instance running,exiting this one" ) ;
+
+			if( !m_argument.isEmpty() ){
+
+				m_localSocket.write( m_argument.toLatin1() ) ;
+				m_localSocket.waitForBytesWritten() ;
+			}
+
+			m_localSocket.close() ;
+
+			m_callbacks.exit() ;
+		} ) ;
+
+#if QT_VERSION < QT_VERSION_CHECK( 5,15,0 )
+		connect( &m_localSocket,static_cast< cs >( &QLocalSocket::error ),[ this ]( QLocalSocket::LocalSocketError e ){
+
+			Q_UNUSED( e )
+			utility::debug() << tr( "Previous instance seem to have crashed,trying to clean up before starting" ) ;
+			QFile::remove( m_serverPath ) ;
+			this->start() ;
+		} ) ;
+#else
+		connect( &m_localSocket,&QLocalSocket::errorOccurred,[ this ]( QLocalSocket::LocalSocketError e ){
+
+			Q_UNUSED( e )
+			utility::debug() << tr( "Previous instance seem to have crashed,trying to clean up before starting" ) ;
+			QFile::remove( m_serverPath ) ;
+			this->start() ;
+		} ) ;
+#endif
 		m_localSocket.connectToServer( m_serverPath ) ;
 	}else{
 		this->start() ;
@@ -49,41 +77,16 @@ void oneinstance::start()
 {
 	m_callbacks.start( m_argument ) ;
 
-	connect( &m_localServer,SIGNAL( newConnection() ),this,SLOT( gotConnection() ) ) ;
+	connect( &m_localServer,&QLocalServer::newConnection,[ this ](){
+
+		std::unique_ptr< QLocalSocket > s( m_localServer.nextPendingConnection() ) ;
+
+		s->waitForReadyRead() ;
+
+		m_callbacks.event( s->readAll() ) ;
+	} ) ;
 
 	m_localServer.listen( m_serverPath ) ;
-}
-
-void oneinstance::gotConnection()
-{
-	std::unique_ptr< QLocalSocket > s( m_localServer.nextPendingConnection() ) ;
-
-	s->waitForReadyRead() ;
-
-	m_callbacks.event( s->readAll() ) ;
-}
-
-void oneinstance::errorOnConnect( QLocalSocket::LocalSocketError e )
-{
-	Q_UNUSED( e )
-	utility::debug() << tr( "Previous instance seem to have crashed,trying to clean up before starting" ) ;
-	QFile::remove( m_serverPath ) ;
-	this->start() ;
-}
-
-void oneinstance::connected()
-{
-	utility::debug() << tr( "There seem to be another instance running,exiting this one" ) ;
-
-	if( !m_argument.isEmpty() ){
-
-		m_localSocket.write( m_argument.toLatin1() ) ;
-		m_localSocket.waitForBytesWritten() ;
-	}
-
-	m_localSocket.close() ;
-
-	m_callbacks.exit() ;
 }
 
 oneinstance::~oneinstance()
