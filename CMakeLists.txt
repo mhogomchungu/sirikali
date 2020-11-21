@@ -138,7 +138,7 @@ else()
 	message( STATUS "Found Qt5Network, version  ${Qt5Network_VERSION}" )
 endif()
 
-#pkg_check_modules( MCHUNGU_NETWORK mhogomchungu_network )
+pkg_check_modules( MCHUNGU_NETWORK mhogomchungu_network )
 pkg_check_modules( MCHUNGU_TASK mhogomchungu_task )
 
 file( WRITE ${PROJECT_BINARY_DIR}/version.h "
@@ -151,6 +151,37 @@ file( WRITE ${PROJECT_BINARY_DIR}/version.h "
 #define VERSION_STRING \"Version  : ${PGR_VERSION} (Compiled with Qt ${Qt5Core_VERSION})\\nCopyright: ${COPYRIGHT_YEARS} Francis Banyikwa,mhogomchungu@gmail.com\\nLicense  : GPLv2+\"
 #endif
 \n" )
+
+if(NONETWORKSUPPORT)
+        file(WRITE  ${PROJECT_BINARY_DIR}/network_support.h "\n#define HAS_NETWORK_SUPPORT 0\n")
+	message( STATUS "---------------------------------------------------------------------------" )
+	message( STATUS "network support is disabled" )
+	message( STATUS "---------------------------------------------------------------------------" )
+else()
+        file(WRITE  ${PROJECT_BINARY_DIR}/network_support.h "\n#define HAS_NETWORK_SUPPORT 1\n")
+
+	message( STATUS "---------------------------------------------------------------------------" )
+	message( STATUS "mhogomchungu_network library will be provided by an internal library" )
+	message( STATUS "---------------------------------------------------------------------------" )
+	ADD_SUBDIRECTORY( src/3rdParty/NetworkAccessManager )
+	include_directories( src/3rdParty/NetworkAccessManager )
+endif()
+
+if( MCHUNGU_TASK_FOUND )
+
+        message( STATUS "---------------------------------------------------------------------------" )
+	message( STATUS "mhogomchungu_task library will be provided by an external library" )
+	message( STATUS "---------------------------------------------------------------------------" )
+
+	include_directories( "${MCHUNGU_TASK_INCLUDEDIR}" )
+	link_directories( "${MCHUNGU_TASK_LIBDIR}" )
+else()
+        message( STATUS "---------------------------------------------------------------------------" )
+	message( STATUS "mhogomchungu_task library will be provided by an internal library" )
+	message( STATUS "---------------------------------------------------------------------------" )
+	include_directories( src/3rdParty/tasks )
+	ADD_SUBDIRECTORY( src/3rdParty/tasks )
+endif()
 
 if( INTERNAL_LXQT_WALLET )
 
@@ -190,37 +221,6 @@ else()
 
 		endif()
 	endif()
-endif()
-
-if(NONETWORKSUPPORT)
-	file(WRITE  ${PROJECT_BINARY_DIR}/network_support.h "\n#define HAS_NETWORK_SUPPORT 0\n")
-	message( STATUS "---------------------------------------------------------------------------" )
-	message( STATUS "network support is disabled" )
-	message( STATUS "---------------------------------------------------------------------------" )
-else()
-        file(WRITE  ${PROJECT_BINARY_DIR}/network_support.h "\n#define HAS_NETWORK_SUPPORT 1\n")
-
-	message( STATUS "---------------------------------------------------------------------------" )
-	message( STATUS "mhogomchungu_network library will be provided by an internal library" )
-	message( STATUS "---------------------------------------------------------------------------" )
-	ADD_SUBDIRECTORY( src/3rdParty/NetworkAccessManager )
-	include_directories( src/3rdParty/NetworkAccessManager )
-endif()
-
-if( MCHUNGU_TASK_FOUND )
-
-	message( STATUS "---------------------------------------------------------------------------" )
-	message( STATUS "mhogomchungu_task library will be provided by an external library" )
-	message( STATUS "---------------------------------------------------------------------------" )
-
-	include_directories( "${MCHUNGU_TASK_INCLUDEDIR}" )
-	link_directories( "${MCHUNGU_TASK_LIBDIR}" )
-else()
-	message( STATUS "---------------------------------------------------------------------------" )
-	message( STATUS "mhogomchungu_task library will be provided by an internal library" )
-	message( STATUS "---------------------------------------------------------------------------" )
-	include_directories( src/3rdParty/tasks )
-	ADD_SUBDIRECTORY( src/3rdParty/tasks )
 endif()
 
 add_definitions( -std=c++14 )
@@ -371,15 +371,15 @@ endif()
 link_directories( ${GCRYPT_LIBRARY_PATH} )
 
 if( WIN32 )
-    TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} lxqt-wallet mhogomchungu_task mhogomchungu_network )
+    TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} mhogomchungu_task mhogomchungu_network lxqt-wallet )
 endif()
 
 if( APPLE )
-    TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task mhogomchungu_network -L${GCRYPT_LIBRARY_PATH})
+    TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} mhogomchungu_task mhogomchungu_network lxqt-wallet -L${GCRYPT_LIBRARY_PATH})
 endif()
 
 if( UNIX AND NOT APPLE )
-    TARGET_LINK_LIBRARIES( sirikali ${Qt5DBus_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} lxqt-wallet mhogomchungu_task mhogomchungu_network -L${GCRYPT_LIBRARY_PATH} -Wl,-znow)
+    TARGET_LINK_LIBRARIES( sirikali ${Qt5DBus_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} mhogomchungu_task mhogomchungu_network lxqt-wallet -L${GCRYPT_LIBRARY_PATH} -Wl,-znow)
 else()
 
 endif()

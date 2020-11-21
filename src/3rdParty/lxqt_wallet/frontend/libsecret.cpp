@@ -60,11 +60,19 @@
  *
  */
 
+extern "C"
+{
+
 #define BUFFER_SIZE 32
 
-static char   *_get_string_value_0(const SecretSchema *s, const char *key)
+static const SecretSchema* _to_schema(const void *s)
 {
-    return secret_password_lookup_sync(s, NULL, NULL, "string", key, NULL);
+    return reinterpret_cast<const SecretSchema*>(s);
+}
+
+static char *_get_string_value_0(const SecretSchema *s, const char *key)
+{
+    return secret_password_lookup_sync(s, nullptr, nullptr, "string", key, nullptr);
 }
 
 static int _get_string_value(const SecretSchema *s, const char *key)
@@ -72,7 +80,7 @@ static int _get_string_value(const SecretSchema *s, const char *key)
     char *c = _get_string_value_0(s, key);
     int e;
 
-    if (c == NULL)
+    if (c == nullptr)
     {
         return -1;
     }
@@ -86,7 +94,7 @@ static int _get_string_value(const SecretSchema *s, const char *key)
 
 static char *_get_integer_value_0(const SecretSchema *s, int key)
 {
-    return secret_password_lookup_sync(s, NULL, NULL, "integer", key, NULL);
+    return secret_password_lookup_sync(s, nullptr, nullptr, "integer", key, nullptr);
 }
 
 static int _get_integer_value(const SecretSchema *s, int key)
@@ -94,7 +102,7 @@ static int _get_integer_value(const SecretSchema *s, int key)
     char *c = _get_integer_value_0(s, key);
     int e;
 
-    if (c == NULL)
+    if (c == nullptr)
     {
         return -1;
     }
@@ -108,12 +116,12 @@ static int _get_integer_value(const SecretSchema *s, int key)
 
 static int _set_integer_value(const SecretSchema *s, const char *name, const char *key, int value)
 {
-    return secret_password_store_sync(s, "default", name, key, NULL, NULL, "integer", value, NULL);
+    return secret_password_store_sync(s, "default", name, key, nullptr, nullptr, "integer", value, nullptr);
 }
 
 static int _set_string_value(const SecretSchema *s, const char *name, const char *key, const char *value)
 {
-    return secret_password_store_sync(s, "default", name, key, NULL, NULL, "string", value, NULL);
+    return secret_password_store_sync(s, "default", name, key, nullptr, nullptr, "string", value, nullptr);
 }
 
 static int _number_of_entries_in_the_wallet(const SecretSchema *s)
@@ -132,12 +140,12 @@ static int _number_of_entries_in_the_wallet(const SecretSchema *s)
 
 static int _clear_integer_value(const SecretSchema *s, int k)
 {
-    return secret_password_clear_sync(s, NULL, NULL, "integer", k, NULL);
+    return secret_password_clear_sync(s, nullptr, nullptr, "integer", k, NULL);
 }
 
 static int _clear_string_value(const SecretSchema *s, const char *k)
 {
-    return secret_password_clear_sync(s, NULL, NULL, "string", k, NULL);
+    return secret_password_clear_sync(s, nullptr, nullptr, "string", k, nullptr);
 }
 
 /*
@@ -149,18 +157,18 @@ static int _clear_string_value(const SecretSchema *s, const char *k)
  */
 int lxqt_libsecret_wallet_is_open(const void *s)
 {
-    const SecretSchema *e = s;
+    const SecretSchema *e = _to_schema(s);
     return _set_string_value(e, e->name, "lxqt_wallet_open", "lxqt_wallet_open");
 }
 
 char *lxqt_libsecret_get_value(const char *key, const void *s)
 {
-    return _get_string_value_0(s, key);
+    return _get_string_value_0(_to_schema(s), key);
 }
 
 void *lxqt_libsecret_create_schema(const char *schemaName, const char *type)
 {
-    SecretSchema *s = malloc(sizeof(SecretSchema));
+    SecretSchema *s = static_cast<SecretSchema *>(malloc(sizeof(SecretSchema)));
 
     memset(s, '\0', sizeof(SecretSchema));
 
@@ -179,7 +187,7 @@ void *lxqt_libsecret_create_schema(const char *schemaName, const char *type)
     }
 
     s->attributes[1].name = "NULL";
-    s->attributes[1].type = 0;
+    s->attributes[1].type = static_cast<decltype(s->attributes[1].type)>(0);
 
     return s;
 }
@@ -190,8 +198,8 @@ static gboolean _password_store_sync(const char *key,
                                      const void *id,
                                      int ws)
 {
-    const SecretSchema *keyValues = kv;
-    const SecretSchema *keyID     = id;
+    const SecretSchema *keyValues = _to_schema(kv);
+    const SecretSchema *keyID     = _to_schema(id);
 
     int i = 0;
     int k;
@@ -245,7 +253,7 @@ gboolean lxqt_libsecret_password_store_sync(const char *key,
 
     if (lxqt_libsecret_wallet_is_open(keyValues))
     {
-        j = _get_string_value(keyValues, "lxqt_wallet_size");
+	j = _get_string_value(_to_schema(keyValues), "lxqt_wallet_size");
 
         if (j == -1)
         {
@@ -273,8 +281,8 @@ static gboolean _exceeded_limit(int k)
 
 gboolean lxqt_libsecret_clear_sync(const char *key, const void *kv, const void *id)
 {
-    const SecretSchema *keyValues = kv;
-    const SecretSchema *keyID     = id;
+    const SecretSchema *keyValues = _to_schema(kv);
+    const SecretSchema *keyID     = _to_schema(id);
 
     int i = 0;
     int k = 0;
@@ -292,7 +300,7 @@ gboolean lxqt_libsecret_clear_sync(const char *key, const void *kv, const void *
         {
             c = _get_integer_value_0(keyID, k);
 
-            if (c != NULL)
+	    if (c != nullptr)
             {
                 e = strcmp(c, key);
 
@@ -335,30 +343,30 @@ gboolean lxqt_libsecret_clear_sync(const char *key, const void *kv, const void *
 
 char **lxqt_secret_get_all_keys(const void *kv, const void *id, size_t *count)
 {
-    const SecretSchema *keyValues = kv;
-    const SecretSchema *keyID     = id;
+    const SecretSchema *keyValues = _to_schema(kv);
+    const SecretSchema *keyID     = _to_schema(id);
 
     int k = 0;
     int i = 0;
     int j;
 
-    char **c = NULL;
-    char *e  = NULL;
+    char **c = nullptr;
+    char *e  = nullptr;
 
     *count = 0;
 
     if (lxqt_libsecret_wallet_is_open(keyValues))
     {
         j = _number_of_entries_in_the_wallet(keyValues);
-        c = malloc(sizeof(char *) * j);
+	c = static_cast<char**>(malloc(sizeof(char *) * static_cast<size_t>(j)));
 
-        if (c != NULL)
+	if (c != nullptr)
         {
             while (i < j)
             {
                 e = _get_integer_value_0(keyID, k);
 
-                if (e != NULL)
+		if (e != nullptr)
                 {
                     *(c + i) = e;
                     *count += 1;
@@ -384,5 +392,7 @@ char **lxqt_secret_get_all_keys(const void *kv, const void *id, size_t *count)
 
 int lxqt_libsecret_wallet_size(const void *s)
 {
-    return _number_of_entries_in_the_wallet(s);
+    return _number_of_entries_in_the_wallet(_to_schema(s));
+}
+
 }
