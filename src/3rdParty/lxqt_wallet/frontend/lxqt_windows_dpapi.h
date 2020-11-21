@@ -122,7 +122,7 @@ private:
     bool m_opened = false;
     std::function< void(bool) > m_correctPassword = [](bool e) { Q_UNUSED(e) };
     std::function< void(bool) > m_walletOpened = [](bool e) { Q_UNUSED(e) };
-    std::function<void(QString)> m_log ;
+    std::function<void(QString)> m_log = [](QString e){ Q_UNUSED(e) };
     QVector<std::pair<QString,QByteArray>> m_keys;
     std::unique_ptr<QSettings> m_settings;
     const QString m_settingsName = "LXQtWindowsDPAPI_Data";

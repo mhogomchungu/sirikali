@@ -50,14 +50,14 @@ void LXQt::Wallet::internalWallet::openWallet(QString password)
 {
     m_password = password;
 
-    Task::run< lxqt_wallet_error >([ this ]()
+    Task::run< lxqt_wallet_error >([this]()
     {
         return lxqt_wallet_open(&m_wallet,
                                 m_password.toLatin1().constData(),
                                 m_password.size(), m_walletName.toLatin1().constData(),
 				m_applicationName.toLatin1().constData());
 
-    }).then([ this ](lxqt_wallet_error r)
+    }).then([this](lxqt_wallet_error r)
     {
 	this->opened(r == lxqt_wallet_no_error);
     });
@@ -149,7 +149,7 @@ void LXQt::Wallet::internalWallet::openWallet()
          * prompt on failure,this will allow a silent opening of the wallet set without a password.
          */
 
-        Task::run< lxqt_wallet_error >([ this ]()
+	Task::run< lxqt_wallet_error >([this]()
         {
             return lxqt_wallet_open(&m_wallet,
                                     m_password.toLatin1().constData(),
@@ -157,7 +157,7 @@ void LXQt::Wallet::internalWallet::openWallet()
                                     m_walletName.toLatin1().constData(),
 				    m_applicationName.toLatin1().constData());
 
-        }).then([ this ](lxqt_wallet_error r)
+	}).then([this](lxqt_wallet_error r)
         {
             if (r == lxqt_wallet_no_error)
             {
@@ -171,7 +171,7 @@ void LXQt::Wallet::internalWallet::openWallet()
 
 		using pwd = LXQt::Wallet::password_dialog;
 
-                auto _cancelled = [ this ]()
+		auto _cancelled = [this]()
                 {
 		    m_opened = false;
 
@@ -183,7 +183,7 @@ void LXQt::Wallet::internalWallet::openWallet()
                 pwd::instance(this,
                               m_walletName,
                               m_displayApplicationName,
-			      [ this ](const QString & p) { this->openWallet(p); },
+			      [this](const QString & p) { this->openWallet(p); },
 			      std::move(_cancelled),
 			      &m_correctPassword);
             }
@@ -202,20 +202,20 @@ void LXQt::Wallet::internalWallet::createWallet()
     const auto &w = m_walletName;
     const auto &d = m_displayApplicationName;
 
-    cbd::createInstance(this, w, d, [ this ](const QString & password, bool create)
+    cbd::createInstance(this, w, d, [this](const QString & password, bool create)
     {
         if (create)
         {
 	    m_password = password;
 
-            Task::run< lxqt_wallet_error >([ this ]()
+	    Task::run< lxqt_wallet_error >([this]()
             {
                 return lxqt_wallet_create(m_password.toLatin1().constData(),
                                           m_password.size(),
                                           m_walletName.toLatin1().constData(),
 					  m_applicationName.toLatin1().constData());
 
-            }).then([ this ](lxqt_wallet_error r)
+	    }).then([this](lxqt_wallet_error r)
             {
                 if (r == lxqt_wallet_no_error)
                 {
@@ -235,8 +235,8 @@ void LXQt::Wallet::internalWallet::createWallet()
 }
 
 void LXQt::Wallet::internalWallet::changeWalletPassWord(const QString &walletName,
-        const QString &applicationName,
-        std::function< void(bool) > function)
+							const QString &applicationName,
+							std::function<void(bool)> function)
 {
     using args = LXQt::Wallet::changePassWordDialog::changeArgs;
 
@@ -244,13 +244,13 @@ void LXQt::Wallet::internalWallet::changeWalletPassWord(const QString &walletNam
 							   const QString & New,
 							   bool cancelled)->args
     {
-        auto _open = [ & ](const QString &password)
+	auto _open = [&](const QString &password)
         {
             return lxqt_wallet_open(&m_wallet,
-            password.toLatin1().constData(),
-            password.size(),
-            m_walletName.toLatin1().constData(),
-	    m_applicationName.toLatin1().constData());
+				    password.toLatin1().constData(),
+				    password.size(),
+				    m_walletName.toLatin1().constData(),
+				    m_applicationName.toLatin1().constData());
 	};
 
         if (cancelled)
@@ -273,8 +273,8 @@ void LXQt::Wallet::internalWallet::changeWalletPassWord(const QString &walletNam
             }
 
             auto m = lxqt_wallet_change_wallet_password(m_wallet,
-                     New.toLatin1().constData(),
-		     New.size());
+							New.toLatin1().constData(),
+							New.size());
 
             if (m != lxqt_wallet_no_error)
             {

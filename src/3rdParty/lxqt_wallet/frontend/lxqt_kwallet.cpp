@@ -75,8 +75,6 @@ bool LXQt::Wallet::kwallet::open(const QString &walletName,
 
 void LXQt::Wallet::kwallet::openedWallet(bool e)
 {
-     m_log( "LXQt::Wallet::kwallet: kwallet support is provided through library API");
-
     if (e)
     {
         if (m_applicationName.isEmpty())

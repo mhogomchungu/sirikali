@@ -28,8 +28,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef LXQT_LIBSECRET_H
-#define LXQT_LIBSECRET_H
+#ifndef LXQT_SECRET_SERVICE_H
+#define LXQT_SECRET_SERVICE_H
 
 #include "lxqt_wallet.h"
 
@@ -119,4 +119,4 @@ private:
 
 }
 
-#endif // LXQT_LIBSECRET_H
+#endif // LXQT_KWALLET_H

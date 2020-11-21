@@ -106,7 +106,7 @@ private:
     QString m_password;
 
     std::function< void(bool) > m_walletOpened = [](bool e) { Q_UNUSED(e); };
-    std::function<void(QString)> m_log;
+    std::function<void(QString)> m_log = [](QString e){ Q_UNUSED(e) };
 };
 
 }

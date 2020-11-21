@@ -2,3 +2,11 @@
 - version 1.0.0
 	- initial release
 	- libgcrypt is used for encryption and decryption of the internal wallet
+
+- version 3.1.0
+	- add OSX keychain support.
+- version 3.2.0.
+	- add a backend for Windows based on Window' Data Protection API.
+	- modernize public API and add a few methods.
+- version 3.2.1
+	- fix a build issue.

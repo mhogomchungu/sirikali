@@ -1,15 +1,25 @@
-cmake_minimum_required( VERSION 3.0 )
+cmake_minimum_required(VERSION 3.1.0)
 
-find_package( PkgConfig )
+set_property(GLOBAL PROPERTY ALLOW_DUPLICATE_CUSTOM_TARGETS ON)
 
-if( WIN32 )
-    add_library( lxqt-wallet-backend STATIC backend/fake_wallet_backend.c )
+project(lxqt_wallet)
 
-    set_target_properties( lxqt-wallet-backend PROPERTIES COMPILE_FLAGS "-Wall -s -pedantic" )
-else()
-    add_subdirectory( backend )
-endif()
+set(LIBRARY_VERSION "3.2.0")
 
-add_subdirectory( frontend )
+add_definitions(-Wextra -Wall -pedantic)
 
+find_package(PkgConfig)
 
+include(GNUInstallDirs)
+
+# uninstall target
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+    IMMEDIATE @ONLY )
+
+add_custom_target( uninstall
+COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake )
+
+add_subdirectory(backend)
+add_subdirectory(frontend)

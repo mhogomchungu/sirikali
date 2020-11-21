@@ -1,13 +1,10 @@
-
-
-
 This source file is the one responsible for secure storage information in key-pair fashion.
 
 It has a dependency only on gcrypt and it is designed to be used in other projects simply by
 dropping the source file in the middle of the build tree and start using it.
 
 A simple use case for it is in applications that want to store securely their user's account
-credentials but do not want to tie themselves to desktop environments through the use of 
+credentials but do not want to tie themselves to desktop environments through the use of
 KDE kwallet or gnome gnome-keyring
 
 Encrypted file documentation.
