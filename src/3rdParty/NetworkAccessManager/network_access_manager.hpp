@@ -72,10 +72,10 @@ public:
 	{
 		m_timer.stop() ;
 
-		disconnect( m_object,
-			    &QNetworkAccessManager::finished,
-			    this,
-			    &NetworkAccessManagerTimeOutManager::networkReply ) ;
+		//disconnect( m_object,
+		//	    &QNetworkAccessManager::finished,
+		//	    this,
+		//	    &NetworkAccessManagerTimeOutManager::networkReply ) ;
 
 		m_cancel( m_reply ) ;
 
