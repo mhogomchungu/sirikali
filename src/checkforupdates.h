@@ -65,7 +65,7 @@ private:
 
 	QNetworkRequest m_networkRequest ;
 
-	SirikaliNetworkAccessManager m_network ;
+	NetworkAccessManager m_network ;
 
 	QVector< QStringList > m_results ;
 
@@ -81,12 +81,10 @@ private:
 
 #else
 
-#include <QObject>
 #include "checkforupdateswindow.h"
 
-class checkUpdates : public QObject
-{
-	Q_OBJECT
+class checkUpdates
+{	
 public:
 	static bool hasNetworkSupport()
 	{
