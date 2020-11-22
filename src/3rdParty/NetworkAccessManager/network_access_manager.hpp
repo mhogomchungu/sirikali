@@ -60,24 +60,28 @@ public:
 		m_cancel( std::move( e ) ),
 		m_timeout( std::move( s ) )
 	{
-		connect( &m_timer,&QTimer::timeout,this,[ this ](){
-
-			m_timer.stop() ;
-
-			disconnect( m_object,
-				    &QNetworkAccessManager::finished,
-				    this,
-				    &NetworkAccessManagerTimeOutManager::networkReply ) ;
-
-			m_cancel( m_reply ) ;
-
-			m_timeout() ;
-
-			this->deleteLater() ;
-
-		},Qt::QueuedConnection ) ;
+		connect( &m_timer,
+			 &QTimer::timeout,
+			 this,
+			 &NetworkAccessManagerTimeOutManager::Disconnect,
+			 Qt::QueuedConnection ) ;
 
 		m_timer.start( 1000 * w ) ;
+	}
+	void Disconnect()
+	{
+		m_timer.stop() ;
+
+		disconnect( m_object,
+			    &QNetworkAccessManager::finished,
+			    this,
+			    &NetworkAccessManagerTimeOutManager::networkReply ) ;
+
+		m_cancel( m_reply ) ;
+
+		m_timeout() ;
+
+		this->deleteLater() ;
 	}
 	void networkReply( QNetworkReply * e )
 	{
