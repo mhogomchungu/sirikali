@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required( VERSION 3.0 )
 
 INCLUDE(FindPkgConfig)
 
@@ -125,7 +125,7 @@ if(APPLE)
     target_link_libraries(lxqtwallet ${COREFOUNDATION_LIBRARY} ${SECURITY_LIBRARY})
 endif()
 
-set_target_properties(lxqt-wallet PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pedantic ")
+set_target_properties(lxqt-wallet PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic ")
 set_target_properties(lxqt-wallet PROPERTIES SOVERSION "${LIBRARY_VERSION}")
 
 set_target_properties(lxqt-wallet PROPERTIES OUTPUT_NAME lxqt-wallet)

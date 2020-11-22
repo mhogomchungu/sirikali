@@ -12,18 +12,8 @@ set( sirikali.pkexecSRC
 	zulupolkit.cpp
 )
 
-if( QT5 )
-	find_package( Qt5Core REQUIRED )
-	find_package( Qt5Network REQUIRED )
-else()
-	find_package( Qt4 REQUIRED QtCore QtNetwork )
-
-	add_definitions( -I${Qt4_INCLUDE_DIR} )
-	add_definitions( -I${QT_HEADERS_DIR} )
-
-	INCLUDE( ${QT_USE_FILE} )
-	Qt4_WRAP_CPP( sirikali.pkexecMOC ${sirikali.pkexecMOC_FILES} )
-endif()
+find_package( Qt5Core REQUIRED )
+find_package( Qt5Network REQUIRED )
 
 INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 
