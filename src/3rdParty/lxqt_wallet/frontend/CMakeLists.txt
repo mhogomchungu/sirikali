@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.0 )
+cmake_minimum_required(VERSION 3.0)
 
 INCLUDE(FindPkgConfig)
 
@@ -28,10 +28,8 @@ if(NOSECRETSUPPORT)
     file(WRITE ${PROJECT_BINARY_DIR}/storage_manager.h "\n#define HAS_SECRET_SUPPORT 0\n")
 else()
     pkg_check_modules(LIBSECRET libsecret-1 QUIET)
-    if(LIBSECRET_FOUND)	
-	include_directories( ${LIBSECRET_INCLUDE_DIRS} )
-	link_directories( ${LIBSECRET_LIBDIR} )
-	add_definitions( -I${LIBSECRET_INCLUDEDIR} )
+    if(LIBSECRET_FOUND)
+        add_subdirectory(libsecret)
         SET(SECRET_SUPPORT "true")
         file(WRITE ${PROJECT_BINARY_DIR}/storage_manager.h "\n#define HAS_SECRET_SUPPORT 1\n")
     else()
@@ -89,7 +87,8 @@ if(KWALLET_SUPPORT)
     Qt5_WRAP_CPP(MOC_KWALLET lxqt_kwallet.h)
     set(KWALLET_COMMON lxqt_kwallet.cpp)
     if(SECRET_SUPPORT)
-	add_library(lxqt-wallet STATIC ${KWALLET_COMMON} lxqt_libsecret.cpp libsecret.cpp ${UI} ${COMMON_SRC_FILES} ${MOC} ${MOC_KWALLET})
+	add_library(lxqt-wallet STATIC ${KWALLET_COMMON} lxqt_libsecret.cpp ${UI} ${COMMON_SRC_FILES} ${MOC} ${MOC_KWALLET})
+	target_link_libraries(lxqt-wallet secretlib)
     else()
 	add_library(lxqt-wallet STATIC ${KWALLET_COMMON} ${UI} ${COMMON_SRC_FILES} ${MOC} ${MOC_KWALLET})
     endif()
@@ -98,7 +97,8 @@ else()
     Qt5_WRAP_CPP(MOC_KWALLET_DBUS lxqt_kwallet-dbus.h)
     set(KWALLET_DBUS lxqt_kwallet-dbus.cpp)
     if(SECRET_SUPPORT)
-	add_library(lxqt-wallet STATIC lxqt_libsecret.cpp libsecret.cpp ${KWALLET_DBUS} ${UI} ${COMMON_SRC_FILES} ${MOC} ${MOC_KWALLET_DBUS})
+	add_library(lxqt-wallet STATIC lxqt_libsecret.cpp ${KWALLET_DBUS} ${UI} ${COMMON_SRC_FILES} ${MOC} ${MOC_KWALLET_DBUS})
+	target_link_libraries(lxqt-wallet secretlib)
     else()
 	add_library(lxqt-wallet STATIC ${UI} ${COMMON_SRC_FILES} ${KWALLET_DBUS} ${MOC} ${MOC_KWALLET_DBUS})
     endif()
@@ -109,10 +109,6 @@ target_link_libraries(lxqt-wallet lxqtwallet-backend)
 target_link_libraries(lxqt-wallet ${Qt5Widgets_LIBRARIES})
 target_link_libraries(lxqt-wallet ${Qt5Core_LIBRARIES})
 
-if(SECRET_SUPPORT)
-    target_link_libraries(lxqt-wallet ${LIBSECRET_LIBRARIES} -L${LIBSECRET_LIBDIR})
-endif()
-
 if(WIN32)
     target_link_libraries(lxqt-wallet -lcrypt32 -lbcrypt)
 else()
@@ -122,13 +118,11 @@ endif()
 if(APPLE)
     find_library(COREFOUNDATION_LIBRARY CoreFoundation REQUIRED)
     find_library(SECURITY_LIBRARY Security REQUIRED)
-    target_link_libraries(lxqtwallet ${COREFOUNDATION_LIBRARY} ${SECURITY_LIBRARY})
+    target_link_libraries(lxqt-wallet ${COREFOUNDATION_LIBRARY} ${SECURITY_LIBRARY})
 endif()
 
 set_target_properties(lxqt-wallet PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic ")
 set_target_properties(lxqt-wallet PROPERTIES SOVERSION "${LIBRARY_VERSION}")
-
-set_target_properties(lxqt-wallet PROPERTIES OUTPUT_NAME lxqt-wallet)
 
 file(WRITE ${PROJECT_BINARY_DIR}/translations_path.h
 "
@@ -143,6 +137,3 @@ SET(TRANSLATIONS
    ../translations/lxqt-wallet_es_ES.ts
    ../translations/lxqt-wallet_pl_PL.ts
 )
-
-SET(QM_FILES ${QM_FILES} PARENT_SCOPE)
-ADD_CUSTOM_TARGET(translations ALL DEPENDS ${QM_FILES})

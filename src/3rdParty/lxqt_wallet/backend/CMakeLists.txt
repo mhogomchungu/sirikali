@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.0 )
+cmake_minimum_required(VERSION 3.0)
 
 add_definitions(-Wno-unused-result)
 
@@ -18,7 +18,7 @@ else()
     MESSAGE(STATUS "Found gcrypt library: ${GCRYPT_LIBRARY}")
 endif()
 
-add_library(lxqtwallet-backend STATIC lxqtwallet.cpp)
+add_library(lxqtwallet-backend STATIC lxqtwallet.c)
 if( CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7.0 )
         set_target_properties(lxqtwallet-backend PROPERTIES COMPILE_FLAGS "-Wall -s -fPIC -pedantic -Wformat-truncation=0")
 else()
