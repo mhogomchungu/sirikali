@@ -783,7 +783,7 @@ void sirikali::startGUI( const QString& volume )
 
 		this->startGUI( volume,m ) ;
 	}else{
-		this->disableAll() ;
+		this->disableAll_1() ;
 
 		this->showMainWindow() ;
 
@@ -2208,6 +2208,7 @@ void sirikali::emergencyShutDown()
 void sirikali::unMountAll()
 {
 	m_mountInfo.announceEvents( false ) ;
+	m_allowEnableAll.setFalse() ;
 
 	this->disableAll() ;
 
@@ -2234,6 +2235,8 @@ void sirikali::unMountAll()
 			DialogMsg( this ).ShowUIOK( tr( "WARNING" ),tr( "Failed To Unmount %1 Volumes." ).arg( m ) ) ;
 		}
 	}
+
+	m_allowEnableAll.setTrue() ;
 
 	this->updateList() ;
 
@@ -2293,15 +2296,22 @@ void sirikali::slotCurrentItemChanged( QTableWidgetItem * current,QTableWidgetIt
 
 void sirikali::disableAll()
 {
-	if( !utility::platformIsOSX() ){
+	m_ui->pbmenu->setEnabled( false ) ;
+	m_ui->pbupdate->setEnabled( false ) ;
+	m_ui->tableWidget->setEnabled( false ) ;
+	m_ui->pbunlockvolume->setEnabled( false ) ;
+	m_ui->pbcreate->setEnabled( false ) ;
+	m_ui->pbFavorites->setEnabled( false ) ;
+}
 
-		m_ui->pbmenu->setEnabled( false ) ;
-		m_ui->pbupdate->setEnabled( false ) ;
-		m_ui->tableWidget->setEnabled( false ) ;
-		m_ui->pbunlockvolume->setEnabled( false ) ;
-		m_ui->pbcreate->setEnabled( false ) ;
-		m_ui->pbFavorites->setEnabled( false ) ;
-	}
+void sirikali::disableAll_1()
+{
+	m_ui->pbmenu->setEnabled( false ) ;
+	//m_ui->pbupdate->setEnabled( false ) ;
+	m_ui->tableWidget->setEnabled( false ) ;
+	m_ui->pbunlockvolume->setEnabled( false ) ;
+	m_ui->pbcreate->setEnabled( false ) ;
+	m_ui->pbFavorites->setEnabled( false ) ;
 }
 
 void sirikali::enableAll()

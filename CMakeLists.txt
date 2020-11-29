@@ -80,7 +80,7 @@ if( DEFINED QT5 AND NOT QT5 )
 endif()
 
 if(NOT DEFINED NONETWORKSUPPORT)
-   set( NONETWORKSUPPORT "false" )
+   set( NONETWORKSUPPORT "true" )
 endif()
 
 set( QT5 "true" )

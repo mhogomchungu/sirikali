@@ -156,6 +156,7 @@ private:
 	void updateList( const volumeInfo& ) ;
 	void setUpAppMenu( void ) ;
 	void disableAll( void ) ;
+	void disableAll_1( void ) ;
 	void closeEvent( QCloseEvent * e ) ;
 	void setUpFont( void ) ;
 	void setUpShortCuts( void ) ;
