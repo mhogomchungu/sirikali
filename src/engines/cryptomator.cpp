@@ -42,7 +42,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.requiresPolkit        = false ;
 	s.customBackend         = false ;
 	s.requiresAPassword     = true ;
-	s.hasConfigFile         = false ;
+	s.hasConfigFile         = true ;
 	s.autoMountsOnCreate    = false ;
 	s.hasGUICreateOptions   = false ;
 	s.setsCipherPath        = true ;
@@ -59,11 +59,12 @@ static engines::engine::BaseOptions _setOptions()
 	s.configFileNames          = QStringList{ "masterkey.cryptomator" } ;
 	s.fuseNames                = QStringList{ "fuse.cryptomator" } ;
 	s.names                    = QStringList{ "cryptomator" } ;
-	s.failedToMountList        = QStringList{ " ERROR ","Exception" } ;
+	s.failedToMountList        = QStringList{ " ERROR ","Exception","fuse: unknown option" } ;
 	s.successfulMountedList    = QStringList{ "Mounted to" } ;
 	s.unMountCommand           = QStringList{ "SIGTERM" } ;
 	s.notFoundCode             = engines::engine::status::engineExecutableNotFound ;
-	s.versionInfo              = { {} } ;
+	s.versionInfo              = { { "--version",true,0,0 } } ;
+	s.versionMinimum           = "0.5.0" ;
 
 	s.mountControlStructure    = "--vault %{cipherFolder} -fusemount %{mountPoint}" ;
 	s.createControlStructure   = "" ;
@@ -72,7 +73,8 @@ static engines::engine::BaseOptions _setOptions()
 }
 
 cryptomator::cryptomator() :
-	engines::engine( _setOptions() )
+	engines::engine( _setOptions() ),
+	m_version_greater_or_equal_0_5_0( false,*this,this->minimumVersion() )
 {
 }
 
@@ -87,9 +89,11 @@ cryptomator::terminateProcess( const engines::engine::terminate_process& e ) con
 	 * process.
 	 */
 
-	utility::logger().showText( "fusermount",args ) ;
+	const auto& fusermount = this->fuserMountPath() ;
 
-	auto m = utility::unwrap( Task::process::run( "fusermount",args ) ) ;
+	utility::logger().showText( fusermount,args ) ;
+
+	auto m = utility::unwrap( Task::process::run( fusermount,args ) ) ;
 
 	if( m.success() ){
 
@@ -103,7 +107,7 @@ cryptomator::terminateProcess( const engines::engine::terminate_process& e ) con
 						0,
 						true ) ;
 
-		return { std::move( a ),"fusermount",std::move( args ) } ;
+		return { std::move( a ),fusermount,std::move( args ) } ;
 	}
 }
 
@@ -113,6 +117,19 @@ engines::engine::ownsCipherFolder cryptomator::ownsCipherPath( const QString& ci
 	bool s = utility::pathExists( cipherPath + "/masterkey.cryptomator" ) ;
 
 	return { s,cipherPath,configPath } ;
+}
+
+static bool _not_contains_starts_with( const QStringList& list,const QString& e )
+{
+	for( const auto& it : list ){
+
+		if( it.startsWith( e ) ){
+
+			return false ;
+		}
+	}
+
+	return true ;
 }
 
 void cryptomator::updateOptions( QStringList& opts,
@@ -136,6 +153,22 @@ void cryptomator::updateOptions( QStringList& opts,
 			it  = vaultName + "=" + e.mountPoint ;
 		}
 	}
+
+	opts.append( "-mountFlags" ) ;
+
+	auto m = e.mountOptions ;
+
+	if( _not_contains_starts_with( m,"fsname " ) ){
+
+		m.append( "fsname cryptomator" ) ;
+	}
+
+	if( _not_contains_starts_with( m,"subtype " ) ){
+
+		m.append( "subtype cryptomator" ) ;
+	}
+
+	opts.append( vaultName + "=" + m.join( ',' ) ) ;
 }
 
 engines::engine::status cryptomator::errorCode( const QString& e,int s ) const
@@ -161,4 +194,14 @@ void cryptomator::GUIMountOptions( const engines::engine::mountGUIOptions& s ) c
 	ee.enableKeyFile  = false ;
 
 	e.ShowUI() ;
+}
+
+engines::engine::status cryptomator::passAllRequirenments( const engines::engine::cmdArgsList& opt ) const
+{
+	if( m_version_greater_or_equal_0_5_0 ){
+
+		return engines::engine::passAllRequirenments( opt ) ;
+	}else{
+		return engine::engine::status::backEndFailedToMeetMinimumRequirenment ;
+	}
 }

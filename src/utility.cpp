@@ -1189,7 +1189,7 @@ static bool _wait_for_finished( QProcess& e,int timeOut,Function wait )
 			utility::debug() << "Waiting For A Process To Finish" ;
 			wait() ;
 		}else{
-			utility::debug() << "Process Stopped Running" ;
+			utility::debug() << "Process Finished" ;
 			return true ;
 		}
 	}

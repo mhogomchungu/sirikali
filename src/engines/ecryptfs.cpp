@@ -95,7 +95,7 @@ static bool _requiresPolkit( const engines::engine& engine )
 ecryptfs::ecryptfs() :
 	engines::engine( _setOptions() ),
 	m_requirePolkit( _requiresPolkit( *this ) ),
-	m_exeSUFullPath( [](){ return engines::executableFullPath( "su" ) ; } )
+	m_exeSUFullPath( [](){ return engines::executableNotEngineFullPath( "su" ) ; } )
 {
 }
 

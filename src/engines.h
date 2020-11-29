@@ -38,6 +38,7 @@ class engines
 public:
 	class engine ;
 
+	static QString executableNotEngineFullPath( const QString& ) ;
 	static QString executableFullPath( const QString& ) ;
 	static QString executableFullPath( const QString&,const engines::engine& ) ;
 
@@ -588,8 +589,10 @@ public:
 		const engines::version& installedVersion() const ;
 
 		const QString& defaultFavoritesMountOptions() const ;
+
 		const QString& executableFullPath() const ;
 		const QString& javaFullPath() const ;
+		const QString& fuserMountPath() const ;
 
 		const QString& minimumVersion() const ;
 		const QString& sirikaliMinimumVersion() const ;
@@ -820,6 +823,7 @@ public:
 		const engines::exeFullPath m_exeFullPath ;
 		const engines::version m_version ;
 		static engines::exeFullPath m_exeJavaFullPath ;
+		static engines::exeFullPath m_exeFuserMount ;
 	} ;
 
 	engines() ;

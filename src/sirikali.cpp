@@ -2130,11 +2130,13 @@ engines::engine::cmdStatus sirikali::unMountVolume( const sirikali::mountedEntry
 	auto mm = utility2::make_raii( [ this ](){
 
 		m_mountInfo.announceEvents( true ) ;
+		m_allowEnableAll.setTrue() ;
 	} ) ;
 
 	if( utility::platformIsLinux() && engine.runsInForeGround() ){
 
 		m_mountInfo.announceEvents( false ) ;
+		m_allowEnableAll.setFalse() ;
 	}
 
 	auto s = siritask::encryptedFolderUnMount( { e.cipherPath,e.mountPoint,engine,5 } ) ;

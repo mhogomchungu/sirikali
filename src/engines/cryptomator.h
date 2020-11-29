@@ -19,8 +19,9 @@
 
 #include "../engines.h"
 
-struct cryptomator : public engines::engine
+class cryptomator : public engines::engine
 {
+public:
 	cryptomator() ;
 
 	terminate_result terminateProcess( const terminate_process& e ) const override ;
@@ -32,7 +33,11 @@ struct cryptomator : public engines::engine
 
 	void GUIMountOptions( const engines::engine::mountGUIOptions& ) const override ;
 
+	engines::engine::status passAllRequirenments( const engines::engine::cmdArgsList& opt ) const override ;
+
 	void updateOptions( QStringList&,
 	                    const engines::engine::cmdArgsList& args,
 	                    bool creating ) const override ;
+private:
+	const engines::versionGreaterOrEqual m_version_greater_or_equal_0_5_0 ;
 } ;
