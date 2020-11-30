@@ -61,7 +61,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.names                    = QStringList{ "cryptomator" } ;
 	s.failedToMountList        = QStringList{ " ERROR ","Exception","fuse: unknown option" } ;
 	s.successfulMountedList    = QStringList{ "Mounted to" } ;
-	s.unMountCommand           = QStringList{ "SIGTERM" } ;
+	s.unMountCommand           = QStringList{ "fusermount","-u","%{mountPoint}" } ;
 	s.notFoundCode             = engines::engine::status::engineExecutableNotFound ;
 	s.versionInfo              = { { "--version",true,0,0 } } ;
 	s.versionMinimum           = "0.5.0" ;
@@ -76,39 +76,6 @@ cryptomator::cryptomator() :
 	engines::engine( _setOptions() ),
 	m_version_greater_or_equal_0_5_0( false,*this,this->minimumVersion() )
 {
-}
-
-engines::engine::terminate_result
-cryptomator::terminateProcess( const engines::engine::terminate_process& e ) const
-{
-	QStringList args{ "-u",e.mountPath } ;
-
-	/*
-	 * First we unmount the file system and then we terminate the process
-	 * to make sure the file system is not in use before terminating its
-	 * process.
-	 */
-
-	const auto& fusermount = this->fuserMountPath() ;
-
-	utility::logger().showText( fusermount,args ) ;
-
-	auto m = utility::unwrap( Task::process::run( fusermount,args ) ) ;
-
-	if( m.success() ){
-
-		return engines::engine::terminateProcess( e ) ;
-	}else{
-		utility::debug() << "Failed To Unmount file system, is it still in use?" ;
-
-		auto a = Task::process::result( "SiriKali Error: File system is still in use",
-						QByteArray(),
-						-1,
-						0,
-						true ) ;
-
-		return { std::move( a ),fusermount,std::move( args ) } ;
-	}
 }
 
 engines::engine::ownsCipherFolder cryptomator::ownsCipherPath( const QString& cipherPath,
@@ -160,7 +127,7 @@ void cryptomator::updateOptions( QStringList& opts,
 
 	if( _not_contains_starts_with( m,"fsname " ) ){
 
-		m.append( "fsname cryptomator" ) ;
+		m.append( "fsname " + e.cipherFolder ) ;
 	}
 
 	if( _not_contains_starts_with( m,"subtype " ) ){
