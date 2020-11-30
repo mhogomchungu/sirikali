@@ -66,7 +66,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.versionInfo              = { { "--version",true,0,0 } } ;
 	s.versionMinimum           = "0.5.0" ;
 
-	s.mountControlStructure    = "--vault %{cipherFolder} -fusemount %{mountPoint}" ;
+	s.mountControlStructure    = "--foreground --vault %{cipherFolder} --fusemount %{mountPoint} --mountFlags %{fuseOpts}" ;
 	s.createControlStructure   = "" ;
 
 	return s ;
@@ -86,56 +86,14 @@ engines::engine::ownsCipherFolder cryptomator::ownsCipherPath( const QString& ci
 	return { s,cipherPath,configPath } ;
 }
 
-static bool _not_contains_starts_with( const QStringList& list,const QString& e )
-{
-	for( const auto& it : list ){
-
-		if( it.startsWith( e ) ){
-
-			return false ;
-		}
-	}
-
-	return true ;
-}
-
 void cryptomator::updateOptions( QStringList& opts,
 				 const engines::engine::cmdArgsList& e,
 				 bool creating ) const
 {
 	Q_UNUSED( creating )
+	Q_UNUSED( e )
 
-	auto vaultName = crypto::sha256( e.mountPoint ).mid( 0,16 ) ;
-
-	for( int i = 0 ; i < opts.size() ; i++ ){
-
-		auto& it = opts[ i ] ;
-
-		if( it == e.cipherFolder ){
-
-			it = vaultName + "=" + e.cipherFolder ;
-
-		}else if( it == e.mountPoint ){
-
-			it  = vaultName + "=" + e.mountPoint ;
-		}
-	}
-
-	opts.append( "-mountFlags" ) ;
-
-	auto m = e.mountOptions ;
-
-	if( _not_contains_starts_with( m,"fsname " ) ){
-
-		m.append( "fsname " + e.cipherFolder ) ;
-	}
-
-	if( _not_contains_starts_with( m,"subtype " ) ){
-
-		m.append( "subtype cryptomator" ) ;
-	}
-
-	opts.append( vaultName + "=" + m.join( ',' ) ) ;
+	opts.removeOne( "-o" ) ;
 }
 
 engines::engine::status cryptomator::errorCode( const QString& e,int s ) const
