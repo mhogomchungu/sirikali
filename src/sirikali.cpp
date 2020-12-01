@@ -783,7 +783,7 @@ void sirikali::startGUI( const QString& volume )
 
 		this->startGUI( volume,m ) ;
 	}else{
-		this->disableAll_1() ;
+		this->disableAll() ;
 
 		this->showMainWindow() ;
 
@@ -2210,7 +2210,7 @@ void sirikali::emergencyShutDown()
 void sirikali::unMountAll()
 {
 	m_mountInfo.announceEvents( false ) ;
-	m_allowEnableAll.setFalse() ;
+	m_allowEnableAll.setFalse( 2020 ) ;
 
 	this->disableAll() ;
 
@@ -2238,7 +2238,7 @@ void sirikali::unMountAll()
 		}
 	}
 
-	m_allowEnableAll.setTrue() ;
+	m_allowEnableAll.setTrue( 2020 ) ;
 
 	this->updateList() ;
 
@@ -2299,21 +2299,15 @@ void sirikali::slotCurrentItemChanged( QTableWidgetItem * current,QTableWidgetIt
 void sirikali::disableAll()
 {
 	m_ui->pbmenu->setEnabled( false ) ;
-	m_ui->pbupdate->setEnabled( false ) ;
 	m_ui->tableWidget->setEnabled( false ) ;
 	m_ui->pbunlockvolume->setEnabled( false ) ;
 	m_ui->pbcreate->setEnabled( false ) ;
 	m_ui->pbFavorites->setEnabled( false ) ;
-}
 
-void sirikali::disableAll_1()
-{
-	m_ui->pbmenu->setEnabled( false ) ;
-	//m_ui->pbupdate->setEnabled( false ) ;
-	m_ui->tableWidget->setEnabled( false ) ;
-	m_ui->pbunlockvolume->setEnabled( false ) ;
-	m_ui->pbcreate->setEnabled( false ) ;
-	m_ui->pbFavorites->setEnabled( false ) ;
+	if( !utility::miscOptions::instance().starting() ){
+
+		m_ui->pbupdate->setEnabled( false ) ;
+	}
 }
 
 void sirikali::enableAll()

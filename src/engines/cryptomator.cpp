@@ -57,14 +57,14 @@ static engines::engine::BaseOptions _setOptions()
 	s.volumePropertiesCommands = QStringList{} ;
 	s.windowsUnMountCommand    = QStringList{} ;
 	s.configFileNames          = QStringList{ "masterkey.cryptomator" } ;
-	s.fuseNames                = QStringList{ "fuse.cryptomator" } ;
+	s.fuseNames                = QStringList{ "fuse.Cryptomator" } ;
 	s.names                    = QStringList{ "cryptomator" } ;
 	s.failedToMountList        = QStringList{ " ERROR ","Exception","fuse: unknown option" } ;
 	s.successfulMountedList    = QStringList{ "Mounted to" } ;
 	s.unMountCommand           = QStringList{ "fusermount","-u","%{mountPoint}" } ;
 	s.notFoundCode             = engines::engine::status::engineExecutableNotFound ;
 	s.versionInfo              = { { "--version",true,0,0 } } ;
-	s.versionMinimum           = "0.5.0" ;
+	s.versionMinimum           = "0.4.5" ;
 
 	s.mountControlStructure    = "--foreground --vault %{cipherFolder} --fusemount %{mountPoint} --mountFlags %{fuseOpts}" ;
 	s.createControlStructure   = "" ;
