@@ -31,6 +31,8 @@
 #include "lxqt_kwallet-dbus.h"
 #include "task.h"
 
+#ifdef Q_OS_LINUX
+
 static auto _service   = "org.kde.kwalletd5";
 static auto _path      = "/modules/kwalletd5";
 static auto _interface = "org.kde.KWallet";
@@ -307,3 +309,149 @@ bool LXQt::Wallet::kwallet_dbus::has_functionality()
     QDBusMessage reply = m.call("localWallet");
     return reply.type() == QDBusMessage::ReplyMessage;
 }
+
+#else
+LXQt::Wallet::kwallet_dbus::kwallet_dbus()
+{
+}
+
+LXQt::Wallet::kwallet_dbus::~kwallet_dbus()
+{
+}
+
+void LXQt::Wallet::kwallet_dbus::setImage(const QIcon &image)
+{
+    Q_UNUSED(image)
+}
+
+bool LXQt::Wallet::kwallet_dbus::addKey(const QString &key, const QByteArray &value)
+{
+    Q_UNUSED(key)
+    Q_UNUSED(value)
+    return false;
+}
+
+bool LXQt::Wallet::kwallet_dbus::open(const QString &walletName,
+				 const QString &applicationName,
+				 QWidget *parent,
+				 const QString &password,
+				 const QString &displayApplicationName)
+{
+    Q_UNUSED(walletName)
+    Q_UNUSED(applicationName)
+    Q_UNUSED(parent)
+    Q_UNUSED(password)
+    Q_UNUSED(displayApplicationName)
+    return false;
+}
+
+void LXQt::Wallet::kwallet_dbus::openedWallet(bool e)
+{
+    Q_UNUSED(e)
+}
+
+void LXQt::Wallet::kwallet_dbus::open(const QString &walletName,
+				 const QString &applicationName,
+				 std::function< void(bool) > function,
+				 QWidget *parent,
+				 const QString &password,
+				 const QString &displayApplicationName)
+{
+    Q_UNUSED(walletName)
+    Q_UNUSED(applicationName)
+    Q_UNUSED(function)
+    Q_UNUSED(parent)
+    Q_UNUSED(password)
+    Q_UNUSED(displayApplicationName)
+}
+
+void LXQt::Wallet::kwallet_dbus::walletOpened(bool opened)
+{
+    Q_UNUSED(opened)
+}
+
+QByteArray LXQt::Wallet::kwallet_dbus::readValue(const QString &key)
+{
+    Q_UNUSED(key)
+    return {} ;
+}
+
+QVector<std::pair<QString, QByteArray>> LXQt::Wallet::kwallet_dbus::readAllKeyValues(void)
+{
+    return QVector<std::pair<QString, QByteArray>>();
+}
+
+void LXQt::Wallet::kwallet_dbus::log(std::function<void(QString)> f)
+{
+    Q_UNUSED(f)
+}
+
+QStringList LXQt::Wallet::kwallet_dbus::readAllKeys(void)
+{
+    return {} ;
+}
+
+void LXQt::Wallet::kwallet_dbus::deleteKey(const QString &key)
+{
+    Q_UNUSED(key)
+}
+
+int LXQt::Wallet::kwallet_dbus::walletSize(void)
+{
+    return this->readAllKeys().size();
+}
+
+void LXQt::Wallet::kwallet_dbus::closeWallet(bool b)
+{
+    Q_UNUSED(b)
+}
+
+LXQt::Wallet::BackEnd LXQt::Wallet::kwallet_dbus::backEnd(void)
+{
+    return LXQt::Wallet::BackEnd::kwallet;
+}
+
+bool LXQt::Wallet::kwallet_dbus::opened(void)
+{
+    return false ;
+}
+
+QObject *LXQt::Wallet::kwallet_dbus::qObject(void)
+{
+    return this;
+}
+
+QString LXQt::Wallet::kwallet_dbus::storagePath()
+{
+    return {};
+}
+
+void LXQt::Wallet::kwallet_dbus::changeWalletPassWord(const QString &walletName,
+	const QString &applicationName,
+	std::function< void(bool) > function)
+{
+    Q_UNUSED(applicationName)
+    Q_UNUSED(function)
+    Q_UNUSED(walletName)
+}
+
+QStringList LXQt::Wallet::kwallet_dbus::managedWalletList()
+{
+    return {} ;
+}
+
+QString LXQt::Wallet::kwallet_dbus::localDefaultWalletName()
+{
+    return {} ;
+}
+
+QString LXQt::Wallet::kwallet_dbus::networkDefaultWalletName()
+{
+    return {} ;
+}
+
+bool LXQt::Wallet::kwallet_dbus::has_functionality()
+{
+    return false ;
+}
+#endif

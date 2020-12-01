@@ -37,6 +37,12 @@ extern "C" {
 
 #include <sys/types.h>
 
+#ifdef _WIN32
+#include <stdint.h>
+typedef uint32_t u_int32_t;
+typedef uint64_t u_int64_t;
+#endif
+
     /*
      * NOTE: For documentation on how to use this API,look at the end of this header file.
      *

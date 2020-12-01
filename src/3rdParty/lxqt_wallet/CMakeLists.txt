@@ -21,5 +21,12 @@ configure_file(
 add_custom_target( uninstall
 COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake )
 
-add_subdirectory(backend)
+if( WIN32 )
+    add_library( lxqtwallet-backend STATIC backend/fake_wallet_backend.c )
+
+    set_target_properties( lxqtwallet-backend PROPERTIES COMPILE_FLAGS "-Wall -s -pedantic" )
+else()
+    add_subdirectory(backend)
+endif()
+
 add_subdirectory(frontend)

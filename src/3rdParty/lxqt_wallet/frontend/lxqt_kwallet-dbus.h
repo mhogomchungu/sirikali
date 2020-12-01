@@ -36,7 +36,12 @@
 #include <QString>
 #include <QByteArray>
 #include <QDebug>
+
+#ifdef Q_OS_LINUX
+
 #include <QtDBus>
+
+#endif
 
 class QWidget;
 
@@ -100,15 +105,18 @@ private slots:
     void walletOpened(bool);
 private:
     void openedWallet(bool);
-
+#ifdef Q_OS_LINUX
     int m_handle = -1;
     QString m_walletName;
     QString m_applicationName;
     QString m_password;
     QString m_folder;
+
     QDBusInterface m_dbus;
+
     std::function<void(bool)> m_walletOpened = [](bool e) { Q_UNUSED(e) };
     std::function<void(QString)> m_log;
+#endif
 };
 
 }
