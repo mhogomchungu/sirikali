@@ -2146,6 +2146,8 @@ void sirikali::pbUmount()
 
 	if( table->rowCount() > 0 ){
 
+		m_mountInfo.announceEvents( false ) ;
+
 		this->disableAll() ;
 
 		auto row = table->currentRow() ;
@@ -2162,10 +2164,7 @@ void sirikali::pbUmount()
 
 		if( s.success() ){
 
-			if( !s.engine().autorefreshOnMountUnMount() ){
-
-				this->updateList() ;
-			}
+			this->updateList() ;
 		}else{
 			DialogMsg( this ).ShowUIOK( tr( "ERROR" ),s.toString() ) ;
 
@@ -2176,6 +2175,8 @@ void sirikali::pbUmount()
 				this->pbUpdate() ;
 			}
 		}
+
+		m_mountInfo.announceEvents( true ) ;
 	}
 }
 
