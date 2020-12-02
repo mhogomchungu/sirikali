@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  *  Copyright (c) 2012-2015
  *  name : Francis Banyikwa
@@ -2127,18 +2127,6 @@ engines::engine::cmdStatus sirikali::unMountVolume( const sirikali::mountedEntry
 {
 	const auto& engine = engines::instance().getByName( e.volumeType ) ;
 
-	auto mm = utility2::make_raii( [ this ](){
-
-		m_mountInfo.announceEvents( true ) ;
-		m_allowEnableAll.setTrue() ;
-	} ) ;
-
-	if( utility::platformIsLinux() && engine.runsInForeGround() ){
-
-		m_mountInfo.announceEvents( false ) ;
-		m_allowEnableAll.setFalse() ;
-	}
-
 	auto s = siritask::encryptedFolderUnMount( { e.cipherPath,e.mountPoint,engine,5 } ) ;
 
 	if( s.success() && engine.backendRequireMountPath() ){
@@ -2210,7 +2198,7 @@ void sirikali::emergencyShutDown()
 void sirikali::unMountAll()
 {
 	m_mountInfo.announceEvents( false ) ;
-	m_allowEnableAll.setFalse( 2020 ) ;
+	m_allowEnableAll.setFalse() ;
 
 	this->disableAll() ;
 
@@ -2238,7 +2226,7 @@ void sirikali::unMountAll()
 		}
 	}
 
-	m_allowEnableAll.setTrue( 2020 ) ;
+	m_allowEnableAll.setTrue() ;
 
 	this->updateList() ;
 

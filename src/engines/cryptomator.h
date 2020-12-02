@@ -37,5 +37,5 @@ public:
 	                    const engines::engine::cmdArgsList& args,
 	                    bool creating ) const override ;
 private:
-	const engines::versionGreaterOrEqual m_version_greater_or_equal_0_5_0 ;
+	const engines::versionGreaterOrEqual m_version_greater_or_equal_0_4_5 ;
 } ;

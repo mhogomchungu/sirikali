@@ -57,7 +57,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.volumePropertiesCommands = QStringList{} ;
 	s.windowsUnMountCommand    = QStringList{} ;
 	s.configFileNames          = QStringList{ "masterkey.cryptomator" } ;
-	s.fuseNames                = QStringList{ "fuse.Cryptomator" } ;
+	s.fuseNames                = QStringList{ "fuse.cryptomator" } ;
 	s.names                    = QStringList{ "cryptomator" } ;
 	s.failedToMountList        = QStringList{ " ERROR ","Exception","fuse: unknown option" } ;
 	s.successfulMountedList    = QStringList{ "Mounted to" } ;
@@ -74,7 +74,7 @@ static engines::engine::BaseOptions _setOptions()
 
 cryptomator::cryptomator() :
 	engines::engine( _setOptions() ),
-	m_version_greater_or_equal_0_5_0( false,*this,this->minimumVersion() )
+	m_version_greater_or_equal_0_4_5( false,*this,this->minimumVersion() )
 {
 }
 
@@ -123,7 +123,7 @@ void cryptomator::GUIMountOptions( const engines::engine::mountGUIOptions& s ) c
 
 engines::engine::status cryptomator::passAllRequirenments( const engines::engine::cmdArgsList& opt ) const
 {
-	if( m_version_greater_or_equal_0_5_0 ){
+	if( m_version_greater_or_equal_0_4_5 ){
 
 		return engines::engine::passAllRequirenments( opt ) ;
 	}else{
