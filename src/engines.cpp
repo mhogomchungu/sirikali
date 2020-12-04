@@ -813,7 +813,7 @@ const QString& engines::engine::javaFullPath() const
 	return m_exeJavaFullPath.get() ;
 }
 
-const QString & engines::engine::fuserMountPath() const
+const QString& engines::engine::fuserMountPath() const
 {
 	return m_exeFuserMount.get() ;
 }
@@ -1081,7 +1081,7 @@ const QStringList& engines::engine::unMountCommand() const
 	return m_Options.unMountCommand ;
 }
 
-const QString &engines::engine::configFileArgument() const
+const QString& engines::engine::configFileArgument() const
 {
 	return m_Options.configFileArgument ;
 }
