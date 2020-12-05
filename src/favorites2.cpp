@@ -965,7 +965,7 @@ void favorites2::updateVolumeList( const std::vector<favorites::entry>& e,const 
 {
 	_updateList( m_ui->tableWidget,this->font(),e,volPath ) ;
 
-	auto _update = [ & ]()->const favorites::entry&{
+	this->setVolumeProperties( [ & ]()->utility2::result_ref< const favorites::entry& >{
 
 		for( const auto& it : e ){
 
@@ -975,10 +975,8 @@ void favorites2::updateVolumeList( const std::vector<favorites::entry>& e,const 
 			}
 		}
 
-		return favorites::instance().unknown() ;
-	} ;
-
-	this->setVolumeProperties( _update() ) ;
+		return {} ;
+	}() ) ;
 }
 
 void favorites2::updateVolumeList( const std::vector< favorites::entry >& e,size_t row )
@@ -1017,11 +1015,11 @@ void favorites2::toggleAutoMount()
 
 		auto row = table->currentRow() ;
 
-		const auto& e = this->getEntry( row ) ;
+		auto e = this->getEntry( row ) ;
 
-		if( !e.volumePath.isEmpty() ){
+		if( e.has_value() ){
 
-			auto f = e ;
+			auto f = e.value() ;
 
 			f.autoMount.toggle() ;
 
@@ -1032,7 +1030,9 @@ void favorites2::toggleAutoMount()
 				m_ui->textEditAutoMount->setText( "false" ) ;
 			}
 
-			favorites::instance().replaceFavorite( e,f ) ;
+			favorites::instance().replaceFavorite( e.value(),f ) ;
+		}else{
+			utility::debug() << "Warning: favorites2::toggleAutoMount() out of range" ;
 		}
 	}
 }
@@ -1123,11 +1123,18 @@ void favorites2::removeEntryFromFavoriteList()
 
 		auto row = table->currentRow() ;
 
-		favorites::instance().removeFavoriteEntry( this->getEntry( row ) ) ;
+		auto aa = this->getEntry( row ) ;
 
-		const auto& volumes = favorites::instance().readFavorites() ;
+		if( aa.has_value() ){
 
-		this->updateVolumeList( volumes,volumes.size() - 1 ) ;
+			favorites::instance().removeFavoriteEntry( aa.value() ) ;
+
+			const auto& volumes = favorites::instance().readFavorites() ;
+
+			this->updateVolumeList( volumes,volumes.size() - 1 ) ;
+		}else{
+			utility::debug() << "Warning: favorites2::removeEntryFromFavoriteList() out of range" ;
+		}
 	}
 }
 
@@ -1217,12 +1224,17 @@ void favorites2::updateFavorite( bool edit )
 
 		const auto& f = this->getEntry( m_editRow ) ;
 
-		if( engine.known() && engine.usesOnlyMountPoint() ){
+		if( f.has_value() ){
 
-			e.mountPointPath = dev ;
+			if( engine.known() && engine.usesOnlyMountPoint() ){
+
+				e.mountPointPath = dev ;
+			}
+
+			favorites::instance().replaceFavorite( f.value(),e ) ;
+		}else{
+			utility::debug() << "Warning: favorites2::getEntry() out of range" ;
 		}
-
-		favorites::instance().replaceFavorite( f,e ) ;
 	}else{
 		if( utility::platformIsWindows() ){
 
@@ -1387,7 +1399,7 @@ void favorites2::checkFavoritesConsistency()
 {	
 }
 
-const favorites::entry& favorites2::getEntry( int row )
+utility2::result_ref< const favorites::entry& > favorites2::getEntry( int row )
 {
 	auto m = static_cast< size_t >( row ) ;
 
@@ -1399,7 +1411,7 @@ const favorites::entry& favorites2::getEntry( int row )
 
 		return volumes[ m ] ;
 	}else{
-		return ff.unknown() ;
+		return {} ;
 	}
 }
 
@@ -1425,12 +1437,21 @@ QString favorites2::getExistingDirectory( const QString& r )
 	return utility::getExistingDirectory( this,r,QDir::homePath() ) ;
 }
 
-void favorites2::setVolumeProperties( const favorites::entry& e )
+void favorites2::setVolumeProperties( utility2::result_ref< const favorites::entry& > ee )
 {
-	if( !e.hasValue() ){
+	const auto& e = [ & ](){
 
-		utility::debug() << "Warning: Unknown Favorite Entry Encountered in favorites2::setVolumeProperties" ;
-	}
+		if( ee.has_value() ){
+
+			return ee.value() ;
+		}else{
+			utility::debug() << "Warning: Unknown Favorite Entry Encountered in favorites2::setVolumeProperties" ;
+
+			static favorites::entry s ;
+
+			return s ;
+		}
+	}() ;
 
 	m_ui->textEditMountPoint->setText( e.mountPointPath ) ;
 

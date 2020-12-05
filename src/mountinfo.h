@@ -46,7 +46,7 @@ public:
 	}
 	void monitor()
 	{
-		m_dbus.reset( new QDBusConnection( QDBusConnection::sessionBus() ) ) ;
+		m_dbus = std::make_unique< QDBusConnection >( QDBusConnection::sessionBus() ) ;
 
 		auto a = "org.gtk.vfs.Daemon" ;
 		auto b = "/org/gtk/vfs/mounttracker" ;

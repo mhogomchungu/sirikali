@@ -88,7 +88,7 @@ private :
 	void shortcutPressed( void ) ;
 	void devicePathTextChange( QString ) ;
 	void clearEditVariables() ;
-	void setVolumeProperties( const favorites::entry& e ) ;
+	void setVolumeProperties( utility2::result_ref< const favorites::entry& > e ) ;
 	void clearVolumeProperties() ;
 	void ShowUI() ;
 	void HideUI( void ) ;
@@ -96,7 +96,7 @@ private :
 	void setUiLikeSsh( const QString& cipherPath,const engines::engine& engine ) ;
 	void setDefaultUI( const engines::engine& ) ;
 	QStringList readAllKeys() ;
-	const favorites::entry& getEntry( int ) ;
+	utility2::result_ref< const favorites::entry& > getEntry( int ) ;
 	QString getExistingFile( const QString& ) ;
 	QString getExistingDirectory( const QString& ) ;
 	void closeEvent( QCloseEvent * ) ;

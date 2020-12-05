@@ -1688,22 +1688,24 @@ static void _file_entry( const QString& path,
 {
 	if( path.endsWith( ".json" ) ){
 
-		const auto& ss = favorites.readFavoriteByPath( path ) ;
+		auto ss = favorites.readFavoriteByPath( path ) ;
 
-		if( ss.hasValue() ){
+		if( ss.has_value() ){
 
-			if( ss.password.isEmpty() ){
+			const auto& sss = ss.value() ;
 
-				volumeList.emplace_back( ss,function( ss.volumePath ) ) ;
+			if( sss.password.isEmpty() ){
+
+				volumeList.emplace_back( sss,function( sss.volumePath ) ) ;
 			}else{
-				volumeList.emplace_back( ss ) ;
+				volumeList.emplace_back( sss ) ;
 			}
 		}else{
 			auto bb = favorites.readFavoriteByFileSystemPath( path ) ;
 
-			if( bb.hasValue() ){
+			if( bb.has_value() ){
 
-				volumeList.emplace_back( std::move( bb ),true ) ;
+				volumeList.emplace_back( std::move( bb.RValue() ),true ) ;
 			}else{
 				utility::debug() << "Malformed SiriKali config file: " + path ;
 			}
@@ -1842,6 +1844,21 @@ void sirikali::autoMount( const QString& vv )
 	auto& favorites = favorites::instance() ;
 
 	auto s = settings::instance().autoOpenFolderOnMount() ;
+
+	if( volume.endsWith( ".json" ) ){
+
+		auto a = favorites.readFavoriteByFileSystemPath( volume ) ;
+
+		if( a.has_value() ){
+
+			favorites::volumeList mm ;
+			mm.emplace_back( std::move( a.RValue() ),true ) ;
+
+			auto aa = this->autoUnlockVolumes( std::move( mm ),s ) ;
+
+			return this->mountMultipleVolumes( std::move( aa ) ) ;
+		}
+	}
 
 	auto m = [ & ](){
 

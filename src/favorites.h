@@ -115,11 +115,6 @@ public:
 		entry() ;
 		entry( const QString& volumePath,const QString& mountPath = QString() ) ;
 
-		bool hasValue() const
-		{
-			return !volumePath.isEmpty() ;
-		}
-
 		QString volumePath ;
 		QString mountPointPath ;
 		QString configFilePath ;
@@ -187,26 +182,7 @@ public:
 		{
 			m_password = std::forward< T >( e ) ;
 		}
-		void setAutoMount( bool s )
-		{
-			auto m = m_tmpFavorite.get() ;
-
-			if( m ){
-
-				utility::debug() << "Changing a setting of a temporary favorite: " + m->volumePath ;
-
-				m->autoMount = s ;
-			}else{
-				QString aa = "Creating a copy of a favorite at: %1\nto change a setting" ;
-
-				utility::debug() << aa.arg( m_favorite->volumePath ) ;
-
-				auto a = *m_favorite ;
-				a.autoMount = s ;
-
-				m_favorite = this->entry( std::move( a ),true ) ;
-			}
-		}
+		void setAutoMount( bool s ) ;
 	private:
 		template< typename E >
 		const favorites::entry * entry( E&& e,bool manage )
@@ -234,20 +210,17 @@ public:
 
 	volumeList readVolumeList() const ;
 
-	const favorites::entry& readFavoriteByPath( const QString& configPath ) const ;
+	utility2::result_ref< const favorites::entry& > readFavoriteByPath( const QString& configPath ) const ;
 
-	favorites::entry readFavoriteByFileSystemPath( const QString& configPath ) const ;
+	utility2::result< favorites::entry > readFavoriteByFileSystemPath( const QString& configPath ) const ;
 
-	const favorites::entry& unknown() const ;
-
-	const favorites::entry& readFavorite( const QString& volumePath,
-					      const QString& mountPath = QString() ) const ;
+	utility2::result_ref< const favorites::entry& > readFavorite( const QString& volumePath,
+								      const QString& mountPath = QString() ) const ;
 
 	favorites() ;
 private:
 	void reload() ;
 	std::vector< favorites::entry > m_favorites ;
-	favorites::entry m_empty ;
 };
 
 #endif // FAVORITES_H

@@ -19,7 +19,7 @@
 
 #include "processManager.h"
 
-static const char * _backEndTimedOut       = "BackendTimedOut" ;
+static const char * _backEndTimedOut = "BackendTimedOut" ;
 
 struct result
 {
@@ -157,7 +157,7 @@ Task::process::result processManager::run( const processManager::opts& s )
 	}
 }
 
-bool processManager::backEndTimedOut( const QString& e)
+bool processManager::backEndTimedOut( const QString& e )
 {
 	return e == _backEndTimedOut ;
 }

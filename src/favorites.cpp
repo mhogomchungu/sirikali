@@ -127,7 +127,7 @@ static void _update_favorites( favorites::entry& m )
 	}
 }
 
-static favorites::entry _favorites( const QString& path )
+static utility2::result< favorites::entry > _favorites( const QString& path )
 {
 	utility::logger logger ;
 
@@ -141,7 +141,6 @@ static favorites::entry _favorites( const QString& path )
 
 		m.reverseMode          = json.getBool( "reverseMode" ) ;
 		m.volumeNeedNoPassword = json.getBool( "volumeNeedNoPassword" ) ;
-		m.volumePath           = json.getString( "volumePath" ) ;
 		m.mountPointPath       = json.getString( "mountPointPath" ) ;
 		m.configFilePath       = json.getString( "configFilePath" ) ;
 		m.idleTimeOut          = json.getString( "idleTimeOut" ) ;
@@ -156,13 +155,17 @@ static favorites::entry _favorites( const QString& path )
 
 		m.password             = json.getByteArray( "password" ) ;
 
+		m.volumePath           = json.getString( "volumePath" ) ;
+
 		_update_favorites( m ) ;
 
 		favorites::triState::readTriState( json,m.readOnlyMode,"mountReadOnly" ) ;
 		favorites::triState::readTriState( json,m.autoMount,"autoMountVolume" ) ;
-	}
 
-	return m ;
+		return m ;
+	}else{
+		return {} ;
+	}
 }
 
 favorites::favorites()
@@ -186,9 +189,9 @@ void favorites::reload()
 
 			auto m = _favorites( a + it ) ;
 
-			if( m.hasValue() ){
+			if( m.has_value() ){
 
-				m_favorites.emplace_back( std::move( m ) ) ;
+				m_favorites.emplace_back( std::move( m.RValue() ) ) ;
 			}
 		}
 	}else{
@@ -277,7 +280,7 @@ favorites::volumeList favorites::readVolumeList() const
 	return e ;
 }
 
-const favorites::entry& favorites::readFavoriteByPath( const QString& configPath ) const
+utility2::result_ref< const favorites::entry& > favorites::readFavoriteByPath( const QString& configPath ) const
 {
 	auto path = QDir( configPath ).absolutePath() ;
 
@@ -289,21 +292,16 @@ const favorites::entry& favorites::readFavoriteByPath( const QString& configPath
 		}
 	}
 
-	return m_empty ;
+	return {} ;
 }
 
-favorites::entry favorites::readFavoriteByFileSystemPath( const QString& path ) const
+utility2::result< favorites::entry > favorites::readFavoriteByFileSystemPath( const QString& path ) const
 {
 	return _favorites( path ) ;
 }
 
-const favorites::entry& favorites::unknown() const
-{
-	return m_empty ;
-}
-
-const favorites::entry& favorites::readFavorite( const QString& volumePath,
-						 const QString& mountPath ) const
+utility2::result_ref< const favorites::entry& > favorites::readFavorite( const QString& volumePath,
+									 const QString& mountPath ) const
 {
 	if( mountPath.isEmpty() ){
 
@@ -324,7 +322,7 @@ const favorites::entry& favorites::readFavorite( const QString& volumePath,
 		}
 	}
 
-	return m_empty ;
+	return {} ;
 }
 
 void favorites::replaceFavorite( const favorites::entry& old,const favorites::entry& New )
@@ -367,4 +365,25 @@ favorites::entry::entry()
 favorites::entry::entry( const QString& e,const QString& mountPath ) :
 	volumePath( e ),mountPointPath( mountPath )
 {
+}
+
+void favorites::volEntry::setAutoMount( bool s )
+{
+	auto m = m_tmpFavorite.get() ;
+
+	if( m ){
+
+		utility::debug() << "Changing a setting of a temporary favorite: " + m->volumePath ;
+
+		m->autoMount = s ;
+	}else{
+		QString aa = "Creating a copy of a favorite at: %1\nto change a setting" ;
+
+		utility::debug() << aa.arg( m_favorite->volumePath ) ;
+
+		auto a = *m_favorite ;
+		a.autoMount = s ;
+
+		m_favorite = this->entry( std::move( a ),true ) ;
+	}
 }
