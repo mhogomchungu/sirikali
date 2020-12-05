@@ -727,12 +727,7 @@ void sirikali::mountFavorite( const QString& e )
 
 		if( _found( it,mountPointPath,volumePath ) ){
 
-			favorites::volumeList s ;
-			s.emplace_back( std::move( it ) ) ;
-
-			auto mm = this->autoUnlockVolumes( std::move( s ),true ) ;
-
-			this->mountMultipleVolumes( std::move( mm ) ) ;
+			this->autoUnlockAutoMount( std::move( it ),true ) ;
 
 			break ;
 		}
@@ -1069,7 +1064,7 @@ void sirikali::autoMountFavoritesOnAvailable( QString m )
 			}
 		}
 
-		this->mountMultipleVolumes( this->autoUnlockVolumes( std::move( e ),false,true ) ) ;
+		this->autoUnlockAutoMount( std::move( e ),false,true ) ;
 	}
 }
 
@@ -1117,7 +1112,7 @@ void sirikali::autoUnlockVolumes( const mountinfo::List& s,bool autoSetAutoMount
 		}
 	}
 
-	this->mountMultipleVolumes( this->autoUnlockVolumes( std::move( e ),false,false,autoSetAutoMount ) ) ;
+	this->autoUnlockAutoMount( std::move( e ),false,false,autoSetAutoMount ) ;
 }
 
 void sirikali::autoMount( keyDialog::volumeList& q,
@@ -1780,9 +1775,7 @@ void sirikali::dropEvent( QDropEvent * e )
 				return wallet->readValue( e ) ;
 			} ) ;
 
-			auto mm = this->autoUnlockVolumes( std::move( l ),false ) ;
-
-			return this->mountMultipleVolumes( std::move( mm ) ) ;
+			return this->autoUnlockAutoMount( std::move( l ),false ) ;
 		}
 	}
 
@@ -1792,9 +1785,7 @@ void sirikali::dropEvent( QDropEvent * e )
 		return QByteArray() ;
 	} ) ;
 
-	auto mm = this->autoUnlockVolumes( std::move( aa ),false ) ;
-
-	this->mountMultipleVolumes( std::move( mm ) ) ;
+	this->autoUnlockAutoMount( std::move( aa ),false ) ;
 }
 
 void sirikali::createVolume( QAction * ac )
@@ -1851,35 +1842,19 @@ void sirikali::autoMount( const QString& vv )
 
 		if( a.has_value() ){
 
-			favorites::volumeList mm ;
-			mm.emplace_back( std::move( a.RValue() ),true ) ;
-
-			auto aa = this->autoUnlockVolumes( std::move( mm ),s ) ;
-
-			return this->mountMultipleVolumes( std::move( aa ) ) ;
+			return this->autoUnlockAutoMount( { std::move( a.RValue() ),true },s ) ;
 		}
 	}
 
-	auto m = [ & ](){
+	for( auto&& it : favorites.readVolumeList() ){
 
-		for( auto&& it : favorites.readVolumeList() ){
+		if( it.favorite().volumePath == volume ){
 
-			if( it.favorite().volumePath == volume ){
-
-				favorites::volumeList mm ;
-				mm.emplace_back( std::move( it ) ) ;
-
-				return this->autoUnlockVolumes( std::move( mm ),s ) ;
-			}
+			return this->autoUnlockAutoMount( { std::move( it ) },s ) ;
 		}
+	}
 
-		favorites::volumeList mm ;
-		mm.emplace_back( favorites::entry( volume ),true ) ;
-
-		return this->autoUnlockVolumes( std::move( mm ),s ) ;
-	}() ;
-
-	this->mountMultipleVolumes( std::move( m ) ) ;
+	this->autoUnlockAutoMount( { volume,true },s ) ;
 }
 
 void sirikali::unlockVolume( bool dir )

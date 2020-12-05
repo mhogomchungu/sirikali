@@ -167,6 +167,26 @@ private:
 						 bool skipUnknown = false,
 						 bool autoSetAutoMount = false ) ;
 
+	template< typename ... Args >
+	void autoUnlockAutoMount( favorites::volEntry&& vEntry,Args&& ... args )
+	{
+		favorites::volumeList s ;
+		s.emplace_back( std::forward< favorites::volEntry >( vEntry ) ) ;
+		auto mm = this->autoUnlockVolumes( std::move( s ),
+						   std::forward< Args >( args ) ... ) ;
+
+		this->mountMultipleVolumes( std::move( mm ) ) ;
+	}
+
+	template< typename ... Args >
+	void autoUnlockAutoMount( favorites::volumeList&& volList,Args&& ... args )
+	{
+		auto mm = this->autoUnlockVolumes( std::forward< favorites::volumeList >( volList ),
+						   std::forward< Args >( args ) ... ) ;
+
+		this->mountMultipleVolumes( std::move( mm ) ) ;
+	}
+
 	struct mountedEntry{
 		const QString& cipherPath ;
 		const QString& mountPoint ;
