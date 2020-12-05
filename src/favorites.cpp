@@ -27,6 +27,8 @@
 #include <QFile>
 #include <QCryptographicHash>
 
+favorites::entry favorites::volEntry::m_static_favorite_entry ;
+
 static utility::qstring_result _config_path()
 {
 	QString m = settings::instance().ConfigLocation() + "/favorites/" ;

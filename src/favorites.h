@@ -146,6 +146,9 @@ public:
 
 	class volEntry{
 	public:
+		volEntry() : m_favorite( std::addressof( m_static_favorite_entry ) )
+		{
+		}
 		template< typename E,typename P >
 		volEntry( E&& e,P&& p,bool manage ) :
 			m_favorite( this->entry( std::forward< E >( e ),manage ) ),
@@ -195,6 +198,7 @@ public:
 		std::unique_ptr< favorites::entry > m_tmpFavorite ;
 		const favorites::entry * m_favorite ;
 		QByteArray m_password ;
+		static favorites::entry m_static_favorite_entry ;
 	};
 
 	using volumeList = std::vector< volEntry > ;

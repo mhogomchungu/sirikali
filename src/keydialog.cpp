@@ -204,8 +204,7 @@ keyDialog::keyDialog( QWidget * parent,secrets& s,
 
 	this->setUpInitUI() ;
 
-	static favorites::entry fe ;
-	this->setUpVolumeProperties( { fe } ) ;
+	this->setUpVolumeProperties( {} ) ;
 
 	m_ui->lineEditMountPoint->setText( QString() ) ;
 

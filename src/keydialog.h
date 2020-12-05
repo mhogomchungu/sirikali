@@ -164,6 +164,9 @@ class keyDialog : public QDialog
 	Q_OBJECT
 public:
 	struct entry{
+		entry()
+		{
+		}
 		entry( favorites::volEntry e ) :
 			volEntry( std::move( e ) ),
 			engine( volEntry.favorite().volumePath,volEntry.favorite().configFilePath )
