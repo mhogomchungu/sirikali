@@ -1257,7 +1257,7 @@ engines::engine::status engines::engine::passAllRequirenments( const engines::en
 
 			if( m.valid() ){
 
-				if( m < utility::SiriKaliVersion() ){
+				if( m > utility::SiriKaliVersion() ){
 
 					return engines::engine::status::backendFailedToMeetSiriKaliMinimumVersion ;
 				}
@@ -1770,7 +1770,7 @@ QString engines::engine::cmdStatus::toString() const
 
 	case engines::engine::status::backendFailedToMeetSiriKaliMinimumVersion :
 
-		return QObject::tr( "Backend Requires Atleast Version \"%1\" Of SiriKali." ).arg( utility::SiriKaliVersion() ) ;
+		return QObject::tr( "Backend Requires Atleast Version \"%1\" Of SiriKali." ).arg( m_engine->sirikaliMinimumVersion() ) ;
 
 	case engines::engine::status::backEndFailedToMeetMinimumRequirenment :
 

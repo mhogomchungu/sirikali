@@ -155,12 +155,12 @@ public:
 		}
 		template< typename P >
 		volEntry( favorites::entry&& e,P&& p,bool manage ) :
-			m_favorite( this->entry( std::forward< favorites::entry >( e ),manage ) ),
+			m_favorite( this->entry( std::move( e ),manage ) ),
 			m_password( std::forward< P >( p ) )
 		{
 		}
 		volEntry( favorites::entry&& e,bool manage ) :
-			m_favorite( this->entry( std::forward< favorites::entry >( e ),manage ) ),
+			m_favorite( this->entry( std::move( e ),manage ) ),
 			m_password( m_favorite->password )
 		{
 		}
@@ -194,7 +194,7 @@ public:
 		{
 			Q_UNUSED( manage )
 			utility::debug() << "Favorites managing temporary entry: " + e.volumePath ;
-			m_tmpFavorite = std::make_unique< favorites::entry >( std::forward< favorites::entry >( e ) ) ;
+			m_tmpFavorite = std::make_unique< favorites::entry >( std::move( e ) ) ;
 			return m_tmpFavorite.get() ;
 		}
 		std::unique_ptr< favorites::entry > m_tmpFavorite ;

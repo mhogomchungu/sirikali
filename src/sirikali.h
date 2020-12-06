@@ -171,17 +171,16 @@ private:
 	void autoUnlockAutoMount( favorites::volEntry&& vEntry,Args&& ... args )
 	{
 		favorites::volumeList s ;
-		s.emplace_back( std::forward< favorites::volEntry >( vEntry ) ) ;
-		auto mm = this->autoUnlockVolumes( std::move( s ),
-						   std::forward< Args >( args ) ... ) ;
+		s.emplace_back( std::move( vEntry ) ) ;
 
-		this->mountMultipleVolumes( std::move( mm ) ) ;
+		this->autoUnlockAutoMount( std::move( s ),
+					   std::forward< Args >( args ) ... ) ;
 	}
 
 	template< typename ... Args >
 	void autoUnlockAutoMount( favorites::volumeList&& volList,Args&& ... args )
 	{
-		auto mm = this->autoUnlockVolumes( std::forward< favorites::volumeList >( volList ),
+		auto mm = this->autoUnlockVolumes( std::move( volList ),
 						   std::forward< Args >( args ) ... ) ;
 
 		this->mountMultipleVolumes( std::move( mm ) ) ;
