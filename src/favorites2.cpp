@@ -924,12 +924,12 @@ void favorites2::tabChanged( int index )
 
 		m_volPathFav.clear() ;
 
-		for( const auto& it : favorites::instance().readFavorites() ){
+		favorites::instance().entries( [ & ]( const favorites::entry& e ){
 
-			const auto& s = it.volumePath ;
+			const auto& s = e.volumePath ;
 
 			m_volPathFav.addAction( s )->setObjectName( s ) ;
-		}
+		} ) ;
 
 		m_ui->pbVolumePathFromFavorites->setMenu( &m_volPathFav ) ;
 	}else{
@@ -1447,9 +1447,7 @@ void favorites2::setVolumeProperties( utility2::result_ref< const favorites::ent
 		}else{
 			utility::debug() << "Warning: Unknown Favorite Entry Encountered in favorites2::setVolumeProperties" ;
 
-			static favorites::entry s ;
-
-			return s ;
+			return favorites::entry::empty() ;
 		}
 	}() ;
 

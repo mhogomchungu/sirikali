@@ -112,6 +112,13 @@ public:
 
 	struct entry
 	{
+		static const favorites::entry& empty()
+		{
+			static favorites::entry s ;
+
+			return s ;
+		}
+
 		entry() ;
 		entry( const QString& volumePath,const QString& mountPath = QString() ) ;
 
@@ -146,21 +153,21 @@ public:
 
 	class volEntry{
 	public:
-		volEntry() : m_favorite( std::addressof( m_static_favorite_entry ) )
+		volEntry() : m_favorite( std::addressof( favorites::entry::empty() ) )
 		{
 		}
 		volEntry( const QString& e ) :
-			m_favorite( this->entry( favorites::entry( e ),true ) )
+			m_favorite( this->entry( e ) )
 		{
 		}
 		template< typename P >
-		volEntry( favorites::entry&& e,P&& p,bool manage ) :
-			m_favorite( this->entry( std::move( e ),manage ) ),
+		volEntry( favorites::entry&& e,P&& p ) :
+			m_favorite( this->entry( std::move( e ) ) ),
 			m_password( std::forward< P >( p ) )
 		{
 		}
-		volEntry( favorites::entry&& e,bool manage ) :
-			m_favorite( this->entry( std::move( e ),manage ) ),
+		volEntry( favorites::entry&& e ) :
+			m_favorite( this->entry( std::move( e ) ) ),
 			m_password( m_favorite->password )
 		{
 		}
@@ -190,9 +197,8 @@ public:
 		}
 		void setAutoMount( bool s ) ;
 	private:
-		const favorites::entry * entry( favorites::entry&& e,bool manage )
+		const favorites::entry * entry( favorites::entry&& e )
 		{
-			Q_UNUSED( manage )
 			utility::debug() << "Favorites managing temporary entry: " + e.volumePath ;
 			m_tmpFavorite = std::make_unique< favorites::entry >( std::move( e ) ) ;
 			return m_tmpFavorite.get() ;
@@ -214,7 +220,44 @@ public:
 
 	const std::vector< favorites::entry >& readFavorites() const ;
 
-	volumeList readVolumeList() const ;
+	template< typename Function,
+		  std::enable_if_t< std::is_same< std::result_of_t< Function( const favorites::entry& ) >,bool >::value,int > = 0 >
+	void entries( Function&& function ) const
+	{
+		for( const auto& it : m_favorites ){
+
+			if( function( it ) ){
+
+				break ;
+			}
+		}
+	}
+
+	template< typename Function,
+		  typename NotFound,
+		  std::enable_if_t< std::is_same< std::result_of_t< Function( const favorites::entry& ) >,bool >::value,int > = 0 >
+	void entries( Function&& function,NotFound&& notFound ) const
+	{
+		for( const auto& it : m_favorites ){
+
+			if( function( it ) ){
+
+				return ;
+			}
+		}
+
+		notFound() ;
+	}
+
+	template< typename Function,
+		  std::enable_if_t< std::is_void< std::result_of_t< Function( const favorites::entry& ) > >::value,int > = 0 >
+	void entries( Function&& function ) const
+	{
+		for( const auto& it : m_favorites ){
+
+			function( it ) ;
+		}
+	}
 
 	utility2::result_ref< const favorites::entry& > readFavoriteByPath( const QString& configPath ) const ;
 

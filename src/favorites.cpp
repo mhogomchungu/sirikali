@@ -27,8 +27,6 @@
 #include <QFile>
 #include <QCryptographicHash>
 
-favorites::entry favorites::volEntry::m_static_favorite_entry ;
-
 static utility::qstring_result _config_path()
 {
 	QString m = settings::instance().ConfigLocation() + "/favorites/" ;
@@ -270,18 +268,6 @@ const std::vector< favorites::entry >& favorites::readFavorites() const
 	return m_favorites ;
 }
 
-favorites::volumeList favorites::readVolumeList() const
-{
-	favorites::volumeList e ;
-
-	for( const auto& it : m_favorites ){
-
-		e.emplace_back( it ) ;
-	}
-
-	return e ;
-}
-
 utility2::result_ref< const favorites::entry& > favorites::readFavoriteByPath( const QString& configPath ) const
 {
 	auto path = QDir( configPath ).absolutePath() ;
@@ -386,6 +372,6 @@ void favorites::volEntry::setAutoMount( bool s )
 		auto a = *m_favorite ;
 		a.autoMount = s ;
 
-		m_favorite = this->entry( std::move( a ),true ) ;
+		m_favorite = this->entry( std::move( a ) ) ;
 	}
 }
