@@ -61,7 +61,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.names                    = QStringList{ "cryptomator" } ;
 	s.failedToMountList        = QStringList{ " ERROR ","Exception","fuse: unknown option" } ;
 	s.successfulMountedList    = QStringList{ "Mounted to" } ;
-	s.unMountCommand           = QStringList{ "fusermount","-u","%{mountPoint}" } ;
+	s.unMountCommand           = QStringList{ engines::engine::fuserMountPath(),"-u","%{mountPoint}" } ;
 	s.notFoundCode             = engines::engine::status::engineExecutableNotFound ;
 	s.versionInfo              = { { "--version",true,0,0 } } ;
 	s.versionMinimum           = "0.4.5" ;

@@ -435,7 +435,7 @@ engines::engine::args engines::engine::command( const QByteArray& password,
 		s.insert( 0,exe ) ;
 		s.insert( 0,"-jar" ) ;
 
-		return { args,m,engine.javaFullPath(),s } ;
+		return { args,m,engines::engine::javaFullPath(),s } ;
 	}else{
 		return { args,m,exe,s } ;
 	}
@@ -808,12 +808,12 @@ const QString& engines::engine::executableFullPath() const
 	return m_exeFullPath.get() ;
 }
 
-const QString& engines::engine::javaFullPath() const
+const QString& engines::engine::javaFullPath()
 {
 	return m_exeJavaFullPath.get() ;
 }
 
-const QString& engines::engine::fuserMountPath() const
+const QString& engines::engine::fuserMountPath()
 {
 	return m_exeFuserMount.get() ;
 }
