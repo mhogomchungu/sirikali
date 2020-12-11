@@ -27,15 +27,9 @@ public:
 	engines::engine::ownsCipherFolder ownsCipherPath( const QString& cipherPath,
 							  const QString& configPath ) const override ;
 
-	engines::engine::status errorCode( const QString& e,int s ) const override ;
-
 	void GUIMountOptions( const engines::engine::mountGUIOptions& ) const override ;
 
 	engines::engine::status passAllRequirenments( const engines::engine::cmdArgsList& opt ) const override ;
-
-	void updateOptions( QStringList&,
-	                    const engines::engine::cmdArgsList& args,
-	                    bool creating ) const override ;
 private:
 	const engines::versionGreaterOrEqual m_version_greater_or_equal_0_4_5 ;
 } ;

@@ -218,8 +218,8 @@ public:
 		} ;
 
 		struct exe_args{
-			exe_args( const QString& e,const QStringList& s ) :
-				exe( e ),args( s )
+		        exe_args( QString e,QStringList s ) :
+			        exe( std::move( e ) ),args( std::move( s ) )
 			{
 			}
 			exe_args()
@@ -494,6 +494,7 @@ public:
 			bool autoCreatesMountPoint ;
 			bool autoDeletesMountPoint ;
 			bool usesOnlyMountPoint ;
+			bool usesFuseArgumentSwitch ;
 
 			QByteArray passwordFormat ;
 			QString displayName ;
@@ -576,6 +577,7 @@ public:
 		bool requiresNoPassword() const ;
 		bool usesOnlyMountPoint() const ;
 		bool needsJava() const ;
+		bool usesFuseArgumentSwitch() const ;
 
 		engines::engine::status notFoundCode() const ;
 
@@ -586,8 +588,6 @@ public:
 		const QStringList& configFileNames() const ;
 		const QStringList& fileExtensions() const ;
 		const QStringList& volumePropertiesCommands() const ;
-		const QStringList& unMountCommand() const ;
-		const QStringList& windowsUnMountCommand() const ;
 
 		const engines::version& installedVersion() const ;
 
@@ -621,10 +621,52 @@ public:
 
 		virtual ~engine() ;
 
-		struct terminate_process{
+		class terminate_process{
+		public:
+		        terminate_process( QProcess& exe,const QString& mountPath ) :
+				m_exe( &exe ),m_mountPath( mountPath )
+			{
+			}
+			terminate_process( const QString& mountPath ) :
+				m_exe( nullptr ),m_mountPath( mountPath )
+			{
+			}
+			qint64 PID() const
+			{
+				if( m_exe ){
 
-			QProcess& exe ;
-			const QString& mountPath ;
+					return m_exe->processId() ;
+				}else{
+					utility::debug() << "Warning, accessing invalid entry in terminate_process::PID" ;
+					return 0 ;
+				}
+			}
+			const QString& mountPath() const
+			{
+				 return m_mountPath ;
+			}
+			void terminate() const
+			{
+				if( m_exe ){
+
+					m_exe->terminate() ;
+				}else{
+					utility::debug() << "Warning, accessing invalid entry in terminate_process::terminate" ;
+				}
+			}
+			bool waitForFinished() const
+			{
+				if( m_exe ){
+
+					return utility::waitForFinished( *m_exe ) ;
+				}else{
+					utility::debug() << "Warning, accessing invalid entry in terminate_process::waitForFinished" ;
+					return false ;
+				}
+			}
+		private:
+			QProcess * m_exe ;
+			const QString& m_mountPath ;
 		};
 
 		struct terminate_result{
@@ -633,6 +675,8 @@ public:
 			QString exe ;
 			QStringList args ;
 		} ;
+
+		engines::engine::exe_args unMountCommand( const engines::engine::terminate_process& e ) const ;
 
 		virtual terminate_result terminateProcess( const terminate_process& ) const ;
 
@@ -710,14 +754,6 @@ public:
 				{
 					m_options.append( e ) ;
 				}
-				void add( fuseOptions&& e )
-				{
-					_add( e ) ;
-				}
-				void add( fuseOptions& e )
-				{
-					_add( e ) ;
-				}
 				template< typename E,typename ... T >
 				void add( E&& e,T&& ... m )
 				{
@@ -762,8 +798,6 @@ public:
 					return {} ;
 				}
 			private:
-				void _add( const fuseOptions& s ) ;
-
 				QStringList& m_options ;
 			};
 

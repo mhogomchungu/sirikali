@@ -38,6 +38,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoCreatesMountPoint       = false ;
 	s.autoDeletesMountPoint       = false ;
 	s.usesOnlyMountPoint          = false ;
+	s.usesFuseArgumentSwitch      = false ;
 	s.likeSsh               = false ;
 	s.requiresPolkit        = false ;
 	s.customBackend         = false ;
@@ -61,7 +62,6 @@ static engines::engine::BaseOptions _setOptions()
 	s.names                    = QStringList{ "cryptomator" } ;
 	s.failedToMountList        = QStringList{ " ERROR ","Exception","fuse: unknown option" } ;
 	s.successfulMountedList    = QStringList{ "Mounted to" } ;
-	s.unMountCommand           = QStringList{ engines::engine::fuserMountPath(),"-u","%{mountPoint}" } ;
 	s.notFoundCode             = engines::engine::status::engineExecutableNotFound ;
 	s.versionInfo              = { { "--version",true,0,0 } } ;
 	s.versionMinimum           = "0.4.5" ;
@@ -86,28 +86,6 @@ engines::engine::ownsCipherFolder cryptomator::ownsCipherPath( const QString& ci
 	return { s,cipherPath,configPath } ;
 }
 
-void cryptomator::updateOptions( QStringList& opts,
-				 const engines::engine::cmdArgsList& e,
-				 bool creating ) const
-{
-	Q_UNUSED( creating )
-	Q_UNUSED( e )
-
-	opts.removeOne( "-o" ) ;
-}
-
-engines::engine::status cryptomator::errorCode( const QString& e,int s ) const
-{
-	Q_UNUSED( s )
-
-	if( e.contains( this->incorrectPasswordText() ) ){
-
-		return engines::engine::status::badPassword ;
-	}else{
-		return engines::engine::status::backendFail ;
-	}
-}
-
 void cryptomator::GUIMountOptions( const engines::engine::mountGUIOptions& s ) const
 {
 	auto& e = options::instance( *this,s ) ;
@@ -117,6 +95,7 @@ void cryptomator::GUIMountOptions( const engines::engine::mountGUIOptions& s ) c
 	ee.enableIdleTime = false ;
 	ee.enableCheckBox = false ;
 	ee.enableKeyFile  = false ;
+	ee.enableConfigFile = false ;
 
 	e.ShowUI() ;
 }

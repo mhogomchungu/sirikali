@@ -218,12 +218,8 @@ engines::engine::status ecryptfs::errorCode( const QString& e,int s ) const
 	if( e.contains( "Operation not permitted" ) ){
 
 		return engines::engine::status::failedToStartPolkit ;
-
-	}else if( e.contains( this->incorrectPasswordText() ) ){
-
-		return engines::engine::status::badPassword ;
 	}else{
-		return engines::engine::status::backendFail ;
+		return engines::engine::errorCode( e,s ) ;
 	}
 }
 

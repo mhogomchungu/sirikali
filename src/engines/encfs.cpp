@@ -35,6 +35,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.backendRequireMountPath     = true ;
 	s.backendRunsInBackGround     = true ;
 	s.usesOnlyMountPoint          = false ;
+	s.usesFuseArgumentSwitch      = true ;
 	s.likeSsh               = false ;
 	s.requiresPolkit        = false ;
 	s.customBackend         = false ;
@@ -102,22 +103,6 @@ engines::engine::args encfs::command( const QByteArray& password,
 	}
 
 	return engines::engine::command( password,args,create ) ;
-}
-
-engines::engine::status encfs::errorCode( const QString& e,int s ) const
-{
-	Q_UNUSED( s )
-
-	if( e.contains( this->incorrectPasswordText() ) ){
-
-		return engines::engine::status::badPassword ;
-
-	}else if( e.contains( "cygfuse: initialization failed: winfsp" ) ){
-
-		return engines::engine::status::failedToLoadWinfsp ;
-	}else{
-		return engines::engine::status::backendFail ;
-	}
 }
 
 const QProcessEnvironment& encfs::getProcessEnvironment() const

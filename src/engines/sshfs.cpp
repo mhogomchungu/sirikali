@@ -41,6 +41,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.backendRequireMountPath     = true ;
 	s.backendRunsInBackGround     = true ;
 	s.usesOnlyMountPoint          = false ;
+	s.usesFuseArgumentSwitch      = true ;
 	s.likeSsh               = true ;
 	s.requiresPolkit        = false ;
 	s.customBackend         = false ;
@@ -200,18 +201,6 @@ engines::engine::error sshfs::errorCode( const QString& e ) const
 		return engines::engine::error::Failed ;
 	}else{
 		return engines::engine::errorCode( e ) ;
-	}
-}
-
-engines::engine::status sshfs::errorCode( const QString& e,int s ) const
-{
-	Q_UNUSED( s )
-
-	if( e.contains( "cygfuse: initialization failed: winfsp" ) ){
-
-		return engines::engine::status::failedToLoadWinfsp ;
-	}else{
-		return engines::engine::status::backendFail ;
 	}
 }
 

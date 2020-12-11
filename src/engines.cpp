@@ -365,11 +365,21 @@ static QStringList _resolve( const resolveStruct& r )
 
 		if( !r.fuseOpts.isEmpty() ){
 
-			if( r.args.fuseOptionsSeparator.isEmpty() ){
+			if( r.engine.usesFuseArgumentSwitch() ){
 
-				s.set( { "-o",r.fuseOpts.join( ',' ) } ) ;
+				if( r.args.fuseOptionsSeparator.isEmpty() ){
+
+					s.set( { "-o",r.fuseOpts.join( ',' ) } ) ;
+				}else{
+					s.set( { r.args.fuseOptionsSeparator,"-o",r.fuseOpts.join( ',' ) } ) ;
+				}
 			}else{
-				s.set( { r.args.fuseOptionsSeparator,"-o",r.fuseOpts.join( ',' ) } ) ;
+				if( r.args.fuseOptionsSeparator.isEmpty() ){
+
+					s.set( { r.fuseOpts.join( ',' ) } ) ;
+				}else{
+					s.set( { r.args.fuseOptionsSeparator,r.fuseOpts.join( ',' ) } ) ;
+				}
 			}
 		}
 	} ) ;
@@ -443,9 +453,22 @@ engines::engine::args engines::engine::command( const QByteArray& password,
 
 engines::engine::status engines::engine::errorCode( const QString& e,int s ) const
 {
-	Q_UNUSED( e )
 	Q_UNUSED( s )
-	return engines::engine::status::backendFail ;
+
+	if( e.contains( "cygfuse: initialization failed: winfsp" ) ){
+
+		return engines::engine::status::failedToLoadWinfsp ;
+
+	}else if( e.contains( "cannot load WinFsp" ) ){
+
+		return engines::engine::status::failedToLoadWinfsp ;
+
+	}else if( e.contains( this->incorrectPasswordText() ) ){
+
+		return engines::engine::status::badPassword ;
+	}else{
+		return engines::engine::status::backendFail ;
+	}
 }
 
 void engines::engine::updateVolumeList( const engines::engine::cmdArgsList& e ) const
@@ -518,23 +541,7 @@ bool engines::engine::unmountVolume( const engines::engine::exe_args_const& exe,
 
 engines::engine::status engines::engine::unmount( const engines::engine::unMount& e ) const
 {
-	auto cmd = [ & ]()->engines::engine::exe_args{
-
-		if( this->unMountCommand().isEmpty() ){
-
-			if( utility::platformIsOSX() ){
-
-				return { "umount",{ e.mountPoint } } ;
-			}else{
-				return { this->fuserMountPath(),{ "-u",e.mountPoint } } ;
-			}
-		}else{
-			auto s = this->unMountCommand() ;
-			auto e = s.takeAt( 0 ) ;
-
-			return { e,s } ;
-		}
-	}() ;
+	auto cmd = this->unMountCommand( e.mountPoint ) ;
 
 	if( this->unmountVolume( cmd,false ) ){
 
@@ -670,17 +677,12 @@ static engines::engine::terminate_result _failed_to_finish( QString exe,QStringL
 engines::engine::terminate_result
 engines::engine::terminateProcess( const engines::engine::terminate_process& e ) const
 {
-	auto args = [ & ](){
+	auto aaa = this->unMountCommand( e ) ;
 
-		if( utility::platformIsWindows() ){
+	auto exe = std::move( aaa.exe ) ;
+	auto args = std::move( aaa.args ) ;
 
-			return this->windowsUnMountCommand() ;
-		}else{
-			return this->unMountCommand() ;
-		}
-	}() ;
-
-	if( args.isEmpty() ){
+	if( exe.isEmpty() ){
 
 		auto a = "SiriKali Error: Unmount Command Not Set" ;
 		auto b = Task::process::result( a,QByteArray(),-1,0,true ) ;
@@ -688,15 +690,13 @@ engines::engine::terminateProcess( const engines::engine::terminate_process& e )
 		return { std::move( b ),{},{} } ;
 	}
 
-	QString exe = args.takeAt( 0 ) ;
-
 	if( exe == "SIGTERM" ){
 
 		utility::debug() << "Terminating a process by sending it SIGTERM" ;
 
-		e.exe.terminate() ;
+		e.terminate() ;
 
-		if( utility::waitForFinished( e.exe ) ){
+		if( e.waitForFinished() ){
 
 			auto a = Task::process::result( QByteArray(),
 							QByteArray(),
@@ -708,19 +708,7 @@ engines::engine::terminateProcess( const engines::engine::terminate_process& e )
 		}else{
 			return _failed_to_finish( std::move( exe ),std::move( args ) ) ;
 		}
-	}
-
-	for( auto& it : args ){
-
-		if( it == "%{PID}" ){
-
-			it = QString::number( e.exe.processId() ) ;
-
-		}else if( it == "%{mountPoint}" ){
-
-			it = e.mountPath ;
-		}
-	}
+	}	
 
 	utility::logger logger ;
 
@@ -732,7 +720,7 @@ engines::engine::terminateProcess( const engines::engine::terminate_process& e )
 
 	if( m.success() ){
 
-		if( utility::waitForFinished( e.exe ) ){
+		if( e.waitForFinished() ){
 
 			return { std::move( m ),std::move( exe ),std::move( args ) } ;
 		}else{
@@ -821,6 +809,11 @@ const QString& engines::engine::fuserMountPath()
 bool engines::engine::needsJava() const
 {
 	return this->executableFullPath().endsWith( ".jar" ) ;
+}
+
+bool engines::engine::usesFuseArgumentSwitch() const
+{
+	return m_Options.usesFuseArgumentSwitch ;
 }
 
 bool engines::engine::isInstalled() const
@@ -1076,19 +1069,55 @@ const QString& engines::engine::incorrectPasswordCode() const
 	return m_Options.incorrectPassWordCode ;
 }
 
-const QStringList& engines::engine::unMountCommand() const
+engines::engine::exe_args engines::engine::unMountCommand( const engines::engine::terminate_process& e ) const
 {
-	return m_Options.unMountCommand ;
+	auto _replace_opts = [ & ]( QStringList a )->engines::engine::exe_args{
+
+		for( int it = 0 ; it != a.size() ; it++ ){
+
+			auto& s = a[ it ] ;
+
+			if( s == "%{PID}" ){
+
+				s = QString::number( e.PID() ) ;
+
+			}else if( s == "%{mountPoint}" ){
+
+				s = e.mountPath() ;
+			}
+		}
+
+		auto e = a.takeAt( 0 ) ;
+
+		return { std::move( e ),std::move( a ) } ;
+	} ;
+
+	if( utility::platformIsWindows() ){
+
+		if( m_Options.windowsUnMountCommand.isEmpty() ){
+
+			return {} ;
+		}else{
+			return _replace_opts( m_Options.windowsUnMountCommand ) ;
+		}
+	}else{
+		if( m_Options.unMountCommand.isEmpty() ){
+
+			if( utility::platformIsOSX() ){
+
+				return { "umount",{ e.mountPath() } } ;
+			}else{
+				return { engines::engine::fuserMountPath(),{ "-u",e.mountPath() } } ;
+			}
+		}else{
+			return _replace_opts( m_Options.unMountCommand ) ;
+		}
+	}
 }
 
 const QString& engines::engine::configFileArgument() const
 {
 	return m_Options.configFileArgument ;
-}
-
-const QStringList& engines::engine::windowsUnMountCommand() const
-{
-	return m_Options.windowsUnMountCommand ;
 }
 
 const QString& engines::engine::windowsInstallPathRegistryKey() const
@@ -2129,18 +2158,6 @@ engines::engine::commandOptions::commandOptions( bool creating,
 	m_fuseOptions.removeAll( QString() ) ;
 
 	engine.updateOptions( *this,e,creating ) ;
-}
-
-void engines::engine::commandOptions::Options::_add( const engines::engine::commandOptions::fuseOptions& s )
-{
-	const auto& e = s.get() ;
-
-	if( !e.isEmpty() ){
-
-		m_options.append( "-o" ) ;		
-
-		m_options.append( e.join( ',' ) ) ;
-	}
 }
 
 engines::engineVersion::engineVersion() : m_valid( false )

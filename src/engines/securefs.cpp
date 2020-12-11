@@ -38,6 +38,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoCreatesMountPoint       = false ;
 	s.autoDeletesMountPoint       = false ;
 	s.usesOnlyMountPoint          = false ;
+	s.usesFuseArgumentSwitch      = true ;
 	s.likeSsh               = false ;
 	s.requiresPolkit        = false ;
 	s.customBackend         = false ;
@@ -131,22 +132,6 @@ void securefs::updateOptions( engines::engine::commandOptions& opts,
 
 			exeOpts.add( "--fssubtype",fssubtype.mid( 8 ) ) ;
 		}
-	}
-}
-
-engines::engine::status securefs::errorCode( const QString& e,int s ) const
-{
-	Q_UNUSED( s )
-
-	if( e.contains( this->incorrectPasswordText() ) ){
-
-		return engines::engine::status::badPassword ;
-
-	}else if( e.contains( "SecureFS cannot load WinFsp" ) ){
-
-		return engines::engine::status::failedToLoadWinfsp ;
-	}else{
-		return engines::engine::status::backendFail ;
 	}
 }
 

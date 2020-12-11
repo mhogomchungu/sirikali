@@ -32,8 +32,6 @@ public:
 
 	engine::engine::error errorCode( const QString& ) const override ;
 
-	engines::engine::status errorCode( const QString& e,int s ) const override ;
-
 	void updateOptions( engines::engine::commandOptions& opts,
 			    const engines::engine::cmdArgsList& args,
 			    bool creating ) const override ;

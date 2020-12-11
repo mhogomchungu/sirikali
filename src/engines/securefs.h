@@ -24,8 +24,6 @@ class securefs : public engines::engine
 public:
 	securefs() ;
 
-	engines::engine::status errorCode( const QString& e,int s ) const override ;
-
 	bool requiresAPassword( const engines::engine::cmdArgsList& ) const override ;
 
 	void GUICreateOptions( const engines::engine::createGUIOptions& ) const override ;

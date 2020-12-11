@@ -36,6 +36,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoCreatesMountPoint       = false ;
 	s.autoDeletesMountPoint       = false ;
 	s.usesOnlyMountPoint          = false ;
+	s.usesFuseArgumentSwitch      = true ;
 	s.likeSsh               = false ;
 	s.requiresPolkit        = false ;
 	s.customBackend         = false ;
@@ -131,14 +132,9 @@ engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const
 
 			return engines::engine::status::badPassword ;
 		}
-	}else{
-		if( e.contains( this->incorrectPasswordText() ) ){
-
-			return engines::engine::status::badPassword ;
-		}
 	}
 
-	return engines::engine::status::backendFail ;
+	return engines::engine::errorCode( e,s ) ;
 }
 
 void gocryptfs::GUICreateOptions( const engines::engine::createGUIOptions& s ) const

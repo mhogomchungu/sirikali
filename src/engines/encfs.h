@@ -23,8 +23,6 @@ class encfs : public engines::engine
 public:
 	encfs() ;
 
-	engines::engine::status errorCode( const QString& e,int s ) const override ;
-
 	const QProcessEnvironment& getProcessEnvironment() const override ;
 
 	void updateOptions( engines::engine::cmdArgsList&,bool ) const override ;

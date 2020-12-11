@@ -505,17 +505,11 @@ void fscrypt::updateOptions( engines::engine::cmdArgsList& args,bool creating ) 
 
 engines::engine::status fscrypt::errorCode( const QString& e,int s ) const
 {
-	Q_UNUSED( s )
-
-	if( e.contains( this->incorrectPasswordText() ) ){
-
-		return engines::engine::status::badPassword ;
-
-	}else if( e.contains( "fscrypt unlock: no key file specified" ) ){
+	if( e.contains( "fscrypt unlock: no key file specified" ) ){
 
 		return engines::engine::status::fscryptKeyFileRequired ;
 	}else{
-		return engines::engine::status::backendFail ;
+		return engines::engine::errorCode( e,s ) ;
 	}
 }
 

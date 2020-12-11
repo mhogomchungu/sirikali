@@ -46,6 +46,7 @@ static void _parse( engines::engine::BaseOptions& s,const SirikaliJson& json )
 	s.autoCreatesMountPoint           = json.getBool( "autoCreatesMountPoint",false ) ;
 	s.autoDeletesMountPoint           = json.getBool( "autoDeletesMountPoint",false ) ;
 	s.usesOnlyMountPoint              = json.getBool( "usesOnlyMountPoint",false ) ;
+	s.usesFuseArgumentSwitch          = json.getBool( "usesFuseArgumentSwitch",true ) ;
 
 	s.backendTimeout                  = json.getInterger( "backendTimeout",0 ) ;
 

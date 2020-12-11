@@ -211,7 +211,8 @@ void DialogMsg::ShowUIInfo( const QString& title,bool centered,const QString& ms
 
 void DialogMsg::ShowUIOK( const QString& title,const QString& msg )
 {
-	dialogok( m_parent,this,false,false,title,msg ).Show() ;
+	this->ShowUIInfo( title,true,msg ) ;
+	//dialogok( m_parent,this,false,false,title,msg ).Show() ;
 }
 
 void DialogMsg::SetUpButtons()
