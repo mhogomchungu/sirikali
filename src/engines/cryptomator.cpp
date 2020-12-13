@@ -49,7 +49,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.setsCipherPath        = true ;
 	s.acceptsSubType        = true ;
 	s.acceptsVolName        = false ;
-	s.releaseURL            = "https://api.github.com/repos/cryptomator/cli/releases" ;
+	s.releaseURL            = "https://api.github.com/repos/mhogomchungu/cli/releases" ;
 	s.passwordFormat        = "" ;
 	s.incorrectPasswordText = "InvalidPassphraseException" ;
 	s.configFileArgument    = "" ;
