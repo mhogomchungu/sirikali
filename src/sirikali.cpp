@@ -1185,7 +1185,7 @@ QByteArray static _get_key( QString& debug,const keyDialog::entry& it,secrets::w
 
 	const auto& volumePath = it.volEntry.favorite().volumePath ;
 
-	const auto& name = it.engine->name() ;
+	const auto& name = it.engine->uiName() ;
 
 	if( volumePath.startsWith( name + " ",Qt::CaseInsensitive ) ){
 

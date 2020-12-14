@@ -278,7 +278,7 @@ favorites2::favorites2( QWidget * parent,
 
 				m_ui->lineEditVolumePath->setText( a ) ;
 			}else{
-				m_ui->lineEditVolumePath->setText( b.toLower() + " " + a ) ;
+				m_ui->lineEditVolumePath->setText( b + " " + a ) ;
 			}
 
 			m_ui->tabWidget->setCurrentIndex( 2 ) ;
@@ -1306,6 +1306,13 @@ void favorites2::folderPath()
 	if( !e.isEmpty() ){
 
 		m_ui->lineEditEncryptedFolderPath->setText( e ) ;
+
+		const auto& engine = engines::instance().getByPaths( e ) ;
+
+		if( !engine->hasConfigFile() ){
+
+			m_ui->lineEditVolumeType->setText( engine->uiName() ) ;
+		}
 	}
 }
 

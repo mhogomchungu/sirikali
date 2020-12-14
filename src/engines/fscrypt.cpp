@@ -399,6 +399,11 @@ volumeInfo::List fscrypt::mountInfo( const volumeInfo::List& a ) const
 engines::engine::ownsCipherFolder fscrypt::ownsCipherPath( const QString& cipherPath,
 							   const QString& configPath ) const
 {
+	if( cipherPath.startsWith( "fscrypt",Qt::CaseInsensitive ) ){
+
+		return { true,cipherPath.mid( 7 ),configPath } ;
+	}
+
 	Q_UNUSED( configPath )
 
 	if( QFileInfo( cipherPath ).isFile() ){
