@@ -1309,7 +1309,7 @@ void favorites2::folderPath()
 
 		const auto& engine = engines::instance().getByPaths( e ) ;
 
-		if( !engine->hasConfigFile() ){
+		if( engine->known() && !engine->hasConfigFile() ){
 
 			m_ui->lineEditVolumeType->setText( engine->uiName() ) ;
 		}
