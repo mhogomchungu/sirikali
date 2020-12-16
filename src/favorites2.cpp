@@ -1323,6 +1323,13 @@ void favorites2::filePath()
 	if( !e.isEmpty() ){
 
 		m_ui->lineEditEncryptedFolderPath->setText( e ) ;
+
+		const auto& engine = engines::instance().getByPaths( e ) ;
+
+		if( engine->known() && !engine->hasConfigFile() ){
+
+			m_ui->lineEditVolumeType->setText( engine->uiName() ) ;
+		}
 	}
 }
 
