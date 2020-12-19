@@ -164,14 +164,15 @@ utility::SocketPaths utility::socketPath()
 
 ::Task::future< utility::Task >& utility::Task::run( const QString& exe,
 						     const QStringList& list,
-						     bool e )
+						     const utility::Task::moreOptions& e )
 {
 	return utility::Task::run( exe,list,-1,e ) ;
 }
 
 ::Task::future< utility::Task >& utility::Task::run( const QString& exe,
 						     const QStringList& list,
-						     int s,bool e )
+						     int s,
+						     const utility::Task::moreOptions& e )
 {
 	return ::Task::run( [ = ](){
 
@@ -187,12 +188,11 @@ void utility::Task::execute( const QString& exe,
 			     const QProcessEnvironment& env,
 			     const QByteArray& password,
 			     std::function< void() > function,
-			     bool polkit,
-			     bool runs_in_background )
+			     const utility::Task::moreOptions& moreOpts )
 {
 	const auto& m = utility::miscOptions::instance() ;
 
-	if( polkit && m.usePolkit() ){
+	if( moreOpts.usePolkit() && m.usePolkit() ){
 
 		auto _report_error = [ this ]( const char * msg ){
 
@@ -230,6 +230,8 @@ void utility::Task::execute( const QString& exe,
 
 		logger.showText( exe,args ) ;
 
+		utility::unlockIntervalReporter rpt( moreOpts.likeSsh() ) ;
+
 		s.write( [ & ]()->QByteArray{
 
 			SirikaliJson json( logger.function() ) ;
@@ -246,6 +248,8 @@ void utility::Task::execute( const QString& exe,
 
 		s.waitForReadyRead() ;
 
+		rpt.report() ;
+
 		SirikaliJson json( s.readAll(),logger.function() ) ;
 
 		m_finished   = json.getBool( "finished" ) ;
@@ -256,50 +260,45 @@ void utility::Task::execute( const QString& exe,
 
 		logger.showText( { m_stdOut,m_stdError,m_exitCode,m_exitStatus,m_finished } ) ;
 	}else{
-		if( runs_in_background ){
+		using LG = utility2::LOGLEVEL ;
 
-			bool log = true ;
+		auto log = [ & ](){
 
-			if( exe.endsWith( "fscrypt" ) && args.size() > 0 && args.at( 0 ) == "status" ){
+			if( moreOpts.allowLogging().has_value() ){
 
-				log = false ;
-			}
-
-			utility::logger logger ;
-
-			if( log ){
-
-				logger.showText( exe,args ) ;
-			}
-
-			auto& ss = ::Task::process::run( exe,args,waitTime,password,env,std::move( function ) ) ;
-
-			auto s = utility::unwrap( ss ) ;
-
-			m_finished   = s.finished() ;
-			m_exitCode   = s.exit_code() ;
-			m_exitStatus = s.exit_status() ;
-			m_stdOut     = s.std_out() ;
-			m_stdError   = s.std_error() ;
-
-			if( log ){
-
-				logger.showText( s ) ;
-			}
-		}else{
-			utility::debug() << "Warning, Starting a detached process" ;
-
-			utility::logger().showText( exe,args ).showLine() ;
-
-			if( QProcess::startDetached( exe,args ) ){
-
-				m_exitCode = 0 ;
+				return moreOpts.allowLogging().value() ;
 			}else{
-				m_exitCode = 1 ;
+				return LG::COMMAND_ONLY ;
 			}
+		}() ;
 
-			m_finished   = true ;
-			m_exitStatus = 0 ;
+		utility::logger logger ;
+
+		if( log == LG::COMMAND_ONLY || log == LG::COMMAND_AND_UNLOCK_DURATION ){
+
+			logger.showText( exe,args ) ;
+		}
+
+		utility::unlockIntervalReporter rpt( moreOpts.likeSsh() ) ;
+
+		auto& ss = ::Task::process::run( exe,args,waitTime,password,env,std::move( function ) ) ;
+
+		auto s = utility::unwrap( ss ) ;
+
+		m_finished   = s.finished() ;
+		m_exitCode   = s.exit_code() ;
+		m_exitStatus = s.exit_status() ;
+		m_stdOut     = s.std_out() ;
+		m_stdError   = s.std_error() ;
+
+		if( log == LG::COMMAND_ONLY ){
+
+			logger.showText( s ) ;
+
+		}else if( log == LG::COMMAND_ONLY || log == LG::COMMAND_AND_UNLOCK_DURATION ){
+
+			rpt.report() ;
+			logger.showText( s ) ;
 		}
 	}
 }
@@ -1528,4 +1527,24 @@ int utility::userID()
 QString utility::userIDAsString()
 {
 	return QString::number( utility::userID() ) ;
+}
+
+void utility::unlockIntervalReporter::report() const
+{
+	if( m_likeSsh.has_value() ){
+
+		auto m = QDateTime::currentSecsSinceEpoch() - m_origTime ;
+
+		auto s = [ & ](){
+
+			if( m_likeSsh.value() ){
+
+				return "The attempt to connect took " ;
+			}else{
+				return "The attempt to unlock the volume took " ;
+			}
+		}() ;
+
+		utility::debug() << s + QString::number( m ) + " seconds" ;
+	}
 }

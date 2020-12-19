@@ -251,14 +251,17 @@ static utility::Task _run_task_0( const run_task& e )
 	}else{
 		const auto& s = e.engine.getProcessEnvironment() ;
 
+		utility::Task::moreOptions opts( e.engine.requiresPolkit(),
+						 e.engine.likeSsh(),
+						 e.engine.allowLogging( e.args.cmd_args ) ) ;
+
 		return utility::Task( e.args.cmd,
 				      e.args.cmd_args,
 				      -1,
 				      s,
 				      e.password,
 				      [](){},
-				      e.engine.requiresPolkit(),
-				      e.engine.runsInBackGround() ) ;
+				      opts ) ;
 	}
 }
 

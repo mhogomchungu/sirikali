@@ -293,4 +293,9 @@ namespace utility2
 	}
 }
 
+namespace utility2
+{
+	enum class LOGLEVEL{ NOLOG,COMMAND_ONLY,COMMAND_AND_UNLOCK_DURATION } ;
+}
+
 #endif

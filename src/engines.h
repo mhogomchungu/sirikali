@@ -720,6 +720,9 @@ public:
 
 		virtual const QProcessEnvironment& getProcessEnvironment() const ;
 
+
+		virtual utility2::LOGLEVEL allowLogging( const QStringList& ) const ;
+
 		virtual bool requiresPolkit() const ;
 
 		virtual bool createMountPath( const QString& ) const ;

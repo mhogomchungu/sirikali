@@ -32,6 +32,8 @@ public:
 	engines::engine::ownsCipherFolder ownsCipherPath( const QString& cipherPath,
 							  const QString& configPath ) const override ;
 
+	utility2::LOGLEVEL allowLogging( const QStringList& ) const override ;
+
 	bool requiresAPassword( const engines::engine::cmdArgsList& ) const override ;
 
 	void updateOptions( engines::engine::cmdArgsList&,bool ) const override ;

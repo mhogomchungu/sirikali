@@ -49,16 +49,17 @@ static QString _make_path( QString e,encode s )
 }
 
 template< typename Function >
-static result _read( QProcess& exe,Function function )
+static result _read( QProcess& exe,const engines::engine& engine,Function function )
 {
 	QByteArray m ;
 	QByteArray s ;
 
-	int counter = 1 ;
 	int notRunningCounter = 0 ;
 	int maxNotRunningCounter = 2 ;
 
 	engines::engine::error r ;
+
+	auto raii = utility::unlockIntervalReporter::object( engine.likeSsh() ) ;
 
 	while( true ){
 
@@ -96,14 +97,11 @@ static result _read( QProcess& exe,Function function )
 			if( r == engines::engine::error::Continue ){
 
 				utility::Task::suspendForOneSecond() ;
-				counter++ ;
 			}else{
 				break ;
 			}
 		}
-	}
-
-	utility::debug() << "Backend took " + QString::number( counter ) + " seconds to unlock a volume" ;
+	}	
 
 	return { r,std::move( m ) } ;
 }
@@ -116,7 +114,7 @@ static result _getProcessOutput( QProcess& exe,const engines::engine& engine )
 
 		int counter = 0 ;
 
-		return _read( exe,[ & ]( const QString& e ){
+		return _read( exe,engine,[ & ]( const QString& e ){
 
 			if( counter < timeOut ){
 
@@ -127,7 +125,7 @@ static result _getProcessOutput( QProcess& exe,const engines::engine& engine )
 			}
 		} ) ;
 	}else{
-		return _read( exe,[ & ]( const QString& e ){
+		return _read( exe,engine,[ & ]( const QString& e ){
 
 			return engine.errorCode( e ) ;
 		} ) ;

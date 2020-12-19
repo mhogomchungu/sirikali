@@ -566,6 +566,12 @@ const QProcessEnvironment& engines::engine::getProcessEnvironment() const
 	return m_processEnvironment ;
 }
 
+utility2::LOGLEVEL engines::engine::allowLogging(  const QStringList& args ) const
+{
+	Q_UNUSED( args )
+	return utility2::LOGLEVEL::COMMAND_AND_UNLOCK_DURATION ;
+}
+
 static QString _sanitizeVersionString( const QString& s )
 {
 	auto e = s ;
@@ -2091,9 +2097,19 @@ engines::engine::commandOptions::commandOptions( bool creating,
 
 		if( e.startsWith( '-' ) ){
 
-			m_exeOptions.append( utility::split( e,' ' ) ) ;
+			if( engine.likeSsh() && e.startsWith( "-o " ) ){
 
-			m_fuseOptions.removeAt( i ) ;
+				auto a = utility::split( e,' ' ) ;
+
+				if( a.size() > 1 ){
+
+					e = a.at( 1 ) ;
+				}
+			}else{
+				m_exeOptions.append( utility::split( e,' ' ) ) ;
+
+				m_fuseOptions.removeAt( i ) ;
+			}
 
 			i-- ;
 

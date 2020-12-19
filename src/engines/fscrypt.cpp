@@ -76,7 +76,10 @@ static QString _get_fs_mode( const volumeInfo::List& s,const QString& m )
 	return "rw" ;
 }
 
-static utility::Task _run( const QString& cmd,const QStringList& list,bool debug = false )
+static utility::Task _run( const QString& cmd,
+			   const QStringList& list,
+			   const engines::engine& engine,
+			   bool debug = false )
 {
 	if( debug ){
 
@@ -90,12 +93,14 @@ static utility::Task _run( const QString& cmd,const QStringList& list,bool debug
 		utility::debug() << exe ;
 	}
 
-	return utility::unwrap( utility::Task::run( cmd,list ) ) ;
+	auto& e = utility::Task::run( cmd,list,{ false,false,engine.allowLogging( list ) } ) ;
+
+	return utility::unwrap( e ) ;
 }
 
-static QStringList _fscrypt_mount_points( const QString& exe )
+static QStringList _fscrypt_mount_points( const QString& exe,const engines::engine& engine )
 {
-	auto s = _run( exe,{ "status" } ).stdOut() ;
+	auto s = _run( exe,{ "status" },engine ).stdOut() ;
 
 	if( s.isEmpty() ){
 
@@ -105,9 +110,9 @@ static QStringList _fscrypt_mount_points( const QString& exe )
 	return _encrypted_volumes( s ) ;
 }
 
-static QString _mount_point( const QString& e,const QString& exe )
+static QString _mount_point( const QString& e,const QString& exe,const engines::engine& engine )
 {
-	for( const auto& it : _fscrypt_mount_points( exe ) ){
+	for( const auto& it : _fscrypt_mount_points( exe,engine ) ){
 
 		if( e.startsWith( it ) ){
 
@@ -135,9 +140,12 @@ static QString _sanitize( const QStringList& m )
 	}
 }
 
-static QString _property( const QString& exe,const QString& m,const QString& opt )
+static QString _property( const QString& exe,
+			  const QString& m,
+			  const QString& opt,
+			  const engines::engine& engine )
 {
-	auto s = _run( exe,{ "status",m } ) ;
+	auto s = _run( exe,{ "status",m },engine ) ;
 
 	if( s.success() ){
 
@@ -156,7 +164,9 @@ static QString _property( const QString& exe,const QString& m,const QString& opt
 }
 
 template< typename Function >
-static volumeInfo::List _mountInfo( const mountInfo& e,Function removeEntry )
+static volumeInfo::List _mountInfo( const mountInfo& e,
+				    const engines::engine& engine,
+				    Function removeEntry )
 {
 	volumeInfo::List l ;
 
@@ -169,7 +179,7 @@ static volumeInfo::List _mountInfo( const mountInfo& e,Function removeEntry )
 
 		auto tt = engines::engine::decodeSpecialCharactersConst( it ) ;
 
-		auto s = _property( e.exe,tt,"Unlocked:" ) ;
+		auto s = _property( e.exe,tt,"Unlocked:",engine ) ;
 
 		if( !s.isEmpty() ){
 
@@ -195,7 +205,8 @@ static volumeInfo::List _mountInfo( const mountInfo& e,Function removeEntry )
 
 static QString _volume_properties( const QString& cipherFolder,
 				   const QString& mountPoint,
-				   const QString& exe )
+				   const QString& exe,
+				   const engines::engine& engine )
 {
 	Q_UNUSED( cipherFolder )
 
@@ -204,21 +215,21 @@ static QString _volume_properties( const QString& cipherFolder,
 		return QString() ;
 	}
 
-	auto a = _property( exe,mountPoint,"Policy:" ) ;
+	auto a = _property( exe,mountPoint,"Policy:",engine ) ;
 
 	if( a.isEmpty() ){
 
 		return QString() ;
 	}
 
-	auto m = _mount_point( mountPoint,exe ) ;
+	auto m = _mount_point( mountPoint,exe,engine ) ;
 
 	if( m.isEmpty() ){
 
 		return QString() ;
 	}
 
-	auto r = _run( exe,{ "metadata","dump","--policy=" + m + ":" + a } ) ;
+	auto r = _run( exe,{ "metadata","dump","--policy=" + m + ":" + a },engine ) ;
 
 	if( r.success() ){
 
@@ -228,9 +239,11 @@ static QString _volume_properties( const QString& cipherFolder,
 	}
 }
 
-static QStringList _get_protector_names( const QString& exe,const QString& mountPoint )
+static QStringList _get_protector_names( const QString& exe,
+					 const QString& mountPoint,
+					 const engines::engine& engine )
 {
-	auto r = utility::split( _run( exe,{ "status",mountPoint } ).stdOut() ) ;
+	auto r = utility::split( _run( exe,{ "status",mountPoint },engine ).stdOut() ) ;
 
 	QStringList l ;
 
@@ -263,11 +276,14 @@ static QStringList _get_protector_names( const QString& exe,const QString& mount
 	return l ;
 }
 
-static QString _name( const QString& cipherPath,const QString& e,const QString& exe )
+static QString _name( const QString& cipherPath,
+		      const QString& e,
+		      const QString& exe,
+		      const engines::engine& engine )
 {
-	auto mp = _mount_point( cipherPath,exe ) ;
+	auto mp = _mount_point( cipherPath,exe,engine ) ;
 
-	auto mm = _get_protector_names( exe,mp ) ;
+	auto mm = _get_protector_names( exe,mp,engine ) ;
 
 	auto _contains = [ & ]( const QString& e ){
 
@@ -354,14 +370,14 @@ engines::engine::status fscrypt::unmount( const engines::engine::unMount& e ) co
 
 		exeOptions.add( "lock",e.mountPoint ) ;
 	}else{
-		auto m = _mount_point( e.mountPoint,exe ) ;
+		auto m = _mount_point( e.mountPoint,exe,*this ) ;
 
 		exeOptions.add( "purge",m,"--force","--drop-caches=false" ) ;
 	}
 
 	for( int i = 0 ; i < e.numberOfAttempts ; i++ ){
 
-		auto s = _run( exe,exeOptions.get() ) ;
+		auto s = _run( exe,exeOptions.get(),*this ) ;
 
 		if( s.success() ){
 
@@ -390,10 +406,10 @@ volumeInfo::List fscrypt::mountInfo( const volumeInfo::List& a ) const
 	auto list = m_unlockedVolumeManager.getList() ;
 	const auto& names = this->fuseNames() ;
 
-	return _mountInfo( { a,list,names,exe },[ this ]( const QString& e ){
+	return _mountInfo( { a,list,names,exe },*this,[ this ]( const QString& e ){
 
 		m_unlockedVolumeManager.removeEntry( e ) ;
-	} ) ;
+	}) ;
 }
 
 engines::engine::ownsCipherFolder fscrypt::ownsCipherPath( const QString& cipherPath,
@@ -415,7 +431,7 @@ engines::engine::ownsCipherFolder fscrypt::ownsCipherPath( const QString& cipher
 
 	if( !exe.isEmpty() ){
 
-		auto s = _run( exe,{ "status",cipherPath } ) ;
+		auto s = _run( exe,{ "status",cipherPath },*this ) ;
 
 		if( s.success() && s.stdOut().contains( "is encrypted with fscrypt" ) ){
 
@@ -424,6 +440,27 @@ engines::engine::ownsCipherFolder fscrypt::ownsCipherPath( const QString& cipher
 	}
 
 	return { false,cipherPath,configPath } ;
+}
+
+utility2::LOGLEVEL fscrypt::allowLogging( const QStringList& args ) const
+{
+	if( args.size() > 0 ){
+
+		const auto& e = args.at( 0 ) ;
+
+		if( e == "unlock" ){
+
+			return utility2::LOGLEVEL::COMMAND_AND_UNLOCK_DURATION ;
+
+		}else if( e == "status" ){
+
+			return utility2::LOGLEVEL::NOLOG ;
+		}else{
+			return utility2::LOGLEVEL::COMMAND_ONLY ;
+		}
+	}else{
+		return utility2::LOGLEVEL::COMMAND_ONLY ;
+	}
 }
 
 bool fscrypt::requiresAPassword( const engines::engine::cmdArgsList& opt ) const
@@ -450,7 +487,7 @@ Task::future< QString >& fscrypt::volumeProperties( const QString& cipherFolder,
 {
 	return Task::run( [ = ](){
 
-		return _volume_properties( cipherFolder,mountPoint,this->executableFullPath() ) ;
+		return _volume_properties( cipherFolder,mountPoint,this->executableFullPath(),*this ) ;
 	} ) ;
 }
 
@@ -494,7 +531,7 @@ void fscrypt::updateOptions( engines::engine::cmdArgsList& args,bool creating ) 
 				}
 			}
 
-			auto nn = _name( args.cipherFolder,n,this->executableFullPath() ) ;
+			auto nn = _name( args.cipherFolder,n,this->executableFullPath(),*this ) ;
 
 			opts.append( "--name=" + nn ) ;
 		}
