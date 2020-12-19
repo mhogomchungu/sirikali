@@ -1531,20 +1531,17 @@ QString utility::userIDAsString()
 
 void utility::unlockIntervalReporter::report() const
 {
-	if( m_likeSsh.has_value() ){
+	auto m = QDateTime::currentSecsSinceEpoch() - m_origTime ;
 
-		auto m = QDateTime::currentSecsSinceEpoch() - m_origTime ;
+	auto s = [ & ](){
 
-		auto s = [ & ](){
+		if( m_likeSsh.has_value() && m_likeSsh.value() ){
 
-			if( m_likeSsh.value() ){
+			return "The attempt to connect took " ;
+		}else{
+			return "The attempt to unlock the volume took " ;
+		}
+	}() ;
 
-				return "The attempt to connect took " ;
-			}else{
-				return "The attempt to unlock the volume took " ;
-			}
-		}() ;
-
-		utility::debug() << s + QString::number( m ) + " seconds" ;
-	}
+	utility::debug() << s + QString::number( m ) + " seconds" ;
 }
