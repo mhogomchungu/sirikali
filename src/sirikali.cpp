@@ -1181,15 +1181,15 @@ keyDialog::volumeList sirikali::autoMount( keyDialog::volumeList l,bool autoOpen
 	return e ;
 }
 
-QByteArray static _get_key( QString& debug,const keyDialog::entry& it,secrets::wallet& m ){
-
+QByteArray static _get_key( const keyDialog::entry& it,QString& debug,secrets::wallet& m )
+{
 	const auto& volumePath = it.volEntry.favorite().volumePath ;
 
 	const auto& name = it.engine->uiName() ;
 
-	if( volumePath.startsWith( name + " ",Qt::CaseInsensitive ) ){
+	debug += "\n3. Trying to get password from wallet for path: " + volumePath ;
 
-		debug += "\n3. Trying to get password from wallet for path: " + volumePath ;
+	if( volumePath.startsWith( name + " ",Qt::CaseInsensitive ) ){
 
 		auto ee = m->readValue( volumePath ) ;
 
@@ -1197,7 +1197,7 @@ QByteArray static _get_key( QString& debug,const keyDialog::entry& it,secrets::w
 
 			auto ss = name.toLower() + " " + it.engine.cipherFolder() ;
 
-			debug += "\n3.1 Retrying to get password from wallet for path: " + ss ;
+			debug += "\n4. Retrying to get password from wallet for path: " + ss ;
 
 			ee = m->readValue( ss ) ;
 		}
@@ -1254,82 +1254,69 @@ keyDialog::volumeList sirikali::autoUnlockVolumes( favorites::volumeList ss,
 
 	auto s = settings::instance().showMountDialogWhenAutoMounting() ;
 
-	auto _mountTooLong = [ & ]( QString& s,keyDialog::entry&& m ){
-
-		s += "\n6. Unconditionally showing mount dialog window" ;
-		s += " because the backend takes too long to unlock" ;
-
-		m.volEntry.setAutoMount( true ) ;
-
-		e.emplace_back( std::move( m ) ) ;
-	} ;
-
-	QString debug ;
-
 	m_allowEnableAll.setFalse() ;
 
 	auto disableAllRaii = utility2::make_raii( [ this ](){ m_allowEnableAll.setTrue() ; } ) ;
 
 	for( auto&& it : l ){
 
-		debug = "1. Processing favorite entry: " + it.volEntry.favorite().volumePath ;
+		QString debug =  "1. Processing favorite entry: " + it.volEntry.favorite().volumePath ;
 
 		if( autoSetAutoMount ){
 
 			it.volEntry.setAutoMount( true ) ;
 		}
 
-		if( it.volEntry.password().isEmpty() ){
+		if( !it.volEntry.password().isEmpty() ){
 
-			debug += "\n2. Favorite entry does not have a password" ;
+			debug += "\n2. Favorite entry has password already" ;
 
-			if( m ){
+		}else if( it.engine->requiresNoPassword() || it.volEntry.favorite().volumeNeedNoPassword ){
 
-				/*
-				 * _get_key sets entry 3.
-				 */
-				it.volEntry.setPassword( _get_key( debug,it,m ) ) ;
+			debug += "\n2. Engine requires no password or favorite need no password" ;
 
-				if( it.volEntry.password().isEmpty() ){
+		}else if( m ){
 
-					debug += "\n4. Favorite entry does not exist in the wallet" ;
-				}else{
-					debug += "\n4. Password obtained from wallet" ;
-				}
+			debug += "\n2. Trying to get volume password from wallet" ;
+
+			auto uu = _get_key( it,debug,m ) ;
+
+			if( uu.isEmpty() ){
+
+				debug += "\n5. Volume has no entry in the wallet" ;
+
+				utility::debug() << debug ;
+
+				e.emplace_back( std::move( it ) ) ;
+
+				continue ;
 			}else{
-				debug += "\n3. Failed to read password from wallet" ;
+				it.volEntry.setPassword( std::move( uu ) ) ;
+
+				debug += "\n5. Volume password obtained from wallet" ;
 			}
 		}else{
-			debug += "\n2. Favorite entry already has a password" ;
+			debug += "\n2. Failed to obtain password from wallet" ;
+
+			utility::debug() << debug ;
+
+			e.emplace_back( std::move( it ) ) ;
+
+			continue ;
 		}
 
-		if( it.volEntry.password().isEmpty() ){
+		if( it.engine->takesTooLongToUnlock() ){
 
-			if( it.engine->requiresNoPassword() || it.volEntry.favorite().volumeNeedNoPassword ){
+			debug += "\n6. Showing mount dialog window" ;
+			debug += " because the backend takes too long to unlock" ;
 
-				debug += "\n5. Engine requires no password or favorite need no password" ;
+			utility::debug() << debug ;
 
-				if( it.engine->takesTooLongToUnlock() ){
-
-					_mountTooLong( debug,std::move( it ) ) ;
-					utility::debug() << debug ;
-				}else{
-					utility::debug() << debug ;
-					this->autoMount( e,std::move( it ),s,autoOpenFolderOnMount ) ;
-				}
-			}else{
-				utility::debug() << debug ;
-				e.emplace_back( std::move( it ) ) ;
-			}
+			e.emplace_back( std::move( it ) ) ;
 		}else{
-			if( it.engine->takesTooLongToUnlock() ){
+			utility::debug() << debug ;
 
-				_mountTooLong( debug,std::move( it ) ) ;
-				utility::debug() << debug ;
-			}else{
-				utility::debug() << debug ;
-				this->autoMount( e,std::move( it ),s,autoOpenFolderOnMount ) ;
-			}
+			this->autoMount( e,std::move( it ),s,autoOpenFolderOnMount ) ;
 		}
 	}
 
