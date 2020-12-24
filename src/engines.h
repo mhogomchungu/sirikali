@@ -178,11 +178,11 @@ public:
 	class versionGreaterOrEqual : public cache< utility::bool_result >{
 	public:
 	        versionGreaterOrEqual( bool m,const engines::engine& engine,int major,int minor,int patch ) :
-		        cache( [ =,&engine ](){ return this->setCallback( m,engine,major,minor,patch ) ; } )
+		        cache( [ this,&engine,m,major,minor,patch ](){ return this->setCallback( m,engine,major,minor,patch ) ; } )
 		{
 		}
 		versionGreaterOrEqual( bool m,const engines::engine& engine,const QString& e ) :
-		        cache( [ =,&engine ](){ return this->setCallback( m,engine,e ) ; } )
+		        cache( [ this,&engine,m,e ](){ return this->setCallback( m,engine,e ) ; } )
 		{
 		}
 		operator bool() const

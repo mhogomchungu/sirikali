@@ -485,7 +485,7 @@ void fscrypt::updateVolumeList( const engines::engine::cmdArgsList& e ) const
 Task::future< QString >& fscrypt::volumeProperties( const QString& cipherFolder,
 						    const QString& mountPoint ) const
 {
-	return Task::run( [ = ](){
+	return Task::run( [ this,cipherFolder,mountPoint ](){
 
 		return _volume_properties( cipherFolder,mountPoint,this->executableFullPath(),*this ) ;
 	} ) ;

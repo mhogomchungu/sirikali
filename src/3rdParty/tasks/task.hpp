@@ -1,5 +1,5 @@
 ﻿/*
- * copyright: 2014-2018
+ * copyright: 2014-2020
  * name : Francis Banyikwa
  * email: mhogomchungu@gmail.com
  *
@@ -41,7 +41,6 @@
 #include <QMutex>
 #include <QProcess>
 #include <QVariant>
-
 /*
  *
  * Examples on how to use the library are at the end of this file.
@@ -116,6 +115,54 @@ namespace Task
 		void add_void( Task::future< T >&,Task::future< T >&,std::function< T() >&& ) ;
 		template< typename T >
 		void add( Task::future< T >&,Task::future< T >&,std::function< void( T ) >&& ) ;
+
+		template<typename Function>
+		class functionWrapper
+		{
+		public:
+			template< typename ... Args >
+			auto operator()( Args&& ... args ) const
+			{
+				return (*m_function)( std::forward<Args>( args ) ... ) ;
+			}
+			functionWrapper( Function function ) :
+				m_function( std::make_shared<Function>( Function( std::move( function ) ) ) )
+			{
+			}
+		private:
+			std::shared_ptr<Function> m_function ;
+		};
+
+		template<typename Function>
+		functionWrapper<Function> function( Function function )
+		{
+			return functionWrapper<Function>( std::move( function ) ) ;
+		}
+
+#if __cplusplus >= 201703L
+		template<typename Function,typename ... Args>
+		using result_of = std::invoke_result_t<Function,Args ...> ;
+#else
+		template<typename Function,typename ... Args>
+		using result_of = std::result_of_t<Function( Args ... )> ;
+#endif
+		template<typename Function>
+		using copyable = std::enable_if_t<std::is_copy_constructible<Function>::value,int> ;
+
+		template<typename Function>
+		using not_copyable = std::enable_if_t<!std::is_copy_constructible<Function>::value,int> ;
+
+		template<typename Function,typename Args>
+		using has_argument = std::enable_if_t<std::is_void<result_of<Function,Args>>::value,int> ;
+
+		template<typename Function>
+		using has_no_argument = std::enable_if_t<std::is_void<result_of<Function>>::value,int> ;
+
+		template<typename Function>
+		using returns_void = std::enable_if_t<std::is_void<Task::detail::result_of<Function>>::value,int > ;
+
+		template<typename Function>
+		using returns_value = std::enable_if_t<!std::is_void<Task::detail::result_of<Function>>::value,int > ;
 	}
 
 	template< typename T >
@@ -134,21 +181,42 @@ namespace Task
 		{
 		}
 		std::pair< std::function< void() >,std::function< void() > > value ;
-	};
-
-	template< typename E,typename F >
-	pair<typename std::result_of<E()>::type> make_pair( E e,F f )
+	};	
+	template< typename E,
+		  typename F,
+		  Task::detail::not_copyable<E> = 0,
+		  Task::detail::not_copyable<F> = 0 >
+	pair<Task::detail::result_of<E>> make_pair( E e,F f )
 	{
-		return pair<typename std::result_of<E()>::type>( std::move( e ),std::move( f ) ) ;
+		using type = Task::detail::result_of<E> ;
+		return pair<type>( Task::detail::function( std::move( e ) ),Task::detail::function( std::move( f ) ) ) ;
 	}
-
-	template< typename E,typename F,
-		  typename std::enable_if<std::is_void<typename std::result_of<E()>::type>::value>::type>
-	pair< void > make_pair( E e,F f )
+	template< typename E,
+		  typename F,
+		  Task::detail::copyable<E> = 0,
+		  Task::detail::copyable<F> = 0 >
+	pair<Task::detail::result_of<E>> make_pair( E e,F f )
 	{
-		return pair< void >( std::move( e ),std::move( f ) ) ;
-	}	
-
+		return pair<Task::detail::result_of<E>>( std::move( e ),std::move( f ) ) ;
+	}
+	template< typename E,
+		  typename F,
+		  Task::detail::not_copyable<E> = 0,
+		  Task::detail::copyable<F> = 0 >
+	pair<Task::detail::result_of<E>> make_pair( E e,F f )
+	{
+		using type = Task::detail::result_of<E> ;
+		return pair<type>( Task::detail::function( std::move( e ) ),std::move( f ) ) ;
+	}
+	template< typename E,
+		  typename F,
+		  Task::detail::copyable<E> = 0,
+		  Task::detail::not_copyable<F> = 0 >
+	pair<Task::detail::result_of<E>> make_pair( E e,F f )
+	{
+		using type = Task::detail::result_of<E> ;
+		return pair<type>( std::move( e ),Task::detail::function( std::move( f ) ) ) ;
+	}
 	template< typename T >
 	class future : private QObject
 	{
@@ -156,20 +224,61 @@ namespace Task
 		/*
 		 * Use this API if you care about the result
 		 */
-		void then( std::function< void( T ) > function )
+		//std::function< void( T ) >
+		template<typename Function,
+			Task::detail::has_argument<Function,T> = 0,
+			Task::detail::copyable<Function> = 0>
+		void then( Function function )
 		{
 			m_function = std::move( function ) ;
+			this->start() ;
+		}
+		template<typename Function,
+			Task::detail::has_argument<Function,T> = 0,
+			Task::detail::not_copyable<Function> = 0>
+		void then( Function function )
+		{
+			m_function = Task::detail::function( std::move( function ) ) ;
 			this->start() ;
 		}
 		/*
 		 * Use this API if you DO NOT care about the result
 		 */
-		void then( std::function< void() > function )
+		//std::function< void( void ) >
+		template<typename Function,
+			Task::detail::has_no_argument<Function> = 0,
+			Task::detail::copyable<Function> = 0>
+		void then( Function function )
 		{
 			m_function_1 = std::move( function ) ;
 			this->start() ;
 		}
-		void queue( std::function< void() > function = [](){} )
+		template<typename Function,
+			Task::detail::has_no_argument<Function> = 0,
+			Task::detail::not_copyable<Function> = 0>
+		void then( Function function )
+		{
+			m_function_1 = Task::detail::function( std::move( function ) ) ;
+			this->start() ;
+		}
+		template<typename Function,
+			 Task::detail::has_no_argument<Function> = 0,
+			 Task::detail::not_copyable<Function> = 0>
+		void queue( Function function )
+		{
+			if( this->manages_multiple_futures() ){
+
+				m_function_1 = Task::detail::function( std::move( function ) ) ;
+
+				this->_queue() ;
+			}else{
+				this->then( Task::detail::function( std::move( function ) ) ) ;
+			}
+		}
+		template<typename Function,
+			 Task::detail::has_no_argument<Function> = 0,
+			 Task::detail::copyable<Function> = 0>
+		void queue( Function function )
 		{
 			if( this->manages_multiple_futures() ){
 
@@ -180,24 +289,70 @@ namespace Task
 				this->then( std::move( function ) ) ;
 			}
 		}
+
+		void queue()
+		{
+			if( this->manages_multiple_futures() ){
+
+				m_function_1 = [](){} ;
+
+				this->_queue() ;
+			}else{
+				this->then( [](){} ) ;
+			}
+		}
 		/*
 		 * Below two API just exposes existing functionality using more standard names
 		 */
-		void when_all( std::function< void() > function = [](){} )
+		template<typename Function>
+		void when_all( Function function )
 		{
 			this->then( std::move( function ) ) ;
 		}
-		void when_seq( std::function< void() > function = [](){} )
+		template<typename Function>
+		void when_seq( Function function )
 		{
 			this->queue( std::move( function ) ) ;
 		}
-		void when_any( std::function< void() > function = [](){} )
+		template<typename Function,
+			 Task::detail::has_no_argument<Function> = 0,
+			 Task::detail::copyable<Function> = 0>
+		void when_any( Function function )
 		{
 			if( this->manages_multiple_futures() ){
 
 				this->_when_any( std::move( function ) ) ;
 			}else{
 				this->then( std::move( function ) ) ;
+			}
+		}
+		template<typename Function,
+			 Task::detail::has_no_argument<Function> = 0,
+			 Task::detail::not_copyable<Function> = 0>
+		void when_any( Function function )
+		{
+			if( this->manages_multiple_futures() ){
+
+				this->_when_any( Task::detail::function( std::move( function ) ) ) ;
+			}else{
+				this->then( Task::detail::function( std::move( function ) ) ) ;
+			}
+		}
+		void when_all()
+		{
+			this->then( [](){} ) ;
+		}
+		void when_seq()
+		{
+			this->queue( [](){} ) ;
+		}
+		void when_any()
+		{
+			if( this->manages_multiple_futures() ){
+
+				this->_when_any( [](){} ) ;
+			}else{
+				this->then( [](){} ) ;
 			}
 		}
 		T get()
@@ -312,7 +467,7 @@ namespace Task
 					  Task::future< E >&,
 					  std::function< void( E ) >&& ) ;
 	private:
-		void _when_any( std::function< void() > function = [](){} )
+		void _when_any( std::function< void() > function )
 		{
 			m_when_any_function = std::move( function ) ;
 
@@ -413,12 +568,20 @@ namespace Task
 	class future< void > : private QObject
 	{
 	public:
-		void then( std::function< void() > function )
+		template<typename Function,Task::detail::copyable<Function> = 0>
+		void then( Function function )
 		{
 			m_function = std::move( function ) ;
 			this->start() ;
 		}
-		void queue( std::function< void() > function = [](){} )
+		template<typename Function,Task::detail::not_copyable<Function> = 0>
+		void then( Function function )
+		{
+			m_function = Task::detail::function( std::move( function ) ) ;
+			this->start() ;
+		}
+		template<typename Function,Task::detail::copyable<Function> = 0>
+		void queue( Function function )
 		{
 			if( this->manages_multiple_futures() ){
 
@@ -429,7 +592,40 @@ namespace Task
 				this->then( std::move( function ) ) ;
 			}
 		}
-		void when_any( std::function< void() > function = [](){} )
+		template<typename Function,Task::detail::not_copyable<Function> = 0>
+		void queue( Function function )
+		{
+			if( this->manages_multiple_futures() ){
+
+				m_function = Task::detail::function( std::move( function ) ) ;
+
+				this->_queue() ;
+			}else{
+				this->then( Task::detail::function( std::move( function ) ) ) ;
+			}
+		}
+		void queue()
+		{
+			if( this->manages_multiple_futures() ){
+
+				m_function = [](){} ;
+
+				this->_queue() ;
+			}else{
+				this->then( [](){} ) ;
+			}
+		}
+		void when_any()
+		{
+			if( this->manages_multiple_futures() ){
+
+				this->_when_any( [](){} ) ;
+			}else{
+				this->then( [](){} ) ;
+			}
+		}
+		template<typename Function,Task::detail::copyable<Function> = 0>
+		void when_any( Function function )
 		{
 			if( this->manages_multiple_futures() ){
 
@@ -438,16 +634,36 @@ namespace Task
 				this->then( std::move( function ) ) ;
 			}
 		}
+		template<typename Function,Task::detail::not_copyable<Function> = 0>
+		void when_any( Function function )
+		{
+			if( this->manages_multiple_futures() ){
+
+				this->_when_any( Task::detail::function( std::move( function ) ) ) ;
+			}else{
+				this->then( Task::detail::function( std::move( function ) ) ) ;
+			}
+		}
 		/*
 		 * Below two API just exposes existing functionality using more standard names
 		 */
-		void when_all( std::function< void() > function = [](){} )
+		template<typename Function>
+		void when_all( Function function )
 		{
 			this->then( std::move( function ) ) ;
 		}
-		void when_seq( std::function< void() > function = [](){} )
+		template<typename Function>
+		void when_seq( Function function )
 		{
 			this->queue( std::move( function ) ) ;
+		}
+		void when_all()
+		{
+			this->then( [](){} ) ;
+		}
+		void when_seq()
+		{
+			this->queue() ;
 		}
 		void get()
 		{
@@ -644,11 +860,11 @@ namespace Task
 		/*
 		 * -------------------------Start of internal helper functions-------------------------
 		 */
-		template< typename T >
+		template< typename Type,typename Function >
 		class ThreadHelper : public QThread
 		{
 		public:
-			ThreadHelper( std::function< T() >&& function ) :
+			ThreadHelper( Function function ) :
 				m_function( std::move( function ) ),
 				m_future( this,
 					  [ this ](){ this->start() ; },
@@ -657,7 +873,7 @@ namespace Task
 			{
 				connect( this,&QThread::finished,this,&QThread::deleteLater ) ;
 			}
-			future<T>& Future()
+			future<Type>& Future()
 			{
 				return m_future ;
 			}
@@ -670,16 +886,16 @@ namespace Task
 			{
 				m_result = m_function() ;
 			}
-			std::function< T() > m_function ;
-			future<T> m_future ;
-			T m_result ;
+			Function m_function ;
+			future<Type> m_future ;
+			Type m_result ;
 		};
 
-		template<>
-		class ThreadHelper< void > : public QThread
+		template< typename Function>
+		class ThreadHelperVoid : public QThread
 		{
 		public:
-			ThreadHelper( std::function< void() >&& function ) :
+			ThreadHelperVoid( Function function ) :
 				m_function( std::move( function ) ),
 				m_future( this,
 					  [ this ](){ this->start() ; },
@@ -693,7 +909,7 @@ namespace Task
 				return m_future ;
 			}
 		private:
-			~ThreadHelper()
+			~ThreadHelperVoid()
 			{
 				m_future.run() ;
 			}
@@ -701,16 +917,21 @@ namespace Task
 			{
 				m_function() ;
 			}
-			std::function< void() > m_function ;
+			Function m_function ;
 			future< void > m_future ;
 		};
-		template< typename Fn >
-		Task::future<typename std::result_of<Fn()>::type>& run( Fn function )
+		template<typename Fn,Task::detail::returns_value<Fn> = 0>
+		Task::future<Task::detail::result_of<Fn>>& run( Fn function )
 		{
-			using fn_t = typename std::result_of<Fn()>::type ;
-			return ( new ThreadHelper<fn_t>( std::move( function ) ) )->Future() ;
-		}
+			using t = Task::detail::result_of<Fn> ;
 
+			return ( new ThreadHelper<t,Fn>( std::move( function ) ) )->Future() ;
+		}
+		template<typename Fn,Task::detail::returns_void<Fn> = 0>
+		Task::future<Task::detail::result_of<Fn>>& run( Fn function )
+		{
+			return ( new ThreadHelperVoid<Fn>( std::move( function ) ) )->Future() ;
+		}
 		template< typename T >
 		void add( Task::future< T >& a,Task::future< T >& b,std::function< void( T ) >&& c )
 		{
@@ -728,33 +949,53 @@ namespace Task
 		template< typename T >
 		void add_task( Task::future< T >& f )
 		{
-			Q_UNUSED( f ) ;
+			Q_UNUSED( f )
 		}
 
 		template< typename T >
 		void add_future( Task::future< T >& f )
 		{
-			Q_UNUSED( f ) ;
+			Q_UNUSED( f )
 		}
 
 		template< typename T >
 		void add_pair( Task::future< T >& f )
 		{
-			Q_UNUSED( f ) ;
+			Q_UNUSED( f )
 		}
 
 		template< typename T >
 		void add_pair_void( Task::future< T >& f )
 		{
-			Q_UNUSED( f ) ;
+			Q_UNUSED( f )
 		}
 
-		template< typename ... T >
-		void add_task( Task::future< void >& f,std::function< void() >&& e,T&& ... t )
+		template< typename ... T,
+			  typename Function,
+			  Task::detail::not_copyable<Function> = 0 >
+		void add_task( Task::future< void >& f,Function e,T&& ... t ) ;
+
+		template< typename ... T,
+			  typename Function,
+			  Task::detail::copyable<Function> = 0 >
+		void add_task( Task::future< void >& f,Function e,T&& ... t )
 		{
-			add_void( f,Task::detail::run( std::move( e ) ),
+			add_void( f,Task::detail::run( std::function< void() >( std::move( e ) ) ),
 				  std::function< void() >( [](){} ) ) ;
-			add_task( f,std::move( t ) ... ) ;
+			add_task( f,std::forward<T>( t ) ... ) ;
+		}
+
+		template< typename ... T,
+			  typename Function,
+			  Task::detail::not_copyable<Function> >
+		void add_task( Task::future< void >& f,Function e,T&& ... t )
+		{
+			auto a = std::function< void() >( Task::detail::function( std::move( e ) ) ) ;
+
+			add_void( f,Task::detail::run( std::move( a ) ),
+				  std::function< void() >( [](){} ) ) ;
+
+			add_task( f,std::forward<T>( t ) ... ) ;
 		}
 
 		template< typename ... T >
@@ -790,19 +1031,48 @@ namespace Task
 	/*
 	 * -------------------------End of internal helper functions-------------------------
 	 */
-
-	template< typename Fn >
-	future<typename std::result_of<Fn()>::type>& run( Fn function )
+	template< typename Fn,Task::detail::copyable<Fn> = 0 >
+	auto& run( Fn function )
 	{
 		return Task::detail::run( std::move( function ) ) ;
 	}
-
-	template< typename Fn,typename ... Args >
-	future<typename std::result_of<Fn(Args...)>::type>& run( Fn function,Args ... args )
+	template< typename Fn,Task::detail::not_copyable<Fn> = 0 >
+	auto& run( Fn function )
 	{
-		return Task::run( std::bind( std::move( function ),std::move( args ) ... ) ) ;
+		return Task::detail::run( Task::detail::function( std::move( function ) ) ) ;
 	}
+#if __cplusplus > 201703L
+	template< typename Fn,typename ... Args >
+	future<std::invoke_result_t<Fn,Args...>>& run( Fn function,Args ... args )
+	{
+		return Task::run( [ function = std::move( function ),... args = std::move( args ) ]()mutable{
 
+			return function( std::move( args ) ... ) ;
+		} ) ;
+	}
+#elif __cplusplus == 201703L
+	template< typename Fn,typename ... Args >
+	future<std::invoke_result_t<Fn,Args...>>& run( Fn function,Args ... args )
+	{
+		return Task::run( [ args = std::make_tuple( std::move( args ) ... ),function = std::move( function ) ]()mutable{
+
+			return std::apply( [ function = std::move( function ) ]( Args ... args ){
+
+				return function( std::move( args ) ... ) ;
+
+			},std::move( args ) ) ;
+		} ) ;
+	}
+#else
+	template< typename Fn,typename ... Args >
+	future<std::result_of_t<Fn(Args...)>>& run( Fn function,Args ... args )
+	{
+		return Task::run( [ =,function = std::move( function ) ](){
+
+			return function( std::move( args ) ... ) ;
+		} ) ;
+	}
+#endif
 	class progress : public QObject{
 		Q_OBJECT
 	public:
@@ -817,7 +1087,7 @@ namespace Task
 	};
 
 	template< typename Fn,typename cb >
-	future<typename std::result_of<Fn( const progress& )>::type>& run( QObject * obj,Fn function,cb rp )
+	future<Task::detail::result_of<Fn,const progress&>>& run( QObject * obj,Fn function,cb rp )
 	{
 		return Task::run( [ obj,rp = std::move( rp ),function = std::move( function ) ](){
 
@@ -825,16 +1095,27 @@ namespace Task
 		} ) ;
 	}
 
-	template< typename ... T >
-	Task::future< void >& run( std::function< void() >f,T ... t )
+	template< typename Function,
+		  Task::detail::copyable<Function> = 0,
+		  typename ... T >
+	Task::future< void >& run_tasks( Function f,T ... t )
 	{
 		auto& e = Task::detail::future< void >() ;
 		Task::detail::add_task( e,std::move( f ),std::move( t ) ... ) ;
 		return e ;
 	}
+	template< typename Function,
+		  Task::detail::not_copyable<Function> = 0,
+		  typename ... T >
+	Task::future< void >& run_tasks( Function f,T ... t )
+	{
+		auto& e = Task::detail::future< void >() ;
+		Task::detail::add_task( e,Task::detail::function( std::move( f ) ),std::move( t ) ... ) ;
+		return e ;
+	}
 
 	template< typename ... T >
-	Task::future< void >& run( Task::future< void >& s,T&& ... t )
+	Task::future< void >& run_tasks( Task::future< void >& s,T&& ... t )
 	{
 		auto& e = Task::detail::future< void >() ;
 		Task::detail::add_future( e,s,std::forward<T>( t ) ... ) ;
@@ -862,19 +1143,17 @@ namespace Task
 	 * A few useful helper functions
 	 *
 	 */
-
 	template< typename Fn >
-	typename std::result_of<Fn()>::type await( Fn function )
+	Task::detail::result_of<Fn> await( Fn function )
 	{
 		return Task::run( std::move( function ) ).await() ;
 	}
 
 	template< typename Fn,typename ... Args >
-	typename std::result_of<Fn(Args...)>::type await( Fn function,Args ... args )
+	Task::detail::result_of<Fn,Args ...> await( Fn function,Args ... args )
 	{
 		return Task::run( std::move( function ),std::move( args ) ... ).await() ;
 	}
-
 	template< typename T >
 	T await( Task::future<T>& e )
 	{
@@ -897,13 +1176,11 @@ namespace Task
 	{
 		Task::run( std::move( function ) ).start() ;
 	}
-
 	template< typename Fn,typename ... Args >
 	void exec( Fn function,Args ... args )
 	{
-		Task::exec( std::bind( std::move( function ),std::move( args ) ... ) ) ;
+		Task::run( std::move( function ),std::move( args ) ... ).start() ;
 	}
-
 	template< typename T >
 	void exec( Task::future<T>& e )
 	{

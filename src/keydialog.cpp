@@ -1442,7 +1442,7 @@ void keyDialog::pbSetKey()
 	auto keyFile    = m_ui->lineEditSetKeyKeyFile->text() ;
 	auto passphrase = m_ui->lineEditSetKeyPassword->text() ;
 
-	Task::run( [ = ](){
+	Task::run( [ this,keyFile,passphrase ](){
 
 		if( m_hmac ){
 

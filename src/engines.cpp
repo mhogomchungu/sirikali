@@ -485,7 +485,7 @@ volumeInfo::List engines::engine::mountInfo( const volumeInfo::List& e ) const
 Task::future< QString >& engines::engine::volumeProperties( const QString& cipherFolder,
 							    const QString& mountPoint ) const
 {
-	return Task::run( [ = ](){
+	return Task::run( [ this,cipherFolder,mountPoint ](){
 
 		for( const auto& it : this->volumePropertiesCommands() ){
 

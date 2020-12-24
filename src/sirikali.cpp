@@ -406,7 +406,7 @@ void sirikali::setUpApp( const QString& volume )
 			auto ac = m->addAction( a ) ;
 			m_actionPair.emplace_back( ac,b ) ;
 
-			connect( ac,&QAction::triggered,[ = ](){
+			connect( ac,&QAction::triggered,[ this,c ](){
 
 				this->unlockVolume( c ) ;
 			} ) ;
@@ -793,7 +793,7 @@ void sirikali::startGUI( const QString& volume )
 
 void sirikali::startGUI( const QString& volume,bool autoMountAtStartUp )
 {
-	mountinfo::unlockedVolumes().then( [ = ]( mountinfo::List m ){
+	mountinfo::unlockedVolumes().then( [ this,autoMountAtStartUp,volume ]( mountinfo::List m ){
 
 		this->updateVolumeList( m,false ) ;
 

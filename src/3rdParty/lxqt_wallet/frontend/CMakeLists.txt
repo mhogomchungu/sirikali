@@ -38,7 +38,16 @@ else()
     endif()
 endif()
 
-add_definitions(-std=c++14)
+if( CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 10.0.0)
+	set( CMAKE_CXX_STANDARD 20 )
+	MESSAGE( STATUS "Setting C++ version to C++20" )
+else()
+	set( CMAKE_CXX_STANDARD 14 )
+	MESSAGE( STATUS "Setting C++ version to C++14" )
+endif()
+
+set( CMAKE_CXX_STANDARD_REQUIRED ON )
+set( CMAKE_CXX_EXTENSIONS OFF)
 
 if(NOKDESUPPORT)
     SET(KWALLET_SUPPORT "false")
