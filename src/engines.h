@@ -788,13 +788,25 @@ public:
 				{
 					return m_options ;
 				}
-				QString extractStartsWith( const QString& e )
+				utility2::result< QString > extractStartsWith( const QString& e )
 				{
 					for( int i = 0 ; i < m_options.size() ; i++ ){
 
 						if( m_options[ i ].startsWith( e ) ){
 
 							return m_options.takeAt( i ) ;
+						}
+					}
+
+					return {} ;
+				}
+				utility2::result_ref< QString& > optionStartsWith( const QString& e )
+				{
+					for( int i = 0 ; i < m_options.size() ; i++ ){
+
+						if( m_options[ i ].startsWith( e ) ){
+
+							return m_options[ i ] ;
 						}
 					}
 

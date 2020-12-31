@@ -147,12 +147,33 @@ void sshfs::updateOptions( engines::engine::commandOptions& opts,
 
 		if( utility::isDriveLetter( args.mountPoint ) ){
 
-			if( !exeOptions.contains( "--VolumePrefix=" ) &&
-					args.boolOptions.unlockInReverseMode ){
+			auto _volPrefix = []( QString& m ){
 
-				auto x = args.cipherFolder ;
+				if( m.size() > 15 + 32 ){
+					/*
+					 * 15 is the size of "--VolumePrefix=" and 32 is
+					 * the maximum size allowed to be stored in VolumePrefix.
+					 * If the value stored is more than 32 characters,
+					 * we truncate it to 29 characters and then add three dots.
+					 */
+					m = m.mid( 0,15 + 29 ) + "..." ;
+				}
+			} ;
+
+			auto m = exeOptions.optionStartsWith( "--VolumePrefix=" ) ;
+
+			if( m ){
+
+				_volPrefix( m.value() ) ;
+
+			}else if( args.boolOptions.unlockInReverseMode ){
+
+				auto x = "--VolumePrefix=\\mysshfs\\" + args.cipherFolder ;
 				x.replace( ":",";" ) ;
-				exeOptions.add( "--VolumePrefix=\\mysshfs\\" + x ) ;
+
+				_volPrefix( x ) ;
+
+				exeOptions.add( x ) ;
 			}
 		}
 	}

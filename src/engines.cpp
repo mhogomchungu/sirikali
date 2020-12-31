@@ -2072,14 +2072,13 @@ engines::engine::commandOptions::commandOptions( bool creating,
 
 	auto _volname = []( QString& e ){
 
-		if( e.size() > 40 ){
+		if( e.size() > 8 + 32 ){
 			/*
-			 * we are making sure that volname value does not exceed 32 characters.
-			 * 40 is the sum of characters in "volname="(8) plus the value that must be
-			 * less or equal to 32.
+			 * 8 is the size of "volname=" and 32 is the maximum size allowed
+			 * to be stored in volname. If the value stored is more than 32
+			 * characters, we truncate it to 29 characters and then add three dots.
 			 */
-
-			e = e.mid( 0,37 ) + "...," ;
+			e = e.mid( 0,8 + 29 ) + "..." ;
 		}
 	} ;
 

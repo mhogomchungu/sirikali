@@ -123,14 +123,14 @@ void securefs::updateOptions( engines::engine::commandOptions& opts,
 
 		auto fssubtype = fuseOpts.extractStartsWith( "subtype" ) ;
 
-		if( !fsname.isEmpty() ){
+		if( fsname ){
 
-			exeOpts.add( "--fsname",fsname.mid( 7 ) ) ;
+			exeOpts.add( "--fsname",fsname.RValue().mid( 7 ) ) ;
 		}
 
-		if( !fssubtype.isEmpty() ){
+		if( fssubtype ){
 
-			exeOpts.add( "--fssubtype",fssubtype.mid( 8 ) ) ;
+			exeOpts.add( "--fssubtype",fssubtype.RValue().mid( 8 ) ) ;
 		}
 	}
 }
