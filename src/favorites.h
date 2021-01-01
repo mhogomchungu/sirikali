@@ -168,7 +168,7 @@ public:
 		}
 		volEntry( favorites::entry&& e ) :
 			m_favorite( this->entry( std::move( e ) ) ),
-			m_password( m_favorite->password )
+			m_password( std::move( m_favorite->password ) )
 		{
 		}
 		volEntry( const favorites::entry& e ) :
@@ -220,37 +220,32 @@ public:
 
 	const std::vector< favorites::entry >& readFavorites() const ;
 
-	template< typename Function,
-		  std::enable_if_t< std::is_same< std::result_of_t< Function( const favorites::entry& ) >,bool >::value,int > = 0 >
-	void entries( Function&& function ) const
+	template< typename Function,Task::detail::has_bool_return_type< Function,const favorites::entry& > = 0 >
+	bool entries( Function&& function ) const
 	{
 		for( const auto& it : m_favorites ){
 
 			if( function( it ) ){
 
-				break ;
+				return true ;
 			}
 		}
+
+		return false ;
 	}
 
 	template< typename Function,
-		  typename NotFound,
-		  std::enable_if_t< std::is_same< std::result_of_t< Function( const favorites::entry& ) >,bool >::value,int > = 0 >
-	void entries( Function&& function,NotFound&& notFound ) const
+		  typename NotFoundFunction,
+		  Task::detail::has_bool_return_type< Function,const favorites::entry& > = 0 >
+	void entries( Function&& function,NotFoundFunction&& notFound ) const
 	{
-		for( const auto& it : m_favorites ){
+		if( !entries( std::forward<Function>( function ) ) ){
 
-			if( function( it ) ){
-
-				return ;
-			}
+			notFound() ;
 		}
-
-		notFound() ;
 	}
 
-	template< typename Function,
-		  std::enable_if_t< std::is_void< std::result_of_t< Function( const favorites::entry& ) > >::value,int > = 0 >
+	template< typename Function,Task::detail::has_void_return_type< Function,const favorites::entry& > = 0 >
 	void entries( Function&& function ) const
 	{
 		for( const auto& it : m_favorites ){

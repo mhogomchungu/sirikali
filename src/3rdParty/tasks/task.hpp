@@ -144,7 +144,7 @@ namespace Task
 		using result_of = std::invoke_result_t<Function,Args ...> ;
 #else
 		template<typename Function,typename ... Args>
-		using result_of = std::result_of_t<Function( Args ... )> ;
+		using result_of = std::result_of_t<Function(Args ...)> ;
 #endif
 		template<typename Function>
 		using copyable = std::enable_if_t<std::is_copy_constructible<Function>::value,int> ;
@@ -152,17 +152,29 @@ namespace Task
 		template<typename Function>
 		using not_copyable = std::enable_if_t<!std::is_copy_constructible<Function>::value,int> ;
 
-		template<typename Function,typename Args>
-		using has_argument = std::enable_if_t<std::is_void<result_of<Function,Args>>::value,int> ;
+		template<typename ReturnType,typename Function,typename ... Args>
+		using has_same_return_type = std::enable_if_t<std::is_same<result_of<Function,Args...>,ReturnType>::value,int> ;
+
+		template<typename Function,typename ... Args>
+		using has_void_return_type = has_same_return_type<void,Function,Args...> ;
+
+		template<typename Function,typename ... Args>
+		using has_bool_return_type = has_same_return_type<bool,Function,Args...> ;
+
+		template<typename Function,typename ... Args>
+		using has_non_void_return_type = std::enable_if_t<!std::is_void<result_of<Function,Args...>>::value,int> ;
+
+		template<typename Function,typename ... Args>
+		using has_argument = has_same_return_type<result_of<Function,Args...>,Function,Args...> ;
 
 		template<typename Function>
-		using has_no_argument = std::enable_if_t<std::is_void<result_of<Function>>::value,int> ;
+		using has_no_argument = has_same_return_type<result_of<Function>,Function> ;
 
-		template<typename Function>
-		using returns_void = std::enable_if_t<std::is_void<Task::detail::result_of<Function>>::value,int > ;
+		template<typename Function,typename ... Args>
+		using returns_void = has_void_return_type<Function,Args...> ;
 
-		template<typename Function>
-		using returns_value = std::enable_if_t<!std::is_void<Task::detail::result_of<Function>>::value,int > ;
+		template<typename Function,typename ... Args>
+		using returns_value = has_non_void_return_type<Function,Args...> ;
 	}
 
 	template< typename T >
