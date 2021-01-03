@@ -149,14 +149,16 @@ void sshfs::updateOptions( engines::engine::commandOptions& opts,
 
 			auto _volPrefix = []( QString& m ){
 
-				if( m.size() > 15 + 32 ){
+				if( m.size() > 15 + 192 ){
 					/*
-					 * 15 is the size of "--VolumePrefix=" and 32 is
+					 * 15 is the size of "--VolumePrefix=" and 192 is
 					 * the maximum size allowed to be stored in VolumePrefix.
 					 * If the value stored is more than 32 characters,
-					 * we truncate it to 29 characters and then add three dots.
+					 * we truncate it to 189 characters and then add three dots.
+					 *
+					 * The 192 number is taken from winfsp source code: https://github.com/billziss-gh/winfsp/blob/c803ef24f8f777bc0c8c6a9571d70ce1d23116dd/inc/winfsp/fsctl.h#L83
 					 */
-					m = m.mid( 0,15 + 29 ) + "..." ;
+					m = m.mid( 0,15 + 189 ) + "..." ;
 				}
 			} ;
 
