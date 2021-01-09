@@ -1258,11 +1258,13 @@ keyDialog::volumeList sirikali::autoUnlockVolumes( favorites::volumeList ss,
 
 	auto disableAllRaii = utility2::make_raii( [ this ](){ m_allowEnableAll.setTrue() ; } ) ;
 
+	QString debug ;
+
 	for( auto&& it : l ){
 
-		QString debug =  "1. Processing favorite entry: " + it.volEntry.favorite().volumePath ;
+		debug = "1. Processing favorite entry: " + it.volEntry.favorite().volumePath ;
 
-		if( autoSetAutoMount ){
+		if( autoSetAutoMount && it.volEntry.favorite().autoMount.False() ){
 
 			it.volEntry.setAutoMount( true ) ;
 		}
