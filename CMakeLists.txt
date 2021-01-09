@@ -134,14 +134,14 @@ endif()
 
 if( UNIX AND NOT APPLE )
 
-        find_package( Qt5 COMPONENTS Core Widgets Network DBus REQUIRED )
+	find_package( Qt5 COMPONENTS Core Widgets Network DBus REQUIRED )
 
 	message( STATUS "Found Qt5Widgets, version  ${Qt5Widgets_VERSION}" )
 	message( STATUS "Found Qt5Core, version  ${Qt5Core_VERSION}" )
 	message( STATUS "Found Qt5Network, version  ${Qt5Network_VERSION}" )
 	message( STATUS "Found Qt5DBus, version  ${Qt5DBus_VERSION}" )
 else()
-        find_package( Qt5 COMPONENTS Core Widgets Network REQUIRED )
+	find_package( Qt5 COMPONENTS Core Widgets Network REQUIRED )
 
 	message( STATUS "Found Qt5Widgets, version  ${Qt5Widgets_VERSION}" )
 	message( STATUS "Found Qt5Core, version  ${Qt5Core_VERSION}" )
@@ -149,7 +149,7 @@ else()
 endif()
 
 pkg_check_modules( MCHUNGU_NETWORK mhogomchungu_network )
-pkg_check_modules( MCHUNGU_TASK mhogomchungu_task )
+#pkg_check_modules( MCHUNGU_TASK mhogomchungu_task )
 
 file( WRITE ${PROJECT_BINARY_DIR}/version.h "
 #ifndef THIS_VERSION
