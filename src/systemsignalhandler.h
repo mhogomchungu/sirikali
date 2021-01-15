@@ -24,24 +24,14 @@
 #include <functional>
 #include <vector>
 
-class systemSignalHandler{
+class systemSignalHandler
+{
 public:
 	enum class signal{ HUP = 1,INT = 2,QUIT = 3,TERM = 15,WINDOWS_END_SESSION } ;
 	void setHandle( std::function< void( systemSignalHandler::signal ) > function ) ;
 	void addSignal( systemSignalHandler::signal SIG ) ;
 	systemSignalHandler( QObject * parent ) ;
-private:
-	static void signalHandle( int SIG ) ;
-	struct manager{
-		manager( systemSignalHandler::signal sig ) ;
-		systemSignalHandler::signal signal ;
-		int sockpair[ 2 ] ;
-		int read() const;
-		int write() const;
-	};
-	static std::function< void( systemSignalHandler::signal ) > m_function ;
-	static std::vector< manager > m_signals ;
-	static QObject * m_parent ;
+private:	
 };
 
 #endif

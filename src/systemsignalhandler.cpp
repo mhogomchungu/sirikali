@@ -28,34 +28,69 @@
 #include <unistd.h>
 #include <signal.h>
 
-// https://doc.qt.io/archives/qt-5.6/unix-signals.html
+/*
+ * How to handle signals in unix: https://doc.qt.io/archives/qt-5.6/unix-signals.html
+ */
 
-std::vector< systemSignalHandler::manager>  systemSignalHandler::m_signals ;
-std::function< void( systemSignalHandler::signal ) > systemSignalHandler::m_function ;
-QObject * systemSignalHandler::m_parent ;
+struct signalHandler
+{
+	struct socketPairs
+	{
+		socketPairs( systemSignalHandler::signal sig )
+		{
+			signal = sig ;
+		}
+		int reader() const
+		{
+			return sockpair[ 1 ] ;
+		}
+		int writer() const
+		{
+			return sockpair[ 0 ] ;
+		}
+
+		systemSignalHandler::signal signal ;
+		int sockpair[ 2 ] ;
+	} ;
+
+	static signalHandler& instance()
+	{
+		static signalHandler m ;
+
+		return m ;
+	}
+	static void function( int SIG )
+	{
+		for( const auto& it : signalHandler::instance().signalsManager ){
+
+			if( it.signal == static_cast< systemSignalHandler::signal >( SIG ) ){
+
+				char a = 1 ;
+
+				if( write( it.writer(),&a,sizeof( a ) ) ){}
+
+				break ;
+			}
+		}
+	}
+	socketPairs& addSignal( systemSignalHandler::signal SIG )
+	{
+		signalsManager.emplace_back( SIG ) ;
+		return signalsManager[ signalsManager.size() - 1 ] ;
+	}
+	std::function< void( systemSignalHandler::signal ) > callback ;
+	std::vector< signalHandler::socketPairs > signalsManager ;
+	QObject * parent ;
+} ;
 
 systemSignalHandler::systemSignalHandler( QObject * parent )
 {
-	m_parent = parent ;
+	signalHandler::instance().parent = parent ;
 }
 
 void systemSignalHandler::setHandle( std::function< void( systemSignalHandler::signal ) > function )
 {
-	m_function = std::move( function ) ;
-}
-
-systemSignalHandler::manager::manager( systemSignalHandler::signal sig ) : signal( sig )
-{
-}
-
-int systemSignalHandler::manager::read() const
-{
-	return sockpair[ 1 ] ;
-}
-
-int systemSignalHandler::manager::write() const
-{
-	return sockpair[ 0 ] ;
+	signalHandler::instance().callback = std::move( function ) ;
 }
 
 #ifdef Q_OS_LINUX
@@ -67,26 +102,11 @@ int systemSignalHandler::manager::write() const
 
 #include <QSocketNotifier>
 
-void systemSignalHandler::signalHandle( int SIG )
-{
-	for( const auto& it : m_signals ){
-
-		if( it.signal == static_cast< systemSignalHandler::signal >( SIG ) ){
-
-			char a = 1 ;
-
-			if( write( it.write(),&a,sizeof( a ) ) ){}
-
-			break ;
-		}
-	}
-}
-
 void systemSignalHandler::addSignal( systemSignalHandler::signal SIG )
 {
-	m_signals.emplace_back( SIG ) ;
+	auto& sHandler = signalHandler::instance() ;
 
-	manager& e = m_signals[ m_signals.size() - 1 ] ;
+	auto& e = sHandler.addSignal( SIG ) ;
 
 	socketpair( AF_UNIX,SOCK_STREAM,0,e.sockpair ) ;
 
@@ -97,25 +117,29 @@ void systemSignalHandler::addSignal( systemSignalHandler::signal SIG )
 	action.sa_flags = 0 ;
 	action.sa_flags |= SA_RESTART ;
 
-	action.sa_handler = systemSignalHandler::signalHandle ;
+	action.sa_handler = signalHandler::function ;
 
 	sigaction( static_cast< int >( SIG ),&action,nullptr ) ;
 
-	auto mm = new QSocketNotifier( e.read(),QSocketNotifier::Read,m_parent ) ;
+	auto mm = new QSocketNotifier( e.reader(),QSocketNotifier::Read,sHandler.parent ) ;
 
-	QObject::connect( mm,&QSocketNotifier::activated,[ SIG,mm ]( int ){
+	QObject::connect( mm,&QSocketNotifier::activated,[ SIG,mm ]( int s ){
+
+		Q_UNUSED( s )
+
+		auto& signalHandler = signalHandler::instance() ;
 
 		mm->setEnabled( false ) ;
 
-		for( const auto& it : m_signals ){
+		for( const auto& it : signalHandler.signalsManager ){
 
 			if( it.signal == SIG ){
 
 				char tmp ;
 
-				read( it.read(),&tmp,sizeof( tmp ) ) ;
+				read( it.reader(),&tmp,sizeof( tmp ) ) ;
 
-				m_function( SIG ) ;
+				signalHandler.callback( SIG ) ;
 
 				mm->setEnabled( true ) ;
 
@@ -129,11 +153,6 @@ void systemSignalHandler::addSignal( systemSignalHandler::signal SIG )
 
 #ifdef Q_OS_WIN
 
-void systemSignalHandler::signalHandle( int SIG )
-{
-	Q_UNUSED( SIG )
-}
-
 void systemSignalHandler::addSignal( systemSignalHandler::signal SIG )
 {
 	Q_UNUSED( SIG )
@@ -142,11 +161,6 @@ void systemSignalHandler::addSignal( systemSignalHandler::signal SIG )
 #endif
 
 #ifdef Q_OS_MACOS
-
-void systemSignalHandler::signalHandle( int SIG )
-{
-	Q_UNUSED( SIG )
-}
 
 void systemSignalHandler::addSignal( systemSignalHandler::signal SIG )
 {
