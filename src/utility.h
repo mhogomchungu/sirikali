@@ -391,8 +391,7 @@ namespace utility
 	/*
 	 * Function must take an int and must return bool
 	 */
-	template< typename Function,
-		  std::enable_if_t< std::is_same< std::result_of_t< Function( int ) >,bool >::value,int > = 0 >
+	template< typename Function,Task::detail::has_bool_return_type<Function,int > = 0 >
 	static inline void Timer( int interval,Function&& function )
 	{
 		class Timer{
@@ -427,11 +426,9 @@ namespace utility
 	}
 
 	/*
-	 * Function must takes no argument and must returns void and it will
-	 * be called once when the interval pass
+	 * Function must takes no argument and will be called once when the interval pass
 	 */
-	template< typename Function,
-		  std::enable_if_t< std::is_void< std::result_of_t< Function() > >::value,int > = 0 >
+	template< typename Function,Task::detail::has_no_argument< Function > = 0 >
 	static inline void Timer( int interval,Function&& function )
 	{
 		utility::Timer( interval,[ function = std::forward< Function >( function ) ]( int s ){

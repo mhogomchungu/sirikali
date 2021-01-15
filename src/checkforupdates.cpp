@@ -208,7 +208,7 @@ void checkUpdates::checkForUpdate( size_t position )
 				m_networkRequest.setUrl( QUrl( "https://api.github.com/repos/mhogomchungu/sirikali/releases" ) ) ;
 			}
 
-			m_network.get( m_timeOut,m_networkRequest,[ = ]( QNetworkReply& e ){
+			m_network.get( m_timeOut,m_networkRequest,[ this,f,exeName,position ]( QNetworkReply& e ){
 
 				try{
 					m_results += { exeName,f,this->latestVersion( e.readAll() ) } ;

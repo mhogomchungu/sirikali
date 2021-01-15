@@ -236,20 +236,10 @@ sirikali::sirikali( const QStringList& args ) :
 	m_mountInfo( this,true,[ & ](){ QCoreApplication::exit( m_exitStatus ) ; },_debug() ),
 	m_checkUpdates( this,{ [ this ](){ this->disableAll() ; },[ this ](){ this->enableAll() ; } } ),
 	m_configOptions( this,m_secrets,&m_language_menu,this->configOption() ),
-	m_signalHandler( this,this->getEmergencyShutDown() ),
+	m_signalHandler( this ),
 	m_argumentList( args )
 {
 	utility::miscOptions::instance().setMainQtWidget( this ) ;
-}
-
-std::function< void( systemSignalHandler::signal ) > sirikali::getEmergencyShutDown()
-{
-	return [ this ]( systemSignalHandler::signal s ){
-
-		Q_UNUSED( s )
-
-		this->emergencyShutDown() ;
-	} ;
 }
 
 configOptions::functions sirikali::configOption()
@@ -344,7 +334,23 @@ void sirikali::setUpApp( const QString& volume )
 {
 	this->setLocalizationLanguage( true ) ;
 
-	m_signalHandler.listen() ;
+	m_signalHandler.setHandle( [ this ]( systemSignalHandler::signal s ){
+
+		Q_UNUSED( s )
+
+		this->emergencyShutDown() ;
+	} ) ;
+
+	if( utility::platformIsLinux() ){
+
+		if( settings::instance().unMountVolumesOnLogout() ){
+
+			m_signalHandler.addSignal( systemSignalHandler::signal::HUP ) ;
+			m_signalHandler.addSignal( systemSignalHandler::signal::INT ) ;
+			m_signalHandler.addSignal( systemSignalHandler::signal::QUIT ) ;
+			m_signalHandler.addSignal( systemSignalHandler::signal::TERM ) ;
+		}
+	}
 
 	m_ui = new Ui::sirikali ;
 	m_ui->setupUi( this ) ;
@@ -2104,7 +2110,7 @@ void sirikali::updateList( const volumeInfo& e )
 	}
 }
 
-engines::engine::cmdStatus sirikali::unMountVolume( const sirikali::mountedEntry& e )
+engines::engine::cmdStatus sirikali::unMountVolume( const sirikali::mountedEntry& e,bool emergencyShutDown )
 {
 	const auto& engine = engines::instance().getByName( e.volumeType ) ;
 
@@ -2112,10 +2118,15 @@ engines::engine::cmdStatus sirikali::unMountVolume( const sirikali::mountedEntry
 
 	if( s.success() && engine.backendRequireMountPath() ){
 
-		utility::Timer( 1000,[ s = e.mountPoint ](){
+		if( emergencyShutDown ){
 
-			siritask::deleteMountFolder( s ) ;
-		} ) ;
+			siritask::deleteMountFolder( e.mountPoint ) ;
+		}else{
+			utility::Timer( 1000,[ s = e.mountPoint ](){
+
+				siritask::deleteMountFolder( s ) ;
+			} ) ;
+		}
 	}
 
 	return s ;
@@ -2171,7 +2182,7 @@ void sirikali::emergencyShutDown()
 
 	this->processMountedVolumes( m_ui->tableWidget,[ this ]( const sirikali::mountedEntry& e ){
 
-		this->unMountVolume( e ) ;
+		this->unMountVolume( e,true ) ;
 	} ) ;
 
 	this->closeApplication( 0,"Emergency shut down" ) ;

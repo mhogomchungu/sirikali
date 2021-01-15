@@ -105,7 +105,6 @@ private slots:
 	void createVolume( QAction * = nullptr ) ;
 	void unMountAll( void ) ;
 	void emergencyShutDown( void ) ;
-	std::function< void( systemSignalHandler::signal ) > getEmergencyShutDown() ;
 	void unMountAllAndQuit( void ) ;
 	void pbUmount( void ) ;
 	void slotTrayClicked( QSystemTrayIcon::ActivationReason = QSystemTrayIcon::Trigger ) ;
@@ -209,7 +208,7 @@ private:
 		}
 	}
 
-	engines::engine::cmdStatus unMountVolume( const sirikali::mountedEntry& ) ;
+	engines::engine::cmdStatus unMountVolume( const sirikali::mountedEntry&,bool = false ) ;
 
 	Ui::sirikali * m_ui = nullptr ;
 

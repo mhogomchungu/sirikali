@@ -21,6 +21,43 @@
 #include "systemsignalhandler.h"
 #include <memory>
 
+#include <QSocketNotifier>
+
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <signal.h>
+
+// https://doc.qt.io/archives/qt-5.6/unix-signals.html
+
+std::vector< systemSignalHandler::manager>  systemSignalHandler::m_signals ;
+std::function< void( systemSignalHandler::signal ) > systemSignalHandler::m_function ;
+QObject * systemSignalHandler::m_parent ;
+
+systemSignalHandler::systemSignalHandler( QObject * parent )
+{
+	m_parent = parent ;
+}
+
+void systemSignalHandler::setHandle( std::function< void( systemSignalHandler::signal ) > function )
+{
+	m_function = std::move( function ) ;
+}
+
+systemSignalHandler::manager::manager( systemSignalHandler::signal sig ) : signal( sig )
+{
+}
+
+int systemSignalHandler::manager::read() const
+{
+	return sockpair[ 1 ] ;
+}
+
+int systemSignalHandler::manager::write() const
+{
+	return sockpair[ 0 ] ;
+}
+
 #ifdef Q_OS_LINUX
 
 #include <sys/types.h>
@@ -30,99 +67,61 @@
 
 #include <QSocketNotifier>
 
-static int sighupFd[ 2 ] ;
-static int sigtermFd[ 2 ] ;
-
-static void setup_unix_signal_handlers()
+void systemSignalHandler::signalHandle( int SIG )
 {
-	struct sigaction hup ;
-	struct sigaction term ;
+	for( const auto& it : m_signals ){
 
-	hup.sa_handler = []( int q ){
+		if( it.signal == static_cast< systemSignalHandler::signal >( SIG ) ){
 
-		Q_UNUSED( q )
+			char a = 1 ;
 
-		char a = 1 ;
+			if( write( it.write(),&a,sizeof( a ) ) ){}
 
-		if( ::write( sighupFd[ 0 ],&a,sizeof( a ) ) ){}
-	} ;
-
-	sigemptyset( &hup.sa_mask ) ;
-	hup.sa_flags = 0 ;
-	hup.sa_flags |= SA_RESTART ;
-
-	sigaction( SIGHUP,&hup,nullptr ) ;
-
-	term.sa_handler = []( int q ){
-
-		Q_UNUSED( q )
-
-		char a = 1 ;
-
-		if( ::write( sigtermFd[ 0 ],&a,sizeof( a ) ) ){}
-	} ;
-
-	sigemptyset( &term.sa_mask ) ;
-	term.sa_flags |= SA_RESTART ;
-
-	sigaction( SIGTERM,&term,nullptr ) ;
-}
-
-systemSignalHandler::systemSignalHandler( QObject * parent,std::function< void( signal ) > function ) :
-	m_parent( parent ),m_function( std::move( function ) )
-{
-}
-
-void systemSignalHandler::listen()
-{
-	if( !settings::instance().unMountVolumesOnLogout() ){
-
-		return ;
+			break ;
+		}
 	}
+}
 
-	setup_unix_signal_handlers() ;
+void systemSignalHandler::addSignal( systemSignalHandler::signal SIG )
+{
+	m_signals.emplace_back( SIG ) ;
 
-	::socketpair( AF_UNIX,SOCK_STREAM,0,sighupFd ) ;
+	manager& e = m_signals[ m_signals.size() - 1 ] ;
 
-	::socketpair(AF_UNIX,SOCK_STREAM,0,sigtermFd ) ;
+	socketpair( AF_UNIX,SOCK_STREAM,0,e.sockpair ) ;
 
-	auto snHup = new QSocketNotifier( sighupFd[ 1 ],QSocketNotifier::Read,m_parent ) ;
+	struct sigaction action ;
 
-	QObject::connect( snHup,&QSocketNotifier::activated,[ snHup,this ]( int ){
-#if 1
-		snHup->setEnabled( false ) ;
+	sigemptyset( &action.sa_mask ) ;
 
-		m_function( signal::hup ) ;
-#else
-		snHup->setEnabled( false ) ;
+	action.sa_flags = 0 ;
+	action.sa_flags |= SA_RESTART ;
 
-		char tmp ;
+	action.sa_handler = systemSignalHandler::signalHandle ;
 
-		::read( sighupFd[ 1 ],&tmp,sizeof( tmp ) ) ;
+	sigaction( static_cast< int >( SIG ),&action,nullptr ) ;
 
-		m_function( signal::hup ) ;
+	auto mm = new QSocketNotifier( e.read(),QSocketNotifier::Read,m_parent ) ;
 
-		snHup->setEnabled( true ) ;
-#endif
-	} ) ;
+	QObject::connect( mm,&QSocketNotifier::activated,[ SIG,mm ]( int ){
 
-	auto snTerm = new QSocketNotifier( sigtermFd[ 1 ],QSocketNotifier::Read,m_parent ) ;
+		mm->setEnabled( false ) ;
 
-	QObject::connect( snTerm,&QSocketNotifier::activated,[ snTerm,this ]( int ){
-#if 1
-		snTerm->setEnabled( false ) ;
-		m_function( signal::term ) ;
-#else
-		snTerm->setEnabled( false ) ;
+		for( const auto& it : m_signals ){
 
-		char tmp ;
+			if( it.signal == SIG ){
 
-		::read( sighupFd[ 1 ],&tmp,sizeof( tmp ) ) ;
+				char tmp ;
 
-		m_function( signal::term ) ;
+				read( it.read(),&tmp,sizeof( tmp ) ) ;
 
-		snTerm->setEnabled( true ) ;
-#endif
+				m_function( SIG ) ;
+
+				mm->setEnabled( true ) ;
+
+				break ;
+			}
+		}
 	} ) ;
 }
 
@@ -130,67 +129,28 @@ void systemSignalHandler::listen()
 
 #ifdef Q_OS_WIN
 
-#include <QApplication>
-#include <QAbstractNativeEventFilter>
-
-#include "utility.h"
-
-#include <windows.h>
-
-class eventFilter : public QObject,public QAbstractNativeEventFilter
+void systemSignalHandler::signalHandle( int SIG )
 {
-public:
-	eventFilter( QObject * parent,std::function< void( systemSignalHandler::signal ) > function ) :
-		QObject( parent ),m_function( std::move( function ) )
-	{
-	}
-	bool nativeEventFilter( const QByteArray& eventType,void * message,long * result )
-	{
-		Q_UNUSED( eventType )
-		Q_UNUSED( result )
-
-		MSG * msg = reinterpret_cast< MSG * >( message ) ;
-
-		if( msg->message == WM_ENDSESSION ){
-
-			m_function( systemSignalHandler::signal::winEndSession ) ;
-
-			//return true ;
-		}
-
-		return false ;
-	}
-
-	std::function< void( systemSignalHandler::signal ) > m_function ;
-};
-
-systemSignalHandler::systemSignalHandler( QObject * parent,std::function< void( signal ) > function ) :
-	m_parent( parent ),m_function( std::move( function ) )
-{
+	Q_UNUSED( SIG )
 }
 
-void systemSignalHandler::listen()
+void systemSignalHandler::addSignal( systemSignalHandler::signal SIG )
 {
-	return ;
-
-	if( settings::instance().unMountVolumesOnLogout() ){
-
-		auto m = new eventFilter( m_parent,std::move( m_function ) ) ;
-		QApplication::instance()->installNativeEventFilter( m ) ;
-	}
+	Q_UNUSED( SIG )
 }
 
 #endif
 
 #ifdef Q_OS_MACOS
 
-systemSignalHandler::systemSignalHandler( QObject * parent,std::function< void( signal ) > function )
-	: m_parent( parent ),m_function( std::move( function ) )
+void systemSignalHandler::signalHandle( int SIG )
 {
+	Q_UNUSED( SIG )
 }
 
-void systemSignalHandler::listen()
+void systemSignalHandler::addSignal( systemSignalHandler::signal SIG )
 {
+	Q_UNUSED( SIG )
 }
 
 #endif
