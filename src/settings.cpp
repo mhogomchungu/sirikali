@@ -239,12 +239,12 @@ bool settings::enableRevealingPasswords()
 
 bool settings::enableHighDpiScaling()
 {
-	if( !m_settings.contains( "EnableHighDpiScaling" ) ){
+	if( !m_settings.contains( "EnableHighDpiScalingV1" ) ){
 
-		m_settings.setValue( "EnableHighDpiScaling",false ) ;
+		m_settings.setValue( "EnableHighDpiScalingV1",true ) ;
 	}
 
-	return m_settings.value( "EnableHighDpiScaling" ).toBool() ;
+	return m_settings.value( "EnableHighDpiScalingV1" ).toBool() ;
 }
 
 void settings::enableHighDpiScaling( bool e )
@@ -271,7 +271,7 @@ QByteArray settings::enabledHighDpiScalingFactor()
 {
 	if( !m_settings.contains( "EnabledHighDpiScalingFactor" ) ){
 
-		m_settings.setValue( "EnabledHighDpiScalingFactor","1.1" ) ;
+		m_settings.setValue( "EnabledHighDpiScalingFactor","1.0" ) ;
 	}
 
 	return m_settings.value( "EnabledHighDpiScalingFactor" ).toByteArray() ;
@@ -342,9 +342,15 @@ void settings::scaleGUI()
 	if( this->enableHighDpiScaling() ){
 
 		QApplication::setAttribute( Qt::AA_EnableHighDpiScaling ) ;
-
-		qputenv( "QT_SCALE_FACTOR",this->enabledHighDpiScalingFactor() ) ;
 	}
+
+	auto a = this->enabledHighDpiScalingFactor() ;
+
+	if( a != "1.0" ){
+
+		qputenv( "QT_SCALE_FACTOR",a ) ;
+	}
+
 #endif
 }
 
