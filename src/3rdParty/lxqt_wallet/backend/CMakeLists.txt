@@ -20,7 +20,7 @@ endif()
 
 add_library(lxqtwallet-backend STATIC lxqtwallet.c)
 if( CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7.0 )
-        set_target_properties(lxqtwallet-backend PROPERTIES COMPILE_FLAGS "-Wall -s -fPIC -pedantic -Wformat-truncation=0")
+        set_target_properties(lxqtwallet-backend PROPERTIES COMPILE_FLAGS "-Wall -s -fPIC -pedantic -Wno-format-truncation")
 else()
         set_target_properties(lxqtwallet-backend PROPERTIES COMPILE_FLAGS "-Wall -s -fPIC -pedantic")
 endif()
