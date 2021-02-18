@@ -139,6 +139,16 @@ favorites2::favorites2( QWidget * parent,
 		m_settings.showFavoritesInContextMenu( e ) ;
 	} ) ;
 
+	connect( m_ui->cbSetMountPathNotPrefix,&QCheckBox::stateChanged,[ this ]( int s ){
+
+		if( s == Qt::CheckState::Checked ){
+
+			m_ui->labelMountPointPrefix->setText( tr( "Mount Point Path" ) ) ;
+		}else{
+			m_ui->labelMountPointPrefix->setText( tr( "Mount Point Prefix" ) ) ;
+		}
+	} ) ;
+
 	connect( m_ui->cbAllowExternalToolsToReadPasswords,&QCheckBox::toggled,[ this ]( bool e ){
 
 		m_settings.allowExternalToolsToReadPasswords( e ) ;
@@ -1240,10 +1250,15 @@ void favorites2::updateFavorite( bool edit )
 
 			if( !utility::isDriveLetter( path ) ){
 
+				if( !m_ui->cbSetMountPathNotPrefix->isChecked() ){
+
+					e.mountPointPath = path + "/" + utility::split( dev,'/' ).last() ;
+				}			}
+		}else{
+			if( !m_ui->cbSetMountPathNotPrefix->isChecked() ){
+
 				e.mountPointPath = path + "/" + utility::split( dev,'/' ).last() ;
 			}
-		}else{
-			e.mountPointPath = path + "/" + utility::split( dev,'/' ).last() ;
 		}
 
 		auto a = favorites::instance().add( e ) ;
@@ -1362,24 +1377,6 @@ void favorites2::itemClicked( QTableWidgetItem * current )
 void favorites2::shortcutPressed()
 {
 	this->itemClicked( m_ui->tableWidget->currentItem(),false ) ;
-}
-
-void favorites2::devicePathTextChange( QString txt )
-{
-	if( txt.isEmpty() ){
-
-		m_ui->lineEditMountPath->clear() ;
-	}else{
-		auto s = txt.split( "/" ).last() ;
-
-		if( s.isEmpty() ){
-
-			m_ui->lineEditMountPath->setText( txt ) ;
-		}else{
-			auto m = m_settings.mountPath( s ) ;
-			m_ui->lineEditMountPath->setText( m ) ;
-		}
-	}
 }
 
 void favorites2::clearEditVariables()

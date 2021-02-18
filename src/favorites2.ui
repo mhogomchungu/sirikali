@@ -574,6 +574,22 @@
          <string/>
         </property>
        </widget>
+       <widget class="QCheckBox" name="cbSetMountPathNotPrefix">
+        <property name="geometry">
+         <rect>
+          <x>680</x>
+          <y>120</y>
+          <width>31</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Set Full Mount Point Path Instead Of Mount Prefix</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
        <widget class="QLabel" name="labelCofigFilePath">
         <property name="geometry">
          <rect>

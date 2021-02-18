@@ -86,7 +86,6 @@ private :
 	void itemClicked( QTableWidgetItem * current,bool ) ;
 	void itemClicked( QTableWidgetItem * current ) ;
 	void shortcutPressed( void ) ;
-	void devicePathTextChange( QString ) ;
 	void clearEditVariables() ;
 	void setVolumeProperties( utility2::result_ref< const favorites::entry& > e ) ;
 	void clearVolumeProperties() ;
