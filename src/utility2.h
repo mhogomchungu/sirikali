@@ -173,7 +173,7 @@ namespace utility2
 		return raii< Function >( std::move( function ) ) ;
 	}
 
-	template< typename T >
+	template< typename T,std::enable_if_t< std::is_reference< T >::value,int > = 0 >
 	class result_ref
 	{
 	public:
