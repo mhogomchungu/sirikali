@@ -294,8 +294,35 @@ static QString _file_manager()
 
 	if( utility::platformIsLinux() ){
 
+		struct{
+			const char * name ;
+			const char * exe_name ;
+
+		}fm[] = { { "KDE","dolphin" },
+			  { "GNOME","nautilus" },
+			  { nullptr,nullptr } } ;
+
 		s = "xdg-open" ;
 		e = engines::executableFullPath( s ) ;
+
+		auto DE = QProcessEnvironment::systemEnvironment().value( "XDG_CURRENT_DESKTOP" ) ;
+
+		for( size_t i = 0 ; fm[ i ].name != nullptr ; i++ ){
+
+			const auto& it = fm[ i ] ;
+
+			if( DE.contains( it.name,Qt::CaseInsensitive ) ){
+
+				auto m = engines::executableFullPath( it.exe_name ) ;
+
+				if( QFile::exists( m ) ){
+
+					return m ;
+				}
+
+				break ;
+			}
+		}
 
 	}else if( utility::platformIsOSX() ){
 
@@ -362,14 +389,14 @@ QString settings::fileManager()
 
 		if( e.isEmpty() ){
 
-			settings::setFileManager( QString() ) ;
+			this->setFileManager( QString() ) ;
 
 			return m_settings.value( "FileManagerOpener" ).toString() ;
 		}else{
 			return e ;
 		}
 	}else{
-		settings::setFileManager( QString() ) ;
+		this->setFileManager( QString() ) ;
 		return m_settings.value( "FileManagerOpener" ).toString() ;
 	}
 }
