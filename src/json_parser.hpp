@@ -20,21 +20,18 @@
 #ifndef JSON_H
 #define JSON_H
 
-#include "json.h"
-
 #include <QString>
 #include <QStringList>
 #include <QFile>
+
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonObject>
 
 class SirikaliJson
 {
 public:
 	using function = std::function< void( const QString& ) > ;
-
-	struct result{
-		bool contains ;
-		bool exceptionThrown ;
-	};
 
 	SirikaliJson( function log = []( const QString& e ){ Q_UNUSED( e ) } ) :
 		m_log( std::move( log ) )
@@ -60,227 +57,158 @@ public:
 	{
 	        this->getData( e ) ;
 	}
-	result contains( const char * key )
+	std::vector< int > getIntVector( const char * key ) const
 	{
-		try{
-			auto a = m_json.find( key ) ;
+		auto s = m_json.value( key ) ;
 
-			if( a != m_json.end() ){
+		if( s.isArray() ){
 
-				return { true,false } ;
-			}else{
-				return { false,false } ;
+			std::vector< int > m ;
+
+			const auto arr = s.toArray() ;
+
+			for( const auto& it : arr ){
+
+				m.emplace_back( it.toInt() ) ;
 			}
 
-		}catch( const std::exception& e ){
-
-			this->logException( e,key ) ;
-			return { false,true } ;
-
-		}catch( ... ){
-
-			this->logException( key ) ;
-			return { false,true } ;
+			return m ;
+		}else{
+			return {} ;
 		}
-	}
-	template< typename T >
-	T get( const char * key,const T& t = T() ) const
-	{
-		try{
-			auto a = m_json.find( key ) ;
-
-			if( a != m_json.end() ){
-
-				return a->get< T >() ;
-			}else{
-			        if( m_fileName.isEmpty() ){
-
-					m_log( QString( "Warning, Key \"%1\" Not Found" ).arg( key ) ) ;
-				}else{
-					m_log( QString( "Warning, Key \"%1\" Not Found In File: %2" ).arg( key,m_fileName ) ) ;
-				}
-
-				return t ;
-			}
-
-		}catch( const std::exception& e ){
-
-			this->logException( e,key ) ;
-			return t ;
-
-		}catch( ... ) {
-
-			this->logException( key ) ;
-			return t ;
-		}
-	}
-	template< typename E >
-	std::vector< E > getVector( const char * key,const std::vector< E > e = {} ) const
-	{
-		return this->get< std::vector< E > >( key,e ) ;
-	}
-	QStringList getStringList( const char * key,const QStringList& l ) const
-	{
-		std::vector< std::string > m ;
-
-		for( const auto& it : l ){
-
-			m.emplace_back( it.toStdString() ) ;
-		}
-
-		const auto e = this->get< std::vector< std::string > >( key,m ) ;
-
-		QStringList s ;
-
-		for( const auto& it : e ){
-
-			s.append( it.c_str() ) ;
-		}
-
-		return s ;
 	}
 	QStringList getStringList( const char * key ) const
 	{
-		QStringList s ;
+		auto s = m_json.value( key ) ;
 
-		auto e = this->get< std::vector< std::string > >( key,m_defaultStringList ) ;
+		if( s.isArray() ){
 
-		for( const auto& it : e ){
+			QStringList m ;
 
-			s.append( it.c_str() ) ;
+			const auto arr = s.toArray() ;
+
+			for( const auto& it : arr ){
+
+				m.append( it.toString() ) ;
+			}
+
+			return m ;
+		}else{
+			return {} ;
 		}
-
-		return s ;
 	}
 	QString getString( const char * key,const QString& defaultValue ) const
 	{
-		return this->get< std::string >( key,defaultValue.toStdString() ).c_str() ;
+		return m_json.value( key ).toString( defaultValue ) ;
 	}
 	QString getString( const char * key ) const
 	{
-		return this->get< std::string >( key,m_defaultString ).c_str() ;
+		return m_json.value( key ).toString() ;
 	}
 	QByteArray getByteArray( const char * key,const QByteArray& defaultValue ) const
 	{
-		return this->get< std::string >( key,defaultValue.constData() ).c_str() ;
+		return this->getString( key,defaultValue ).toUtf8() ;
 	}
 	QByteArray getByteArray( const char * key ) const
 	{
-		return this->get< std::string >( key,m_defaultString ).c_str() ;
+		return this->getString( key ).toUtf8() ;
 	}
 	bool getBool( const char * key,bool s = false ) const
 	{
-		return this->get< bool >( key,s ) ;
+		return m_json.value( key ).toBool( s ) ;
 	}
 	int getInterger( const char * key,int s = 0 ) const
 	{
-		return this->get< int >( key,s ) ;
+		return m_json.value( key ).toInt( s ) ;
 	}
 	double getDouble( const char * key,double s = 0.0 ) const
 	{
-		return this->get< double >( key,s ) ;
+		return m_json.value( key ).toDouble( s ) ;
+	}
+	QStringList getTags( const char * tag )
+	{
+		QStringList s ;
+
+		const QJsonArray arr = m_doc.array() ;
+
+		for( const auto& it : arr ){
+
+			if( it.isObject() ){
+
+				auto value = it.toObject().value( tag ) ;
+
+				if( value.isString() ){
+
+					s.append( value.toString() ) ;
+				}
+			}
+		}
+
+		return s ;
 	}
 	SirikaliJson& operator[]( const char * key )
 	{
 		m_key = key ;
 		return *this ;
 	}
+	void operator=( const char * value )
+	{
+		m_json.insert( m_key,value ) ;
+	}
 	void operator=( const QString& value )
 	{
-		this->insert( m_key,value.toStdString() ) ;
+		m_json.insert( m_key,value ) ;
+	}
+	void operator=( bool value )
+	{
+		m_json.insert( m_key,value ) ;
 	}
 	void operator=( const QByteArray& value )
 	{
-		this->insert( m_key,value.constData() ) ;
+		m_json.insert( m_key,QString( value ) ) ;
 	}
-	void operator=( const QStringList& value )
+	void operator=( const std::vector< int >& value )
 	{
-		std::vector< std::string > m ;
+		QJsonArray arr ;
 
 		for( const auto& it : value ){
 
-			m.emplace_back( it.toStdString() ) ;
+			arr.append( it ) ;
 		}
 
-		this->insert( m_key,m ) ;
+		m_json.insert( m_key,arr ) ;
 	}
-	template< typename T >
-	void operator=( const T& value )
+	void operator=( int value )
 	{
-		this->insert( m_key,value ) ;
+		m_json.insert( m_key,QString( value ) ) ;
 	}
-	template< typename T >
-	void insert( const char * key,const T& value )
+	void operator=( const QStringList& value )
 	{
-		try{
-			if( m_passed ){
+		QJsonArray arr ;
 
-				m_json[ key ] = value ;
-			}
+		for( const auto& it : value ){
 
-		}catch( const std::exception& e ){
-
-			QString s ;
-
-			if( m_fileName.isEmpty() ){
-
-				s = QString( "Error, Exception Thrown When Adding Key \"%1\"" ).arg( key ) ;
-			}else{
-				s = QString( "Error, Exception Thrown When Adding Key \"%1\" in File: %2" ).arg( key,m_fileName ) ;
-			}
-
-			m_log( s + QString( "\n\nException msg: " ) + e.what() ) ;
-
-			m_passed = false ;
-
-		}catch( ... ) {
-
-			QString s ;
-
-			if( m_fileName.isEmpty() ){
-
-				s = QString( "Error, Exception Thrown When Searching For Key \"%1\"" ).arg( key ) ;
-			}else{
-				s = QString( "Error, Exception Thrown When Searching For Key \"%1\" in File: %2" ).arg( key,m_fileName ) ;
-			}
-
-			m_log( s + QString( "\n\nException msg: Unknown" ) ) ;
-
-			m_passed = false ;
+			arr.append( it ) ;
 		}
+
+		m_json.insert( m_key,arr ) ;
 	}
-	bool toFile( const QString& path,int indent = 8 ) const
+	bool toFile( const QString& path ) const
 	{
 		QFile file( path ) ;
 
 		if( file.open( QIODevice::WriteOnly ) ){
 
-			file.write( m_json.dump( indent ).data() ) ;
+			file.write( this->structure() ) ;
 
 			return true ;
 		}else{
 			return false ;
 		}
 	}
-	QByteArray structure( int indent = 8 ) const
+	QByteArray structure() const
 	{
-		return m_json.dump( indent ).c_str() ;
-	}
-	QStringList getTags( const char * tag )
-	{
-		QStringList s ;
-
-		for( const auto& it : m_json ){
-
-			auto e = it.find( tag ) ;
-
-			if( e != it.end() ){
-
-				s.append( QString::fromStdString( e.value() ) ) ;
-			}
-		}
-
-		return s ;
+		return QJsonDocument( m_json ).toJson( QJsonDocument::JsonFormat::Indented ) ;
 	}
 	bool passed() const
 	{
@@ -291,32 +219,18 @@ public:
 		return !this->passed() ;
 	}
 private:
-	QString exeptionLog( const char * key ) const
+	void logException( const QString& e ) const
 	{
-		if( key == nullptr ){
+		if( m_fileName.isEmpty() ){
 
-			if( m_fileName.isEmpty() ){
+			QString m = "Error, Malformed Json Structure Encountered" ;
 
-				return QString( "Error, Exception Thrown When Parsing Data" ) ;
-			}else{
-				return QString( "Error, Exception Thrown When Parsing Data in File: %1" ).arg( m_fileName ) ;
-			}
+			m_log( m + "\n\n" + e ) ;
 		}else{
-			if( m_fileName.isEmpty() ){
+			QString m = QString( "Error, Malformed Json Structure Encountered in File: %1" ).arg( m_fileName ) ;
 
-				return QString( "Error, Exception Thrown When Searching For Key \"%1\"" ).arg( key ) ;
-			}else{
-				return QString( "Error, Exception Thrown When Searching For Key \"%1\" in File: %2" ).arg( key,m_fileName ) ;
-			}
+			m_log( m + "\n\n" + e ) ;
 		}
-	}
-	void logException( const char * key = nullptr ) const
-	{
-		m_log( this->exeptionLog( key ) + "\n\nException msg: Unknown" ) ;
-	}
-	void logException( const std::exception& e,const char * key = nullptr ) const
-	{
-		m_log( this->exeptionLog( key ) + QString( "\n\nException msg: " ) + e.what() ) ;
 	}
 	void getData( QFile& f )
 	{
@@ -336,29 +250,32 @@ private:
 	}
 	void getData( const QByteArray& e )
 	{
-		try{
-			m_json = nlohmann::json::parse( e.constData() ) ;
+		QJsonParseError error ;
+		m_doc = QJsonDocument::fromJson( e,&error ) ;
 
-		}catch( const std::exception& e ){
+		if( error.error == QJsonParseError::NoError ){
 
-			this->logException( e ) ;
+			if( m_doc.isObject() ){
+
+				m_passed = true ;
+
+				m_json = m_doc.object() ;
+			}else{
+				m_passed = false ;
+				this->logException( "Error Reason: Expected an object and got something else" ) ;
+			}
+		}else{
 			m_passed = false ;
-
-		}catch( ... ){
-
-			this->logException() ;
-			m_passed = false ;
+			this->logException( "Error Reason: " + error.errorString() ) ;
 		}
 	}
 
-	std::vector< std::string > m_defaultStringList ;
-	std::string m_defaultString ;
 	QString m_fileName ;
-
-	bool m_passed = true ;
+	bool m_passed ;
 	std::function< void( const QString& ) > m_log = []( const QString& e ){ Q_UNUSED( e ) } ;
 	const char * m_key ;
-	nlohmann::json m_json ;
+	QJsonObject m_json ;
+	QJsonDocument m_doc ;
 };
 
 #endif //JSON_H

@@ -62,7 +62,6 @@
 #include "help.h"
 #include "configoptions.h"
 #include "win.h"
-#include "json.h"
 #include "settings.h"
 #include "engines.h"
 #include "processManager.h"

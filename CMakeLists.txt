@@ -99,15 +99,6 @@ endif()
 
 set( QT5 "true" )
 
-find_file( JSON_HEADER_PATH "nlohmann/json.hpp" )
-
-if( NOT JSON_HEADER_PATH )
-	set( JSON_HEADER_PATH "${PROJECT_SOURCE_DIR}/src/3rdParty/json/nlohmann/json.hpp" )
-endif()
-
-file( WRITE ${PROJECT_BINARY_DIR}/json.h "\n#include \"${JSON_HEADER_PATH}\"" )
-MESSAGE( STATUS "found json.hpp header file at: ${JSON_HEADER_PATH}" )
-
 if( WIN32 )
     set( INTERNAL_LXQT_WALLET "true" )
 else()

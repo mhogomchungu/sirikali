@@ -85,7 +85,7 @@ static void _parse( engines::engine::BaseOptions& s,const SirikaliJson& json )
 
 	auto versionArgumentString        = json.getString( "versionArgumentString" ) ;
 	auto versionOutputStdOut          = json.getBool( "versionOutputStdOut",true ) ;
-	auto versionStringTextPosition    = json.getVector< int >( "versionStringTextPosition" ) ;
+	auto versionStringTextPosition    = json.getIntVector( "versionStringTextPosition" ) ;
 
 	if( !versionArgumentString.isEmpty() && versionStringTextPosition.size() > 1 ){
 
