@@ -220,8 +220,8 @@ void keyDialog::setUpInitUI()
 	if( utility::platformIsWindows() ){
 
 		/*
-		 * We are diabling this functionality on windows for now
-		 * its currently not possible to open a volume in read only mode.
+		 * We are disabling this functionality on windows for now
+		 * it's currently not possible to open a volume in read only mode.
 		 */
 		m_ui->checkBoxOpenReadOnly->setChecked( false ) ;
 		m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
@@ -1011,7 +1011,7 @@ void keyDialog::pbOpen()
 			}
 		}else{
 			/*
-			 * We shouldnt get here
+			 * We shouldn't get here
 			 */
 			return this->openVolume() ;
 		}

@@ -36,12 +36,12 @@ version 1.0.0
 -- Add a convenient "HMAC+KeyFile" option to use a keyfile with an empty passphrase
    as a volume password. "Key+KeyFile" option is to be used if volume passphrase is to be a combination
    of a password and a keyfile. Both of these two options are better than using a "KeyFile" option
-   because keyfiles will most likely be trancated on the first new line character encountered and al the
+   because keyfiles will most likely be truncated on the first new line character encountered and al the
    contents of the keyfile may not be used leading to weak passphrase.
 
 version 1.1.0
 -- Add ability to automount favorites volumes on program start up time.
--- Add ability to automount favorites volumes when they become available ie,when the files systems the volume
+-- Add ability to automount favorites volumes when they become available i.e. when the files systems the volume
    resides in is mounted.
 
 version 1.2.0
@@ -50,9 +50,9 @@ version 1.2.0
 
 version 1.2.1
 -- Maintanance release.
-   -- FIX BUG: Dont generate an update warning prompt on startup when auto check for updates is set but the application
+   -- FIX BUG: Don't generate an update warning prompt on startup when auto check for updates is set but the application
                is started while the system has no internet connection.
-   -- FIX BUG: Dont auto delete mount folders when a volumes was unmounted outside of SiriKali.
+   -- FIX BUG: Don't auto delete mount folders when a volumes was unmounted outside of SiriKali.
    -- FIX BUG: Populate $PATH variable properly before calling backends since some backends fails without it.
    -- FIX BUG: The build process failed to build on Qt4
 
@@ -89,7 +89,7 @@ version 1.2.7
 version 1.2.8
 -- Add a GUI way to set options when creating a securefs volume.
 -- Add a GUI way to set options when creating a cryfs volume.
--- Agg a GUI way to display gocryptfs volume properties.
+-- Add a GUI way to display gocryptfs volume properties.
 -- Better mount/unmount events monitoring on OSX.
 -- Set it as a run time option(off by default) to support ecryptfs-simple backend that does not have suid bit set. A user
    will be asked to allow polkit support on first attempt.
@@ -166,7 +166,7 @@ version 1.3.9(August 01,2019)
 -- Add ability to run user created custom backends/extensions. This feature make it possible to configure SiriKali
    to run any tool that deals with mounting file systems. Documentation on how to create a custom backed is
    here: https://github.com/mhogomchungu/sirikali/wiki/How-to-create-SiriKali-custom-backend
--- Fix an occassional crash that happens when creating an internal wallet when an internal version of
+-- Fix an occasional crash that happens when creating an internal wallet when an internal version of
    lxqt_wallet is in use.
 
 version 1.4.0(October 01,2019)
@@ -174,7 +174,7 @@ version 1.4.0(October 01,2019)
 -- Add a config option to show favorites entries on the tray icon context menu with an ability to
    mount/unmount volume from the menu.
 -- Fix a bug that prevented favorite entries with cipher path that starts with a dot from showing up in the GUI.
--- Add GUI options to enable HiDPI option to scale the GUI when runing in HiDPI displays.
+-- Add GUI options to enable HiDPI option to scale the GUI when running in HiDPI displays.
 
 version 1.4.1(October 15,2019)
 -- Add support for fscrypt backend. This backend will allow encrypting individual folders that reside in a
@@ -189,7 +189,7 @@ version 1.4.2(December 18,2019)
    is a remote address of "abc@example:/".
 -- Add a visible option to choose between creating a local drive or a network drive when connecting to ssh server
    on windows.
--- Inforce a requirenment that says Sshfs-win should be atleast version 3.4.0.
+-- Enforce a requirement that says Sshfs-win should be at least version 3.4.0.
 -- Add support for "lock" command in fscrypt backend. This option is used for locking directories that use V2
    encryption policies.
 

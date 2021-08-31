@@ -460,7 +460,7 @@ void mountinfo::linuxMonitor()
 			}else if( a == 0 ){
 
 				/*
-				 * Timout has occurred
+				 * Timeout has occurred
 				 */
 			}else{
 				m_debug( "Warning: pollMonitor.poll failed" ) ;
