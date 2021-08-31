@@ -31,7 +31,7 @@ public:
 	void setHandle( std::function< void( systemSignalHandler::signal ) > function ) ;
 	void addSignal( systemSignalHandler::signal SIG ) ;
 	systemSignalHandler( QObject * parent ) ;
-private:	
+private:
 };
 
 #endif

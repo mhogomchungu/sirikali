@@ -176,7 +176,7 @@ void cryfs::updateOptions( engines::engine::cmdArgsList& e,bool creating ) const
 
 engines::engine::status cryfs::passAllRequirenments( const engines::engine::cmdArgsList& opt ) const
 {
-	auto s = engines::engine::passAllRequirenments( opt ) ;	
+	auto s = engines::engine::passAllRequirenments( opt ) ;
 
 	if( s != engines::engine::status::success ){
 

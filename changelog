@@ -213,7 +213,7 @@ version 1.4.2(December 18,2019)
 -- Fix a bug that causes fscrypt folders paths that contain a space character from showing up in the GUI.
 -- Prevent fscrypt error when creating a new volume with an already taken protector name by making sure
     we are using a unique protector name.
--- Add a GUI option to set protector's name  when creating fscrypt volume.
+-- Add a GUI option to set protector's name when creating fscrypt volume.
 -- Add a GUI option to choose between using a custom passphrase,login passphrase or a key file
     when creating fscrypt volume.
 -- Add support for fscrypt keyfile.
@@ -230,13 +230,13 @@ version 1.4.2(December 18,2019)
 
    version 1.4.5(August 01,2020)
     [ALL]
--- Make  it compile with Qt 5.15.0 without warnings(remove Qt's deprecated APIs).
+-- Make it compile with Qt 5.15.0 without warnings(remove Qt's deprecated APIs).
 -- Declare backend API to be stable and provide a few examples backends.
     SiriKali now supports custom backends that can be added by users by providing json based
     configuration files and place them in either "$HOME/.config/SiriKali/backends" or in
     "$INSTALL_PREFIX/share/SiriKali/backends". Look in "custom backends" folder for
     more information.
--- Fix a bug that caused SiriKali to attempt to auto unlock not  available favorite volume at startup.
+-- Fix a bug that caused SiriKali to attempt to auto unlock not available favorite volume at startup.
 -- Fix a bug that caused SiriKali to delay showing up in GNOME or any other DE that does not use
     system tray functionality.
 

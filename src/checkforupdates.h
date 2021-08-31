@@ -83,7 +83,7 @@ private:
 #include "checkforupdateswindow.h"
 
 class checkUpdates
-{	
+{
 public:
 	static bool hasNetworkSupport()
 	{

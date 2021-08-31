@@ -37,7 +37,7 @@ public:
 	void GUICreateOptions( const createGUIOptions& ) const override ;
 
 	void GUIMountOptions( const mountGUIOptions& ) const override ;
-private:	
+private:
 	QProcessEnvironment setEnv() const ;
 	const QProcessEnvironment m_env ;
 	const engines::versionGreaterOrEqual m_version_greater_or_equal_0_10_0 ;

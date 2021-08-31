@@ -141,7 +141,7 @@ public:
 		} ;
 
 		walletKey getKey( const QString& keyID,QWidget * widget = nullptr ) ;
-	private:		
+	private:
 		struct info{
 
 			QString walletName ;

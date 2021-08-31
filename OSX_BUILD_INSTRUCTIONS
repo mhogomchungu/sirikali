@@ -27,13 +27,13 @@ Below are instructions on how to build SiriKali on OSX.
 8.  export CMAKE_PREFIX_PATH=/usr/local/opt/qt5/
     # Then you'll be able to compile Sirikali to $HOME/sirikali
 9.  cmake -DCMAKE_INSTALL_PREFIX=$HOME/sirikali -DQT5=true -DCMAKE_BUILD_TYPE=RELEASE . ..
-	# Compile using all available logical cores
+    # Compile using all available logical cores
 10. make -j$(sysctl -n hw.ncpu)
 11. make install
 12. "install" SiriKali by just dragging it (in the Finder) from the directory you
     compiled it in to the "Application" directory.
 
-Note: 
+Note:
 If you encounter errors such as:
 
 /usr/local/include/QtCore/qglobal.h:667:43: error: no template named 'is_arithmetic_v' in namespace 'std'; did you mean

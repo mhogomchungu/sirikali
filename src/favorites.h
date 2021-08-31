@@ -1,4 +1,4 @@
-﻿/*
+/*
  *
  *  Copyright ( c ) 2011-2015
  *  name : Francis Banyikwa

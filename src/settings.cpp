@@ -720,7 +720,7 @@ bool settings::startMinimized()
 
 		return m_settings.value( "StartMinimized" ).toBool() ;
 	}else{
-		bool s = false  ;
+		bool s = false ;
 
 		m_settings.setValue( "StartMinimized",s ) ;
 
@@ -973,7 +973,7 @@ void settings::autoMountBackEnd( const settings::walletBackEnd& e )
 
 			return "windows_DPAPI" ;
 		}else{
-			return "none" ;			
+			return "none" ;
 		}
 	}() ) ;
 }
