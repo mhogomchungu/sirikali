@@ -112,7 +112,7 @@ bool utility::platformIsOSX()
 
 bool utility::platformIsWindows()
 {
-    return false ;
+	return false ;
 }
 
 #endif

@@ -86,7 +86,7 @@ static engines::engine::BaseOptions _setOptions()
 encfs::encfs() :
 	engines::engine( _setOptions() ),
 	m_environment( engines::engine::getProcessEnvironment() )
-{	
+{
 }
 
 engines::engine::args encfs::command( const QByteArray& password,

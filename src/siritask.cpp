@@ -217,7 +217,7 @@ engines::engine::cmdStatus siritask::encryptedFolderUnMount( const siritask::unm
 
 		return s ;
 	}else{
-		return _unmount( { e.cipherFolder,e.mountPoint,e.engine,e.numberOfAttempts }  ) ;
+		return _unmount( { e.cipherFolder,e.mountPoint,e.engine,e.numberOfAttempts } ) ;
 	}
 }
 
@@ -526,7 +526,7 @@ static engines::engine::cmdStatus _create( const siritask::create& s )
 
 static void _warning( const QString& e )
 {
-	auto a = "ERROR!!\n " + e + "siritask::encryptedFolderMount is"  ;
+	auto a = "ERROR!!\n " + e + "siritask::encryptedFolderMount is" ;
 	auto b = "running from a background thread" ;
 
 	utility::debug() << a + b ;

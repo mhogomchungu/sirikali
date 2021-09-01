@@ -1,4 +1,4 @@
-﻿/*
+/*
  *
  *  Copyright (c) 2012-2015
  *  name : Francis Banyikwa
@@ -285,7 +285,7 @@ private slots:
 	void pbSetKeyKeyFile( void ) ;
 	void pbSetKey( void ) ;
 	void pbSetKeyCancel( void ) ;
-private :	
+private :
 	void key( void ) ;
 	void yubiKey( void ) ;
 	void secretStorage( void ) ;

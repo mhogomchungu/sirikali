@@ -229,7 +229,7 @@ int DialogMsg::ShowUIYesNo( const QString& title,const QString& msg )
 	return dialogok( m_parent,this,true,false,title,msg ).Show() ;
 }
 
-int  DialogMsg::ShowUIYesNoDefaultNo( const QString& title,const QString& msg )
+int DialogMsg::ShowUIYesNoDefaultNo( const QString& title,const QString& msg )
 {
 	return dialogok( m_parent,this,true,true,title,msg ).Show() ;
 }

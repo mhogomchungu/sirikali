@@ -1175,7 +1175,7 @@ void favorites2::updateFavorite( bool edit )
 
 	bool likeSsh = false ;
 
-	auto dev_path = [ & ](){		
+	auto dev_path = [ & ](){
 
 		if( type.isEmpty() ){
 
@@ -1407,7 +1407,7 @@ void favorites2::HideUI()
 }
 
 void favorites2::checkFavoritesConsistency()
-{	
+{
 }
 
 utility2::result_ref< const favorites::entry& > favorites2::getEntry( int row )

@@ -62,7 +62,7 @@ use a system installed version if found.
 -DNONETWORKSUPPORT=true
 This options tells the build process to add QNetwork support. Set this option to true if you do not want SiriKali to
 connect to the internet to check for backend updates. SiriKali will not automatically connect to the internet
-without user consent. This option was added because some versions of Qt crashes some  versions of gcc
+without user consent. This option was added because some versions of Qt crashes some versions of gcc
 when encountering QNetworkAccessManager class.
 
 Build errors/test failures/feature requests/recommendations can be reported at: https://github.com/mhogomchungu/SiriKali/issues
