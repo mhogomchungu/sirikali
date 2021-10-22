@@ -25,12 +25,12 @@ Below are instructions on how to build SiriKali on MacOS.
     #Alternative Gocryptfs install (reference - https://github.com/rfjakob/gocryptfs/issues/556#issuecomment-848076752)
     git clone https://github.com/rfjakob/gocryptfs.git
     cd gocryptfs; ./build-without-openssl.bash
-    
-6.  # Inside the directory of the cloned repository
-    mkdir build; cd build
 
-7.  # You need to specify the path to the qt5 you installed through homebrew:
+6.  # You need to specify the path to the qt5 you installed through homebrew:
     echo 'export PATH="/opt/homebrew/opt/qt@5/bin:$PATH"' >> ~/.zshrc/; source ~/.zshrc
+
+7.  # Create a build diretory and cd into it
+    mkdir build; cd build
 
 8.  # Then you'll be able to compile Sirikali to $HOME/sirikali
     cmake -DCMAKE_INSTALL_PREFIX=$HOME/sirikali -DQT5=true -DCMAKE_BUILD_TYPE=RELEASE . ..
