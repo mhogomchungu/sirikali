@@ -6,11 +6,8 @@ Below are instructions on how to build SiriKali on OSX.
     When you run git the first time on macOS, you will be
     prompted to install developer tools (which includes git) and be guided through it.
 2.  Install homebrew (https://brew.sh/)
-3.  Install dependencies with brew:
-3.1 brew install libgcrypt
-3.2 brew install qt5
-3.3 brew install pkg-config
-3.4 brew install cmake
+    # Install dependencies with brew:
+3   brew install libgcrypt qt5 pkg-config cmake
 
 4.  brew cask install osxfuse
     # for encfs support
