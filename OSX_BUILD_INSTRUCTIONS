@@ -27,7 +27,7 @@ Below are instructions on how to build SiriKali on OSX.
     # Inside the directory of the cloned repository
 6.  mkdir build; cd build
     # You need to specify the path to the qt5 you installed through homebrew:
-7.  export CMAKE_PREFIX_PATH=/usr/local/opt/qt5/
+7.  echo 'export PATH="/opt/homebrew/opt/qt@5/bin:$PATH"' >> ~/.zshrc/; source ~/.zshrc
     # Then you'll be able to compile Sirikali to $HOME/sirikali
 8.  cmake -DCMAKE_INSTALL_PREFIX=$HOME/sirikali -DQT5=true -DCMAKE_BUILD_TYPE=RELEASE . ..
 	# Compile using all available logical cores
