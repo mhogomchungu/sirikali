@@ -15,8 +15,15 @@ Below are instructions on how to build SiriKali on OSX.
     # for securefs support
 5.2 brew install securefs
     # for gocryptfs support
-5.3 brew install gocryptfs
+5.3 ~~brew install gocryptfs~~ -- Not supported by homebrew since gocryptfs relies on Macfuse which is no longer open source
 
+    # Install Macfuse (yep there's a cask of it, but no formula)
+    brew install --cask macfuse
+
+    #Alternative Gocryptfs install (reference - https://github.com/rfjakob/gocryptfs/issues/556#issuecomment-848076752)
+    git clone https://github.com/rfjakob/gocryptfs.git
+    cd gocryptfs; ./build-without-openssl.bash
+    
     # Inside the directory of the cloned repository
 6.  mkdir build; cd build
     # You need to specify the path to the qt5 you installed through homebrew:
