@@ -18,16 +18,15 @@ Below are instructions on how to build SiriKali on OSX.
 5.3 brew install gocryptfs
 
     # Inside the directory of the cloned repository
-6.  mkdir build
-7.  cd build
+6.  mkdir build; cd build
     # You need to specify the path to the qt5 you installed through homebrew:
-8.  export CMAKE_PREFIX_PATH=/usr/local/opt/qt5/
+7.  export CMAKE_PREFIX_PATH=/usr/local/opt/qt5/
     # Then you'll be able to compile Sirikali to $HOME/sirikali
-9.  cmake -DCMAKE_INSTALL_PREFIX=$HOME/sirikali -DQT5=true -DCMAKE_BUILD_TYPE=RELEASE . ..
+8.  cmake -DCMAKE_INSTALL_PREFIX=$HOME/sirikali -DQT5=true -DCMAKE_BUILD_TYPE=RELEASE . ..
 	# Compile using all available logical cores
-10. make -j$(sysctl -n hw.ncpu)
-11. make install
-12. "install" SiriKali by just dragging it (in the Finder) from the directory you
+9. make -j$(sysctl -n hw.ncpu)
+10. make install
+11. "install" SiriKali by just dragging it (in the Finder) from the directory you
     compiled it in to the "Application" directory.
 
 *****************************************************************************************************
