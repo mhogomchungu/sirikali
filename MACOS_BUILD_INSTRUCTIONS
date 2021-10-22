@@ -1,41 +1,47 @@
 
-Below are instructions on how to build SiriKali on OSX.
+Below are instructions on how to build SiriKali on MacOS.
 
 1.  Clone SiriKali repository with the following command:
-    "git clone https://github.com/mhogomchungu/sirikali.git"
-    When you run git the first time on macOS, you will be
-    prompted to install developer tools (which includes git) and be guided through it.
+    git clone https://github.com/mhogomchungu/sirikali.git
+
+    When you run git the first time on MacOS, you will be prompted to install developer tools (which includes git) and be guided through it.
+
 2.  Install homebrew (https://brew.sh/)
-    # Install dependencies with brew:
-3   brew install libgcrypt qt5 pkg-config cmake
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-4.  brew cask install osxfuse
-    # for encfs support
-5.1 brew install encfs
-    # for securefs support
-5.2 brew install securefs
-    # for gocryptfs support
-5.3 ~~brew install gocryptfs~~ -- Not supported by homebrew since gocryptfs relies on Macfuse which is no longer open source
+3.  # Install dependencies with brew:
+    brew install libgcrypt qt5 pkg-config cmake
 
-    # Install Macfuse (yep there's a cask of it, but no formula)
+4.  # Install Macfuse
     brew install --cask macfuse
+
+5.1 # for encfs support
+    brew install encfs
+5.2 # for securefs support
+    brew install securefs
+5.3 # for gocryptfs support
+    'brew install' not supported by homebrew since gocryptfs relies on Macfuse which is no longer open source
 
     #Alternative Gocryptfs install (reference - https://github.com/rfjakob/gocryptfs/issues/556#issuecomment-848076752)
     git clone https://github.com/rfjakob/gocryptfs.git
     cd gocryptfs; ./build-without-openssl.bash
     
-    # Inside the directory of the cloned repository
-6.  mkdir build; cd build
-    # You need to specify the path to the qt5 you installed through homebrew:
-7.  echo 'export PATH="/opt/homebrew/opt/qt@5/bin:$PATH"' >> ~/.zshrc/; source ~/.zshrc
-    # Then you'll be able to compile Sirikali to $HOME/sirikali
-<<<<<<< HEAD
-8.  cmake -DCMAKE_INSTALL_PREFIX=$HOME/sirikali -DQT5=true -DCMAKE_BUILD_TYPE=RELEASE . ..
-    # Compile using all available logical cores
-9.  make -j$(sysctl -n hw.ncpu)
-10. make install
-11. "install" SiriKali by just dragging it (in the Finder) from the directory you
-    compiled it in to the "Application" directory.
+6.  # Inside the directory of the cloned repository
+    mkdir build; cd build
+
+7.  # You need to specify the path to the qt5 you installed through homebrew:
+    echo 'export PATH="/opt/homebrew/opt/qt@5/bin:$PATH"' >> ~/.zshrc/; source ~/.zshrc
+
+8.  # Then you'll be able to compile Sirikali to $HOME/sirikali
+    cmake -DCMAKE_INSTALL_PREFIX=$HOME/sirikali -DQT5=true -DCMAKE_BUILD_TYPE=RELEASE . ..
+
+9.  # Compile using all available logical cores
+    make -j$(sysctl -n hw.ncpu)
+
+10. # Run make install
+    make install
+
+11. "install" SiriKali by just dragging it (in the Finder) from the directory you compiled it in to the "Application" directory.
 
 Note:
 If you encounter errors such as:
