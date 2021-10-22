@@ -37,7 +37,7 @@ encfscreateoptions::encfscreateoptions( const engines::engine::createGUIOptions&
 	connect( m_ui->pbOK,SIGNAL( clicked() ),this,SLOT( pbOK() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 
-	m_ui->plainTextEdit->appendPlainText( tr( "Normally EncFS provides a plaintext view of data on demand: it stores enciphered data and displays plaintext data.  With this option set, it takes as source plaintext data and produces enciphered data on-demand. This can be useful for creating remote encrypted backups, where you do not wish to keep the local files unencrypted." ) ) ;
+	m_ui->plainTextEdit->appendPlainText( tr( "Normally EncFS provides a plaintext view of data on demand: it stores enciphered data and displays plaintext data. With this option set, it takes as source plaintext data and produces enciphered data on-demand. This can be useful for creating remote encrypted backups, where you do not wish to keep the local files unencrypted." ) ) ;
 
 	this->show() ;
 }

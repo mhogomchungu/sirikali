@@ -101,7 +101,7 @@ static result _read( QProcess& exe,const engines::engine& engine,Function functi
 				break ;
 			}
 		}
-	}	
+	}
 
 	return { r,std::move( m ) } ;
 }

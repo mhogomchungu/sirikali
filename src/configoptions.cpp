@@ -1,4 +1,4 @@
-﻿/*
+/*
  *
  *  Copyright (c) 2017
  *  name : Francis Banyikwa
@@ -67,7 +67,7 @@ configOptions::configOptions( QWidget * parent,
 	connect( m_ui->cbAutoCheckForUpdates,&QCheckBox::toggled,[ this ]( bool e ){
 
 		m_settings.autoCheck( e ) ;
-	} ) ;	
+	} ) ;
 
 	connect( m_ui->cbStartMinimized,&QCheckBox::toggled,[ this ]( bool e ){
 

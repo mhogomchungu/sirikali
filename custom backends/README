@@ -1,7 +1,7 @@
 
 To create a custom backend using a GUI, press "CTRL+B" while SiriKali has focus to
-get a GUI window that will allow you to create a custom backend confuguration file.
-The file will be created in user's home folder in Linux and Macos in user's desktop
+get a GUI window that will allow you to create a custom backend configuration file.
+The file will be created in user's home folder in Linux and macOS in user's desktop
 folder in Windows.
 
 Manual changes to the configuration file may be necessary to further customise

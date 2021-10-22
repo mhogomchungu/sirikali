@@ -1,4 +1,4 @@
-﻿/*
+/*
  *
  *  Copyright (c) 2012-2015
  *  name : Francis Banyikwa
@@ -540,8 +540,8 @@ void sirikali::showTrayIcon()
 			}else if( counter == 5 ){
 
 				/*
-				 * The tray doesnt seem to be ready yet but we cant wait any
-				 * longer,just display it and hope for the best.
+				 * The tray doesn't seem to be ready yet but we cant wait any
+				 * longer, just display it and hope for the best.
 				 */
 
 				utility::debug() << "TimeOut Waiting For System Tray to Become Available" ;

@@ -1,4 +1,4 @@
-﻿/*
+/*
  *
  *  Copyright (c) 2012-2015
  *  name : Francis Banyikwa
@@ -220,8 +220,8 @@ void keyDialog::setUpInitUI()
 	if( utility::platformIsWindows() ){
 
 		/*
-		 * We are diabling this functionality on windows for now
-		 * its currently not possible to open a volume in read only mode.
+		 * We are disabling this functionality on windows for now
+		 * it's currently not possible to open a volume in read only mode.
 		 */
 		m_ui->checkBoxOpenReadOnly->setChecked( false ) ;
 		m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
@@ -475,7 +475,7 @@ void keyDialog::setUpVolumeProperties( const keyDialog::entry& ee )
 	const auto& e      = ee.volEntry.favorite() ;
 	m_path             = e.volumePath ;
 	m_mountOptions     = e ;
-	m_favoriteReadOnly = e.readOnlyMode ;	
+	m_favoriteReadOnly = e.readOnlyMode ;
 
 	if( m_favoriteReadOnly.defined() ){
 
@@ -772,7 +772,7 @@ void keyDialog::textChanged( QString e )
 
 	m_ui->lineEditMountPoint->setText( e ) ;
 
-	auto r =  m_ui->lineEditFolderPath->text() ;
+	auto r = m_ui->lineEditFolderPath->text() ;
 
 	auto l = r.lastIndexOf( '/' ) ;
 
@@ -814,7 +814,7 @@ void keyDialog::enableAll()
 {
 	m_ui->pbMountPoint->setEnabled( true ) ;
 	m_ui->pbMountPoint_1->setEnabled( true ) ;
-        m_ui->pbOptions->setEnabled( true ) ;
+	m_ui->pbOptions->setEnabled( true ) ;
 	m_ui->label_2->setEnabled( true ) ;
 	m_ui->pbOpenFolderPath->setEnabled( true ) ;
 	m_ui->pbCancel->setEnabled( true ) ;
@@ -1011,7 +1011,7 @@ void keyDialog::pbOpen()
 			}
 		}else{
 			/*
-			 * We shouldnt get here
+			 * We shouldn't get here
 			 */
 			return this->openVolume() ;
 		}
@@ -1067,7 +1067,7 @@ void keyDialog::reportErrorMessage( const engines::engine::cmdStatus& s )
 
 			m_ui->checkBoxOpenReadOnly->setChecked( false ) ;
 		}
-	}	
+	}
 
 	this->showErrorMessage( s ) ;
 }

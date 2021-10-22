@@ -29,16 +29,26 @@ Below are instructions on how to build SiriKali on OSX.
     # You need to specify the path to the qt5 you installed through homebrew:
 7.  echo 'export PATH="/opt/homebrew/opt/qt@5/bin:$PATH"' >> ~/.zshrc/; source ~/.zshrc
     # Then you'll be able to compile Sirikali to $HOME/sirikali
+<<<<<<< HEAD
 8.  cmake -DCMAKE_INSTALL_PREFIX=$HOME/sirikali -DQT5=true -DCMAKE_BUILD_TYPE=RELEASE . ..
-	# Compile using all available logical cores
-9. make -j$(sysctl -n hw.ncpu)
+    # Compile using all available logical cores
+9.  make -j$(sysctl -n hw.ncpu)
 10. make install
 11. "install" SiriKali by just dragging it (in the Finder) from the directory you
     compiled it in to the "Application" directory.
 
+Note:
+If you encounter errors such as:
+
+/usr/local/include/QtCore/qglobal.h:667:43: error: no template named 'is_arithmetic_v' in namespace 'std'; did you mean
+      'is_arithmetic'?
+         typename = std::enable_if_t<std::is_arithmetic_v<T> && std::is_arithmetic_v<U> &&
+
+You will need to unlink QT6 to get things to compile: brew unlink qt6
+
 *****************************************************************************************************
 
-available build options:
+Available build options:
 
 -DCMAKE_INSTALL_PREFIX=$HOME/sirikali
 This option tells the build process to install project's files in "$HOME/sirikali".

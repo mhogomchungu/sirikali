@@ -75,7 +75,7 @@ static QStringList _search_path( const QStringList& m )
 
 	if( utility::platformIsWindows() ){
 
-		auto x = _search_path_0( a  + "\\bin\\" ) ;
+		auto x = _search_path_0( a + "\\bin\\" ) ;
 		x += _search_path_0( QDir().currentPath() ) ;
 		x += _search_path_0( settings::instance().windowsExecutableSearchPath() + "\\" ) ;
 
@@ -348,7 +348,7 @@ static QStringList _resolve( const resolveStruct& r )
 
 	_replace_opts( mm,"%{cipherFolder}",[ & ]( replace s ){
 
-		s.set( r.args.cipherFolder )  ;
+		s.set( r.args.cipherFolder ) ;
 	} ) ;
 
 	_replace_opts( mm,"%{mountPoint}",[ & ]( replace s ){
@@ -566,7 +566,7 @@ const QProcessEnvironment& engines::engine::getProcessEnvironment() const
 	return m_processEnvironment ;
 }
 
-utility2::LOGLEVEL engines::engine::allowLogging(  const QStringList& args ) const
+utility2::LOGLEVEL engines::engine::allowLogging( const QStringList& args ) const
 {
 	Q_UNUSED( args )
 	return utility2::LOGLEVEL::COMMAND_AND_UNLOCK_DURATION ;
@@ -714,7 +714,7 @@ engines::engine::terminateProcess( const engines::engine::terminate_process& e )
 		}else{
 			return _failed_to_finish( std::move( exe ),std::move( args ) ) ;
 		}
-	}	
+	}
 
 	utility::logger logger ;
 
@@ -1555,7 +1555,7 @@ engines::engine::ownsCipherFolder engines::engine::ownsCipherPath( const QString
 		if( _found( this->configFileNames(),ee ) ){
 
 			return { true,cipherPath,configFilePath } ;
-		}else{			
+		}else{
 			auto a = "[[[" + this->name() + "]]]" ;
 
 			if( configFilePath.startsWith( a ) ){
@@ -1974,7 +1974,7 @@ engines::engine::args::args( const engines::engine::cmdArgsList& m,
 			     const QStringList& l ) :
 	cmd( c ),
 	cipherPath( m.cipherFolder ),
-	mountPath( m.mountPoint ),	
+	mountPath( m.mountPoint ),
 	mode( s.mode() ),
 	subtype( s.subType() ),
 	cmd_args( l ),
@@ -2264,7 +2264,7 @@ void engines::booleanCache::silenceWarning()
 }
 
 void engines::exeFullPath::silenceWarning()
-{	
+{
 }
 
 template< typename ... T >

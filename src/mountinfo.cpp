@@ -1,4 +1,4 @@
-﻿/*
+/*
  *
  *  Copyright (c) 2012-2015
  *  name : Francis Banyikwa
@@ -460,7 +460,7 @@ void mountinfo::linuxMonitor()
 			}else if( a == 0 ){
 
 				/*
-				 * Timout has occurred
+				 * Timeout has occurred
 				 */
 			}else{
 				m_debug( "Warning: pollMonitor.poll failed" ) ;
