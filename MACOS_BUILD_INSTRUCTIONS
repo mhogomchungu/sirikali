@@ -1,0 +1,83 @@
+
+Below are instructions on how to build SiriKali on MacOS.
+
+1.  Clone SiriKali repository with the following command:
+    git clone https://github.com/mhogomchungu/sirikali.git
+
+    When you run git the first time on MacOS, you will be prompted to install developer tools (which includes git) and be guided through it.
+
+2.  Install homebrew (https://brew.sh/)
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+3.  # Install dependencies with brew:
+    brew install libgcrypt qt5 pkg-config cmake
+
+4.  # Install Macfuse
+    brew install --cask macfuse
+
+5.  If your chosen encrypted filesystem is not installed select one (or more) of the following: 
+5.1 # Encfs support
+    brew install encfs
+5.2 # Securefs support
+    brew install securefs
+5.3 # Gocryptfs support
+    'brew install' not supported by homebrew since gocryptfs relies on Macfuse which is no longer open source
+
+    # Alternative Gocryptfs install (reference - https://github.com/rfjakob/gocryptfs/issues/556#issuecomment-848076752)
+    brew install go
+
+    git clone https://github.com/rfjakob/gocryptfs.git
+    cd gocryptfs; ./build-without-openssl.bash
+    
+    # Ensure SiriKali can find gocryptfs (due to Go setting ~/go as $gopath environment variable) 
+    sudo ln -s ~/go/bin/gocryptfs /opt/local/bin
+
+    # Back to SiriKali directory
+    cd ..
+
+6.  # You need to specify the path to the qt5 you installed through homebrew:
+    echo 'export PATH="/opt/homebrew/opt/qt@5/bin:$PATH"' >> ~/.zshrc/; source ~/.zshrc
+
+7.  # Create a build diretory and cd into it
+    mkdir build; cd build
+
+8.  # Then you'll be able to compile Sirikali to $HOME/sirikali
+    cmake -DCMAKE_INSTALL_PREFIX=$HOME/sirikali -DQT5=true -DCMAKE_BUILD_TYPE=RELEASE . ..
+
+9.  # Compile using all available logical cores
+    make -j$(sysctl -n hw.ncpu)
+
+10. # Run make install
+    make install
+
+11. "install" SiriKali by just dragging it (in the Finder) from the directory you compiled it in to the "Application" directory.
+
+Note:
+If you encounter errors such as:
+
+/usr/local/include/QtCore/qglobal.h:667:43: error: no template named 'is_arithmetic_v' in namespace 'std'; did you mean
+      'is_arithmetic'?
+         typename = std::enable_if_t<std::is_arithmetic_v<T> && std::is_arithmetic_v<U> &&
+
+You will need to unlink QT6 to get things to compile: brew unlink qt6
+
+*****************************************************************************************************
+
+Available build options:
+
+-DCMAKE_INSTALL_PREFIX=$HOME/sirikali
+This option tells the build process to install project's files in "$HOME/sirikali".
+
+This option tells the build process to build the project in release mode.This mode is most suitable for non developers.
+
+-DNOSECRETSUPPORT=false
+This option tells the build process to add gnome's libsecret secure storage of passwords.Set this option to "true" if
+you do not want libsecret's support.
+
+-DINTERNAL_LXQT_WALLET=false
+This project depends on lxqt_wallet project and it ships with an internal copy of the project. Set this option to "true"
+if you want SiriKali to unconditionally use the internal copy of the project or to "false" to make the build process
+use a system installed version if found.
+
+Build errors/test failures/feature requests/recommendations can be reported at: https://github.com/mhogomchungu/SiriKali/issues
+or using my private email address at: mhogomchungu@gmail.com
