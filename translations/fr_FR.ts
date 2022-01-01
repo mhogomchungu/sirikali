@@ -248,7 +248,8 @@ clé = hmac_sha256(mot de passe,contenu du fichier de clé)</translation>
         <location filename="../src/engines.cpp" line="1734"/>
         <source>Failed To Unlock &quot;%1&quot; Volume.
 Wrong Password Entered.</source>
-        <translation type="unfinished"></translation>
+        <translation>Echec du déchiffrement du volume &quot;%1&quot;.
+Mot de passe erroné.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="1754"/>
@@ -303,7 +304,8 @@ Testez l&apos;option &quot;Remplacer le système de fichiers&quot; et déchiffre
         <location filename="../src/engines.cpp" line="1786"/>
         <source>Failed To Complete The Request.
 Java Executable Could Not Be Found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Echec de l&apos;aboutissement de la requête.
+L&apos;exécutable Java n&apos;a pas été trouvé.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="1782"/>
@@ -332,7 +334,7 @@ Volume non supporté rencontré.</translation>
     <message>
         <location filename="../src/engines.cpp" line="1802"/>
         <source>Backend Requires Atleast Version &quot;%1&quot; Of SiriKali.</source>
-        <translation type="unfinished"></translation>
+        <translation>Le programme nécessite au moins la version &quot;%1&quot; de Sirikali.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="1812"/>
@@ -1727,27 +1729,27 @@ Mettre la clé de volume à ajouter dans le trousseau avant le montage.</transla
     <message>
         <location filename="../src/keydialog.cpp" line="1949"/>
         <source>Internal Wallet</source>
-        <translation type="unfinished">Trousseau interne</translation>
+        <translation>Trousseau interne</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1954"/>
         <source>Gnome Wallet</source>
-        <translation type="unfinished">Trousseau Gnome</translation>
+        <translation>Trousseau Gnome</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1959"/>
         <source>Kde Wallet</source>
-        <translation type="unfinished">Trousseau Kde</translation>
+        <translation>Trousseau Kde</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1964"/>
         <source>OSX KeyChain</source>
-        <translation type="unfinished">Porte clés OSX</translation>
+        <translation>Porte clés OSX</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1969"/>
         <source>Windows DPAPI</source>
-        <translation type="unfinished">Windows DPAPI</translation>
+        <translation>Windows DPAPI</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1244"/>
@@ -2184,7 +2186,8 @@ Le &quot;format allégé&quot; est devenu le mode par défaut des systèmes bas�
         <location filename="../src/sirikali.cpp" line="313"/>
         <source>Close The Following File System(s) Before Quitting The Application
 &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Fermer le(s) système(s) de fichier suivant avant de quitter l&apos;application
+&quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="415"/>
