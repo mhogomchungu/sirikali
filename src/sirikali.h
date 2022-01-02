@@ -80,6 +80,7 @@ public:
 	static int unlockVolume( const QStringList&,secrets& ) ;
 
 	sirikali( const QStringList& ) ;
+	void start() ;
 	~sirikali() ;
 private slots:
 	void addToFavorites( void ) ;
@@ -89,7 +90,6 @@ private slots:
 	void FAQ( void ) ;
 	void hideWindow( void ) ;
 	void setUpApp( const QString& ) ;
-	void start() ;
 	void autoUpdateCheck( void ) ;
 	void volumeProperties() ;
 	void genericVolumeProperties( void ) ;
@@ -293,6 +293,27 @@ private:
 		int m_token = -1 ;
 		bool m_allowEnableAll = true ;
 	} m_allowEnableAll ;
+};
+
+class starter : public QObject
+{
+	Q_OBJECT
+public:
+	starter( const QStringList& args ) : m_args( args )
+	{
+	}
+	~starter()
+	{
+	}
+private slots :
+	void start()
+	{
+		m_sirikali = std::make_unique< sirikali >( m_args ) ;
+		m_sirikali->start() ;
+	}
+private:
+	const QStringList& m_args ;
+	std::unique_ptr< sirikali > m_sirikali ;
 };
 
 #endif // MAINWINDOW_H
