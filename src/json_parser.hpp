@@ -34,6 +34,7 @@ public:
 	using function = std::function< void( const QString& ) > ;
 
 	SirikaliJson( function log = []( const QString& e ){ Q_UNUSED( e ) } ) :
+		m_passed( true ),
 		m_log( std::move( log ) )
 	{
 	}
