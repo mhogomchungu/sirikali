@@ -940,6 +940,21 @@ bool settings::autoMountFavoritesOnStartUp()
 	}
 }
 
+bool settings::useDarkMode()
+{
+	if( !m_settings.contains( "UseDarkMode" ) ){
+
+		m_settings.setValue( "UseDarkMode",false ) ;
+	}
+
+	return m_settings.value( "UseDarkMode" ).toBool() ;
+}
+
+void settings::useDarkMode( bool e )
+{
+	m_settings.setValue( "UseDarkMode",e ) ;
+}
+
 void settings::autoMountFavoritesOnStartUp( bool e )
 {
 	m_settings.setValue( "AutoMountFavoritesOnStartUp",e ) ;

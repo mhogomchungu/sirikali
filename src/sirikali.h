@@ -79,7 +79,7 @@ public:
 	static int run( const QStringList&,int argc,char * argv[] ) ;
 	static int unlockVolume( const QStringList&,secrets& ) ;
 
-	sirikali( const QStringList& ) ;
+	sirikali( const QStringList&,QApplication& ) ;
 	void start() ;
 	~sirikali() ;
 private slots:
@@ -210,6 +210,8 @@ private:
 
 	engines::engine::cmdStatus unMountVolume( const sirikali::mountedEntry&,bool = false ) ;
 
+	QApplication& m_app ;
+
 	Ui::sirikali * m_ui = nullptr ;
 
 	debugWindow m_debugWindow ;
@@ -299,7 +301,7 @@ class starter : public QObject
 {
 	Q_OBJECT
 public:
-	starter( const QStringList& args ) : m_args( args )
+	starter( const QStringList& args,QApplication& app ) : m_args( args ),m_app( app )
 	{
 	}
 	~starter()
@@ -308,11 +310,12 @@ public:
 private slots :
 	void start()
 	{
-		m_sirikali = std::make_unique< sirikali >( m_args ) ;
+		m_sirikali = std::make_unique< sirikali >( m_args,m_app ) ;
 		m_sirikali->start() ;
 	}
 private:
 	const QStringList& m_args ;
+	QApplication& m_app ;
 	std::unique_ptr< sirikali > m_sirikali ;
 };
 

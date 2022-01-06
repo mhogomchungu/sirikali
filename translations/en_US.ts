@@ -94,53 +94,53 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="1726"/>
+        <location filename="../src/engines.cpp" line="1732"/>
         <source>Volume Created Successfully.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="1730"/>
+        <location filename="../src/engines.cpp" line="1736"/>
         <source>Backend Requires A Password.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="1742"/>
+        <location filename="../src/engines.cpp" line="1748"/>
         <source>Backend Requires Polkit Support and SiriKali Failed To Start It.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="1746"/>
+        <location filename="../src/engines.cpp" line="1752"/>
         <source>A Space Character Is Not Allowed In Paths When Using Ecryptfs Backend And Polkit.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="1722"/>
+        <location filename="../src/engines.cpp" line="1728"/>
         <source>Failed To Unmount %1 Volume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="1738"/>
+        <location filename="../src/engines.cpp" line="1744"/>
         <source>This Fscrypt Volume Requires A KeyFile.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="1750"/>
+        <location filename="../src/engines.cpp" line="1756"/>
         <source>Backend Does Not Support Custom Configuration File Path.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="1754"/>
+        <location filename="../src/engines.cpp" line="1760"/>
         <source>Failed To Complete The Request.
 %1 Executable Could Not Be Found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="1758"/>
+        <location filename="../src/engines.cpp" line="1764"/>
         <source>Something Is Wrong With The Backend And It Took Too Long To Respond.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="1762"/>
+        <location filename="../src/engines.cpp" line="1768"/>
         <source>This Volume Of Cryfs Needs To Be Upgraded To Work With The Version Of Cryfs You Are Using.
 
 The Upgrade is IRREVERSIBLE And The Volume Will No Longer Work With Older Versions of Cryfs.
@@ -149,92 +149,92 @@ To Do The Upgrade, Check The &quot;Upgrade File System&quot; Option And Unlock T
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="1766"/>
+        <location filename="../src/engines.cpp" line="1772"/>
         <source>This Volume Of Cryfs Is Different From The Known One.
 
 Check The &quot;Replace File System&quot; Option And Unlock The Volume Again To Replace The Previous File System.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="1770"/>
+        <location filename="../src/engines.cpp" line="1776"/>
         <source>Atleast Version 0.9.9 Of Cryfs Is Required To Be Able To Upgrade A Volume and Installed Version Is &quot;%1&quot;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="1774"/>
+        <location filename="../src/engines.cpp" line="1780"/>
         <source>Mount Point Folder Path Must Reside In An NTFS FileSystem.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="1778"/>
+        <location filename="../src/engines.cpp" line="1784"/>
         <source>Mount Point Folder Path Is Not Empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="1786"/>
+        <location filename="../src/engines.cpp" line="1792"/>
         <source>Failed To Complete The Request.
 Java Executable Could Not Be Found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="1782"/>
+        <location filename="../src/engines.cpp" line="1788"/>
         <source>Failed To Complete The Request.
 Ecryptfs-simple Executable Could Not Be Found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="1734"/>
+        <location filename="../src/engines.cpp" line="1740"/>
         <source>Failed To Unlock &quot;%1&quot; Volume.
 Wrong Password Entered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="1790"/>
+        <location filename="../src/engines.cpp" line="1796"/>
         <source>Failed To Create Mount Point.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="1794"/>
+        <location filename="../src/engines.cpp" line="1800"/>
         <source>Backend Could Not Load WinFsp. Please Make Sure You Have WinFsp Properly Installed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="1798"/>
+        <location filename="../src/engines.cpp" line="1804"/>
         <source>Failed To Unlock The Volume.
 Not Supported Volume Encountered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="1802"/>
+        <location filename="../src/engines.cpp" line="1808"/>
         <source>Backend Requires Atleast Version &quot;%1&quot; Of SiriKali.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="1812"/>
+        <location filename="../src/engines.cpp" line="1818"/>
         <source>Installed &quot;%1&quot; Version Is Too Old.
  Please Update To Atleast Version %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="1817"/>
+        <location filename="../src/engines.cpp" line="1823"/>
         <source>Folder Not Fully Locked Because Some Files Are Still In Use.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="1827"/>
+        <location filename="../src/engines.cpp" line="1833"/>
         <source>Invalid Config File Name.
 Its Name Must End With &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="1830"/>
+        <location filename="../src/engines.cpp" line="1836"/>
         <source>Invalid Config File Name.
 It Must End With One Of The Following:
 &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="1838"/>
+        <location filename="../src/engines.cpp" line="1846"/>
         <source>Failed To Complete The Task And Below Log was Generated By The Backend.
 </source>
         <translation type="unfinished"></translation>
@@ -259,7 +259,7 @@ key = hmac_sha256(password,keyfile contents)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="529"/>
+        <location filename="../src/utility.cpp" line="528"/>
         <source>
 options:
 	-d   Path to where a volume to be auto unlocked/mounted is located.
@@ -288,17 +288,17 @@ options:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="690"/>
+        <location filename="../src/utility.cpp" line="689"/>
         <source>about SiriKali</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="1262"/>
+        <location filename="../src/utility.cpp" line="1261"/>
         <source>Policy:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/utility.cpp" line="1267"/>
+        <location filename="../src/utility.cpp" line="1266"/>
         <source>Comment:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -308,47 +308,47 @@ options:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="547"/>
+        <location filename="../src/settings.cpp" line="580"/>
         <source>Manage Favorites</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="548"/>
+        <location filename="../src/settings.cpp" line="581"/>
         <source>Mount All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1245"/>
+        <location filename="../src/settings.cpp" line="1293"/>
         <source>Russian (RU)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1246"/>
+        <location filename="../src/settings.cpp" line="1294"/>
         <source>French (FR)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1247"/>
+        <location filename="../src/settings.cpp" line="1295"/>
         <source>German (DE)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1248"/>
+        <location filename="../src/settings.cpp" line="1296"/>
         <source>English (US)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1249"/>
+        <location filename="../src/settings.cpp" line="1297"/>
         <source>Swedish (SE)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1250"/>
+        <location filename="../src/settings.cpp" line="1298"/>
         <source>Arabic (SA)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1251"/>
+        <location filename="../src/settings.cpp" line="1299"/>
         <source>Spanish (MX)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -363,17 +363,17 @@ options:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines/cryfs.cpp" line="225"/>
+        <location filename="../src/engines/cryfs.cpp" line="233"/>
         <source>Allow Replaced File System</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines/fscrypt.cpp" line="532"/>
+        <location filename="../src/engines/fscrypt.cpp" line="574"/>
         <source>Unlock Fscrypt Volume With A Specified 32 Byte(256-Bit) KeyFile.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="760"/>
+        <location filename="../src/favorites2.cpp" line="770"/>
         <source>The Password Is &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -511,18 +511,18 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/configoptions.ui" line="377"/>
-        <location filename="../src/configoptions.cpp" line="156"/>
+        <location filename="../src/configoptions.ui" line="406"/>
+        <location filename="../src/configoptions.cpp" line="161"/>
         <source>Set External Plugin Executable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/configoptions.ui" line="396"/>
+        <location filename="../src/configoptions.ui" line="425"/>
         <source>Set Command To Run After Mount</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/configoptions.ui" line="435"/>
+        <location filename="../src/configoptions.ui" line="464"/>
         <source>Set Command To Run Before UnMount</source>
         <translation type="unfinished"></translation>
     </message>
@@ -548,64 +548,69 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/configoptions.ui" line="284"/>
+        <location filename="../src/configoptions.ui" line="304"/>
+        <source>Use Dark Theme(Restarting Required)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/configoptions.ui" line="313"/>
         <source>External Commands</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/configoptions.ui" line="296"/>
+        <location filename="../src/configoptions.ui" line="325"/>
         <source>Set File Manager</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/configoptions.ui" line="345"/>
+        <location filename="../src/configoptions.ui" line="374"/>
         <source>Set Mount Point Prefix</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/configoptions.ui" line="480"/>
+        <location filename="../src/configoptions.ui" line="509"/>
         <source>Set Command To Run Periodically</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/configoptions.ui" line="532"/>
+        <location filename="../src/configoptions.ui" line="561"/>
         <source>Interval In Minutes Periodic Command Will Run</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/configoptions.ui" line="577"/>
-        <location filename="../src/configoptions.ui" line="593"/>
-        <location filename="../src/configoptions.ui" line="609"/>
-        <location filename="../src/configoptions.ui" line="625"/>
-        <location filename="../src/configoptions.ui" line="641"/>
-        <location filename="../src/configoptions.ui" line="657"/>
+        <location filename="../src/configoptions.ui" line="606"/>
+        <location filename="../src/configoptions.ui" line="622"/>
+        <location filename="../src/configoptions.ui" line="638"/>
+        <location filename="../src/configoptions.ui" line="654"/>
+        <location filename="../src/configoptions.ui" line="670"/>
+        <location filename="../src/configoptions.ui" line="686"/>
         <source>Set To Default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/configoptions.ui" line="675"/>
+        <location filename="../src/configoptions.ui" line="704"/>
         <source>&amp;Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/configoptions.cpp" line="79"/>
-        <location filename="../src/configoptions.cpp" line="225"/>
+        <location filename="../src/configoptions.cpp" line="84"/>
+        <location filename="../src/configoptions.cpp" line="230"/>
         <source>Set Executables Search Path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/configoptions.cpp" line="116"/>
+        <location filename="../src/configoptions.cpp" line="121"/>
         <source>Set Post Mount Command</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/configoptions.cpp" line="126"/>
-        <location filename="../src/configoptions.cpp" line="136"/>
+        <location filename="../src/configoptions.cpp" line="131"/>
+        <location filename="../src/configoptions.cpp" line="141"/>
         <source>Set Pre UnMount Command</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/configoptions.cpp" line="146"/>
+        <location filename="../src/configoptions.cpp" line="151"/>
         <source>Set Command To Open Mount Points</source>
         <translation type="unfinished"></translation>
     </message>
@@ -770,7 +775,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/engines/encfscreateoptions.cpp" line="40"/>
-        <source>Normally EncFS provides a plaintext view of data on demand: it stores enciphered data and displays plaintext data.  With this option set, it takes as source plaintext data and produces enciphered data on-demand. This can be useful for creating remote encrypted backups, where you do not wish to keep the local files unencrypted.</source>
+        <source>Normally EncFS provides a plaintext view of data on demand: it stores enciphered data and displays plaintext data. With this option set, it takes as source plaintext data and produces enciphered data on-demand. This can be useful for creating remote encrypted backups, where you do not wish to keep the local files unencrypted.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -803,13 +808,13 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="145"/>
-        <location filename="../src/favorites2.cpp" line="1478"/>
+        <location filename="../src/favorites2.cpp" line="1489"/>
         <source>Config File Path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="177"/>
-        <location filename="../src/favorites2.cpp" line="1479"/>
+        <location filename="../src/favorites2.cpp" line="1490"/>
         <source>Idle Time Out</source>
         <translation type="unfinished"></translation>
     </message>
@@ -825,25 +830,25 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="309"/>
-        <location filename="../src/favorites2.ui" line="897"/>
+        <location filename="../src/favorites2.ui" line="913"/>
         <source>PreMount Command</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="328"/>
-        <location filename="../src/favorites2.ui" line="916"/>
+        <location filename="../src/favorites2.ui" line="932"/>
         <source>PostMount Command</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="347"/>
-        <location filename="../src/favorites2.ui" line="935"/>
+        <location filename="../src/favorites2.ui" line="951"/>
         <source>PreUnMount Command</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="366"/>
-        <location filename="../src/favorites2.ui" line="954"/>
+        <location filename="../src/favorites2.ui" line="970"/>
         <source>PostUnMount Command</source>
         <translation type="unfinished"></translation>
     </message>
@@ -863,34 +868,34 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="796"/>
-        <location filename="../src/favorites2.cpp" line="1574"/>
+        <location filename="../src/favorites2.ui" line="812"/>
+        <location filename="../src/favorites2.cpp" line="1585"/>
         <source>Reverse Mode (Gocryptfs and Encfs Only)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="764"/>
+        <location filename="../src/favorites2.ui" line="780"/>
         <source>Mount In Read Only Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="732"/>
+        <location filename="../src/favorites2.ui" line="748"/>
         <source>Volume Does Not Use A Password</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="700"/>
+        <location filename="../src/favorites2.ui" line="716"/>
         <source>Auto Mount Volume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="671"/>
+        <location filename="../src/favorites2.ui" line="687"/>
         <source>Mount Options (Optional And Comma Separated)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="419"/>
-        <location filename="../src/favorites2.cpp" line="608"/>
+        <location filename="../src/favorites2.cpp" line="618"/>
         <source>Edit</source>
         <translation type="unfinished"></translation>
     </message>
@@ -900,27 +905,28 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="629"/>
-        <location filename="../src/favorites2.cpp" line="1576"/>
+        <location filename="../src/favorites2.ui" line="645"/>
+        <location filename="../src/favorites2.cpp" line="1587"/>
         <source>Idle TimeOut (Optional)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="587"/>
-        <location filename="../src/favorites2.cpp" line="1575"/>
+        <location filename="../src/favorites2.ui" line="603"/>
+        <location filename="../src/favorites2.cpp" line="1586"/>
         <source>Config File Path (Optional)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="545"/>
-        <location filename="../src/favorites2.cpp" line="470"/>
-        <location filename="../src/favorites2.cpp" line="883"/>
+        <location filename="../src/favorites2.cpp" line="148"/>
+        <location filename="../src/favorites2.cpp" line="480"/>
+        <location filename="../src/favorites2.cpp" line="893"/>
         <source>Mount Point Prefix</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="461"/>
-        <location filename="../src/favorites2.cpp" line="1619"/>
+        <location filename="../src/favorites2.cpp" line="1630"/>
         <source>Encrypted Folder Path</source>
         <translation type="unfinished"></translation>
     </message>
@@ -930,285 +936,291 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="828"/>
+        <location filename="../src/favorites2.ui" line="587"/>
+        <source>Set Full Mount Point Path Instead Of Mount Prefix</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/favorites2.ui" line="844"/>
         <source>Add Volume To Secure Wallets</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="854"/>
-        <location filename="../src/favorites2.cpp" line="1548"/>
+        <location filename="../src/favorites2.ui" line="870"/>
+        <location filename="../src/favorites2.cpp" line="1559"/>
         <source>Ssh Port Number</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="873"/>
-        <location filename="../src/favorites2.cpp" line="1263"/>
+        <location filename="../src/favorites2.ui" line="889"/>
+        <location filename="../src/favorites2.cpp" line="1278"/>
         <source>Entry Already Exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="885"/>
+        <location filename="../src/favorites2.ui" line="901"/>
         <source>Custom Commands</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1067"/>
+        <location filename="../src/favorites2.ui" line="1083"/>
         <source>OK</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1074"/>
+        <location filename="../src/favorites2.ui" line="1090"/>
         <source>Manage Keys In Wallets</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1101"/>
+        <location filename="../src/favorites2.ui" line="1117"/>
         <source>Set Default Wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1113"/>
+        <location filename="../src/favorites2.ui" line="1129"/>
         <source>Internal Wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1126"/>
+        <location filename="../src/favorites2.ui" line="1142"/>
         <source>&amp;Libsecret</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1139"/>
+        <location filename="../src/favorites2.ui" line="1155"/>
         <source>&amp;KWallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1152"/>
+        <location filename="../src/favorites2.ui" line="1168"/>
         <source>&amp;MACOS Keychain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1165"/>
+        <location filename="../src/favorites2.ui" line="1181"/>
         <source>&amp;None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1178"/>
+        <location filename="../src/favorites2.ui" line="1194"/>
         <source>Windows&apos; DPAPI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1199"/>
+        <location filename="../src/favorites2.ui" line="1215"/>
         <source>Volume Path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1216"/>
+        <location filename="../src/favorites2.ui" line="1232"/>
         <source>Enter Volume Path Below</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1245"/>
+        <location filename="../src/favorites2.ui" line="1261"/>
         <source>Enter Password Below</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1274"/>
+        <location filename="../src/favorites2.ui" line="1290"/>
         <source>Add Volume To Selected Wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1313"/>
-        <location filename="../src/favorites2.cpp" line="345"/>
-        <location filename="../src/favorites2.cpp" line="388"/>
+        <location filename="../src/favorites2.ui" line="1329"/>
+        <location filename="../src/favorites2.cpp" line="355"/>
+        <location filename="../src/favorites2.cpp" line="398"/>
         <source>Change Internal Wallet Password</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1361"/>
+        <location filename="../src/favorites2.ui" line="1377"/>
         <source>TextLabel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1383"/>
+        <location filename="../src/favorites2.ui" line="1399"/>
         <source>Ok</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1390"/>
+        <location filename="../src/favorites2.ui" line="1406"/>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1428"/>
+        <location filename="../src/favorites2.ui" line="1444"/>
         <source>Auto Mount Favorites Volumes When Available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1457"/>
+        <location filename="../src/favorites2.ui" line="1473"/>
         <source>Show Mount Dialog When Auto Mounting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1473"/>
+        <location filename="../src/favorites2.ui" line="1489"/>
         <source>Allow External Tools To Get Passwords From Wallets</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1508"/>
+        <location filename="../src/favorites2.ui" line="1524"/>
         <source>Auto Mount Favorites Volumes At Startup</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1537"/>
+        <location filename="../src/favorites2.ui" line="1553"/>
         <source>Show Favorite List On Context Menu(Restart Required)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.ui" line="1555"/>
+        <location filename="../src/favorites2.ui" line="1571"/>
         <source>&amp;Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="659"/>
+        <location filename="../src/favorites2.cpp" line="669"/>
         <source>Select A Command Executable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="251"/>
-        <location filename="../src/favorites2.cpp" line="1110"/>
+        <location filename="../src/favorites2.cpp" line="261"/>
+        <location filename="../src/favorites2.cpp" line="1120"/>
         <source>Path To A Config File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="330"/>
-        <location filename="../src/favorites2.cpp" line="408"/>
+        <location filename="../src/favorites2.cpp" line="340"/>
+        <location filename="../src/favorites2.cpp" line="418"/>
         <source>Change Window&apos;s Wallet Password</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="354"/>
-        <location filename="../src/favorites2.cpp" line="363"/>
-        <location filename="../src/favorites2.cpp" line="372"/>
-        <location filename="../src/favorites2.cpp" line="379"/>
-        <location filename="../src/favorites2.cpp" line="421"/>
-        <location filename="../src/favorites2.cpp" line="434"/>
-        <location filename="../src/favorites2.cpp" line="446"/>
+        <location filename="../src/favorites2.cpp" line="364"/>
+        <location filename="../src/favorites2.cpp" line="373"/>
+        <location filename="../src/favorites2.cpp" line="382"/>
+        <location filename="../src/favorites2.cpp" line="389"/>
+        <location filename="../src/favorites2.cpp" line="431"/>
+        <location filename="../src/favorites2.cpp" line="444"/>
         <location filename="../src/favorites2.cpp" line="456"/>
+        <location filename="../src/favorites2.cpp" line="466"/>
         <source>Not Applicable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="466"/>
-        <location filename="../src/favorites2.cpp" line="881"/>
-        <location filename="../src/favorites2.cpp" line="1598"/>
+        <location filename="../src/favorites2.cpp" line="146"/>
+        <location filename="../src/favorites2.cpp" line="476"/>
+        <location filename="../src/favorites2.cpp" line="891"/>
+        <location filename="../src/favorites2.cpp" line="1609"/>
         <source>Mount Point Path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="601"/>
+        <location filename="../src/favorites2.cpp" line="611"/>
         <source>Toggle AutoMount</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="615"/>
+        <location filename="../src/favorites2.cpp" line="625"/>
         <source>Remove Selected Entry</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="622"/>
+        <location filename="../src/favorites2.cpp" line="632"/>
         <source>Add Entry To Default Wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="645"/>
+        <location filename="../src/favorites2.cpp" line="655"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="731"/>
+        <location filename="../src/favorites2.cpp" line="741"/>
         <source>Delete Entry</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="745"/>
+        <location filename="../src/favorites2.cpp" line="755"/>
         <source>Show Password</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="769"/>
+        <location filename="../src/favorites2.cpp" line="779"/>
         <source>Close Menu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1156"/>
-        <location filename="../src/favorites2.cpp" line="1161"/>
+        <location filename="../src/favorites2.cpp" line="1166"/>
+        <location filename="../src/favorites2.cpp" line="1171"/>
         <source>ERROR!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1156"/>
+        <location filename="../src/favorites2.cpp" line="1166"/>
         <source>Encrypted Folder Address Field Is Empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1161"/>
+        <location filename="../src/favorites2.cpp" line="1171"/>
         <source>Mount Point Path Field Is Empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1610"/>
+        <location filename="../src/favorites2.cpp" line="1621"/>
         <source>File Path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="290"/>
-        <location filename="../src/favorites2.cpp" line="1304"/>
+        <location filename="../src/favorites2.cpp" line="300"/>
+        <location filename="../src/favorites2.cpp" line="1319"/>
         <source>Path To An Encrypted Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1265"/>
+        <location filename="../src/favorites2.cpp" line="1280"/>
         <source>Failed To Create Entry</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1314"/>
+        <location filename="../src/favorites2.cpp" line="1336"/>
         <source>Select A File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1324"/>
+        <location filename="../src/favorites2.cpp" line="1353"/>
         <source>Path To Mount Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1467"/>
+        <location filename="../src/favorites2.cpp" line="1478"/>
         <source>SSH_AUTH_SOCK Socket Path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1468"/>
+        <location filename="../src/favorites2.cpp" line="1479"/>
         <source>IdentityFile Path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1539"/>
+        <location filename="../src/favorites2.cpp" line="1550"/>
         <source>Create Network Drive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1542"/>
+        <location filename="../src/favorites2.cpp" line="1553"/>
         <source>Remote Ssh Server Address
 (Example: woof@example.com:/remote/path)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1543"/>
+        <location filename="../src/favorites2.cpp" line="1554"/>
         <source>SSH_AUTH_SOCK Socket Path (Optional)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/favorites2.cpp" line="1544"/>
+        <location filename="../src/favorites2.cpp" line="1555"/>
         <source>IdentityFile Path (Optional)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2007,178 +2019,178 @@ The lite format has become the default on Unix-like operating systems as it is m
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="619"/>
+        <location filename="../src/sirikali.cpp" line="626"/>
         <source>Unmount All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/sirikali.ui" line="122"/>
-        <location filename="../src/sirikali.cpp" line="625"/>
+        <location filename="../src/sirikali.cpp" line="632"/>
         <source>Favorites</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="612"/>
+        <location filename="../src/sirikali.cpp" line="619"/>
         <source>Check For Updates</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="632"/>
+        <location filename="../src/sirikali.cpp" line="639"/>
         <source>About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="639"/>
+        <location filename="../src/sirikali.cpp" line="646"/>
         <source>Quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="636"/>
+        <location filename="../src/sirikali.cpp" line="643"/>
         <source>Show/Hide</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="976"/>
+        <location filename="../src/sirikali.cpp" line="1013"/>
         <source>ERROR: Volume Path Not Given.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1011"/>
+        <location filename="../src/sirikali.cpp" line="1048"/>
         <source>ERROR: Key Not Found In The Backend.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1016"/>
+        <location filename="../src/sirikali.cpp" line="1053"/>
         <source>ERROR: Failed To Unlock Requested Backend.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="849"/>
-        <location filename="../src/sirikali.cpp" line="1382"/>
-        <location filename="../src/sirikali.cpp" line="2161"/>
+        <location filename="../src/sirikali.cpp" line="886"/>
+        <location filename="../src/sirikali.cpp" line="1408"/>
+        <location filename="../src/sirikali.cpp" line="2192"/>
         <source>ERROR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1382"/>
+        <location filename="../src/sirikali.cpp" line="1408"/>
         <source>Failed To Read Volume Properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1362"/>
-        <location filename="../src/sirikali.cpp" line="1384"/>
-        <location filename="../src/sirikali.cpp" line="1408"/>
+        <location filename="../src/sirikali.cpp" line="1388"/>
+        <location filename="../src/sirikali.cpp" line="1410"/>
+        <location filename="../src/sirikali.cpp" line="1434"/>
         <source>INFORMATION</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="300"/>
+        <location filename="../src/sirikali.cpp" line="291"/>
         <source>Close All Volumes Before Quitting The Application</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="313"/>
+        <location filename="../src/sirikali.cpp" line="304"/>
         <source>Close The Following File System(s) Before Quitting The Application
 &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="415"/>
+        <location filename="../src/sirikali.cpp" line="422"/>
         <source>Mount Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="417"/>
+        <location filename="../src/sirikali.cpp" line="424"/>
         <source>Mount File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="450"/>
-        <location filename="../src/sirikali.cpp" line="452"/>
+        <location filename="../src/sirikali.cpp" line="457"/>
+        <location filename="../src/sirikali.cpp" line="459"/>
         <source>%1 Is Not Installed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="622"/>
+        <location filename="../src/sirikali.cpp" line="629"/>
         <source>Unmount All And Quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="634"/>
+        <location filename="../src/sirikali.cpp" line="641"/>
         <source>FAQ</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="849"/>
+        <location filename="../src/sirikali.cpp" line="886"/>
         <source>&quot;%1&quot; Folder Must Be Writable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1444"/>
+        <location filename="../src/sirikali.cpp" line="1470"/>
         <source>Unmount</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1448"/>
+        <location filename="../src/sirikali.cpp" line="1474"/>
         <source>Add To Favorites</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1871"/>
+        <location filename="../src/sirikali.cpp" line="1897"/>
         <source>Select A File To Be Mounted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="2216"/>
+        <location filename="../src/sirikali.cpp" line="2247"/>
         <source>Failed To Unmount 1 Volume.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="2218"/>
+        <location filename="../src/sirikali.cpp" line="2249"/>
         <source>Failed To Unmount %1 Volumes.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1442"/>
+        <location filename="../src/sirikali.cpp" line="1468"/>
         <source>Open Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="629"/>
+        <location filename="../src/sirikali.cpp" line="636"/>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1446"/>
+        <location filename="../src/sirikali.cpp" line="1472"/>
         <source>Properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1452"/>
+        <location filename="../src/sirikali.cpp" line="1478"/>
         <source>Close Menu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="301"/>
-        <location filename="../src/sirikali.cpp" line="315"/>
-        <location filename="../src/sirikali.cpp" line="1554"/>
-        <location filename="../src/sirikali.cpp" line="2216"/>
-        <location filename="../src/sirikali.cpp" line="2218"/>
+        <location filename="../src/sirikali.cpp" line="292"/>
+        <location filename="../src/sirikali.cpp" line="306"/>
+        <location filename="../src/sirikali.cpp" line="1580"/>
+        <location filename="../src/sirikali.cpp" line="2247"/>
+        <location filename="../src/sirikali.cpp" line="2249"/>
         <source>WARNING</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1555"/>
+        <location filename="../src/sirikali.cpp" line="1581"/>
         <source>Could Not Open Mount Point Because &quot;%1&quot; Tool Does Not Appear To Be Working Correctly.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1604"/>
+        <location filename="../src/sirikali.cpp" line="1630"/>
         <source>&amp;Quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1868"/>
+        <location filename="../src/sirikali.cpp" line="1894"/>
         <source>Select An Encrypted Volume Directory</source>
         <translation type="unfinished"></translation>
     </message>

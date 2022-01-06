@@ -41,6 +41,7 @@
 #include <QFile>
 #include <QApplication>
 #include <QCoreApplication>
+#include <QStyleFactory>
 
 #include <utility>
 #include <initializer_list>
@@ -213,7 +214,7 @@ int sirikali::run( const QStringList& args,int argc,char * argv[] )
 
 		srk.setApplicationName( "SiriKali" ) ;
 
-		starter str( args ) ;
+		starter str( args,srk ) ;
 
 		QMetaObject::invokeMethod( &str,"start",Qt::QueuedConnection ) ;
 
@@ -230,7 +231,8 @@ void miniSiriKali::silenceWarning()
 {
 }
 
-sirikali::sirikali( const QStringList& args ) :
+sirikali::sirikali( const QStringList& args,QApplication& app ) :
+	m_app( app ),
 	m_secrets( this ),
 	m_mountInfo( this,true,[ & ](){ QCoreApplication::exit( m_exitStatus ) ; },_debug() ),
 	m_checkUpdates( this,{ [ this ](){ this->disableAll() ; },[ this ](){ this->enableAll() ; } } ),
@@ -777,7 +779,37 @@ void sirikali::setLocalizationLanguage( bool translate )
 
 void sirikali::startGUI( const QString& volume )
 {
-	auto m = settings::instance().autoMountFavoritesOnStartUp() ;
+	auto& settings = settings::instance() ;
+
+	auto m = settings.autoMountFavoritesOnStartUp() ;
+
+	if( settings.useDarkMode() ){
+
+		m_app.setStyle( QStyleFactory::create( "Fusion" ) ) ;
+		QPalette darkPalette ;
+		QColor darkColor = QColor( 45,45,45 ) ;
+		QColor disabledColor = QColor( 127,127,127 ) ;
+		darkPalette.setColor( QPalette::Window,darkColor ) ;
+		darkPalette.setColor( QPalette::WindowText,Qt::white ) ;
+		darkPalette.setColor( QPalette::Base,QColor( 18,18,18 ) ) ;
+		darkPalette.setColor( QPalette::AlternateBase,darkColor ) ;
+		darkPalette.setColor( QPalette::ToolTipBase,Qt::white ) ;
+		darkPalette.setColor( QPalette::ToolTipText,Qt::white ) ;
+		darkPalette.setColor( QPalette::Text,Qt::white ) ;
+		darkPalette.setColor( QPalette::Disabled,QPalette::Text,disabledColor ) ;
+		darkPalette.setColor( QPalette::Button,darkColor ) ;
+		darkPalette.setColor( QPalette::ButtonText,Qt::white ) ;
+		darkPalette.setColor( QPalette::Disabled,QPalette::ButtonText,disabledColor ) ;
+		darkPalette.setColor( QPalette::BrightText,Qt::red) ;
+		darkPalette.setColor( QPalette::Link,QColor( 42,130,218 ) ) ;
+		darkPalette.setColor( QPalette::Highlight,QColor( 42,130,218 ) ) ;
+		darkPalette.setColor( QPalette::HighlightedText,Qt::black ) ;
+		darkPalette.setColor( QPalette::Disabled,QPalette::HighlightedText,disabledColor ) ;
+
+		m_app.setPalette( darkPalette ) ;
+
+		m_app.setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
+	}
 
 	if( m_startHidden ){
 

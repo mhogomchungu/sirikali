@@ -74,6 +74,11 @@ configOptions::configOptions( QWidget * parent,
 		m_settings.setStartMinimized( e ) ;
 	} ) ;
 
+	connect( m_ui->cbUseDarkTheme,&QCheckBox::toggled,[ this ]( bool e ){
+
+		m_settings.useDarkMode( e ) ;
+	} ) ;
+
 	if( utility::platformIsWindows() ){
 
 		m_ui->label->setText( tr( "Set Executables Search Path" ) ) ;
@@ -255,6 +260,8 @@ void configOptions::ShowUI()
 	m_ui->lineEditHiDPI->setEnabled( m_ui->cbHiDPI->isChecked() ) ;
 
 	m_ui->chShowDebugWindowOnStartup->setChecked( m_settings.showDebugWindowOnStartup() ) ;
+
+	m_ui->cbUseDarkTheme->setChecked( m_settings.useDarkMode() ) ;
 
 	if( utility::platformIsWindows() ){
 

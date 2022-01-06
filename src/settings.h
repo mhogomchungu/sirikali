@@ -180,6 +180,8 @@ public:
 	bool doNotShowReadOnlyWarning() ;
 	void doNotShowReadOnlyWarning( bool ) ;
 	bool autoMountFavoritesOnStartUp() ;
+	bool useDarkMode() ;
+	void useDarkMode( bool ) ;
 	void autoMountFavoritesOnStartUp( bool ) ;
 	void autoMountFavoritesOnAvailable( bool ) ;
 	bool autoMountFavoritesOnAvailable() ;
