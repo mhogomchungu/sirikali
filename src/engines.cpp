@@ -451,7 +451,7 @@ engines::engine::args engines::engine::command( const QByteArray& password,
 	}
 }
 
-engines::engine::status engines::engine::errorCode( const QString& e,int s ) const
+engines::engine::status engines::engine::errorCode( const QString& e,const QString&,int s ) const
 {
 	Q_UNUSED( s )
 
@@ -1838,6 +1838,8 @@ QString engines::engine::cmdStatus::toString() const
 	}
 
 	case engines::engine::status::backendFail : break ;
+
+	case engines::engine::status::backendCrashed : break ;
 
 	}
 

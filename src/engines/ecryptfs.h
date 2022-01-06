@@ -31,7 +31,7 @@ struct ecryptfs : public engines::engine
 
 	engines::engine::status unmount( const engines::engine::unMount& e ) const override ;
 
-	engines::engine::status errorCode( const QString& e,int s ) const override ;
+	engines::engine::status errorCode( const QString& e,const QString& err,int s ) const override ;
 
 	engines::engine::args command( const QByteArray& password,
 				       const engines::engine::cmdArgsList& args,

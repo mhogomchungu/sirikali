@@ -110,8 +110,16 @@ const QProcessEnvironment& cryfs::getProcessEnvironment() const
 	return m_env ;
 }
 
-engines::engine::status cryfs::errorCode( const QString& e,int s ) const
+engines::engine::status cryfs::errorCode( const QString& e,const QString& err,int s ) const
 {
+	if( s == 0 ){
+
+		if( err.contains( "[error]" ) ){
+
+			return engines::engine::status::backendCrashed ;
+		}
+	}
+
 	if( m_version_greater_or_equal_0_9_9 ){
 
 		/*

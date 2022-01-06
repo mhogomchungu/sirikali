@@ -211,7 +211,7 @@ engines::engine::args ecryptfs::command( const QByteArray& password,
 	}
 }
 
-engines::engine::status ecryptfs::errorCode( const QString& e,int s ) const
+engines::engine::status ecryptfs::errorCode( const QString& e,const QString& err,int s ) const
 {
 	Q_UNUSED( s )
 
@@ -219,7 +219,7 @@ engines::engine::status ecryptfs::errorCode( const QString& e,int s ) const
 
 		return engines::engine::status::failedToStartPolkit ;
 	}else{
-		return engines::engine::errorCode( e,s ) ;
+		return engines::engine::errorCode( e,err,s ) ;
 	}
 }
 

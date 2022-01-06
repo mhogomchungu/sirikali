@@ -30,7 +30,7 @@ public:
 
 	const QProcessEnvironment& getProcessEnvironment() const override ;
 
-	engines::engine::status errorCode( const QString& e,int s ) const override ;
+	engines::engine::status errorCode( const QString& e,const QString&,int s ) const override ;
 
 	engines::engine::status passAllRequirenments( const engines::engine::cmdArgsList& opt ) const override ;
 

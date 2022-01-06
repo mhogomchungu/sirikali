@@ -120,7 +120,7 @@ void gocryptfs::updateOptions( engines::engine::cmdArgsList& opt,bool creating )
 	}
 }
 
-engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const
+engines::engine::status gocryptfs::errorCode( const QString& e,const QString& err,int s ) const
 {
 	if( m_version_has_error_codes ){
 
@@ -134,7 +134,7 @@ engines::engine::status gocryptfs::errorCode( const QString& e,int s ) const
 		}
 	}
 
-	return engines::engine::errorCode( e,s ) ;
+	return engines::engine::errorCode( e,err,s ) ;
 }
 
 void gocryptfs::GUICreateOptions( const engines::engine::createGUIOptions& s ) const

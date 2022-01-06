@@ -307,6 +307,7 @@ public:
 
 			invalidConfigFileName,
 			backendFail,
+			backendCrashed,
 			backendTimedOut,
 			unknown
 		} ;
@@ -735,7 +736,7 @@ public:
 				      const engines::engine::cmdArgsList& args,
 				      bool create ) const ;
 
-		virtual engines::engine::status errorCode( const QString& e,int s ) const ;
+		virtual engines::engine::status errorCode( const QString& e,const QString& err,int s ) const ;
 
 		virtual void GUICreateOptions( const createGUIOptions& ) const ;
 

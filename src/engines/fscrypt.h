@@ -43,7 +43,7 @@ public:
 	Task::future< QString >& volumeProperties( const QString& cipherFolder,
 						   const QString& mountPoint ) const override ;
 
-	engines::engine::status errorCode( const QString& e,int s ) const override ;
+	engines::engine::status errorCode( const QString& e,const QString& err,int s ) const override ;
 
 	void GUICreateOptions( const engines::engine::createGUIOptions& ) const override ;
 

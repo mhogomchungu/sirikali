@@ -180,7 +180,7 @@ custom::custom( engines::engine::BaseOptions baseOpts ) :
 {
 }
 
-engines::engine::status custom::errorCode( const QString& e,int s ) const
+engines::engine::status custom::errorCode( const QString& e,const QString&,int s ) const
 {
 	const auto& m = this->incorrectPasswordCode() ;
 

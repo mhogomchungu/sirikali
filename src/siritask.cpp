@@ -313,7 +313,23 @@ static engines::engine::cmdStatus _cmd( const cmd_args& e )
 
 	auto s = _run_task( { cmd,e } ) ;
 
-	if( s.success() ){
+	if( utility::platformIsNOTWindows() && e.engine.name() == "Cryfs" ){
+
+		auto n = engine.errorCode( s.stdOut(),s.stdError(),s.exitCode() ) ;
+
+		if( s.success() ){
+
+			if( n == engines::engine::status::backendCrashed ){
+
+				return { n,engine,s.stdError() } ;
+			}else{
+				return { engines::engine::status::success,engine } ;
+			}
+		}else{
+			return { n,engine,s.stdOut() } ;
+		}
+
+	}else if( s.success() ){
 
 		return { engines::engine::status::success,engine } ;
 	}else{
@@ -327,7 +343,7 @@ static engines::engine::cmdStatus _cmd( const cmd_args& e )
 
 		auto ss = s.stdError().isEmpty() ? s.stdOut() : s.stdError() ;
 
-		auto n = engine.errorCode( ss,s.exitCode() ) ;
+		auto n = engine.errorCode( ss,ss,s.exitCode() ) ;
 
 		return { n,engine,ss } ;
 	}
