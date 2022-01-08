@@ -1160,6 +1160,17 @@ void favorites2::updateFavorite( bool edit )
 
 	const auto& engine = engines::instance().getByName( type ) ;
 
+	if( engine.likeSsh() ){
+
+		if( !dev.contains( '@' ) || !dev.contains( ':' ) ){
+
+			thisWidget.hide() ;
+			msg.ShowUIOK( tr( "ERROR!" ),tr( "Sshfs Remote Path Must Be In Below Format:\nwoof@example.com:/remote/path" ) ) ;
+			thisWidget.show() ;
+
+			return ;
+		}
+	}
 	if( dev.isEmpty() ){
 
 		thisWidget.hide() ;

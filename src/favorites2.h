@@ -77,7 +77,6 @@ private :
 	void edit( void ) ;
 	void configPath( void ) ;
 	void removeEntryFromFavoriteList( void ) ;
-	void add( void ) ;
 	void cancel( void ) ;
 	void folderPath( void ) ;
 	void filePath( void ) ;
