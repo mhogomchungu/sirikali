@@ -539,6 +539,7 @@ options:\n\
 	     \"libsecret\" option causes SiriKali to read password from lxqt-wallet libsecret backend.\n\
 	     \"kwallet\" option causes SiriKali to read password from lxqt-wallet kwallet backend.\n\
 	     \"osxkeychain\" option causes SiriKali to read password from lxqt-wallet OSX key chain backend.\n\
+	     \"clargs\" option causes SiriKali to read password from cli argument given to option \"-w\"\
 	-k   When opening a volume from CLI,a value of \"rw\" will open the volume in read\\write\n\
 	     mode and a value of \"ro\" will open the volume in read only mode.\n\
 	-z   Full path of the mount point to be used when the volume is opened from CLI.\n\

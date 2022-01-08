@@ -191,7 +191,7 @@ int sirikali::run( const QStringList& args,int argc,char * argv[] )
 		auto mm = utility::cmdArgumentValue( args,"-b" ) ;
 
 		if( utility::equalsAtleastOne( mm,"internal","windows_dpapi","gnomewallet",
-					       "libsecret","kwallet","osxkeychain" ) ){
+					       "libsecret","kwallet","osxkeychain","clargs" ) ){
 
 			QApplication srk( argc,argv ) ;
 
@@ -1012,6 +1012,13 @@ int sirikali::unlockVolume( const QStringList& l,secrets& secrets )
 
 		return _print_err( 1,tr( "ERROR: Volume Path Not Given." ) ) ;
 	}else{
+		if( s.backEnd == "clargs" ){
+
+			auto key = utility::cmdArgumentValue( l,"-w" ).toUtf8() ;
+
+			return _unlockVolume( s,key ) ;
+		}
+
 		if( s.backEnd == "stdin" ){
 
 			return _unlockVolume( s,[ & ](){
