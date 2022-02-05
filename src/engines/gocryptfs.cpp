@@ -47,7 +47,6 @@ static engines::engine::BaseOptions _setOptions()
 	s.setsCipherPath        = true ;
 	s.acceptsVolName        = false ;
 	s.releaseURL             = "https://api.github.com/repos/rfjakob/gocryptfs/releases" ;
-	s.reverseString         = "-reverse" ;
 	s.idleString            = "-idle %{timeout}" ;
 	s.configFileArgument    = "--config %{configFilePath}" ;
 	s.configFileNames       = QStringList{ "gocryptfs.conf",
@@ -72,6 +71,8 @@ static engines::engine::BaseOptions _setOptions()
 
 		s.acceptsSubType        = true ;
 
+		s.reverseString         = "--reverse" ;
+
 		s.volumePropertiesCommands = QStringList{ "cppcryptfsctl.exe -i %{plainFolder}" } ;
 
 		s.passwordFormat        = "%{password}" ;
@@ -90,6 +91,8 @@ static engines::engine::BaseOptions _setOptions()
 		s.passwordFormat         = "%{password}" ;
 
 		s.createControlStructure = "-q --init %{createOptions} %{cipherFolder}" ;
+
+		s.reverseString         = "-reverse" ;
 
 		s.acceptsSubType        = false ;
 

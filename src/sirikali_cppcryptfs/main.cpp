@@ -159,6 +159,11 @@ static void _create( const QStringList& args )
 		opts.append( "--plaintext" ) ;
 	}
 
+	if( args.contains( "--reverse" ) ){
+
+		opts.append( "--reverse" ) ;
+	}
+
 	opts.append( "--init=" + cipherPath ) ;
 
 	auto m = Task::process::run( exe,opts,-1,password ).await() ;
