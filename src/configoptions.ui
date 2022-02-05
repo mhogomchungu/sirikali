@@ -383,7 +383,7 @@
     <widget class="QPushButton" name="pbMountPointPrefix">
      <property name="geometry">
       <rect>
-       <x>460</x>
+       <x>470</x>
        <y>30</y>
        <width>31</width>
        <height>33</height>
@@ -473,7 +473,7 @@
     <widget class="QPushButton" name="pbPostMountCommand">
      <property name="geometry">
       <rect>
-       <x>460</x>
+       <x>470</x>
        <y>210</y>
        <width>31</width>
        <height>33</height>
@@ -486,7 +486,7 @@
     <widget class="QPushButton" name="pbPreUnMountCommand">
      <property name="geometry">
       <rect>
-       <x>460</x>
+       <x>470</x>
        <y>270</y>
        <width>31</width>
        <height>33</height>
@@ -528,7 +528,7 @@
     <widget class="QPushButton" name="pbRunPeriodicallyCommand">
      <property name="geometry">
       <rect>
-       <x>460</x>
+       <x>470</x>
        <y>330</y>
        <width>31</width>
        <height>33</height>
@@ -570,7 +570,7 @@
     <widget class="QPushButton" name="pbSetFileManager">
      <property name="geometry">
       <rect>
-       <x>460</x>
+       <x>470</x>
        <y>90</y>
        <width>31</width>
        <height>33</height>
@@ -583,7 +583,7 @@
     <widget class="QPushButton" name="pbSetExternalCommand">
      <property name="geometry">
       <rect>
-       <x>460</x>
+       <x>470</x>
        <y>150</y>
        <width>31</width>
        <height>33</height>
@@ -596,7 +596,7 @@
     <widget class="QPushButton" name="pbExternalExecutableDefault">
      <property name="geometry">
       <rect>
-       <x>490</x>
+       <x>500</x>
        <y>150</y>
        <width>31</width>
        <height>33</height>
@@ -612,7 +612,7 @@
     <widget class="QPushButton" name="pbSetFileManagerToDefault">
      <property name="geometry">
       <rect>
-       <x>490</x>
+       <x>500</x>
        <y>90</y>
        <width>31</width>
        <height>33</height>
@@ -628,7 +628,7 @@
     <widget class="QPushButton" name="pbMountPointPrefixDefault">
      <property name="geometry">
       <rect>
-       <x>490</x>
+       <x>500</x>
        <y>30</y>
        <width>31</width>
        <height>33</height>
@@ -644,7 +644,7 @@
     <widget class="QPushButton" name="pbRunPostMountCommandDefault">
      <property name="geometry">
       <rect>
-       <x>490</x>
+       <x>500</x>
        <y>210</y>
        <width>31</width>
        <height>33</height>
@@ -660,7 +660,7 @@
     <widget class="QPushButton" name="pbRunPreUnMountCommandDefault">
      <property name="geometry">
       <rect>
-       <x>490</x>
+       <x>500</x>
        <y>270</y>
        <width>31</width>
        <height>33</height>
@@ -676,7 +676,7 @@
     <widget class="QPushButton" name="pbRunCommandPeriodicallyDefault">
      <property name="geometry">
       <rect>
-       <x>490</x>
+       <x>500</x>
        <y>330</y>
        <width>31</width>
        <height>33</height>
