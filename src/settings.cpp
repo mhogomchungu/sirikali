@@ -461,7 +461,7 @@ QString settings::ConfigLocation()
 
 			m_settings.setValue( "ConfigLocation",m.first() + "/SiriKali/" ) ;
 		}else{
-			//TODO: what to do here???
+			m_settings.setValue( "ConfigLocation",QDir::homePath() + "/.config/SiriKali/" ) ;
 		}
 	}
 

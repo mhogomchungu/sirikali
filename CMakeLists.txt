@@ -294,6 +294,7 @@ set( SRC 	src/dialogok.cpp
 		src/keydialog.cpp
 		src/siritask.cpp
 		src/help.cpp
+		src/themes.cpp
 		src/createbackendwindow.cpp
 		src/engines.cpp
 		src/oneinstance.cpp
