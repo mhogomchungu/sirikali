@@ -217,16 +217,6 @@ void keyDialog::setUpInitUI()
 
 	m_keyType.keyOptions( m_ui->cbKeyType,this,&keyDialog::keyTypeChanged ) ;
 
-	if( utility::platformIsWindows() ){
-
-		/*
-		 * We are disabling this functionality on windows for now
-		 * it's currently not possible to open a volume in read only mode.
-		 */
-		m_ui->checkBoxOpenReadOnly->setChecked( false ) ;
-		m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
-	}
-
 	m_reUseMountPoint = m_settings.reUseMountPoint() ;
 
 	m_checkBoxOriginalText = m_ui->checkBoxOpenReadOnly->text() ;
@@ -483,7 +473,9 @@ void keyDialog::setUpVolumeProperties( const keyDialog::entry& ee )
 	}else{
 		if( utility::platformIsWindows() ){
 
-			m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
+			m_windowsCanUnlockReadOnlyMode = ee.engine->windowsCanUnlocInReadWriteMode() ;
+
+			m_ui->checkBoxOpenReadOnly->setEnabled( m_windowsCanUnlockReadOnlyMode ) ;
 		}else{
 			m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
 			m_ui->checkBoxOpenReadOnly->setChecked( m_settings.getOpenVolumeReadOnlyOption() ) ;
@@ -844,6 +836,8 @@ void keyDialog::enableAll()
 
 		m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
 	}else{
+		m_ui->checkBoxOpenReadOnly->setEnabled( m_windowsCanUnlockReadOnlyMode ) ;
+
 		m_ui->pbMountPoint_1->setEnabled( m_engine->supportsMountPathsOnWindows() ) ;
 	}
 
@@ -1063,9 +1057,9 @@ void keyDialog::reportErrorMessage( const engines::engine::cmdStatus& s )
 
 		if( utility::platformIsWindows() ){
 
-			m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
+			m_ui->checkBoxOpenReadOnly->setEnabled( m_windowsCanUnlockReadOnlyMode ) ;
 
-			m_ui->checkBoxOpenReadOnly->setChecked( false ) ;
+			m_ui->checkBoxOpenReadOnly->setChecked( m_windowsCanUnlockReadOnlyMode ) ;
 		}
 	}
 

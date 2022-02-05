@@ -300,11 +300,33 @@ QString processManager::volumeProperties( const QString& mm ) const
 
 			m = QObject::tr( "Mount Options:\n\n" ) ;
 
-			for( const auto& it : e.arguments() ){
+			const auto& s = e.arguments() ;
 
-				if( it != "-o" ){
+			if( s.contains( "--password" ) ){
 
-					m += it + "\n" ;
+				auto e = s ;
+
+				for( int i = 0 ; i < e.size() ; i++ ){
+
+					const auto& it = e[ i ] ;
+
+					if( it != "-o" ){
+
+						if( it == "--password" && i + 1 < e.size() ){
+
+							e[ i + 1 ] = "<redacted>" ;
+						}
+
+						m += it + "\n" ;
+					}
+				}
+			}else{
+				for( const auto& it : s ){
+
+					if( it != "-o" ){
+
+						m += it + "\n" ;
+					}
 				}
 			}
 

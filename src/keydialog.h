@@ -343,6 +343,7 @@ private :
 	bool m_hmac ;
 	bool m_closeGUI = false ;
 	bool m_enableUsingPassword = false ;
+	bool m_windowsCanUnlockReadOnlyMode = true ;
 
 	engines::engine::mOpts m_mountOptions ;
 	engines::engine::cOpts m_createOptions ;

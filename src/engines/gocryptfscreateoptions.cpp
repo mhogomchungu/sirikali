@@ -66,7 +66,12 @@ void gocryptfscreateoptions::pbOK()
 
 		if( m_ui->comboBox->currentIndex() == 1 ){
 
-			return "-aessiv" ;
+			if( utility::platformIsWindows() ){
+
+				return "--siv" ;
+			}else{
+				return "-aessiv" ;
+			}
 		}else{
 			return "" ;
 		}
@@ -76,7 +81,12 @@ void gocryptfscreateoptions::pbOK()
 
 		if( m_ui->rbDoNotEncryptFileNames->isChecked() ){
 
-			return "-plaintextnames" ;
+			if( utility::platformIsWindows() ){
+
+				return "--plaintext" ;
+			}else{
+				return "-plaintextnames" ;
+			}
 		}else{
 			return "" ;
 		}

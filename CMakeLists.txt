@@ -393,6 +393,10 @@ message( STATUS "Building GUI components using Qt5" )
 message( STATUS "---------------------------------------------------------------------------\n\n" )
 
 if( WIN32 )
+    ADD_SUBDIRECTORY( src/sirikali_cppcryptfs )
+endif()
+
+if( WIN32 )
     set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -pedantic" )
 else()
     set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic" )
@@ -556,6 +560,7 @@ file( WRITE ${PROJECT_BINARY_DIR}/sirikali_windows_installer.iss
 #define MyAppExeName \"sirikali.exe\"
 #define MyLibrariesLocation \"C:\\projects\\SiriKali.libraries.Qt-${Qt5Core_VERSION}\\\"
 #define MyEXELocation \"${PROJECT_BINARY_DIR}\\sirikali.exe\"
+#define MyEXELocation1 \"${PROJECT_BINARY_DIR}\\src\\sirikali_cppcryptfs\\sirikali_cppcryptfs.exe\"
 #define MyOutPutPath  \"C:\\projects\\SiriKali.installer\\Qt-${Qt5Core_VERSION}\"
 #define MyGcryptLibraryPath \"C:\\projects\\sirikali\\libs\\lib\\\"
 #define MySourcesPath \"C:\\projects\\sirikali\\\"
@@ -584,6 +589,8 @@ Name: \"quicklaunchicon\"; Description: \"{cm:CreateQuickLaunchIcon}\"; GroupDes
 
 [Files]
 Source: {#MyEXELocation}; DestDir: {app}; Flags: ignoreversion
+
+Source: {#MyEXELocation1}; DestDir: {app}; Flags: ignoreversion
 
 Source: {#MyLibrariesLocation}\\*.dll; DestDir: {app} ; Flags: ignoreversion
 

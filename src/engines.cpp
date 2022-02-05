@@ -41,6 +41,11 @@ static QString _emptyQString ;
 
 static QStringList _system_search_paths()
 {
+	if( utility::platformIsWindows() ){
+
+		return { QDir::homePath() + "/bin/",QDir::currentPath() + "/" } ;
+	}
+
 	return { "/usr/local/bin/",
 		 "/usr/local/sbin/",
 		 "/usr/bin/",
@@ -517,6 +522,10 @@ Task::future< QString >& engines::engine::volumeProperties( const QString& ciphe
 					}
 				}
 
+				utility::debug::cout() << "exe: " + exe ;
+				utility::debug::cout() << "a: " << a ;
+				utility::debug::cout() << "-----" ;
+
 				auto e = utility::unwrap( utility::Task::run( exe,a ) ) ;
 
 				if( e.success() ){
@@ -820,6 +829,11 @@ bool engines::engine::needsJava() const
 bool engines::engine::usesFuseArgumentSwitch() const
 {
 	return m_Options.usesFuseArgumentSwitch ;
+}
+
+bool engines::engine::windowsCanUnlocInReadWriteMode() const
+{
+	return m_Options.windowsCanUnlockInReadWriteMode ;
 }
 
 bool engines::engine::isInstalled() const
@@ -1139,6 +1153,17 @@ const QString& engines::engine::windowsInstallPathRegistryValue() const
 const QString& engines::engine::windowsExecutableFolderPath() const
 {
 	return m_Options.windowsExecutableFolderPath ;
+}
+
+const QString& engines::engine::windowsUnmountExecutableFullPath() const
+{
+	if( m_Options.unMountCommand.isEmpty() ){
+
+		static QString s ;
+		return s ;
+	}else{
+		return m_Options.unMountCommand.at( 0 ) ;
+	}
 }
 
 const QStringList& engines::engine::volumePropertiesCommands() const
@@ -1470,6 +1495,7 @@ engines::engines()
 		m_backends.emplace_back( std::make_unique< cryfs >() ) ;
 		m_backends.emplace_back( std::make_unique< encfs >() ) ;
 		m_backends.emplace_back( std::make_unique< sshfs >() ) ;
+		m_backends.emplace_back( std::make_unique< gocryptfs >() ) ;
 
 	}else if( utility::platformIsOSX() ){
 

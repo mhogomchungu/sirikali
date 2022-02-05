@@ -496,6 +496,7 @@ public:
 			bool autoDeletesMountPoint ;
 			bool usesOnlyMountPoint ;
 			bool usesFuseArgumentSwitch ;
+			bool windowsCanUnlockInReadWriteMode = false ;
 
 			QByteArray passwordFormat ;
 			QString displayName ;
@@ -579,6 +580,7 @@ public:
 		bool usesOnlyMountPoint() const ;
 		bool needsJava() const ;
 		bool usesFuseArgumentSwitch() const ;
+		bool windowsCanUnlocInReadWriteMode() const ;
 
 		engines::engine::status notFoundCode() const ;
 
@@ -615,6 +617,7 @@ public:
 		const QString& windowsInstallPathRegistryKey() const ;
 		const QString& windowsInstallPathRegistryValue() const ;
 		const QString& windowsExecutableFolderPath() const ;
+		const QString& windowsUnmountExecutableFullPath() const ;
 
 		QByteArray setPassword( const QByteArray& ) const ;
 

@@ -66,7 +66,6 @@
 #include "settings.h"
 #include "engines.h"
 #include "processManager.h"
-
 #include "favorites2.h"
 #include "favorites.h"
 

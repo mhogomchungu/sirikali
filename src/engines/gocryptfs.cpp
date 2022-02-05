@@ -45,17 +45,11 @@ static engines::engine::BaseOptions _setOptions()
 	s.autoMountsOnCreate    = false ;
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = true ;
-	s.acceptsSubType        = false ;
 	s.acceptsVolName        = false ;
 	s.releaseURL             = "https://api.github.com/repos/rfjakob/gocryptfs/releases" ;
-	s.passwordFormat         = "%{password}" ;
-	s.volumePropertiesCommands = QStringList{ "gocryptfs -info %{cipherFolder}",
-						  "gocryptfs -info %{plainFolder}" } ;
 	s.reverseString         = "-reverse" ;
 	s.idleString            = "-idle %{timeout}" ;
-	s.incorrectPasswordText = "Password incorrect." ;
 	s.configFileArgument    = "--config %{configFilePath}" ;
-	s.executableNames       = QStringList{ "gocryptfs" } ;
 	s.configFileNames       = QStringList{ "gocryptfs.conf",
 					       ".gocryptfs.conf",
 					       ".gocryptfs.reverse.conf",
@@ -65,16 +59,71 @@ static engines::engine::BaseOptions _setOptions()
 	s.notFoundCode          = engines::engine::status::engineExecutableNotFound ;
 	s.versionInfo           = { { "--version",true,1,0 } } ;
 
-	s.createControlStructure = "-q --init %{createOptions} %{cipherFolder}" ;
-	s.mountControlStructure  = "-q %{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
+	if( utility::platformIsWindows() ){
+
+		auto aa = engines::executableNotEngineFullPath( "sirikali_cppcryptfs.exe" ) ;
+		auto bb = engines::executableNotEngineFullPath( "cppcryptfsctl.exe" ) ;
+
+		s.windowsCanUnlockInReadWriteMode = true ;
+
+		s.createControlStructure = "--create %{createOptions} --cipherPath %{cipherFolder} --cppcryptfsctl-path " + bb ;
+
+		s.windowsUnMountCommand = QStringList{ aa,"--umount","--mountPath","%{mountPoint}","--cppcryptfsctl-path",bb } ;
+
+		s.acceptsSubType        = true ;
+
+		s.volumePropertiesCommands = QStringList{ "cppcryptfsctl.exe -i %{plainFolder}" } ;
+
+		s.passwordFormat        = "%{password}" ;
+
+		s.successfulMountedList = QStringList{ "Mount Success" } ;
+		s.failedToMountList     = QStringList{ "Failed To Mount: Error Code" } ;
+
+		s.incorrectPasswordText = "cppcryptfs: password incorrect" ;
+
+		s.executableNames = QStringList{ "cppcryptfsctl.exe" } ;
+		s.mountControlStructure  = "--mount %{mountOptions} --cipherPath %{cipherFolder} --mountPath %{mountPoint} --password %{password} %{fuseOpts}" ;
+	}else{
+		s.volumePropertiesCommands = QStringList{ "gocryptfs -info %{cipherFolder}",
+							  "gocryptfs -info %{plainFolder}" } ;
+
+		s.passwordFormat         = "%{password}" ;
+
+		s.createControlStructure = "-q --init %{createOptions} %{cipherFolder}" ;
+
+		s.acceptsSubType        = false ;
+
+		s.incorrectPasswordText = "Password incorrect." ;
+
+		s.mountControlStructure  = "-q %{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
+		s.executableNames = QStringList{ "gocryptfs" } ;
+	}
 
 	return s ;
 }
+
+#ifdef Q_OS_WIN
+
+gocryptfs::gocryptfs() :
+	engines::engine( _setOptions() ),
+	m_sirikaliCppcryptfsExe( engines::executableNotEngineFullPath( "sirikali_cppcryptfs.exe" ) ),
+	m_cppcryptfsctl( engines::executableNotEngineFullPath( "cppcryptfsctl.exe" ) ),
+	m_cppcryptfs( QString( m_cppcryptfsctl ).replace( "cppcryptfsctl","cppcryptfs" ) )
+{
+	if( !m_cppcryptfs.isEmpty() ){
+
+		Task::process::run( m_cppcryptfs,QStringList{ "--tray" } ).start() ;
+	}
+}
+
+#else
 
 gocryptfs::gocryptfs() : engines::engine( _setOptions() ),
 	m_version_has_error_codes( true,*this,1,2,1 )
 {
 }
+
+#endif
 
 template< typename Function >
 static bool _set_if_found( const Function& function )
@@ -97,11 +146,24 @@ void gocryptfs::updateOptions( engines::engine::cmdArgsList& opt,bool creating )
 {
 	if( creating ){
 
+		if( utility::platformIsWindows() ){
+
+			opt.createOptions.append( "--password" ) ;
+			opt.createOptions.append( opt.key ) ;
+		}
 		if( opt.boolOptions.unlockInReverseMode ){
 
 			opt.createOptions.append( this->reverseString() ) ;
 		}
 	}else{
+		if( utility::platformIsWindows() ){
+
+			if( opt.configFilePath.isEmpty() ){
+
+				opt.configFilePath = opt.cipherFolder + "/" + this->configFileName() ;
+			}
+		}
+
 		opt.boolOptions.unlockInReverseMode = [ & ](){
 
 			if( opt.configFilePath.isEmpty() ){
@@ -122,6 +184,18 @@ void gocryptfs::updateOptions( engines::engine::cmdArgsList& opt,bool creating )
 
 engines::engine::status gocryptfs::errorCode( const QString& e,const QString& err,int s ) const
 {
+#ifdef Q_OS_WIN
+	/*
+	 * This error code was added in gocryptfs 1.2.1
+	 */
+
+	if( s == 12 ){
+
+		return engines::engine::status::badPassword ;
+	}
+
+	return engines::engine::errorCode( e,err,s ) ;
+#else
 	if( m_version_has_error_codes ){
 
 		/*
@@ -135,6 +209,7 @@ engines::engine::status gocryptfs::errorCode( const QString& e,const QString& er
 	}
 
 	return engines::engine::errorCode( e,err,s ) ;
+#endif
 }
 
 void gocryptfs::GUICreateOptions( const engines::engine::createGUIOptions& s ) const
@@ -162,4 +237,22 @@ void gocryptfs::GUIMountOptions( const engines::engine::mountGUIOptions& s ) con
 	} ;
 
 	e.ShowUI() ;
+}
+
+engines::engine::args gocryptfs::command( const QByteArray& password,
+					  const cmdArgsList& args,
+					  bool create ) const
+{
+	if( utility::platformIsWindows() ){
+
+		auto m = engines::engine::command( password,args,create ) ;
+
+		m.cmd = m_sirikaliCppcryptfsExe ;
+		m.cmd_args.append( "--cppcryptfsctl-path" ) ;
+		m.cmd_args.append( m_cppcryptfsctl ) ;
+
+		return m ;
+	}else{
+		return engines::engine::command( password,args,create ) ;
+	}
 }

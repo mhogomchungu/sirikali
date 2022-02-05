@@ -31,6 +31,16 @@ public:
 	void GUICreateOptions( const engines::engine::createGUIOptions& ) const override ;
 
 	void GUIMountOptions( const engines::engine::mountGUIOptions& ) const override ;
+
+	args command( const QByteArray& password,
+		      const engines::engine::cmdArgsList& args,
+		      bool create ) const override ;
 private:
+#ifdef Q_OS_WIN
+#else
 	const engines::versionGreaterOrEqual m_version_has_error_codes ;
+#endif
+	QString m_sirikaliCppcryptfsExe ;
+	QString m_cppcryptfsctl ;
+	QString m_cppcryptfs ;
 } ;
