@@ -107,10 +107,15 @@ static engines::engine::BaseOptions _setOptions()
 
 #ifdef Q_OS_WIN
 
+static QString _to_native_path( const QString& e )
+{
+	return QDir::toNativeSeparators( e ) ;
+}
+
 gocryptfs::gocryptfs() :
 	engines::engine( _setOptions() ),
-	m_sirikaliCppcryptfsExe( engines::executableNotEngineFullPath( "sirikali_cppcryptfs.exe" ) ),
-	m_cppcryptfsctl( engines::executableNotEngineFullPath( "cppcryptfsctl.exe" ) ),
+	m_sirikaliCppcryptfsExe( _to_native_path( engines::executableNotEngineFullPath( "sirikali_cppcryptfs.exe" ) ) ),
+	m_cppcryptfsctl( _to_native_path( engines::executableNotEngineFullPath( "cppcryptfsctl.exe" ) ) ),
 	m_cppcryptfs( QString( m_cppcryptfsctl ).replace( "cppcryptfsctl","cppcryptfs" ) )
 {
 	if( !m_cppcryptfs.isEmpty() ){
@@ -153,6 +158,10 @@ void gocryptfs::updateOptions( engines::engine::cmdArgsList& opt,bool creating )
 
 			opt.createOptions.append( "--password" ) ;
 			opt.createOptions.append( opt.key ) ;
+
+			opt.cipherFolder   = _to_native_path( opt.cipherFolder ) ;
+			opt.mountPoint     = _to_native_path( opt.mountPoint ) ;
+			opt.configFilePath = _to_native_path( opt.configFilePath ) ;
 		}
 		if( opt.boolOptions.unlockInReverseMode ){
 
@@ -165,6 +174,10 @@ void gocryptfs::updateOptions( engines::engine::cmdArgsList& opt,bool creating )
 
 				opt.configFilePath = opt.cipherFolder + "/" + this->configFileName() ;
 			}
+
+			opt.cipherFolder   = _to_native_path( opt.cipherFolder ) ;
+			opt.mountPoint     = _to_native_path( opt.mountPoint ) ;
+			opt.configFilePath = _to_native_path( opt.configFilePath ) ;
 		}
 
 		opt.boolOptions.unlockInReverseMode = [ & ](){
