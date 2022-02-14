@@ -83,7 +83,7 @@ static engines::engine::BaseOptions _setOptions()
 		s.incorrectPasswordText = "cppcryptfs: password incorrect" ;
 
 		s.executableNames = QStringList{ "cppcryptfsctl.exe" } ;
-		s.mountControlStructure  = "--mount %{mountOptions} --cipherPath %{cipherFolder} --mountPath %{mountPoint} --password %{password} %{fuseOpts}" ;
+		s.mountControlStructure  = "--mount %{mountOptions} --cipherPath %{cipherFolder} --mountPath %{mountPoint} %{fuseOpts}" ;
 	}else{
 		s.volumePropertiesCommands = QStringList{ "gocryptfs -info %{cipherFolder}",
 							  "gocryptfs -info %{plainFolder}" } ;
@@ -155,9 +155,6 @@ void gocryptfs::updateOptions( engines::engine::cmdArgsList& opt,bool creating )
 	if( creating ){
 
 		if( utility::platformIsWindows() ){
-
-			opt.createOptions.append( "--password" ) ;
-			opt.createOptions.append( opt.key ) ;
 
 			opt.cipherFolder   = _to_native_path( opt.cipherFolder ) ;
 			opt.mountPoint     = _to_native_path( opt.mountPoint ) ;
