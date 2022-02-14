@@ -105,12 +105,12 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
-#ifdef Q_OS_WIN
-
 static QString _to_native_path( const QString& e )
 {
 	return QDir::toNativeSeparators( e ) ;
 }
+
+#ifdef Q_OS_WIN
 
 gocryptfs::gocryptfs() :
 	engines::engine( _setOptions() ),
