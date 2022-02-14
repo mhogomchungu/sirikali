@@ -36,8 +36,54 @@
 #include "engines/options.h"
 
 #include <QCoreApplication>
+#include <QJsonDocument>
 
 static QString _emptyQString ;
+
+static QStringList _windows_extra_paths_impl()
+{
+	auto bin_path = QDir::homePath() + "/bin/" ;
+
+	auto cppcryptfs_path = bin_path + "cppcryptfs.json" ;
+
+	if( !QFile::exists( cppcryptfs_path ) ){
+
+		QJsonObject obj ;
+		obj.insert( "path","" ) ;
+
+		auto doc = QJsonDocument( obj ).toJson( QJsonDocument::Indented ) ;
+
+		QFile f( cppcryptfs_path ) ;
+
+		f.open( QIODevice::WriteOnly ) ;
+
+		f.write( doc ) ;
+	}
+
+	QFile file( cppcryptfs_path ) ;
+
+	file.open( QIODevice::ReadOnly ) ;
+
+	auto json = QJsonDocument::fromJson( file.readAll() ).object() ;
+
+	auto path = json.value( "path" ).toString() ;
+
+	if( !path.isEmpty() ){
+
+		path += "/" ;
+
+		return { path,bin_path,QDir::currentPath() + "/" } ;
+	}else{
+		return {} ;
+	}
+}
+
+static QStringList _windows_extra_paths()
+{
+	static auto s = _windows_extra_paths_impl() ;
+
+	return s ;
+}
 
 static QStringList _system_search_paths()
 {
@@ -91,6 +137,8 @@ static QStringList _search_path( const QStringList& m )
 				x += _search_path_0( it + "\\" ) ;
 			}
 		}
+
+		x += _windows_extra_paths() ;
 
 		return x ;
 	}else{
