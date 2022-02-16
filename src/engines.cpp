@@ -40,58 +40,17 @@
 
 static QString _emptyQString ;
 
-static QStringList _windows_extra_paths_impl()
-{
-	auto bin_path = QDir::homePath() + "/bin/" ;
-
-	auto cppcryptfs_path = bin_path + "cppcryptfs.json" ;
-
-	if( !QFile::exists( cppcryptfs_path ) ){
-
-		QDir().mkpath( bin_path ) ;
-
-		QJsonObject obj ;
-		obj.insert( "FolderPath","" ) ;
-
-		auto doc = QJsonDocument( obj ).toJson( QJsonDocument::Indented ) ;
-
-		QFile f( cppcryptfs_path ) ;
-
-		f.open( QIODevice::WriteOnly ) ;
-
-		f.write( doc ) ;
-	}
-
-	QFile file( cppcryptfs_path ) ;
-
-	file.open( QIODevice::ReadOnly ) ;
-
-	auto json = QJsonDocument::fromJson( file.readAll() ).object() ;
-
-	auto path = json.value( "FolderPath" ).toString() ;
-
-	if( !path.isEmpty() ){
-
-		path += "/" ;
-
-		return { path,bin_path,QDir::currentPath() + "/" } ;
-	}else{
-		return {} ;
-	}
-}
-
-static QStringList _windows_extra_paths()
-{
-	static auto s = _windows_extra_paths_impl() ;
-
-	return s ;
-}
-
 static QStringList _system_search_paths()
 {
 	if( utility::platformIsWindows() ){
 
-		return { QDir::homePath() + "/bin/",QDir::currentPath() + "/" } ;
+		QStringList m ;
+
+		m.append( settings::instance().windowsExecutableSearchPath() + "/" ) ;
+
+		m.append( QDir::currentPath() + "/" ) ;
+
+		return m ;
 	}
 
 	return { "/usr/local/bin/",
@@ -139,8 +98,6 @@ static QStringList _search_path( const QStringList& m )
 				x += _search_path_0( it + "\\" ) ;
 			}
 		}
-
-		x += _windows_extra_paths() ;
 
 		return x ;
 	}else{
@@ -222,9 +179,9 @@ QString engines::executableNotEngineFullPath( const QString& e )
 
 		return _executableFullPath( e,[](){
 
-			auto m = _windows_extra_paths() ;
+			QStringList m ;
 
-			m.append( QDir::homePath() + "/bin/" ) ;
+			m.append( settings::instance().windowsExecutableSearchPath() + "/" ) ;
 			m.append( QDir::currentPath() + "/" ) ;
 
 			return m ;
