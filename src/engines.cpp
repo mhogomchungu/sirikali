@@ -48,8 +48,10 @@ static QStringList _windows_extra_paths_impl()
 
 	if( !QFile::exists( cppcryptfs_path ) ){
 
+		QDir().mkpath( bin_path ) ;
+
 		QJsonObject obj ;
-		obj.insert( "path","" ) ;
+		obj.insert( "FolderPath","" ) ;
 
 		auto doc = QJsonDocument( obj ).toJson( QJsonDocument::Indented ) ;
 
@@ -66,7 +68,7 @@ static QStringList _windows_extra_paths_impl()
 
 	auto json = QJsonDocument::fromJson( file.readAll() ).object() ;
 
-	auto path = json.value( "path" ).toString() ;
+	auto path = json.value( "FolderPath" ).toString() ;
 
 	if( !path.isEmpty() ){
 
@@ -216,7 +218,20 @@ QStringList engines::executableSearchPaths( const engines::engine& engine )
 
 QString engines::executableNotEngineFullPath( const QString& e )
 {
-	return _executableFullPath( e,[](){ return _system_search_paths() ; } ) ;
+	if( utility::platformIsWindows() ){
+
+		return _executableFullPath( e,[](){
+
+			auto m = _windows_extra_paths() ;
+
+			m.append( QDir::homePath() + "/bin/" ) ;
+			m.append( QDir::currentPath() + "/" ) ;
+
+			return m ;
+		} ) ;
+	}else{
+		return _executableFullPath( e,[](){ return _system_search_paths() ; } ) ;
+	}
 }
 
 QString engines::executableFullPath( const QString& f )
