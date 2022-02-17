@@ -21,11 +21,83 @@
 #include <iostream>
 #include <QProcess>
 #include <QTimer>
+#include <QThread>
 
-#include "task.hpp"
+class result
+{
+public:
+	result( QProcess& p ) :
+		m_exitCode( p.exitCode() ),
+		m_exitStatus( p.exitStatus() ),
+		m_stdOut( p.readAllStandardOutput() ),
+		m_stdError( p.readAllStandardError() )
+	{
+	}
+	const QByteArray& stdOut() const
+	{
+		return m_stdOut ;
+	}
+	const QByteArray& stdError() const
+	{
+		return m_stdError ;
+	}
+	bool success() const
+	{
+		return m_exitCode == 0 && m_exitStatus == QProcess::ExitStatus::NormalExit ;
+	}
+	int exitCode() const
+	{
+		return m_exitCode ;
+	}
+private:
+	int m_exitCode ;
+	QProcess::ExitStatus m_exitStatus ;
+	QByteArray m_stdOut ;
+	QByteArray m_stdError ;
+};
 
-template<typename Function,typename ... Args>
-using result_of = std::result_of_t<Function(Args ...)> ;
+struct arguments
+{
+	arguments( QStringList l ) : args( std::move( l ) )
+	{
+		auto _arg = [ this ]( const QString& arg )->QString{
+
+			int j = args.size() ;
+
+			for( int i = 0 ; i < j ; i++ ){
+
+				if( args.at( i ) == arg ){
+
+					if( i + 1 < j ){
+
+						return args.at( i + 1 ) ;
+					}else{
+						return {} ;
+					}
+				}
+			}
+
+			return {} ;
+		} ;
+
+		cryptFolder   = _arg( "--cipherPath" ) ;
+		mountPoint    = _arg( "--mountPath" ) ;
+		configPath    = _arg( "--config" ) ;
+		cppcryptfsctl = _arg( "--cppcryptfsctl-path" ) ;
+		readOnly      = _arg( "-o" ).startsWith( "ro" ) ;
+	}
+	bool contains( const QString& e ) const
+	{
+		return args.contains( e ) ;
+	}
+	QString cryptFolder ;
+	QString mountPoint ;
+	QString configPath ;
+	QString cppcryptfsctl ;
+	bool readOnly ;
+private:
+	QStringList args ;
+};
 
 template< typename BackGroundTask,typename UiThreadResult >
 static void _runInBgThread( BackGroundTask bgt,UiThreadResult fgt )
@@ -43,71 +115,95 @@ static void _runInBgThread( BackGroundTask bgt,UiThreadResult fgt )
 		}
 		void run() override
 		{
-			m_data = m_bgt() ;
+			m_pointer = new ( &m_storage ) bgt_t( m_bgt() ) ;
 		}
 		void then()
 		{
-			m_fgt( std::move( m_data ) ) ;
+			m_fgt( std::move( *m_pointer ) ) ;
+
+			m_pointer->~bgt_t() ;
 
 			this->deleteLater() ;
 		}
 	private:
 		BackGroundTask m_bgt ;
-		UiThreadResult m_fgt ;
+		UiThreadResult m_fgt ;		
 
-		result_of< BackGroundTask > m_data ;
+#if __cplusplus >= 201703L
+		using bgt_t = std::invoke_result_t< BackGroundTask > ;
+
+		alignas( bgt_t ) std::byte m_storage[ sizeof( bgt_t ) ] ;
+#else
+		using bgt_t = std::result_of_t< BackGroundTask() > ;
+
+		typename std::aligned_storage< sizeof( bgt_t ),alignof( bgt_t ) >::type m_storage ;
+#endif
+		bgt_t * m_pointer ;
 	};
 
 	new Thread( std::move( bgt ),std::move( fgt ) ) ;
 }
 
-static QString _cmdArgumentValue( const QStringList& l,const QString& arg )
+template< typename Result >
+static void _run( const QString& exe,const QStringList& args,const QByteArray& password,Result result )
 {
-	int j = l.size() ;
+	auto cmd = new QProcess() ;
 
-	for( int i = 0 ; i < j ; i++ ){
+	QObject::connect( cmd,&QProcess::started,[ cmd,password ](){
 
-		if( l.at( i ) == arg ){
+		cmd->write( password ) ;
+	} ) ;
 
-			if( i + 1 < j ){
+	using cc = void( QProcess::* )( int,QProcess::ExitStatus ) ;
 
-				return l.at( i + 1 ) ;
-			}else{
-				return {} ;
-			}
-		}
-	}
+	auto s = static_cast< cc >( &QProcess::finished ) ;
 
-	return {} ;
+	QObject::connect( cmd,s,[ cmd,result = std::move( result ) ]( int,QProcess::ExitStatus ){
+
+		result( *cmd ) ;
+
+		cmd->deleteLater() ;
+	} ) ;
+
+	cmd->start( exe,args ) ;
 }
 
-static void _checkMounted( const QString& exe,const QByteArray& cf )
+template< typename Result >
+static void _run( const QString& exe,const QStringList& args,Result r )
 {
-	auto s = Task::process::run( exe,QStringList{ "-l" } ).await().std_out() ;
+	_run( exe,args,{},std::move( r ) ) ;
+}
 
-	const auto e = s.split( '\n' ) ;
+static void _checkMounted( const arguments& args )
+{
+	_run( args.cppcryptfsctl,{ "-l" },[ &args ]( const result& s ){
 
-	bool found = false ;
+		const auto e = s.stdOut().split( '\n' ) ;
 
-	for( const auto& it : e ){
+		auto cf = args.cryptFolder.toUtf8() ;
 
-		if( it.contains( cf ) ){
+		bool found = false ;
 
-			found = true ;
+		for( const auto& it : e ){
 
-			break ;
+			if( it.contains( cf ) ){
+
+				found = true ;
+
+				break ;
+			}
 		}
-	}
 
-	if( found ){
+		if( found ){
 
-		QTimer::singleShot( 2000,[ = ](){
+			QTimer::singleShot( 2000,[ &args ](){
 
-			_checkMounted( exe,cf ) ;
-		} ) ;
-	}else{
-		QCoreApplication::exit( 0 ) ;
-	}
+				_checkMounted( args ) ;
+			} ) ;
+		}else{
+			QCoreApplication::exit( 0 ) ;
+		}
+	} ) ;
 }
 
 template< typename Then >
@@ -132,86 +228,65 @@ static void _read_password( Then then )
 			}
 		}
 
-
 		return s ;
 
 	},std::move( then ) ) ;
 }
 
-static void _mount( QCoreApplication&,const QStringList& l,const QByteArray& password )
+static void _mount( QCoreApplication&,const arguments& arr,const QByteArray& password )
 {
-	auto cryptFolder   = _cmdArgumentValue( l,"--cipherPath" ) ;
-	auto mountPoint    = _cmdArgumentValue( l,"--mountPath" ) ;
-	auto config        = _cmdArgumentValue( l,"--config" ) ;
-	auto cppcryptfsctl = _cmdArgumentValue( l,"--cppcryptfsctl-path" ) ;
-	auto mode          = _cmdArgumentValue( l ,"-o" ) ;
+	QStringList args{ "-p",password,"-d",arr.mountPoint,"-m",arr.cryptFolder,"-c",arr.configPath } ;
 
-	QStringList args{ "-p",password,"-d",mountPoint,"-m",cryptFolder,"-c",config } ;
-
-	if( mode.startsWith( "ro" ) ){
+	if( arr.readOnly ){
 
 		args.append( "-r" ) ;
 	}
 
-	Task::process::run( cppcryptfsctl,args ).then( [ cryptFolder,cppcryptfsctl ]( const auto& m ){
+	_run( arr.cppcryptfsctl,args,[ &arr ]( const result& m ){
 
 		if( m.success() ){
 
 			std::cout << "Mount Success" << std::endl ;
 
-			std::cout << m.std_error().toStdString() << std::endl ;
+			std::cout << m.stdOut().toStdString() << std::endl ;
 
-			auto cf = cryptFolder.toUtf8() ;
+			QTimer::singleShot( 2000,[ &arr ](){
 
-			QTimer::singleShot( 2000,[ = ](){
-
-				_checkMounted( cppcryptfsctl,cf ) ;
+				_checkMounted( arr ) ;
 			} ) ;
 		}else{
-			auto s = QString::number( m.exit_code() ).toStdString() ;
+			auto s = QString::number( m.exitCode() ).toStdString() ;
 			std::cout << "Failed To Mount: Error Code: " + s << std::endl ;
 
-			std::cout << m.std_error().toStdString() << std::endl ;
-			std::cout << m.std_out().toStdString() << std::endl ;
+			std::cout << m.stdError().toStdString() << std::endl ;
+			std::cout << m.stdOut().toStdString() << std::endl ;
 
-			QCoreApplication::exit( m.exit_code() ) ;
+			QCoreApplication::exit( m.exitCode() ) ;
 		}
 	} ) ;
 }
 
-static void _umount( const QStringList& args )
+static void _umount( const arguments& args )
 {
-	auto mountPoint  = _cmdArgumentValue( args,"--mountPath" ) ;
-	auto exe         = _cmdArgumentValue( args,"--cppcryptfsctl-path" ) ;
-
-	Task::process::run( exe,QStringList{ "-u",mountPoint } ).then( []( const auto& m ){
+	_run( args.cppcryptfsctl,{ "-u",args.mountPoint },[]( const result& m ){
 
 		if( m.success() ){
 
 			std::cout << "Umount Success" << std::endl ;
 		}else{
-			auto s = QString::number( m.exit_code() ).toStdString() ;
+			auto s = QString::number( m.exitCode() ).toStdString() ;
 			std::cout << "Failed To Unmount: Error Code: " + s << std::endl ;
 
-			std::cout << m.std_error().toStdString() << std::endl ;
-			std::cout << m.std_out().toStdString() << std::endl ;
+			std::cout << m.stdError().toStdString() << std::endl ;
+			std::cout << m.stdOut().toStdString() << std::endl ;
 		}
 
-		QCoreApplication::exit( m.exit_code() ) ;
+		QCoreApplication::exit( m.exitCode() ) ;
 	} ) ;
 }
 
-static void _create( const QStringList& args,const QByteArray& password )
+static void _create( const arguments& args,const QByteArray& password )
 {
-	auto cipherPath = _cmdArgumentValue( args,"--cipherPath" ) ;
-	auto exe        = _cmdArgumentValue( args,"--cppcryptfsctl-path" ) ;
-
-	if( password.isEmpty() ){
-
-		std::cout << "Create Failed: Error Code: 1 " << std::endl ;
-		std::cout << "Failure Reason: Empty Password" << std::endl ;
-	}
-
 	QStringList opts ;
 
 	if( args.contains( "--siv" ) ){
@@ -229,30 +304,30 @@ static void _create( const QStringList& args,const QByteArray& password )
 		opts.append( "--reverse" ) ;
 	}
 
-	opts.append( "--init=" + cipherPath ) ;
+	opts.append( "--init=" + args.cryptFolder ) ;
 
-	Task::process::run( exe,opts,-1,password ).then( []( const auto& m ){
+	_run( args.cppcryptfsctl,opts,password,[]( const result& m ){
 
 		if( m.success() ){
 
 			std::cout << "Create Success" << std::endl ;
 		}else{
-			auto s = QString::number( m.exit_code() ).toStdString() ;
+			auto s = QString::number( m.exitCode() ).toStdString() ;
 			std::cout << "Create Failed: Error Code: " + s << std::endl ;
 
-			std::cout << m.std_error().toStdString() << std::endl ;
-			std::cout << m.std_out().toStdString() << std::endl ;
+			std::cout << m.stdError().toStdString() << std::endl ;
+			std::cout << m.stdOut().toStdString() << std::endl ;
 		}
 
-		QCoreApplication::exit( m.exit_code() ) ;
+		QCoreApplication::exit( m.exitCode() ) ;
 	} ) ;
 }
 
-static void run( QCoreApplication& app,const QStringList& args )
+static void _run( QCoreApplication& app,const arguments& args )
 {
 	if( args.contains( "--mount" ) ){
 
-		_read_password( [ & ]( const QByteArray& password ){
+		_read_password( [ &app,&args ]( const QByteArray& password ){
 
 			_mount( app,args,password ) ;
 		} ) ;
@@ -278,11 +353,11 @@ int main( int argc,char * argv[] )
 {
 	QCoreApplication a( argc,argv ) ;
 
-	auto args = a.arguments() ;
+	arguments args( a.arguments() ) ;
 
 	QTimer::singleShot( 0,[ & ](){
 
-		run( a,args ) ;
+		_run( a,args ) ;
 	} ) ;
 
 	return a.exec() ;
