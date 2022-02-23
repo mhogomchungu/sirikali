@@ -2112,178 +2112,178 @@ The lite format has become the default on Unix-like operating systems as it is m
         <translation>&amp;Меню</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="626"/>
+        <location filename="../src/sirikali.cpp" line="622"/>
         <source>Unmount All</source>
         <translation>Отмонтировать все</translation>
     </message>
     <message>
         <location filename="../src/sirikali.ui" line="122"/>
-        <location filename="../src/sirikali.cpp" line="632"/>
+        <location filename="../src/sirikali.cpp" line="628"/>
         <source>Favorites</source>
         <translation>Избранное</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="619"/>
+        <location filename="../src/sirikali.cpp" line="615"/>
         <source>Check For Updates</source>
         <translation>Проверка обновлений</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="639"/>
+        <location filename="../src/sirikali.cpp" line="635"/>
         <source>About</source>
         <translation>О программе</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="646"/>
+        <location filename="../src/sirikali.cpp" line="642"/>
         <source>Quit</source>
         <translation>Выход</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="643"/>
+        <location filename="../src/sirikali.cpp" line="639"/>
         <source>Show/Hide</source>
         <translation>Отобразить/Спрятать окно</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="990"/>
+        <location filename="../src/sirikali.cpp" line="986"/>
         <source>ERROR: Volume Path Not Given.</source>
         <translation>ОШИБКА: Путь к тому не указан.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1032"/>
+        <location filename="../src/sirikali.cpp" line="1028"/>
         <source>ERROR: Key Not Found In The Backend.</source>
         <translation>ОШИБКА: Ключ не найден.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1037"/>
+        <location filename="../src/sirikali.cpp" line="1033"/>
         <source>ERROR: Failed To Unlock Requested Backend.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="863"/>
-        <location filename="../src/sirikali.cpp" line="1392"/>
-        <location filename="../src/sirikali.cpp" line="2176"/>
+        <location filename="../src/sirikali.cpp" line="859"/>
+        <location filename="../src/sirikali.cpp" line="1388"/>
+        <location filename="../src/sirikali.cpp" line="2172"/>
         <source>ERROR</source>
         <translation>ОШИБКА</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1392"/>
+        <location filename="../src/sirikali.cpp" line="1388"/>
         <source>Failed To Read Volume Properties</source>
         <translation>Не удалось прочитать Свойства тома</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1372"/>
-        <location filename="../src/sirikali.cpp" line="1394"/>
-        <location filename="../src/sirikali.cpp" line="1418"/>
+        <location filename="../src/sirikali.cpp" line="1368"/>
+        <location filename="../src/sirikali.cpp" line="1390"/>
+        <location filename="../src/sirikali.cpp" line="1414"/>
         <source>INFORMATION</source>
         <translation>ИНФОРМАЦИЯ</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="291"/>
+        <location filename="../src/sirikali.cpp" line="287"/>
         <source>Close All Volumes Before Quitting The Application</source>
         <translation>Закройте все тома перед выходом из приложения</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="304"/>
+        <location filename="../src/sirikali.cpp" line="300"/>
         <source>Close The Following File System(s) Before Quitting The Application
 &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="422"/>
+        <location filename="../src/sirikali.cpp" line="418"/>
         <source>Mount Folder</source>
         <translation>Папка монтирования</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="424"/>
+        <location filename="../src/sirikali.cpp" line="420"/>
         <source>Mount File</source>
         <translation>Файл монтирования</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="457"/>
-        <location filename="../src/sirikali.cpp" line="459"/>
+        <location filename="../src/sirikali.cpp" line="453"/>
+        <location filename="../src/sirikali.cpp" line="455"/>
         <source>%1 Is Not Installed</source>
         <translation>%1 Не установлен</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="629"/>
+        <location filename="../src/sirikali.cpp" line="625"/>
         <source>Unmount All And Quit</source>
         <translation>Отмонтировать все и выйти</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="641"/>
+        <location filename="../src/sirikali.cpp" line="637"/>
         <source>FAQ</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="863"/>
+        <location filename="../src/sirikali.cpp" line="859"/>
         <source>&quot;%1&quot; Folder Must Be Writable</source>
         <translation>Папка &quot;%1&quot; должна быть доступна для записи</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1454"/>
+        <location filename="../src/sirikali.cpp" line="1450"/>
         <source>Unmount</source>
         <translation>Отмонтировать</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1458"/>
+        <location filename="../src/sirikali.cpp" line="1454"/>
         <source>Add To Favorites</source>
         <translation>Добавить в Избранное</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1881"/>
+        <location filename="../src/sirikali.cpp" line="1877"/>
         <source>Select A File To Be Mounted</source>
         <translation>Выберите файл для монтирования</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="2231"/>
+        <location filename="../src/sirikali.cpp" line="2227"/>
         <source>Failed To Unmount 1 Volume.</source>
         <translation>Не удалось размонтировать 1 том.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="2233"/>
+        <location filename="../src/sirikali.cpp" line="2229"/>
         <source>Failed To Unmount %1 Volumes.</source>
         <translation>Не удалось размонтировать %1 тома(ов).</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1452"/>
+        <location filename="../src/sirikali.cpp" line="1448"/>
         <source>Open Folder</source>
         <translation>Открыть директорию</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="636"/>
+        <location filename="../src/sirikali.cpp" line="632"/>
         <source>Settings</source>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1456"/>
+        <location filename="../src/sirikali.cpp" line="1452"/>
         <source>Properties</source>
         <translation>Свойства</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1462"/>
+        <location filename="../src/sirikali.cpp" line="1458"/>
         <source>Close Menu</source>
         <translation>Закрыть меню</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="292"/>
-        <location filename="../src/sirikali.cpp" line="306"/>
-        <location filename="../src/sirikali.cpp" line="1564"/>
-        <location filename="../src/sirikali.cpp" line="2231"/>
-        <location filename="../src/sirikali.cpp" line="2233"/>
+        <location filename="../src/sirikali.cpp" line="288"/>
+        <location filename="../src/sirikali.cpp" line="302"/>
+        <location filename="../src/sirikali.cpp" line="1560"/>
+        <location filename="../src/sirikali.cpp" line="2227"/>
+        <location filename="../src/sirikali.cpp" line="2229"/>
         <source>WARNING</source>
         <translation>ПРЕДУПРЕЖДЕНИЕ</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1565"/>
+        <location filename="../src/sirikali.cpp" line="1561"/>
         <source>Could Not Open Mount Point Because &quot;%1&quot; Tool Does Not Appear To Be Working Correctly.</source>
         <translation>Не удалось открыть точку монтирования, потому что инструмент «%1» не работает корректно.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1614"/>
+        <location filename="../src/sirikali.cpp" line="1610"/>
         <source>&amp;Quit</source>
         <translation>&amp;Выход</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1878"/>
+        <location filename="../src/sirikali.cpp" line="1874"/>
         <source>Select An Encrypted Volume Directory</source>
         <translation>Выберите папку зашифрованного тома</translation>
     </message>

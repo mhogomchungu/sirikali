@@ -105,7 +105,31 @@ options:
 	-u   Unmount volume.
 	-p   Print a list of unlocked volumes.
 	-s   Option to trigger generation of password hash.</source>
-        <translation type="unfinished"></translation>
+        <translation>
+Options:
+	-d   localisation du chemin d&apos;un volume pour être auto déverrouillé / monté
+	-m   à utiliser pour ouvrir un gestionnaire de fichiers par défaut (l&apos;outil par défaut est xdg-open)
+	-e   démarre l&apos;application sans afficher l&apos;interface graphique
+	-b   Nom du processus pour  to récupérer le mot de passe du volume quand il est ouvert depuis la ligne de commande CLI.
+	     Les processus supportés sont : &quot;internal&quot;,&quot;stdin&quot;,&quot;keyfile&quot;,&quot;osxkeychain&quot;,&quot;kwallet&quot; and &quot;libsecret&quot;.
+	     Les trois premiers sont toujours dispo mais les autres ont des dépendances à compiler.
+	     &quot;internal&quot; option amène SiriKali à lire le mot de passe depuis lxqt-wallet internal backend.
+	     &quot;stdin&quot; option amène SiriKali à lire le mot de passe depuis standard input.
+	     &quot;keyfile&quot; option amène SiriKali à lire le mot de passe depuis un simple fichier.
+	     &quot;libsecret&quot; option amène SiriKali à lire le mot de passe depuis lxqt-wallet libsecret backend.
+	     &quot;kwallet&quot; option amène SiriKali à lire le mot de passe depuis lxqt-wallet kwallet backend.
+	     &quot;osxkeychain&quot; option amène SiriKali à lire le mot de passe depuis lxqt-wallet OSX key chain backend.
+	-k   quand il est ouvert depuis la ligne de commande CLI, la valeur &quot;rw&quot; ouvrira le volume en mode read\write (lecture/écriture)
+	     la valeur &quot;ro&quot; ouvrira le volume en mode read only (lecture seule).
+	-z   Chemin complet du point de montage à utiliser quand il est ouvert depuis la ligne de commande CLI.
+	     Cette option est toutefois facultative.
+	-c   Paramètre le fichier de configuration du volume quand il est ouvert depuis la ligne de commande CLI.
+	-i   Paramètre le temps d&apos;inactivité (en minutes) pour démonter le volume quand le montage a été fait en ligne de commande CLI.
+	-o   Paramètre les options de montage quand le montage va être fait en ligne de commande CLI.
+	-f   Chemin vers le fichier de clé.
+	-u   Démonte le volume.
+	-p   Affiche la liste des volumes déchiffrés.
+	-s   Option pour déclencher la génération du hash du mot de passe.</translation>
     </message>
     <message>
         <location filename="../src/utility.cpp" line="690"/>
@@ -812,7 +836,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/engines/encfscreateoptions.cpp" line="40"/>
         <source>Normally EncFS provides a plaintext view of data on demand: it stores enciphered data and displays plaintext data. With this option set, it takes as source plaintext data and produces enciphered data on-demand. This can be useful for creating remote encrypted backups, where you do not wish to keep the local files unencrypted.</source>
-        <translation type="unfinished"></translation>
+        <translation>En général EncFS fournit à la demande une vision en clair des données : il stocke les données chiffrées et affiche les textes clair. Avec cette option activée, il prend comme source les données en texte brut et produit des données chiffrées à la demande. Cela peut être utile pour créer des sauvegardes chiffrées à distance, où vous ne souhaitez pas conserver les fichiers locaux non chiffrés.</translation>
     </message>
 </context>
 <context>
@@ -1198,7 +1222,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/favorites2.cpp" line="1168"/>
         <source>Sshfs Remote Path Must Be In Below Format:
 woof@example.com:/remote/path</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="1177"/>
@@ -2078,179 +2102,179 @@ Le &quot;format allégé&quot; est devenu le mode par défaut des systèmes bas�
         <translation>&amp;Menu</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="626"/>
+        <location filename="../src/sirikali.cpp" line="622"/>
         <source>Unmount All</source>
         <translation>Démonter tout</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="457"/>
-        <location filename="../src/sirikali.cpp" line="459"/>
+        <location filename="../src/sirikali.cpp" line="453"/>
+        <location filename="../src/sirikali.cpp" line="455"/>
         <source>%1 Is Not Installed</source>
         <translation>%1 n&apos;est pas installé</translation>
     </message>
     <message>
         <location filename="../src/sirikali.ui" line="122"/>
-        <location filename="../src/sirikali.cpp" line="632"/>
+        <location filename="../src/sirikali.cpp" line="628"/>
         <source>Favorites</source>
         <translation>Favoris</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="619"/>
+        <location filename="../src/sirikali.cpp" line="615"/>
         <source>Check For Updates</source>
         <translation>Tester si la version du logiciel est à jour</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="639"/>
+        <location filename="../src/sirikali.cpp" line="635"/>
         <source>About</source>
         <translation>À propos</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="646"/>
+        <location filename="../src/sirikali.cpp" line="642"/>
         <source>Quit</source>
         <translation>Quitter</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="643"/>
+        <location filename="../src/sirikali.cpp" line="639"/>
         <source>Show/Hide</source>
         <translation>Montrer/Cacher</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="990"/>
+        <location filename="../src/sirikali.cpp" line="986"/>
         <source>ERROR: Volume Path Not Given.</source>
         <translation>ERREUR: Chemin du volume non fourni.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1032"/>
+        <location filename="../src/sirikali.cpp" line="1028"/>
         <source>ERROR: Key Not Found In The Backend.</source>
         <translation>ERREUR: Clé non trouvée dans le Gestionnaire.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1037"/>
+        <location filename="../src/sirikali.cpp" line="1033"/>
         <source>ERROR: Failed To Unlock Requested Backend.</source>
         <translation>ERREUR: Echec du déverrouillage du Gestionnaire sélectionné.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="863"/>
-        <location filename="../src/sirikali.cpp" line="1392"/>
-        <location filename="../src/sirikali.cpp" line="2176"/>
+        <location filename="../src/sirikali.cpp" line="859"/>
+        <location filename="../src/sirikali.cpp" line="1388"/>
+        <location filename="../src/sirikali.cpp" line="2172"/>
         <source>ERROR</source>
         <translation>ERREUR</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1392"/>
+        <location filename="../src/sirikali.cpp" line="1388"/>
         <source>Failed To Read Volume Properties</source>
         <translation>Echec de la lecture des propriétés du volume</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1372"/>
-        <location filename="../src/sirikali.cpp" line="1394"/>
-        <location filename="../src/sirikali.cpp" line="1418"/>
+        <location filename="../src/sirikali.cpp" line="1368"/>
+        <location filename="../src/sirikali.cpp" line="1390"/>
+        <location filename="../src/sirikali.cpp" line="1414"/>
         <source>INFORMATION</source>
         <translation>INFORMATION</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="291"/>
+        <location filename="../src/sirikali.cpp" line="287"/>
         <source>Close All Volumes Before Quitting The Application</source>
         <translation>Fermer tous les volumes avant de quitter l&apos;application</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="304"/>
+        <location filename="../src/sirikali.cpp" line="300"/>
         <source>Close The Following File System(s) Before Quitting The Application
 &quot;%1&quot;</source>
         <translation>Fermer le(s) système(s) de fichier suivant avant de quitter l&apos;application
 &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="422"/>
+        <location filename="../src/sirikali.cpp" line="418"/>
         <source>Mount Folder</source>
         <translation>Répertoire monté</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="424"/>
+        <location filename="../src/sirikali.cpp" line="420"/>
         <source>Mount File</source>
         <translation>Fichier monté</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="629"/>
+        <location filename="../src/sirikali.cpp" line="625"/>
         <source>Unmount All And Quit</source>
         <translation>Démonter tout et quitter</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="636"/>
+        <location filename="../src/sirikali.cpp" line="632"/>
         <source>Settings</source>
         <translation>Paramétrages</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="641"/>
+        <location filename="../src/sirikali.cpp" line="637"/>
         <source>FAQ</source>
         <translation>Foire Aux Questions</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="863"/>
+        <location filename="../src/sirikali.cpp" line="859"/>
         <source>&quot;%1&quot; Folder Must Be Writable</source>
         <translation>&quot;%1&quot; Répertoire devant être autorisé en écriture</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1454"/>
+        <location filename="../src/sirikali.cpp" line="1450"/>
         <source>Unmount</source>
         <translation>Démonter</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1458"/>
+        <location filename="../src/sirikali.cpp" line="1454"/>
         <source>Add To Favorites</source>
         <translation>Ajouter aux favoris</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1881"/>
+        <location filename="../src/sirikali.cpp" line="1877"/>
         <source>Select A File To Be Mounted</source>
         <translation>Sélectiionner un fichier à monter</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="2231"/>
+        <location filename="../src/sirikali.cpp" line="2227"/>
         <source>Failed To Unmount 1 Volume.</source>
         <translation>Echec de démontage d&apos;un volume.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="2233"/>
+        <location filename="../src/sirikali.cpp" line="2229"/>
         <source>Failed To Unmount %1 Volumes.</source>
         <translation>Echec de démontage de %1 volumes.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1452"/>
+        <location filename="../src/sirikali.cpp" line="1448"/>
         <source>Open Folder</source>
         <translation>Ouvrir Répertoire</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1456"/>
+        <location filename="../src/sirikali.cpp" line="1452"/>
         <source>Properties</source>
         <translation>Propriétés</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1462"/>
+        <location filename="../src/sirikali.cpp" line="1458"/>
         <source>Close Menu</source>
         <translation>Fermer le Menu</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="292"/>
-        <location filename="../src/sirikali.cpp" line="306"/>
-        <location filename="../src/sirikali.cpp" line="1564"/>
-        <location filename="../src/sirikali.cpp" line="2231"/>
-        <location filename="../src/sirikali.cpp" line="2233"/>
+        <location filename="../src/sirikali.cpp" line="288"/>
+        <location filename="../src/sirikali.cpp" line="302"/>
+        <location filename="../src/sirikali.cpp" line="1560"/>
+        <location filename="../src/sirikali.cpp" line="2227"/>
+        <location filename="../src/sirikali.cpp" line="2229"/>
         <source>WARNING</source>
         <translation>Attention</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1565"/>
+        <location filename="../src/sirikali.cpp" line="1561"/>
         <source>Could Not Open Mount Point Because &quot;%1&quot; Tool Does Not Appear To Be Working Correctly.</source>
         <translation>Impossible d&apos;ouvrir le point de montage parce que l&apos;outil &quot;%1&quot; ne semble pas fonctionner correctement.</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1614"/>
+        <location filename="../src/sirikali.cpp" line="1610"/>
         <source>&amp;Quit</source>
         <translation>&amp;Quitter</translation>
     </message>
     <message>
-        <location filename="../src/sirikali.cpp" line="1878"/>
+        <location filename="../src/sirikali.cpp" line="1874"/>
         <source>Select An Encrypted Volume Directory</source>
         <translation>Sélectionner un répertoire de volume</translation>
     </message>
