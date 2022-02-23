@@ -214,11 +214,7 @@ int sirikali::run( const QStringList& args,int argc,char * argv[] )
 
 		srk.setApplicationName( "SiriKali" ) ;
 
-		starter str( args,srk ) ;
-
-		QMetaObject::invokeMethod( &str,"start",Qt::QueuedConnection ) ;
-
-		return srk.exec() ;
+		return starter( args,srk ).exec() ;
 	}
 }
 

@@ -303,9 +303,14 @@ class starter : public QObject
 public:
 	starter( const QStringList& args,QApplication& app ) : m_args( args ),m_app( app )
 	{
+		QMetaObject::invokeMethod( this,"start",Qt::QueuedConnection ) ;
 	}
 	~starter()
 	{
+	}
+	int exec()
+	{
+		return m_app.exec() ;
 	}
 private slots :
 	void start()
