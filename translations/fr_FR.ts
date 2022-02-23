@@ -604,7 +604,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configoptions.ui" line="304"/>
         <source>Use Dark Theme(Restarting Required)</source>
-        <translation type="unfinished"></translation>
+        <translation>Utiliser le thème sombre (relancement requis du programme)</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="313"/>
@@ -998,7 +998,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.ui" line="587"/>
         <source>Set Full Mount Point Path Instead Of Mount Prefix</source>
-        <translation type="unfinished"></translation>
+        <translation>Configurer un chemin complet du point de montage au lieu d&apos;un préfixe de montage</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="844"/>
