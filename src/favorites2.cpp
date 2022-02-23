@@ -490,6 +490,17 @@ favorites2::favorites2( QWidget * parent,
 		this->HideUI() ;
 	} ) ;
 
+	m_ui->tableWidget->setContextMenuPolicy( Qt::ContextMenuPolicy::CustomContextMenu ) ;
+
+	connect( m_ui->tableWidget,&QTableWidget::customContextMenuRequested,[ this ]( const QPoint& ){
+
+		QMenu m ;
+
+		this->setMenu( m ) ;
+
+		m.exec( QCursor::pos() ) ;
+	} ) ;
+
 	connect( m_ui->tableWidget,&QTableWidget::itemClicked,[ this ]( QTableWidgetItem * item ){
 
 		const auto& volumes = favorites::instance().readFavorites() ;
@@ -606,30 +617,39 @@ favorites2::favorites2( QWidget * parent,
 
 	auto optionsMenu = new QMenu( this ) ;
 
-	optionsMenu->setFont( this->font() ) ;
+	this->setMenu( *optionsMenu ) ;
 
-	connect( optionsMenu->addAction( tr( "Toggle AutoMount" ) ),&QAction::triggered,[ this ](){
+	m_ui->pbOptions->setMenu( optionsMenu ) ;
+
+	this->ShowUI() ;
+}
+
+void favorites2::setMenu( QMenu& m )
+{
+	m.setFont( this->font() ) ;
+
+	connect( m.addAction( tr( "Toggle AutoMount" ) ),&QAction::triggered,[ this ](){
 
 		this->toggleAutoMount() ;
 	} ) ;
 
-	optionsMenu->addSeparator() ;
+	m.addSeparator() ;
 
-	connect( optionsMenu->addAction( tr( "Edit" ) ),&QAction::triggered,[ this ](){
+	connect( m.addAction( tr( "Edit" ) ),&QAction::triggered,[ this ](){
 
 		this->edit() ;
 	} ) ;
 
-	optionsMenu->addSeparator() ;
+	m.addSeparator() ;
 
-	connect( optionsMenu->addAction( tr( "Remove Selected Entry" ) ),&QAction::triggered,[ this ](){
+	connect( m.addAction( tr( "Remove Selected Entry" ) ),&QAction::triggered,[ this ](){
 
 		this->removeEntryFromFavoriteList() ;
 	} ) ;
 
-	optionsMenu->addSeparator() ;
+	m.addSeparator() ;
 
-	connect( optionsMenu->addAction( tr( "Add Entry To Default Wallet" ) ),&QAction::triggered,[ this ](){
+	connect( m.addAction( tr( "Add Entry To Default Wallet" ) ),&QAction::triggered,[ this ](){
 
 		auto table = m_ui->tableWidget ;
 
@@ -650,13 +670,9 @@ favorites2::favorites2( QWidget * parent,
 		}
 	} ) ;
 
-	optionsMenu->addSeparator() ;
+	m.addSeparator() ;
 
-	optionsMenu->addAction( tr( "Cancel" ) ) ;
-
-	m_ui->pbOptions->setMenu( optionsMenu ) ;
-
-	this->ShowUI() ;
+	m.addAction( tr( "Cancel" ) ) ;
 }
 
 favorites2::~favorites2()

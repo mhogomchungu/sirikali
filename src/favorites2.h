@@ -78,6 +78,7 @@ private :
 	void configPath( void ) ;
 	void removeEntryFromFavoriteList( void ) ;
 	void cancel( void ) ;
+	void setMenu( QMenu& ) ;
 	void folderPath( void ) ;
 	void filePath( void ) ;
 	void mountPointPath( void ) ;
