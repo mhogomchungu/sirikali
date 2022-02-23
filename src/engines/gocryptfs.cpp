@@ -118,10 +118,6 @@ gocryptfs::gocryptfs() :
 	m_cppcryptfsctl( _to_native_path( engines::executableNotEngineFullPath( "cppcryptfsctl.exe" ) ) ),
 	m_cppcryptfs( QString( m_cppcryptfsctl ).replace( "cppcryptfsctl","cppcryptfs" ) )
 {
-	if( !m_cppcryptfs.isEmpty() ){
-
-		Task::process::run( m_cppcryptfs,QStringList{ "--tray" } ).start() ;
-	}
 }
 
 #else
@@ -250,6 +246,34 @@ void gocryptfs::GUIMountOptions( const engines::engine::mountGUIOptions& s ) con
 	} ;
 
 	e.ShowUI() ;
+}
+
+QByteArray gocryptfs::prepareBackend() const
+{
+	if( utility::platformIsWindows() ){
+
+		for( int i = 0 ; i < 5 ; i++ ){
+
+			auto m = Task::process::run( "taskList",{ "/fi","IMAGENAME eq cppcryptfs.exe" } ).await() ;
+
+			if( m.std_out().contains( "cppcryptfs.exe" ) ){
+
+				utility::debug() << "Cppcryptfs Status: Running" ;
+
+				return {} ;
+			}else{
+				utility::debug() << "Starting An Instance Of Cppcryptfs" ;
+
+				Task::process::run( m_cppcryptfs,QStringList{ "--tray" } ).start() ;
+
+				utility::Task::suspendForOneSecond() ;
+			}
+		}
+
+		return "Failed To Start An Instance of \"Cppcryptfs\"" ;
+	}else{
+		return {} ;
+	}
 }
 
 engines::engine::args gocryptfs::command( const QByteArray& password,

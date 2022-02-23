@@ -162,6 +162,18 @@ bool processManager::backEndTimedOut( const QString& e )
 
 Task::process::result processManager::add( const processManager::opts& opts )
 {
+	auto error = []( const QByteArray& e ){
+
+		return Task::process::result( e,QByteArray(),-1,0,true ) ;
+	} ;
+
+	auto e = opts.engine.prepareBackend() ;
+
+	if( !e.isEmpty() ){
+
+		return error( e ) ;
+	}
+
 	auto exe = utility2::unique_qptr< QProcess >() ;
 
 	exe->setProcessEnvironment( opts.engine.getProcessEnvironment() ) ;
@@ -176,11 +188,6 @@ Task::process::result processManager::add( const processManager::opts& opts )
 	logger.showText( opts.args.cmd,opts.args.cmd_args ) ;
 
 	auto m = _getProcessOutput( *exe,opts.engine ) ;
-
-	auto error = []( const QByteArray& e ){
-
-		return Task::process::result( e,QByteArray(),-1,0,true ) ;
-	} ;
 
 	auto s = [ & ](){
 

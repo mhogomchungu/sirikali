@@ -32,6 +32,8 @@ public:
 
 	void GUIMountOptions( const engines::engine::mountGUIOptions& ) const override ;
 
+	QByteArray prepareBackend() const override ;
+
 	args command( const QByteArray& password,
 		      const engines::engine::cmdArgsList& args,
 		      bool create ) const override ;

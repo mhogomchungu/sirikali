@@ -442,7 +442,7 @@
        </rect>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tabGeneralOptions">
        <attribute name="title">
@@ -577,9 +577,9 @@
        <widget class="QCheckBox" name="cbSetMountPathNotPrefix">
         <property name="geometry">
          <rect>
-          <x>680</x>
+          <x>690</x>
           <y>120</y>
-          <width>31</width>
+          <width>21</width>
           <height>31</height>
          </rect>
         </property>

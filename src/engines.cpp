@@ -542,10 +542,6 @@ Task::future< QString >& engines::engine::volumeProperties( const QString& ciphe
 					}
 				}
 
-				utility::debug::cout() << "exe: " + exe ;
-				utility::debug::cout() << "a: " << a ;
-				utility::debug::cout() << "-----" ;
-
 				auto e = utility::unwrap( utility::Task::run( exe,a ) ) ;
 
 				if( e.success() ){
@@ -976,6 +972,11 @@ bool engines::engine::autoDeletesMountPoint() const
 bool engines::engine::takesTooLongToUnlock() const
 {
 	return m_Options.takesTooLongToUnlock ;
+}
+
+QByteArray engines::engine::prepareBackend() const
+{
+	return {} ;
 }
 
 bool engines::engine::requiresPolkit() const

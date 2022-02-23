@@ -701,6 +701,8 @@ public:
 
 		virtual bool takesTooLongToUnlock() const ;
 
+		virtual QByteArray prepareBackend() const ;
+
 		virtual engine::engine::status passAllRequirenments( const engines::engine::cmdArgsList& ) const ;
 
 		struct ownsCipherFolder{
