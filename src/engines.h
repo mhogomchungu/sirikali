@@ -682,6 +682,8 @@ public:
 
 		engines::engine::exe_args unMountCommand( const engines::engine::terminate_process& e ) const ;
 
+		virtual const QStringList& windowsUnmountCommand() const ;
+
 		virtual terminate_result terminateProcess( const terminate_process& ) const ;
 
 		virtual terminate_result terminateProcess( const QString& mountPath ) const ;

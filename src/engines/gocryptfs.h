@@ -32,6 +32,8 @@ public:
 
 	void GUIMountOptions( const engines::engine::mountGUIOptions& ) const override ;
 
+	const QStringList& windowsUnmountCommand() const override ;
+
 	QByteArray prepareBackend() const override ;
 
 	args command( const QByteArray& password,
@@ -45,4 +47,6 @@ private:
 	QString m_sirikaliCppcryptfsExe ;
 	QString m_cppcryptfsctl ;
 	QString m_cppcryptfs ;
+	QStringList m_windowsUnmountCommand ;
+	mutable bool m_quitCppcryptfsOnUmount ;
 } ;

@@ -1135,11 +1135,13 @@ engines::engine::exe_args engines::engine::unMountCommand( const engines::engine
 
 	if( utility::platformIsWindows() ){
 
-		if( m_Options.windowsUnMountCommand.isEmpty() ){
+		const auto& w = this->windowsUnmountCommand() ;
+
+		if( w.isEmpty() ){
 
 			return {} ;
 		}else{
-			return _replace_opts( m_Options.windowsUnMountCommand ) ;
+			return _replace_opts( w ) ;
 		}
 	}else{
 		if( m_Options.unMountCommand.isEmpty() ){
@@ -1154,6 +1156,11 @@ engines::engine::exe_args engines::engine::unMountCommand( const engines::engine
 			return _replace_opts( m_Options.unMountCommand ) ;
 		}
 	}
+}
+
+const QStringList& engines::engine::windowsUnmountCommand() const
+{
+	return m_Options.windowsUnMountCommand ;
 }
 
 const QString& engines::engine::configFileArgument() const

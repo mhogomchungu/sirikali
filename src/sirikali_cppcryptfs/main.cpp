@@ -23,6 +23,27 @@
 #include <QTimer>
 #include <QThread>
 
+class counter
+{
+public:
+	counter( int s ) : m_max( s )
+	{
+	}
+	bool Continue() const
+	{
+		return m_counter < m_max ;
+	}
+	counter next() const
+	{
+		counter c = *this ;
+		c.m_counter++ ;
+		return c ;
+	}
+private:
+	int m_max ;
+	int m_counter = 0 ;
+};
+
 class result
 {
 public:
@@ -48,6 +69,10 @@ public:
 	int exitCode() const
 	{
 		return m_exitCode ;
+	}
+	bool pipeConnectionFailed() const
+	{
+		return m_stdError.contains( "Named pipe connection wait failed" ) ;
 	}
 private:
 	int m_exitCode ;
@@ -85,6 +110,7 @@ struct arguments
 		configPath    = _arg( "--config" ) ;
 		cppcryptfsctl = _arg( "--cppcryptfsctl-path" ) ;
 		readOnly      = _arg( "-o" ).startsWith( "ro" ) ;
+		quitCppcryptfs = this->contains( "--exit" ) ;
 	}
 	bool contains( const QString& e ) const
 	{
@@ -95,6 +121,7 @@ struct arguments
 	QString configPath ;
 	QString cppcryptfsctl ;
 	bool readOnly ;
+	bool quitCppcryptfs ;
 private:
 	QStringList args ;
 };
@@ -131,11 +158,9 @@ static void _runInBgThread( BackGroundTask bgt,UiThreadResult fgt )
 
 #if __cplusplus >= 201703L
 		using bgt_t = std::invoke_result_t< BackGroundTask > ;
-
 		alignas( bgt_t ) std::byte m_storage[ sizeof( bgt_t ) ] ;
 #else
 		using bgt_t = std::result_of_t< BackGroundTask() > ;
-
 		typename std::aligned_storage< sizeof( bgt_t ),alignof( bgt_t ) >::type m_storage ;
 #endif
 		bgt_t * m_pointer ;
@@ -206,6 +231,13 @@ static void _checkMounted( const arguments& args )
 	} ) ;
 }
 
+static void _msg( const result& r,const char * msg )
+{
+	std::cout << "status: " << msg << "\n" ;
+	std::cout << "std out: " + r.stdOut().trimmed().toStdString() << "\n" ;
+	std::cout << "std error: " + r.stdError().trimmed().toStdString() << std::endl ;
+}
+
 template< typename Then >
 static void _read_password( Then then )
 {
@@ -233,7 +265,7 @@ static void _read_password( Then then )
 	},std::move( then ) ) ;
 }
 
-static void _mount( QCoreApplication&,const arguments& arr,const QByteArray& password )
+static void _mount( const arguments& arr,const QByteArray& password,counter c )
 {
 	QStringList args{ "-p",password,"-d",arr.mountPoint,"-m",arr.cryptFolder,"-c",arr.configPath } ;
 
@@ -242,50 +274,57 @@ static void _mount( QCoreApplication&,const arguments& arr,const QByteArray& pas
 		args.append( "-r" ) ;
 	}
 
-	_run( arr.cppcryptfsctl,args,[ &arr ]( const result& m ){
+	_run( arr.cppcryptfsctl,args,[ &arr,password,c ]( const result& m ){
 
 		if( m.success() ){
 
-			std::cout << "Mount Success" << std::endl ;
-
-			std::cout << m.stdOut().toStdString() << std::endl ;
+			_msg( m,"Mount Success" ) ;
 
 			QTimer::singleShot( 2000,[ &arr ](){
 
 				_checkMounted( arr ) ;
 			} ) ;
 		}else{
-			auto s = QString::number( m.exitCode() ).toStdString() ;
-			std::cout << "Failed To Mount: Error Code: " + s << std::endl ;
+			_msg( m,"Failed To Mount" ) ;
 
-			std::cout << m.stdError().toStdString() << std::endl ;
-			std::cout << m.stdOut().toStdString() << std::endl ;
+			if( c.Continue() && m.pipeConnectionFailed() ){
+
+				return _mount( arr,password,c.next() ) ;
+			}
 
 			QCoreApplication::exit( m.exitCode() ) ;
 		}
 	} ) ;
 }
 
-static void _umount( const arguments& args )
+static void _umount( const arguments& args,counter c )
 {
-	_run( args.cppcryptfsctl,{ "-u",args.mountPoint },[]( const result& m ){
+	QStringList opts{ "-u",args.mountPoint } ;
+
+	if( args.quitCppcryptfs ){
+
+		opts.append( "--exit" ) ;
+	}
+
+	_run( args.cppcryptfsctl,opts,[ &args,c ]( const result& m ){
 
 		if( m.success() ){
 
-			std::cout << "Umount Success" << std::endl ;
+			_msg( m,"Umount Success" ) ;
 		}else{
-			auto s = QString::number( m.exitCode() ).toStdString() ;
-			std::cout << "Failed To Unmount: Error Code: " + s << std::endl ;
+			_msg( m,"Failed To Unmount" ) ;
 
-			std::cout << m.stdError().toStdString() << std::endl ;
-			std::cout << m.stdOut().toStdString() << std::endl ;
+			if( c.Continue() && m.pipeConnectionFailed() ){
+
+				return _umount( args,c.next() ) ;
+			}
 		}
 
 		QCoreApplication::exit( m.exitCode() ) ;
 	} ) ;
 }
 
-static void _create( const arguments& args,const QByteArray& password )
+static void _create( const arguments& args,const QByteArray& password,counter c )
 {
 	QStringList opts ;
 
@@ -306,41 +345,42 @@ static void _create( const arguments& args,const QByteArray& password )
 
 	opts.append( "--init=" + args.cryptFolder ) ;
 
-	_run( args.cppcryptfsctl,opts,password,[]( const result& m ){
+	_run( args.cppcryptfsctl,opts,password,[ &args,password,c ]( const result& m ){
 
 		if( m.success() ){
 
-			std::cout << "Create Success" << std::endl ;
+			_msg( m,"Create Success" ) ;
 		}else{
-			auto s = QString::number( m.exitCode() ).toStdString() ;
-			std::cout << "Create Failed: Error Code: " + s << std::endl ;
+			_msg( m,"Failed To Create" ) ;
 
-			std::cout << m.stdError().toStdString() << std::endl ;
-			std::cout << m.stdOut().toStdString() << std::endl ;
+			if( c.Continue() && m.pipeConnectionFailed() ){
+
+				return _create( args,password,c.next() ) ;
+			}
 		}
 
 		QCoreApplication::exit( m.exitCode() ) ;
 	} ) ;
 }
 
-static void _run( QCoreApplication& app,const arguments& args )
+static void _run( const arguments& args )
 {
 	if( args.contains( "--mount" ) ){
 
-		_read_password( [ &app,&args ]( const QByteArray& password ){
+		_read_password( [ &args ]( const QByteArray& password ){
 
-			_mount( app,args,password ) ;
+			_mount( args,password,3 ) ;
 		} ) ;
 
 	}else if( args.contains( "--umount" ) ){
 
-		_umount( args ) ;
+		_umount( args,3 ) ;
 
 	}else if( args.contains( "--create" ) ){
 
 		_read_password( [ & ]( const QByteArray& password ){
 
-			_create( args,password ) ;
+			_create( args,password,3 ) ;
 		} ) ;
 	}else{
 		std::cout << "Unknown command" << std::endl ;
@@ -357,7 +397,7 @@ int main( int argc,char * argv[] )
 
 	QTimer::singleShot( 0,[ & ](){
 
-		_run( a,args ) ;
+		_run( args ) ;
 	} ) ;
 
 	return a.exec() ;

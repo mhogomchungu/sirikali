@@ -78,7 +78,7 @@ static engines::engine::BaseOptions _setOptions()
 		s.passwordFormat        = "%{password}" ;
 
 		s.successfulMountedList = QStringList{ "Mount Success" } ;
-		s.failedToMountList     = QStringList{ "Failed To Mount: Error Code" } ;
+		s.failedToMountList     = QStringList{ "Failed To Mount" } ;
 
 		s.incorrectPasswordText = "cppcryptfs: password incorrect" ;
 
@@ -116,7 +116,8 @@ gocryptfs::gocryptfs() :
 	engines::engine( _setOptions() ),
 	m_sirikaliCppcryptfsExe( _to_native_path( engines::executableNotEngineFullPath( "sirikali_cppcryptfs.exe" ) ) ),
 	m_cppcryptfsctl( _to_native_path( engines::executableNotEngineFullPath( "cppcryptfsctl.exe" ) ) ),
-	m_cppcryptfs( QString( m_cppcryptfsctl ).replace( "cppcryptfsctl","cppcryptfs" ) )
+	m_cppcryptfs( QString( m_cppcryptfsctl ).replace( "cppcryptfsctl","cppcryptfs" ) ),
+	m_windowsUnmountCommand( this->windowsUnmountCommand() + QStringList{ "--exit" } )
 {
 }
 
@@ -248,25 +249,51 @@ void gocryptfs::GUIMountOptions( const engines::engine::mountGUIOptions& s ) con
 	e.ShowUI() ;
 }
 
+const QStringList& gocryptfs::windowsUnmountCommand() const
+{
+	if( m_quitCppcryptfsOnUmount ){
+
+		return m_windowsUnmountCommand ;
+	}else{
+		return engines::engine::windowsUnmountCommand() ;
+	}
+}
+
+static bool _cppcryptfs_is_running()
+{
+	auto m = Task::process::run( "taskList",{ "/fi","IMAGENAME eq cppcryptfs.exe" } ).await() ;
+
+	return m.std_out().contains( "cppcryptfs.exe" ) ;
+}
+
 QByteArray gocryptfs::prepareBackend() const
 {
 	if( utility::platformIsWindows() ){
 
+		if( _cppcryptfs_is_running() ){
+
+			m_quitCppcryptfsOnUmount = false ;
+
+			utility::debug() << "Cppcryptfs Status: Running" ;
+
+			return {} ;
+		}else{
+			m_quitCppcryptfsOnUmount = true ;
+		}
+
 		for( int i = 0 ; i < 5 ; i++ ){
 
-			auto m = Task::process::run( "taskList",{ "/fi","IMAGENAME eq cppcryptfs.exe" } ).await() ;
+			utility::debug() << "Starting An Instance Of Cppcryptfs" ;
 
-			if( m.std_out().contains( "cppcryptfs.exe" ) ){
+			Task::process::run( m_cppcryptfs,QStringList{ "--tray" } ).start() ;
+
+			utility::Task::suspendForOneSecond() ;
+
+			if( _cppcryptfs_is_running() ){
 
 				utility::debug() << "Cppcryptfs Status: Running" ;
 
 				return {} ;
-			}else{
-				utility::debug() << "Starting An Instance Of Cppcryptfs" ;
-
-				Task::process::run( m_cppcryptfs,QStringList{ "--tray" } ).start() ;
-
-				utility::Task::suspendForOneSecond() ;
 			}
 		}
 
