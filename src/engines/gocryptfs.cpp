@@ -117,7 +117,7 @@ gocryptfs::gocryptfs() :
 	m_sirikaliCppcryptfsExe( _to_native_path( engines::executableNotEngineFullPath( "sirikali_cppcryptfs.exe" ) ) ),
 	m_cppcryptfsctl( _to_native_path( engines::executableNotEngineFullPath( "cppcryptfsctl.exe" ) ) ),
 	m_cppcryptfs( QString( m_cppcryptfsctl ).replace( "cppcryptfsctl","cppcryptfs" ) ),
-	m_windowsUnmountCommand( this->windowsUnmountCommand() + QStringList{ "--exit" } )
+	m_windowsUnmountCommand( engines::engine::windowsUnmountCommand() + QStringList{ "--exit" } )
 {
 }
 
