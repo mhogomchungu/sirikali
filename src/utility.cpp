@@ -1546,3 +1546,61 @@ void utility::unlockIntervalReporter::report() const
 
 	utility::debug() << s + QString::number( m ) + " seconds" ;
 }
+
+QStringList utility::splitPreserveQuotes( const QString& e )
+{
+#if QT_VERSION < QT_VERSION_CHECK( 5,15,0 )
+	QStringList args ;
+	QString tmp ;
+	int quoteCount = 0 ;
+	bool inQuote = false ;
+
+	for( int i = 0 ; i < e.size() ; ++i ) {
+
+		const auto& s = e.at( i ) ;
+
+		if( s == '"' ){
+
+			quoteCount++ ;
+
+			if( quoteCount == 3 ) {
+
+				quoteCount = 0 ;
+				tmp.append( s ) ;
+			}
+
+			continue ;
+		}
+
+		if( quoteCount ){
+
+			if( quoteCount == 1 ){
+
+				inQuote = !inQuote ;
+			}
+
+			quoteCount = 0 ;
+		}
+
+		if( !inQuote && s.isSpace() ){
+
+			if( !tmp.isEmpty() ){
+
+				args.append( tmp ) ;
+				tmp.clear() ;
+			}
+		}else{
+			tmp.append( s ) ;
+		}
+	}
+
+	if( !tmp.isEmpty() ){
+
+		args.append( tmp ) ;
+	}
+
+	return args ;
+#else
+	return QProcess::splitCommand( e ) ;
+#endif
+}

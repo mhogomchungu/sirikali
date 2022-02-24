@@ -73,7 +73,7 @@ static engines::engine::BaseOptions _setOptions()
 
 		s.reverseString         = "--reverse" ;
 
-		s.volumePropertiesCommands = QStringList{ "cppcryptfsctl.exe -i %{plainFolder}" } ;
+		s.volumePropertiesCommands = QStringList{ "sirikali_cppcryptfs.exe --info --mountPath %{plainFolder} --cppcryptfsctl-path \"" + bb + "\"" } ;
 
 		s.passwordFormat        = "%{password}" ;
 

@@ -88,7 +88,7 @@ static QStringList _search_path( const QStringList& m )
 	if( utility::platformIsWindows() ){
 
 		auto x = _search_path_0( a + "\\bin\\" ) ;
-		x += _search_path_0( QDir().currentPath() ) ;
+		x += _search_path_0( QDir().currentPath() + "\\" ) ;
 		x += _search_path_0( settings::instance().windowsExecutableSearchPath() + "\\" ) ;
 
 		for( const auto& it : m ){
@@ -514,7 +514,7 @@ Task::future< QString >& engines::engine::volumeProperties( const QString& ciphe
 
 		for( const auto& it : this->volumePropertiesCommands() ){
 
-			auto a = utility::split( it,' ' ) ;
+			auto a = utility::splitPreserveQuotes( it ) ;
 
 			auto exe = [ & ](){
 

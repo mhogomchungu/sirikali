@@ -207,29 +207,30 @@ static void _checkMounted( const context& ctx )
 {
 	_run( ctx.cppcryptfsctl,{ "-l" },[ &ctx ]( const result& s ){
 
-		const auto e = s.stdOut().split( '\n' ) ;
-
-		auto cf = ctx.cryptFolder.toUtf8() ;
-
-		bool found = false ;
-
-		for( const auto& it : e ){
-
-			if( it.contains( cf ) ){
-
-				found = true ;
-
-				break ;
-			}
-		}
-
-		if( found ){
+		if( s.pipeConnectionFailed() ){
 
 			QTimer::singleShot( 2000,[ &ctx ](){
 
 				_checkMounted( ctx ) ;
 			} ) ;
 		}else{
+			const auto e = s.stdOut().split( '\n' ) ;
+
+			auto cf = ctx.cryptFolder.toUtf8() + "\n" ;
+
+			for( const auto& it : e ){
+
+				if( it.endsWith( cf ) ){
+
+					QTimer::singleShot( 2000,[ &ctx ](){
+
+						_checkMounted( ctx ) ;
+					} ) ;
+
+					return ;
+				}
+			}
+
 			QCoreApplication::exit( 0 ) ;
 		}
 	} ) ;
@@ -298,6 +299,24 @@ static void _mount( const context& ctx,counter c )
 
 			QCoreApplication::exit( m.exitCode() ) ;
 		}
+	} ) ;
+}
+
+static void _info( const context& ctx,counter c )
+{
+	_run( ctx.cppcryptfsctl,{ "-i",ctx.mountPoint },[ &ctx,c ]( const result& m ){
+
+		if( m.success() ){
+
+			std::cout << m.stdOut().toStdString() << std::endl ;
+		}else{
+			if( c.Continue() && m.pipeConnectionFailed() ){
+
+				return _info( ctx,c.next() ) ;
+			}
+		}
+
+		QCoreApplication::exit( m.exitCode() ) ;
 	} ) ;
 }
 
@@ -390,6 +409,10 @@ static void _run( context& ctx )
 
 			_create( ctx,3 ) ;
 		} ) ;
+
+	}else if( ctx.contains( "--info" ) ){
+
+		_info( ctx,3 ) ;
 	}else{
 		std::cout << "Unknown command" << std::endl ;
 

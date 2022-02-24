@@ -299,6 +299,8 @@ namespace utility
 		utility::debug operator<<( const QStringList& ) ;
 	};
 
+	QStringList splitPreserveQuotes( const QString& e ) ;
+
 	bool platformIsLinux() ;
 	bool platformIsOSX() ;
 	bool platformIsWindows() ;
