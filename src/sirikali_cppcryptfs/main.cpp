@@ -216,11 +216,12 @@ static void _checkMounted( const context& ctx )
 		}else{
 			const auto e = s.stdOut().split( '\n' ) ;
 
-			auto cf = ctx.cryptFolder.toUtf8() + "\n" ;
+			auto cf = ctx.cryptFolder.toUtf8() ;
+			auto mp = ctx.mountPoint.toUtf8() ;
 
 			for( const auto& it : e ){
 
-				if( it.endsWith( cf ) ){
+				if( it.startsWith( mp ) && it.contains( cf ) ){
 
 					QTimer::singleShot( 2000,[ &ctx ](){
 
