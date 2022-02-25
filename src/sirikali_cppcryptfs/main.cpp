@@ -83,6 +83,9 @@ private:
 
 struct context
 {
+	context() = delete ;
+	context( const context& ) = delete ;
+	context( context&& ) = delete ;
 	context( QStringList l ) : args( std::move( l ) )
 	{
 		auto _arg = [ this ]( const QString& arg )->QString{
@@ -126,6 +129,20 @@ struct context
 private:
 	QStringList args ;
 };
+
+template< typename Function,typename Ctx >
+static void _run_delayed( int waitTime,Function function,Ctx& ctx )
+{
+	QTimer::singleShot( waitTime,[ &ctx,function = std::move( function ) ](){
+
+		function( ctx ) ;
+	} ) ;
+}
+
+static void _quit( int s )
+{
+	QCoreApplication::exit( s ) ;
+}
 
 template< typename BackGroundTask,typename UiThreadResult >
 static void _runInBgThread( BackGroundTask bgt,UiThreadResult fgt )
@@ -209,10 +226,7 @@ static void _checkMounted( const context& ctx )
 
 		if( s.pipeConnectionFailed() ){
 
-			QTimer::singleShot( 2000,[ &ctx ](){
-
-				_checkMounted( ctx ) ;
-			} ) ;
+			_run_delayed( 2000,_checkMounted,ctx ) ;
 		}else{
 			const auto e = s.stdOut().split( '\n' ) ;
 
@@ -223,16 +237,13 @@ static void _checkMounted( const context& ctx )
 
 				if( it.startsWith( mp ) && it.contains( cf ) ){
 
-					QTimer::singleShot( 2000,[ &ctx ](){
-
-						_checkMounted( ctx ) ;
-					} ) ;
+					_run_delayed( 2000,_checkMounted,ctx ) ;
 
 					return ;
 				}
 			}
 
-			QCoreApplication::exit( 0 ) ;
+			_quit( 0 ) ;
 		}
 	} ) ;
 }
@@ -271,7 +282,7 @@ static void _read_password( Then then )
 	},std::move( then ) ) ;
 }
 
-static void _mount( const context& ctx,counter c )
+static void _mount( const context& ctx,counter c = 3 )
 {
 	QStringList args{ "-p",ctx.password,"-d",ctx.mountPoint,"-m",ctx.cryptFolder,"-c",ctx.configPath } ;
 
@@ -286,30 +297,48 @@ static void _mount( const context& ctx,counter c )
 
 			_msg( m,"Mount Success" ) ;
 
-			QTimer::singleShot( 2000,[ &ctx ](){
-
-				_checkMounted( ctx ) ;
-			} ) ;
+			_run_delayed( 2000,_checkMounted,ctx ) ;
 		}else{
 			_msg( m,"Failed To Mount" ) ;
 
 			if( c.Continue() && m.pipeConnectionFailed() ){
 
-				return _mount( ctx,c.next() ) ;
+				_mount( ctx,c.next() ) ;
+			}else{
+				_quit( m.exitCode() ) ;
 			}
-
-			QCoreApplication::exit( m.exitCode() ) ;
 		}
 	} ) ;
 }
 
-static void _info( const context& ctx,counter c )
+static void _info( const context& ctx,counter c = 3 )
 {
 	_run( ctx.cppcryptfsctl,{ "-i",ctx.mountPoint },[ &ctx,c ]( const result& m ){
 
 		if( m.success() ){
 
-			std::cout << m.stdOut().toStdString() << std::endl ;
+			auto s = m.stdOut().split( '\n' ) ;
+
+			for( int i = 0 ; i < s.size() ; i++ ){
+
+				auto& e = s[ i ] ;
+
+				int k = e.indexOf( ':' ) ;
+
+				if( k != -1 && k + 2 < e.size() ){
+
+					k +=2 ;
+
+					while( e[ k ] == ' ' ){
+
+						e.remove( k,1 ) ;
+					}
+				}
+
+				std::cout << e.constData() << "\n" ;
+			}
+
+			std::cout << std::endl ;
 		}else{
 			if( c.Continue() && m.pipeConnectionFailed() ){
 
@@ -317,11 +346,11 @@ static void _info( const context& ctx,counter c )
 			}
 		}
 
-		QCoreApplication::exit( m.exitCode() ) ;
+		_quit( m.exitCode() ) ;
 	} ) ;
 }
 
-static void _umount( const context& ctx,counter c )
+static void _umount( const context& ctx,counter c = 3 )
 {
 	QStringList opts{ "-u",ctx.mountPoint } ;
 
@@ -344,11 +373,11 @@ static void _umount( const context& ctx,counter c )
 			}
 		}
 
-		QCoreApplication::exit( m.exitCode() ) ;
+		_quit( m.exitCode() ) ;
 	} ) ;
 }
 
-static void _create( const context& ctx,counter c )
+static void _create( const context& ctx,counter c = 3 )
 {
 	QStringList opts ;
 
@@ -383,11 +412,11 @@ static void _create( const context& ctx,counter c )
 			}
 		}
 
-		QCoreApplication::exit( m.exitCode() ) ;
+		_quit( m.exitCode() ) ;
 	} ) ;
 }
 
-static void _run( context& ctx )
+static void _exec( context& ctx )
 {
 	if( ctx.contains( "--mount" ) ){
 
@@ -395,12 +424,12 @@ static void _run( context& ctx )
 
 			ctx.password = std::move( password ) ;
 
-			_mount( ctx,3 ) ;
+			_mount( ctx ) ;
 		} ) ;
 
 	}else if( ctx.contains( "--umount" ) ){
 
-		_umount( ctx,3 ) ;
+		_umount( ctx ) ;
 
 	}else if( ctx.contains( "--create" ) ){
 
@@ -408,29 +437,26 @@ static void _run( context& ctx )
 
 			ctx.password = std::move( password ) ;
 
-			_create( ctx,3 ) ;
+			_create( ctx ) ;
 		} ) ;
 
 	}else if( ctx.contains( "--info" ) ){
 
-		_info( ctx,3 ) ;
+		_info( ctx ) ;
 	}else{
 		std::cout << "Unknown command" << std::endl ;
 
-		QCoreApplication::exit( 255 ) ;
+		_quit( 255 ) ;
 	}
 }
 
 int main( int argc,char * argv[] )
 {
-	QCoreApplication a( argc,argv ) ;
+	QCoreApplication app( argc,argv ) ;
 
-	context ctx( a.arguments() ) ;
+	context ctx( app.arguments() ) ;
 
-	QTimer::singleShot( 0,[ & ](){
+	_run_delayed( 0,_exec,ctx ) ;
 
-		_run( ctx ) ;
-	} ) ;
-
-	return a.exec() ;
+	return app.exec() ;
 }
