@@ -17,6 +17,8 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_CXX_COMPILER_VERSION VE
 	MESSAGE( STATUS "Setting C++ version to C++20" )
 else()
 	set( CMAKE_CXX_STANDARD 14 )
+	#This is necessary with old versions of cmake
+	add_definitions(-std=c++14)
 	MESSAGE( STATUS "Setting C++ version to C++14" )
 endif()
 
