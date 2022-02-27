@@ -28,6 +28,8 @@
 #include <QJsonArray>
 #include <QJsonObject>
 
+#include <functional>
+
 class SirikaliJson
 {
 public:
