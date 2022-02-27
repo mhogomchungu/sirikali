@@ -1532,7 +1532,7 @@ QString utility::userIDAsString()
 
 void utility::unlockIntervalReporter::report() const
 {
-	auto m = QDateTime::currentSecsSinceEpoch() - m_origTime ;
+	std::chrono::duration<double> m = this->currentTime() - m_origTime ;
 
 	auto s = [ & ](){
 
@@ -1544,7 +1544,12 @@ void utility::unlockIntervalReporter::report() const
 		}
 	}() ;
 
-	utility::debug() << s + QString::number( m ) + " seconds" ;
+	utility::debug() << s + QString::number( m.count(),'f',2 ) + " seconds" ;
+}
+
+std::chrono::system_clock::time_point utility::unlockIntervalReporter::currentTime() const
+{
+	return std::chrono::system_clock::now() ;
 }
 
 QStringList utility::splitPreserveQuotes( const QString& e )

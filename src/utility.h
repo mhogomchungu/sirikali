@@ -50,6 +50,7 @@
 #include <utility>
 #include <vector>
 #include <type_traits>
+#include <chrono>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -805,7 +806,7 @@ public:
 	}
 	unlockIntervalReporter( utility::bool_result s ) :
 		m_likeSsh( std::move( s ) ),
-		m_origTime( QDateTime::currentSecsSinceEpoch() )
+		m_origTime( this->currentTime() )
 	{
 	}
 	void operator()() const
@@ -814,8 +815,9 @@ public:
 	}
 	void report() const ;
 private:
+	std::chrono::system_clock::time_point currentTime() const ;
 	utility::bool_result m_likeSsh ;
-	qint64 m_origTime ;
+	std::chrono::system_clock::time_point m_origTime ;
 };
 }
 #endif // MISCFUNCTIONS_H

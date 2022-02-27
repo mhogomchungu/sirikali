@@ -35,7 +35,7 @@ public:
 	}
 	counter next() const
 	{
-		counter c = *this ;
+		auto c = *this ;
 		c.m_counter++ ;
 		return c ;
 	}
@@ -172,7 +172,7 @@ static void _runInBgThread( BackGroundTask bgt,UiThreadResult fgt )
 		}
 	private:
 		BackGroundTask m_bgt ;
-		UiThreadResult m_fgt ;		
+		UiThreadResult m_fgt ;
 
 #if __cplusplus >= 201703L
 		using bgt_t = std::invoke_result_t< BackGroundTask > ;
@@ -327,7 +327,7 @@ static void _info( const context& ctx,counter c = 3 )
 
 				if( k != -1 && k + 2 < e.size() ){
 
-					k +=2 ;
+					k += 2 ;
 
 					while( e[ k ] == ' ' ){
 

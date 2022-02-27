@@ -271,5 +271,5 @@ version 1.4.2(December 18,2019)
 
    version 1.5.0(Unreleased)
    [ALL]
--- Add dark theme
+-- Add dark theme.
 -- Add support for gocryptfs using cppcryptfs as a CLI backend.
