@@ -251,35 +251,24 @@ void gocryptfs::GUIMountOptions( const engines::engine::mountGUIOptions& s ) con
 
 const QStringList& gocryptfs::windowsUnmountCommand() const
 {
-	if( m_quitCppcryptfsOnUmount ){
+	if( m_cppcryptfsPid.isEmpty() ){
 
-		return m_windowsUnmountCommand ;
-	}else{
 		return engines::engine::windowsUnmountCommand() ;
+	}else{
+		return m_windowsUnmountCommand ;
 	}
-}
-
-static bool _cppcryptfs_is_running()
-{
-	auto m = Task::process::run( "taskList",{ "/fi","IMAGENAME eq cppcryptfs.exe" } ).await() ;
-
-	return m.std_out().contains( "cppcryptfs.exe" ) ;
 }
 
 QByteArray gocryptfs::prepareBackend() const
 {
-	if( utility::platformIsWindows() ){
+	if( utility::platformIsNOTWindows() ){
 
-		if( _cppcryptfs_is_running() ){
+		return {} ;
+	}
 
-			m_quitCppcryptfsOnUmount = false ;
+	auto m = this->getcppcryptfsPid() ;
 
-			utility::debug() << "Cppcryptfs Status: Running" ;
-
-			return {} ;
-		}else{
-			m_quitCppcryptfsOnUmount = true ;
-		}
+	if( m.isEmpty() ){
 
 		for( int i = 0 ; i < 5 ; i++ ){
 
@@ -289,9 +278,14 @@ QByteArray gocryptfs::prepareBackend() const
 
 			utility::Task::suspendForOneSecond() ;
 
-			if( _cppcryptfs_is_running() ){
+			m_cppcryptfsPid = this->getcppcryptfsPid() ;
 
-				utility::debug() << "Cppcryptfs Status: Running" ;
+			if( !m_cppcryptfsPid.isEmpty() ){
+
+				auto a = "Cppcryptfs Status: Running" ;
+				auto b = "\nManaging instance of cppcryptfs with a PID of " + m_cppcryptfsPid ;
+
+				utility::debug() << a + b ;
 
 				return {} ;
 			}
@@ -299,6 +293,21 @@ QByteArray gocryptfs::prepareBackend() const
 
 		return "Failed To Start An Instance of \"Cppcryptfs\"" ;
 	}else{
+		QString a = "Cppcryptfs Status: Running\n" ;
+
+		if( m_cppcryptfsPid.isEmpty() ){
+
+			utility::debug() << a + "Cppcryptfs is running and somebody else started it" ;
+		}else{
+			if( m == m_cppcryptfsPid ){
+
+				utility::debug() << a + "Cppcryptfs is running and we started it" ;
+			}else{
+				utility::debug() << a + "Cppcryptfs is running and it was restarted by somebody else" ;
+				m_cppcryptfsPid.clear() ;
+			}
+		}
+
 		return {} ;
 	}
 }
@@ -319,4 +328,31 @@ engines::engine::args gocryptfs::command( const QByteArray& password,
 	}else{
 		return engines::engine::command( password,args,create ) ;
 	}
+}
+
+QString gocryptfs::getcppcryptfsPid() const
+{
+	auto m = Task::process::run( "taskList",{ "/fi","IMAGENAME eq cppcryptfs.exe" } ).await() ;
+
+	auto s = m.std_out() ;
+
+	if( s.contains( "cppcryptfs.exe" ) ){
+
+		const auto e = utility::split( s,'\n' ) ;
+
+		for( const auto& it : e ){
+
+			if( it.startsWith( "cppcryptfs.exe" ) ){
+
+				auto ss = utility::split( it,' ' ) ;
+
+				if( ss.size() > 1 ){
+
+					return ss[ 1 ] ;
+				}
+			}
+		}
+	}
+
+	return {} ;
 }

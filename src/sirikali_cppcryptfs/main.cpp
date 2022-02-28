@@ -86,39 +86,21 @@ struct context
 	context() = delete ;
 	context( const context& ) = delete ;
 	context( context&& ) = delete ;
-	context( QStringList l ) : args( std::move( l ) )
+	context( const QCoreApplication& app ) :
+		args( app.arguments() ),
+		cryptFolder( this->arg( "--cipherPath" ) ),
+		mountPoint( this->arg( "--mountPath" ) ),
+		configPath( this->arg( "--config" ) ),
+		cppcryptfsctl( this->arg( "--cppcryptfsctl-path" ) ),
+		readOnly( this->arg( "-o" ).startsWith( "ro" ) ),
+		quitCppcryptfs( this->contains( "--exit" ) )
 	{
-		auto _arg = [ this ]( const QString& arg )->QString{
-
-			int j = args.size() ;
-
-			for( int i = 0 ; i < j ; i++ ){
-
-				if( args.at( i ) == arg ){
-
-					if( i + 1 < j ){
-
-						return args.at( i + 1 ) ;
-					}else{
-						return {} ;
-					}
-				}
-			}
-
-			return {} ;
-		} ;
-
-		cryptFolder   = _arg( "--cipherPath" ) ;
-		mountPoint    = _arg( "--mountPath" ) ;
-		configPath    = _arg( "--config" ) ;
-		cppcryptfsctl = _arg( "--cppcryptfsctl-path" ) ;
-		readOnly      = _arg( "-o" ).startsWith( "ro" ) ;
-		quitCppcryptfs = this->contains( "--exit" ) ;
 	}
 	bool contains( const QString& e ) const
 	{
 		return args.contains( e ) ;
 	}
+	QStringList args ;
 	QString cryptFolder ;
 	QString mountPoint ;
 	QString configPath ;
@@ -127,7 +109,25 @@ struct context
 	bool readOnly ;
 	bool quitCppcryptfs ;
 private:
-	QStringList args ;
+	QString arg( const char * arg )
+	{
+		int j = args.size() ;
+
+		for( int i = 0 ; i < j ; i++ ){
+
+			if( args.at( i ) == arg ){
+
+				if( i + 1 < j ){
+
+					return args.at( i + 1 ) ;
+				}else{
+					return {} ;
+				}
+			}
+		}
+
+		return {} ;
+	}
 };
 
 template< typename Function,typename Ctx >
@@ -454,7 +454,7 @@ int main( int argc,char * argv[] )
 {
 	QCoreApplication app( argc,argv ) ;
 
-	context ctx( app.arguments() ) ;
+	context ctx( app ) ;
 
 	_run_delayed( 0,_exec,ctx ) ;
 

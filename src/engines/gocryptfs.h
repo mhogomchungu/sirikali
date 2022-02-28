@@ -48,5 +48,6 @@ private:
 	QString m_cppcryptfsctl ;
 	QString m_cppcryptfs ;
 	QStringList m_windowsUnmountCommand ;
-	mutable bool m_quitCppcryptfsOnUmount ;
+	mutable QString m_cppcryptfsPid ;
+	QString getcppcryptfsPid() const ;
 } ;
