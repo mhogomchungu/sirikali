@@ -7,10 +7,10 @@ SiriKali is a Qt/C++ GUI application that manages ecryptfs, cryfs, encfs, gocryp
 <a href="https://github.com/google/fscrypt">Fscrypt</a>, <a href="https://github.com/netheril96/securefs">Securefs</a>, <a href="https://github.com/mhogomchungu/ecryptfs-simple">Ecryptfs</a>, <a href="https://www.cryfs.org/">Cryfs</a>, <a href="https://github.com/vgough/encfs">Encfs, </a><a href="https://nuetzlich.net/gocryptfs">Gocryptfs</a>, <a href="https://github.com/libfuse/sshfs">Sshfs</a> and <a href="https://github.com/mhogomchungu/cli">Cryptomator,</a>
 
 #### Supported Backends on Microsoft Windows:
- <a href="https://www.cryfs.org/">Cryfs</a>, <a href="https://github.com/netheril96/securefs">Securefs</a>, <a href="https://github.com/mhogomchungu/encfs/latest">Encfs</a> and <a href="https://github.com/billziss-gh/sshfs-win">Sshfs.</a>
+ <a href="https://www.cryfs.org/">Cryfs</a>, <a href="https://github.com/netheril96/securefs">Securefs</a>, <a href="https://github.com/mhogomchungu/encfs/latest">Encfs</a>, <a href="https://github.com/billziss-gh/sshfs-win">Sshfs</a> and <a href="https://github.com/bailey27/cppcryptfs">Cppcryptfs</a>
 
 
-Users of Securefs should inform SiriKali of where Securefs binary is located on the system by setting the path at: ```Menu->Settings->External Commands->Set Executables Search Path.```
+Users of Securefs and Cppcryptfs should inform SiriKali of where Securefs and Cppcryptfs binaries are located on the system by setting the path at: ```Menu->Settings->External Commands->Set Executables Search Path.```
 
 #### Supported Backends on macOS:
 <a href="https://github.com/netheril96/securefs">Securefs, </a><a href="https://www.cryfs.org/">Cryfs, </a><a href="https://github.com/vgough/encfs">Encfs</a> and <a href="https://nuetzlich.net/gocryptfs">Gocryptfs.</a>
@@ -52,13 +52,13 @@ Send me an email through mhogomchungu at Gmail Dot coM for transfer details.
 
 ## Source download link.
 
-Latest released version is 1.4.8 and its source code can be downloaded by clicking below link.
+Latest released version is 1.5.0 and its source code can be downloaded by clicking below link.
 
-<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.4.8/SiriKali-1.4.8.tar.xz">SiriKali-1.4.8.tar.xz</a>
+<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.5.0/SiriKali-1.5.0.tar.xz">SiriKali-1.5.0.tar.xz</a>
 
 ## Download links for Microsoft Windows Operating System.
 
-There are two packages for Windows Windows, the one with an installer is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.4.8/SiriKali-1.4.8.setup.exe">here</a> and the one without an installer(portable version) is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.4.8/SiriKali-1.4.8.exe.zip">here.</a>
+The installer for Microsoft Windows operating system is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.5.0/SiriKali-1.5.0.setup.exe">here</a>.
 
 The installer is not signed and expect to get a warning from windows saying the installer is from an unknown publisher.
 We recommend using the installer version.
@@ -151,4 +151,4 @@ cv9jY9bZAbVaMUjF7dw/bsqgJ2HCJ33cf16GybRtozOE36YDB2omg58ngIrlmlea
 -----END PGP PUBLIC KEY BLOCK-----
 ```
 
-last update: Tue 01 Dec 2020 09:01:59 PM EAT
+last update: Tue Mar  1 06:23:57 PM EAT 2022
