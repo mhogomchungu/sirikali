@@ -69,6 +69,8 @@ static engines::engine::BaseOptions _setOptions()
 
 		s.windowsUnMountCommand = QStringList{ aa,"--umount","--mountPath","%{mountPoint}","--cppcryptfsctl-path",bb } ;
 
+		s.displayName           = "cppcryptfs" ;
+
 		s.acceptsSubType        = true ;
 
 		s.reverseString         = "--reverse" ;
