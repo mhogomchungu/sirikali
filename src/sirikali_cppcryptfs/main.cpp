@@ -22,6 +22,9 @@
 #include <QProcess>
 #include <QTimer>
 #include <QThread>
+#include <QDir>
+
+#include <fileapi.h>
 
 class counter
 {
@@ -220,32 +223,56 @@ static void _run( const QString& exe,const QStringList& args,Result r )
 	_run( exe,args,{},std::move( r ) ) ;
 }
 
-static void _checkMounted( const context& ctx )
+static bool _is_driveLetter( const QString& m )
 {
-	_run( ctx.cppcryptfsctl,{ "-l" },[ &ctx ]( const result& s ){
+	return m.size() == 2 ;
+}
 
-		if( s.pipeConnectionFailed() ){
+static QString _deviceName( const context& ctx )
+{
+	std::array< wchar_t,4096 > mountPoint ;
+	std::array< wchar_t,4096 > buffer ;
 
-			_run_delayed( 2000,_checkMounted,ctx ) ;
+	std::fill( mountPoint.begin(),mountPoint.end(),'\0' ) ;
+	std::fill( buffer.begin(),buffer.end(),'\0' ) ;
+
+	if( _is_driveLetter( ctx.mountPoint ) ){
+
+		ctx.mountPoint.toWCharArray( mountPoint.data() ) ;
+
+		auto s = QueryDosDeviceW( mountPoint.data(),buffer.data(),buffer.size() ) ;
+
+		return QString::fromWCharArray( buffer.data(),s ) ;
+	}else{
+		auto m = ctx.mountPoint + "\\" ;
+
+		m.toWCharArray( mountPoint.data() ) ;
+
+		auto s = GetVolumeNameForVolumeMountPointW( mountPoint.data(),buffer.data(),buffer.size() ) ;
+
+		if( s ){
+
+			return QString::fromWCharArray( buffer.data() ) ;
 		}else{
-			const auto e = s.stdOut().split( '\n' ) ;
+			return {} ;
+		}
+	}
+}
 
-			auto cf = ctx.cryptFolder.toUtf8() ;
-			auto mp = ctx.mountPoint.toUtf8() ;
+static void _hang_until_unmounted( const context& ctx,const QString& id )
+{
+	_run_delayed( 1000,[ id ]( const context& ctx ){
 
-			for( const auto& it : e ){
+		auto d = _deviceName( ctx ) ;
 
-				if( it.startsWith( mp ) && it.contains( cf ) ){
-
-					_run_delayed( 2000,_checkMounted,ctx ) ;
-
-					return ;
-				}
-			}
+		if( d != id ){
 
 			_quit( 0 ) ;
+		}else{
+			_hang_until_unmounted( ctx,id ) ;
 		}
-	} ) ;
+
+	},ctx ) ;
 }
 
 static void _msg( const result& r,const char * msg )
@@ -297,7 +324,7 @@ static void _mount( const context& ctx,counter c = 3 )
 
 			_msg( m,"Mount Success" ) ;
 
-			_run_delayed( 2000,_checkMounted,ctx ) ;
+			_hang_until_unmounted( ctx,_deviceName( ctx ) ) ;
 		}else{
 			_msg( m,"Failed To Mount" ) ;
 
@@ -362,6 +389,13 @@ static void _umount( const context& ctx,counter c = 3 )
 	_run( ctx.cppcryptfsctl,opts,[ &ctx,c ]( const result& m ){
 
 		if( m.success() ){
+
+			if( !_is_driveLetter( ctx.mountPoint ) ){
+
+				QDir d ;
+				d.rmdir( ctx.mountPoint ) ;
+				d.mkdir( ctx.mountPoint ) ;
+			}
 
 			_msg( m,"Umount Success" ) ;
 		}else{
@@ -443,6 +477,16 @@ static void _exec( context& ctx )
 	}else if( ctx.contains( "--info" ) ){
 
 		_info( ctx ) ;
+
+	}else if( ctx.contains( "--deviceName" ) ){
+
+		std::cout << _deviceName( ctx ).toStdString() << std::endl ;
+
+		_quit( 0 ) ;
+
+	}else if( ctx.contains( "--checkMounted" ) ){
+
+		_hang_until_unmounted( ctx,_deviceName( ctx ) ) ;
 	}else{
 		std::cout << "Unknown command" << std::endl ;
 

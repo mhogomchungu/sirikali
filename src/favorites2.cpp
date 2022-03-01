@@ -1171,7 +1171,7 @@ void favorites2::updateFavorite( bool edit )
 	utility::hideQWidget thisWidget( this ) ;
 
 	const auto type = m_ui->lineEditVolumeType->toPlainText() ;
-	const auto dev  = m_ui->lineEditEncryptedFolderPath->toPlainText() ;
+	const auto dev  = QDir::fromNativeSeparators( m_ui->lineEditEncryptedFolderPath->toPlainText() ) ;
 	const auto path = m_ui->lineEditMountPath->toPlainText() ;
 
 	const auto& engine = engines::instance().getByName( type ) ;

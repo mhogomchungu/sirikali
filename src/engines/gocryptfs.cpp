@@ -29,7 +29,7 @@ static engines::engine::BaseOptions _setOptions()
 
 	s.backendTimeout              = 0 ;
 	s.takesTooLongToUnlock        = false ;
-	s.supportsMountPathsOnWindows = false ;
+	s.supportsMountPathsOnWindows = true ;
 	s.autorefreshOnMountUnMount   = true ;
 	s.backendRequireMountPath     = true ;
 	s.backendRunsInBackGround     = true ;
