@@ -269,7 +269,7 @@ version 1.4.2(December 18,2019)
    [WINDOWS]
 -- Update Qt to version 5.15.1
 
-   version 1.5.0(Unreleased)
+   version 1.5.0(March 01,2022)
    [ALL]
 -- Add dark theme.
 -- Add support for gocryptfs using cppcryptfs as a CLI backend.

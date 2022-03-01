@@ -4,8 +4,8 @@ set_property( GLOBAL PROPERTY ALLOW_DUPLICATE_CUSTOM_TARGETS ON )
 
 project( sirikali )
 
-set( PGR_VERSION "1.4.8" )
-set( COPYRIGHT_YEARS "2016-2020" )
+set( PGR_VERSION "1.5.0" )
+set( COPYRIGHT_YEARS "2016-2022" )
 
 add_definitions( -Wextra -Wall -pedantic )
 
