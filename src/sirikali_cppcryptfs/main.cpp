@@ -467,9 +467,9 @@ static void _exec( context& ctx )
 
 	}else if( ctx.contains( "--create" ) ){
 
-		_read_password( [ & ]( QByteArray password ){
+		_read_password( [ & ]( const QByteArray& password ){
 
-			ctx.password = std::move( password ) ;
+			ctx.password = password + "\n" + password ;
 
 			_create( ctx ) ;
 		} ) ;

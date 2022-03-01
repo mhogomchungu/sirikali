@@ -487,6 +487,11 @@ static engines::engine::cmdStatus _create( const siritask::create& s )
 		return { mm,engine } ;
 	}
 
+	if( !engine.prepareBackend().isEmpty() ){
+
+		return { engines::engine::status::engineExecutableNotFound,engine } ;
+	}
+
 	if( !engine.createCipherPath( opt.cipherFolder ) ){
 
 		return { engines::engine::status::failedToCreateMountPoint,engine } ;
