@@ -38,6 +38,8 @@ configOptions::configOptions( QWidget * parent,
 
 	this->setFixedSize( this->window()->size() ) ;
 
+	this->installEventFilter( this ) ;
+
 	m_ui->tabWidget->setCurrentIndex( 0 ) ;
 
 	m_ui->pbMountPointPrefix->setIcon( QIcon( ":/folder.png" ) ) ;
@@ -326,4 +328,9 @@ void configOptions::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
 	this->HideUI() ;
+}
+
+bool configOptions::eventFilter( QObject * watched,QEvent * event )
+{
+	return utility::eventFilter( this,watched,event,[ this ](){ this->HideUI() ; } ) ;
 }

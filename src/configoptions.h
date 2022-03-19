@@ -51,6 +51,7 @@ public:
 private:
 	void HideUI() ;
 	void closeEvent( QCloseEvent * ) ;
+	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::configOptions * m_ui ;
 	configOptions::functions m_functions ;
 	secrets& m_secrets ;

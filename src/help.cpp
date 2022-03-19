@@ -34,6 +34,8 @@ help::help( QWidget * parent,const QString& path,std::function< void() > functio
 {
 	m_ui->setupUi( this ) ;
 
+	this->installEventFilter( this ) ;
+
 	m_ui->pushButton_2->setVisible( false ) ;
 
 	this->setFixedSize( this->size() ) ;
