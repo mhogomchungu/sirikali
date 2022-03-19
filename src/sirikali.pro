@@ -113,4 +113,5 @@ FORMS += \
 TRANSLATIONS = \
                ../translations/en_US.ts \
                ../translations/fr_FR.ts \
-               ../translations/ru_RU.ts
+               ../translations/ru_RU.ts \
+               ../translations/zh_CN.ts
