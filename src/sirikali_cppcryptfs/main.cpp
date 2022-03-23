@@ -73,9 +73,9 @@ public:
 	{
 		return m_exitCode ;
 	}
-	bool pipeConnectionFailed() const
+	bool retry( const counter& c ) const
 	{
-		return m_stdError.contains( "Named pipe connection wait failed" ) ;
+		return c.Continue() && m_stdError.contains( "Named pipe connection wait failed" ) ;
 	}
 private:
 	int m_exitCode ;
@@ -134,7 +134,7 @@ private:
 };
 
 template< typename Function,typename Ctx >
-static void _run_delayed( int waitTime,Function function,Ctx& ctx )
+static void _run_delayed( int waitTime,Ctx& ctx,Function function )
 {
 	QTimer::singleShot( waitTime,[ &ctx,function = std::move( function ) ](){
 
@@ -261,7 +261,7 @@ static QString _deviceName( const context& ctx )
 
 static void _hang_until_unmounted( const context& ctx,const QString& id )
 {
-	_run_delayed( 1000,[ id ]( const context& ctx ){
+	_run_delayed( 1000,ctx,[ id ]( const context& ctx ){
 
 		auto d = _deviceName( ctx ) ;
 
@@ -271,8 +271,7 @@ static void _hang_until_unmounted( const context& ctx,const QString& id )
 		}else{
 			_hang_until_unmounted( ctx,id ) ;
 		}
-
-	},ctx ) ;
+	} ) ;
 }
 
 static void _msg( const result& r,const char * msg )
@@ -328,7 +327,7 @@ static void _mount( const context& ctx,counter c = 3 )
 		}else{
 			_msg( m,"Failed To Mount" ) ;
 
-			if( c.Continue() && m.pipeConnectionFailed() ){
+			if( m.retry( c ) ){
 
 				_mount( ctx,c.next() ) ;
 			}else{
@@ -367,7 +366,7 @@ static void _info( const context& ctx,counter c = 3 )
 
 			std::cout << std::endl ;
 		}else{
-			if( c.Continue() && m.pipeConnectionFailed() ){
+			if( m.retry( c ) ){
 
 				return _info( ctx,c.next() ) ;
 			}
@@ -401,7 +400,7 @@ static void _umount( const context& ctx,counter c = 3 )
 		}else{
 			_msg( m,"Failed To Unmount" ) ;
 
-			if( c.Continue() && m.pipeConnectionFailed() ){
+			if( m.retry( c ) ){
 
 				return _umount( ctx,c.next() ) ;
 			}
@@ -440,7 +439,7 @@ static void _create( const context& ctx,counter c = 3 )
 		}else{
 			_msg( m,"Failed To Create" ) ;
 
-			if( c.Continue() && m.pipeConnectionFailed() ){
+			if( m.retry( c ) ){
 
 				return _create( ctx,c.next() ) ;
 			}
@@ -500,7 +499,7 @@ int main( int argc,char * argv[] )
 
 	context ctx( app ) ;
 
-	_run_delayed( 0,_exec,ctx ) ;
+	_run_delayed( 0,ctx,_exec ) ;
 
 	return app.exec() ;
 }
