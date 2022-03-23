@@ -7,12 +7,12 @@ SiriKali is a Qt/C++ GUI application that manages ecryptfs, cryfs, encfs, gocryp
 <a href="https://github.com/google/fscrypt">Fscrypt</a>, <a href="https://github.com/netheril96/securefs">Securefs</a>, <a href="https://github.com/mhogomchungu/ecryptfs-simple">Ecryptfs</a>, <a href="https://www.cryfs.org/">Cryfs</a>, <a href="https://github.com/vgough/encfs">Encfs, </a><a href="https://nuetzlich.net/gocryptfs">Gocryptfs</a>, <a href="https://github.com/libfuse/sshfs">Sshfs</a> and <a href="https://github.com/mhogomchungu/cli">Cryptomator,</a>
 
 #### Supported Backends on Microsoft Windows:
- <a href="https://www.cryfs.org/">Cryfs</a>, <a href="https://github.com/netheril96/securefs">Securefs</a>, <a href="https://github.com/mhogomchungu/encfs/latest">Encfs</a>, <a href="https://github.com/billziss-gh/sshfs-win">Sshfs</a> and <a href="https://github.com/bailey27/cppcryptfs">Cppcryptfs</a>
+ <a href="https://www.cryfs.org/">Cryfs</a>, <a href="https://github.com/netheril96/securefs">Securefs</a>, <a href="https://github.com/mhogomchungu/encfs">Encfs</a>, <a href="https://github.com/billziss-gh/sshfs-win">Sshfs</a> and <a href="https://github.com/bailey27/cppcryptfs">Cppcryptfs</a>
 
 
 Users of Securefs and Cppcryptfs should inform SiriKali of where Securefs and Cppcryptfs binaries are located on the system by setting the path at: ```Menu->Settings->External Commands->Set Executables Search Path.```
 
-If you are using the portable version, then a better place to put external executables in the "local/bin" subfolder of the portable application folder.
+If you are using the portable version, then a better place to put external executables is in the "local/bin" subfolder of the portable application folder.
 
 #### Supported Backends on macOS:
 <a href="https://github.com/netheril96/securefs">Securefs, </a><a href="https://www.cryfs.org/">Cryfs, </a><a href="https://github.com/vgough/encfs">Encfs</a> and <a href="https://nuetzlich.net/gocryptfs">Gocryptfs.</a>
