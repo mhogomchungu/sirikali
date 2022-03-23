@@ -65,7 +65,7 @@ std::unique_ptr<LXQt::Wallet::Wallet> LXQt::Wallet::getWalletBackend(LXQt::Walle
     if( bk == LXQt::Wallet::BackEnd::windows_dpapi )
     {
 #ifdef Q_OS_WIN
-        return std::unique_ptr<LXQt::Wallet::Wallet>(new LXQt::Wallet::windows_dpapi());
+	return std::unique_ptr<LXQt::Wallet::Wallet>(new LXQt::Wallet::windows_dpapi());
 #else
         return nullptr;
 #endif

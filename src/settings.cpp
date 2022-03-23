@@ -50,8 +50,123 @@
 #include <QCoreApplication>
 #include <QStandardPaths>
 
-settings::settings() : m_settings( "SiriKali","SiriKali" )
+static QString _configPath()
 {
+#if QT_VERSION >= QT_VERSION_CHECK( 5,6,0 )
+	auto s = QStandardPaths::standardLocations( QStandardPaths::ConfigLocation ) ;
+
+	if( s.isEmpty() ){
+
+		return QDir::homePath() + "/.config/SiriKali/" ;
+	}else{
+		return s.first() ;
+	}
+#else
+	return QDir::homePath() + "/.config/SiriKali/" ;
+#endif
+}
+
+static std::unique_ptr< QSettings > _set_config( const QString& path,bool createFolders )
+{
+	if( createFolders ){
+
+		QDir d ;
+		d.mkpath( path + "/settings" ) ;
+		d.mkpath( path + "/bin" ) ;
+	}
+
+	auto m = path + "/settings/settings.ini" ;
+
+	return std::make_unique< QSettings >( m,QSettings::IniFormat ) ;
+}
+
+std::unique_ptr< QSettings > lxqt_qsettings( const QString& path )
+{
+	auto m = path + "/lxqt_settings.ini" ;
+
+	return std::make_unique< QSettings >( m,QSettings::IniFormat ) ;
+}
+
+std::unique_ptr< QSettings > lxqt_qsettings()
+{
+	if( settings::portableVersion() ){
+
+		return lxqt_qsettings( settings::portableVersionConfigPath() + "/settings" ) ;
+	}else{
+		return lxqt_qsettings( _configPath() + "/settings" ) ;
+	}
+}
+
+static std::unique_ptr< QSettings > _init()
+{
+	if( settings::portableVersion() ){
+
+		return _set_config( settings::portableVersionConfigPath(),true ) ;
+	}else{
+		if( utility::platformIsWindows() ){
+
+			auto appPath      = _configPath() + "/SiriKali" ;
+			auto settingsPath = appPath + "/settings" ;
+
+			if( QFile::exists( settingsPath ) ){
+
+				return _set_config( appPath,false ) ;
+			}else{
+				/*
+				 * Migrating from registry based config to text file config.
+				 */
+
+				auto newSettings = _set_config( appPath,true ) ;
+
+				auto lxqtSettings = lxqt_qsettings( settingsPath ) ;
+
+				QSettings oldSettings( "SiriKali","SiriKali" ) ;
+
+				const auto keys = oldSettings.allKeys() ;
+
+				for( const auto& it : keys ){
+
+					if( it == "WindowsPbkdf2Interations" || it == "LXQtWindowsDPAPI_Data" ){
+
+						lxqtSettings->setValue( it,oldSettings.value( it ) ) ;
+					}else{
+						newSettings->setValue( it,oldSettings.value( it ) ) ;
+					}
+				}
+
+				//oldSettings.clear() ;
+
+				return newSettings ;
+			}
+		}else{
+			return std::make_unique< QSettings >( "SiriKali","SiriKali" ) ;
+		}
+	}
+}
+
+settings::settings() :
+	m_settingsP( _init() ),
+	m_settings( *m_settingsP ),
+	m_portableVersion( settings::portableVersion() )
+{
+}
+
+bool settings::portableVersion()
+{
+	if( utility::platformIsWindows() ){
+
+		auto a = QFile::exists( settings::portableVersionConfigPath() ) ;
+		auto b = QFile::exists( QDir::currentPath() + "/sirikali.exe" ) ;
+
+		return a && b ;
+	}else{
+		return false ;
+	}
+}
+
+QString settings::portableVersionConfigPath()
+{
+	return QDir::currentPath() + "/local" ;
 }
 
 bool settings::showCipherFolderAndMountPathInFavoritesList()
@@ -66,7 +181,12 @@ bool settings::showCipherFolderAndMountPathInFavoritesList()
 
 QString settings::homePath()
 {
-	return QDir::homePath() ;
+	if( utility::platformIsWindows() ){
+
+		return QDir::homePath() + "/Desktop" ;
+	}else{
+		return QDir::homePath() ;
+	}
 }
 
 QString settings::windowsMountPointPath()
@@ -140,13 +260,25 @@ int settings::favoritesEntrySize()
 	}
 }
 
+static QString _homePaths( const QString& homePath,bool portableVersion )
+{
+	if( portableVersion ){
+
+		return settings::portableVersionConfigPath() + "/bin;" + homePath ;
+	}else{
+		return homePath ;
+	}
+}
+
 void settings::setWindowsExecutableSearchPath( const QString& e )
 {
 	if( e.isEmpty() ){
 
-		m_settings.setValue( "WindowsExecutableSearchPath",settings::homePath() + "/bin" ) ;
+		auto m = _homePaths( settings::homePath(),m_portableVersion ) ;
+		m_settings.setValue( "WindowsExecutableSearchPath",m ) ;
 	}else{
-		m_settings.setValue( "WindowsExecutableSearchPath",e ) ;
+		auto m = _homePaths( e,m_portableVersion ) ;
+		m_settings.setValue( "WindowsExecutableSearchPath",m ) ;
 	}
 }
 
@@ -154,7 +286,18 @@ QString settings::windowsExecutableSearchPath()
 {
 	if( !m_settings.contains( "WindowsExecutableSearchPath" ) ){
 
-		m_settings.setValue( "WindowsExecutableSearchPath",settings::homePath() + "/bin" ) ;
+		auto m = _homePaths( settings::homePath(),m_portableVersion ) ;
+		m_settings.setValue( "WindowsExecutableSearchPath",m ) ;
+	}
+
+	if( m_portableVersion ){
+
+		auto s = utility::split( m_settings.value( "WindowsExecutableSearchPath" ).toString(),";" ) ;
+
+		if( s.size() > 1 ){
+
+			this->setWindowsExecutableSearchPath( s.at( 1 ) ) ;
+		}
 	}
 
 	return m_settings.value( "WindowsExecutableSearchPath" ).toString() ;
@@ -453,6 +596,11 @@ QString settings::mountPath( const QString& path )
 
 QString settings::ConfigLocation()
 {
+	if( m_portableVersion ){
+
+		return QDir().currentPath() + "/local" ;
+	}
+
 	if( !m_settings.contains( "ConfigLocation" ) ){
 
 		auto m = QStandardPaths::standardLocations( QStandardPaths::ConfigLocation ) ;
@@ -604,7 +752,7 @@ bool settings::readFavorites( QMenu * m )
 
 			return true ;
 		}else{
-			return settings().instance().showCipherFolderAndMountPathInFavoritesList() ;
+			return this->showCipherFolderAndMountPathInFavoritesList() ;
 		}
 	}() ;
 
@@ -691,14 +839,15 @@ void settings::languageMenu( QMenu * m,QAction * ac,settings::translator& s )
 }
 
 QString settings::localizationLanguagePath()
-{
+{	
+	if( utility::platformIsWindows() ){
+
+		return QDir().currentPath() + "/translations" ;
+	}
+
 	if( !m_settings.contains( "TranslationsPath" ) ){
 
-		if( utility::platformIsWindows() ){
-
-			m_settings.setValue( "TranslationsPath",QDir().currentPath() + "/translations" ) ;
-
-		}else if( utility::platformIsOSX() ){
+		if( utility::platformIsOSX() ){
 
 			m_settings.setValue( "TranslationsPath",TRANSLATION_PATH ) ;
 		}else{
@@ -917,7 +1066,7 @@ bool settings::doNotShowReadOnlyWarning()
 
 		return m_settings.value( "DoNotShowReadOnlyWarning" ).toBool() ;
 	}else{
-		bool s = false ;
+		bool s = true ;
 		settings::doNotShowReadOnlyWarning( s ) ;
 		return s ;
 	}

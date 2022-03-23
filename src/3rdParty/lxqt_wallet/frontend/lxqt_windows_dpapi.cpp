@@ -8,6 +8,8 @@ static const int TEST_VALUE = -1;
 
 #include <cstring>
 
+std::unique_ptr< QSettings > lxqt_qsettings() ;
+
 #ifdef Q_OS_WIN
 
 #include <windows.h>
@@ -257,7 +259,8 @@ void LXQt::Wallet::windows_dpapi::open(const QString &walletName,
     m_walletName      = walletName;
     m_applicationName = applicationName;
 
-    m_settings.reset(new QSettings(m_applicationName, m_walletName));
+    //m_settings.reset(new QSettings(m_applicationName, m_walletName));
+    m_settings = lxqt_qsettings();
 
     m_walletOpened = std::move(function);
 

@@ -123,9 +123,13 @@ public:
 		return s ;
 	}
 
+	static bool portableVersion() ;
+	static QString portableVersionConfigPath() ;
+
 	settings::windowDimensions getWindowDimensions() ;
 	void setWindowDimensions( const settings::windowDimensions& ) ;
 	settings() ;
+
 	bool showCipherFolderAndMountPathInFavoritesList() ;
 	int pollForUpdatesInterval() ;
 	int sshfsBackendTimeout() ;
@@ -221,7 +225,9 @@ public:
 	int mountMonitorFolderPollingInterval( void ) ;
 	int delayBeforeAutoMountAtStartup() ;
 private:
-	QSettings m_settings ;
+	std::unique_ptr< QSettings > m_settingsP ;
+	QSettings& m_settings ;
+	bool m_portableVersion ;
 };
 
 #endif //SETTINGS_H

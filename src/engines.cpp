@@ -40,13 +40,23 @@
 
 static QString _emptyQString ;
 
+static QStringList _windows_search_paths()
+{
+	const auto s = settings::instance().windowsExecutableSearchPath() ;
+
+	return utility::split( s,";" ) ;
+}
+
 static QStringList _system_search_paths()
 {
 	if( utility::platformIsWindows() ){
 
 		QStringList m ;
 
-		m.append( settings::instance().windowsExecutableSearchPath() + "/" ) ;
+		for( const auto& it : _windows_search_paths() ){
+
+			m.append( it + "/" ) ;
+		}
 
 		m.append( QDir::currentPath() + "/" ) ;
 
@@ -89,7 +99,11 @@ static QStringList _search_path( const QStringList& m )
 
 		auto x = _search_path_0( a + "\\bin\\" ) ;
 		x += _search_path_0( QDir().currentPath() + "\\" ) ;
-		x += _search_path_0( settings::instance().windowsExecutableSearchPath() + "\\" ) ;
+
+		for( const auto& it : _windows_search_paths() ){
+
+			x += _search_path_0( it + "\\" ) ;
+		}
 
 		for( const auto& it : m ){
 
@@ -181,7 +195,12 @@ QString engines::executableNotEngineFullPath( const QString& e )
 
 			QStringList m ;
 
-			m.append( settings::instance().windowsExecutableSearchPath() + "/" ) ;
+			for( const auto& it : _windows_search_paths() ){
+
+				m.append( it + "/" ) ;
+				m.append( it + "/bin/" ) ;
+			}
+
 			m.append( QDir::currentPath() + "/" ) ;
 
 			return m ;

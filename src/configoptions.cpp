@@ -98,12 +98,15 @@ configOptions::configOptions( QWidget * parent,
 
 		if( !e.isEmpty() ){
 
-			m_ui->lineEditMountPointPrefix->setText( e ) ;
-
 			if( utility::platformIsWindows() ){
 
 				m_settings.setWindowsExecutableSearchPath( e ) ;
+				auto m = m_settings.windowsExecutableSearchPath() ;
+
+				m_ui->lineEditMountPointPrefix->setText( m ) ;
 			}else{
+				m_ui->lineEditMountPointPrefix->setText( e ) ;
+
 				m_settings.setDefaultMountPointPrefix( e ) ;
 			}
 		}
@@ -312,13 +315,6 @@ void configOptions::HideUI()
 		m_settings.runCommandOnIntervalTime( b ) ;
 	}else{
 		m_settings.runCommandOnIntervalTime( 10 ) ;
-	}
-
-	if( utility::platformIsWindows() ){
-
-		m_settings.setWindowsExecutableSearchPath( m_ui->lineEditMountPointPrefix->text() ) ;
-	}else{
-		m_settings.setDefaultMountPointPrefix( m_ui->lineEditMountPointPrefix->text() ) ;
 	}
 
 	this->hide() ;

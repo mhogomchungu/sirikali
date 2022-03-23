@@ -336,8 +336,6 @@ namespace utility
 
 	void setWindowsMountPointOptions( QWidget *,QLineEdit *,QPushButton * ) ;
 
-	QString homeConfigPath( const QString& = QString() ) ;
-
 	QString getExistingFile( QWidget *,const QString& caption,const QString& dir ) ;
 
 	QString getExistingDirectory( QWidget *,const QString& caption,const QString& dir ) ;

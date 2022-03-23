@@ -719,11 +719,6 @@ QIcon utility::getIcon( iconType type )
 	}
 }
 
-QString utility::homeConfigPath( const QString& e )
-{
-	return settings::instance().homePath() + "/.SiriKali/" + e ;
-}
-
 bool utility::pathIsReadable( const QString& path,bool isFolder )
 {
 	QFileInfo s( path ) ;

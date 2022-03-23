@@ -7,8 +7,6 @@ project( sirikali )
 set( PGR_VERSION "1.5.0" )
 set( COPYRIGHT_YEARS "2016-2022" )
 
-add_definitions( -Wextra -Wall -pedantic )
-
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 10.0.0 )
 	set( CMAKE_CXX_STANDARD 20 )
 	MESSAGE( STATUS "Setting C++ version to C++20" )
@@ -16,10 +14,16 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_CXX_COMPILER_VERSION VE
 	set( CMAKE_CXX_STANDARD 20 )
 	MESSAGE( STATUS "Setting C++ version to C++20" )
 else()
-	set( CMAKE_CXX_STANDARD 14 )
-	#This is necessary with old versions of cmake
-	add_definitions(-std=c++14)
-	MESSAGE( STATUS "Setting C++ version to C++14" )
+	if( WIN32 )
+		set( CMAKE_CXX_STANDARD 14 )
+		MESSAGE( STATUS "Setting C++ version to C++14" )
+	else()
+		set( CMAKE_CXX_STANDARD 14 )
+		#This is necessary with old versions of cmake
+		add_definitions(-std=c++14)
+		MESSAGE( STATUS "Setting C++ version to C++14" )
+	endif()
+
 endif()
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
@@ -365,11 +369,15 @@ INCLUDE_DIRECTORIES( ${GCRYPT_INCLUDE_PATH} )
 
 if( APPLE )
 	add_executable( sirikali MACOSX_BUNDLE ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} ${PROJECT_SOURCE_DIR}/icons/256x256/sirikali.icns )
+	set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic")
 else()
-	if( WIN32)
-		 add_executable( sirikali WIN32 ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
+	if( WIN32 )
+		 set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/src/appicon.rc" )
+		 add_executable( sirikali WIN32 ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} ${APP_ICON_RESOURCE_WINDOWS} )
+		 set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -pedantic")
 	else()
-	                add_executable( sirikali ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
+		 add_executable( sirikali ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
+		 set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic")
 	endif()
 endif()
 
