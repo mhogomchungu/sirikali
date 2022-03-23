@@ -12,6 +12,8 @@ SiriKali is a Qt/C++ GUI application that manages ecryptfs, cryfs, encfs, gocryp
 
 Users of Securefs and Cppcryptfs should inform SiriKali of where Securefs and Cppcryptfs binaries are located on the system by setting the path at: ```Menu->Settings->External Commands->Set Executables Search Path.```
 
+If you are using the portable version, then a better place to put external executables in the "local/bin" subfolder of the portable application folder.
+
 #### Supported Backends on macOS:
 <a href="https://github.com/netheril96/securefs">Securefs, </a><a href="https://www.cryfs.org/">Cryfs, </a><a href="https://github.com/vgough/encfs">Encfs</a> and <a href="https://nuetzlich.net/gocryptfs">Gocryptfs.</a>
 
@@ -62,6 +64,8 @@ The installer for Microsoft Windows operating system is <a href="https://github.
 
 The installer is not signed and expect to get a warning from windows saying the installer is from an unknown publisher.
 We recommend using the installer version.
+
+A portable version is also found <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.5.0/SiriKali-1.5.0.exe.zip">here</a>.
 
 ## Binary packages for Linux.
 
