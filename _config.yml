@@ -1,8 +1,9 @@
+remote_theme: pages-themes/cayman@v0.2.0
 title: SiriKali
 description: A Qt/C++ GUI front end to cryfs,gocryptfs,securefs,ecryptfs and encfs
 google_analytics: UA-106643569-2
 show_downloads: false
-theme: jekyll-theme-cayman
 
-gems:
+plugins:
+  - jekyll-remote-theme
   - jekyll-mentions
