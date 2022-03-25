@@ -67,6 +67,8 @@ We recommend using the installer version.
 
 A portable version is also found <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.5.0/SiriKali-1.5.0.exe.zip">here</a>.
 
+Packages are also available for <a href="https://github.com/microsoft/winget-pkgs/tree/master/manifests/f/FrancisBanyikwa/SiriKali">Winget</a> and <a href="https://github.com/ScoopInstaller/Extras/blob/master/bucket/sirikali.json">Scoop</a>.
+
 ## Binary packages for Linux.
 
 Check first if SiriKali is present in your distribution's repositories and use that version if it is.
