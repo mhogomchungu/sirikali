@@ -703,6 +703,8 @@ public:
 
 		virtual bool takesTooLongToUnlock() const ;
 
+		virtual void aboutToExit() const ;
+
 		virtual QByteArray prepareBackend() const ;
 
 		virtual engine::engine::status passAllRequirenments( const engines::engine::cmdArgsList& ) const ;
@@ -890,6 +892,7 @@ public:
 	volumeInfo::List mountInfo( const volumeInfo::List& ) const ;
 	QStringList enginesWithNoConfigFile() const ;
 	QStringList enginesWithConfigFile() const ;
+	void aboutToExit() const ;
 	const std::vector< engines::engine::Wrapper >& supportedEngines() const ;
 
 	class engineWithPaths{

@@ -251,6 +251,19 @@ void gocryptfs::GUIMountOptions( const engines::engine::mountGUIOptions& s ) con
 	e.ShowUI() ;
 }
 
+void gocryptfs::aboutToExit() const
+{
+	if( utility::platformIsWindows() && !m_cppcryptfsPid.isEmpty() ){
+
+		auto id = this->getcppcryptfsPid() ;
+
+		if( m_cppcryptfsPid == id ){
+
+			auto m = Task::process::run( m_cppcryptfsctl,QStringList{ "--exit" } ).await() ;
+		}
+	}
+}
+
 const QStringList& gocryptfs::windowsUnmountCommand() const
 {
 	if( m_cppcryptfsPid.isEmpty() ){

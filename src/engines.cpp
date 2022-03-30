@@ -993,6 +993,10 @@ bool engines::engine::takesTooLongToUnlock() const
 	return m_Options.takesTooLongToUnlock ;
 }
 
+void engines::engine::aboutToExit() const
+{
+}
+
 QByteArray engines::engine::prepareBackend() const
 {
 	return {} ;
@@ -1520,6 +1524,14 @@ QStringList engines::enginesWithConfigFile() const
 
 		return engine.hasConfigFile() ;
 	} ) ;
+}
+
+void engines::aboutToExit() const
+{
+	for( const auto& it : m_backends ){
+
+		it->aboutToExit() ;
+	}
 }
 
 const std::vector< engines::engine::Wrapper >& engines::supportedEngines() const

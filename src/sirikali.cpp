@@ -324,6 +324,8 @@ void sirikali::closeApplication( int s,const QString& e )
 		}
 	}
 
+	engines::instance().aboutToExit() ;
+
 	m_mountInfo.stop() ;
 }
 
