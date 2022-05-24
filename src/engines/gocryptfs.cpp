@@ -259,7 +259,7 @@ void gocryptfs::aboutToExit() const
 
 		if( m_cppcryptfsPid == id ){
 
-			auto m = Task::process::run( m_cppcryptfsctl,QStringList{ "--exit" } ).await() ;
+			Task::process::run( m_cppcryptfsctl,QStringList{ "--exit" } ).await() ;
 		}
 	}
 }

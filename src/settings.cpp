@@ -392,7 +392,7 @@ bool settings::enableHighDpiScaling()
 
 void settings::enableHighDpiScaling( bool e )
 {
-	m_settings.setValue( "EnableHighDpiScaling",e ) ;
+	m_settings.setValue( "EnableHighDpiScalingV1",e ) ;
 }
 
 void settings::showDebugWindowOnStartup( bool e )
