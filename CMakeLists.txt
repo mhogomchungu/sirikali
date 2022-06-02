@@ -19,9 +19,11 @@ else()
 		MESSAGE( STATUS "Setting C++ version to C++14" )
 	else()
 		set( CMAKE_CXX_STANDARD 14 )
-		#This is necessary with old versions of cmake
-		add_definitions(-std=c++14)
 		MESSAGE( STATUS "Setting C++ version to C++14" )
+		if(${CMAKE_VERSION} VERSION_LESS "3.1.0")
+		        message("Warning your cmake version is too old(<3.1.0) and code my not compile")
+			add_definitions(-std=c++14)
+		endif()
 	endif()
 
 endif()

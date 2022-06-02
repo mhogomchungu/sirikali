@@ -43,8 +43,11 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"  AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 10.0.0)
 	set( CMAKE_CXX_STANDARD 20 )
 else()
-	add_definitions(-std=c++14)
 	set( CMAKE_CXX_STANDARD 14 )
+                if(${CMAKE_VERSION} VERSION_LESS "3.1.0")
+                        message("Warning your cmake version is too old(<3.1.0) and code my not compile")
+                        add_definitions(-std=c++14)
+                endif()
 endif()
 
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
