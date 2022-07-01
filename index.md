@@ -17,7 +17,8 @@ If you are using the portable version, then a better place to put external execu
 #### Supported Backends on macOS:
 <a href="https://github.com/netheril96/securefs">Securefs, </a><a href="https://www.cryfs.org/">Cryfs, </a><a href="https://github.com/vgough/encfs">Encfs</a> and <a href="https://nuetzlich.net/gocryptfs">Gocryptfs.</a>
 
-Building SiriKali on macOS is currently a bit involving process and the steps are documented <a href="https://github.com/mhogomchungu/sirikali/blob/master/OSX_BUILD_INSTRUCTIONS">here.</a>
+Building SiriKali on macOS is currently a bit involving process and [the steps are documented here](https://github.com/mhogomchungu/sirikali/blob/master/MACOS_BUILD_INSTRUCTIONS).
+
 
 #### Using SiriKali to connect to ssh server using sshfs:
 Steps to setup SiriKali to connect to an ssh server are documented <a href="https://github.com/mhogomchungu/sirikali/wiki/Frequently-Asked-Questions#90-how-do-i-add-options-to-connect-to-an-ssh-server">here.</a>
