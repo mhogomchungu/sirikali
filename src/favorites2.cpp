@@ -45,7 +45,7 @@ Task::future< bool >& favorites2::addKey( secrets::wallet& wallet,
 {
 	return Task::run( [ &wallet,id,key ](){
 
-		if( wallet->addKey( id,key ) ){
+		if( wallet->addKey( id,key.toUtf8() ) ){
 
 			return true ;
 		}else{
