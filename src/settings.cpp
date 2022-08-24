@@ -1446,6 +1446,7 @@ settings::translator::translator()
 	m_languages.emplace_back( QObject::tr( "Swedish (SE)" ),"Swedish (SE)","sv_SE" ) ;
 	m_languages.emplace_back( QObject::tr( "Arabic (SA)" ) ,"Arabic (SA)","ar_SA" ) ;
 	m_languages.emplace_back( QObject::tr( "Spanish (MX)" ),"Spanish (MX)","es_MX" ) ;
+	m_languages.emplace_back( QObject::tr( "Spanish (SP)" ),"Spanish (SP))","es_ES" ) ;
 	m_languages.emplace_back( QObject::tr( "Chinese Simplified (zh-CN)" ),"Chinese Simplified (zh-CN)","zh_CN" ) ;
 }
 
