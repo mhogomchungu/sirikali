@@ -213,6 +213,7 @@ int sirikali::run( const QStringList& args,int argc,char * argv[] )
 		QApplication srk( argc,argv ) ;
 
 		srk.setApplicationName( "SiriKali" ) ;
+		srk.setDesktopFileName( "io.github.mhogomchungu.sirikali" ) ;
 
 		return starter( args,srk ).exec() ;
 	}
