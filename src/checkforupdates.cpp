@@ -29,6 +29,7 @@
 checkUpdates::checkUpdates( QWidget * widget,checkforupdateswindow::functions ff ) :
 	m_widget( widget ),
 	m_timeOut( settings::instance().networkTimeOut() ),
+	m_network( m_timeOut ),
 	m_running( false ),
 	m_functions( std::move( ff ) )
 {
@@ -208,25 +209,30 @@ void checkUpdates::checkForUpdate( size_t position )
 				m_networkRequest.setUrl( QUrl( "https://api.github.com/repos/mhogomchungu/sirikali/releases" ) ) ;
 			}
 
-			m_network.get( m_timeOut,m_networkRequest,[ this,f,exeName,position ]( QNetworkReply& e ){
+			m_network.get( m_networkRequest,[ this,f,exeName,position ]( const utils::network::reply& reply ){
 
-				try{
-					m_results += { exeName,f,this->latestVersion( e.readAll() ) } ;
+				if( reply.success() ){
 
-				}catch( ... ){
+					try{
+						m_results += { exeName,f,this->latestVersion( reply.data() ) } ;
 
-					m_results += { exeName,f,"N/A" } ;
+					}catch( ... ){
+
+						m_results += { exeName,f,"N/A" } ;
+					}
+
+				}else if( reply.timeOut() ){
+
+					auto s = QString::number( m_timeOut ) ;
+					auto e = QObject::tr( "Network Request Failed To Respond Within %1 Seconds." ).arg( s ) ;
+
+					DialogMsg( m_widget ).ShowUIOK( QObject::tr( "ERROR" ),e ) ;
+					m_running = false ;
+				}else{
+
 				}
 
 				this->checkForUpdate( position ) ;
-
-			},[ this ](){
-
-				auto s = QString::number( m_timeOut ) ;
-				auto e = QObject::tr( "Network Request Failed To Respond Within %1 Seconds." ).arg( s ) ;
-
-				DialogMsg( m_widget ).ShowUIOK( QObject::tr( "ERROR" ),e ) ;
-				m_running = false ;
 			} ) ;
 		}
 	}

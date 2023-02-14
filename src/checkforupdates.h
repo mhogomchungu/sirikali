@@ -29,7 +29,7 @@
 #include <QWidget>
 #include <QTimer>
 
-#include "network_access_manager.hpp"
+#include "utils/network_access_manager.hpp"
 #include "utility.h"
 #include "dialogmsg.h"
 #include "siritask.h"
@@ -64,11 +64,11 @@ private:
 
 	QNetworkRequest m_networkRequest ;
 
-	NetworkAccessManager m_network ;
-
 	QVector< QStringList > m_results ;
 
 	int m_timeOut ;
+
+	utils::network::manager m_network ;
 
 	bool m_autocheck ;
 

@@ -151,7 +151,6 @@ else()
 	message( STATUS "Found Qt5Network, version  ${Qt5Network_VERSION}" )
 endif()
 
-pkg_check_modules( MCHUNGU_NETWORK mhogomchungu_network )
 #pkg_check_modules( MCHUNGU_TASK mhogomchungu_task )
 
 file( WRITE ${PROJECT_BINARY_DIR}/version.h "
@@ -165,20 +164,7 @@ file( WRITE ${PROJECT_BINARY_DIR}/version.h "
 #endif
 \n" )
 
-if(NONETWORKSUPPORT)
-        file(WRITE  ${PROJECT_BINARY_DIR}/network_support.h "\n#define HAS_NETWORK_SUPPORT 0\n")
-	message( STATUS "---------------------------------------------------------------------------" )
-	message( STATUS "network support is disabled" )
-	message( STATUS "---------------------------------------------------------------------------" )
-else()
-        file(WRITE  ${PROJECT_BINARY_DIR}/network_support.h "\n#define HAS_NETWORK_SUPPORT 1\n")
-
-	message( STATUS "---------------------------------------------------------------------------" )
-	message( STATUS "mhogomchungu_network library will be provided by an internal library" )
-	message( STATUS "---------------------------------------------------------------------------" )
-	ADD_SUBDIRECTORY( src/3rdParty/NetworkAccessManager )
-	include_directories( src/3rdParty/NetworkAccessManager )
-endif()
+file(WRITE  ${PROJECT_BINARY_DIR}/network_support.h "\n#define HAS_NETWORK_SUPPORT 1\n")
 
 if( MCHUNGU_TASK_FOUND )
 
@@ -397,10 +383,6 @@ if( UNIX AND NOT APPLE )
     TARGET_LINK_LIBRARIES( sirikali ${Qt5DBus_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} mhogomchungu_task lxqt-wallet -L${GCRYPT_LIBRARY_PATH} -Wl,-znow)
 endif()
 
-if(NOT NONETWORKSUPPORT)
-    TARGET_LINK_LIBRARIES(sirikali mhogomchungu_network)
-endif()
-
 message( STATUS "---------------------------------------------------------------------------" )
 message( STATUS "Building GUI components using Qt5" )
 message( STATUS "---------------------------------------------------------------------------\n\n" )
@@ -434,7 +416,7 @@ if( APPLE )
 	file( COPY translations/en_US.qm DESTINATION "sirikali.app/Contents/Resources/" )
 	file( COPY translations/zh_CN.qm DESTINATION "sirikali.app/Contents/Resources/" )
 
-	#file( COPY translations/de_DE.qm DESTINATION "sirikali.app/Contents/Resources/" )
+	file( COPY translations/de_DE.qm DESTINATION "sirikali.app/Contents/Resources/" )
 	#file( COPY translations/es_MX.qm DESTINATION "sirikali.app/Contents/Resources/" )
 
 	file( COPY changelog DESTINATION "sirikali.app/Contents/Resources/" )
@@ -471,7 +453,7 @@ else()
 	install( FILES translations/zh_CN.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 
 	#install( FILES translations/es_MX.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
-	#install( FILES translations/de_DE.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
+	install( FILES translations/de_DE.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 
 	install( FILES src/sirikali.1.gz DESTINATION ${CMAKE_INSTALL_DATADIR}/man/man1/ )
 	install( FILES src/sirikali.pkexec.1.gz DESTINATION ${CMAKE_INSTALL_DATADIR}/man/man1/ )
