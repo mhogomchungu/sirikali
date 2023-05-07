@@ -24,10 +24,10 @@ Below are instructions on how to build SiriKali on MacOS.
     brew install gromgit/fuse/gocryptfs-mac gromgit/fuse/encfs-mac  gromgit/fuse/securefs-mac
 
 6.  # You need to specify the path to the qt5 you installed through homebrew:
-    echo 'export PATH="/opt/local/opt/qt@5/bin:$PATH"' >> ~/.zshrc; source ~/.zshrc
+    echo 'export PATH="/opt/homebrew/opt/qt@5/bin:$PATH"' >> ~/.zshrc
     
     6b. Tell cmake where to find qt:
-    export CMAKE_PREFIX_PATH=/usr/local/Cellar/qt@5/5.15.5/
+    export CMAKE_PREFIX_PATH=/opt/homebrew/Cellar/qt@5/5.15.5/
 
 7.  # Create a build diretory and cd into it
     mkdir build; cd build
