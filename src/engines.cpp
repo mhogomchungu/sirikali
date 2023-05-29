@@ -72,7 +72,8 @@ static QStringList _system_search_paths()
 		 "/opt/local/bin/",
 		 "/opt/local/sbin/",
 		 "/opt/bin/",
-		 "/opt/sbin/" } ;
+		 "/opt/sbin/",
+		 "/opt/homebrew/bin/" } ;
 }
 
 static QStringList _search_path_0( const QString& e )
