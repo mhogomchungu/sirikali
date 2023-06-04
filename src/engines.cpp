@@ -49,6 +49,8 @@ static QStringList _windows_search_paths()
 
 static QStringList _system_search_paths()
 {
+	auto env = QProcess::systemEnvironment() ;
+
 	if( utility::platformIsWindows() ){
 
 		QStringList m ;
@@ -60,10 +62,10 @@ static QStringList _system_search_paths()
 
 		m.append( QDir::currentPath() + "/" ) ;
 
-		return m ;
+		return m + env ;
 	}
 
-	return { "/usr/local/bin/",
+	return QStringList{ "/usr/local/bin/",
 		 "/usr/local/sbin/",
 		 "/usr/bin/",
 		 "/usr/sbin/",
@@ -73,7 +75,7 @@ static QStringList _system_search_paths()
 		 "/opt/local/sbin/",
 		 "/opt/bin/",
 		 "/opt/sbin/",
-		 "/opt/homebrew/bin/" } ;
+		 "/opt/homebrew/bin/" } + env ;
 }
 
 static QStringList _search_path_0( const QString& e )
