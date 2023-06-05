@@ -217,30 +217,6 @@ public:
 			int numberOfAttempts ;
 		} ;
 
-		struct exe_args{
-		        exe_args( QString e,QStringList s ) :
-			        exe( std::move( e ) ),args( std::move( s ) )
-			{
-			}
-			exe_args()
-			{
-			}
-			QString exe ;
-			QStringList args ;
-		};
-
-		struct exe_args_const{
-			exe_args_const( const exe_args& e ) : exe( e.exe ),args( e.args )
-			{
-			}
-			exe_args_const( const QString& e,const QStringList& s ) :
-				exe( e ),args( s )
-			{
-			}
-			const QString& exe ;
-			const QStringList& args ;
-		};
-
 		class Wrapper{
 		public:
 			Wrapper( const engines::engine& e ) :
@@ -278,6 +254,8 @@ public:
 			success,
 			volumeCreatedSuccessfully,
 
+			fuserMountNotFound,
+
 			backendRequiresPassword,
 			badPassword,
 
@@ -311,6 +289,34 @@ public:
 			backendTimedOut,
 			unknown
 		} ;
+
+		struct exe_args{
+			exe_args( QString e,QStringList s ) :
+				exe( std::move( e ) ),args( std::move( s ) )
+			{
+			}
+			exe_args()
+			{
+			}
+			exe_args( engines::engine::status e ) : error( e )
+			{
+			}
+			engines::engine::status error = engines::engine::status::success ;
+			QString exe ;
+			QStringList args ;
+		};
+
+		struct exe_args_const{
+			exe_args_const( const exe_args& e ) : exe( e.exe ),args( e.args )
+			{
+			}
+			exe_args_const( const QString& e,const QStringList& s ) :
+				exe( e ),args( s )
+			{
+			}
+			const QString& exe ;
+			const QStringList& args ;
+		};
 
 		class cmdStatus
 		{

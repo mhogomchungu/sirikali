@@ -49,7 +49,7 @@ static QStringList _windows_search_paths()
 
 static QStringList _system_search_paths()
 {
-	auto env = QProcess::systemEnvironment() ;
+	auto env = QProcessEnvironment::systemEnvironment().value( "PATH" ) ;
 
 	if( utility::platformIsWindows() ){
 
@@ -62,7 +62,7 @@ static QStringList _system_search_paths()
 
 		m.append( QDir::currentPath() + "/" ) ;
 
-		return m + env ;
+		return m + utility::split( env,";" ) ;
 	}
 
 	return QStringList{ "/usr/local/bin/",
@@ -75,7 +75,7 @@ static QStringList _system_search_paths()
 		 "/opt/local/sbin/",
 		 "/opt/bin/",
 		 "/opt/sbin/",
-		 "/opt/homebrew/bin/" } + env ;
+		 "/opt/homebrew/bin/" } + utility::split( env,":" ) ;
 }
 
 static QStringList _search_path_0( const QString& e )
@@ -167,11 +167,21 @@ static QString _executableFullPath( const QString& f,Function function )
 
 		if( !it.isEmpty() ){
 
-			exe = it + e ;
+			if( it.endsWith( '/' ) ){
 
-			if( QFile::exists( exe ) ){
+				exe = it + e ;
 
-				return exe ;
+				if( QFile::exists( exe ) ){
+
+					return exe ;
+				}
+			}else{
+				exe = it + "/" + e ;
+
+				if( QFile::exists( exe ) ){
+
+					return exe ;
+				}
 			}
 		}
 	}
@@ -589,6 +599,11 @@ bool engines::engine::unmountVolume( const engines::engine::exe_args_const& exe,
 engines::engine::status engines::engine::unmount( const engines::engine::unMount& e ) const
 {
 	auto cmd = this->unMountCommand( e.mountPoint ) ;
+
+	if( cmd.error != engines::engine::status::success ){
+
+		return cmd.error ;
+	}
 
 	if( this->unmountVolume( cmd,false ) ){
 
@@ -1176,7 +1191,14 @@ engines::engine::exe_args engines::engine::unMountCommand( const engines::engine
 
 				return { "umount",{ e.mountPath() } } ;
 			}else{
-				return { engines::engine::fuserMountPath(),{ "-u",e.mountPath() } } ;
+				auto fuserMount = engines::engine::fuserMountPath() ;
+
+				if( fuserMount.isEmpty() ){
+
+					return { engines::engine::status::fuserMountNotFound } ;
+				}else{
+					return { fuserMount,{ "-u",e.mountPath() } } ;
+				}
 			}
 		}else{
 			return _replace_opts( m_Options.unMountCommand ) ;
@@ -1822,6 +1844,10 @@ QString engines::engine::cmdStatus::toString() const
 	case engines::engine::status::backendRequiresPassword :
 
 		return QObject::tr( "Backend Requires A Password." ) ;
+
+	case engines::engine::status::fuserMountNotFound :
+
+		return QObject::tr( "Failed To UnMount Because \"fusermount\" Executable Could Not Be Found." ) ;
 
 	case engines::engine::status::badPassword :
 
