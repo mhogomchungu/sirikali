@@ -1214,14 +1214,12 @@ bool settings::showFavoritesInContextMenu()
 
 int settings::networkTimeOut()
 {
-	if( m_settings.contains( "NetworkTimeOut" ) ){
+	if( !m_settings.contains( "NetworkTimeOutInSeconds" ) ){
 
-		return m_settings.value( "NetworkTimeOut" ).toInt() ;
-	}else{
-		int s = 5 ;
-		m_settings.setValue( "NetworkTimeOut",s ) ;
-		return s ;
+		m_settings.setValue( "NetworkTimeOutInSeconds",30 ) ;
 	}
+
+	return m_settings.value( "NetworkTimeOutInSeconds" ).toInt() ;
 }
 
 bool settings::showMountDialogWhenAutoMounting()

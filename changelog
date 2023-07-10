@@ -273,3 +273,7 @@ version 1.4.2(December 18,2019)
    [ALL]
 -- Add dark theme.
 -- Add support for gocryptfs using cppcryptfs as a CLI backend.
+
+   version 1.5.1(July 10, 2023)
+   [NON WINDOWS]
+-- Folders specified in PATH variable will be checked when looking for executables.

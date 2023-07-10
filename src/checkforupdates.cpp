@@ -28,7 +28,7 @@
 
 checkUpdates::checkUpdates( QWidget * widget,checkforupdateswindow::functions ff ) :
 	m_widget( widget ),
-	m_timeOut( settings::instance().networkTimeOut() ),
+	m_timeOut( settings::instance().networkTimeOut() * 1000 ),
 	m_network( m_timeOut ),
 	m_running( false ),
 	m_functions( std::move( ff ) )
@@ -223,7 +223,7 @@ void checkUpdates::checkForUpdate( size_t position )
 
 				}else if( reply.timeOut() ){
 
-					auto s = QString::number( m_timeOut ) ;
+					auto s = QString::number( m_timeOut / 1000 ) ;
 					auto e = QObject::tr( "Network Request Failed To Respond Within %1 Seconds." ).arg( s ) ;
 
 					DialogMsg( m_widget ).ShowUIOK( QObject::tr( "ERROR" ),e ) ;
