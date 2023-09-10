@@ -6,12 +6,12 @@
     <message>
         <location filename="../src/dialogmsg.ui" line="17"/>
         <source>Dialog</source>
-        <translation></translation>
+        <translation>Диалоговое окно</translation>
     </message>
     <message>
         <location filename="../src/dialogmsg.ui" line="29"/>
         <source>&amp;Ok</source>
-        <translation></translation>
+        <translation>&amp;Хорошо</translation>
     </message>
     <message>
         <location filename="../src/dialogmsg.ui" line="42"/>
@@ -73,7 +73,7 @@
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/password_dialog.cpp" line="74"/>
         <source>Wallet could not be opened with the presented key</source>
-        <translation>Хранилище ключей не может быть открыто с помощью данного пароля</translation>
+        <translation>Хранилище не может быть открыто с помощью данного ключа</translation>
     </message>
 </context>
 <context>
@@ -106,7 +106,7 @@
     <message>
         <location filename="../src/engines.cpp" line="1794"/>
         <source>Backend Requires Polkit Support and SiriKali Failed To Start It.</source>
-        <translation>Backend требует поддержки Polkit и SiriKali не удалось запустить его.</translation>
+        <translation>Бэкэнд требует поддержки Polkit и SiriKali не удалось запустить его.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="1798"/>
@@ -121,7 +121,7 @@
     <message>
         <location filename="../src/engines.cpp" line="1790"/>
         <source>This Fscrypt Volume Requires A KeyFile.</source>
-        <translation>Этот том Fscrypt требует KeyFile.</translation>
+        <translation>Этот том Fscrypt требует файл ключа.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="1802"/>
@@ -132,7 +132,8 @@
         <location filename="../src/engines.cpp" line="1786"/>
         <source>Failed To Unlock &quot;%1&quot; Volume.
 Wrong Password Entered.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалесь разблокировать том &quot;%1&quot;.
+Введен неверный пароль.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="1806"/>
@@ -155,23 +156,23 @@ The Upgrade is IRREVERSIBLE And The Volume Will No Longer Work With Older Versio
 To Do The Upgrade, Check The &quot;Upgrade File System&quot; Option And Unlock The Volume Again.</source>
         <translation>Этот том Cryfs нуждается в обновлении для работы с версией Cryfs, которую вы используете.
 
-Обновление является нерегулярным, и этот том больше не будет работать с более старыми версиями Cryfs.
+Обновление является НЕОБРАТИМЫЙ, и этот том больше не будет работать с более старыми версиями Cryfs.
 
-Чтобы выполнить обновление, установите флажок «Обновить файловую систему» ​​и снова разблокируйте том.</translation>
+Чтобы выполнить обновление, установите флажок на &quot;Обновить файловую систему&quot; ​​и снова разблокируйте том.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="1818"/>
         <source>This Volume Of Cryfs Is Different From The Known One.
 
 Check The &quot;Replace File System&quot; Option And Unlock The Volume Again To Replace The Previous File System.</source>
-        <translation>Этот Том Cryfs отличается от известного.
+        <translation>Этот том Cryfs отличается от известного.
 
-Установите флажок «Заменить файловую систему» ​​и снова разблокируйте том, чтобы заменить предыдущую файловую систему.</translation>
+Установите флажок на &quot;Заменить файловую систему&quot; ​​и снова разблокируйте том, чтобы заменить предыдущую файловую систему.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="1822"/>
         <source>Atleast Version 0.9.9 Of Cryfs Is Required To Be Able To Upgrade A Volume and Installed Version Is &quot;%1&quot;.</source>
-        <translation>Для обновления тома требуется  Cryfs версии 0.9.9 или выше, а текущая версия - &quot;%1&quot;.</translation>
+        <translation>Для обновления тома требуется  Cryfs версии 0.9.9 и выше, а текущая версия — &quot;%1&quot;.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="1826"/>
@@ -188,7 +189,7 @@ Check The &quot;Replace File System&quot; Option And Unlock The Volume Again To 
         <source>Failed To Complete The Request.
 Java Executable Could Not Be Found.</source>
         <translation>Не удалось выполнить запрос.
-Исполняемый файл java не может быть найден.</translation>
+Исполняемый файл Java не может быть найден.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="1834"/>
@@ -217,14 +218,14 @@ Not Supported Volume Encountered.</source>
     <message>
         <location filename="../src/engines.cpp" line="1854"/>
         <source>Backend Requires Atleast Version &quot;%1&quot; Of SiriKali.</source>
-        <translation type="unfinished"></translation>
+        <translation>Для бэкэнда требуется версия SiriKali &quot;%1&quot; и выше.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="1864"/>
         <source>Installed &quot;%1&quot; Version Is Too Old.
  Please Update To Atleast Version %2.</source>
         <translation>Установленная версия &quot;%1&quot; устарела.
- Пожалуйста, обновите до последней версии%2.</translation>
+ Пожалуйста, обновите до версии %2 и выше.</translation>
     </message>
     <message>
         <location filename="../src/engines.cpp" line="1869"/>
@@ -251,7 +252,7 @@ It Must End With One Of The Following:
         <location filename="../src/engines.cpp" line="1892"/>
         <source>Failed To Complete The Task And Below Log was Generated By The Backend.
 </source>
-        <translation>Не удалось завершить задачу, журнал событий был создан на бэкенде.
+        <translation>Не удалось завершить задачу, журнал событий был создан на бэкэнде.
 </translation>
     </message>
     <message>
@@ -266,7 +267,7 @@ It Must End With One Of The Following:
 Please Use a Hash Of The KeyFile Through &quot;HMAC+KeyFile&quot; Option.</source>
         <translation>Не корректный Файловый ключ, так как он содержит как минимум один недопустимый символ (&apos;\n&apos;, &apos;\0&apos;, &apos;\r&apos;).
 
-Пожалуйста, используйте хэш Файлового ключа с помощью опции «HMAC + Файл ключа».</translation>
+Пожалуйста, используйте хэш файла ключа с помощью опции «HMAC + файл ключа».</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1569"/>
@@ -275,7 +276,7 @@ Please Use a Hash Of The KeyFile Through &quot;HMAC+KeyFile&quot; Option.</sourc
 key = hmac_sha256(password,keyfile contents)</source>
         <translation>Эффективный ключ шифрования генерируется по формуле:
 
-key = hmac_sha256 (пароль, содержимое Файлового ключа)</translation>
+key = hmac_sha256 (пароль, содержимое файла ключа)</translation>
     </message>
     <message>
         <location filename="../src/utility.cpp" line="528"/>
@@ -329,7 +330,7 @@ options:
     <message>
         <location filename="../src/settings.cpp" line="580"/>
         <source>Manage Favorites</source>
-        <translation>Управление Избранным</translation>
+        <translation>Управление избранным</translation>
     </message>
     <message>
         <location filename="../src/settings.cpp" line="581"/>
@@ -374,12 +375,12 @@ options:
     <message>
         <location filename="../src/engines/options.cpp" line="84"/>
         <source>Select %1 Configuration File.</source>
-        <translation>Выберите Файл конфигурации %1.</translation>
+        <translation>Выберите файл конфигурации %1.</translation>
     </message>
     <message>
         <location filename="../src/engines/options.cpp" line="99"/>
         <source>Select %1 KeyFile.</source>
-        <translation>Выберите KeyFile %1.</translation>
+        <translation>Выберите файл ключа %1.</translation>
     </message>
     <message>
         <location filename="../src/engines/cryfs.cpp" line="233"/>
@@ -389,7 +390,7 @@ options:
     <message>
         <location filename="../src/engines/fscrypt.cpp" line="574"/>
         <source>Unlock Fscrypt Volume With A Specified 32 Byte(256-Bit) KeyFile.</source>
-        <translation>Разблокируйте том Fscrypt с указанным 32-байтным (256-битным) KeyFile.</translation>
+        <translation>Разблокируйте том Fscrypt с указанным 32-байтным (256-битным) файлом ключа.</translation>
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="770"/>
@@ -422,7 +423,7 @@ options:
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/changepassworddialog.ui" line="58"/>
         <source>&amp;Ok</source>
-        <translation></translation>
+        <translation>&amp;Хорошо</translation>
     </message>
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/changepassworddialog.ui" line="129"/>
@@ -526,7 +527,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configoptions.ui" line="155"/>
         <source>Start Minimized</source>
-        <translation>Стартовать свернутым</translation>
+        <translation>Запускать свернутым</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="94"/>
@@ -536,7 +537,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configoptions.ui" line="245"/>
         <source>SiriKali Will Have To Be Restarted For These Changes To Take Effect.</source>
-        <translation>SiriKali требует перезагрузки, чтобы эти изменения вступили в силу.</translation>
+        <translation>SiriKali требуется перезагрузка, чтобы эти изменения вступили в силу.</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="406"/>
@@ -584,7 +585,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/configoptions.ui" line="313"/>
         <source>External Commands</source>
-        <translation>Внешние Команды</translation>
+        <translation>Внешние команды</translation>
     </message>
     <message>
         <location filename="../src/configoptions.ui" line="325"/>
@@ -651,7 +652,7 @@ p, li { white-space: pre-wrap; }
         <source>Please be patient because creating a &quot;%1&quot; volume may take a very long time.
 
 </source>
-        <translation>Пожалуйста, будьте терпеливы, потому что создание тома &quot;%1&quot; может занять очень много времени.
+        <translation>Пожалуйста, потерпете, потому что создание тома &quot;%1&quot; может занять очень много времени.
 
 </translation>
     </message>
@@ -660,24 +661,24 @@ p, li { white-space: pre-wrap; }
         <source>Please be patient because unlocking a &quot;%1&quot; volume may take a very long time.
 
 </source>
-        <translation>Пожалуйста, будьте терпеливы, потому что разблокировка тома &quot;%1&quot; может занять очень много времени.
+        <translation>Пожалуйста, потерпите, потому что разблокировка тома &quot;%1&quot; может занять очень много времени.
 
 </translation>
     </message>
     <message>
         <location filename="../src/keydialog.h" line="82"/>
         <source>Elapsed time: 0 seconds</source>
-        <translation>Затраченное время: 0 секунд</translation>
+        <translation>Затраченное время: 0 секунд(ы)</translation>
     </message>
     <message>
         <location filename="../src/keydialog.h" line="96"/>
         <source>Elapsed time: %0 minutes</source>
-        <translation>Затраченное время: %0 минут</translation>
+        <translation>Затраченное время: %0 минут(ы)</translation>
     </message>
     <message>
         <location filename="../src/keydialog.h" line="98"/>
         <source>Elapsed time: %0 seconds</source>
-        <translation>Затраченное время: %0 секунд</translation>
+        <translation>Затраченное время: %0 секунд(ы)</translation>
     </message>
 </context>
 <context>
@@ -700,7 +701,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/engines/cryfscreateoptions.ui" line="84"/>
         <source>&amp;OK</source>
-        <translation></translation>
+        <translation>&amp;Хорошо</translation>
     </message>
     <message>
         <location filename="../src/engines/cryfscreateoptions.ui" line="97"/>
@@ -723,12 +724,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/dialogok.ui" line="17"/>
         <source>Dialog</source>
-        <translation></translation>
+        <translation>Диалоговое окно</translation>
     </message>
     <message>
         <location filename="../src/dialogok.ui" line="29"/>
         <source>&amp;Ok</source>
-        <translation></translation>
+        <translation>&amp;Хорошо</translation>
     </message>
     <message>
         <location filename="../src/dialogok.ui" line="67"/>
@@ -751,7 +752,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/engines/ecryptfscreateoptions.ui" line="26"/>
         <source>&amp;OK</source>
-        <translation></translation>
+        <translation>&amp;Хорошо</translation>
     </message>
     <message>
         <location filename="../src/engines/ecryptfscreateoptions.ui" line="39"/>
@@ -794,7 +795,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/engines/encfscreateoptions.ui" line="26"/>
         <source>Reverse Mode</source>
-        <translation>Режим &quot;reverse&quot;</translation>
+        <translation>Реверсивный режим</translation>
     </message>
     <message>
         <location filename="../src/engines/encfscreateoptions.ui" line="39"/>
@@ -804,12 +805,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/engines/encfscreateoptions.ui" line="52"/>
         <source>&amp;OK</source>
-        <translation>&amp;OK</translation>
+        <translation>&amp;Хорошо</translation>
     </message>
     <message>
         <location filename="../src/engines/encfscreateoptions.cpp" line="40"/>
         <source>Normally EncFS provides a plaintext view of data on demand: it stores enciphered data and displays plaintext data. With this option set, it takes as source plaintext data and produces enciphered data on-demand. This can be useful for creating remote encrypted backups, where you do not wish to keep the local files unencrypted.</source>
-        <translation type="unfinished"></translation>
+        <translation>Обычно EncFS обеспечивает представление данных в виде простого текста: хранит зашифрованные данные и отображает данные в виде открытого текста. Если этот параметр установлен, он принимает в качестве источника данные в виде открытого текста и создает зашифрованные данные по запросу. Это может быть полезно для создания удаленных зашифрованных резервных копий, когда вы не хотите хранить локальные файлы незашифрованными.</translation>
     </message>
 </context>
 <context>
@@ -822,7 +823,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.ui" line="30"/>
         <source>Favorite List</source>
-        <translation>Список Избранного</translation>
+        <translation>Список избранного</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="49"/>
@@ -859,7 +860,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.ui" line="241"/>
         <source>Volume Properties</source>
-        <translation>Свойства Тома</translation>
+        <translation>Свойства тома</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="309"/>
@@ -893,7 +894,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.ui" line="392"/>
         <source>Add/Edit Favorite Entry</source>
-        <translation>Добавить/Редактировать Избранную запись</translation>
+        <translation>Добавить/Редактировать избранную запись</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="449"/>
@@ -904,12 +905,12 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/favorites2.ui" line="812"/>
         <location filename="../src/favorites2.cpp" line="1596"/>
         <source>Reverse Mode (Gocryptfs and Encfs Only)</source>
-        <translation>Режим &quot;reverse&quot; (только для Gocryptfs и Encfs)</translation>
+        <translation>Реверсивный режим (только для Gocryptfs и Encfs)</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="780"/>
         <source>Mount In Read Only Mode</source>
-        <translation>Смонтировать в режиме &quot;только для чтения&quot;</translation>
+        <translation>Смонтировать в режиме Только для чтения</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="748"/>
@@ -971,18 +972,18 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.ui" line="587"/>
         <source>Set Full Mount Point Path Instead Of Mount Prefix</source>
-        <translation type="unfinished"></translation>
+        <translation>Задать полный путь к точке монтирования вместо префикса монтирования</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="844"/>
         <source>Add Volume To Secure Wallets</source>
-        <translation>Добавить том для защиты хранилищей ключей</translation>
+        <translation>Добавить том для защиты хранилищ ключей</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="870"/>
         <location filename="../src/favorites2.cpp" line="1570"/>
         <source>Ssh Port Number</source>
-        <translation>Номер порта ssh</translation>
+        <translation>Номер порта Ssh</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="889"/>
@@ -998,12 +999,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.ui" line="1083"/>
         <source>OK</source>
-        <translation>OK</translation>
+        <translation>Хорошо</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="1090"/>
         <source>Manage Keys In Wallets</source>
-        <translation>Управление ключами в хранилище ключей</translation>
+        <translation>Управление ключами в хранилище</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="1117"/>
@@ -1018,17 +1019,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.ui" line="1142"/>
         <source>&amp;Libsecret</source>
-        <translation></translation>
+        <translation>&amp;Libsecret</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="1155"/>
         <source>&amp;KWallet</source>
-        <translation></translation>
+        <translation>&amp;KWallet</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="1168"/>
         <source>&amp;MACOS Keychain</source>
-        <translation></translation>
+        <translation>&amp;Связка ключей macOS</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="1181"/>
@@ -1038,7 +1039,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.ui" line="1194"/>
         <source>Windows&apos; DPAPI</source>
-        <translation></translation>
+        <translation>DPAPI Windows</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="1215"/>
@@ -1075,7 +1076,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/favorites2.ui" line="1399"/>
         <source>Ok</source>
-        <translation></translation>
+        <translation>Хорошо</translation>
     </message>
     <message>
         <location filename="../src/favorites2.ui" line="1406"/>
@@ -1195,7 +1196,8 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/favorites2.cpp" line="1168"/>
         <source>Sshfs Remote Path Must Be In Below Format:
 woof@example.com:/remote/path</source>
-        <translation type="unfinished"></translation>
+        <translation>Удаленный путь Sshfs должен быть в следующем формате:
+woof@example.com:/удаленный/путь</translation>
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="1177"/>
@@ -1253,7 +1255,7 @@ woof@example.com:/remote/path</source>
         <source>Remote Ssh Server Address
 (Example: woof@example.com:/remote/path)</source>
         <translation>Адрес удаленного SSH-сервера
-(Пример: woof@example.com:/remote/path)</translation>
+(Пример: woof@example.com:/удаленный/путь)</translation>
     </message>
     <message>
         <location filename="../src/favorites2.cpp" line="1565"/>
@@ -1297,7 +1299,7 @@ woof@example.com:/remote/path</source>
     <message>
         <location filename="../src/filemanager.cpp" line="54"/>
         <source>Enter Below The Name Of The External Executable And Its Arguments To Use When Invoking &quot;ExternalExecutable&quot; Plugin.</source>
-        <translation>Введите ниже имя внешнего исполняемого файла и его аргументы для использования при вызове плагина «ExternalExecutable».</translation>
+        <translation>Введите ниже имя внешнего исполняемого файла и его аргументы для использования при вызове плагина &quot;ExternalExecutable&quot;.</translation>
     </message>
 </context>
 <context>
@@ -1315,12 +1317,12 @@ woof@example.com:/remote/path</source>
     <message>
         <location filename="../src/engines/fscryptcreateoptions.ui" line="39"/>
         <source>&amp;Ok</source>
-        <translation></translation>
+        <translation>&amp;Хорошо</translation>
     </message>
     <message>
         <location filename="../src/engines/fscryptcreateoptions.ui" line="62"/>
         <source>Enter Volume&apos;s Protector Name Below(Optional)</source>
-        <translation>Введите имя защитника тома ниже (необязательно)</translation>
+        <translation>Введите имя защитника тома ниже (опицонально)</translation>
     </message>
     <message>
         <location filename="../src/engines/fscryptcreateoptions.ui" line="81"/>
@@ -1335,7 +1337,7 @@ woof@example.com:/remote/path</source>
     <message>
         <location filename="../src/engines/fscryptcreateoptions.ui" line="106"/>
         <source>Your Login Passphrase</source>
-        <translation>Пароль пользователя системы (pam авторизация)</translation>
+        <translation>Парольная фраза для входа</translation>
     </message>
     <message>
         <location filename="../src/engines/fscryptcreateoptions.ui" line="119"/>
@@ -1350,7 +1352,7 @@ woof@example.com:/remote/path</source>
     <message>
         <location filename="../src/engines/fscryptcreateoptions.cpp" line="46"/>
         <source>Select A 32 Byte KeyFile</source>
-        <translation>Выберите 32-байтовый KeyFile</translation>
+        <translation>Выберите 32-байтовый файл ключа</translation>
     </message>
 </context>
 <context>
@@ -1368,7 +1370,7 @@ woof@example.com:/remote/path</source>
     <message>
         <location filename="../src/engines/gocryptfscreateoptions.ui" line="55"/>
         <source>&amp;OK</source>
-        <translation></translation>
+        <translation>&amp;Хорошо</translation>
     </message>
     <message>
         <location filename="../src/engines/gocryptfscreateoptions.ui" line="68"/>
@@ -1393,7 +1395,7 @@ woof@example.com:/remote/path</source>
     <message>
         <location filename="../src/engines/gocryptfscreateoptions.ui" line="200"/>
         <source>Reverse Mode</source>
-        <translation>Режим &quot;reverse&quot;</translation>
+        <translation>Реверсивный режим</translation>
     </message>
     <message>
         <location filename="../src/engines/gocryptfscreateoptions.cpp" line="48"/>
@@ -1402,7 +1404,7 @@ It stores enciphered data and displays plaintext data.
 With this option set, it takes as source plaintext data and produces enciphered data on-demand.
 This can be useful for creating remote encrypted backups,
 where you do not wish to keep the local files unencrypted.</source>
-        <translation>Обычно Gocryptfs предоставляет отображение в виде обычного текста по запросу.
+        <translation>Обычно Gocryptfs предоставляет отображение в виде простого текста по запросу.
 Он хранит зашифрованные данные и отображает данные в виде открытого текста.
 С помощью этой опции он принимает в качестве исходных данных открытый текст и создает кодированные данные по требованию.
 Это может быть полезно для создания удаленных зашифрованных резервных копий,
@@ -1414,7 +1416,7 @@ where you do not wish to keep the local files unencrypted.</source>
     <message>
         <location filename="../src/help.ui" line="14"/>
         <source>FAQ</source>
-        <translation></translation>
+        <translation>ЧЗВ</translation>
     </message>
     <message>
         <location filename="../src/help.ui" line="26"/>
@@ -1487,7 +1489,7 @@ p, li { white-space: pre-wrap; }
 &lt;ol style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Нажмите &amp;quot;Меню-&amp;gt;Настройки-&amp;gt;
 Управление ключами в хранилище ключей-&amp;gt;Хранилище ключей&amp;quot; и выберите предпочитаемую систему хранения ключей из списка.&lt;/li&gt;
 &lt;li style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;В появившемся диалоговом окне нажмите &amp;quot;Добавить&amp;quot;.&lt;/li&gt;
-&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;В новом появившемся диалоговом окне, добавьте свой пароль в соответствующие поля. &amp;quot;ID тома&amp;quot; - это полный путь к зашифрованной папке тома. Нажмите кнопку справа от поля, чтобы вызвать диалоговое окно в котором вы сможете выбрать нужную папку.&lt;/li&gt;&lt;/ol&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;В новом появившемся диалоговом окне, добавьте свой пароль в соответствующие поля. &amp;quot;ID тома&amp;quot; — это полный путь к зашифрованной папке тома. Нажмите кнопку справа от поля, чтобы вызвать диалоговое окно в котором вы сможете выбрать нужную папку.&lt;/li&gt;&lt;/ol&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/help.ui" line="99"/>
@@ -1510,7 +1512,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.ui" line="58"/>
         <source>Key</source>
-        <translation>Пароль</translation>
+        <translation>Ключ</translation>
     </message>
     <message>
         <location filename="../src/keydialog.ui" line="100"/>
@@ -1521,12 +1523,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.ui" line="142"/>
         <source>Mount In &amp;Read Only Mode</source>
-        <translation>Монтировать в режиме только для &amp;чтения</translation>
+        <translation>Монтировать в режиме Только для &amp;чтения</translation>
     </message>
     <message>
         <location filename="../src/keydialog.ui" line="233"/>
         <source>&amp;OK</source>
-        <translation></translation>
+        <translation>&amp;Хорошо</translation>
     </message>
     <message>
         <location filename="../src/keydialog.ui" line="303"/>
@@ -1581,17 +1583,17 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/keydialog.cpp" line="1301"/>
         <location filename="../src/keydialog.cpp" line="1935"/>
         <source>KeyFile</source>
-        <translation>Файловый ключ</translation>
+        <translation>Файл ключа</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1937"/>
         <source>HMAC+KeyFile</source>
-        <translation>HMAC+Файловый ключ</translation>
+        <translation>HMAC+файл ключа</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1936"/>
         <source>Key+KeyFile</source>
-        <translation>Пароль+Файловый ключ</translation>
+        <translation>Пароль+файл ключа</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1939"/>
@@ -1601,7 +1603,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.cpp" line="1938"/>
         <source>YubiKey Challenge/Response</source>
-        <translation>Yubikey Вызов/Ответ</translation>
+        <translation>Вызов/Ответ Yubikey</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="338"/>
@@ -1611,7 +1613,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.cpp" line="362"/>
         <source>(%1/%2) Connecting To &quot;%3&quot;</source>
-        <translation>(%1/%2) Подключается до &quot;%3&quot;</translation>
+        <translation>(%1/%2) Подключение к &quot;%3&quot;</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="364"/>
@@ -1633,7 +1635,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/keydialog.cpp" line="375"/>
         <source>Connecting To &quot;%1&quot;</source>
-        <translation>Подключение до &quot;%1&quot;</translation>
+        <translation>Подключение к &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="639"/>
@@ -1677,7 +1679,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/keydialog.cpp" line="915"/>
         <location filename="../src/keydialog.cpp" line="1790"/>
         <source>Select A File To Be Used As A Keyfile.</source>
-        <translation>Выберите файл для использования в качестве Файлового ключа.</translation>
+        <translation>Выберите файл для использования в качестве файла ключа.</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="941"/>
@@ -1742,22 +1744,22 @@ Set The Volume Key To Add It To The Wallet Before Mounting.</source>
     <message>
         <location filename="../src/keydialog.cpp" line="1948"/>
         <source>Gnome Wallet</source>
-        <translation type="unfinished"></translation>
+        <translation>GNOME Wallet</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1953"/>
         <source>Kde Wallet</source>
-        <translation type="unfinished"></translation>
+        <translation>KDE Wallet</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1958"/>
         <source>OSX KeyChain</source>
-        <translation type="unfinished"></translation>
+        <translation>Связка ключей macOS</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1963"/>
         <source>Windows DPAPI</source>
-        <translation type="unfinished"></translation>
+        <translation>DPAPI Windows</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1238"/>
@@ -1772,7 +1774,7 @@ Set The Volume Key To Add It To The Wallet Before Mounting.</source>
     <message>
         <location filename="../src/keydialog.cpp" line="1594"/>
         <source>Select A KeyFile</source>
-        <translation>Выберите Файловый ключ</translation>
+        <translation>Выберите файл ключа</translation>
     </message>
     <message>
         <location filename="../src/keydialog.cpp" line="1127"/>
@@ -1818,7 +1820,7 @@ Set The Volume Key To Add It To The Wallet Before Mounting.</source>
     <message>
         <location filename="../src/oneinstance.cpp" line="40"/>
         <source>There seem to be another instance running,exiting this one</source>
-        <translation>Кажется, что еще один экземпляр программы запущен, завершаем этот экземпляр</translation>
+        <translation>Кажется, еще один экземпляр программы запущен, завершаем эго работу</translation>
     </message>
 </context>
 <context>
@@ -1831,7 +1833,7 @@ Set The Volume Key To Add It To The Wallet Before Mounting.</source>
     <message>
         <location filename="../src/engines/options.ui" line="151"/>
         <source>Automatically Unmount After Specified Minutes of Inactivity Is Reached.</source>
-        <translation>Автоматическое отключение после того, как пройдет указанное количество минут бездействия программы.</translation>
+        <translation>Автоматическое отключение после того, как пройдет указанное количество минут бездействия.</translation>
     </message>
     <message>
         <location filename="../src/engines/options.ui" line="119"/>
@@ -1862,12 +1864,12 @@ Set The Volume Key To Add It To The Wallet Before Mounting.</source>
         <location filename="../src/engines/options.ui" line="207"/>
         <location filename="../src/engines/options.cpp" line="69"/>
         <source>Reverse Mode.</source>
-        <translation>Режим &quot;reverse&quot;.</translation>
+        <translation>Реверсивный режим</translation>
     </message>
     <message>
         <location filename="../src/engines/options.cpp" line="71"/>
         <source>Unlock %1 Volume With A KeyFile.</source>
-        <translation>Разблокируйте том %1 с помощью KeyFile.</translation>
+        <translation>Разблокируйте том %1 с помощью файла ключа.</translation>
     </message>
     <message>
         <location filename="../src/engines/options.cpp" line="73"/>
@@ -1880,17 +1882,17 @@ Set The Volume Key To Add It To The Wallet Before Mounting.</source>
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/password_dialog.ui" line="17"/>
         <source>lxqt wallet service</source>
-        <translation>Сервис lxqt кошелька</translation>
+        <translation>Сервис lxqt wallet</translation>
     </message>
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/password_dialog.ui" line="45"/>
         <source>The application &apos;%1&apos; has requested to open the wallet &apos;%2&apos;.Enter the password below for this wallet to unlock it</source>
-        <translation>Приложение «%1» попросило открыть кошелек «%2». Введите пароль для этого кошелька, чтобы разблокировать его</translation>
+        <translation>Приложение &apos;%1&apos; запросило открыть кошелек &apos;%2&apos;. Введите пароль для этого кошелька, чтобы разблокировать его</translation>
     </message>
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/password_dialog.ui" line="77"/>
         <source>Wallet &apos;%1&apos; does not exist,do you want to create it?</source>
-        <translation>Кошелька «%1» не существует, вы хотите его создать?</translation>
+        <translation>Кошелька &apos;%1&apos; не существует, вы хотите его создать?</translation>
     </message>
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/password_dialog.ui" line="93"/>
@@ -1931,12 +1933,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/password_dialog.ui" line="157"/>
         <source>ok</source>
-        <translation></translation>
+        <translation>Хоршо</translation>
     </message>
     <message>
         <location filename="../src/3rdParty/lxqt_wallet/frontend/password_dialog.ui" line="170"/>
         <source>&amp;Ok</source>
-        <translation></translation>
+        <translation>&amp;Хорошо</translation>
     </message>
 </context>
 <context>
@@ -1944,7 +1946,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/plugin.ui" line="17"/>
         <source>Key Generator Using A Passphrase And A KeyFile</source>
-        <translation>Генератор ключей с использованием Пароля и Файлового ключа</translation>
+        <translation>Генератор ключей с использованием пароля и файла ключа</translation>
     </message>
     <message>
         <location filename="../src/plugin.ui" line="29"/>
@@ -1965,7 +1967,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/plugin.ui" line="142"/>
         <location filename="../src/plugin.cpp" line="158"/>
         <source>KeyFile</source>
-        <translation>Файловый ключ</translation>
+        <translation>Файл ключа</translation>
     </message>
     <message>
         <location filename="../src/plugin.cpp" line="111"/>
@@ -1976,7 +1978,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/plugin.cpp" line="111"/>
         <source>KeyFile Not Set</source>
-        <translation>Файловый ключ не задан</translation>
+        <translation>Файл ключа не задан</translation>
     </message>
     <message>
         <location filename="../src/plugin.cpp" line="146"/>
@@ -2023,15 +2025,15 @@ The &quot;full format&quot; maps files, directories and symlinks in the virtual 
 The lite format has become the default on Unix-like operating systems as it is much faster and features easier conflict resolution, especially when used with DropBox, Google Drive, etc. The full format, however, leaks fewer information about the filesystem hierarchy, runs relatively independent of the features of the underlying filesystem, and is in general more secure.</source>
         <translation>«Упрощенное форматирование» просто шифрует имена файлов и содержимое файла отдельно, подобно тому, как работает encfs, хотя с большей степенью безопасности.
 
-«Полное форматирование» отображает файлы, каталоги и символические ссылки в виртуальной файловой системе на обычные файлы в базовой файловой системе. Структура каталогов сглажена и записана в виде B-деревьев в файлах.
+&quot;Полное форматирование&quot; отображает файлы, каталоги и символические ссылки в виртуальной файловой системе на обычные файлы в базовой файловой системе. Структура каталогов сглажена и записана в виде B-деревьев в файлах.
 
 Упрощенное форматирование стало стандартным для Unix-подобных операционных систем, так как он намного быстрее и обеспечивает более легкое разрешение конфликтов, особенно при использовании с DropBox, Google Диском и т. д. Однако в полном форматировании доступно меньше информации о иерархии файловой системы, выполняется относительно независимо от особенностей базовой файловой системы и в целом более безопасно.</translation>
     </message>
     <message>
         <location filename="../src/engines/securefscreateoptions.cpp" line="90"/>
         <source>Select A KeyFile</source>
-        <translatorcomment>Выберите Файловый ключ</translatorcomment>
-        <translation>Выберите Файловый ключ</translation>
+        <translatorcomment>Выберите Файл ключа</translatorcomment>
+        <translation>Выберите файл ключа</translation>
     </message>
     <message>
         <location filename="../src/engines/securefscreateoptions.ui" line="27"/>
@@ -2046,7 +2048,7 @@ The lite format has become the default on Unix-like operating systems as it is m
     <message>
         <location filename="../src/engines/securefscreateoptions.ui" line="46"/>
         <source>&amp;OK</source>
-        <translation></translation>
+        <translation>&amp;Хорошо</translation>
     </message>
     <message>
         <location filename="../src/engines/securefscreateoptions.ui" line="59"/>
@@ -2061,7 +2063,7 @@ The lite format has become the default on Unix-like operating systems as it is m
     <message>
         <location filename="../src/engines/securefscreateoptions.ui" line="140"/>
         <source>Select A KeyFile(Optional).</source>
-        <translation>Выберите Файловый ключ (опционально).</translation>
+        <translation>Выберите файл ключа (опционально).</translation>
     </message>
 </context>
 <context>
@@ -2069,7 +2071,7 @@ The lite format has become the default on Unix-like operating systems as it is m
     <message>
         <location filename="../src/sirikali.ui" line="17"/>
         <source>SiriKali</source>
-        <translation></translation>
+        <translation>SiriKali</translation>
     </message>
     <message>
         <location filename="../src/sirikali.ui" line="55"/>
@@ -2084,22 +2086,22 @@ The lite format has become the default on Unix-like operating systems as it is m
     <message>
         <location filename="../src/sirikali.ui" line="71"/>
         <source>File System</source>
-        <translation>Файловая Система</translation>
+        <translation>Файловая система</translation>
     </message>
     <message>
         <location filename="../src/sirikali.ui" line="79"/>
         <source>Mode</source>
-        <translation>Атрибуты Доступа</translation>
+        <translation>Режим</translation>
     </message>
     <message>
         <location filename="../src/sirikali.ui" line="95"/>
         <source>&amp;Create Volume</source>
-        <translation>&amp;Создать Том</translation>
+        <translation>&amp;Создать том</translation>
     </message>
     <message>
         <location filename="../src/sirikali.ui" line="108"/>
         <source>Mount &amp;Volume</source>
-        <translation>С&amp;монтировать</translation>
+        <translation>С&amp;монтировать том</translation>
     </message>
     <message>
         <location filename="../src/sirikali.ui" line="115"/>
@@ -2140,7 +2142,7 @@ The lite format has become the default on Unix-like operating systems as it is m
     <message>
         <location filename="../src/sirikali.cpp" line="639"/>
         <source>Show/Hide</source>
-        <translation>Отобразить/Спрятать окно</translation>
+        <translation>Отобразить/Скрыть</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="986"/>
@@ -2155,7 +2157,7 @@ The lite format has become the default on Unix-like operating systems as it is m
     <message>
         <location filename="../src/sirikali.cpp" line="1033"/>
         <source>ERROR: Failed To Unlock Requested Backend.</source>
-        <translation></translation>
+        <translation>ОШИБКА: не удалось разблокировать запрошенный бэкэнд.</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="859"/>
@@ -2167,7 +2169,7 @@ The lite format has become the default on Unix-like operating systems as it is m
     <message>
         <location filename="../src/sirikali.cpp" line="1388"/>
         <source>Failed To Read Volume Properties</source>
-        <translation>Не удалось прочитать Свойства тома</translation>
+        <translation>Не удалось прочитать свойства тома</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="1368"/>
@@ -2185,7 +2187,8 @@ The lite format has become the default on Unix-like operating systems as it is m
         <location filename="../src/sirikali.cpp" line="300"/>
         <source>Close The Following File System(s) Before Quitting The Application
 &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Закройте следующую файловую систему(ы) перед выходом из приложения
+&quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="418"/>
@@ -2201,7 +2204,7 @@ The lite format has become the default on Unix-like operating systems as it is m
         <location filename="../src/sirikali.cpp" line="453"/>
         <location filename="../src/sirikali.cpp" line="455"/>
         <source>%1 Is Not Installed</source>
-        <translation>%1 Не установлен</translation>
+        <translation>%1 не установлен</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="625"/>
@@ -2211,7 +2214,7 @@ The lite format has become the default on Unix-like operating systems as it is m
     <message>
         <location filename="../src/sirikali.cpp" line="637"/>
         <source>FAQ</source>
-        <translation></translation>
+        <translation>ЧЗВ</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="859"/>
@@ -2226,7 +2229,7 @@ The lite format has become the default on Unix-like operating systems as it is m
     <message>
         <location filename="../src/sirikali.cpp" line="1454"/>
         <source>Add To Favorites</source>
-        <translation>Добавить в Избранное</translation>
+        <translation>Добавить в избранное</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="1877"/>
@@ -2246,7 +2249,7 @@ The lite format has become the default on Unix-like operating systems as it is m
     <message>
         <location filename="../src/sirikali.cpp" line="1448"/>
         <source>Open Folder</source>
-        <translation>Открыть директорию</translation>
+        <translation>Открыть папку</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="632"/>
@@ -2275,7 +2278,7 @@ The lite format has become the default on Unix-like operating systems as it is m
     <message>
         <location filename="../src/sirikali.cpp" line="1561"/>
         <source>Could Not Open Mount Point Because &quot;%1&quot; Tool Does Not Appear To Be Working Correctly.</source>
-        <translation>Не удалось открыть точку монтирования, потому что инструмент «%1» не работает корректно.</translation>
+        <translation>Не удалось открыть точку монтирования, потому что инструмент &apos;%1&apos; не работает корректно.</translation>
     </message>
     <message>
         <location filename="../src/sirikali.cpp" line="1610"/>
