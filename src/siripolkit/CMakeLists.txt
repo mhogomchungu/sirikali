@@ -1,14 +1,17 @@
-cmake_minimum_required( VERSION 3.0 )
+if(${CMAKE_VERSION} VERSION_GREATER "3.26")
+    cmake_minimum_required(VERSION 3.5.0)
+else()
+    cmake_minimum_required(VERSION 3.0.0)
+endif()
 
 add_definitions( -Wextra -Wall -pedantic -I${PROJECT_BINARY_DIR}/siripoltik/ )
 include_directories( ${PROJECT_BINARY_DIR}/siripoltik/ )
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 10.0.0 )
-	set( CMAKE_CXX_STANDARD 20 )
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 10.0.0)
-	set( CMAKE_CXX_STANDARD 20 )
+
+if(${CMAKE_VERSION} VERSION_LESS "3.1.0")
+        add_definitions(-std=c++14)
 else()
-	set( CMAKE_CXX_STANDARD 14 )
+        set( CMAKE_CXX_STANDARD 14 )
 endif()
 
 set( CMAKE_CXX_STANDARD_REQUIRED ON )

@@ -303,6 +303,31 @@ QString settings::windowsExecutableSearchPath()
 	return m_settings.value( "WindowsExecutableSearchPath" ).toString() ;
 }
 
+QString settings::executableSearchPath()
+{
+	if( !m_settings.contains( "ExecutableSearchPath" ) ){
+
+		m_settings.setValue( "ExecutableSearchPath",this->defaultExecutableSearchPath() ) ;
+	}
+
+	return m_settings.value( "ExecutableSearchPath" ).toString() ;
+}
+
+QString settings::defaultExecutableSearchPath()
+{
+	if( utility::platformIsOSX() ){
+
+		return "/opt/homebrew/bin" ;
+	}else{
+		return QDir::homePath() + "/.bin" ;
+	}
+}
+
+void settings::setExecutableSearchPath( const QString& e )
+{
+	m_settings.setValue( "ExecutableSearchPath",e ) ;
+}
+
 int settings::windowsPbkdf2Interations()
 {
 	if( !m_settings.contains( "WindowsPbkdf2Interations" ) ){
@@ -542,6 +567,18 @@ QString settings::fileManager()
 		this->setFileManager( QString() ) ;
 		return m_settings.value( "FileManagerOpener" ).toString() ;
 	}
+}
+
+QStringList settings::openWith()
+{
+	if( !m_settings.contains( "FolderOpenWith" ) ){
+
+		m_settings.setValue( "FolderOpenWith",QString() ) ;
+	}
+
+	auto m = m_settings.value( "FolderOpenWith" ).toString() ;
+
+	return utility::splitPreserveQuotes( m ) ;
 }
 
 static void _set_mount_default( settings& s )

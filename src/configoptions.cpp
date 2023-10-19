@@ -163,11 +163,21 @@ configOptions::configOptions( QWidget * parent,
 
 	connect( m_ui->pbSetExternalCommand,&QPushButton::pressed,[ this ](){
 
-		auto e = QFileDialog::getOpenFileName( this,tr( "Set External Plugin Executable" ),QDir::homePath() ) ;
+		if( utility::platformIsWindows() ){
 
-		if( !e.isEmpty() ){
+			auto e = QFileDialog::getOpenFileName( this,tr( "Set External Plugin Executable" ),QDir::homePath() ) ;
 
-			m_ui->lineEditExecutableKeySource->setText( e ) ;
+			if( !e.isEmpty() ){
+
+				m_ui->lineEditExecutableKeySource->setText( e ) ;
+			}
+		}else{
+			auto e = QFileDialog::getOpenFileName( this,tr( "Set Executables Search Path" ),QDir::homePath() ) ;
+
+			if( !e.isEmpty() ){
+
+				m_ui->lineEditExecutableKeySource->setText( e ) ;
+			}
 		}
 	} ) ;
 
@@ -179,9 +189,16 @@ configOptions::configOptions( QWidget * parent,
 
 	connect( m_ui->pbExternalExecutableDefault,&QPushButton::pressed,[ this ](){
 
-		m_settings.setExternalPluginExecutable( QString() ) ;
+		if( utility::platformIsWindows() ){
 
-		m_ui->lineEditExecutableKeySource->setText( m_settings.externalPluginExecutable() ) ;
+			m_settings.setExternalPluginExecutable( QString() ) ;
+
+			m_ui->lineEditExecutableKeySource->setText( m_settings.externalPluginExecutable() ) ;
+		}else{
+			auto m = settings::instance().defaultExecutableSearchPath() ;
+
+			m_ui->lineEditExecutableKeySource->setText( m ) ;
+		}
 	} ) ;
 
 	connect( m_ui->pbMountPointPrefixDefault,&QPushButton::pressed,[ this ](){
@@ -233,6 +250,8 @@ void configOptions::translateUI()
 	if( utility::platformIsWindows() ){
 
 		m_ui->label->setText( tr( "Set Executables Search Path" ) ) ;
+	}else{
+		m_ui->label_3->setText( tr( "Set Executables Search Path" ) ) ;
 	}
 }
 
@@ -248,7 +267,12 @@ void configOptions::ShowUI()
 
 	m_ui->lineEditFileManager->setText( m_settings.fileManager() ) ;
 
-	m_ui->lineEditExecutableKeySource->setText( m_settings.externalPluginExecutable() ) ;
+	if( utility::platformIsWindows() ){
+
+		m_ui->lineEditExecutableKeySource->setText( m_settings.externalPluginExecutable() ) ;
+	}else{
+		m_ui->lineEditExecutableKeySource->setText( m_settings.executableSearchPath() ) ;
+	}
 
 	m_ui->lineEditAfterMountCommand->setText( m_settings.runCommandOnMount() ) ;
 
@@ -283,11 +307,17 @@ void configOptions::HideUI()
 	m_functions.function_1() ;
 
 	m_settings.setFileManager( m_ui->lineEditFileManager->text() ) ;
-	m_settings.setExternalPluginExecutable( m_ui->lineEditExecutableKeySource->text() ) ;
 	m_settings.preUnMountCommand( m_ui->lineEditBeforesUnMount->text() ) ;
 	m_settings.runCommandOnMount( m_ui->lineEditAfterMountCommand->text() ) ;
 	m_settings.runCommandOnInterval( m_ui->lineEditRunPeriodically->text() ) ;
 	m_settings.enableHighDpiScaling( m_ui->cbHiDPI->isChecked() ) ;
+
+	if( utility::platformIsWindows() ){
+
+		m_settings.setExternalPluginExecutable( m_ui->lineEditExecutableKeySource->text() ) ;
+	}else{
+		m_settings.setExecutableSearchPath( m_ui->lineEditExecutableKeySource->text() ) ;
+	}
 
 	m_settings.enabledHighDpiScalingFactor( [ this ]()->QString{
 

@@ -1,4 +1,8 @@
-cmake_minimum_required(VERSION 3.0.0)
+if(${CMAKE_VERSION} VERSION_GREATER "3.26")
+    cmake_minimum_required(VERSION 3.5.0)
+else()
+    cmake_minimum_required(VERSION 3.0.0)
+endif()
 
 INCLUDE(FindPkgConfig)
 

@@ -1,4 +1,8 @@
-cmake_minimum_required( VERSION 3.0 )
+if(${CMAKE_VERSION} VERSION_GREATER "3.26")
+    cmake_minimum_required(VERSION 3.5.0)
+else()
+    cmake_minimum_required(VERSION 3.0.0)
+endif()
 
 project( mhogomchungu_task )
 
@@ -7,13 +11,7 @@ set( SO_VERSION "1.0.0" )
 
 add_definitions( -Wextra -Wall -pedantic)
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 10.0.0 )
-	set( CMAKE_CXX_STANDARD 20 )
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"  AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 10.0.0)
-	set( CMAKE_CXX_STANDARD 20 )
-else()
-	set( CMAKE_CXX_STANDARD 14 )
-endif()
+set( CMAKE_CXX_STANDARD 14 )
 
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
 set( CMAKE_CXX_EXTENSIONS OFF)

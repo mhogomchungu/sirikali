@@ -47,6 +47,38 @@ static QStringList _windows_search_paths()
 	return utility::split( s,";" ) ;
 }
 
+static void _append( QStringList& )
+{
+}
+
+template< typename First,typename ... Rest >
+void _append( QStringList& m,const First& f,Rest&& ... r )
+{
+	m.append( f ) ;
+	_append( m,std::forward< Rest >( r ) ... ) ;
+}
+
+static QStringList _defaultPaths()
+{
+	QStringList s ;
+
+	_append( s,
+		 settings::instance().executableSearchPath(),
+		 "/usr/local/bin/",
+		 "/usr/local/sbin/",
+		 "/usr/bin/",
+		 "/usr/sbin/",
+		 "/bin/",
+		 "/sbin/",
+		 "/opt/local/bin/",
+		 "/opt/local/sbin/",
+		 "/opt/bin/",
+		 "/opt/sbin/",
+		 "/opt/homebrew/bin/" ) ;
+
+	return s ;
+}
+
 static QStringList _system_search_paths()
 {
 	auto env = QProcessEnvironment::systemEnvironment().value( "PATH" ) ;
@@ -63,19 +95,9 @@ static QStringList _system_search_paths()
 		m.append( QDir::currentPath() + "/" ) ;
 
 		return m + utility::split( env,";" ) ;
+	}else{
+		return _defaultPaths() + utility::split( env,":" ) ;
 	}
-
-	return QStringList{ "/usr/local/bin/",
-		 "/usr/local/sbin/",
-		 "/usr/bin/",
-		 "/usr/sbin/",
-		 "/bin/",
-		 "/sbin/",
-		 "/opt/local/bin/",
-		 "/opt/local/sbin/",
-		 "/opt/bin/",
-		 "/opt/sbin/",
-		 "/opt/homebrew/bin/" } + utility::split( env,":" ) ;
 }
 
 static QStringList _search_path_0( const QString& e )

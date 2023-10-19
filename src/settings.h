@@ -134,7 +134,10 @@ public:
 	int pollForUpdatesInterval() ;
 	int sshfsBackendTimeout() ;
 	void setWindowsExecutableSearchPath( const QString& ) ;
+	void setExecutableSearchPath( const QString& ) ;
 	QString windowsExecutableSearchPath() ;
+	QString executableSearchPath() ;
+	QString defaultExecutableSearchPath() ;
 	QByteArray windowsKeysStorageData() ;
 	void windowsKeysStorageData( const QByteArray& ) ;
 	QString externalPluginExecutable() ;
@@ -146,6 +149,7 @@ public:
 	void scaleGUI() ;
 	void setParent( QWidget * parent,QWidget ** localParent,QDialog * dialog ) ;
 	QString fileManager() ;
+	QStringList openWith() ;
 	QString readPassword( bool addNewLine ) ;
 	QString mountPath() ;
 	QString mountPath( const QString& ) ;
