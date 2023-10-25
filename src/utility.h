@@ -818,4 +818,135 @@ private:
 	std::chrono::system_clock::time_point m_origTime ;
 };
 }
+
+namespace utility
+{
+namespace imp
+{
+template< typename Operator >
+static void copy( const QString& s,QFile& src,QFile& dst,const Operator& Opr )
+{
+	if( src.open( QIODevice::ReadOnly ) ){
+
+		if( dst.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
+
+			std::array< char,1024 > buffer ;
+
+			while( true ){
+
+				 auto m = src.read( buffer.data(),buffer.size() ) ;
+
+				 if( m > 0 ){
+
+					dst.write( buffer.data(),m ) ;
+				 }else{
+					if( src.size() == dst.size() ){
+
+						Opr.onFile( s ) ;
+					}
+
+					 break ;
+				 }
+			}
+		}
+	}
+}
+
+template< typename Operator,typename IncludePath >
+static void folderImpl( const QString& src,
+			const QString& dest,
+			const Operator& Opr,
+			const IncludePath& include )
+{
+	QDir dir ;
+
+	if( !dir.exists( dest ) && !dir.mkdir( dest ) ){
+
+		return ;
+	}
+
+	auto filter = QDir::Filter::Files | QDir::Filter::Dirs | QDir::Filter::NoDotAndDotDot ;
+
+	const auto m = QDir( src ).entryList( filter ) ;
+
+	QFileInfo info ;
+
+	for( const auto& it : m ){
+
+		auto s = src + "/" + it ;
+
+		info.setFile( s ) ;
+
+		if( info.isDir() ){
+
+			if( include( true,it ) ){
+
+				folderImpl( s,dest + "/" + it,Opr,include ) ;
+			}
+
+		}else if( info.isFile() ){
+
+			if( include( false,it ) ){
+
+				QFile src( s ) ;
+				QFile dst( dest + "/" + it ) ;
+
+				imp::copy( s,src,dst,Opr ) ;
+			}
+		}
+	}
+
+	Opr.onFolder( dir,src ) ;
+}
+
+}
+
+template< typename IncludePath >
+static void moveFolder( const QString& src,
+			const QString& dest,
+			const IncludePath& include )
+{
+	struct meaw
+	{
+		void onFolder( QDir& dir,const QString& e ) const
+		{
+			dir.rmdir( e ) ;
+		}
+		void onFile( const QString& e ) const
+		{
+			QFile::remove( e ) ;
+		}
+	} ;
+
+	imp::folderImpl( src,dest,meaw(),include ) ;
+}
+
+static inline void moveFolder( const QString& src,const QString& dest )
+{
+	utility::moveFolder( src,dest,[]( bool,const QString& ){ return true ; } ) ;
+}
+
+template< typename IncludePath >
+static void copyFolder( const QString& src,const QString& dest,const IncludePath& include )
+{
+	struct meaw
+	{
+		void onFolder( QDir&,const QString& ) const
+		{
+		}
+		void onFile( const QString& ) const
+		{
+		}
+	} ;
+
+	imp::folderImpl( src,dest,meaw(),include ) ;
+}
+
+static inline void copyFolder( const QString& src,const QString& dest )
+{
+	utility::copyFolder( src,dest,[]( bool,const QString& ){ return true ; } ) ;
+}
+
+}
+
 #endif // MISCFUNCTIONS_H

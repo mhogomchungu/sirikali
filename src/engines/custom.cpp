@@ -158,7 +158,7 @@ static void _add_engines( const QString& path,
 	}
 }
 
-void custom::addEngines( std::vector< std::unique_ptr< engines::engine >>& engines )
+void custom::addEngines( std::vector< std::unique_ptr< engines::engine > >& engines )
 {
 	auto m = settings::instance().ConfigLocation() ;
 

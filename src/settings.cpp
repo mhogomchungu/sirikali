@@ -53,6 +53,7 @@
 static QString _configPath()
 {
 #if QT_VERSION >= QT_VERSION_CHECK( 5,6,0 )
+
 	auto s = QStandardPaths::standardLocations( QStandardPaths::ConfigLocation ) ;
 
 	if( s.isEmpty() ){
@@ -638,19 +639,44 @@ QString settings::ConfigLocation()
 		return QDir().currentPath() + "/local" ;
 	}
 
-	if( !m_settings.contains( "ConfigLocation" ) ){
+	if( !m_settings.contains( "AppDataLocation" ) ){
 
-		auto m = QStandardPaths::standardLocations( QStandardPaths::ConfigLocation ) ;
+		auto New = QStandardPaths::standardLocations( QStandardPaths::AppDataLocation ) ;
+		auto old = QStandardPaths::standardLocations( QStandardPaths::ConfigLocation ) ;
 
-		if( !m.isEmpty() ){
+		QString newPath ;
+		QString oldPath ;
 
-			m_settings.setValue( "ConfigLocation",m.first() + "/SiriKali/" ) ;
+		if( New.isEmpty() ){
+
+			//Should not get here according to Qt documentation
+			newPath = QDir::homePath() + "/.config/SiriKali/" ;
 		}else{
-			m_settings.setValue( "ConfigLocation",QDir::homePath() + "/.config/SiriKali/" ) ;
+			newPath = New.first() ;
 		}
+
+		if( old.isEmpty() ){
+
+			//Should not get here according to Qt documentation
+			oldPath = QDir::homePath() + "/.config/SiriKali/" ;
+		}else{
+			oldPath = old.first() + "/SiriKali/" ;
+		}
+
+		utility::moveFolder( oldPath,newPath,[]( bool folder,const QString& e ){
+
+			if( folder ){
+
+				return true ;
+			}else{
+				return e != "SiriKali.conf" ;
+			}
+		} ) ;
+
+		m_settings.setValue( "AppDataLocation",newPath ) ;
 	}
 
-	return m_settings.value( "ConfigLocation" ).toString() ;
+	return m_settings.value( "AppDataLocation" ).toString() ;
 }
 
 QString settings::environmentalVariableVolumeKey()
