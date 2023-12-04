@@ -852,7 +852,14 @@ engines::exeFullPath engines::engine::m_exeJavaFullPath( [](){
 
 engines::exeFullPath engines::engine::m_exeFuserMount( [](){
 
-	return engines::executableNotEngineFullPath( "fusermount" ) ;
+	auto e = engines::executableNotEngineFullPath( "fusermount3" ) ;
+
+	if( e.isEmpty() ){
+
+		e = engines::executableNotEngineFullPath( "fusermount" ) ;
+	}
+
+	return e ;
 } ) ;
 
 static std::function< QString() > _exe_full_path( const QStringList& exe,const engines::engine& engine )
