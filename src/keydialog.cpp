@@ -1484,6 +1484,7 @@ void keyDialog::pbSetKeyCancel()
 	this->setUIVisible( true ) ;
 	this->enableAll() ;
 	m_keyType.setAsKey() ;
+    m_keyType.setEnabled(true) ;
 }
 
 void keyDialog::setKeyEnabled( bool e )
