@@ -1,14 +1,14 @@
-
- <!DOCTYPE RCC>
- <RCC version="1.0">
-	 <qresource>
-		 <file>sirikali.png</file>
-		 <file>folder.png</file>
-		 <file>file.png</file>
-		 <file>keyfile.png</file>
-		 <file>module.png</file>
- 		 <file>harddrive.png</file>
-		 <file>executable.png</file>
-		 <file>lock.png</file>
-	 </qresource>
- </RCC>
+<RCC>
+    <qresource prefix="/">
+        <file>sirikali.png</file>
+        <file>folder.png</file>
+        <file>file.png</file>
+        <file>keyfile.png</file>
+        <file>module.png</file>
+        <file>harddrive.png</file>
+        <file>executable.png</file>
+        <file>lock.png</file>
+        <file>icons/password_show.png</file>
+        <file>icons/password_hide.png</file>
+    </qresource>
+</RCC>

@@ -221,6 +221,8 @@ void keyDialog::setUpInitUI()
 
 	m_checkBoxOriginalText = m_ui->checkBoxOpenReadOnly->text() ;
 
+    m_ui->tbVisibleKey->setIcon(QIcon(":/icons/password_show.png"));
+
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),
 		 this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbOpen,SIGNAL( clicked() ),
@@ -235,8 +237,8 @@ void keyDialog::setUpInitUI()
 		 this,SLOT( cbMountReadOnlyStateChanged( int ) ) ) ;
 	connect( m_ui->pbOK,SIGNAL( clicked( bool ) ),
 		 this,SLOT( pbOK() ) ) ;
-	connect( m_ui->checkBoxVisibleKey,SIGNAL( stateChanged( int ) ),
-		 this,SLOT( cbVisibleKeyStateChanged( int ) ) ) ;
+    connect( m_ui->tbVisibleKey,SIGNAL( clicked() ),
+         this,SLOT( cbVisibleKeyclicked() ) ) ;
 	connect( m_ui->pbOptions,SIGNAL( clicked() ),
 		 this,SLOT( pbOptions() ) ) ;
 	connect( m_ui->pbSetKeyKeyFile,SIGNAL( clicked() ),
@@ -335,9 +337,9 @@ void keyDialog::setUpInitUI()
 		m_ui->pbOpen->setFocus() ;
 	}
 
-	m_ui->checkBoxVisibleKey->setToolTip( tr( "Check This Box To Make Password Visible" ) ) ;
+    m_ui->tbVisibleKey->setToolTip( tr( "Check This Box To Make Password Visible" ) ) ;
 
-	m_ui->checkBoxVisibleKey->setEnabled( m_settings.enableRevealingPasswords() ) ;
+    m_ui->tbVisibleKey->setEnabled( m_settings.enableRevealingPasswords() ) ;
 }
 
 void keyDialog::setVolumeToUnlock()
@@ -627,7 +629,7 @@ void keyDialog::setDefaultUI()
 
 	m_ui->pbOK->setVisible( false ) ;
 	m_ui->pbOpen->setVisible( true ) ;
-	m_ui->checkBoxVisibleKey->setVisible( true ) ;
+    m_ui->tbVisibleKey->setVisible( true ) ;
 	m_ui->pbkeyOption->setVisible( false ) ;
 	m_ui->textEdit->setVisible( false ) ;
 }
@@ -829,7 +831,7 @@ void keyDialog::enableAll()
 
 	if( m_settings.enableRevealingPasswords() ){
 
-		m_ui->checkBoxVisibleKey->setEnabled( this->keySelected( index ) ) ;
+        m_ui->tbVisibleKey->setEnabled( this->keySelected( index ) ) ;
 	}
 
 	if( utility::platformIsNOTWindows() ){
@@ -848,7 +850,7 @@ void keyDialog::enableAll()
 
 void keyDialog::disableAll()
 {
-	m_ui->checkBoxVisibleKey->setEnabled( false ) ;
+    m_ui->tbVisibleKey->setEnabled( false ) ;
 	m_ui->pbMountPoint->setEnabled( false ) ;
 	m_ui->pbMountPoint_1->setEnabled( false ) ;
 	m_ui->cbKeyType->setEnabled( false ) ;
@@ -879,7 +881,7 @@ void keyDialog::setUIVisible( bool e )
 	m_ui->pbCancel->setVisible( e ) ;
 	m_ui->pbOpen->setVisible( e ) ;
 	m_ui->label->setVisible( e ) ;
-	m_ui->checkBoxVisibleKey->setVisible( e ) ;
+    m_ui->tbVisibleKey->setVisible( e ) ;
 	m_ui->pbkeyOption->setVisible( e ) ;
 
 	if( e ){
@@ -1098,7 +1100,8 @@ void keyDialog::pbOK()
 		return this->HideUI() ;
 	}
 
-	m_ui->checkBoxVisibleKey->setChecked( false ) ;
+    m_ui->tbVisibleKey->setIcon(QIcon(":/icons/password_show.png")) ;
+    m_ui->lineEditKey->setEchoMode( QLineEdit::Password );
 
 	this->setUIVisible( true ) ;
 
@@ -1106,10 +1109,10 @@ void keyDialog::pbOK()
 
 	if( this->keySelected( m_ui->cbKeyType->currentIndex() ) ) {
 
-		m_ui->checkBoxVisibleKey->setVisible( true ) ;
+        m_ui->tbVisibleKey->setVisible( true ) ;
 		m_ui->pbkeyOption->setVisible( false ) ;
 	}else{
-		m_ui->checkBoxVisibleKey->setVisible( false ) ;
+        m_ui->tbVisibleKey->setVisible( false ) ;
 		m_ui->pbkeyOption->setVisible( true ) ;
 	}
 }
@@ -1543,9 +1546,10 @@ void keyDialog::keyTypeChanged()
 	auto _showVisibleKeyOption = [ this ]( bool e ){
 
 		bool s = m_settings.enableRevealingPasswords() ;
-		m_ui->checkBoxVisibleKey->setEnabled( e && s ) ;
-		m_ui->checkBoxVisibleKey->setChecked( false ) ;
-		m_ui->checkBoxVisibleKey->setVisible( e ) ;
+        m_ui->tbVisibleKey->setEnabled( e && s ) ;
+        m_ui->tbVisibleKey->setIcon(QIcon(":/icons/password_show.png")) ;
+        m_ui->lineEditKey->setEchoMode( QLineEdit::Password );
+        m_ui->tbVisibleKey->setVisible( e ) ;
 		m_ui->pbkeyOption->setVisible( !e ) ;
 	} ;
 
@@ -1631,7 +1635,7 @@ void keyDialog::keyTypeChanged()
 				this->showErrorMessage( tr( "Volume Name Field Is Empty." ) ) ;
 				m_ui->cbKeyType->setCurrentIndex( 0 ) ;
 				m_ui->lineEditMountPoint->setFocus() ;
-				m_ui->checkBoxVisibleKey->setVisible( false ) ;
+                m_ui->tbVisibleKey->setVisible( false ) ;
 				return ;
 			}
 
@@ -1729,14 +1733,15 @@ QString keyDialog::keyFileError()
 	return QObject::tr( "Not Supported KeyFile Encountered Since It Contains AtLeast One Illegal Character('\\n','\\0','\\r').\n\nPlease Use a Hash Of The KeyFile Through \"HMAC+KeyFile\" Option." ) ;
 }
 
-void keyDialog::cbVisibleKeyStateChanged( int s )
+void keyDialog::cbVisibleKeyclicked()
 {
 	if( this->keySelected( m_ui->cbKeyType->currentIndex() ) ){
 
-		if( s == Qt::Checked ){
-
+        if(m_ui->lineEditKey->echoMode() == QLineEdit::Password){
+            m_ui->tbVisibleKey->setIcon(QIcon(":/icons/password_hide.png"));
 			m_ui->lineEditKey->setEchoMode( QLineEdit::Normal ) ;
 		}else{
+            m_ui->tbVisibleKey->setIcon(QIcon(":/icons/password_show.png"));
 			m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
 		}
 
@@ -1760,7 +1765,7 @@ void keyDialog::key()
 	m_ui->pbkeyOption->setEnabled( false ) ;
 	m_ui->label->setText( m_keyType.toString() ) ;
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
-	m_ui->checkBoxVisibleKey->setChecked( false ) ;
+    m_ui->tbVisibleKey->setIcon(QIcon(":/icons/password_show.png")) ;
 	m_ui->lineEditKey->clear() ;
 	m_ui->lineEditKey->setEnabled( true ) ;
 	m_ui->lineEditKey->setFocus() ;
@@ -1772,7 +1777,7 @@ void keyDialog::yubiKey()
 	m_ui->pbkeyOption->setEnabled( false ) ;
 	m_ui->label->setText( m_keyType.toString( keyType::name::Key ) ) ;
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
-	m_ui->checkBoxVisibleKey->setChecked( false ) ;
+    m_ui->tbVisibleKey->setIcon(QIcon(":/icons/password_show.png")) ;
 	m_ui->lineEditKey->clear() ;
 	m_ui->lineEditKey->setEnabled( true ) ;
 	m_ui->lineEditKey->setFocus() ;
