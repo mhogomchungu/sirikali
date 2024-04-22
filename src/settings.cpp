@@ -778,11 +778,24 @@ bool settings::readFavorites( QMenu * m )
 {
 	m->clear() ;
 
-    auto _add_action = [ m ]( const QString& e, const QString& s, bool enable = true ){
+	auto _enable_entry = []( const QString& e ){
+
+		if( e.startsWith( "sshfs ",Qt::CaseInsensitive ) ){
+
+			return true ;
+		}else{
+			return QFile::exists( e ) ;
+		}
+	} ;
+
+	auto _add_action = [ m ]( const QString& e,const QString& s,bool enable = true ){
+
 		auto ac = new QAction( m ) ;
+
 		ac->setText( e ) ;
 		ac->setObjectName( s ) ;
-        ac->setEnabled(enable);
+		ac->setEnabled( enable ) ;
+
 		return ac ;
 	} ;
 
@@ -823,7 +836,7 @@ bool settings::readFavorites( QMenu * m )
 
 			const auto& e = it.volumePath + "\n" + it.mountPointPath ;
 
-            m->addAction( _add_action( e,e,QFile::exists(it.volumePath) ) ) ;
+			m->addAction( _add_action( e,e,_enable_entry( it.volumePath ) ) ) ;
 			m->addSeparator() ;
 		}
 	}else{
@@ -831,7 +844,7 @@ bool settings::readFavorites( QMenu * m )
 
 			const auto& e = it.volumePath ;
 
-            m->addAction( _add_action( e,e,QFile::exists(it.volumePath) ) ) ;
+			m->addAction( _add_action( e,e,_enable_entry( it.volumePath ) ) ) ;
 		}
 	}
 
