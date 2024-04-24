@@ -85,11 +85,11 @@ securefs::securefs() :
 {
 }
 
-static engines::engine::status _check_passwoed( const QStringList& e )
+static engines::engine::status _check_password( const QString& m,const QStringList& e )
 {
 	for( const auto& s : e ){
 
-		if( e.contains( s ) ){
+		if( m.contains( s ) ){
 
 			return engines::engine::status::badPassword ;
 		}
@@ -106,14 +106,14 @@ engines::engine::status securefs::errorCode( const QString& e,const QString&,int
 
 			return engines::engine::status::success ;
 		}else{
-			return _check_passwoed( this->incorrectPasswordText() ) ;
+			return _check_password( e,this->incorrectPasswordText() ) ;
 		}
 	}else{
 		if( s == 0 ){
 
 			return engines::engine::status::success ;
 		}else{
-			return _check_passwoed( this->incorrectPasswordText() ) ;
+			return _check_password( e,this->incorrectPasswordText() ) ;
 		}
 	}
 }
@@ -134,11 +134,17 @@ static QByteArray _get_log( QFile&& file )
 
 					utility::Task::suspendForOneSecond() ;
 				}else{
-					utility::Task::suspendForOneSecond() ;
+					if( m.contains( " Fuse operations initialized" ) ||
+					    m.contains( "Password/keyfile is incorrect" ) ){
 
-					m += file.readAll() ;
+						break ;
+					}else{
+						utility::Task::suspendForOneSecond() ;
 
-					break ;
+						m += file.readAll() ;
+
+						break ;
+					}
 				}
 			}
 
