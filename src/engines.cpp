@@ -530,6 +530,19 @@ engines::engine::args engines::engine::command( const QByteArray& password,
 	}
 }
 
+static bool _wrong_password( const QString& e,const QStringList& s )
+{
+	for( const auto& m : s ){
+
+		if( e.contains( m ) ){
+
+			return true ;
+		}
+	}
+
+	return false ;
+}
+
 engines::engine::status engines::engine::errorCode( const QString& e,const QString&,int s ) const
 {
 	Q_UNUSED( s )
@@ -542,12 +555,17 @@ engines::engine::status engines::engine::errorCode( const QString& e,const QStri
 
 		return engines::engine::status::failedToLoadWinfsp ;
 
-	}else if( e.contains( this->incorrectPasswordText() ) ){
+	}else if( _wrong_password( e,this->incorrectPasswordText() ) ){
 
 		return engines::engine::status::badPassword ;
 	}else{
 		return engines::engine::status::backendFail ;
 	}
+}
+
+QByteArray engines::engine::extraLogOutput( const engines::engine::args& ) const
+{
+	return {} ;
 }
 
 void engines::engine::updateVolumeList( const engines::engine::cmdArgsList& e ) const
@@ -559,6 +577,11 @@ volumeInfo::List engines::engine::mountInfo( const volumeInfo::List& e ) const
 {
 	Q_UNUSED( e )
 	return {} ;
+}
+
+bool engines::engine::canShowVolumeProperties() const
+{
+	return true ;
 }
 
 Task::future< QString >& engines::engine::volumeProperties( const QString& cipherFolder,
@@ -1170,7 +1193,7 @@ const QString& engines::engine::createControlStructure() const
 	return m_Options.createControlStructure ;
 }
 
-const QString& engines::engine::incorrectPasswordText() const
+const QStringList& engines::engine::incorrectPasswordText() const
 {
 	return m_Options.incorrectPasswordText ;
 }

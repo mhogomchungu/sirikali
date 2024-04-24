@@ -511,7 +511,6 @@ public:
 			QString sirikaliMinimumVersion ;
 			QString reverseString ;
 			QString idleString ;
-			QString incorrectPasswordText ;
 			QString incorrectPassWordCode ;
 			QString configFileArgument ;
 			QString keyFileArgument ;
@@ -522,6 +521,7 @@ public:
 			QString createControlStructure ;
 			QString defaultFavoritesMountOptions ;
 
+			QStringList incorrectPasswordText ;
 			QStringList executableNames ;
 			QStringList windowsUnMountCommand ;
 			QStringList unMountCommand ;
@@ -597,6 +597,7 @@ public:
 		const QStringList& configFileNames() const ;
 		const QStringList& fileExtensions() const ;
 		const QStringList& volumePropertiesCommands() const ;
+		const QStringList& incorrectPasswordText() const ;
 
 		const engines::version& installedVersion() const ;
 
@@ -617,7 +618,6 @@ public:
 		const QString& keyFileArgument() const ;
 		const QString& mountControlStructure() const ;
 		const QString& createControlStructure() const ;
-		const QString& incorrectPasswordText() const ;
 		const QString& incorrectPasswordCode() const ;
 		const QString& configFileArgument() const ;
 		const QString& windowsInstallPathRegistryKey() const ;
@@ -700,6 +700,8 @@ public:
 
 		virtual volumeInfo::List mountInfo( const volumeInfo::List& ) const ;
 
+		virtual bool canShowVolumeProperties() const ;
+
 		virtual Task::future< QString >& volumeProperties( const QString& cipherFolder,
 								   const QString& mountPoint ) const ;
 
@@ -752,6 +754,8 @@ public:
 				      bool create ) const ;
 
 		virtual engines::engine::status errorCode( const QString& e,const QString& err,int s ) const ;
+
+		virtual QByteArray extraLogOutput( const engines::engine::args& ) const ;
 
 		virtual void GUICreateOptions( const createGUIOptions& ) const ;
 

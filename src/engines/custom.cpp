@@ -57,7 +57,6 @@ static void _parse( engines::engine::BaseOptions& s,const SirikaliJson& json )
 	s.createControlStructure          = json.getString( "createControlStructure" ) ;
 	s.reverseString                   = json.getString( "reverseString" ) ;
 	s.idleString                      = json.getString( "idleString" ) ;
-	s.incorrectPasswordText           = json.getString( "wrongPasswordText" ) ;
 	s.incorrectPassWordCode           = json.getString( "wrongPasswordErrorCode" ) ;
 	s.configFileArgument              = json.getString( "configFileArgument" ) ;
 	s.keyFileArgument                 = json.getString( "keyFileArgument" ) ;
@@ -67,6 +66,8 @@ static void _parse( engines::engine::BaseOptions& s,const SirikaliJson& json )
 	s.displayName                     = json.getString( "displayName" ) ;
 	s.versionMinimum                  = json.getString( "versionMinimum" ) ;
 	s.sirikaliMinimumVersion          = json.getString( "sirikaliMinimumVersion" ) ;
+
+	s.incorrectPasswordText           = QStringList{ json.getString( "wrongPasswordText" ) } ;
 
 	s.executableNames                 = QStringList{ json.getString( "executableName" ) } ;
 
@@ -197,9 +198,22 @@ engines::engine::status custom::errorCode( const QString& e,const QString&,int s
 			return engines::engine::status::backendFail ;
 		}
 	}else{
+		auto _wrong_password = []( const QString& e,const QStringList& m ){
+
+			for( const auto& a : m ){
+
+				if( e.contains( a ) ){
+
+					return true ;
+				}
+			}
+
+			return false ;
+		} ;
+
 		const auto& s = this->incorrectPasswordText() ;
 
-		if( !s.isEmpty() && e.contains( s ) ){
+		if( !s.isEmpty() && _wrong_password( e,s ) ){
 
 			return engines::engine::status::badPassword ;
 

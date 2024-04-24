@@ -329,7 +329,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.setsCipherPath        = true ;
 	s.releaseURL            = "https://api.github.com/repos/google/fscrypt/releases" ;
 	s.passwordFormat        = "%{password}" ;
-	s.incorrectPasswordText = "incorrect key provided" ;
+	s.incorrectPasswordText = QStringList{ "incorrect key provided" } ;
 	s.executableNames       = QStringList{ "fscrypt" } ;
 	s.fuseNames             = QStringList{ "fscrypt","fscrypt*" } ;
 	s.failedToMountList     = QStringList{ "Error" } ;

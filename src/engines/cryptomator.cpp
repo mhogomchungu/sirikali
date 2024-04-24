@@ -51,9 +51,10 @@ static engines::engine::BaseOptions _setOptions()
 	s.acceptsVolName        = false ;
 	s.releaseURL            = "https://api.github.com/repos/mhogomchungu/cli/releases" ;
 	s.passwordFormat        = "" ;
-	s.incorrectPasswordText = "InvalidPassphraseException" ;
 	s.configFileArgument    = "" ;
 	s.keyFileArgument       = "" ;
+
+	s.incorrectPasswordText    = QStringList{ "InvalidPassphraseException" } ;
 	s.executableNames          = QStringList{ "cryptomator-cli","cryptomator-cli.jar" } ;
 	s.volumePropertiesCommands = QStringList{} ;
 	s.windowsUnMountCommand    = QStringList{} ;

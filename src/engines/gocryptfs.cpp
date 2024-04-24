@@ -82,7 +82,7 @@ static engines::engine::BaseOptions _setOptions()
 		s.successfulMountedList = QStringList{ "Mount Success" } ;
 		s.failedToMountList     = QStringList{ "Failed To Mount" } ;
 
-		s.incorrectPasswordText = "cppcryptfs: password incorrect" ;
+		s.incorrectPasswordText = QStringList{ "cppcryptfs: password incorrect" } ;
 
 		s.executableNames = QStringList{ "cppcryptfsctl.exe" } ;
 		s.mountControlStructure  = "--mount %{mountOptions} --cipherPath %{cipherFolder} --mountPath %{mountPoint} %{fuseOpts}" ;
@@ -98,7 +98,7 @@ static engines::engine::BaseOptions _setOptions()
 
 		s.acceptsSubType        = false ;
 
-		s.incorrectPasswordText = "Password incorrect." ;
+		s.incorrectPasswordText = QStringList{ "Password incorrect." } ;
 
 		s.mountControlStructure  = "-q %{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
 		s.executableNames = QStringList{ "gocryptfs" } ;

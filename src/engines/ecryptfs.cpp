@@ -47,10 +47,9 @@ static engines::engine::BaseOptions _setOptions()
 	s.setsCipherPath        = true ;
 	s.releaseURL            = "https://api.github.com/repos/mhogomchungu/ecryptfs-simple/releases" ;
 	s.passwordFormat        = "%{password}" ;
-	s.incorrectPasswordText = "error: mount failed" ;
 	s.configFileArgument    = "--config=%{configFilePath}" ;
 	s.executableNames       = QStringList{ "ecryptfs-simple" } ;
-
+	s.incorrectPasswordText = QStringList{ "error: mount failed" } ;
 	s.configFileNames       = QStringList{ ".ecryptfs.config","ecryptfs.config" } ;
 	s.fuseNames             = QStringList{ "ecryptfs" } ;
 	s.names                 = QStringList{ "ecryptfs" } ;

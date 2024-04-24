@@ -57,9 +57,9 @@ static engines::engine::BaseOptions _setOptions()
 	s.acceptsVolName        = true ;
 	s.passwordFormat        = "%{password}" ;
 	s.idleString            = "--unmount-idle %{timeout}" ;
-	s.incorrectPasswordText = "Could not load config file. Did you enter the correct password?" ;
 	s.configFileArgument    = "--config %{configFilePath}" ;
 	s.releaseURL            = "https://api.github.com/repos/cryfs/cryfs/releases" ;
+	s.incorrectPasswordText = QStringList{ "Could not load config file. Did you enter the correct password?" } ;
 	s.successfulMountedList = QStringList{ "Mounting filesystem." } ;
 	s.configFileNames       = QStringList{ "cryfs.config",".cryfs.config" } ;
 	s.fuseNames             = QStringList{ "fuse.cryfs" } ;
@@ -141,10 +141,23 @@ engines::engine::status cryfs::errorCode( const QString& e,const QString& err,in
 			return engines::engine::status::cryfsReplaceFileSystem ;
 		}
 	}else{
+		auto _wrong_password = []( const QString& e,const char * s,const QStringList& m ){
+
+			for( const auto& a : m ){
+
+				if( utility::containsAtleastOne( e,s,a ) ){
+
+					return true ;
+				}
+			}
+
+			return false ;
+		} ;
+
 		/*
 		 * Falling back to parsing strings
 		 */
-		if( utility::containsAtleastOne( e,"Error 11:",this->incorrectPasswordText() ) ){
+		if( _wrong_password( e,"Error 11:",this->incorrectPasswordText() ) ){
 
 			return engines::engine::status::badPassword ;
 

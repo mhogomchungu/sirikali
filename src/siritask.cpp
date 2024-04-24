@@ -329,6 +329,26 @@ static engines::engine::cmdStatus _cmd( const cmd_args& e )
 			return { n,engine,s.stdOut() } ;
 		}
 
+	}else if( utility::platformIsNOTWindows() && e.engine.name() == "Securefs" ){
+
+		if( e.create ){
+
+			if( s.success() ){
+
+				return { engines::engine::status::success,engine } ;
+			}else{
+				auto ss = s.stdOut() + "\n" + s.stdError() ;
+
+				return { engines::engine::status::backendFail,engine,ss } ;
+			}
+		}else{
+			auto ss = s.stdOut() + "\n" + s.stdError() + "\n" + engine.extraLogOutput( cmd ) ;
+
+			auto n = engine.errorCode( ss,ss,s.exitCode() ) ;
+
+			return { n,engine,ss } ;
+		}
+
 	}else if( s.success() ){
 
 		return { engines::engine::status::success,engine } ;

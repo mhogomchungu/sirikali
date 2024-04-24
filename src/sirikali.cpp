@@ -186,6 +186,8 @@ static int _run( App& app,Function function )
 
 int sirikali::run( const QStringList& args,int argc,char * argv[] )
 {
+	std::srand( std::time( nullptr ) ) ;
+
 	if( utility::containsAtleastOne( args,"-s","-u","-p","-T","-b" ) ){
 
 		auto mm = utility::cmdArgumentValue( args,"-b" ) ;
@@ -1364,13 +1366,18 @@ void sirikali::volumeProperties()
 
 	const auto& engine = engines::instance().getByName( volumeType ) ;
 
-	auto s = engine.volumeProperties( cipherPath,mountPath ).await() ;
+	if( engine.canShowVolumeProperties() ){
 
-	if( s.isEmpty() ){
+		auto s = engine.volumeProperties( cipherPath,mountPath ).await() ;
 
+		if( s.isEmpty() ){
+
+			this->genericVolumeProperties() ;
+		}else {
+			return DialogMsg( this ).ShowUIInfo( tr( "INFORMATION" ),true,s ) ;
+		}
+	}else{
 		this->genericVolumeProperties() ;
-	}else {
-		return DialogMsg( this ).ShowUIInfo( tr( "INFORMATION" ),true,s ) ;
 	}
 }
 

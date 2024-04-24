@@ -24,6 +24,12 @@ class securefs : public engines::engine
 public:
 	securefs() ;
 
+	engines::engine::status errorCode( const QString&,const QString&,int s ) const override ;
+
+	QByteArray extraLogOutput( const engines::engine::args& ) const override ;
+
+	bool canShowVolumeProperties() const override ;
+
 	bool requiresAPassword( const engines::engine::cmdArgsList& ) const override ;
 
 	void GUICreateOptions( const engines::engine::createGUIOptions& ) const override ;
@@ -37,4 +43,5 @@ public:
 			    bool creating ) const override ;
 private:
 	const engines::versionGreaterOrEqual m_version_greater_or_equal_0_11_1 ;
+	const engines::versionGreaterOrEqual m_version_greater_or_equal_1_0_0 ;
 } ;

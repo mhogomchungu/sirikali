@@ -51,12 +51,12 @@ static engines::engine::BaseOptions _setOptions()
 	s.acceptsVolName        = true ;
 	s.releaseURL            = "https://api.github.com/repos/netheril96/securefs/releases" ;
 	s.passwordFormat        = "%{password}\n%{password}" ;
-	s.incorrectPasswordText = "Invalid password" ;
 	s.configFileArgument    = "--config %{configFilePath}" ;
 	s.keyFileArgument       = "--keyfile %{keyfile}" ;
 	s.volumePropertiesCommands = QStringList{ "securefs info %{cipherFolder}" } ;
+	s.incorrectPasswordText = QStringList{ "Invalid password","Password/keyfile is incorrect" } ;
 	s.windowsUnMountCommand = QStringList{ "sirikali.exe", "-T","%{PID}" } ;
-	s.configFileNames       = QStringList{ ".securefs.json","securefs.json" } ;
+	s.configFileNames       = QStringList{ ".securefs.json","securefs.json",".config.pb","config.pb" } ;
 	s.fuseNames             = QStringList{ "fuse.securefs" } ;
 	s.names                 = QStringList{ "securefs" } ;
 	s.failedToMountList     = QStringList{ "Error","init" } ;
@@ -80,8 +80,103 @@ static engines::engine::BaseOptions _setOptions()
 
 securefs::securefs() :
 	engines::engine( _setOptions() ),
-	m_version_greater_or_equal_0_11_1( true,*this,0,11,1 )
+	m_version_greater_or_equal_0_11_1( true,*this,0,11,1 ),
+	m_version_greater_or_equal_1_0_0( true,*this,1,0,0 )
 {
+}
+
+static engines::engine::status _check_passwoed( const QStringList& e )
+{
+	for( const auto& s : e ){
+
+		if( e.contains( s ) ){
+
+			return engines::engine::status::badPassword ;
+		}
+	}
+
+	return engines::engine::status::backendFail ;
+}
+
+engines::engine::status securefs::errorCode( const QString& e,const QString&,int s ) const
+{
+	if( m_version_greater_or_equal_1_0_0 ){
+
+		if( e.contains( " Fuse operations initialized" ) ){
+
+			return engines::engine::status::success ;
+		}else{
+			return _check_passwoed( this->incorrectPasswordText() ) ;
+		}
+	}else{
+		if( s == 0 ){
+
+			return engines::engine::status::success ;
+		}else{
+			return _check_passwoed( this->incorrectPasswordText() ) ;
+		}
+	}
+}
+
+static QByteArray _get_log( QFile&& file )
+{
+	for( int s = 0 ; s < 5 ; s++ ){
+
+		if( file.open( QIODevice::ReadOnly ) ){
+
+			QByteArray m ;
+
+			while( true ){
+
+				m += file.readAll() ;
+
+				if( m.isEmpty() ){
+
+					utility::Task::suspendForOneSecond() ;
+				}else{
+					utility::Task::suspendForOneSecond() ;
+
+					m += file.readAll() ;
+
+					break ;
+				}
+			}
+
+			file.remove() ;
+
+			return m ;
+		}else{
+			utility::Task::suspendForOneSecond() ;
+		}
+	}
+
+	return {} ;
+}
+
+QByteArray securefs::extraLogOutput( const engines::engine::args& e ) const
+{
+	if( m_version_greater_or_equal_1_0_0 ){
+
+		const auto& opts = e.cmd_args ;
+
+		for( int s = 0 ; s < opts.size() ; s++ ){
+
+			if( opts[ s ] == "--log" ){
+
+				if( s + 1 < opts.size() ){
+
+					return _get_log( opts[ s + 1 ] ) ;
+				}
+			}
+		}
+	}
+
+	return {} ;
+}
+
+bool securefs::canShowVolumeProperties() const
+{
+	return !m_version_greater_or_equal_1_0_0 ;
 }
 
 static void _updateKeys( QStringList& opts,engines::engine::cmdArgsList& e )
@@ -104,6 +199,19 @@ void securefs::updateOptions( engines::engine::cmdArgsList& e,bool creating ) co
 			_updateKeys( e.createOptions,e ) ;
 		}else{
 			_updateKeys( e.mountOptions,e ) ;
+		}
+	}
+}
+
+static QString _logPath( const QString& e )
+{
+	while( true ){
+
+		auto s = e + "." + QString::number( std::rand() ) ;
+
+		if( !QFile::exists( s ) ){
+
+			return s ;
 		}
 	}
 }
@@ -131,6 +239,11 @@ void securefs::updateOptions( engines::engine::commandOptions& opts,
 		if( fssubtype ){
 
 			exeOpts.add( "--fssubtype",fssubtype.RValue().mid( 8 ) ) ;
+		}
+
+		if( m_version_greater_or_equal_1_0_0 ){
+
+			exeOpts.add( "--log",_logPath( args.mountPoint ) ) ;
 		}
 	}
 }
