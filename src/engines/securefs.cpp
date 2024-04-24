@@ -130,21 +130,11 @@ static QByteArray _get_log( QFile&& file )
 
 				m += file.readAll() ;
 
-				if( m.isEmpty() ){
+				if( m.contains( "\n" ) ){
 
-					utility::Task::suspendForOneSecond() ;
+					break ;
 				}else{
-					if( m.contains( " Fuse operations initialized" ) ||
-					    m.contains( "Password/keyfile is incorrect" ) ){
-
-						break ;
-					}else{
-						utility::Task::suspendForOneSecond() ;
-
-						m += file.readAll() ;
-
-						break ;
-					}
+					utility::Task::suspendForOneSecond() ;
 				}
 			}
 
