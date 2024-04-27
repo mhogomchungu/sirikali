@@ -35,6 +35,8 @@
 #include "win.h"
 #include "engines/options.h"
 
+#include "processManager.h"
+
 #include <QCoreApplication>
 #include <QJsonDocument>
 
@@ -563,11 +565,6 @@ engines::engine::status engines::engine::errorCode( const QString& e,const QStri
 	}
 }
 
-QByteArray engines::engine::extraLogOutput( const engines::engine::args& ) const
-{
-	return {} ;
-}
-
 void engines::engine::updateVolumeList( const engines::engine::cmdArgsList& e ) const
 {
 	Q_UNUSED( e )
@@ -665,6 +662,30 @@ engines::engine::status engines::engine::unmount( const engines::engine::unMount
 		}
 
 		return engines::engine::status::failedToUnMount ;
+	}
+}
+
+engines::engine::cmdStatus engines::engine::commandStatus( const engines::engine::commandStatusOpts& e ) const
+{
+	const auto& engine = *this ;
+
+	if( e.success() ){
+
+		return { engines::engine::status::success,engine } ;
+	}else{
+		if( utility::platformIsWindows() ){
+
+			if( processManager::backEndTimedOut( e.stdOut() ) ){
+
+				return { engines::engine::status::backendTimedOut,engine } ;
+			}
+		}
+
+		auto ss = e.stdError().isEmpty() ? e.stdOut() : e.stdError() ;
+
+		auto n = engine.errorCode( ss,ss,e.exitCode() ) ;
+
+		return { n,engine,ss } ;
 	}
 }
 

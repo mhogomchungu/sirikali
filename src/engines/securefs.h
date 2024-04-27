@@ -24,9 +24,9 @@ class securefs : public engines::engine
 public:
 	securefs() ;
 
-	engines::engine::status errorCode( const QString&,const QString&,int s ) const override ;
+	engines::engine::cmdStatus commandStatus( const engines::engine::commandStatusOpts& ) const override ;
 
-	QByteArray extraLogOutput( const engines::engine::args& ) const override ;
+	engines::engine::status errorCode( const QString&,const QString&,int s ) const override ;
 
 	bool canShowVolumeProperties() const override ;
 
@@ -42,6 +42,8 @@ public:
 			    const engines::engine::cmdArgsList& args,
 			    bool creating ) const override ;
 private:
+	QByteArray extraLogOutput( const engines::engine::args& ) const ;
+
 	const engines::versionGreaterOrEqual m_version_greater_or_equal_0_11_1 ;
 	const engines::versionGreaterOrEqual m_version_greater_or_equal_1_0_0 ;
 } ;

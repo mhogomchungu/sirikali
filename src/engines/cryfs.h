@@ -26,6 +26,8 @@ public:
 
 	bool takesTooLongToUnlock() const override ;
 
+	engines::engine::cmdStatus commandStatus( const engines::engine::commandStatusOpts& ) const override ;
+
 	void updateOptions( engines::engine::cmdArgsList&,bool ) const override ;
 
 	const QProcessEnvironment& getProcessEnvironment() const override ;

@@ -105,6 +105,30 @@ bool cryfs::takesTooLongToUnlock() const
 	return m_version_greater_or_equal_0_10_0 ;
 }
 
+engines::engine::cmdStatus cryfs::commandStatus( const engines::engine::commandStatusOpts& e ) const
+{
+	if( utility::platformIsWindows() ){
+
+		return engines::engine::commandStatus( e ) ;
+	}else{
+		const auto& engine = *this ;
+
+		auto n = engine.errorCode( e.stdOut(),e.stdError(),e.exitCode() ) ;
+
+		if( e.success() ){
+
+			if( n == engines::engine::status::backendCrashed ){
+
+				return { n,engine,e.stdError() } ;
+			}else{
+				return { engines::engine::status::success,engine } ;
+			}
+		}else{
+			return { n,engine,e.stdOut() } ;
+		}
+	}
+}
+
 const QProcessEnvironment& cryfs::getProcessEnvironment() const
 {
 	return m_env ;

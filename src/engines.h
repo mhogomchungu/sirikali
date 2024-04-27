@@ -707,6 +707,47 @@ public:
 
 		virtual engines::engine::status unmount( const engines::engine::unMount& ) const ;
 
+		class commandStatusOpts
+		{
+		public:
+			commandStatusOpts( utility::Task s,
+					   const engines::engine::args& e,
+					   bool creating ) :
+				m_task( std::move( s ) ),m_args( e ),m_creating( creating )
+			{
+			}
+			const QByteArray& stdOut() const
+			{
+				return m_task.stdOut() ;
+			}
+			const QByteArray& stdError() const
+			{
+				return m_task.stdError() ;
+			}
+			bool success() const
+			{
+				return m_task.success() ;
+			}
+			int exitCode() const
+			{
+				return m_task.exitCode() ;
+			}
+			const engines::engine::args& args() const
+			{
+				return m_args ;
+			}
+			bool creating() const
+			{
+				return m_creating ;
+			}
+		private:
+			utility::Task m_task ;
+			const engines::engine::args& m_args ;
+			bool m_creating ;
+		} ;
+
+		virtual engines::engine::cmdStatus commandStatus( const commandStatusOpts& ) const ;
+
 		virtual bool requiresAPassword( const engines::engine::cmdArgsList& ) const ;
 
 		virtual bool takesTooLongToUnlock() const ;
@@ -754,8 +795,6 @@ public:
 				      bool create ) const ;
 
 		virtual engines::engine::status errorCode( const QString& e,const QString& err,int s ) const ;
-
-		virtual QByteArray extraLogOutput( const engines::engine::args& ) const ;
 
 		virtual void GUICreateOptions( const createGUIOptions& ) const ;
 

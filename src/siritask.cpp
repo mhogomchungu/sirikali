@@ -311,62 +311,7 @@ static engines::engine::cmdStatus _cmd( const cmd_args& e )
 
 	auto cmd = engine.command( e.password,e.opts,e.create ) ;
 
-	auto s = _run_task( { cmd,e } ) ;
-
-	if( utility::platformIsNOTWindows() && e.engine.name() == "Cryfs" ){
-
-		auto n = engine.errorCode( s.stdOut(),s.stdError(),s.exitCode() ) ;
-
-		if( s.success() ){
-
-			if( n == engines::engine::status::backendCrashed ){
-
-				return { n,engine,s.stdError() } ;
-			}else{
-				return { engines::engine::status::success,engine } ;
-			}
-		}else{
-			return { n,engine,s.stdOut() } ;
-		}
-
-	}else if( utility::platformIsNOTWindows() && e.engine.name() == "Securefs" ){
-
-		if( e.create ){
-
-			if( s.success() ){
-
-				return { engines::engine::status::success,engine } ;
-			}else{
-				auto ss = s.stdOut() + "\n" + s.stdError() ;
-
-				return { engines::engine::status::backendFail,engine,ss } ;
-			}
-		}else{
-			auto ss = s.stdOut() + "\n" + s.stdError() + "\n" + engine.extraLogOutput( cmd ) ;
-
-			auto n = engine.errorCode( ss,ss,s.exitCode() ) ;
-
-			return { n,engine,ss } ;
-		}
-
-	}else if( s.success() ){
-
-		return { engines::engine::status::success,engine } ;
-	}else{
-		if( utility::platformIsWindows() ){
-
-			if( processManager::backEndTimedOut( s.stdOut() ) ){
-
-				return { engines::engine::status::backendTimedOut,engine } ;
-			}
-		}
-
-		auto ss = s.stdError().isEmpty() ? s.stdOut() : s.stdError() ;
-
-		auto n = engine.errorCode( ss,ss,s.exitCode() ) ;
-
-		return { n,engine,ss } ;
-	}
+	return engine.commandStatus( { _run_task( { cmd,e } ),cmd,e.create } ) ;
 }
 
 struct result_create_mp{

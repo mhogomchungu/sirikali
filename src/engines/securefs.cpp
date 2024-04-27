@@ -85,6 +85,34 @@ securefs::securefs() :
 {
 }
 
+engines::engine::cmdStatus securefs::commandStatus( const engines::engine::commandStatusOpts& e ) const
+{
+	if( utility::platformIsWindows() ){
+
+		return engines::engine::commandStatus( e ) ;
+	}else{
+		const auto& engine = *this ;
+
+		if( e.creating() ){
+
+			if( e.success() ){
+
+				return { engines::engine::status::success,engine } ;
+			}else{
+				auto ss = e.stdOut() + "\n" + e.stdError() ;
+
+				return { engines::engine::status::backendFail,engine,ss } ;
+			}
+		}else{
+			auto ss = e.stdOut() + "\n" + e.stdError() + "\n" + this->extraLogOutput( e.args() ) ;
+
+			auto n = engine.errorCode( ss,ss,e.exitCode() ) ;
+
+			return { n,engine,ss } ;
+		}
+	}
+}
+
 static engines::engine::status _check_password( const QString& m,const QStringList& e )
 {
 	for( const auto& s : e ){
