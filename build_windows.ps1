@@ -41,7 +41,7 @@ $data = [System.IO.File]::ReadAllText("$BUILD_PATH/SiriKali/version.h")
 
 $versionInfoLines = $data.Split([Environment]::NewLine, [System.StringSplitOptions]::RemoveEmptyEntries)
 
-$versionInfoFirstLine = $versionInfoLines[0]
+$versionInfoFirstLine = $versionInfoLines[1]
 
 $versionInfo = $versionInfoFirstLine.Split(" ",[System.StringSplitOptions]::RemoveEmptyEntries)[2]
 
@@ -79,9 +79,9 @@ else
 New-Item -ItemType Directory -Path $BUILD_PATH/SiriKali-$VERSION
 
 Copy-Item -Path $SRC_LOCATION/translations -Destination $BUILD_PATH/SiriKali-$VERSION -Recurse
-Copy-Item -Path $BUILD_PATH/SiriKali/media-downloader.exe -Destination $BUILD_PATH/SiriKali-$VERSION
+Copy-Item -Path $BUILD_PATH/SiriKali/sirikali.exe -Destination $BUILD_PATH/SiriKali-$VERSION
 
-windeployqt.exe $BUILD_PATH/SiriKali-$VERSION/media-downloader.exe --libdir $BUILD_PATH/SiriKali-$VERSION --plugindir $BUILD_PATH/SiriKali-$VERSION
+windeployqt.exe $BUILD_PATH/SiriKali-$VERSION/sirikali.exe --libdir $BUILD_PATH/SiriKali-$VERSION --plugindir $BUILD_PATH/SiriKali-$VERSION
 
 if($?)
 {
