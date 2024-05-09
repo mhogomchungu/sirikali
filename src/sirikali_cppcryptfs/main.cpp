@@ -26,6 +26,8 @@
 
 #include <fileapi.h>
 
+#include <array>
+
 class counter
 {
 public:

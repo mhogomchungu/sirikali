@@ -15,14 +15,23 @@ set( CMAKE_CXX_STANDARD 14 )
 
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
 set( CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 
 INCLUDE( GNUInstallDirs )
 
 INCLUDE( CMakeDependentOption )
 
-QT5_WRAP_CPP( MOC_LIBRARY task.hpp )
+set( MOC_LIBRARY task.hpp )
 
-include_directories( ${Qt5Core_INCLUDE_DIRS} )
+if(BUILD_WITH_QT6)
+	include_directories( ${Qt6Core_INCLUDE_DIRS} )
+else()
+	include_directories( ${Qt5Core_INCLUDE_DIRS} )
+endif()
+
 
 if( MCHUNGU_TASK_INSTALL )
 	add_library( mhogomchungu_task SHARED ${MOC_LIBRARY} )
@@ -31,7 +40,11 @@ else()
 	add_library( mhogomchungu_task STATIC ${MOC_LIBRARY} )
 endif()
 
-target_link_libraries( mhogomchungu_task ${Qt5Core_LIBRARIES} )
+if(BUILD_WITH_QT6)
+	target_link_libraries( mhogomchungu_task ${Qt6Core_LIBRARIES} )
+else()
+	target_link_libraries( mhogomchungu_task ${Qt5Core_LIBRARIES} )
+endif()
 
 if( WIN32 )
 	set_target_properties( mhogomchungu_task PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -pedantic " )
@@ -40,7 +53,7 @@ else()
 endif()
 
 if( MCHUNGU_TASK_DEBUG )
-	QT5_WRAP_CPP( MOC_EXE example.h )
+	set( MOC_EXE example.h )
 	add_executable( example example.cpp main.cpp ${MOC_EXE} )
 	target_link_libraries( example mhogomchungu_task )
 endif()

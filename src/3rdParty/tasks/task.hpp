@@ -193,7 +193,7 @@ namespace Task
 		{
 		}
 		std::pair< std::function< void() >,std::function< void() > > value ;
-	};	
+	};
 	template< typename E,
 		  typename F,
 		  Task::detail::not_copyable<E> = 0,
@@ -1285,12 +1285,19 @@ namespace Task
 						 m_function( std::move( function  ) )
 					{
 						this->setProcessEnvironment( env ) ;
+
+						#ifndef Q_OS_WIN
+							#if QT_VERSION >= QT_VERSION_CHECK( 6,0,0 )
+								this->setChildProcessModifier( m_function ) ;
+							#endif
+						#endif
 					}
-				protected:
-					void setupChildProcess()
+					#if QT_VERSION < QT_VERSION_CHECK( 6,0,0 )
+					void setupChildProcess() override
 					{
 						m_function() ;
 					}
+					#endif
 				private:
 					std::function< void() > m_function ;
 

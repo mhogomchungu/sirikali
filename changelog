@@ -277,3 +277,8 @@ version 1.4.2(December 18,2019)
    version 1.5.1(July 10, 2023)
    [NON WINDOWS]
 -- Folders specified in PATH variable will be checked when looking for executables.
+
+   version 1.6.0(May 09, 2024)
+   [ALL]
+-- Add support for building with Qt6 by passing option "-DBUILD_WITH_QT6=true" to cmake.
+-- Add support for securefs version >= 1.0.0.

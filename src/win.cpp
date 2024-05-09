@@ -98,7 +98,7 @@ static QByteArray _reg_get_value( HKEY hkey,const char * key )
 		auto e = reinterpret_cast< BYTE * >( buffer.data() ) ;
 		auto m = static_cast< DWORD >( buffer.size() ) ;
 
-		if( RegQueryValueEx( hkey,key,nullptr,&dwType,e,&m ) == ERROR_SUCCESS ){
+		if( RegQueryValueExA( hkey,key,nullptr,&dwType,e,&m ) == ERROR_SUCCESS ){
 
 			return { buffer.data(),static_cast< int >( m ) } ;
 		}
@@ -116,19 +116,19 @@ static QString _readRegistry( const char * subKey,const char * key )
 
 static auto _msg( DWORD err )
 {
-	TCHAR * s = nullptr ;
+	char * s = nullptr ;
 
 	DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_ALLOCATE_BUFFER ;
 
-	auto m = FormatMessage( flags,
+	auto m = FormatMessageA( flags,
 				nullptr,
 				err,
 				MAKELANGID( LANG_NEUTRAL,SUBLANG_DEFAULT ),
-				reinterpret_cast< TCHAR * >( &s ),
+				reinterpret_cast< char * >( &s ),
 				0,
 				nullptr ) ;
 
-	return std::make_pair( m > 0,utility2::unique_ptr( s,[]( TCHAR * e ){ LocalFree( e ) ; } ) ) ;
+	return std::make_pair( m > 0,utility2::unique_ptr( s,[]( char * e ){ LocalFree( e ) ; } ) ) ;
 }
 
 QString lastError()
@@ -157,11 +157,11 @@ static QString _errorMsg( DWORD err,const QString& path )
 
 std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path )
 {
-	auto a = path.mid( 0,1 ).toLatin1()[ 0 ] ;
+	auto aa = path.mid( 0,1 ).toUtf8() ;
 
-	std::array< TCHAR,4 >rpath = { a,':','\\','\0' } ;
+	std::array< char,4 >rpath = { aa[ 0 ],':','\\','\0' } ;
 
-	std::array< TCHAR,MAX_PATH + 1 > fsname ;
+	std::array< char,MAX_PATH + 1 > fsname ;
 
 	std::fill( fsname.begin(),fsname.end(),'\0' ) ;
 

@@ -7,6 +7,7 @@
 static const int TEST_VALUE = -1;
 
 #include <cstring>
+#include <array>
 
 std::unique_ptr< QSettings > lxqt_qsettings() ;
 

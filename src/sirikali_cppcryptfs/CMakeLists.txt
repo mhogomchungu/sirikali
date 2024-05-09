@@ -10,11 +10,20 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 
-find_package(QT NAMES Qt5 COMPONENTS Core REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
+if(BUILD_WITH_QT6)
+        find_package( Qt6 COMPONENTS Core  REQUIRED )
+        add_executable(sirikali_cppcryptfs  main.cpp )
+        target_link_libraries(sirikali_cppcryptfs Qt6::Core)
+else()
+        find_package( Qt5 COMPONENTS Core REQUIRED )
+        add_executable(sirikali_cppcryptfs  main.cpp )
+        target_link_libraries(sirikali_cppcryptfs Qt5::Core)
+endif()
 
-add_executable(sirikali_cppcryptfs
-  main.cpp
-)
-target_link_libraries(sirikali_cppcryptfs Qt${QT_VERSION_MAJOR}::Core)
+
+

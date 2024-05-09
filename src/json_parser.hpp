@@ -183,7 +183,7 @@ public:
 	}
 	void operator=( int value )
 	{
-		m_json.insert( m_key,QString( value ) ) ;
+		m_json.insert( m_key,value ) ;
 	}
 	void operator=( const QStringList& value )
 	{
