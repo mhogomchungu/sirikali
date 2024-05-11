@@ -179,7 +179,7 @@ static QByteArray _get_log( QFile&& file )
 
 QByteArray securefs::extraLogOutput( const engines::engine::args& e ) const
 {
-	if( m_version_greater_or_equal_1_0_0 ){
+	if( m_version_greater_or_equal_1_0_0  && utility::platformIsNOTWindows() ){
 
 		const auto& opts = e.cmd_args ;
 
@@ -265,7 +265,7 @@ void securefs::updateOptions( engines::engine::commandOptions& opts,
 			exeOpts.add( "--fssubtype",fssubtype.RValue().mid( 8 ) ) ;
 		}
 
-		if( m_version_greater_or_equal_1_0_0 ){
+		if( m_version_greater_or_equal_1_0_0 && utility::platformIsNOTWindows() ){
 
 			exeOpts.add( "--log",_logPath( args.mountPoint ) ) ;
 		}
