@@ -1302,7 +1302,7 @@ namespace Task
 
 						struct Process : public QProcess
 						{
-							Process( std::function< void() > function,
+							Process( std::function< void( QProcess::CreateProcessArguments * ) > function,
 								 const QProcessEnvironment& env )
 							{
 								this->setProcessEnvironment( env ) ;
