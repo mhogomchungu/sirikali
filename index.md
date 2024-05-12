@@ -48,12 +48,12 @@ Latest released version is 1.6.0 and its source code can be downloaded by clicki
 
 ## Download links for Microsoft Windows Operating System.
 
-The installer for Microsoft Windows operating system is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.6.0/SiriKali-1.6.0.setup.exe">here</a>.
+The installer for Microsoft Windows operating system is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.6.0/SiriKali-1.6.0.1.setup.exe">here</a>.
 
 The installer is not signed and expect to get a warning from windows saying the installer is from an unknown publisher.
 We recommend using the installer version.
 
-A portable version is also found <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.6.0/SiriKali-1.6.0.zip">here</a>.
+A portable version is also found <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.6.0/SiriKali-1.6.0.1.zip">here</a>.
 
 Packages are also available for <a href="https://github.com/microsoft/winget-pkgs/tree/master/manifests/f/FrancisBanyikwa/SiriKali">Winget</a> and <a href="https://github.com/ScoopInstaller/Extras/blob/master/bucket/sirikali.json">Scoop</a>.
 
