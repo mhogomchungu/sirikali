@@ -124,7 +124,7 @@ jobs:
 
         echo "$bb" | Out-File -FilePath ${{github.workspace}}\SiriKali.git\version_info.txt -Encoding utf8 -Append
 
-        Compress-Archive -Path ${{github.workspace}}\SiriKali.git -DestinationPath ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}.exe.zip
+        Compress-Archive -Path ${{github.workspace}}\SiriKali.git -DestinationPath ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}.zip
 
         Remove-Item -Path ${{github.workspace}}\SiriKali.git\local
 
@@ -188,7 +188,7 @@ jobs:
 
         echo "$bb" | Out-File -FilePath ${{github.workspace}}\SiriKaliQt6.git\version_info.txt -Encoding utf8 -Append
 
-        Compress-Archive -Path ${{github.workspace}}\SiriKaliQt6.git -DestinationPath ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}.exe.zip
+        Compress-Archive -Path ${{github.workspace}}\SiriKaliQt6.git -DestinationPath ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}.zip
 
         Remove-Item -Path ${{github.workspace}}\SiriKaliQt6.git\local
 
@@ -207,7 +207,7 @@ jobs:
       name: Post Releases
       uses: ncipollo/release-action@v1
       with:
-        artifacts: ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}.setup.exe,${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}.setup.exe,${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}.exe.zip,${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}.exe.zip
+        artifacts: ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}.setup.exe,${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}.setup.exe,${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}.zip,${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}.zip
         tag: "1.5.2"
         commit: "master"
         allowUpdates: true
