@@ -1309,6 +1309,11 @@ namespace Task
 
 								this->setCreateProcessArgumentsModifier( function ) ;
 							}
+							Process( std::function< void() > function,
+								 const QProcessEnvironment& env )
+							{
+								this->setProcessEnvironment( env ) ;
+							}
 						} ;
 					#else
 						struct Process : public QProcess
