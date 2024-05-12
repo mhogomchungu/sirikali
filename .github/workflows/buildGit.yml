@@ -110,6 +110,7 @@ jobs:
 
         Copy-Item -Path ${{github.workspace}}\SiriKali\translations -Destination ${{github.workspace}}\SiriKali.git -Recurse
         Copy-Item -Path ${{github.workspace}}\SiriKali\build5\sirikali.exe -Destination ${{github.workspace}}\SiriKali.git
+        Copy-Item -Path ${{github.workspace}}\SiriKali\build5\src/sirikali_cppcryptfs\sirikali_cppcryptfs.exe -Destination ${{github.workspace}}\SiriKali.git
 
         Set-Location ${{github.workspace}}\SiriKali.git
 
@@ -120,7 +121,7 @@ jobs:
 
         echo "$bb" | Out-File -FilePath ${{github.workspace}}\SiriKali.git\version_info.txt -Encoding utf8 -Append
 
-        Compress-Archive -Path ${{github.workspace}}\SiriKali.git -DestinationPath ${{github.workspace}}\SiriKaliQt5.git.exe.zip
+        Compress-Archive -Path ${{github.workspace}}\SiriKali.git -DestinationPath ${{github.workspace}}\SiriKaliQt5.git.zip
 
         Remove-Item -Path ${{github.workspace}}\SiriKali.git\local
 
@@ -174,6 +175,7 @@ jobs:
 
         Copy-Item -Path ${{github.workspace}}\SiriKali\translations -Destination ${{github.workspace}}\SiriKaliQt6.git -Recurse
         Copy-Item -Path ${{github.workspace}}\SiriKali\build6\sirikali.exe -Destination ${{github.workspace}}\SiriKaliQt6.git
+        Copy-Item -Path ${{github.workspace}}\SiriKali\build6\src\sirikali_cppcryptfs\sirikali_cppcryptfs.exe -Destination ${{github.workspace}}\SiriKaliQt6.git
 
         Set-Location ${{github.workspace}}\SiriKaliQt6.git
 
@@ -184,7 +186,7 @@ jobs:
 
         echo "$bb" | Out-File -FilePath ${{github.workspace}}\SiriKaliQt6.git\version_info.txt -Encoding utf8 -Append
 
-        Compress-Archive -Path ${{github.workspace}}\SiriKaliQt6.git -DestinationPath ${{github.workspace}}\SiriKaliQt6.git.exe.zip
+        Compress-Archive -Path ${{github.workspace}}\SiriKaliQt6.git -DestinationPath ${{github.workspace}}\SiriKaliQt6.git.zip
 
         Remove-Item -Path ${{github.workspace}}\SiriKaliQt6.git\local
 
@@ -203,7 +205,7 @@ jobs:
       name: Post Releases
       uses: ncipollo/release-action@v1
       with:
-        artifacts: ${{github.workspace}}\SiriKaliQt5.git.setup.exe,${{github.workspace}}\SiriKaliQt6.git.setup.exe,${{github.workspace}}\SiriKaliQt6.git.exe.zip,${{github.workspace}}\SiriKaliQt5.git.exe.zip
+        artifacts: ${{github.workspace}}\SiriKaliQt5.git.setup.exe,${{github.workspace}}\SiriKaliQt6.git.setup.exe,${{github.workspace}}\SiriKaliQt6.git.zip,${{github.workspace}}\SiriKaliQt5.git.zip
         tag: "1.5.2"
         commit: "master"
         allowUpdates: true
