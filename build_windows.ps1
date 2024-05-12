@@ -77,12 +77,10 @@ else
 }
 
 New-Item -ItemType Directory -Path $BUILD_PATH/SiriKali-$VERSION
-New-Item -ItemType Directory -Path $BUILD_PATH/SiriKali-$VERSION/local
-New-Item -ItemType Directory -Path $BUILD_PATH/SiriKali-$VERSION/local/bin
 
 Copy-Item -Path $SRC_LOCATION/translations -Destination $BUILD_PATH/SiriKali-$VERSION -Recurse
 Copy-Item -Path $BUILD_PATH/SiriKali/sirikali.exe -Destination $BUILD_PATH/SiriKali-$VERSION
-Copy-Item -Path $BUILD_PATH/SiriKali/sirikali_cppcryptfs.exe -Destination $BUILD_PATH/SiriKali-$VERSION/local/bin/sirikali_cppcryptfs
+Copy-Item -Path $BUILD_PATH/SiriKali/src/sirikali_cppcryptfs/sirikali_cppcryptfs.exe -Destination $BUILD_PATH/SiriKali-$VERSION
 
 windeployqt.exe $BUILD_PATH/SiriKali-$VERSION/sirikali.exe --libdir $BUILD_PATH/SiriKali-$VERSION --plugindir $BUILD_PATH/SiriKali-$VERSION
 

@@ -36,6 +36,8 @@
 #include <utility>
 #include <future>
 #include <functional>
+#include <memory>
+
 #include <QThread>
 #include <QEventLoop>
 #include <QMutex>
@@ -1278,50 +1280,72 @@ namespace Task
 		{
 			return Task::run( [ = ](){
 
-				class Process : public QProcess{
-				public:
-					Process( std::function< void() > function,
-						 const QProcessEnvironment& env ) :
-						 m_function( std::move( function  ) )
+				#if QT_VERSION < QT_VERSION_CHECK( 6,0,0 )
+					class Process : public QProcess
 					{
-						this->setProcessEnvironment( env ) ;
+					public:
+						Process( std::function< void() > function,
+							const QProcessEnvironment& env ) :
+							m_function( std::move( function  ) )
+						{
+							this->setProcessEnvironment( env ) ;
+						}
+						void setupChildProcess() override
+						{
+							m_function() ;
+						}
+					private:
+						std::function< void() > m_function ;
+					} ;
+				#else
+					#ifdef Q_OS_WIN
 
-						#ifndef Q_OS_WIN
-							#if QT_VERSION >= QT_VERSION_CHECK( 6,0,0 )
-								this->setChildProcessModifier( m_function ) ;
-							#endif
-						#endif
-					}
-					#if QT_VERSION < QT_VERSION_CHECK( 6,0,0 )
-					void setupChildProcess() override
-					{
-						m_function() ;
-					}
+						struct Process : public QProcess
+						{
+							Process( std::function< void() > function,
+								 const QProcessEnvironment& env )
+							{
+								this->setProcessEnvironment( env ) ;
+
+								this->setCreateProcessArgumentsModifier( function ) ;
+							}
+						} ;
+					#else
+						struct Process : public QProcess
+						{
+							Process( std::function< void() > function,
+								 const QProcessEnvironment& env )
+							{
+								this->setProcessEnvironment( env ) ;
+
+								this->setChildProcessModifier( function ) ;
+							}
+						} ;
 					#endif
-				private:
-					std::function< void() > m_function ;
 
-				} exe( std::move( setUp_child_process ),env ) ;
+				#endif
+
+				auto exe = std::make_unique< Process >( std::move( setUp_child_process ),env ) ;
 
 				if( args.isEmpty() ){
 
 					#if QT_VERSION < QT_VERSION_CHECK( 5,15,0 )
-						exe.start( cmd ) ;
+						exe->start( cmd ) ;
 					#else
-						exe.start( cmd,args ) ;
+						exe->start( cmd,args ) ;
 					#endif
 				}else{
-					exe.start( cmd,args ) ;
+					exe->start( cmd,args ) ;
 				}
 
 				if( !password.isEmpty() ){
 
-					exe.waitForStarted( waitTime ) ;
-					exe.write( password ) ;
-					exe.closeWriteChannel() ;
+					exe->waitForStarted( waitTime ) ;
+					exe->write( password ) ;
+					exe->closeWriteChannel() ;
 				}
 
-				return result( exe,waitTime ) ;
+				return result( *exe,waitTime ) ;
 			} ) ;
 		}
 
