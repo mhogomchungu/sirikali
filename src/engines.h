@@ -814,7 +814,7 @@ public:
 				template< typename E >
 				void add( E&& e )
 				{
-					m_options.append( e ) ;
+					m_options.append( std::forward< E >( e ) ) ;
 				}
 				template< typename E,typename ... T >
 				void add( E&& e,T&& ... m )

@@ -596,7 +596,7 @@ static void _set_mount_default( settings& s )
 
 	if( utility::platformIsWindows() ){
 
-		m.setValue( "MountPrefix",s.homePath() + "/Desktop" ) ;
+		m.setValue( "MountPrefix",s.homePath() ) ;
 	}else{
 		m.setValue( "MountPrefix",s.homePath() + "/.SiriKali" ) ;
 	}

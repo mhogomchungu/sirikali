@@ -221,7 +221,7 @@ void keyDialog::setUpInitUI()
 
 	m_checkBoxOriginalText = m_ui->checkBoxOpenReadOnly->text() ;
 
-    m_ui->tbVisibleKey->setIcon(QIcon(":/icons/password_show.png"));
+	m_ui->tbVisibleKey->setIcon( QIcon( ":/icons/password_show.png" ) ) ;
 
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),
 		 this,SLOT( pbCancel() ) ) ;
@@ -237,8 +237,8 @@ void keyDialog::setUpInitUI()
 		 this,SLOT( cbMountReadOnlyStateChanged( int ) ) ) ;
 	connect( m_ui->pbOK,SIGNAL( clicked( bool ) ),
 		 this,SLOT( pbOK() ) ) ;
-    connect( m_ui->tbVisibleKey,SIGNAL( clicked() ),
-         this,SLOT( cbVisibleKeyclicked() ) ) ;
+	connect( m_ui->tbVisibleKey,SIGNAL( clicked() ),
+		 this,SLOT( cbVisibleKeyclicked() ) ) ;
 	connect( m_ui->pbOptions,SIGNAL( clicked() ),
 		 this,SLOT( pbOptions() ) ) ;
 	connect( m_ui->pbSetKeyKeyFile,SIGNAL( clicked() ),
@@ -279,7 +279,7 @@ void keyDialog::setUpInitUI()
 
 			//m_ui->lineEditFolderPath->setText( "Z:" ) ;
 			//utility::setWindowsMountPointOptions( this,m_ui->lineEditFolderPath,m_ui->pbOpenFolderPath ) ;
-			m_ui->lineEditFolderPath->setText( m_settings.homePath() + "/Desktop/" ) ;
+			m_ui->lineEditFolderPath->setText( m_settings.homePath() ) ;
 			//m_ui->pbOpenFolderPath->setIcon( QIcon( ":/folder.png" ) ) ;
 		}else{
 			m_ui->lineEditFolderPath->setText( m_settings.homePath() + "/" ) ;
