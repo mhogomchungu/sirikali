@@ -166,12 +166,12 @@ endif()
 
 file( WRITE ${PROJECT_BINARY_DIR}/version.h "
 #ifndef THIS_VERSION
-#define THIS_VERSION \"${PGR_VERSION}\"
+#define THIS_VERSION \"${PGR_VERSION}.git_tag\"
 #endif
 \n
 #ifndef SIRIKALI_VERSION
 #define SIRIKALI_VERSION
-#define VERSION_STRING \"Version  : ${PGR_VERSION} (Compiled with Qt ${QTVERSION})\\nCopyright: ${COPYRIGHT_YEARS} Francis Banyikwa,mhogomchungu@gmail.com\\nLicense  : GPLv2+\"
+#define VERSION_STRING \"Version  : ${PGR_VERSION}.git_tag (Compiled with Qt ${QTVERSION})\\nCopyright: ${COPYRIGHT_YEARS} Francis Banyikwa,mhogomchungu@gmail.com\\nLicense  : GPLv2+\"
 #endif
 \n" )
 

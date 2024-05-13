@@ -523,9 +523,18 @@ void utility::openPath( const QString& path,const QString& opener,
 	}
 }
 
+static QString _version_string()
+{
+	QString s = VERSION_STRING ;
+
+	s.replace( ".git_tag","" ) ;
+
+	return s ;
+}
+
 static bool _help()
 {
-	utility::debug::cout() << VERSION_STRING << QObject::tr( "\n\
+	utility::debug::cout() << _version_string() << QObject::tr( "\n\
 options:\n\
 	-d   Path to where a volume to be auto unlocked/mounted is located.\n\
 	-m   Tool to use to open a default file manager(default tool is xdg-open).\n\
@@ -685,7 +694,7 @@ This program is distributed in the hope that it will be useful,\
 but WITHOUT ANY WARRANTY; without even the implied warranty of \
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the \
 GNU General Public License for more details.\n\
-" ).arg( VERSION_STRING ) ;
+" ).arg( _version_string() ) ;
 
 	DialogMsg( parent,nullptr ).ShowUIInfo( QObject::tr( "about SiriKali" ),true,license ) ;
 }
@@ -1475,7 +1484,11 @@ utility::logger& utility::logger::enableDebug()
 
 QString utility::SiriKaliVersion()
 {
-	return THIS_VERSION ;
+	QString s = THIS_VERSION ;
+
+	s.replace( ".git_tag","" ) ;
+
+	return s ;
 }
 
 #ifdef Q_OS_WIN
