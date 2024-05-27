@@ -11,6 +11,8 @@ project( sirikali )
 set( PGR_VERSION "1.6.0" )
 set( COPYRIGHT_YEARS "2016-2024" )
 
+file(WRITE ${PROJECT_BINARY_DIR}/VERSION_INFO "${PGR_VERSION}")
+
 set( CMAKE_CXX_STANDARD 14 )
 
 option(BUILD_WITH_QT6 "Build with Qt 6" OFF)
