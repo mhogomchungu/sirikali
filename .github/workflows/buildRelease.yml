@@ -1,4 +1,4 @@
-name: buildRelease
+name: Build Windows Release
 
 on:
   push:

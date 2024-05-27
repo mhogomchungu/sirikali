@@ -1,4 +1,4 @@
-name: buildGit
+name: Build Windows Git
 
 on:
   push:
