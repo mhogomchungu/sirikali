@@ -352,6 +352,8 @@ if(BUILD_WITH_QT6)
 
 	if( APPLE )
 	        add_executable( SiriKali MACOSX_BUNDLE ${MOC_FILES} ${UI_FILES} ${SRC} ${TRAY_RC_SRCS} ${PROJECT_SOURCE_DIR}/icons/256x256/sirikali.icns )
+		set_target_properties( SiriKali PROPERTIES MACOSX_BUNDLE ON )
+
 		set_target_properties( SiriKali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic")
 	else()
 	        if( WIN32 )
@@ -370,6 +372,7 @@ else()
 
 	if( APPLE )
 	        add_executable( SiriKali MACOSX_BUNDLE ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} ${PROJECT_SOURCE_DIR}/icons/256x256/sirikali.icns )
+		set_target_properties( SiriKali PROPERTIES MACOSX_BUNDLE ON )
 		set_target_properties( SiriKali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic")
 	else()
 	        if( WIN32 )
@@ -444,21 +447,20 @@ if( APPLE )
 	SET( qtconf_dest_dir SiriKali.app/Contents/Resources )
 	SET( APPS "\${CMAKE_INSTALL_PREFIX}/SiriKali.app" )
 
-	set_target_properties( SiriKali PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/MacOSXBundleInfo.plist.in" )
+	set_target_properties( SiriKali
+	        PROPERTIES
+		MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/MacOSXBundleInfo.plist.in"
+		MACOSX_BUNDLE_BUNDLE_NAME "SiriKali"
+		MACOSX_BUNDLE_COPYRIGHT "(c)${COPYRIGHT_YEARS},Francis Banyikwa,mhogomchungu@gmail.com"
+		MACOSX_BUNDLE_BUNDLE_VERSION "${PGR_VERSION}"
+		MACOSX_BUNDLE_GUI_IDENTIFIER "com.crypto.SiriKali"
+		MACOSX_BUNDLE_SHORT_VERSION_STRING "${PGR_VERSION}"
+		MACOSX_BUNDLE_LONG_VERSION_STRING "${PGR_VERSION}"
+		MACOSX_BUNDLE_ICON_FILE sirikali.icns
+
+	)
 
 	install( TARGETS SiriKali BUNDLE DESTINATION . COMPONENT Runtime )
-
-	SET( MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/MacOSXBundleInfo.plist.in" )
-	SET( MACOSX_BUNDLE_BUNDLE_NAME "SiriKali" )
-	SET( MACOSX_BUNDLE_COPYRIGHT "(c)${COPYRIGHT_YEARS},Francis Banyikwa,mhogomchungu@gmail.com" )
-	SET( MACOSX_BUNDLE_BUNDLE_VERSION "${PGR_VERSION}" )
-	SET( MACOSX_BUNDLE_GUI_IDENTIFIER "com.crypto.SiriKali" )
-	SET( MACOSX_BUNDLE_SHORT_VERSION_STRING "${PGR_VERSION}" )
-	SET( MACOSX_BUNDLE_LONG_VERSION_STRING "${PGR_VERSION}" )
-	SET( MACOSX_BUNDLE_ICON_FILE sirikali.icns )
-	SET_SOURCE_FILES_PROPERTIES( icons/256x256/sirikali.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
-	SET_SOURCE_FILES_PROPERTIES( translations/en_US.qm PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
-	SET_SOURCE_FILES_PROPERTIES( translations/fr_FR.qm PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
 
 	file( COPY icons/256x256/sirikali.icns DESTINATION "sirikali.app/Contents/Resources/" )
 	file( COPY translations/fr_FR.qm DESTINATION "sirikali.app/Contents/Resources/" )
