@@ -12,12 +12,11 @@ set( PGR_VERSION "1.6.0" )
 set( COPYRIGHT_YEARS "2016-2024" )
 
 set( CMAKE_CXX_STANDARD 14 )
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
 
 option(BUILD_WITH_QT6 "Build with Qt 6" OFF)
+
+set( CMAKE_CXX_STANDARD_REQUIRED ON )
+set( CMAKE_CXX_EXTENSIONS OFF)
 
 MESSAGE( STATUS "Setting C++ version to C++14" )
 if(${CMAKE_VERSION} VERSION_LESS "3.1.0")
@@ -28,9 +27,6 @@ endif()
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_definitions(-Qunused-arguments)
 endif()
-
-set( CMAKE_CXX_STANDARD_REQUIRED ON )
-set( CMAKE_CXX_EXTENSIONS OFF)
 
 include_directories( ${PROJECT_BINARY_DIR} )
 
@@ -286,7 +282,7 @@ set( MOC_FILES
 		src/engines/fscryptcreateoptions.h
  )
 
-set( SRC 		src/dialogok.cpp
+set( SRC 	src/dialogok.cpp
 		src/main.cpp
 		src/systemsignalhandler.cpp
 		src/crypto.cpp
@@ -338,51 +334,50 @@ set( SRC 		src/dialogok.cpp
 		src/engines/cryptomator.cpp
 )
 
-if( APPLE )
-
-	SET( MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/MacOSXBundleInfo.plist.in" )
-	SET( MACOSX_BUNDLE_BUNDLE_NAME "SiriKali" )
-	SET( MACOSX_BUNDLE_COPYRIGHT "(c)${COPYRIGHT_YEARS},Francis Banyikwa,mhogomchungu@gmail.com" )
-	SET( MACOSX_BUNDLE_BUNDLE_VERSION "${PGR_VERSION}" )
-	SET( MACOSX_BUNDLE_GUI_IDENTIFIER "com.crypto.SiriKali" )
-	SET( MACOSX_BUNDLE_SHORT_VERSION_STRING "${PGR_VERSION}" )
-	SET( MACOSX_BUNDLE_LONG_VERSION_STRING "${PGR_VERSION}" )
-	SET( MACOSX_BUNDLE_ICON_FILE sirikali.icns )
-	SET_SOURCE_FILES_PROPERTIES( icons/256x256/sirikali.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
-	SET_SOURCE_FILES_PROPERTIES( translations/en_US.qm PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
-	SET_SOURCE_FILES_PROPERTIES( translations/fr_FR.qm PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
-endif()
-
 set( CMAKE_INCLUDE_CURRENT_DIR ON )
 include_directories( ${Qt5Widgets_INCLUDE_DIRS} )
 include_directories( ${Qt5Network_INCLUDE_DIRS} )
 
 add_definitions( ${Qt5Widgets_DEFINITIONS} )
 
-if(BUILD_WITH_QT6)
-	QT6_WRAP_UI( UI ${UI_FILES} )
-	QT6_WRAP_CPP( MOC ${MOC_FILES} )
-	QT6_ADD_RESOURCES( TRAY_RC_SRCS src/icon.qrc )
-else()
-	QT5_WRAP_UI( UI ${UI_FILES} )
-	QT5_WRAP_CPP( MOC ${MOC_FILES} )
-	QT5_ADD_RESOURCES( TRAY_RC_SRCS src/icon.qrc )
-endif()
-
 INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 INCLUDE_DIRECTORIES( ${GCRYPT_INCLUDE_PATH} )
 
-if( APPLE )
-	add_executable( sirikali MACOSX_BUNDLE ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} ${PROJECT_SOURCE_DIR}/icons/256x256/sirikali.icns )
-	set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic")
-else()
-	if( WIN32 )
-		 set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/src/appicon.rc" )
-		 add_executable( sirikali WIN32 ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} ${APP_ICON_RESOURCE_WINDOWS} )
-		 set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -pedantic")
+if(BUILD_WITH_QT6)
+        set( CMAKE_AUTOMOC ON )
+	set( CMAKE_AUTORCC ON )
+	set( CMAKE_AUTOUIC ON )
+
+	if( APPLE )
+	        add_executable( SiriKali MACOSX_BUNDLE ${MOC_FILES} ${UI_FILES} ${SRC} ${TRAY_RC_SRCS} ${PROJECT_SOURCE_DIR}/icons/256x256/sirikali.icns )
+		set_target_properties( SiriKali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic")
 	else()
-		 add_executable( sirikali ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
-		 set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic")
+	        if( WIN32 )
+		        set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/src/appicon.rc" )
+			add_executable( sirikali WIN32 ${MOC_FILES} ${UI_FILES} ${SRC} ${TRAY_RC_SRCS} ${APP_ICON_RESOURCE_WINDOWS} )
+			set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -pedantic")
+		else()
+		        add_executable( sirikali ${MOC_FILES} ${UI_FILES} ${SRC} ${TRAY_RC_SRCS} )
+			set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic")
+		endif()
+	endif()
+else()
+        QT5_WRAP_UI( UI ${UI_FILES} )
+	QT5_WRAP_CPP( MOC ${MOC_FILES} )
+	QT5_ADD_RESOURCES( TRAY_RC_SRCS src/icon.qrc )
+
+	if( APPLE )
+	        add_executable( SiriKali MACOSX_BUNDLE ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} ${PROJECT_SOURCE_DIR}/icons/256x256/sirikali.icns )
+		set_target_properties( SiriKali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic")
+	else()
+	        if( WIN32 )
+		        set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/src/appicon.rc" )
+			add_executable( sirikali WIN32 ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} ${APP_ICON_RESOURCE_WINDOWS} )
+			set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -pedantic")
+		else()
+		        add_executable( sirikali ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
+			set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic")
+		endif()
 	endif()
 endif()
 
@@ -394,7 +389,7 @@ if(BUILD_WITH_QT6)
 	endif()
 
 	if( APPLE )
-		TARGET_LINK_LIBRARIES( sirikali ${Qt6Widgets_LIBRARIES} ${Qt6Core_LIBRARIES} ${Qt6Widgets_LIBRARIES} ${Qt6Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} mhogomchungu_task lxqt-wallet -L${GCRYPT_LIBRARY_PATH})
+		TARGET_LINK_LIBRARIES( SiriKali ${Qt6Widgets_LIBRARIES} ${Qt6Core_LIBRARIES} ${Qt6Widgets_LIBRARIES} ${Qt6Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} mhogomchungu_task lxqt-wallet -L${GCRYPT_LIBRARY_PATH})
 	endif()
 
 	if( UNIX AND NOT APPLE )
@@ -406,7 +401,7 @@ else()
 	endif()
 
 	if( APPLE )
-		TARGET_LINK_LIBRARIES( sirikali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} mhogomchungu_task lxqt-wallet -L${GCRYPT_LIBRARY_PATH})
+		TARGET_LINK_LIBRARIES( SiriKali ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${library_pwquality} ${GCRYPT_LIBRARY} mhogomchungu_task lxqt-wallet -L${GCRYPT_LIBRARY_PATH})
 	endif()
 
 	if( UNIX AND NOT APPLE )
@@ -432,20 +427,36 @@ endif()
 if( WIN32 )
 	set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -pedantic" )
 else()
-	set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic" )
+	if( APPLE )
+		set_target_properties( SiriKali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic" )
+	else()
+		set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic" )
+	endif()
 endif()
 
 file( WRITE ${PROJECT_BINARY_DIR}/siriPolkit.h "\n#define siriPolkitPath \"${CMAKE_INSTALL_PREFIX}/bin/sirikali.pkexec\"" )
 
 if( APPLE )
 
-	SET( plugin_dest_dir sirikali.app/Contents/MacOS )
-	SET( qtconf_dest_dir sirikali.app/Contents/Resources )
-	SET( APPS "\${CMAKE_INSTALL_PREFIX}/sirikali.app" )
+	SET( plugin_dest_dir SiriKali.app/Contents/MacOS )
+	SET( qtconf_dest_dir SiriKali.app/Contents/Resources )
+	SET( APPS "\${CMAKE_INSTALL_PREFIX}/SiriKali.app" )
 
-	set_target_properties( sirikali PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/MacOSXBundleInfo.plist.in" )
+	set_target_properties( SiriKali PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/MacOSXBundleInfo.plist.in" )
 
-	install( TARGETS sirikali BUNDLE DESTINATION . COMPONENT Runtime )
+	install( TARGETS SiriKali BUNDLE DESTINATION . COMPONENT Runtime )
+
+	SET( MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/MacOSXBundleInfo.plist.in" )
+	SET( MACOSX_BUNDLE_BUNDLE_NAME "SiriKali" )
+	SET( MACOSX_BUNDLE_COPYRIGHT "(c)${COPYRIGHT_YEARS},Francis Banyikwa,mhogomchungu@gmail.com" )
+	SET( MACOSX_BUNDLE_BUNDLE_VERSION "${PGR_VERSION}" )
+	SET( MACOSX_BUNDLE_GUI_IDENTIFIER "com.crypto.SiriKali" )
+	SET( MACOSX_BUNDLE_SHORT_VERSION_STRING "${PGR_VERSION}" )
+	SET( MACOSX_BUNDLE_LONG_VERSION_STRING "${PGR_VERSION}" )
+	SET( MACOSX_BUNDLE_ICON_FILE sirikali.icns )
+	SET_SOURCE_FILES_PROPERTIES( icons/256x256/sirikali.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
+	SET_SOURCE_FILES_PROPERTIES( translations/en_US.qm PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
+	SET_SOURCE_FILES_PROPERTIES( translations/fr_FR.qm PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
 
 	file( COPY icons/256x256/sirikali.icns DESTINATION "sirikali.app/Contents/Resources/" )
 	file( COPY translations/fr_FR.qm DESTINATION "sirikali.app/Contents/Resources/" )

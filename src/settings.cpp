@@ -641,7 +641,12 @@ QString settings::ConfigLocation()
 
 	if( !m_settings.contains( "AppDataLocation" ) ){
 
-		auto New = QStandardPaths::standardLocations( QStandardPaths::AppDataLocation ) ;
+		#if QT_VERSION > QT_VERSION_CHECK( 5,4,0 )
+			auto New = QStandardPaths::standardLocations( QStandardPaths::AppDataLocation ) ;
+		#else
+			QStringList New ;
+		#endif
+
 		auto old = QStandardPaths::standardLocations( QStandardPaths::ConfigLocation ) ;
 
 		QString newPath ;
