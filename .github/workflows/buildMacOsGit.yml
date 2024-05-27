@@ -44,7 +44,9 @@ jobs:
          echo "---------ls ${{github.workspace}}/MAC/build6/SiriKali.app/Contents/MacOS/--------------------"
          ls ${{github.workspace}}/MAC/build6/SiriKali.app/Contents/MacOS/
          echo "--------- ls ${{github.workspace}}/MAC/build6/SiriKali.app/Contents/Resources/--------------------"
-         echo "---------ls ${{github.workspace}}/MAC/build6/SiriKali.app/Contents/Resources/--------------------"
+         ls ${{github.workspace}}/MAC/build6/SiriKali.app/Contents/Resources/
+         echo "--------- cat /Users/runner/work/sirikali/sirikali/MAC/build6/SiriKali.app/Contents/Info.plist--------------------"
+         cat /Users/runner/work/sirikali/sirikali/MAC/build6/SiriKali.app/Contents/Info.plist
     -
       name: Rename Bundle
       run: |
