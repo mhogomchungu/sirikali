@@ -8,7 +8,7 @@ on:
     - '*'
 
 env:
-  QT6_VERSION:     "6.6.2"
+  QT6_VERSION: "6.6.2"
 jobs:
   buildMacOSGit:
     runs-on: macos-latest
@@ -39,14 +39,6 @@ jobs:
       name: Create img Bundle
       run: |
          ${{github.workspace}}/qt6/Qt/${{ env.QT6_VERSION }}/macos/bin/macdeployqt6 ${{github.workspace}}/MAC/build6/SiriKali.app -dmg
-         echo "---------ls ${{github.workspace}}/MAC/build6/SiriKali.app/Contents--------------------"
-         ls ${{github.workspace}}/MAC/build6/SiriKali.app/Contents/
-         echo "---------ls ${{github.workspace}}/MAC/build6/SiriKali.app/Contents/MacOS/--------------------"
-         ls ${{github.workspace}}/MAC/build6/SiriKali.app/Contents/MacOS/
-         echo "--------- ls ${{github.workspace}}/MAC/build6/SiriKali.app/Contents/Resources/--------------------"
-         ls ${{github.workspace}}/MAC/build6/SiriKali.app/Contents/Resources/
-         echo "--------- cat /Users/runner/work/sirikali/sirikali/MAC/build6/SiriKali.app/Contents/Info.plist--------------------"
-         cat /Users/runner/work/sirikali/sirikali/MAC/build6/SiriKali.app/Contents/Info.plist
     -
       name: Rename Bundle
       run: |
