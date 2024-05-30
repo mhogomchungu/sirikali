@@ -1,0 +1,63 @@
+name: MacOS Git
+
+on:
+  push:
+    branches:
+    - master
+    tags-ignore:
+    - '*'
+
+env:
+  QT6_VERSION: "6.6.2"
+jobs:
+  MacOSGit:
+    runs-on: macos-latest
+    steps:
+    -
+      uses: actions/checkout@v4
+      with:
+         path: MAC
+    -
+      name: Install Qt6
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: ${{ env.QT6_VERSION }}
+        arch: 'clang_64'
+        dir: "${{github.workspace}}/qt6"
+        install-deps: "true"
+        host: 'mac'
+        target: 'desktop'
+    -
+      name: Configure CMake
+      env:
+        CMAKE_PREFIX_PATH: "${{github.workspace}}/qt6/Qt/${{ env.QT6_VERSION }}"
+      run: cmake -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/SiriKali -DBUILD_WITH_QT6=true -DSOURCE_PATH=${{github.workspace}}/MAC/ -DCMAKE_VERBOSE_MAKEFILE=FALSE -DCMAKE_BUILD_TYPE=RELEASE -S ${{github.workspace}}/MAC/ -B ${{github.workspace}}/MAC/build6
+    -
+      name: Prepare Release Info
+      run: |
+         version=`cat ${{github.workspace}}/MAC/build6/VERSION_INFO`
+         echo -n "VERSION_INFO=$version" >> "$GITHUB_ENV"
+    -
+      name: Build
+      run: cmake --build ${{github.workspace}}/MAC/build6
+    -
+      name: Create img Bundle
+      run: |
+         cd ${{github.workspace}}/MAC/build6
+         ${{github.workspace}}/qt6/Qt/${{ env.QT6_VERSION }}/macos/bin/macdeployqt6 SiriKali.app -dmg
+    -
+      name: Rename Bundle
+      run: |
+        cp ${{github.workspace}}/MAC/build6/SiriKali.dmg ${{github.workspace}}/MAC/build6/SiriKali-${{ env.VERSION_INFO }}.dmg
+    -
+      name: Post Bundle
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: ${{github.workspace}}/MAC/build6/SiriKali-${{ env.VERSION_INFO }}.dmg
+        tag: "1.5.2"
+        commit: "master"
+        allowUpdates: true
+        omitBody: true
+        omitBodyDuringUpdate: true
+        omitNameDuringUpdate: true
+        omitPrereleaseDuringUpdate: true
