@@ -136,7 +136,12 @@ void systemSignalHandler::addSignal( systemSignalHandler::signal SIG )
 
 				char tmp ;
 
-				read( it.reader(),&tmp,sizeof( tmp ) ) ;
+				auto m = read( it.reader(),&tmp,sizeof( tmp ) ) ;
+
+				if( !m ){
+
+					//??
+				}
 
 				signalHandler.callback( SIG ) ;
 

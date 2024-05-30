@@ -702,6 +702,8 @@ public:
 
 		virtual bool canShowVolumeProperties() const ;
 
+		virtual void parseVolumeProperties( QString& ) const ;
+
 		virtual Task::future< QString >& volumeProperties( const QString& cipherFolder,
 								   const QString& mountPoint ) const ;
 

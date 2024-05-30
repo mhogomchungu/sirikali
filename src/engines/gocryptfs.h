@@ -32,6 +32,8 @@ public:
 
 	void GUIMountOptions( const engines::engine::mountGUIOptions& ) const override ;
 
+	void parseVolumeProperties( QString& ) const override ;
+
 	void aboutToExit() const override ;
 
 	const QStringList& windowsUnmountCommand() const override ;

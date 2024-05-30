@@ -581,6 +581,10 @@ bool engines::engine::canShowVolumeProperties() const
 	return true ;
 }
 
+void engines::engine::parseVolumeProperties( QString& ) const
+{
+}
+
 Task::future< QString >& engines::engine::volumeProperties( const QString& cipherFolder,
 							    const QString& mountPoint ) const
 {
@@ -620,7 +624,11 @@ Task::future< QString >& engines::engine::volumeProperties( const QString& ciphe
 
 				if( e.success() ){
 
-					return QString( e.stdOut() ) ;
+					QString m = e.stdOut() ;
+
+					this->parseVolumeProperties( m ) ;
+
+					return m ;
 				}
 			}
 		}

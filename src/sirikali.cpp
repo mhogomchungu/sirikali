@@ -1371,14 +1371,18 @@ void sirikali::volumeProperties()
 
 	if( engine.canShowVolumeProperties() ){
 
+		this->disableAll() ;
+
 		auto s = engine.volumeProperties( cipherPath,mountPath ).await() ;
 
 		if( s.isEmpty() ){
 
 			this->genericVolumeProperties() ;
 		}else {
-			return DialogMsg( this ).ShowUIInfo( tr( "INFORMATION" ),true,s ) ;
+			DialogMsg( this ).ShowUIInfo( tr( "INFORMATION" ),true,s ) ;
 		}
+
+		this->enableAll() ;
 	}else{
 		this->genericVolumeProperties() ;
 	}

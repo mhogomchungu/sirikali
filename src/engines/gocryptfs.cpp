@@ -251,6 +251,14 @@ void gocryptfs::GUIMountOptions( const engines::engine::mountGUIOptions& s ) con
 	e.ShowUI() ;
 }
 
+void gocryptfs::parseVolumeProperties( QString& e ) const
+{
+	while( e.contains( ":  " ) ){
+
+		e.replace( ":  ",": " ) ;
+	}
+}
+
 void gocryptfs::aboutToExit() const
 {
 	if( utility::platformIsWindows() && !m_cppcryptfsPid.isEmpty() ){
