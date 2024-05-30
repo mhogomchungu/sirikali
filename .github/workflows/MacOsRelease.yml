@@ -10,7 +10,7 @@ on:
 env:
   QT6_VERSION: "6.6.2"
 jobs:
-  MacOSGit:
+  MacOSRelease:
     runs-on: macos-latest
     steps:
     -
