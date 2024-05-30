@@ -1,4 +1,4 @@
-name: MacOS Git
+name: MacOS Release
 
 on:
   push:
