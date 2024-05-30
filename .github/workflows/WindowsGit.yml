@@ -209,4 +209,4 @@ jobs:
         tag: "1.5.2"
         commit: "master"
         allowUpdates: true
-        body: "This entry is used to host git windows builds.\n\nBuild date and time: ${{ env.CURRENT_TIME }}\nBuild version: ${{ env.BUILD_VERSION }}"
+        body: "This entry is used to hold binaries build with github infrastructure.\n\nBuild date and time for git version: ${{ env.CURRENT_TIME }}"
