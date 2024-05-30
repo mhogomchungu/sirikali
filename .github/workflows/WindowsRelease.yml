@@ -17,7 +17,7 @@ env:
   BUILD_TYPE:      Release
 
 jobs:
-  WindowsRelease:
+  WindowsBuildRelease:
     runs-on: windows-latest
     steps:
     -
