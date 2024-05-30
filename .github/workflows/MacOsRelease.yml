@@ -2,9 +2,7 @@ name: MacOS Release
 
 on:
   push:
-    branches:
-    - master
-    tags-ignore:
+    tags:
     - '*'
 
 env:
