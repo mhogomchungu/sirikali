@@ -443,12 +443,12 @@ file( WRITE ${PROJECT_BINARY_DIR}/siriPolkit.h "\n#define siriPolkitPath \"${CMA
 
 if( APPLE )
 
-	SET( plugin_dest_dir SiriKali.app/Contents/MacOS )
+	SET( plugin_dest_dir SiriKali.app/Contents )
 	SET( qtconf_dest_dir SiriKali.app/Contents/Resources )
 	SET( APPS "\${CMAKE_INSTALL_PREFIX}/SiriKali.app" )
 
 	set_target_properties( SiriKali
-	        PROPERTIES
+		PROPERTIES
 		MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/MacOSXBundleInfo.plist.in"
 		MACOSX_BUNDLE_BUNDLE_NAME "SiriKali"
 		MACOSX_BUNDLE_COPYRIGHT "(c)${COPYRIGHT_YEARS},Francis Banyikwa,mhogomchungu@gmail.com"
@@ -457,39 +457,20 @@ if( APPLE )
 		MACOSX_BUNDLE_SHORT_VERSION_STRING "${PGR_VERSION}"
 		MACOSX_BUNDLE_LONG_VERSION_STRING "${PGR_VERSION}"
 		MACOSX_BUNDLE_ICON_FILE sirikali.icns
-
 	)
 
 	install( TARGETS SiriKali BUNDLE DESTINATION . COMPONENT Runtime )
 
 	file( COPY icons/256x256/sirikali.icns DESTINATION "sirikali.app/Contents/Resources/" )
-	file( COPY translations/fr_FR.qm DESTINATION "sirikali.app/Contents/Resources/" )
-	file( COPY translations/ru_RU.qm DESTINATION "sirikali.app/Contents/Resources/" )
-	file( COPY translations/es_ES.qm DESTINATION "sirikali.app/Contents/Resources/" )
-	file( COPY translations/en_US.qm DESTINATION "sirikali.app/Contents/Resources/" )
-	file( COPY translations/zh_CN.qm DESTINATION "sirikali.app/Contents/Resources/" )
-
-	file( COPY translations/de_DE.qm DESTINATION "sirikali.app/Contents/Resources/" )
-	#file( COPY translations/es_MX.qm DESTINATION "sirikali.app/Contents/Resources/" )
+	file( COPY translations/fr_FR.qm DESTINATION "sirikali.app/Contents/Resources/translations/" )
+	file( COPY translations/ru_RU.qm DESTINATION "sirikali.app/Contents/Resources/translations/" )
+	file( COPY translations/es_ES.qm DESTINATION "sirikali.app/Contents/Resources/translations/" )
+	file( COPY translations/en_US.qm DESTINATION "sirikali.app/Contents/Resources/translations/" )
+	file( COPY translations/zh_CN.qm DESTINATION "sirikali.app/Contents/Resources/translations/" )
+	file( COPY translations/de_DE.qm DESTINATION "sirikali.app/Contents/Resources/translations/" )
+	#file( COPY translations/es_MX.qm DESTINATION "sirikali.app/Contents/Resources/translations/" )
 
 	file( COPY changelog DESTINATION "sirikali.app/Contents/Resources/" )
-
-	#install( DIRECTORY "${QT_PLUGINS_DIR}/imageformats" DESTINATION ${plugin_dest_dir}/plugins COMPONENT Runtime )
-
-	#install( CODE " file(WRITE \"\${CMAKE_INSTALL_PREFIX}/${qtconf_dest_dir}/qt.conf\" \"\")" COMPONENT Runtime )
-
-	#SET( DIRS ${QT_LIBRARY_DIRS} )
-
-	#INSTALL(CODE "
-	#    file(GLOB_RECURSE QTPLUGINS
-	#      \"\${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}/plugins/*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
-	#    include(BundleUtilities)
-	#   fixup_bundle(\"${APPS}\" \"\${QTPLUGINS}\" \"${DIRS}\")
-	#    " COMPONENT Runtime)
-
-	#set( CPACK_BINARY_DRAGNDROP ON )
-	#include( CPack )
-
 else()
 
 	install( TARGETS sirikali RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} )
