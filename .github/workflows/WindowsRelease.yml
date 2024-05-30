@@ -54,13 +54,19 @@ jobs:
       env:
         CMAKE_PREFIX_PATH: "${{github.workspace}}/qt5/Qt/${{ env.QT5_VERSION }}"
         msystem: MINGW32
-      run: cmake -DOUTPUT_BASE_NAME=SiriKaliQt5 -DLIBRARIES_LOCATION=${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }} -DBUILD_WITH_QT6=false -DOUTPUT_PATH=${{github.workspace}}\ -DSOURCE_PATH=${{github.workspace}}\SiriKali\ -DCMAKE_VERBOSE_MAKEFILE=FALSE -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "CodeBlocks - MinGW Makefiles" -S ${{github.workspace}}/SiriKali/ -B ${{github.workspace}}/SiriKali/build5
+      run: cmake -DOUTPUT_BASE_NAME=SiriKaliQt5 -DBUILD_WITH_QT6=false -DOUTPUT_PATH=${{github.workspace}}\ -DSOURCE_PATH=${{github.workspace}}\SiriKali\ -DCMAKE_VERBOSE_MAKEFILE=FALSE -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "CodeBlocks - MinGW Makefiles" -S ${{github.workspace}}/SiriKali/ -B ${{github.workspace}}/SiriKali/build5
     -
       name: Prepare Release Version
       run: |
         $data = [System.IO.File]::ReadAllText("${{github.workspace}}\SiriKali\build5\VERSION_INFO")
 
         echo "RELEASEVERSION=$data" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+    -
+      name: Reconfigure CMake for Qt5
+      env:
+        CMAKE_PREFIX_PATH: "${{github.workspace}}/qt5/Qt/${{ env.QT5_VERSION }}"
+        msystem: MINGW32
+      run: cmake -DOUTPUT_BASE_NAME=SiriKaliQt5 -DLIBRARIES_LOCATION=${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }} -DBUILD_WITH_QT6=false -DOUTPUT_PATH=${{github.workspace}}\ -DSOURCE_PATH=${{github.workspace}}\SiriKali\ -DCMAKE_VERBOSE_MAKEFILE=FALSE -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "CodeBlocks - MinGW Makefiles" -S ${{github.workspace}}/SiriKali/ -B ${{github.workspace}}/SiriKali/build5
     -
       name: Print installer script for Qt5
       run : get-content ${{github.workspace}}\SiriKali\build5\sirikali_windows_installer_Qt5.iss
