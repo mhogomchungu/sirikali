@@ -131,7 +131,7 @@ jobs:
       name: Create SiriKaliQt6.zip
       run: |
         New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}
-        New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}\ocal
+        New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}\local
 
         Copy-Item -Path ${{github.workspace}}\SiriKali\translations -Destination ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }} -Recurse
         Copy-Item -Path ${{github.workspace}}\SiriKali\build6\sirikali.exe -Destination ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}
