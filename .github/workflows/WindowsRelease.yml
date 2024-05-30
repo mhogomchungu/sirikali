@@ -2,9 +2,7 @@ name: Windows Release
 
 on:
   push:
-    branches:
-    - master
-    tags-ignore:
+    tags:
     - '*'
 
 env:
