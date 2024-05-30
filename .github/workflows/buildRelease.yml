@@ -48,87 +48,41 @@ jobs:
         host: 'windows'
         target: 'desktop'
     -
-      name: Set Build time
+      name: Prepare Release Version
       run: |
-
-        $now = (Get-Date)
-
-        $then = (Get-Date -Year 2024 -Month 5 -Day 3 -Hour 0 -Minute 0)
-
-        echo "CURRENT_TIME=$($now.ToString())" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-
-        $All = (New-TimeSpan -start $then -end $now)
-
-        $Days=$All.Days.ToString()
-        $Hours=$All.Hours.ToString()
-        $Minutes=$All.Minutes.ToString()
-
-        if($Hours.Length -eq 1){ $Hours = "0" + $Hours }
-        if($Minutes.Length -eq 1){ $Minutes = "0" + $Minutes }
-
-        $Version=$Days+$Hours+$Minutes
-
-        $Version=$Version.TrimStart("0")
-
-        echo "GIT_VERSION_NUMBER=$Version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        $data = [System.IO.File]::ReadAllText("${{github.workspace}}\SiriKali\build5\VERSION_INFO")
+        
+        echo "RELEASEVERSION=$data" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
     -
       name: Configure CMake for Qt5
       env:
         CMAKE_PREFIX_PATH: "${{github.workspace}}/qt5/Qt/${{ env.QT5_VERSION }}"
         msystem: MINGW32
-      run: cmake -DOUTPUT_BASE_NAME=SiriKaliQt5 -DBUILD_WITH_QT6=false -DLIBRARIES_LOCATION=${{github.workspace}}\SiriKali.git\ -DOUTPUT_PATH=${{github.workspace}}\ -DSOURCE_PATH=${{github.workspace}}\SiriKali\ -DCMAKE_VERBOSE_MAKEFILE=FALSE -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "CodeBlocks - MinGW Makefiles" -S ${{github.workspace}}/SiriKali/ -B ${{github.workspace}}/SiriKali/build5
+      run: cmake -DOUTPUT_BASE_NAME=SiriKaliQt5 -DBUILD_WITH_QT6=false -DOUTPUT_PATH=${{github.workspace}}\ -DSOURCE_PATH=${{github.workspace}}\SiriKali\ -DCMAKE_VERBOSE_MAKEFILE=FALSE -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "CodeBlocks - MinGW Makefiles" -S ${{github.workspace}}/SiriKali/ -B ${{github.workspace}}/SiriKali/build5
     -
       name: Print installer script for Qt5
       run : get-content ${{github.workspace}}\SiriKali\build5\sirikali_windows_installer_Qt5.iss
     -
-      name: Update version.h for Qt5
-      run: |
-        $content = [System.IO.File]::ReadAllText("${{github.workspace}}\SiriKali\build5\version.h").Replace("git_tag",${{ env.GIT_VERSION_NUMBER }})
-        [System.IO.File]::WriteAllText("${{github.workspace}}\SiriKali\build5\version.h",$content )
-    -
       name: Build Project for Qt5
       run: cmake --build ${{github.workspace}}/SiriKali/build5
-    -
-      name: Prepare release date
+     -
+      name: Create SiriKaliQt5.zip
       run: |
-        $data = [System.IO.File]::ReadAllText("${{github.workspace}}\SiriKali\build5\version.h")
+        New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}
+        New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}\local
 
-        $versionInfoLines = $data.Split([Environment]::NewLine, [System.StringSplitOptions]::RemoveEmptyEntries)
+        Copy-Item -Path ${{github.workspace}}\SiriKali\translations -Destination ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }} -Recurse
+        Copy-Item -Path ${{github.workspace}}\SiriKali\build5\sirikali.exe -Destination ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}
 
-        $versionInfoFirstLine = $versionInfoLines[1]
+        Set-Location ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}
 
-        $versionInfo = $versionInfoFirstLine.Split(" ",[System.StringSplitOptions]::RemoveEmptyEntries)[2]
+        ${{github.workspace}}/qt5/Qt/${{ env.QT5_VERSION }}/${{ env.MINGW5_PATH }}/bin/windeployqt.exe ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}\sirikali.exe
 
-        $VERSION = $versionInfo
+        echo ${{ env.RELEASEVERSION }} | Out-File -FilePath ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}\version_info.txt -Encoding utf8 -Append
 
-        $VERSION = $VERSION.Replace('"',"")
+        Compress-Archive -Path ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }} -DestinationPath ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}.zip
 
-        echo "RELEASEVERSION=$VERSION" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-
-        echo "BUILD_VERSION=$versionInfo" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-    -
-      name: Create SiriKali.git.exe.zip
-      run: |
-        New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKali.git
-        New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKali.git/local
-
-        Copy-Item -Path ${{github.workspace}}\SiriKali\translations -Destination ${{github.workspace}}\SiriKali.git -Recurse
-        Copy-Item -Path ${{github.workspace}}\SiriKali\build5\sirikali.exe -Destination ${{github.workspace}}\SiriKali.git
-
-        Set-Location ${{github.workspace}}\SiriKali.git
-
-        ${{github.workspace}}/qt5/Qt/${{ env.QT5_VERSION }}/${{ env.MINGW5_PATH }}/bin/windeployqt.exe ${{github.workspace}}\SiriKali.git\sirikali.exe
-
-        $bb = ${{ env.BUILD_VERSION }}
-        $bb = $bb.Trim()
-
-        echo "$bb" | Out-File -FilePath ${{github.workspace}}\SiriKali.git\version_info.txt -Encoding utf8 -Append
-
-        Compress-Archive -Path ${{github.workspace}}\SiriKali.git -DestinationPath ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}.zip
-
-        Remove-Item -Path ${{github.workspace}}\SiriKali.git\local
-
-        Remove-Item -Path ${{github.workspace}}\SiriKali.git\version_info.txt
+        Remove-Item -Path ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}\local
     -
       name: Make installer for Qt5
       uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
@@ -158,41 +112,31 @@ jobs:
       env:
         CMAKE_PREFIX_PATH: "${{github.workspace}}/qt6/Qt/${{ env.QT6_VERSION }}"
         msystem: MINGW32
-      run: cmake -DOUTPUT_BASE_NAME=SiriKaliQt6 -DLIBRARIES_LOCATION=${{github.workspace}}\SiriKaliQt6.git\ -DOUTPUT_PATH=${{github.workspace}}\ -DSOURCE_PATH=${{github.workspace}}\SiriKali\ -DBUILD_WITH_QT6=true -DCMAKE_VERBOSE_MAKEFILE=FALSE -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "CodeBlocks - MinGW Makefiles" -S ${{github.workspace}}/SiriKali/ -B ${{github.workspace}}/SiriKali/build6
+      run: cmake -DOUTPUT_BASE_NAME=SiriKaliQt6 -DOUTPUT_PATH=${{github.workspace}}\ -DSOURCE_PATH=${{github.workspace}}\SiriKali\ -DBUILD_WITH_QT6=true -DCMAKE_VERBOSE_MAKEFILE=FALSE -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "CodeBlocks - MinGW Makefiles" -S ${{github.workspace}}/SiriKali/ -B ${{github.workspace}}/SiriKali/build6
     -
       name: Print installer script for Qt6
       run : get-content ${{github.workspace}}\SiriKali\build6\sirikali_windows_installer_Qt6.iss
     -
-      name: Update version.h for Qt6
-      run: |
-          $content = [System.IO.File]::ReadAllText("${{github.workspace}}\SiriKali\build6\version.h").Replace("git_tag",${{ env.GIT_VERSION_NUMBER }})
-          [System.IO.File]::WriteAllText("${{github.workspace}}\SiriKali\build6\version.h",$content )
-    -
       name: Build Project for Qt6
       run: cmake --build ${{github.workspace}}/SiriKali/build6
     -
-      name: Create SiriKaliQt6.git.exe.zip
+      name: Create SiriKaliQt6.zip
       run: |
-        New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKaliQt6.git
-        New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKaliQt6.git/local
+        New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}
+        New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}\ocal
 
-        Copy-Item -Path ${{github.workspace}}\SiriKali\translations -Destination ${{github.workspace}}\SiriKaliQt6.git -Recurse
-        Copy-Item -Path ${{github.workspace}}\SiriKali\build6\sirikali.exe -Destination ${{github.workspace}}\SiriKaliQt6.git
+        Copy-Item -Path ${{github.workspace}}\SiriKali\translations -Destination ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }} -Recurse
+        Copy-Item -Path ${{github.workspace}}\SiriKali\build6\sirikali.exe -Destination ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}
 
-        Set-Location ${{github.workspace}}\SiriKaliQt6.git
+        Set-Location ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}
 
-        ${{github.workspace}}/qt6/Qt/${{ env.QT6_VERSION }}/${{ env.MINGW6_PATH }}/bin/windeployqt6.exe ${{github.workspace}}\SiriKaliQt6.git\sirikali.exe
+        ${{github.workspace}}/qt6/Qt/${{ env.QT6_VERSION }}/${{ env.MINGW6_PATH }}/bin/windeployqt6.exe ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}\sirikali.exe
 
-        $bb = ${{ env.BUILD_VERSION }}
-        $bb = $bb.Trim()
+        echo ${{ env.RELEASEVERSION }} | Out-File -FilePath ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}\version_info.txt -Encoding utf8 -Append
 
-        echo "$bb" | Out-File -FilePath ${{github.workspace}}\SiriKaliQt6.git\version_info.txt -Encoding utf8 -Append
+        Compress-Archive -Path ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }} -DestinationPath ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}.zip
 
-        Compress-Archive -Path ${{github.workspace}}\SiriKaliQt6.git -DestinationPath ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}.zip
-
-        Remove-Item -Path ${{github.workspace}}\SiriKaliQt6.git\local
-
-        Remove-Item -Path ${{github.workspace}}\SiriKaliQt6.git\version_info.txt
+        Remove-Item -Path ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}\local
     -
       name: Make installer for Qt6
       uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
