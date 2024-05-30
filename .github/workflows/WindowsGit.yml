@@ -1,4 +1,4 @@
-name: Build Windows Git
+name: Windows Git
 
 on:
   push:
@@ -17,7 +17,7 @@ env:
   BUILD_TYPE:      Release
 
 jobs:
-  buildGitEvent:
+  WindowsGit:
     runs-on: windows-latest
     steps:
     -

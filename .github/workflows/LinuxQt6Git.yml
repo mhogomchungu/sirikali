@@ -1,4 +1,4 @@
-name: Build Linux Qt6 Git
+name: Linux Qt6 Git
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
 env:
   QT6_VERSION: "6.6.2"
 jobs:
-  buildLinuxQt6Git:
+  LinuxQt6Git:
     runs-on: ubuntu-latest
     steps:
     -

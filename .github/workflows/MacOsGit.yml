@@ -1,4 +1,4 @@
-name: Build MacOS Git
+name: MacOS Git
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
 env:
   QT6_VERSION: "6.6.2"
 jobs:
-  buildMacOSGit:
+  MacOSGit:
     runs-on: macos-latest
     steps:
     -
