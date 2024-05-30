@@ -67,7 +67,7 @@ jobs:
     -
       name: Build Project for Qt5
       run: cmake --build ${{github.workspace}}/SiriKali/build5
-     -
+    -
       name: Create SiriKaliQt5.zip
       run: |
         New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}
