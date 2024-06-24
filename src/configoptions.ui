@@ -57,51 +57,32 @@
      <widget class="QCheckBox" name="cbHiDPI">
       <property name="geometry">
        <rect>
-        <x>270</x>
+        <x>100</x>
         <y>80</y>
-        <width>31</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEditHiDPI">
-      <property name="geometry">
-       <rect>
-        <x>270</x>
-        <y>130</y>
-        <width>113</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_19">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>80</y>
-        <width>241</width>
+        <width>181</width>
         <height>41</height>
        </rect>
       </property>
       <property name="text">
        <string>Enable HiDPI Scalling</string>
       </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
+     </widget>
+     <widget class="QLineEdit" name="lineEditHiDPI">
+      <property name="geometry">
+       <rect>
+        <x>102</x>
+        <y>130</y>
+        <width>101</width>
+        <height>31</height>
+       </rect>
       </property>
      </widget>
      <widget class="QLabel" name="label_18">
       <property name="geometry">
        <rect>
-        <x>20</x>
+        <x>210</x>
         <y>110</y>
-        <width>241</width>
+        <width>311</width>
         <height>61</height>
        </rect>
       </property>
@@ -110,7 +91,7 @@
 (Enter A Decimal Number)</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -136,12 +117,12 @@
       </property>
      </widget>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>120</x>
        <y>0</y>
-       <width>184</width>
+       <width>191</width>
        <height>26</height>
       </rect>
      </property>
@@ -149,28 +130,18 @@
       <item>
        <widget class="QCheckBox" name="cbAutoOpenMountPoint">
         <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_9">
-        <property name="text">
          <string>Auto Open Mount Point</string>
-        </property>
-        <property name="wordWrap">
-         <bool>false</bool>
         </property>
        </widget>
       </item>
      </layout>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget1">
      <property name="geometry">
       <rect>
        <x>120</x>
        <y>30</y>
-       <width>159</width>
+       <width>166</width>
        <height>26</height>
       </rect>
      </property>
@@ -178,28 +149,18 @@
       <item>
        <widget class="QCheckBox" name="cbReUseMountPoint">
         <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_10">
-        <property name="text">
          <string>Re Use Mount Point</string>
-        </property>
-        <property name="wordWrap">
-         <bool>false</bool>
         </property>
        </widget>
       </item>
      </layout>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget2">
      <property name="geometry">
       <rect>
        <x>120</x>
        <y>60</y>
-       <width>187</width>
+       <width>195</width>
        <height>26</height>
       </rect>
      </property>
@@ -207,28 +168,18 @@
       <item>
        <widget class="QCheckBox" name="cbAutoCheckForUpdates">
         <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_11">
-        <property name="text">
          <string>Auto Check For Updates</string>
-        </property>
-        <property name="wordWrap">
-         <bool>false</bool>
         </property>
        </widget>
       </item>
      </layout>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget3">
      <property name="geometry">
       <rect>
        <x>120</x>
        <y>90</y>
-       <width>133</width>
+       <width>141</width>
        <height>26</height>
       </rect>
      </property>
@@ -236,28 +187,18 @@
       <item>
        <widget class="QCheckBox" name="cbStartMinimized">
         <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_12">
-        <property name="text">
          <string>Start Minimized</string>
-        </property>
-        <property name="wordWrap">
-         <bool>false</bool>
         </property>
        </widget>
       </item>
      </layout>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget4">
      <property name="geometry">
       <rect>
        <x>120</x>
        <y>120</y>
-       <width>276</width>
+       <width>288</width>
        <height>26</height>
       </rect>
      </property>
@@ -265,41 +206,24 @@
       <item>
        <widget class="QCheckBox" name="cbUseDarkTheme">
         <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_15">
-        <property name="text">
          <string>Use Dark Theme(Restarting Required)</string>
-        </property>
-        <property name="wordWrap">
-         <bool>false</bool>
         </property>
        </widget>
       </item>
      </layout>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget5">
      <property name="geometry">
       <rect>
        <x>120</x>
        <y>150</y>
-       <width>243</width>
+       <width>252</width>
        <height>26</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_6">
       <item>
        <widget class="QCheckBox" name="chShowDebugWindowOnStartup">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_7">
         <property name="text">
          <string>Show Debug Window On Startup</string>
         </property>
