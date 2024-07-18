@@ -234,9 +234,9 @@ Task::process::result processManager::add( const processManager::opts& opts )
 
 Task::process::result processManager::remove( const QString& mountPoint )
 {
-	Task::process::result r ;
+	for( auto it = m_instances.begin() ; it != m_instances.end() ; it++ ){
 
-	this->ProcessEntriesAndRemove( [ & ]( const processManager::Process& s )->result{
+		const auto& s = *it ;
 
 		if( s.mountPoint() == mountPoint ){
 
@@ -246,20 +246,16 @@ Task::process::result processManager::remove( const QString& mountPoint )
 
 				m_updateVolumeList() ;
 
-				r = Task::process::result( 0 ) ;
+				m_instances.erase( it ) ;
 
-				return { true,true } ;
+				return 0 ;
 			}else{
-				r = Task::process::result( "","Failed To Terminate A Process",1,0,true ) ;
-
-				return { true,false } ;
+				return { "","Failed To Terminate A Process",1,0,true } ;
 			}
-		}else{
-			return { false,false } ;
 		}
-	} ) ;
+	}
 
-	return r ;
+	return { "","Failed To Terminate Unknown Process",1,0,true } ; ;
 }
 
 std::vector<QStringList> processManager::commands() const
@@ -392,24 +388,16 @@ bool processManager::mountPointTaken( const QString& ee ) const
 
 void processManager::removeInActive()
 {
-	auto _remove_inactive = [ & ]{
+	struct meaw
+	{
+		bool operator()( const processManager::Process& p ) const
+		{
+			return p.notRunning() ;
+		}
+	};
 
-		bool entryRemoved = false ;
+	auto begin = m_instances.begin() ;
+	auto end   = m_instances.end() ;
 
-		this->ProcessEntriesAndRemove( [ & ]( const processManager::Process& p )->result{
-
-			if( p.notRunning() ){
-
-				entryRemoved = true ;
-
-				return { true,true } ;
-			}else{
-				return { false,false } ;
-			}
-		} ) ;
-
-		return entryRemoved ;
-	} ;
-
-	while( _remove_inactive() ){}
+	m_instances.erase( std::remove_if( begin,end,meaw() ),end ) ;
 }

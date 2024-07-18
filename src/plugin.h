@@ -57,11 +57,10 @@ public:
 		const QString&,
 		std::function< void( const QByteArray& ) > ) ;
 	~plugin() ;
-private slots:
+private:
 	void pbSetKey() ;
 	void pbSelectKeyFile() ;
 	void pbClose() ;
-private:
 	void ShowUI() ;
 	void HideUI() ;
 	void enableAll() ;

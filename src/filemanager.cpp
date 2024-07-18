@@ -31,7 +31,7 @@ fileManager::fileManager( QWidget * parent,QString& e,bool s ) :
 {
 	m_ui->setupUi( this ) ;
 
-	connect( m_ui->pushButton,SIGNAL( clicked( bool ) ),this,SLOT( set() ) ) ;
+	connect( m_ui->pushButton,&QPushButton::clicked,this,&fileManager::set ) ;
 
 	this->setFixedSize( this->size() ) ;
 	this->setFont( parent->font() ) ;

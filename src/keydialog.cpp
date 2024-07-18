@@ -223,30 +223,19 @@ void keyDialog::setUpInitUI()
 
 	m_ui->tbVisibleKey->setIcon( QIcon( ":/icons/password_show.png" ) ) ;
 
-	connect( m_ui->pbCancel,SIGNAL( clicked() ),
-		 this,SLOT( pbCancel() ) ) ;
-	connect( m_ui->pbOpen,SIGNAL( clicked() ),
-		 this,SLOT( pbOpen() ) ) ;
-	connect( m_ui->pbkeyOption,SIGNAL( clicked() ),
-		 this,SLOT( pbkeyOption() ) ) ;
-	connect( m_ui->pbOpenFolderPath,SIGNAL( clicked() ),
-		 this,SLOT( pbFolderPath() ) ) ;
-	connect( m_ui->pbMountPoint,SIGNAL( clicked() ),
-		 this,SLOT( pbMountPointPath() ) ) ;
-	connect( m_ui->checkBoxOpenReadOnly,SIGNAL( stateChanged( int ) ),
-		 this,SLOT( cbMountReadOnlyStateChanged( int ) ) ) ;
-	connect( m_ui->pbOK,SIGNAL( clicked( bool ) ),
-		 this,SLOT( pbOK() ) ) ;
-	connect( m_ui->tbVisibleKey,SIGNAL( clicked() ),
-		 this,SLOT( cbVisibleKeyclicked() ) ) ;
-	connect( m_ui->pbOptions,SIGNAL( clicked() ),
-		 this,SLOT( pbOptions() ) ) ;
-	connect( m_ui->pbSetKeyKeyFile,SIGNAL( clicked() ),
-		 this,SLOT( pbSetKeyKeyFile() ) ) ;
-	connect( m_ui->pbSetKey,SIGNAL( clicked() ),
-		 this,SLOT( pbSetKey() ) ) ;
-	connect( m_ui->pbSetKeyCancel,SIGNAL( clicked() ),
-		 this,SLOT( pbSetKeyCancel() ) ) ;
+	connect( m_ui->checkBoxOpenReadOnly,&QCheckBox::stateChanged,
+		 this,&keyDialog::cbMountReadOnlyStateChanged ) ;
+	connect( m_ui->pbCancel,&QPushButton::clicked,this,&keyDialog::pbCancel ) ;
+	connect( m_ui->pbOpen,&QPushButton::clicked,this,&keyDialog::pbOpen ) ;
+	connect( m_ui->pbkeyOption,&QPushButton::clicked,this,&keyDialog::pbkeyOption ) ;
+	connect( m_ui->pbOpenFolderPath,&QPushButton::clicked,this,&keyDialog::pbFolderPath ) ;
+	connect( m_ui->pbMountPoint,&QPushButton::clicked,this,&keyDialog::pbMountPointPath ) ;
+	connect( m_ui->pbOK,&QPushButton::clicked,this,&keyDialog::pbOK ) ;
+	connect( m_ui->tbVisibleKey,&QToolButton::clicked,this,&keyDialog::cbVisibleKeyclicked ) ;
+	connect( m_ui->pbOptions,&QPushButton::clicked,this,&keyDialog::pbOptions ) ;
+	connect( m_ui->pbSetKeyKeyFile,&QPushButton::clicked,this,&keyDialog::pbSetKeyKeyFile ) ;
+	connect( m_ui->pbSetKey,&QPushButton::clicked,this,&keyDialog::pbSetKey ) ;
+	connect( m_ui->pbSetKeyCancel,&QPushButton::clicked,this,&keyDialog::pbSetKeyCancel ) ;
 
 	connect( m_ui->pbMountPoint_1,&QPushButton::clicked,[ this ](){
 
@@ -268,8 +257,8 @@ void keyDialog::setUpInitUI()
 
 		m_ui->pbMountPoint_1->setVisible( false ) ;
 
-		connect( m_ui->lineEditMountPoint,SIGNAL( textChanged( QString ) ),
-			 this,SLOT( textChanged( QString ) ) ) ;
+		connect( m_ui->lineEditMountPoint,&QLineEdit::textChanged,
+			 this,&keyDialog::textChanged ) ;
 
 		m_ui->pbOpen->setText( tr( "&Create" ) ) ;
 
@@ -320,8 +309,8 @@ void keyDialog::setUpInitUI()
 
 		if( m_keyStrength ){
 
-			connect( m_ui->lineEditKey,SIGNAL( textChanged( QString ) ),
-				 this,SLOT( passWordTextChanged( QString ) ) ) ;
+			connect( m_ui->lineEditKey,&QLineEdit::textChanged,
+				 this,&keyDialog::passWordTextChanged ) ;
 		}
 
 		m_ui->lineEditMountPoint->setFocus() ;

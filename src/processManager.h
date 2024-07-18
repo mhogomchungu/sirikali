@@ -78,28 +78,6 @@ private:
 	{
 		m_instances.emplace_back( std::forward< A >( a ),std::forward< B >( b ) ) ;
 	}
-	struct result{
-		bool exit ;
-		bool erase ;
-	};
-	template< typename Function >
-	void ProcessEntriesAndRemove( Function&& function )
-	{
-		for( auto it = m_instances.begin() ; it != m_instances.end() ; it++ ){
-
-			auto a = function( *it ) ;
-
-			if( a.erase ){
-
-				m_instances.erase( it ) ;
-			}
-
-			if( a.exit ){
-
-				break ;
-			}
-		}
-	}
 	template< typename Function >
 	void ProcessEntries( Function&& function ) const
 	{

@@ -55,9 +55,9 @@ plugin::plugin( QWidget * parent,
 	this->setFixedSize( this->size() ) ;
 	this->setFont( parent->font() ) ;
 
-	connect( m_ui->pbSetKey,SIGNAL( clicked() ),this,SLOT( pbSetKey() ) ) ;
-	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbClose() ) ) ;
-	connect( m_ui->pbKeyFile,SIGNAL( clicked() ),this,SLOT( pbSelectKeyFile() ) ) ;
+	connect( m_ui->pbSetKey,&QPushButton::clicked,this,&plugin::pbSetKey ) ;
+	connect( m_ui->pbCancel,&QPushButton::clicked,this,&plugin::pbClose ) ;
+	connect( m_ui->pbKeyFile,&QPushButton::clicked,this,&plugin::pbSelectKeyFile ) ;
 
 	m_ui->pbKeyFile->setIcon( QIcon( ":/file.png" ) ) ;
 

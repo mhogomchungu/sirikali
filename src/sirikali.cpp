@@ -242,6 +242,15 @@ sirikali::sirikali( const QStringList& args,QApplication& app ) :
 	m_signalHandler( this ),
 	m_argumentList( args )
 {
+	connect( &m_mountInfo,
+		 &mountinfo::pbUpdate,
+		 this,
+		 &sirikali::pbUpdate,Qt::QueuedConnection ) ;
+	connect( &m_mountInfo,
+		 &mountinfo::autoMount,
+		 this,
+		 &sirikali::autoMountFavoritesOnAvailable,Qt::QueuedConnection ) ;
+
 	utility::miscOptions::instance().setMainQtWidget( this ) ;
 }
 

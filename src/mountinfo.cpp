@@ -109,7 +109,7 @@ static mountinfo::List _processManager_volumes()
 
 		volumeInfo aa{ std::move( mm ),e.mountPointPath,std::move( fs ),e.mode } ;
 
-		s.emplace_back( mountinfo::volumeEntry{ e.engine,std::move( aa ) } ) ;
+		s.emplace_back( e.engine,std::move( aa ) ) ;
 	}
 
 	return s ;
@@ -190,11 +190,13 @@ mountinfo::mountinfo( QObject * parent,
 	m_linuxMonitorExit( false ),
 	m_folderMonitorExit( false ),
 	m_oldMountList( _unlocked_volumes() ),
-	m_dbusMonitor( [ this ]( const QString& e ){ this->autoMount( e ) ; },m_debug )
+	m_dbusMonitor( [ this ]( const QString& e ){ emit this->autoMount( e ) ; },m_debug )
 {
+	connect( this,&mountinfo::updateVolume,this,&mountinfo::volumeUpdate,Qt::QueuedConnection ) ;
+
 	processManager::get().updateVolumeList( [ this ](){
 
-		this->updateVolume() ;
+		emit this->updateVolume() ;
 	} ) ;
 
 	if( utility::platformIsLinux() ){
@@ -399,7 +401,7 @@ void mountinfo::volumeUpdate()
 
 	if( m_announceEvents ){
 
-		this->pbUpdate() ;
+		emit this->pbUpdate() ;
 
 		if( _volumeWasMounted() ){
 
@@ -407,31 +409,13 @@ void mountinfo::volumeUpdate()
 
 				if( _mountedVolume( it.cipherPath() ) ){
 
-					this->autoMount( it.mountPoint() ) ;
+					emit this->autoMount( it.mountPoint() ) ;
 				}
 			}
 		}
 	}
 
 	m_oldMountList = std::move( m_newMountList ) ;
-}
-
-void mountinfo::updateVolume()
-{
-	QMetaObject::invokeMethod( this,"volumeUpdate",Qt::QueuedConnection ) ;
-}
-
-void mountinfo::pbUpdate()
-{
-	QMetaObject::invokeMethod( m_parent,"pbUpdate",Qt::QueuedConnection ) ;
-}
-
-void mountinfo::autoMount( const QString& e )
-{
-	QMetaObject::invokeMethod( m_parent,
-				   "autoMountFavoritesOnAvailable",
-				   Qt::QueuedConnection,
-				   Q_ARG( QString,e ) ) ;
 }
 
 void mountinfo::announceEvents( bool s )
@@ -455,7 +439,7 @@ void mountinfo::linuxMonitor()
 
 			}else if( a > 0 ){
 
-				this->updateVolume() ;
+				emit this->updateVolume() ;
 
 			}else if( a == 0 ){
 
@@ -507,7 +491,7 @@ void mountinfo::linuxMonitor()
 				}else{
 					entries.created( [ this ]( const QString& e ){
 
-						this->autoMount( e ) ;
+						emit this->autoMount( e ) ;
 					} ) ;
 				}
 
@@ -547,7 +531,7 @@ void mountinfo::pollForUpdates()
 
 				if( now != previous ){
 
-					this->updateVolume() ;
+					emit this->updateVolume() ;
 				}
 
 				previous = std::move( now ) ;

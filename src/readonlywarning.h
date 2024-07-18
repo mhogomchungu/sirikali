@@ -43,14 +43,13 @@ public:
 	static bool getOpenVolumeReadOnlyOption() ;
 	explicit readOnlyWarning( QWidget * parent = 0,bool checked = false ) ;
 	~readOnlyWarning() ;
-	void ShowUI( void ) ;
-	void HideUI( void ) ;
-private slots:
-	void pbOK( void ) ;
-	void checkBoxChecked( bool ) ;
+	void ShowUI() ;
+	void HideUI() ;
 private:
+	void pbOK() ;
+	void checkBoxChecked( bool ) ;
 	void setReadOnlyOption( bool ) ;
-	bool showUIwarning( void ) ;
+	bool showUIwarning() ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::readOnlyWarning * m_ui ;

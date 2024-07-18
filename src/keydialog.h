@@ -268,53 +268,52 @@ public:
 signals:
 	void mounted( QString ) ;
 	void cryptoOpen( QString ) ;
-private slots:
-    void cbVisibleKeyclicked() ;
+private:
+	void cbVisibleKeyclicked() ;
 	void textChanged( QString ) ;
 	void passWordTextChanged( QString ) ;
-	void pbOptions( void ) ;
-	void pbkeyOption( void ) ;
-	void pbMountPointPath( void ) ;
-	void pbFolderPath( void ) ;
-	void pbOK( void ) ;
-	void pbOpen( void ) ;
-	void pbCancel( void ) ;
+	void pbOptions();
+	void pbkeyOption();
+	void pbMountPointPath();
+	void pbFolderPath();
+	void pbOK();
+	void pbOpen();
 	void cbMountReadOnlyStateChanged( int ) ;
-	void encryptedFolderMount( void ) ;
-	void encryptedFolderCreate( void ) ;
-	void pbSetKeyKeyFile( void ) ;
-	void pbSetKey( void ) ;
-	void pbSetKeyCancel( void ) ;
-private :
-	void key( void ) ;
-	void yubiKey( void ) ;
-	void secretStorage( void ) ;
+	void encryptedFolderMount();
+	void encryptedFolderCreate();
+	void pbSetKeyKeyFile();
+	void pbSetKey();
+	void pbSetKeyCancel();
+	void pbCancel();
+	void key();
+	void yubiKey();
+	void secretStorage();
 	void autoMount( const keyDialog::entry& ee ) ;
-	void unlockVolume( void ) ;
+	void unlockVolume();
 	void setVolumeToUnlock() ;
 	void setUpVolumeProperties( const keyDialog::entry& e ) ;
 	void setUpInitUI() ;
 	void setKeyEnabled( bool ) ;
-	void setDefaultUI( void ) ;
+	void setDefaultUI();
 	void SetUISetKey( bool ) ;
-	void ShowUI( void ) ;
-	void HideUI( void ) ;
+	void ShowUI();
+	void HideUI();
 	void setKeyInWallet() ;
 	void setKeyInWallet( const QString& volumeType,const QString& title ) ;
 	void showErrorMessage( const engines::engine::cmdStatus& ) ;
 	void showErrorMessage( const QString& ) ;
 	void reportErrorMessage( const engines::engine::cmdStatus& ) ;
 	void openMountPoint( const QString& ) ;
-	void keyFile( void ) ;
+	void keyFile();
 	void setUIVisible( bool ) ;
-	void openVolume( void ) ;
-	void enableAll( void ) ;
-	void disableAll( void ) ;
+	void openVolume();
+	void enableAll();
+	void disableAll();
 	void windowSetTitle( const QString& = QString() ) ;
 	void closeEvent( QCloseEvent * ) ;
 
-	bool upgradingFileSystem( void ) ;
-	bool replaceFileSystem( void ) ;
+	bool upgradingFileSystem();
+	bool replaceFileSystem();
 
 	void keyTypeChanged() ;
 

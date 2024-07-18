@@ -41,8 +41,8 @@ readOnlyWarning::readOnlyWarning( QWidget * parent,bool checked ) :
 	this->setFont( parent->font() ) ;
 	this->setFixedSize( this->size() ) ;
 
-	connect( m_ui->PbOK,SIGNAL( clicked() ),this,SLOT( pbOK() ) ) ;
-	connect( m_ui->checkBox,SIGNAL( clicked( bool ) ),this,SLOT( checkBoxChecked( bool ) ) ) ;
+	connect( m_ui->PbOK,&QPushButton::clicked,this,&readOnlyWarning::pbOK ) ;
+	connect( m_ui->checkBox,&QCheckBox::clicked,this,&readOnlyWarning::checkBoxChecked ) ;
 
 	this->installEventFilter( this ) ;
 

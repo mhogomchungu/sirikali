@@ -38,9 +38,8 @@ public:
 	}
 	explicit fileManager( QWidget * parent,QString&,bool ) ;
 	~fileManager();
-private slots:
-	void set( void ) ;
 private:
+	void set() ;
 	void closeEvent( QCloseEvent * ) ;
 	Ui::fileManager * m_ui ;
 	QString& m_fileManager ;
