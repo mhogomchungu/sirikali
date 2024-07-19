@@ -35,8 +35,9 @@ public:
 	~debugWindow();
         void Show() ;
         void Hide() ;
-	void UpdateOutPut( const QString&,bool ) ;
         void closeEvent( QCloseEvent * ) ;
+signals:
+	void UpdateOutPut( const QString&,bool ) ;
 private slots:
 	void UpdateOutPutSlot( const QString&,bool ) ;
 private:

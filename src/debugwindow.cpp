@@ -41,6 +41,8 @@ debugWindow::debugWindow( QWidget * parent ) :
 		this->Hide() ;
 	} ) ;
 
+	connect( this,&debugWindow::UpdateOutPut,this,&debugWindow::UpdateOutPutSlot,Qt::QueuedConnection ) ;
+
 	utility::miscOptions::instance().setDebugWindow( this ) ;
 }
 
@@ -69,15 +71,6 @@ void debugWindow::UpdateOutPutSlot( const QString& e,bool s )
 		cursor.movePosition( QTextCursor::End ) ;
 		m_ui->textEdit->setTextCursor( cursor ) ;
 	}
-}
-
-void debugWindow::UpdateOutPut( const QString& e,bool m )
-{
-	QMetaObject::invokeMethod( this,
-				   "UpdateOutPutSlot",
-				   Qt::QueuedConnection,
-				   Q_ARG( QString,e ),
-				   Q_ARG( bool,m ) ) ;
 }
 
 void debugWindow::closeEvent( QCloseEvent * e )
