@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>3</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="FavoritesList">
     <attribute name="title">
@@ -47,9 +47,6 @@
      <column>
       <property name="text">
        <string>Volume ID</string>
-      </property>
-      <property name="textAlignment">
-       <set>AlignCenter</set>
       </property>
      </column>
     </widget>
@@ -1201,7 +1198,7 @@
         <x>220</x>
         <y>10</y>
         <width>511</width>
-        <height>301</height>
+        <height>231</height>
        </rect>
       </property>
       <property name="editTriggers">
@@ -1214,17 +1211,56 @@
        <property name="text">
         <string>Volume Path</string>
        </property>
-       <property name="textAlignment">
-        <set>AlignCenter</set>
-       </property>
       </column>
+     </widget>
+     <widget class="QLabel" name="label_29">
+      <property name="geometry">
+       <rect>
+        <x>260</x>
+        <y>360</y>
+        <width>401</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Enter KeyFile Path Below(Optional)</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEditVolumeKeyFilePath">
+      <property name="geometry">
+       <rect>
+        <x>260</x>
+        <y>390</y>
+        <width>401</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="echoMode">
+       <enum>QLineEdit::Normal</enum>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pbKeyFileVolumePathFromFavorites">
+      <property name="geometry">
+       <rect>
+        <x>670</x>
+        <y>390</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
      </widget>
      <widget class="QLabel" name="label_21">
       <property name="geometry">
        <rect>
         <x>260</x>
-        <y>310</y>
-        <width>421</width>
+        <y>240</y>
+        <width>401</width>
         <height>31</height>
        </rect>
       </property>
@@ -1239,7 +1275,7 @@
       <property name="geometry">
        <rect>
         <x>260</x>
-        <y>340</y>
+        <y>270</y>
         <width>401</width>
         <height>31</height>
        </rect>
@@ -1252,8 +1288,8 @@
       <property name="geometry">
        <rect>
         <x>260</x>
-        <y>370</y>
-        <width>421</width>
+        <y>300</y>
+        <width>401</width>
         <height>31</height>
        </rect>
       </property>
@@ -1268,7 +1304,7 @@
       <property name="geometry">
        <rect>
         <x>260</x>
-        <y>400</y>
+        <y>330</y>
         <width>401</width>
         <height>31</height>
        </rect>
@@ -1294,7 +1330,7 @@
       <property name="geometry">
        <rect>
         <x>670</x>
-        <y>340</y>
+        <y>270</y>
         <width>31</width>
         <height>31</height>
        </rect>
@@ -1307,7 +1343,7 @@
       <property name="geometry">
        <rect>
         <x>700</x>
-        <y>340</y>
+        <y>270</y>
         <width>31</width>
         <height>31</height>
        </rect>
@@ -1352,7 +1388,7 @@
       <property name="geometry">
        <rect>
         <x>670</x>
-        <y>400</y>
+        <y>330</y>
         <width>31</width>
         <height>31</height>
        </rect>
@@ -1367,7 +1403,7 @@
         <x>-10</x>
         <y>0</y>
         <width>761</width>
-        <height>481</height>
+        <height>471</height>
        </rect>
       </property>
       <property name="autoFillBackground">
@@ -1405,12 +1441,12 @@
     <attribute name="title">
      <string>Settings</string>
     </attribute>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget4">
      <property name="geometry">
       <rect>
        <x>191</x>
        <y>130</y>
-       <width>383</width>
+       <width>399</width>
        <height>26</height>
       </rect>
      </property>
@@ -1434,12 +1470,12 @@
       </item>
      </layout>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget3">
      <property name="geometry">
       <rect>
        <x>191</x>
        <y>170</y>
-       <width>297</width>
+       <width>311</width>
        <height>26</height>
       </rect>
      </property>
@@ -1463,12 +1499,12 @@
       </item>
      </layout>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>191</x>
        <y>210</y>
-       <width>331</width>
+       <width>344</width>
        <height>26</height>
       </rect>
      </property>
@@ -1498,12 +1534,12 @@
       </item>
      </layout>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget1">
      <property name="geometry">
       <rect>
        <x>191</x>
        <y>250</y>
-       <width>297</width>
+       <width>307</width>
        <height>26</height>
       </rect>
      </property>
@@ -1527,12 +1563,12 @@
       </item>
      </layout>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget2">
      <property name="geometry">
       <rect>
        <x>191</x>
        <y>290</y>
-       <width>366</width>
+       <width>378</width>
        <height>26</height>
       </rect>
      </property>

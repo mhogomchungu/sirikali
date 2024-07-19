@@ -30,6 +30,21 @@
 
 const QString COMMENT = "-SiriKali_Comment_ID" ;
 
+QString favorites2::encodeKeyKeyFile( const QString& key,const QString& keyFile )
+{
+	if( keyFile.isEmpty() ){
+
+		return key ;
+	}else{
+		return key + "-SiriKali_KeyFile-" + keyFile ;
+	}
+}
+
+QStringList favorites2::decodeKeyKeyFile( const QString& e )
+{
+	return utility::split( e,"-SiriKali_KeyFile-" ) ;
+}
+
 Task::future< void >& favorites2::deleteKey( secrets::wallet& wallet,const QString& id )
 {
 	return Task::run( [ &wallet,id ](){
@@ -162,6 +177,16 @@ favorites2::favorites2( QWidget * parent,
 	connect( m_ui->cbShowMountDialogWhenAutoMounting,&QCheckBox::toggled,[ this ]( bool e ){
 
 		m_settings.showMountDialogWhenAutoMounting( e ) ;
+	} ) ;	
+
+	connect( m_ui->pbKeyFileVolumePathFromFavorites,&QPushButton::clicked,[ this ](){
+
+		auto e = this->getExistingFile( tr( "Path To KeyFile" ) ) ;
+
+		if( !e.isEmpty() ){
+
+			m_ui->lineEditVolumeKeyFilePath->setText( e ) ;
+		}
 	} ) ;
 
 	connect( m_ui->pbConfigFilePath,&QPushButton::clicked,[ this ](){
@@ -704,6 +729,8 @@ void favorites2::addkeyToWallet()
 
 	m_ui->tableWidgetWallet->setEnabled( false ) ;
 	m_ui->pbAddKeyToWallet->setEnabled( false ) ;
+
+	b = favorites2::encodeKeyKeyFile( b,m_ui->lineEditVolumeKeyFilePath->text() ) ;
 
 	favorites2::addKey( m_wallet.get(),a,b ).then( [ this,a ]( bool s ){
 

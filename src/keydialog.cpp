@@ -176,7 +176,8 @@ void keyDialog::unlockVolume()
  * Called when creating volumes
  *
  */
-keyDialog::keyDialog( QWidget * parent,secrets& s,
+keyDialog::keyDialog( QWidget * parent,
+		      secrets& s,
 		      std::function< void() > p,
 		      std::function< void() > l,
 		      bool o,
@@ -473,7 +474,22 @@ void keyDialog::setUpVolumeProperties( const keyDialog::entry& ee )
 		}
 	}
 
-	m_ui->lineEditKey->setText( ee.volEntry.password() ) ;
+	auto mm = favorites2::decodeKeyKeyFile( ee.volEntry.password() ) ;
+
+	if( mm.size() == 1 ){
+
+		m_ui->lineEditKey->setText( mm.at( 0 ) ) ;
+
+	}else if( mm.size() > 1 ){
+
+		m_ui->lineEditKey->setText( Task::await( [ & ](){
+
+			const auto& key = mm.at( 0 ) ;
+			const auto& keyFile = mm.at( 1 ) ;
+
+			return crypto::hmac_key( keyFile,key ) ;
+		} ) ) ;
+	}
 
 	this->setUIVisible( true ) ;
 
@@ -1536,10 +1552,10 @@ void keyDialog::keyTypeChanged()
 	auto _showVisibleKeyOption = [ this ]( bool e ){
 
 		bool s = m_settings.enableRevealingPasswords() ;
-        m_ui->tbVisibleKey->setEnabled( e && s ) ;
-        m_ui->tbVisibleKey->setIcon(QIcon(":/icons/password_show.png")) ;
-        m_ui->lineEditKey->setEchoMode( QLineEdit::Password );
-        m_ui->tbVisibleKey->setVisible( e ) ;
+		m_ui->tbVisibleKey->setEnabled( e && s ) ;
+		m_ui->tbVisibleKey->setIcon(QIcon(":/icons/password_show.png")) ;
+		m_ui->lineEditKey->setEchoMode( QLineEdit::Password );
+		m_ui->tbVisibleKey->setVisible( e ) ;
 		m_ui->pbkeyOption->setVisible( !e ) ;
 	} ;
 

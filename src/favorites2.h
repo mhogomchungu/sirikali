@@ -37,6 +37,9 @@ class favorites2 : public QDialog
 {
 	Q_OBJECT
 public:
+	static QString encodeKeyKeyFile( const QString&,const QString& ) ;
+	static QStringList decodeKeyKeyFile( const QString& ) ;
+
 	static Task::future< void >& deleteKey( secrets::wallet&,const QString& id ) ;
 
 	static Task::future< bool >& addKey( secrets::wallet&,
@@ -114,6 +117,7 @@ private :
 	std::function< void() > m_function ;
 	const engines::engine& m_engine ;
 	QString m_cipherPath ;
+	QString m_keyFilePath ;
 
 	class wallet{
 
