@@ -38,7 +38,42 @@ class favorites2 : public QDialog
 	Q_OBJECT
 public:
 	static QString encodeKeyKeyFile( const QString&,const QString& ) ;
-	static QStringList decodeKeyKeyFile( const QString& ) ;
+	class credentials
+	{
+	public:
+		credentials()
+		{
+		}
+		credentials( QString p,QString f ) :
+			m_password( std::move( p ) ),m_keyFilePath( std::move( f ) )
+		{
+		}
+		bool hasBoth() const
+		{
+			return !m_password.isEmpty() && !m_keyFilePath.isEmpty() ;
+		}
+		bool hasKeyOnly() const
+		{
+			return !m_password.isEmpty() && m_keyFilePath.isEmpty() ;
+		}
+		bool hasKeyFileOnly() const
+		{
+			return m_password.isEmpty() && !m_keyFilePath.isEmpty() ;
+		}
+		const QString& password() const
+		{
+			return m_password ;
+		}
+		const QString& keyFilePath() const
+		{
+			return m_keyFilePath ;
+		}
+	private:
+		QString m_password ;
+		QString m_keyFilePath ;
+	};
+
+	static favorites2::credentials decodeKeyKeyFile( const QString& ) ;
 
 	static Task::future< void >& deleteKey( secrets::wallet&,const QString& id ) ;
 

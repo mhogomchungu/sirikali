@@ -150,7 +150,7 @@ void keyDialog::autoMount( const keyDialog::entry& ee )
 
 			this->openVolume() ;
 
-		}else if( !ee.volEntry.password().isEmpty() ){
+		}else if( !m_ui->lineEditKey->text().isEmpty() ){
 
 			this->openVolume() ;
 
@@ -374,6 +374,32 @@ void keyDialog::setVolumeToUnlock()
 		}
 	}
 
+	auto mm = favorites2::decodeKeyKeyFile( s.volEntry.password() ) ;
+
+	if( mm.hasKeyOnly() ){
+
+		m_ui->lineEditKey->setText( mm.password() ) ;
+
+	}else if( mm.hasBoth() ){
+
+		const auto& a = mm.keyFilePath() ;
+		const auto& b = mm.password() ;
+
+		auto m = Task::await( [ & ](){ return crypto::hmac_key( a,b ) ; } ) ;
+
+		m_ui->lineEditKey->setText( m ) ;
+
+	}else if( mm.hasKeyFileOnly() ){
+
+		m_keyType.setType( keyType::name::keyKeyFile ) ;
+
+		this->keyTypeChanged() ;
+
+		m_ui->lineEditSetKeyKeyFile->setText( mm.keyFilePath() ) ;
+
+		return ;
+	}
+
 	this->autoMount( s ) ;
 }
 
@@ -472,23 +498,6 @@ void keyDialog::setUpVolumeProperties( const keyDialog::entry& ee )
 			m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
 			m_ui->checkBoxOpenReadOnly->setChecked( m_settings.getOpenVolumeReadOnlyOption() ) ;
 		}
-	}
-
-	auto mm = favorites2::decodeKeyKeyFile( ee.volEntry.password() ) ;
-
-	if( mm.size() == 1 ){
-
-		m_ui->lineEditKey->setText( mm.at( 0 ) ) ;
-
-	}else if( mm.size() > 1 ){
-
-		m_ui->lineEditKey->setText( Task::await( [ & ](){
-
-			const auto& key = mm.at( 0 ) ;
-			const auto& keyFile = mm.at( 1 ) ;
-
-			return crypto::hmac_key( keyFile,key ) ;
-		} ) ) ;
 	}
 
 	this->setUIVisible( true ) ;
@@ -634,7 +643,7 @@ void keyDialog::setDefaultUI()
 
 	m_ui->pbOK->setVisible( false ) ;
 	m_ui->pbOpen->setVisible( true ) ;
-    m_ui->tbVisibleKey->setVisible( true ) ;
+	m_ui->tbVisibleKey->setVisible( true ) ;
 	m_ui->pbkeyOption->setVisible( false ) ;
 	m_ui->textEdit->setVisible( false ) ;
 }
@@ -836,7 +845,7 @@ void keyDialog::enableAll()
 
 	if( m_settings.enableRevealingPasswords() ){
 
-        m_ui->tbVisibleKey->setEnabled( this->keySelected( index ) ) ;
+		m_ui->tbVisibleKey->setEnabled( this->keySelected( index ) ) ;
 	}
 
 	if( utility::platformIsNOTWindows() ){
@@ -1641,7 +1650,7 @@ void keyDialog::keyTypeChanged()
 				this->showErrorMessage( tr( "Volume Name Field Is Empty." ) ) ;
 				m_ui->cbKeyType->setCurrentIndex( 0 ) ;
 				m_ui->lineEditMountPoint->setFocus() ;
-                m_ui->tbVisibleKey->setVisible( false ) ;
+				m_ui->tbVisibleKey->setVisible( false ) ;
 				return ;
 			}
 

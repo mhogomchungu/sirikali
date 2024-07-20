@@ -40,9 +40,25 @@ QString favorites2::encodeKeyKeyFile( const QString& key,const QString& keyFile 
 	}
 }
 
-QStringList favorites2::decodeKeyKeyFile( const QString& e )
+favorites2::credentials favorites2::decodeKeyKeyFile( const QString& e )
 {
-	return utility::split( e,"-SiriKali_KeyFile-" ) ;
+	auto m = utility::split( e,"-SiriKali_KeyFile-" ) ;
+
+	if( m.size() > 1 ){
+
+		return { m.at( 0 ),m.at( 1 ) } ;
+
+	}else if( m.size() == 1 ){
+
+		if( e.startsWith( "-SiriKali_KeyFile-" ) ){
+
+			return { {},m.at( 0 ) } ;
+		}else{
+			return { m.at( 0 ),{} } ;
+		}
+	}else{
+		return {} ;
+	}
 }
 
 Task::future< void >& favorites2::deleteKey( secrets::wallet& wallet,const QString& id )
@@ -719,8 +735,14 @@ void favorites2::addkeyToWallet()
 {
 	auto a = m_ui->lineEditVolumePath->text() ;
 	auto b = m_ui->lineEditPassword->text() ;
+	auto c = m_ui->lineEditVolumeKeyFilePath->text() ;
 
-	if( a.isEmpty() || b.isEmpty() ){
+	if( a.isEmpty() ){
+
+		return ;
+	}
+
+	if( b.isEmpty() && c.isEmpty() ){
 
 		return ;
 	}
@@ -730,7 +752,7 @@ void favorites2::addkeyToWallet()
 	m_ui->tableWidgetWallet->setEnabled( false ) ;
 	m_ui->pbAddKeyToWallet->setEnabled( false ) ;
 
-	b = favorites2::encodeKeyKeyFile( b,m_ui->lineEditVolumeKeyFilePath->text() ) ;
+	b = favorites2::encodeKeyKeyFile( b,c ) ;
 
 	favorites2::addKey( m_wallet.get(),a,b ).then( [ this,a ]( bool s ){
 
