@@ -10,5 +10,6 @@
         <file>lock.png</file>
         <file>icons/password_show.png</file>
         <file>icons/password_hide.png</file>
+        <file>icons/setting_reset.png</file>
     </qresource>
 </RCC>
