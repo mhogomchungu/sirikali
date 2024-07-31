@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>621</width>
-    <height>475</height>
+    <height>498</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,11 +19,11 @@
      <x>20</x>
      <y>10</y>
      <width>581</width>
-     <height>431</height>
+     <height>451</height>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="widget">
     <attribute name="title">
@@ -33,7 +33,7 @@
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>360</y>
+       <y>370</y>
        <width>331</width>
        <height>33</height>
       </rect>
@@ -123,7 +123,7 @@
        <x>120</x>
        <y>0</y>
        <width>191</width>
-       <height>26</height>
+       <height>28</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
@@ -142,7 +142,7 @@
        <x>120</x>
        <y>30</y>
        <width>166</width>
-       <height>26</height>
+       <height>28</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -161,7 +161,7 @@
        <x>120</x>
        <y>60</y>
        <width>195</width>
-       <height>26</height>
+       <height>28</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -180,7 +180,7 @@
        <x>120</x>
        <y>90</y>
        <width>141</width>
-       <height>26</height>
+       <height>28</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -199,7 +199,7 @@
        <x>120</x>
        <y>120</y>
        <width>288</width>
-       <height>26</height>
+       <height>28</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -218,7 +218,7 @@
        <x>120</x>
        <y>150</y>
        <width>252</width>
-       <height>26</height>
+       <height>28</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_6">
@@ -307,7 +307,7 @@
     <widget class="QPushButton" name="pbMountPointPrefix">
      <property name="geometry">
       <rect>
-       <x>470</x>
+       <x>465</x>
        <y>30</y>
        <width>31</width>
        <height>33</height>
@@ -397,7 +397,7 @@
     <widget class="QPushButton" name="pbPostMountCommand">
      <property name="geometry">
       <rect>
-       <x>470</x>
+       <x>465</x>
        <y>210</y>
        <width>31</width>
        <height>33</height>
@@ -410,7 +410,7 @@
     <widget class="QPushButton" name="pbPreUnMountCommand">
      <property name="geometry">
       <rect>
-       <x>470</x>
+       <x>465</x>
        <y>270</y>
        <width>31</width>
        <height>33</height>
@@ -452,7 +452,7 @@
     <widget class="QPushButton" name="pbRunPeriodicallyCommand">
      <property name="geometry">
       <rect>
-       <x>470</x>
+       <x>465</x>
        <y>330</y>
        <width>31</width>
        <height>33</height>
@@ -465,9 +465,9 @@
     <widget class="QLineEdit" name="lineEditRunPeriodicallyInterval">
      <property name="geometry">
       <rect>
-       <x>330</x>
-       <y>360</y>
-       <width>131</width>
+       <x>400</x>
+       <y>370</y>
+       <width>61</width>
        <height>31</height>
       </rect>
      </property>
@@ -476,8 +476,8 @@
      <property name="geometry">
       <rect>
        <x>70</x>
-       <y>360</y>
-       <width>251</width>
+       <y>370</y>
+       <width>311</width>
        <height>31</height>
       </rect>
      </property>
@@ -494,7 +494,7 @@
     <widget class="QPushButton" name="pbSetFileManager">
      <property name="geometry">
       <rect>
-       <x>470</x>
+       <x>465</x>
        <y>90</y>
        <width>31</width>
        <height>33</height>
@@ -507,7 +507,7 @@
     <widget class="QPushButton" name="pbSetExternalCommand">
      <property name="geometry">
       <rect>
-       <x>470</x>
+       <x>465</x>
        <y>150</y>
        <width>31</width>
        <height>33</height>
@@ -619,7 +619,7 @@
    <property name="geometry">
     <rect>
      <x>220</x>
-     <y>440</y>
+     <y>460</y>
      <width>131</width>
      <height>33</height>
     </rect>
