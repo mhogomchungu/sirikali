@@ -35,9 +35,9 @@
   <widget class="QPushButton" name="pbCancel">
    <property name="geometry">
     <rect>
-     <x>330</x>
+     <x>335</x>
      <y>180</y>
-     <width>101</width>
+     <width>95</width>
      <height>31</height>
     </rect>
    </property>
@@ -147,7 +147,7 @@
     <rect>
      <x>130</x>
      <y>180</y>
-     <width>101</width>
+     <width>95</width>
      <height>31</height>
     </rect>
    </property>
@@ -225,7 +225,7 @@
     <rect>
      <x>230</x>
      <y>180</y>
-     <width>101</width>
+     <width>95</width>
      <height>31</height>
     </rect>
    </property>
@@ -299,7 +299,7 @@
   <widget class="QPushButton" name="pbSetKey">
    <property name="geometry">
     <rect>
-     <x>170</x>
+     <x>165</x>
      <y>180</y>
      <width>111</width>
      <height>31</height>
@@ -312,7 +312,7 @@
   <widget class="QPushButton" name="pbSetKeyCancel">
    <property name="geometry">
     <rect>
-     <x>280</x>
+     <x>285</x>
      <y>180</y>
      <width>111</width>
      <height>31</height>
