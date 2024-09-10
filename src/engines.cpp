@@ -95,7 +95,11 @@ static QStringList _system_search_paths()
 			m.append( it + "/" ) ;
 		}
 
-		m.append( QDir::currentPath() + "/" ) ;
+		auto e = SiriKali::Windows::applicationDirPath() ;
+
+		m.append( e + "/" ) ;
+
+		m.append( e + "/extra/bsdtar/" ) ;
 
 		return m + utility::split( env,";" ) ;
 	}else{
@@ -222,13 +226,18 @@ static QString _executableFullPath( const QString& f,Function function )
 
 QString engines::defaultBinPath()
 {
-	auto s = QStandardPaths::standardLocations( QStandardPaths::AppDataLocation ) ;
+	if( utility::platformIsWindows() && settings::portableVersion() ){
 
-	if( s.isEmpty() ){
-
-		return QDir::homePath() + "/.local/share/SiriKali/bin/" ;
+		return settings::portableVersionConfigPath() + "/bin/" ;
 	}else{
-		return s.first() + "/bin/" ;
+		auto s = QStandardPaths::standardLocations( QStandardPaths::AppDataLocation ) ;
+
+		if( s.isEmpty() ){
+
+			return QDir::homePath() + "/.local/share/SiriKali/bin/" ;
+		}else{
+			return s.first() + "/bin/" ;
+		}
 	}
 }
 
@@ -260,13 +269,19 @@ QString engines::executableNotEngineFullPath( const QString& e )
 
 			QStringList m ;
 
-			for( const auto& it : _windows_search_paths() ){
+			const auto s = _windows_search_paths() ;
+
+			for( const auto& it : s ){
 
 				m.append( it + "/" ) ;
 				m.append( it + "/bin/" ) ;
 			}
 
-			m.append( QDir::currentPath() + "/" ) ;
+			auto mm = SiriKali::Windows::applicationDirPath() ;
+
+			m.append( mm + "/" ) ;
+
+			m.append( mm + "/extra/bsdtar/" ) ;
 
 			return m ;
 		} ) ;

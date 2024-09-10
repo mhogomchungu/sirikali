@@ -119,8 +119,10 @@ private:
 	void downloading( Ctx&,const utils::network::progress& ) ;
 	void extracted( Ctx,const utils::qprocess::outPut& ) ;
 	void currentItemChanged( QTableWidgetItem * ,QTableWidgetItem * ) ;
-	void tableUpdate( int row,const QString& ) ;
-	QString tableText( int row ) ;
+	void tableUpdate( int,const QString& ) ;
+	QString tableText( int ) ;
+	QString exePath( int ) ;
+	QString exeName( int ) ;
 	void download( int,const QString&,const QString& ) ;
 	void extract( Ctx ) ;
 	void update( int ) ;

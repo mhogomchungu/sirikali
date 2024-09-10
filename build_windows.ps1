@@ -10,6 +10,7 @@ $CMAKE_PATH="C:\Qt\Tools\CMake_64\bin"
 $GIT_PATH="C:\Program Files (x86)\Git\bin"
 $INNO_PATH="C:\Program Files (x86)\Inno Setup 6"
 $SEVEN_ZIP_PATH="C:\projects\7-Zip"
+$EXTRA="C:\projects\sirikali-extra"
 
 $SRC_LOCATION=$PSScriptRoot
 
@@ -78,6 +79,8 @@ else
 
 New-Item -ItemType Directory -Path $BUILD_PATH/SiriKali-$VERSION
 
+Copy-Item -Path $EXTRA/bsdtar -Destination $BUILD_PATH/SiriKali-$VERSION/extra/bsdtar -Recurse
+Copy-Item -Path $EXTRA/libs/* -Destination $BUILD_PATH/SiriKali-$VERSION
 Copy-Item -Path $SRC_LOCATION/translations -Destination $BUILD_PATH/SiriKali-$VERSION -Recurse
 Copy-Item -Path $BUILD_PATH/SiriKali/sirikali.exe -Destination $BUILD_PATH/SiriKali-$VERSION
 Copy-Item -Path $BUILD_PATH/SiriKali/src/sirikali_cppcryptfs/sirikali_cppcryptfs.exe -Destination $BUILD_PATH/SiriKali-$VERSION

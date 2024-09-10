@@ -500,15 +500,11 @@ void sirikali::showTrayIcon()
 {
 	if( QSystemTrayIcon::isSystemTrayAvailable() ){
 
-		utility::debug() << "Showing System Tray Icon" ;
-
 		m_trayIcon.show() ;
 	}else{
 		utility::Timer( 1000,[ this ]( int counter ){
 
 			if( QSystemTrayIcon::isSystemTrayAvailable() ){
-
-				utility::debug() << "Showing System Tray Icon" ;
 
 				m_trayIcon.show() ;
 
@@ -521,14 +517,10 @@ void sirikali::showTrayIcon()
 				 * longer, just display it and hope for the best.
 				 */
 
-				utility::debug() << "TimeOut Waiting For System Tray to Become Available" ;
-
 				m_trayIcon.show() ;
 
 				return true ;
 			}else{
-				utility::debug() << "Waiting For System Tray To Become Available" ;
-
 				return false ;
 			}
 		} ) ;

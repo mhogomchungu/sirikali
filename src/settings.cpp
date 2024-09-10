@@ -156,8 +156,9 @@ bool settings::portableVersion()
 {
 	if( utility::platformIsWindows() ){
 
+		auto m = SiriKali::Windows::applicationDirPath() ;
 		auto a = QFile::exists( settings::portableVersionConfigPath() ) ;
-		auto b = QFile::exists( QDir::currentPath() + "/sirikali.exe" ) ;
+		auto b = QFile::exists( m + "/sirikali.exe" ) ;
 
 		return a && b ;
 	}else{
@@ -167,7 +168,7 @@ bool settings::portableVersion()
 
 QString settings::portableVersionConfigPath()
 {
-	return QDir::currentPath() + "/local" ;
+	return SiriKali::Windows::applicationDirPath() + "/local" ;
 }
 
 bool settings::showCipherFolderAndMountPathInFavoritesList()

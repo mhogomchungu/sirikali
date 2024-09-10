@@ -81,7 +81,7 @@ void checkUpdates::checkIfInstalled()
 {
 	auto basePath = engines::defaultBinPath() ;
 
-	QDir().mkpath(  basePath ) ;
+	QDir().mkpath( basePath ) ;
 
 	QStringList apps ;
 

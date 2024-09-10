@@ -163,7 +163,7 @@ void checkforupdateswindow::removeExtra( int row )
 
 	const auto m = QDir( m_binPath ).entryList( filters ) ;
 
-	auto name = m_opts[ row ].name().toLower() ;
+	auto name = this->exeName( row ) ;
 
 	for( const auto& it : m ){
 
@@ -259,6 +259,21 @@ QString checkforupdateswindow::tableText( int row )
 	return m_ui->tableWidget->item( row,0 )->text() ;
 }
 
+QString checkforupdateswindow::exePath( int row )
+{
+	return m_binPath + this->exeName( row ) ;
+}
+
+QString checkforupdateswindow::exeName( int row )
+{
+	if( utility::platformIsWindows() ){
+
+		return m_opts[ row ].name().toLower() + ".exe" ;
+	}else{
+		return m_opts[ row ].name().toLower() ;
+	}
+}
+
 QNetworkRequest checkforupdateswindow::networkRequest( const QString& url )
 {
 	QNetworkRequest networkRequest( url ) ;
@@ -348,7 +363,7 @@ void checkforupdateswindow::extract( Ctx ctx )
 
 		this->tableUpdate( row,m + "\n" + mm ) ;
 	}else{
-		auto exePath = m_binPath + m_opts[ row ].name().toLower() ;
+		auto exePath = this->exePath( row ) ;
 
 		if( QFile::exists( exePath ) ){
 
@@ -367,7 +382,7 @@ void checkforupdateswindow::extracted( Ctx ctx,const utils::qprocess::outPut& p 
 
 	if( p.success() ){
 
-		auto exePath = m_binPath + m_opts[ row ].name().toLower() ;
+		auto exePath = this->exePath( row ) ;
 
 		QFile f( exePath ) ;
 

@@ -42,6 +42,8 @@ int terminateProcess( unsigned long pid ) ;
 QString engineInstalledDir( const engines::engine& ) ;
 QString engineInstalledDir( const QString& key,const QString& value ) ;
 
+QString applicationDirPath() ;
+
 QStringList engineInstalledDirs() ;
 
 QString lastError() ;

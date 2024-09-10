@@ -183,8 +183,29 @@ std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path )
 	}
 }
 
+QString applicationDirPath()
+{
+	std::array< char,4096 > buffer ;
+
+	GetModuleFileNameA( nullptr,buffer.data(),static_cast< DWORD >( buffer.size() ) ) ;
+
+	auto m = QDir::fromNativeSeparators( buffer.data() ) ;
+	auto s = m.lastIndexOf( '/' ) ;
+
+	if( s != -1 ){
+
+		m.truncate( s ) ;
+	}
+
+	return m ;
+}
+
 #else
 
+QString applicationDirPath()
+{
+	return {} ;
+}
 QString lastError()
 {
 	return {} ;
