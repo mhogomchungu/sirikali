@@ -105,7 +105,7 @@ void checkforupdateswindow::add( const checkforupdateswindow::args& e )
 {
 	auto txt = e.engineName ;
 
-	m_opts.emplace_back( e.data,e.engineName ) ;
+	m_opts.emplace_back( e.data,e.engineName,e.error.isEmpty() ) ;
 
 	if( e.error.isEmpty() ){
 
@@ -251,7 +251,29 @@ void checkforupdateswindow::currentItemChanged( QTableWidgetItem * c, QTableWidg
 
 void checkforupdateswindow::tableUpdate( int row,const QString& s )
 {
-	m_ui->tableWidget->item( row,0 )->setText( s ) ;
+	if( m_opts[ row ].noError() ){
+
+		m_ui->tableWidget->item( row,0 )->setText( s ) ;
+	}
+}
+
+QString checkforupdateswindow::archiveName( int row )
+{
+	if( m_opts[ row ].name() == "Securefs" ){
+
+		if( utility::platformIsLinux() ){
+
+			return "securefs-linux-amd64-release.zip" ;
+
+		}else if( utility::platformIsWindows() ){
+
+			return "securefs-windows-amd64-release.zip" ;
+		}else{
+			return "securefs-macos-amd64-release.zip" ;
+		}
+	}else{
+		return "linux-static_amd64.tar.gz" ;
+	}
 }
 
 QString checkforupdateswindow::tableText( int row )
@@ -420,39 +442,28 @@ void checkforupdateswindow::extracted( Ctx ctx,const utils::qprocess::outPut& p 
 
 void checkforupdateswindow::update( int row )
 {
-	const auto array = m_opts[ row ].data().value( "assets" ).toArray() ;
+	if( m_opts[ row ].noError() ){
 
-	QString name ;
+		const auto array = m_opts[ row ].data().value( "assets" ).toArray() ;
 
-	if( m_opts[ row ].name() == "Securefs" ){
+		auto name = this->archiveName( row ) ;
 
-		if( utility::platformIsLinux() ){
+		for( const auto& it : array ){
 
-			name = "securefs-linux-amd64-release.zip" ;
+			auto obj = it.toObject() ;
 
-		}else if( utility::platformIsWindows() ){
+			auto url = obj.value( "browser_download_url" ).toString() ;
 
-			name = "securefs-windows-amd64-release.zip" ;
-		}else{
-			name = "securefs-macos-amd64-release.zip" ;
+			if( url.endsWith( name ) ){
+
+				return this->download( row,url,name ) ;
+			}
 		}
-	}else{
-		name = "linux-static_amd64.tar.gz" ;
+
+		auto mm = tr( "Failed To Find Archive To Download" ) ;
+
+		this->tableUpdate( row,tr( "Error" ) + "\n" + mm ) ;
 	}
-
-	for( const auto& it : array ){
-
-		auto obj = it.toObject() ;
-
-		auto url = obj.value( "browser_download_url" ).toString() ;
-
-		if( url.endsWith( name ) ){
-
-			return this->download( row,url,name ) ;
-		}
-	}
-
-	this->tableUpdate( row,tr( "Error" ) + "\n" + tr( "Failed To Find Archive To Download" ) ) ;
 }
 
 void checkforupdateswindow::closeEvent( QCloseEvent * e )

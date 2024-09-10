@@ -120,6 +120,7 @@ private:
 	void extracted( Ctx,const utils::qprocess::outPut& ) ;
 	void currentItemChanged( QTableWidgetItem * ,QTableWidgetItem * ) ;
 	void tableUpdate( int,const QString& ) ;
+	QString archiveName( int ) ;
 	QString tableText( int ) ;
 	QString exePath( int ) ;
 	QString exeName( int ) ;
@@ -135,8 +136,8 @@ private:
 	class opts
 	{
 	public:
-		opts( const QJsonObject& s,const QString& m ) :
-			m_data( s ),m_name( m )
+		opts( const QJsonObject& s,const QString& m,bool e ) :
+			m_data( s ),m_name( m ),m_noError( e )
 		{
 		}
 		const QJsonObject& data() const
@@ -147,9 +148,14 @@ private:
 		{
 			return m_name ;
 		}
+		bool noError() const
+		{
+			return m_noError ;
+		}
 	private:
 		QJsonObject m_data ;
 		QString m_name ;
+		bool m_noError ;
 	} ;
 
 	class locale

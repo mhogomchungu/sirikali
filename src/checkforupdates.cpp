@@ -264,7 +264,7 @@ void checkUpdates::networkReply( int position,
 
 		checkforupdateswindow::args args ;
 
-		args.engineName = s.known() ? s.name() : "SiriKali" ; ;
+		args.engineName = s.known() ? s.name() : "SiriKali" ;
 
 		auto ss    = QString::number( m_timeOut / 1000 ) ;
 		args.error = QObject::tr( "Network Request Failed To Respond Within %1 Seconds." ).arg( ss ) ;
