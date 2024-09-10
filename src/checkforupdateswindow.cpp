@@ -174,7 +174,7 @@ void checkforupdateswindow::removeExtra( int row )
 				QFile::remove( m_binPath + it ) ;
 			}
 		}
-	}
+	}	
 }
 
 void checkforupdateswindow::downloading( Ctx& ctx,const utils::network::progress& p )
@@ -182,8 +182,6 @@ void checkforupdateswindow::downloading( Ctx& ctx,const utils::network::progress
 	int row = ctx.row() ;
 
 	if( p.finished() ){
-
-		m_ui->tableWidget->setEnabled( true ) ;
 
 		ctx.fileClose() ;
 
@@ -205,6 +203,8 @@ void checkforupdateswindow::downloading( Ctx& ctx,const utils::network::progress
 		}
 
 	}else if( p.timeOut() ){
+
+		m_ui->pbOK->setEnabled( true ) ;
 
 		m_ui->tableWidget->setEnabled( true ) ;
 
@@ -346,6 +346,7 @@ void checkforupdateswindow::download( int row,const QString& url,const QString& 
 	cc.fileRemove() ;
 
 	m_ui->tableWidget->setEnabled( false ) ;
+	m_ui->pbOK->setEnabled( false ) ;
 
 	if( cc.fileOpen() ){
 
@@ -425,11 +426,17 @@ void checkforupdateswindow::extracted( Ctx ctx,const utils::qprocess::outPut& p 
 				this->update( m_position ) ;
 			}else{
 				m_ui->tableWidget->setEnabled( true ) ;
+
+				m_ui->pbOK->setEnabled( true ) ;
 			}
 		}else{
 			m_ui->tableWidget->setEnabled( true ) ;
+
+			m_ui->pbOK->setEnabled( true ) ;
 		}
 	}else{
+		m_ui->pbOK->setEnabled( true ) ;
+
 		auto m = QObject::tr( "Failed To Extract" ) ;
 
 		const auto& mm = p.stdError ;
