@@ -41,6 +41,7 @@ public:
 	static QString executableNotEngineFullPath( const QString& ) ;
 	static QString executableFullPath( const QString& ) ;
 	static QString executableFullPath( const QString&,const engines::engine& ) ;
+	static QString defaultBinPath() ;
 
 	static QStringList executableSearchPaths() ;
 	static QStringList executableSearchPaths( const engines::engine& ) ;
@@ -605,6 +606,8 @@ public:
 
 		const QString& executableFullPath() const ;
 
+		void updateExecutableFullPath() const ;
+
 		const QString& minimumVersion() const ;
 		const QString& sirikaliMinimumVersion() const ;
 		const QString& reverseString() const ;
@@ -931,8 +934,8 @@ public:
 	private:
 		const BaseOptions m_Options ;
 		const QProcessEnvironment m_processEnvironment ;
-		const engines::exeFullPath m_exeFullPath ;
-		const engines::version m_version ;
+		mutable engines::exeFullPath m_exeFullPath ;
+		mutable engines::version m_version ;
 		static engines::exeFullPath m_exeJavaFullPath ;
 		static engines::exeFullPath m_exeFuserMount ;
 	} ;
@@ -946,7 +949,8 @@ public:
 	void aboutToExit() const ;
 	const std::vector< engines::engine::Wrapper >& supportedEngines() const ;
 
-	class engineWithPaths{
+	class engineWithPaths
+	{
 	public:
 	        engineWithPaths() ;
 		engineWithPaths( const QString& engine ) ;

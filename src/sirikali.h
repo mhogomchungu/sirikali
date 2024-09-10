@@ -90,7 +90,6 @@ private slots:
 	void FAQ() ;
 	void hideWindow() ;
 	void setUpApp( const QString& ) ;
-	void autoUpdateCheck() ;
 	void volumeProperties() ;
 	void genericVolumeProperties() ;
 	void closeApplication( int = 0,const QString& = QString() ) ;
@@ -102,7 +101,6 @@ private slots:
 	void itemClicked( QTableWidgetItem * ) ;
 	void pbUpdate() ;
 	void updateList() ;
-	void createVolume( QAction * = nullptr ) ;
 	void unMountAll() ;
 	void emergencyShutDown() ;
 	void unMountAllAndQuit() ;
@@ -125,6 +123,9 @@ private slots:
 	void updateCheck() ;
 	void autoMountFavoritesOnAvailable( QString ) ;
 private:
+	void createVolume( QAction * ) ;
+
+	void setCreateMenu() ;
 	void mountAll() ;
 	void mountFavorite( const QString& ) ;
 

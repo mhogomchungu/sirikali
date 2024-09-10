@@ -47,82 +47,88 @@ checkUpdates::checkUpdates( QWidget * widget,checkforupdateswindow::functions ff
 			m_backends.emplace_back( it ) ;
 		}
 	}
+
+	m_backendsInUse = &m_backends ;
 }
 
-void checkUpdates::check( bool e )
+void checkUpdates::check()
 {
-	m_autocheck = e ;
-
-	m_results.clear() ;
-
 	m_running = true ;
+
+	auto& m = checkforupdateswindow::instance( m_widget,m_functions,m_network ) ;
+
+	connect( this,&checkUpdates::update,&m,&checkforupdateswindow::add ) ;
+	connect( this,&checkUpdates::done,&m,&checkforupdateswindow::done ) ;
+
+	connect( &m,&checkforupdateswindow::closed,[ this ](){
+
+		if( m_backendsInUse == &m_backendsInstallable ){
+
+			emit doneCheckingUpdates() ;
+		}
+
+		m_backendsInUse = &m_backends ;
+	} ) ;
+
+	m.show() ;
+
+	m_functions.first() ;
 
 	this->checkForUpdate() ;
 }
 
-void checkUpdates::run( bool e )
+void checkUpdates::checkIfInstalled()
 {
-	if( m_running == false ){
+	auto basePath = engines::defaultBinPath() ;
 
-		if( e ){
+	QDir().mkpath(  basePath ) ;
 
-			if( settings::instance().autoCheck() ){
+	QStringList apps ;
 
-				this->check( e ) ;
+	if( !QFile::exists( basePath + "securefs" ) ){
+
+		apps.append( "Securefs" ) ;
+	}
+
+	if( !QFile::exists( basePath + "gocryptfs" ) ){
+
+		apps.append( "Gocryptfs" ) ;
+	}
+
+	if( apps.isEmpty() ){
+
+		emit doneCheckingUpdates() ;
+	}else{
+		for( const auto& it : utility::asConst( m_backends ) ){
+
+			for( const auto& xt : utility::asConst( apps ) ){
+
+				if( it->name() == xt ){
+
+					if( checkforupdateswindow::updatable( it->name() ) ){
+
+						m_backendsInstallable.emplace_back( it ) ;
+					}
+				}
 			}
+		}
+
+		if( m_backendsInstallable.size() ){
+
+			m_backendsInUse = &m_backendsInstallable ;
+
+			this->run() ;
 		}else{
-			this->check( e ) ;
+			emit doneCheckingUpdates() ;
 		}
 	}
 }
 
-void checkUpdates::showResult()
+void checkUpdates::run()
 {
-	m_running = false ;
+	if( !m_running ){
 
-	bool show = false ;
-
-	auto _tr = []( const QStringList& l ){
-
-		auto s = QObject::tr( "\"%1\" Installed Version Is : %2.<br>Latest Version Is : %3.<br>" ) ;
-		return s.arg( l.at( 0 ),l.at( 1 ),l.at( 2 ) ) ;
-	} ;
-
-	auto e = "<!DOCTYPE html><html><body><center>" + _tr( m_results.at( 0 ) ) ;
-
-	for( int i = 1 ; i < m_results.size() ; i++ ){
-
-		const auto& it = m_results.at( i ) ;
-
-		e += "<br>" + _tr( it ) ;
-
-		const auto& a = it.at( 1 ) ;
-
-		const auto& b = it.at( 2 ) ;
-
-		if( a != "N/A" && b != "N/A" ){
-
-			if( a != b ){
-
-				show = true ;
-			}
-		}
-	}
-
-	e += "</center></body></html>" ;
-
-	if( m_autocheck ){
-
-		if( show ){
-
-			m_functions.first() ;
-
-			checkforupdateswindow::instance( m_widget,m_functions ).ShowUI( e ) ;
-		}
-	}else{
-		m_functions.first() ;
-
-		checkforupdateswindow::instance( m_widget,m_functions ).ShowUI( e ) ;
+		this->check() ;
 	}
 }
 
@@ -143,7 +149,7 @@ QString checkUpdates::InstalledVersion( const engines::engine& e )
 	}
 }
 
-QString checkUpdates::latestVersion( const QByteArray& data )
+checkUpdates::versionData checkUpdates::latestVersion( const QByteArray& data )
 {
 	auto _found_release = []( const QString& e ){
 
@@ -166,39 +172,55 @@ QString checkUpdates::latestVersion( const QByteArray& data )
 		return true ;
 	} ;
 
-	SirikaliJson json( data,[]( const QString& e ){ utility::debug() << e ; } ) ;
+	QJsonParseError error ;
+	auto doc = QJsonDocument::fromJson( data,&error ) ;
 
-	for( auto& it : json.getTags( "tag_name" ) ){
+	if( error.error == QJsonParseError::NoError ){
 
-		it.remove( 'v' ) ;
-		it.remove( "sshfs-" ) ;
+		const auto array = doc.array() ;
 
-		if( _found_release( it ) ){
+		for( const auto& it : array ){
 
-			return it ;
+			auto obj = it.toObject() ;
+
+			auto tag_name = obj.value( "tag_name" ).toString() ;
+
+			tag_name.remove( 'v' ) ;
+			tag_name.remove( "sshfs-" ) ;
+
+			if( _found_release( tag_name ) ){
+
+				return { tag_name,std::move( obj ) } ;
+			}
 		}
 	}
 
-	return "N/A" ;
+	return { "N/A",QJsonObject() } ;
 }
 
 void checkUpdates::checkForUpdate( size_t position )
 {
-	if( position == m_backends.size() ){
+	if( position == m_backendsInUse->size() ){
 
-		this->showResult() ;
+		m_running = false ;
+
+		emit done( m_backendsInUse == &m_backendsInstallable ) ;
 	}else{
-		const auto& s = m_backends[ position ] ;
+		const auto& s = m_backendsInUse->data()[ position ] ;
 
 		position++ ;
 
 		auto f = this->InstalledVersion( s.get() ) ;
 
-		auto exeName = s->known() ? s->executableName() : "sirikali" ;
+		if( f == "N/A" && m_backendsInUse == &m_backends ){
 
-		if( f == "N/A" ){
+			checkforupdateswindow::args args ;
 
-			m_results += { exeName,"N/A","N/A" } ;
+			args.engineName       = s->known() ? s->name() : "SiriKali" ; ;
+			args.installedVersion = "N/A" ;
+			args.onLineVersion    = "N/A" ;
+
+			emit update( args ) ;
 
 			this->checkForUpdate( position ) ;
 		}else {
@@ -209,33 +231,55 @@ void checkUpdates::checkForUpdate( size_t position )
 				m_networkRequest.setUrl( QUrl( "https://api.github.com/repos/mhogomchungu/sirikali/releases" ) ) ;
 			}
 
-			m_network.get( m_networkRequest,[ this,f,exeName,position ]( const utils::network::reply& reply ){
+			m_network.get( m_networkRequest,[ =,&s ]( const utils::network::reply& reply ){
 
-				if( reply.success() ){
-
-					try{
-						m_results += { exeName,f,this->latestVersion( reply.data() ) } ;
-
-					}catch( ... ){
-
-						m_results += { exeName,f,"N/A" } ;
-					}
-
-				}else if( reply.timeOut() ){
-
-					auto s = QString::number( m_timeOut / 1000 ) ;
-					auto e = QObject::tr( "Network Request Failed To Respond Within %1 Seconds." ).arg( s ) ;
-
-					DialogMsg( m_widget ).ShowUIOK( QObject::tr( "ERROR" ),e ) ;
-					m_running = false ;
-				}else{
-
-				}
-
-				this->checkForUpdate( position ) ;
+				this->networkReply( position,s.get(),f,reply ) ;
 			} ) ;
 		}
 	}
+}
+
+void checkUpdates::networkReply( int position,
+				 const engines::engine& s,
+				 const QString& installedVersion,
+				 const utils::network::reply& reply )
+{
+	if( reply.success() ){
+
+		checkforupdateswindow::args args ;
+
+		auto m = this->latestVersion( reply.data() ) ;
+
+		args.executableName     = s.executableName() ;
+		args.engineName         = s.known() ? s.name() : "SiriKali" ;
+		args.installedVersion   = installedVersion ;
+		args.executableFullPath = s.executableFullPath() ;
+		args.onLineVersion      = m.version ;
+		args.url                = s.releaseURL() ;
+		args.data               = m.data ;
+
+		emit update( args ) ;
+
+	}else if( reply.timeOut() ){
+
+		checkforupdateswindow::args args ;
+
+		args.engineName = s.known() ? s.name() : "SiriKali" ; ;
+
+		auto ss    = QString::number( m_timeOut / 1000 ) ;
+		args.error = QObject::tr( "Network Request Failed To Respond Within %1 Seconds." ).arg( ss ) ;
+
+		emit update( args ) ;
+	}else{
+		checkforupdateswindow::args args ;
+
+		args.engineName = s.known() ? s.name() : "SiriKali" ; ;
+		args.error      = reply.errorString() ;
+
+		emit update( args ) ;
+	}
+
+	this->checkForUpdate( position ) ;
 }
 
 #endif

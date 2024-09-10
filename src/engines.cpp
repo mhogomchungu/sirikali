@@ -39,6 +39,7 @@
 
 #include <QCoreApplication>
 #include <QJsonDocument>
+#include <QStandardPaths>
 
 static QString _emptyQString ;
 
@@ -187,7 +188,11 @@ static QString _executableFullPath( const QString& f,Function function )
 
 	QString exe ;
 
-	for( const auto& it : function() ){
+	auto list = function() ;
+
+	list.prepend( engines::defaultBinPath() ) ;
+
+	for( const auto& it : utility::asConst( list ) ){
 
 		if( !it.isEmpty() ){
 
@@ -212,6 +217,29 @@ static QString _executableFullPath( const QString& f,Function function )
 
 	return QString() ;
 }
+
+#if QT_VERSION >= QT_VERSION_CHECK( 5,6,0 )
+
+QString engines::defaultBinPath()
+{
+	auto s = QStandardPaths::standardLocations( QStandardPaths::AppDataLocation ) ;
+
+	if( s.isEmpty() ){
+
+		return QDir::homePath() + "/.local/share/SiriKali/bin/" ;
+	}else{
+		return s.first() + "/bin/" ;
+	}
+}
+
+#else
+
+QString engines::defaultBinPath()
+{
+	return QDir::homePath() + "/.local/share/SiriKali/bin/" ;
+}
+
+#endif
 
 QStringList engines::executableSearchPaths()
 {
@@ -943,6 +971,12 @@ engines::engine::engine( engines::engine::BaseOptions o ) :
 const QString& engines::engine::executableFullPath() const
 {
 	return m_exeFullPath.get() ;
+}
+
+void engines::engine::updateExecutableFullPath() const
+{
+	m_version     = { this->name(),[ this ](){ return _installedVersion( m_exeJavaFullPath,*this,m_processEnvironment,m_Options.versionInfo ) ; } } ;
+	m_exeFullPath = _exe_full_path( m_Options.executableNames,*this ) ;
 }
 
 const QString& engines::engine::javaFullPath()

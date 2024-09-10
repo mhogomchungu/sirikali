@@ -39,24 +39,40 @@
 #include <utility>
 #include <vector>
 
-class checkUpdates
+class checkUpdates : public QObject
 {
+	Q_OBJECT
 public:
 	static bool hasNetworkSupport()
 	{
 		return true ;
 	}
 
-	void run( bool e ) ;
+	void checkIfInstalled() ;
+
+	void run() ;
 
 	checkUpdates( QWidget * widget,checkforupdateswindow::functions ) ;
+signals:
+	void update( const checkforupdateswindow::args& ) ;
+	void done( bool ) ;
+	void doneCheckingUpdates() ;
 private:
-	void check( bool ) ;
-
-	void showResult() ;
+	void networkReply( int,
+			   const engines::engine&,
+			   const QString&,
+			   const utils::network::reply& ) ;
+	void check() ;
 
 	QString InstalledVersion( const engines::engine& ) ;
-	QString latestVersion( const QByteArray& data ) ;
+
+	struct versionData
+	{
+		QString version ;
+		QJsonObject data ;
+	} ;
+
+	versionData latestVersion( const QByteArray& data ) ;
 
 	void checkForUpdate( size_t position = 0 ) ;
 
@@ -64,17 +80,17 @@ private:
 
 	QNetworkRequest m_networkRequest ;
 
-	QVector< QStringList > m_results ;
-
 	int m_timeOut ;
 
 	utils::network::manager m_network ;
 
-	bool m_autocheck ;
-
 	bool m_running ;
 
 	std::vector< engines::engine::Wrapper > m_backends ;
+	std::vector< engines::engine::Wrapper > m_backendsInstallable ;
+
+	std::vector< engines::engine::Wrapper > * m_backendsInUse ;
+
 	checkforupdateswindow::functions m_functions ;
 } ;
 

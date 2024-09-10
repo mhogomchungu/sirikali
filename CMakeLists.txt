@@ -278,6 +278,7 @@ set( MOC_FILES
 		src/configoptions.h
 		src/configfileoption.h
 		src/dialogok.h
+		src/checkforupdates.h
 		src/help.h
 		src/createbackendwindow.h
 		src/sirikali.h

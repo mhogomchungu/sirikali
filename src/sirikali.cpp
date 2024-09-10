@@ -242,6 +242,11 @@ sirikali::sirikali( const QStringList& args,QApplication& app ) :
 	m_signalHandler( this ),
 	m_argumentList( args )
 {
+	connect( &m_checkUpdates,
+		 &checkUpdates::doneCheckingUpdates,
+		 this,
+		 &sirikali::setCreateMenu ) ;
+
 	connect( &m_mountInfo,
 		 &mountinfo::pbUpdate,
 		 this,
@@ -446,46 +451,6 @@ void sirikali::setUpApp( const QString& volume )
 		} ) ;
 	}
 
-	m_ui->pbcreate->setMenu( [ this ](){
-
-		auto m = new QMenu( this ) ;
-
-		connect( m,SIGNAL( triggered( QAction * ) ),
-			 this,SLOT( createVolume( QAction * ) ) ) ;
-
-		const auto& engines = engines::instance() ;
-
-		for( const auto& it : engines.supportedEngines() ){
-
-			const auto& name = it->uiName() ;
-
-			auto ac = m->addAction( name ) ;
-
-			ac->setObjectName( name ) ;
-
-			if( it->isNotInstalled() ){
-
-				ac->setEnabled( false ) ;
-
-				if( name == "Ecryptfs" ){
-
-					ac->setText( tr( "%1 Is Not Installed" ).arg( "Ecryptfs-simple" ) ) ;
-				}else{
-					ac->setText( tr( "%1 Is Not Installed" ).arg( name ) ) ;
-				}
-			}else{
-				if( it->likeSsh() ){
-
-					ac->setEnabled( true ) ;
-				}else{
-					ac->setEnabled( !it->createControlStructure().isEmpty() ) ;
-				}
-			}
-		}
-
-		return m ;
-	}() ) ;
-
 	this->setUpShortCuts() ;
 
 	this->setUpFont() ;
@@ -501,11 +466,6 @@ void sirikali::setUpApp( const QString& volume )
 	m_trayIcon.setIcon( utility::getIcon( utility::iconType::trayIcon ) ) ;
 
 	this->showTrayIcon() ;
-
-	if( utility::platformIsNOTWindows() && checkUpdates::hasNetworkSupport() ){
-
-		QTimer::singleShot( settings::instance().checkForUpdateInterval(),this,SLOT( autoUpdateCheck() ) ) ;
-	}
 
 	if( utility::miscOptions::instance().debugEnabled() ){
 
@@ -694,12 +654,7 @@ void sirikali::licenseInfo()
 
 void sirikali::updateCheck()
 {
-	m_checkUpdates.run( false ) ;
-}
-
-void sirikali::autoUpdateCheck()
-{
-	m_checkUpdates.run( true ) ;
+	m_checkUpdates.run() ;
 }
 
 void sirikali::favoriteClicked()
@@ -832,6 +787,20 @@ void sirikali::startGUI( const QString& volume,bool autoMountAtStartUp )
 		}
 
 		this->autoMount( volume ) ;
+
+		auto cexe = utility::platformIsWindows() ? "bsdtar.exe" : "bsdtar" ;
+
+		auto exe = engines::executableNotEngineFullPath( cexe ) ;
+
+		if( exe.isEmpty() ){
+
+			if( utility::platformIsLinux() || utility::platformIsWindows() ){
+
+				utility::logger().appendLog( "\nbsdtar Not Found, Updating disabled" ) ;
+			}
+		}else{
+			m_checkUpdates.checkIfInstalled() ;
+		}
 
 		utility::applicationStarted() ;
 	} ) ;
@@ -1100,6 +1069,50 @@ void sirikali::autoMountFavoritesOnAvailable( QString m )
 			}
 		} ) ;
 	}
+}
+
+void sirikali::setCreateMenu()
+{
+	auto m = new QMenu( this ) ;
+
+	connect( m,&QMenu::triggered,this,&sirikali::createVolume ) ;
+
+	for( const auto& it : engines::instance().supportedEngines() ){
+
+		const auto& name = it->uiName() ;
+
+		auto ac = m->addAction( name ) ;
+
+		ac->setObjectName( name ) ;
+
+		if( it->isNotInstalled() ){
+
+			if( checkforupdateswindow::updatable( name ) ){
+
+				it->updateExecutableFullPath() ;
+
+				ac->setEnabled( true ) ;
+			}else{
+				ac->setEnabled( false ) ;
+
+				if( name == "Ecryptfs" ){
+
+					ac->setText( tr( "%1 Is Not Installed" ).arg( "Ecryptfs-simple" ) ) ;
+				}else{
+					ac->setText( tr( "%1 Is Not Installed" ).arg( name ) ) ;
+				}
+			}
+		}else{
+			if( it->likeSsh() ){
+
+				ac->setEnabled( true ) ;
+			}else{
+				ac->setEnabled( !it->createControlStructure().isEmpty() ) ;
+			}
+		}
+	}
+
+	m_ui->pbcreate->setMenu( m ) ;
 }
 
 void sirikali::autoUnlockVolumes( const mountinfo::List& s,bool autoSetAutoMount )
