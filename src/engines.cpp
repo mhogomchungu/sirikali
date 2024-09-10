@@ -785,9 +785,22 @@ static engines::engineVersion _installedVersion( engines::exeFullPath& javaExe,
 
 		if( e.needsJava() ){
 
-			return utility::unwrap( ::Task::process::run( javaExe.get(),{ "-jar",cmd,v.versionArgument },-1,{},env ) ) ;
+			QStringList args{ "-jar",cmd,v.versionArgument } ;
+
+			auto& e = ::Task::process::run( javaExe.get(),args,-1,{},env ) ;
+
+			return utility::unwrap( e ) ;
 		}else{
-			return utility::unwrap( ::Task::process::run( cmd,{ v.versionArgument },-1,{},env ) ) ;
+			if( cmd.isEmpty() ){
+
+				return Task::process::result() ;
+			}else{
+				QStringList args{ v.versionArgument } ;
+
+				auto& e = ::Task::process::run( cmd,args,-1,{},env ) ;
+
+				return utility::unwrap( e ) ;
+			}
 		}
 	}() ;
 

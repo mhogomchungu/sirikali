@@ -313,7 +313,7 @@ QNetworkRequest checkforupdateswindow::networkRequest( const QString& url )
 	return networkRequest ;
 }
 
-void checkforupdateswindow::download( int row,const QString& url,const QString& name )
+void checkforupdateswindow::download( int row,const QString& url,const QString& archiveName )
 {
 	class progress
 	{
@@ -339,7 +339,7 @@ void checkforupdateswindow::download( int row,const QString& url,const QString& 
 		Ctx m_ctx ;
 	} ;
 
-	progress p( this,name,row ) ;
+	progress p( this,m_binPath + archiveName,row ) ;
 
 	auto& cc = p.ctx() ;
 
