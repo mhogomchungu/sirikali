@@ -485,19 +485,20 @@ void keyDialog::setUpVolumeProperties( const keyDialog::entry& ee )
 	m_mountOptions     = e ;
 	m_favoriteReadOnly = e.readOnlyMode ;
 
-	if( m_favoriteReadOnly.defined() ){
+	if( utility::platformIsWindows() ){
 
-		m_ui->checkBoxOpenReadOnly->setChecked( m_favoriteReadOnly.True() ) ;
-	}else{
-		if( utility::platformIsWindows() ){
+		m_windowsCanUnlockReadOnlyMode = ee.engine->windowsCanUnlocInReadWriteMode() ;
 
-			m_windowsCanUnlockReadOnlyMode = ee.engine->windowsCanUnlocInReadWriteMode() ;
+		if( m_windowsCanUnlockReadOnlyMode ){
 
-			m_ui->checkBoxOpenReadOnly->setEnabled( m_windowsCanUnlockReadOnlyMode ) ;
-		}else{
+			m_ui->checkBoxOpenReadOnly->setChecked( m_favoriteReadOnly.True() ) ;
+
 			m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
-			m_ui->checkBoxOpenReadOnly->setChecked( m_settings.getOpenVolumeReadOnlyOption() ) ;
+		}else{
+			m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
 		}
+	}else{
+		m_ui->checkBoxOpenReadOnly->setChecked( m_favoriteReadOnly.True() ) ;
 	}
 
 	this->setUIVisible( true ) ;
