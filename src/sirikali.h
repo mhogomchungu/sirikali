@@ -82,47 +82,50 @@ public:
 	sirikali( const QStringList&,QApplication& ) ;
 	void start() ;
 	~sirikali() ;
-private slots:
-	void addToFavorites() ;
-	void createbackendwindow() ;
-	void showDebugWindow() ;
-	void configurationOptions() ;
-	void FAQ() ;
-	void hideWindow() ;
-	void setUpApp( const QString& ) ;
-	void volumeProperties() ;
+private:
 	void genericVolumeProperties() ;
-	void closeApplication( int = 0,const QString& = QString() ) ;
 	void unlockVolume( bool ) ;
 	void startGUI( const QString& ) ;
 	void startGUI( const QString&,bool ) ;
 	void autoMount( const QString& ) ;
-	void defaultButton() ;
-	void itemClicked( QTableWidgetItem * ) ;
-	void pbUpdate() ;
 	void updateList() ;
-	void unMountAll() ;
 	void emergencyShutDown() ;
-	void unMountAllAndQuit() ;
-	void pbUmount() ;
-	void slotTrayClicked( QSystemTrayIcon::ActivationReason = QSystemTrayIcon::Trigger ) ;
-	void slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ;
-	void enableAll() ;
-	void slotOpenFolder() ;
-	void openWith() ;
 	void slotOpenParentFolder() ;
 	void slotOpenSharedFolder() ;
 	void addEntryToTable( const QStringList& ) ;
 	void addEntryToTable( const volumeInfo& ) ;
 	void removeEntryFromTable( QString ) ;
 	void showFavorites() ;
-	void favoriteClicked( QAction * ) ;
-	void favoriteClicked() ;
 	void openMountPointPath( const QString& ) ;
-	void licenseInfo() ;
-	void updateCheck() ;
+	void openWith() ;
+	void slotOpenFolder() ;
+	void volumeProperties() ;
+	void addToFavorites() ;
+	void defaultButton() ;
+	void favoriteClicked() ;
+	void hideWindow() ;
+	void createbackendwindow() ;
+	void showDebugWindow() ;
+	void slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ;
+	void setUpApp( const QString& ) ;
+	void enableAll() ;
+	void unMountAll() ;
 	void autoMountFavoritesOnAvailable( QString ) ;
-private:
+
+	void favoriteClickedA( QAction * ) ;
+	void updateCheck() ;
+	void closeApplication( int = 0,const QString& = QString() ) ;
+	void closeApp() ;
+	void FAQ() ;
+	void licenseInfo() ;
+	void configurationOptions() ;
+	void unMountAllAndQuit() ;
+	void pbUmount() ;
+	void pbUpdate() ;
+	void itemClicked( QTableWidgetItem * ) ;
+
+	void trayClicked( QSystemTrayIcon::ActivationReason ) ;
+	void trayClickedq() ;
 	void createVolume( QAction * ) ;
 
 	void setCreateMenu() ;
@@ -147,6 +150,7 @@ private:
 	QFont getSystemVolumeFont() ;
 
 	void updateFavoritesInContextMenu() ;
+	void updateAgainFavoritesInContextMenu() ;
 	void runIntervalCustomCommand( const QString& ) ;
 	void updateVolumeList( const mountinfo::List&,bool enableAll = true ) ;
 	void openMountPoint( const QString& ) ;
@@ -208,6 +212,53 @@ private:
 
 			function( { a,b,c } ) ;
 		}
+	}
+
+	using cbVoid = void( sirikali::* )() ;
+	using cbQAct = void( sirikali::* )( QAction * ) ;
+
+	QAction * addAction( const QString& e,const char * z,cbVoid s )
+	{
+		auto ac = new QAction( e,this ) ;
+
+		m_actionPair.emplace_back( ac,z ) ;
+
+		ac->setFont( this->font() ) ;
+
+		connect( ac,&QAction::triggered,this,s ) ;
+
+		return ac ;
+	}
+
+	void addAction( QMenu& m,const QString& txt,sirikali::cbVoid s )
+	{
+		connect( m.addAction( txt ),&QAction::triggered,this,s ) ;
+	}
+
+	QAction * addAction( std::initializer_list< QKeySequence > s,sirikali::cbVoid m )
+	{
+		auto ac = new QAction( this ) ;
+
+		ac->setShortcuts( s ) ;
+
+		connect( ac,&QAction::triggered,this,m ) ;
+
+		return ac ;
+	}
+
+	QMenu * addMenu( QMenu * m,const QString& r,const char * z,cbQAct t,cbVoid s )
+	{
+		auto e = m->addMenu( r ) ;
+
+		m_menuPair.emplace_back( e,z ) ;
+
+		e->setFont( this->font() ) ;
+
+		connect( e,&QMenu::triggered,this,t ) ;
+
+		connect( e,&QMenu::aboutToShow,this,s ) ;
+
+		return e ;
 	}
 
 	engines::engine::cmdStatus unMountVolume( const sirikali::mountedEntry&,bool = false ) ;

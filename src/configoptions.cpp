@@ -43,22 +43,26 @@ configOptions::configOptions( QWidget * parent,
 	m_ui->tabWidget->setCurrentIndex( 0 ) ;
 
 	m_ui->pbMountPointPrefix->setIcon( QIcon( ":/folder.png" ) ) ;
-    m_ui->pbMountPointPrefixDefault->setIcon( QIcon( ":/icons/setting_reset.png" ) );
+	m_ui->pbMountPointPrefixDefault->setIcon( QIcon( ":/icons/setting_reset.png" ) );
 
-    m_ui->pbPostMountCommand->setIcon( QIcon( ":/folder.png" ) ) ;
-    m_ui->pbRunPostMountCommandDefault->setIcon( QIcon( ":/icons/setting_reset.png" ) );
+	m_ui->pbPostMountCommand->setIcon( QIcon( ":/folder.png" ) ) ;
+	m_ui->pbRunPostMountCommandDefault->setIcon( QIcon( ":/icons/setting_reset.png" ) );
 
-    m_ui->pbPreUnMountCommand->setIcon( QIcon( ":/folder.png" ) ) ;
-    m_ui->pbRunPreUnMountCommandDefault->setIcon( QIcon( ":/icons/setting_reset.png" ) );
+	m_ui->pbPreUnMountCommand->setIcon( QIcon( ":/folder.png" ) ) ;
+	m_ui->pbRunPreUnMountCommandDefault->setIcon( QIcon( ":/icons/setting_reset.png" ) );
 
-    m_ui->pbSetExternalCommand->setIcon( QIcon( ":/folder.png" ) ) ;
-    m_ui->pbExternalExecutableDefault->setIcon( QIcon( ":/icons/setting_reset.png" ) );
+	m_ui->pbSetExternalCommand->setIcon( QIcon( ":/folder.png" ) ) ;
+	m_ui->pbExternalExecutableDefault->setIcon( QIcon( ":/icons/setting_reset.png" ) );
 
-    m_ui->pbSetFileManager->setIcon( QIcon( ":/folder.png" ) ) ;
-    m_ui->pbSetFileManagerToDefault->setIcon( QIcon( ":/icons/setting_reset.png" ) );
+	m_ui->pbSetFileManager->setIcon( QIcon( ":/folder.png" ) ) ;
+	m_ui->pbSetFileManagerToDefault->setIcon( QIcon( ":/icons/setting_reset.png" ) );
 
-    m_ui->pbRunPeriodicallyCommand->setIcon( QIcon( ":/folder.png" ) ) ;
-    m_ui->pbRunCommandPeriodicallyDefault->setIcon( QIcon( ":/icons/setting_reset.png" ) );
+	m_ui->pbRunPeriodicallyCommand->setIcon( QIcon( ":/folder.png" ) ) ;
+	m_ui->pbRunCommandPeriodicallyDefault->setIcon( QIcon( ":/icons/setting_reset.png" ) );
+
+	m_ui->cbAutoCheckForUpdates->setChecked( false ) ;
+
+	m_ui->cbAutoCheckForUpdates->setEnabled( false ) ;
 
 	connect( m_ui->pushButton,&QPushButton::clicked,[ this ](){ this->HideUI() ; } ) ;
 

@@ -291,7 +291,6 @@ set( MOC_FILES
 		src/filemanager.h
 		src/mountinfo.h
 		src/debugwindow.h
-		src/runinthread.h
 		src/checkforupdateswindow.h
 		src/engines/options.h
 		src/engines/customcreateoptions.h
@@ -307,7 +306,6 @@ set( SRC 	src/dialogok.cpp
 		src/main.cpp
 		src/systemsignalhandler.cpp
 		src/crypto.cpp
-		src/runinthread.cpp
 		src/debugwindow.cpp
 		src/configoptions.cpp
 		src/configfileoption.cpp

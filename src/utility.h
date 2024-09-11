@@ -349,8 +349,6 @@ namespace utility
 
 	void scaleGUI( void ) ;
 
-	void runInUiThread( std::function< void() > function ) ;
-
 	void waitForOneSecond( void ) ;
 
 	void wait( int ) ;

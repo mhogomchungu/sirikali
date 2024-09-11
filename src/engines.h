@@ -85,7 +85,8 @@ public:
 	};
 
 	template< typename Type >
-	class cache{
+	class cache
+	{
 	public:
 	        cache( std::function< Type() > function ) : m_function( std::move( function ) )
 		{
@@ -113,7 +114,8 @@ public:
 		mutable bool m_unset = true ;
 	};
 
-	class version : public cache< engines::engineVersion >{
+	class version : public cache< engines::engineVersion >
+	{
 	public:
 	        enum class Operator{ less,lessOrEqual,equal,notEqual,greater,greaterOrEqual } ;
 
@@ -162,7 +164,8 @@ public:
 		QString m_engineName ;
 	};
 
-	class booleanCache : public cache< utility::bool_result >{
+	class booleanCache : public cache< utility::bool_result >
+	{
 	public:
 		booleanCache( std::function< utility::bool_result() > s ) :
 		        cache( std::move( s ) )
@@ -176,7 +179,8 @@ public:
 		virtual void silenceWarning() ;
 	};
 
-	class versionGreaterOrEqual : public cache< utility::bool_result >{
+	class versionGreaterOrEqual : public cache< utility::bool_result >
+	{
 	public:
 	        versionGreaterOrEqual( bool m,const engines::engine& engine,int major,int minor,int patch ) :
 		        cache( [ this,&engine,m,major,minor,patch ](){ return this->setCallback( m,engine,major,minor,patch ) ; } )
@@ -196,7 +200,8 @@ public:
 		virtual void silenceWarning() ;
 	} ;
 
-	class exeFullPath : public cache< QString >{
+	class exeFullPath : public cache< QString >
+	{
 	public:
 		template< typename T >
 		exeFullPath( T s ) : cache( std::move( s ) )
@@ -298,7 +303,8 @@ public:
 			unknown
 		} ;
 
-		struct exe_args{
+		struct exe_args
+		{
 			exe_args( QString e,QStringList s ) :
 				exe( std::move( e ) ),args( std::move( s ) )
 			{
@@ -314,7 +320,8 @@ public:
 			QStringList args ;
 		};
 
-		struct exe_args_const{
+		struct exe_args_const
+		{
 			exe_args_const( const exe_args& e ) : exe( e.exe ),args( e.args )
 			{
 			}
@@ -346,8 +353,8 @@ public:
 			engines::engine::Wrapper m_engine ;
 		} ;
 
-		struct booleanOptions{
-
+		struct booleanOptions
+		{
 			booleanOptions() = default ;
 
 			booleanOptions( const booleanOptions& other ) = default ;
@@ -366,8 +373,8 @@ public:
 			bool allowUpgradeFileSystem = false ;
 		} ;
 
-		struct createGUIOptions{
-
+		struct createGUIOptions
+		{
 			struct createOptions
 			{
 				createOptions( const QString& createOpts,
@@ -404,8 +411,8 @@ public:
 			std::function< void( const createGUIOptions::createOptions& ) > fCreateOptions ;
 		};
 
-		struct mountGUIOptions{
-
+		struct mountGUIOptions
+		{
 			struct mountOptions{
 
 				mountOptions( const favorites::entry& ) ;
@@ -641,7 +648,8 @@ public:
 
 		virtual ~engine() ;
 
-		class terminate_process{
+		class terminate_process
+		{
 		public:
 		        terminate_process( QProcess& exe,const QString& mountPath ) :
 				m_exe( &exe ),m_mountPath( mountPath )
@@ -689,8 +697,8 @@ public:
 			const QString& m_mountPath ;
 		};
 
-		struct terminate_result{
-
+		struct terminate_result
+		{
 			Task::process::result result ;
 			QString exe ;
 			QStringList args ;
@@ -814,11 +822,13 @@ public:
 	protected:
 		bool unmountVolume( const engine::engine::exe_args_const& exe,bool usePolkit ) const ;
 
-		class commandOptions{
+		class commandOptions
+		{
 		public:
 			class fuseOptions ;
 
-			class Options{
+			class Options
+			{
 			public:
 				Options( QStringList& m ) : m_options( m )
 				{

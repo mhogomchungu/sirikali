@@ -72,7 +72,6 @@
 #include "siriPolkit.h"
 #include "settings.h"
 #include "version.h"
-#include "runinthread.h"
 
 #ifdef Q_OS_LINUX
 
@@ -1159,11 +1158,6 @@ void utility::setWindowsMountPointOptions( QWidget * obj,QTextEdit * e,QPushButt
 void utility::setWindowsMountPointOptions( QWidget * obj,QLineEdit * e,QPushButton * s )
 {
 	_setWindowsMountMountOptions( obj,e,s ) ;
-}
-
-void utility::runInUiThread( std::function< void() > function )
-{
-	runInThread::instance( utility::miscOptions::instance().getMainGUIThread(),std::move( function ) ) ;
 }
 
 void utility::waitForOneSecond()

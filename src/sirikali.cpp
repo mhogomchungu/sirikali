@@ -242,6 +242,11 @@ sirikali::sirikali( const QStringList& args,QApplication& app ) :
 	m_signalHandler( this ),
 	m_argumentList( args )
 {
+	connect( &m_trayIcon,
+		 &QSystemTrayIcon::activated,
+		 this,
+		 &sirikali::trayClicked ) ;
+
 	connect( &m_checkUpdates,
 		 &checkUpdates::doneCheckingUpdates,
 		 this,
@@ -349,6 +354,11 @@ void sirikali::closeApplication( int s,const QString& e )
 	m_mountInfo.stop() ;
 }
 
+void sirikali::closeApp()
+{
+	this->closeApplication() ;
+}
+
 void sirikali::setUpApp( const QString& volume )
 {
 	this->setLocalizationLanguage( true ) ;
@@ -415,14 +425,14 @@ void sirikali::setUpApp( const QString& volume )
 		}
 	} ) ;
 
-	connect( m_ui->tableWidget,SIGNAL( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ),
-		 this,SLOT( slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) ) ;
+	connect( m_ui->tableWidget,
+		 &QTableWidget::currentItemChanged,
+		 this,
+		 &sirikali::slotCurrentItemChanged ) ;
 
-	connect( m_ui->pbupdate,SIGNAL( clicked() ),
-		 this,SLOT( pbUpdate() ) ) ;
+	connect( m_ui->pbupdate,&QPushButton::clicked,this,&sirikali::pbUpdate ) ;
 
-	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),
-		 this,SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
+	connect( m_ui->tableWidget,&QTableWidget::itemClicked,this,&sirikali::itemClicked ) ;
 
 	if( engines::instance().atLeastOneDealsWithFiles() ){
 
@@ -533,84 +543,37 @@ void sirikali::setUpAppMenu()
 
 	m->setFont( this->font() ) ;
 
-	auto _addAction = [ this ]( bool p,bool q,const QString& e,const char * z,const char * s ){
-
-		auto ac = new QAction( e,this ) ;
-
-		m_actionPair.emplace_back( ac,z ) ;
-
-		ac->setFont( this->font() ) ;
-
-		if( p ){
-
-			ac->setCheckable( p ) ;
-			ac->setChecked( q ) ;
-
-			if( s ){
-
-				connect( ac,SIGNAL( toggled( bool ) ),this,s ) ;
-			}
-
-		}else if( s ){
-
-			connect( ac,SIGNAL( triggered() ),this,s ) ;
-		}
-
-		return ac ;
-	} ;
-
-	auto _addMenu = [ this ]( QMenu * m,const QString& r,
-			const char * z,const char * t,const char * s ){
-
-		auto e = m->addMenu( r ) ;
-
-		m_menuPair.emplace_back( e,z ) ;
-
-		e->setFont( this->font() ) ;
-
-		if( t ){
-
-			connect( e,SIGNAL( triggered( QAction * ) ),this,t ) ;
-		}
-
-		if( s ){
-
-			connect( e,SIGNAL( aboutToShow() ),this,s ) ;
-		}
-
-		return e ;
-	} ;
-
 	if( utility::platformIsNOTWindows() ){
 
-		auto ac = _addAction( false,false,tr( "Check For Updates" ),"Check For Updates",
-				      SLOT( updateCheck() ) ) ;
+		auto mm = &sirikali::updateCheck ;
+
+		auto ac = this->addAction( tr( "Check For Updates" ),"Check For Updates",mm ) ;
 
 		ac->setEnabled( checkUpdates::hasNetworkSupport() ) ;
 
 		m->addAction( ac ) ;
 	}
-	m->addAction( _addAction( false,false,tr( "Unmount All" ),
-				  "Unmount All",SLOT( unMountAll() ) ) ) ;
 
-	m->addAction( _addAction( false,false,tr( "Unmount All And Quit" ),
-				  "Unmount All And Quit",SLOT( unMountAllAndQuit() ) ) ) ;
+	m->addAction( this->addAction( tr( "Unmount All" ),"Unmount All",&sirikali::unMountAll ) ) ;
 
-	m_ui->pbFavorites->setMenu( _addMenu( new QMenu( this ),tr( "Favorites" ),"Favorites",
-				    SLOT( favoriteClicked( QAction * ) ),
-				    SLOT( showFavorites() ) ) ) ;
+	auto mm = &sirikali::unMountAllAndQuit ;
+	m->addAction( this->addAction( tr( "Unmount All And Quit" ),"Unmount All And Quit",mm ) ) ;
 
-	m->addAction( _addAction( false,false,tr( "Settings" ),"Settings",
-				  SLOT( configurationOptions() ) ) ) ;
+	auto mmm = &sirikali::favoriteClickedA ;
+	auto eee = &sirikali::showFavorites ;
+	auto ss = this->addMenu( new QMenu( this ),tr( "Favorites" ),"Favorites",mmm,eee ) ;
 
-	m->addAction( _addAction( false,false,tr( "About" ),"About",SLOT( licenseInfo() ) ) ) ;
+	m_ui->pbFavorites->setMenu( ss ) ;
 
-	m->addAction( _addAction( false,false,tr( "FAQ" ),"FAQ",SLOT( FAQ() ) ) ) ;
+	m->addAction( this->addAction( tr( "Settings" ),"Settings",&sirikali::configurationOptions ) ) ;
 
-	m->addAction( _addAction( false,false,tr( "Show/Hide" ),
-				  "Show/Hide",SLOT( slotTrayClicked() ) ) ) ;
+	m->addAction( this->addAction( tr( "About" ),"About",&sirikali::licenseInfo ) ) ;
 
-	m->addAction( _addAction( false,false,tr( "Quit" ),"Quit",SLOT( closeApplication() ) ) ) ;
+	m->addAction( this->addAction( tr( "FAQ" ),"FAQ",&sirikali::FAQ ) ) ;
+
+	m->addAction( this->addAction( tr( "Show/Hide" ),"Show/Hide",&sirikali::trayClickedq ) ) ;
+
+	m->addAction( this->addAction( tr( "Quit" ),"Quit",&sirikali::closeApp ) ) ;
 
 	this->showFavorites() ;
 
@@ -622,9 +585,6 @@ void sirikali::setUpAppMenu()
 
 		m_trayIcon.setContextMenu( m_main_menu ) ;
 	}
-
-	connect( &m_trayIcon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),
-		 this,SLOT( slotTrayClicked( QSystemTrayIcon::ActivationReason ) ) ) ;
 }
 
 void sirikali::configurationOptions()
@@ -703,7 +663,7 @@ void sirikali::mountFavorite( const QString& e )
 	} ) ;
 }
 
-void sirikali::favoriteClicked( QAction * ac )
+void sirikali::favoriteClickedA( QAction * ac )
 {
 	auto e = ac->objectName() ;
 
@@ -1469,33 +1429,22 @@ void sirikali::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 	m.setFont( this->font() ) ;
 
-	auto _addAction = [ & ]( const auto& txt,const char * slot ){
-
-		auto ac = m.addAction( txt ) ;
-
-		connect( ac,SIGNAL( triggered() ),this,slot ) ;
-	} ;
-
 	auto oo = settings::instance().openWith() ;
 
 	if( oo.size() > 1 ){
 
-		_addAction( tr( "Open Folder With %1" ).arg( oo.at( 0 ) ),SLOT( openWith() ) ) ;
+		auto e = tr( "Open Folder With %1" ).arg( oo.at( 0 ) ) ;
+
+		this->addAction( m,e,&sirikali::openWith ) ;
 	}
 
-	//_addAction( tr( "Open Parent Folder" ),SLOT( slotOpenParentFolder() ) ) ;
+	this->addAction( m,tr( "Open Folder" ),&sirikali::slotOpenFolder ) ;
 
-	_addAction( tr( "Open Folder" ),SLOT( slotOpenFolder() ) ) ;
+	this->addAction( m,tr( "Unmount" ),&sirikali::pbUmount ) ;
 
-	_addAction( tr( "Unmount" ),SLOT( pbUmount() ) ) ;
+	this->addAction( m,tr( "Properties" ),&sirikali::volumeProperties ) ;
 
-	_addAction( tr( "Properties" ),SLOT( volumeProperties() ) ) ;
-
-	_addAction( tr( "Add To Favorites" ),SLOT( addToFavorites() ) ) ;
-
-	m.addSeparator() ;
-
-	m.addAction( tr( "Close Menu" ) ) ;
+	this->addAction( m,tr( "Add To Favorites" ),&sirikali::addToFavorites ) ;
 
 	if( itemClicked ){
 
@@ -1652,32 +1601,21 @@ void sirikali::hideWindow()
 
 void sirikali::setUpShortCuts()
 {
-	auto _addAction = [ this ]( std::initializer_list< QKeySequence > s,const char * slot ){
+	QWidget::addAction( this->addAction( { Qt::Key_Enter,Qt::Key_Return },&sirikali::defaultButton ) ) ;
 
-		auto ac = new QAction( this ) ;
+	QWidget::addAction( this->addAction( { Qt::Key( Qt::CTRL ) + Qt::Key::Key_F },&sirikali::favoriteClicked ) ) ;
 
-		ac->setShortcuts( s ) ;
+	QWidget::addAction( this->addAction( { Qt::Key_U },&sirikali::pbUmount ) ) ;
 
-		connect( ac,SIGNAL( triggered() ),this,slot ) ;
+	QWidget::addAction( this->addAction( { Qt::Key_R },&sirikali::pbUpdate ) ) ;
 
-		return ac ;
-	} ;
+	QWidget::addAction( this->addAction( { Qt::Key( Qt::CTRL ) + Qt::Key::Key_W },&sirikali::hideWindow ) ) ;
 
-	this->addAction( _addAction( { Qt::Key_Enter,Qt::Key_Return },SLOT( defaultButton() ) ) ) ;
+	QWidget::addAction( this->addAction( { Qt::Key( Qt::CTRL ) + Qt::Key::Key_B },&sirikali::createbackendwindow ) ) ;
 
-	this->addAction( _addAction( { Qt::Key( Qt::CTRL ) + Qt::Key::Key_F },SLOT( favoriteClicked() ) ) ) ;
+	QWidget::addAction( [ & ](){
 
-	this->addAction( _addAction( { Qt::Key_U },SLOT( pbUmount() ) ) ) ;
-
-	this->addAction( _addAction( { Qt::Key_R },SLOT( pbUpdate() ) ) ) ;
-
-	this->addAction( _addAction( { Qt::Key( Qt::CTRL ) + Qt::Key::Key_W },SLOT( hideWindow() ) ) ) ;
-
-	this->addAction( _addAction( { Qt::Key( Qt::CTRL ) + Qt::Key::Key_B },SLOT( createbackendwindow() ) ) ) ;
-
-	this->addAction( [ & ](){
-
-		auto e = _addAction( { Qt::Key( Qt::CTRL ) + Qt::Key::Key_Q },SLOT( closeApplication() ) ) ;
+		auto e = this->addAction( { Qt::Key( Qt::CTRL ) + Qt::Key::Key_Q },&sirikali::closeApp )  ;
 
 		e->setMenuRole( QAction::QuitRole ) ;
 
@@ -1686,7 +1624,7 @@ void sirikali::setUpShortCuts()
 		return e ;
 	}() ) ;
 
-	this->addAction( _addAction( { Qt::Key( Qt::CTRL ) + Qt::Key::Key_D },SLOT( showDebugWindow() ) ) ) ;
+	QWidget::addAction( this->addAction( { Qt::Key( Qt::CTRL ) + Qt::Key::Key_D },&sirikali::showDebugWindow ) ) ;
 }
 
 void sirikali::showDebugWindow()
@@ -1707,7 +1645,7 @@ void sirikali::closeEvent( QCloseEvent * e )
 	this->hide() ;
 }
 
-void sirikali::slotTrayClicked( QSystemTrayIcon::ActivationReason e )
+void sirikali::trayClicked( QSystemTrayIcon::ActivationReason e )
 {
 	if( e == QSystemTrayIcon::Trigger ){
 
@@ -2060,15 +1998,21 @@ void sirikali::updateFavoritesInContextMenu()
 
 		m_context_menu = new QMenu( this ) ;
 
+		connect( m_context_menu,&QMenu::aboutToShow,[ this ](){
+
+			this->updateAgainFavoritesInContextMenu() ;
+		} ) ;
+
 		connect( m_context_menu,&QMenu::triggered,[ this ]( QAction * ac ){
 
 			if( ac->isCheckable() ){
 
 				if( ac->isChecked() ){
 
-					this->favoriteClicked( ac ) ;
+					this->favoriteClickedA( ac ) ;
 				}else{
-					auto b = mountedVolumes( m_ui->tableWidget ).row( ac->objectName() ) ;
+					auto a = ac->objectName() ;
+					auto b = mountedVolumes( m_ui->tableWidget ).row( a ) ;
 
 					if( b != -1 ){
 
@@ -2077,13 +2021,16 @@ void sirikali::updateFavoritesInContextMenu()
 					}
 				}
 			}else{
-				this->favoriteClicked( ac ) ;
+				this->favoriteClickedA( ac ) ;
 			}
 		} ) ;
 
 		m_trayIcon.setContextMenu( m_context_menu ) ;
 	}
+}
 
+void sirikali::updateAgainFavoritesInContextMenu()
+{
 	auto e = settings::instance().readFavorites( m_context_menu ) ;
 
 	auto s = m_context_menu->actions() ;
@@ -2255,6 +2202,11 @@ void sirikali::pbUmount()
 
 		m_mountInfo.announceEvents( true ) ;
 	}
+}
+
+void sirikali::trayClickedq()
+{
+	this->trayClicked( QSystemTrayIcon::ActivationReason::Trigger ) ;
 }
 
 void sirikali::emergencyShutDown()
