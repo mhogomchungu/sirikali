@@ -1280,6 +1280,7 @@ void favorites2::updateFavorite( bool edit )
 	e.postMountCommand     = m_ui->lineEditPostMount->text() ;
 	e.postUnmountCommand   = m_ui->lineEditPostUnmount->text() ;
 	e.reverseMode          = m_ui->cbReverseMode->isChecked() ;
+	e.readOnlyMode         = m_ui->cbReadOnlyMode->isChecked() ;
 
 	if( likeSsh ){
 

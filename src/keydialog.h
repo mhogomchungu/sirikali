@@ -163,7 +163,8 @@ class keyDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	struct entry{
+	struct entry
+	{
 		entry()
 		{
 		}

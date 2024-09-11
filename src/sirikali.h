@@ -191,7 +191,8 @@ private:
 		this->mountMultipleVolumes( std::move( mm ) ) ;
 	}
 
-	struct mountedEntry{
+	struct mountedEntry
+	{
 		const QString& cipherPath ;
 		const QString& mountPoint ;
 		const QString& volumeType ;

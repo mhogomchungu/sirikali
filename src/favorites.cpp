@@ -56,9 +56,23 @@ static QString _create_path( const QString& m,const favorites::entry& e,bool new
 
 		auto b = e.volumePath + e.mountPointPath ;
 
+		if( e.readOnlyMode.True() ){
+
+			b += "ro" ;
+		}else{
+			b += "rw" ;
+		}
+
 		return m + a + "-" + crypto::sha256( b ) + ".json" ;
 	}else{
 		auto b = a + e.mountPointPath ;
+
+		if( e.readOnlyMode.True() ){
+
+			b += "ro" ;
+		}else{
+			b += "rw" ;
+		}
 
 		return m + a + "-" + crypto::sha256( b ) + ".json" ;
 	}
@@ -353,6 +367,28 @@ favorites::entry::entry()
 favorites::entry::entry( const QString& e,const QString& mountPath ) :
 	volumePath( e ),mountPointPath( mountPath )
 {
+}
+
+bool favorites::entry::match( const QString& volumePath,const QString& mountPointPath ) const
+{
+	auto m = this->volumePathOpenMode() ;
+
+	if( mountPointPath.isEmpty() ){
+
+		return m == volumePath ;
+	}else{
+		return m == volumePath && this->mountPointPath == mountPointPath ;
+	}
+}
+
+QString favorites::entry::volumePathOpenMode() const
+{
+	if( this->readOnlyMode.True() ){
+
+		return this->volumePath + "(ro)" ;
+	}else{
+		return this->volumePath + "(rw)" ;
+	}
 }
 
 void favorites::volEntry::setAutoMount( bool s )

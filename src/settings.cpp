@@ -782,81 +782,91 @@ int settings::delayBeforeAutoMountAtStartup()
 	return m_settings.value( "DelayBeforeAutoMountAtStartup" ).toInt() ;
 }
 
+bool settings::cipherPathRepeats( const std::vector< favorites::entry >& favorites )
+{
+	for( auto it = favorites.begin() ; it != favorites.end() ; it++ ){
+
+		for( auto xt = it + 1 ; xt != favorites.end() ; xt++ ){
+
+			if( it->volumePath == xt->volumePath ){
+
+				return true ;
+			}
+		}
+	}
+
+	return false ;
+}
+
+bool settings::showCipherPathAndMountPath(bool cipherPathRepeatsInFavoritesList)
+{
+	if( cipherPathRepeatsInFavoritesList ){
+
+		return true ;
+	}else{
+		return this->showCipherFolderAndMountPathInFavoritesList() ;
+	}
+}
+
+bool settings::enableEntry( const QString& e )
+{
+	if( e.isEmpty() ){
+
+		return true ;
+
+	}else if( e.startsWith( "sshfs ",Qt::CaseInsensitive ) ){
+
+		return true ;
+	}else{
+		return QFile::exists( e ) ;
+	}
+}
+
+QAction * settings::addAaction( QMenu * m,const QString& e,const QString& s,const QString& u )
+{
+	auto ac = new QAction( m ) ;
+
+	ac->setText( e ) ;
+	ac->setObjectName( s ) ;
+	ac->setEnabled( this->enableEntry( u ) ) ;
+
+	return ac ;
+}
+
 bool settings::readFavorites( QMenu * m )
 {
 	m->clear() ;
 
-	auto _enable_entry = []( const QString& e ){
-
-		if( e.startsWith( "sshfs ",Qt::CaseInsensitive ) ){
-
-			return true ;
-		}else{
-			return QFile::exists( e ) ;
-		}
-	} ;
-
-	auto _add_action = [ m ]( const QString& e,const QString& s,bool enable = true ){
-
-		auto ac = new QAction( m ) ;
-
-		ac->setText( e ) ;
-		ac->setObjectName( s ) ;
-		ac->setEnabled( enable ) ;
-
-		return ac ;
-	} ;
-
-	m->addAction( _add_action( QObject::tr( "Manage Favorites" ),"Manage Favorites" ) ) ;
-	m->addAction( _add_action( QObject::tr( "Mount All" ),"Mount All" ) ) ;
+	m->addAction( this->addAaction( m,QObject::tr( "Manage Favorites" ),"Manage Favorites","" ) ) ;
+	m->addAction( this->addAaction( m,QObject::tr( "Mount All" ),"Mount All","" ) ) ;
 
 	m->addSeparator() ;
 
 	const auto& favorites = favorites::instance().readFavorites() ;
 
-	bool cipherPathRepeatsInFavoritesList = false ;
+	bool mm = this->cipherPathRepeats( favorites ) ;
 
-	for( auto it = favorites.begin() ; it != favorites.end() ; it++ ){
+	auto s = this->showCipherPathAndMountPath( mm ) ;
 
-		for( auto xt = it + 1 ; xt != favorites.end() ; xt++ ){
-
-			if( ( *it ).volumePath == ( *xt ).volumePath ){
-
-				cipherPathRepeatsInFavoritesList = true ;
-				break ;
-			}
-		}
-	}
-
-	auto _showCipherPathAndMountPath = [ & ](){
-
-		if( cipherPathRepeatsInFavoritesList ){
-
-			return true ;
-		}else{
-			return this->showCipherFolderAndMountPathInFavoritesList() ;
-		}
-	}() ;
-
-	if( _showCipherPathAndMountPath ){
+	if( s ){
 
 		for( const auto& it : favorites ){
 
-			const auto& e = it.volumePath + "\n" + it.mountPointPath ;
+			auto e = it.volumePathOpenMode() + "\n" + it.mountPointPath ;
 
-			m->addAction( _add_action( e,e,_enable_entry( it.volumePath ) ) ) ;
+			m->addAction( this->addAaction( m,e,e,it.volumePath ) ) ;
 			m->addSeparator() ;
 		}
 	}else{
 		for( const auto& it : favorites ){
 
-			const auto& e = it.volumePath ;
+			auto e = it.volumePathOpenMode() ;
 
-			m->addAction( _add_action( e,e,_enable_entry( it.volumePath ) ) ) ;
+			m->addAction( this->addAaction( m,e,e,it.volumePath ) ) ;
 		}
 	}
 
-	return _showCipherPathAndMountPath ;
+	return s ;
 }
 
 void settings::setDefaultMountPointPrefix( const QString& path )

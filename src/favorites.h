@@ -31,7 +31,8 @@
 class favorites
 {
 public:
-	class triState{
+	class triState
+	{
 	public:
 		triState() : m_state( triState::STATES::UNDEFINED )
 		{
@@ -92,7 +93,7 @@ public:
 					json[ entry ] = "false" ;
 				}
 			}else{
-				json[ entry ] = "" ;
+				json[ entry ] = "false" ;
 			}
 		}
 		static void readTriState( SirikaliJson& json,
@@ -101,9 +102,11 @@ public:
 		{
 			auto s = json.getString( entry ) ;
 
-			if( !s.isEmpty() ){
+			if( s.isEmpty() || s == "false" ){
 
-				state = s == "true" ? true : false ;
+				state = false ;
+			}else{
+				state = true ;
 			}
 		}
 	private:
@@ -143,6 +146,9 @@ public:
 
 		favorites::triState readOnlyMode ;
 		favorites::triState autoMount ;
+
+		bool match( const QString& cipherPath,const QString& mountPath ) const ;
+		QString volumePathOpenMode() const ;
 	};
 
 	static favorites& instance()
@@ -151,7 +157,8 @@ public:
 		return m ;
 	}
 
-	class volEntry{
+	class volEntry
+	{
 	public:
 		volEntry() : m_favorite( std::addressof( favorites::entry::empty() ) )
 		{

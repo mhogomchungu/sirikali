@@ -633,18 +633,6 @@ void sirikali::mountAll()
 
 void sirikali::mountFavorite( const QString& e )
 {
-	auto _found = [ & ]( const favorites::entry& s,
-			     const QString& mountPointPath,
-			     const QString& volumePath ){
-
-		if( mountPointPath.isEmpty() ){
-
-			return s.volumePath == volumePath ;
-		}else{
-			return s.volumePath == volumePath && s.mountPointPath == mountPointPath ;
-		}
-	} ;
-
 	QString volumePath ;
 	QString mountPointPath ;
 
@@ -652,7 +640,7 @@ void sirikali::mountFavorite( const QString& e )
 
 	favorites::instance().entries( [ & ]( const favorites::entry& e ){
 
-		if( _found( e,mountPointPath,volumePath ) ){
+		if( e.match( volumePath,mountPointPath ) ){
 
 			this->autoUnlockAutoMount( e,true ) ;
 

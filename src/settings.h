@@ -38,7 +38,8 @@
 #include <array>
 #include <functional>
 
-class settings{
+class settings
+{
 public:
 	class walletBackEnd
 	{
@@ -112,7 +113,7 @@ public:
 			const char * UINameUnTranslated ;
 			QString internalName ;
 		} ;
-		void clear( void ) ;
+		void clear() ;
 		QTranslator * m_translator = nullptr ;
 		std::vector< entry > m_languages ;
 	} ;
@@ -158,7 +159,7 @@ public:
 	bool enableHighDpiScaling() ;
 	void enableHighDpiScaling( bool ) ;
 	void showDebugWindowOnStartup( bool ) ;
-	bool showDebugWindowOnStartup( void ) ;
+	bool showDebugWindowOnStartup() ;
 	QByteArray enabledHighDpiScalingFactor() ;
 	void enabledHighDpiScalingFactor( const QString& ) ;
 	void removeKey( const QString& ) ;
@@ -194,7 +195,7 @@ public:
 	void autoMountFavoritesOnAvailable( bool ) ;
 	bool autoMountFavoritesOnAvailable() ;
 	void showFavoritesInContextMenu( bool ) ;
-	bool showFavoritesInContextMenu( void ) ;
+	bool showFavoritesInContextMenu() ;
 	int networkTimeOut() ;
 	bool showMountDialogWhenAutoMounting() ;
 	bool showUnlockedVolumesFromAllUsers() ;
@@ -219,16 +220,20 @@ public:
 	QString localizationLanguagePath() ;
 	void languageMenu( QMenu * m,QAction * ac,settings::translator& ) ;
 	void setLocalizationLanguage( bool translate,QMenu * m,settings::translator& ) ;
-	QString walletName( void ) ;
-	QString applicationName( void ) ;
+	QString walletName() ;
+	QString applicationName() ;
 	int readPasswordMaximumLength() ;
-	bool unMountVolumesOnLogout( void ) ;
-	QStringList mountMonitorFolderPaths( void ) ;
-	QStringList supportedFileSystemsOnMountPaths( void ) ;
-	QString gvfsFuseMonitorPath( void ) ;
-	int mountMonitorFolderPollingInterval( void ) ;
+	bool unMountVolumesOnLogout() ;
+	QStringList mountMonitorFolderPaths() ;
+	QStringList supportedFileSystemsOnMountPaths() ;
+	QString gvfsFuseMonitorPath() ;
+	int mountMonitorFolderPollingInterval() ;
 	int delayBeforeAutoMountAtStartup() ;
 private:
+	bool cipherPathRepeats( const std::vector< favorites::entry >& ) ;
+	bool showCipherPathAndMountPath( bool ) ;
+	bool enableEntry( const QString& e ) ;
+	QAction * addAaction( QMenu * m,const QString& e,const QString& s,const QString& ) ;
 	std::unique_ptr< QSettings > m_settingsP ;
 	QSettings& m_settings ;
 	bool m_portableVersion ;
