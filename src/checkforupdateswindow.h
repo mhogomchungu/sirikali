@@ -66,7 +66,7 @@ public:
 		QJsonObject data ;
 	} ;
 	void add( const checkforupdateswindow::args& ) ;
-	void done( bool ) ;
+	void doneUpdating( bool ) ;
 	void Show() ;
 	~checkforupdateswindow() ;
 signals:
@@ -179,7 +179,6 @@ private:
 	utils::network::manager& m_network ;
 	locale m_locale ;
 	QString m_binPath ;
-	bool m_autoUpdate ;
 	int m_position = -1 ;
 };
 

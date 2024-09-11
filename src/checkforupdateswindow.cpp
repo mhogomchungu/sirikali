@@ -50,7 +50,7 @@ checkforupdateswindow::checkforupdateswindow( QWidget * parent,
 {
 	m_ui->setupUi( this ) ;
 
-	m_ui->label->setVisible( false ) ;
+	m_ui->pbOK->setEnabled( false ) ;
 
 	m_ui->tableWidget->setEnabled( false ) ;
 
@@ -126,16 +126,15 @@ void checkforupdateswindow::add( const checkforupdateswindow::args& e )
 	m_ui->tableWidget->setCurrentCell( row,0 ) ;
 }
 
-void checkforupdateswindow::done( bool s )
+void checkforupdateswindow::doneUpdating( bool s )
 {
-	m_autoUpdate = s ;
-
-	if( m_autoUpdate ){
+	if( s ){
 
 		m_position = 0 ;
 
 		this->update( m_position ) ;
 	}else{
+		m_ui->pbOK->setEnabled( true ) ;
 		m_ui->tableWidget->setEnabled( true ) ;
 	}
 }

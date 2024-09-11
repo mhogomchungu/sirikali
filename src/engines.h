@@ -107,7 +107,7 @@ public:
 		virtual ~cache()
 		{
 		}
-	private:
+	protected:
 		std::function< Type() > m_function ;
 		mutable Type m_variable ;
 		mutable bool m_unset = true ;
@@ -198,8 +198,15 @@ public:
 
 	class exeFullPath : public cache< QString >{
 	public:
-	        exeFullPath( std::function< QString() > s ) : cache( std::move( s ) )
+		template< typename T >
+		exeFullPath( T s ) : cache( std::move( s ) )
 		{
+		}
+		template< typename T >
+		void operator=( T s )
+		{
+			m_function = std::move( s ) ;
+			m_unset = true ;
 		}
 	private:
 		virtual void silenceWarning() ;
@@ -932,6 +939,47 @@ public:
 			QString m_mode ;
 		};
 	private:
+		class version
+		{
+		public:
+			version( const engines::engine& e ) : m_engine( e )
+			{
+			}
+			engines::engineVersion operator()()
+			{
+				return m_engine.installedVersionImpl() ;
+			}
+		private:
+			const engines::engine& m_engine ;
+		} ;
+		class fullPath
+		{
+		public:
+			fullPath( const engines::engine& engine ) : m_engine( engine )
+			{
+			}
+			QString operator()()
+			{
+				for( const auto& it : m_engine.m_Options.executableNames ){
+
+					auto s = engines::executableFullPath( it,m_engine ) ;
+
+					if( !s.isEmpty() ){
+
+						return s ;
+					}
+				}
+
+				return QString() ;
+			}
+		private:
+			const engines::engine& m_engine ;
+		} ;
+
+		QProcessEnvironment setEnv() const ;
+		engines::engineVersion installedVersionImpl() const ;
+		engines::engineVersion installedVersion( const BaseOptions::vInfo& ) const ;
+
 		const BaseOptions m_Options ;
 		const QProcessEnvironment m_processEnvironment ;
 		mutable engines::exeFullPath m_exeFullPath ;

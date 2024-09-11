@@ -774,20 +774,19 @@ static QString _sanitizeVersionString( const QString& s )
 	return m ;
 }
 
-static engines::engineVersion _installedVersion( engines::exeFullPath& javaExe,
-						 const engines::engine& e,
-						 const QProcessEnvironment env,
-						 const engines::engine::BaseOptions::vInfo& v )
+engines::engineVersion engines::engine::installedVersion( const engines::engine::BaseOptions::vInfo& v ) const
 {
-	const auto& cmd = e.executableFullPath() ;
+	const auto& cmd = this->executableFullPath() ;
 
 	const auto r = [ & ](){
 
-		if( e.needsJava() ){
+		auto& env = m_processEnvironment ;
+
+		if( this->needsJava() ){
 
 			QStringList args{ "-jar",cmd,v.versionArgument } ;
 
-			auto& e = ::Task::process::run( javaExe.get(),args,-1,{},env ) ;
+			auto& e = ::Task::process::run( m_exeJavaFullPath.get(),args,-1,{},env ) ;
 
 			return utility::unwrap( e ) ;
 		}else{
@@ -819,37 +818,33 @@ static engines::engineVersion _installedVersion( engines::exeFullPath& javaExe,
 	return {} ;
 }
 
-template< typename T >
-static engines::engineVersion _installedVersion( engines::exeFullPath& javaExe,
-						 const engines::engine& e,
-						 const QProcessEnvironment env,
-						 const T& v )
+engines::engineVersion engines::engine::installedVersionImpl() const
 {
-	for( const auto& it : v ){
+	for( const auto& it : m_Options.versionInfo ){
 
-		auto m = _installedVersion( javaExe,e,env,it ) ;
+		auto m = this->installedVersion( it ) ;
 
 		if( m.valid() ){
 
 			return m ;
 		}else{
 			QString s = "An attempt to get version info for backend \"%2\" has failed, retrying..." ;
-			utility::debug() << s.arg( e.name() ) ;
+			utility::debug() << s.arg( this->name() ) ;
 		}
 	}
 
-	utility::debug() << QString( "Failed to get version info for backend \"%2\"." ).arg( e.name() ) ;
+	utility::debug() << QString( "Failed to get version info for backend \"%2\"." ).arg( this->name() ) ;
 
 	return {} ;
 }
 
-static QProcessEnvironment _set_env( const engines::engine& engine )
+QProcessEnvironment engines::engine::setEnv() const
 {
 	auto m = utility::systemEnvironment() ;
 
 	if( utility::platformIsWindows() ){
 
-		auto e = engines::executableSearchPaths( engine ).join( ';' ) ;
+		auto e = engines::executableSearchPaths( *this ).join( ';' ) ;
 
 		m.insert( "PATH",e + ";" + m.value( "PATH" ) ) ;
 	}
@@ -970,29 +965,11 @@ engines::exeFullPath engines::engine::m_exeFuserMount( [](){
 	return e ;
 } ) ;
 
-static std::function< QString() > _exe_full_path( const QStringList& exe,const engines::engine& engine )
-{
-	return [ & ](){
-
-		for( const auto& it : exe ){
-
-			auto s = engines::executableFullPath( it,engine ) ;
-
-			if( !s.isEmpty() ){
-
-				return s ;
-			}
-		}
-
-		return QString() ;
-	} ;
-}
-
 engines::engine::engine( engines::engine::BaseOptions o ) :
 	m_Options( _update( std::move( o ) ) ),
-	m_processEnvironment( _set_env( *this ) ),
-	m_exeFullPath( _exe_full_path( m_Options.executableNames,*this ) ),
-	m_version( this->name(),[ this ](){ return _installedVersion( m_exeJavaFullPath,*this,m_processEnvironment,m_Options.versionInfo ) ; } )
+	m_processEnvironment( this->setEnv() ),
+	m_exeFullPath( engines::engine::fullPath( *this ) ),
+	m_version( this->name(),engines::engine::version( *this ) )
 {
 }
 
@@ -1003,8 +980,8 @@ const QString& engines::engine::executableFullPath() const
 
 void engines::engine::updateExecutableFullPath() const
 {
-	m_version     = { this->name(),[ this ](){ return _installedVersion( m_exeJavaFullPath,*this,m_processEnvironment,m_Options.versionInfo ) ; } } ;
-	m_exeFullPath = _exe_full_path( m_Options.executableNames,*this ) ;
+	m_version     = { this->name(),engines::engine::version( *this ) } ;
+	m_exeFullPath = engines::engine::fullPath( *this ) ;
 }
 
 const QString& engines::engine::javaFullPath()

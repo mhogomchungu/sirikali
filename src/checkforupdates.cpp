@@ -58,7 +58,7 @@ void checkUpdates::check()
 	auto& m = checkforupdateswindow::instance( m_widget,m_functions,m_network ) ;
 
 	connect( this,&checkUpdates::update,&m,&checkforupdateswindow::add ) ;
-	connect( this,&checkUpdates::done,&m,&checkforupdateswindow::done ) ;
+	connect( this,&checkUpdates::done,&m,&checkforupdateswindow::doneUpdating ) ;
 
 	connect( &m,&checkforupdateswindow::closed,[ this ](){
 
