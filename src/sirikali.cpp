@@ -1589,17 +1589,25 @@ void sirikali::hideWindow()
 
 void sirikali::setUpShortCuts()
 {
+	auto modifier = static_cast< Qt::Key >( Qt::CTRL ) ;
+
 	QWidget::addAction( this->addAction( { Qt::Key_Enter,Qt::Key_Return },&sirikali::defaultButton ) ) ;
 
-	QWidget::addAction( this->addAction( { Qt::Key( Qt::CTRL ) + Qt::Key::Key_F },&sirikali::favoriteClicked ) ) ;
+	QWidget::addAction( this->addAction( { modifier + Qt::Key::Key_E },&sirikali::favoriteClicked ) ) ;
 
-	QWidget::addAction( this->addAction( { Qt::Key_U },&sirikali::pbUmount ) ) ;
+	QWidget::addAction( this->addAction( { modifier + Qt::Key::Key_F },&sirikali::showFavorites ) ) ;
 
-	QWidget::addAction( this->addAction( { Qt::Key_R },&sirikali::pbUpdate ) ) ;
+	QWidget::addAction( this->addAction( { modifier+ Qt::Key::Key_U },&sirikali::pbUmount ) ) ;
 
-	QWidget::addAction( this->addAction( { Qt::Key( Qt::CTRL ) + Qt::Key::Key_W },&sirikali::hideWindow ) ) ;
+	QWidget::addAction( this->addAction( { modifier + Qt::Key::Key_A },&sirikali::unMountAll ) ) ;
 
-	QWidget::addAction( this->addAction( { Qt::Key( Qt::CTRL ) + Qt::Key::Key_B },&sirikali::createbackendwindow ) ) ;
+	QWidget::addAction( this->addAction( { modifier + Qt::Key::Key_S },&sirikali::unMountAllAndQuit ) ) ;
+
+	QWidget::addAction( this->addAction( { modifier + Qt::Key::Key_R },&sirikali::pbUpdate ) ) ;
+
+	QWidget::addAction( this->addAction( { modifier + Qt::Key::Key_W },&sirikali::hideWindow ) ) ;
+
+	QWidget::addAction( this->addAction( { modifier+ Qt::Key::Key_B },&sirikali::createbackendwindow ) ) ;
 
 	QWidget::addAction( [ & ](){
 
