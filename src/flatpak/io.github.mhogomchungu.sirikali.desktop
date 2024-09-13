@@ -1,0 +1,8 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Type=Application
+Name=SiriKali
+Comment=A Qt based GUI frontend to gocryptfs, securefs and cryfs
+Icon=io.github.mhogomchungu.sirikali
+Exec=io.github.mhogomchungu.sirikali
+Categories=Network;Qt

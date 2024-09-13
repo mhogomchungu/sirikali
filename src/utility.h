@@ -303,6 +303,7 @@ namespace utility
 	QStringList splitPreserveQuotes( const QString& e ) ;
 
 	bool platformIsLinux() ;
+	bool platformIsFlatPak() ;
 	bool platformIsOSX() ;
 	bool platformIsWindows() ;
 	bool platformIsNOTWindows() ;

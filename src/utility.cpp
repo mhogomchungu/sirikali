@@ -17,6 +17,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "flatpak.h"
+
 #include "utility.h"
 
 #include <iostream>
@@ -1609,5 +1611,14 @@ QStringList utility::splitPreserveQuotes( const QString& e )
 	return args ;
 #else
 	return QProcess::splitCommand( e ) ;
+#endif
+}
+
+bool utility::platformIsFlatPak()
+{
+#if FLATPAK
+	return true ;
+#else
+	return false ;
 #endif
 }

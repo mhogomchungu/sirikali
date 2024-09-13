@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+
+	<id>io.github.mhogomchungu.sirikali</id>
+
+	<name>SiriKali</name>
+
+	<summary>A GUI to gocryptfs, securefs, cryfs.</summary>
+
+	<metadata_license>FSFAP</metadata_license>
+
+	<project_license>GPL-2.0-or-later</project_license>
+
+	<url type="homepage">https://mhogomchungu.github.io/sirikali</url>
+	<url type="bugtracker">https://github.com/mhogomchungu/sirikali/issues</url>
+
+	<content_rating type="oars-1.1" />
+
+	<developer id="io.github.mhogomchungu">
+		  <name>Francis Banyikwa</name>
+	</developer>
+
+	<description><p>This application make it easy to use CLI based tools to manage folder based encrypted volumes.</p></description>
+
+	<launchable type="desktop-id">io.github.mhogomchungu.sirikali.desktop</launchable>
+
+	<screenshots>
+		<screenshot>
+			<image>https://raw.githubusercontent.com/mhogomchungu/sirikali/mmm/images/sirikali-2.png</image>
+		</screenshot>
+		<screenshot  type="default">
+			<image>https://raw.githubusercontent.com/mhogomchungu/sirikali/mmm/images/sirikali-3.png</image>
+		</screenshot>
+	</screenshots>
+
+	<categories>
+		<category>Network</category>
+		<category>Qt</category>
+	</categories>
+
+	<releases>
+		<release version="1.7.0" type="stable" date="2024-10-01" >
+			<url type="details">https://github.com/mhogomchungu/sirikali/releases/download/$version/sirikali-$version.tar.xz/</url>
+			<description>
+				<p>Changelog</p>
+				<ul>
+					<li>[WINDOWS]</li>
+					<li>  Internally manage securefs and make it possible to update it from within the app.</li>
+					<li>[LINUX]</li>
+					<li> Internally manage gocryptfs and securefs and make it possible to update them from within the app.</li>
+				</ul>
+			</description>
+		</release>
+	</releases>
+
+	<provides>
+		<binary>io.github.mhogomchungu.sirikali</binary>
+	</provides>
+</component>

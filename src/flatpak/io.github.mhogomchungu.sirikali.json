@@ -1,0 +1,30 @@
+{
+    "app-id": "io.github.mhogomchungu.sirikali",
+    "runtime": "org.kde.Platform",
+    "runtime-version": "6.7",
+    "sdk": "org.kde.Sdk",
+    "command": "io.github.mhogomchungu.sirikali",
+    "finish-args": [
+        "--share=ipc",
+        "--socket=wayland",
+        "--socket=fallback-x11",
+        "--filesystem=host",
+        "--filesystem=home",
+        "--share=network",
+        "--device=dri",
+        "--talk-name=org.kde.StatusNotifierWatcher"
+    ],
+    "modules": [
+        {
+            "name": "io.github.mhogomchungu.sirikali",
+            "buildsystem": "cmake-ninja",
+            "config-opts": ["-DCMAKE_BUILD_TYPE=release","-DBUILD_FLATPAK=TRUE"],
+            "sources": [
+                {
+                     "type": "dir",
+                      "path": "../.."
+                }
+            ]
+        }
+    ]
+}

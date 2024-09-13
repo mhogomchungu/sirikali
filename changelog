@@ -283,7 +283,7 @@ version 1.4.2(December 18,2019)
 -- Add support for building with Qt6.
 -- Add support for securefs version >= 1.0.0.
 
-   version 1.6.0(May 09, 2024)
+   version 1.7.0(October 01, 2024)
    [WINDOWS]
 -- Internally manage securefs and make it possible to update it from within the app.
    [LINUX]

@@ -1708,14 +1708,21 @@ engines::engines()
 		m_backends.emplace_back( std::make_unique< gocryptfs >() ) ;
 		m_backends.emplace_back( std::make_unique< encfs >() ) ;
 	}else{
-		m_backends.emplace_back( std::make_unique< securefs >() ) ;
-		m_backends.emplace_back( std::make_unique< cryfs >() ) ;
-		m_backends.emplace_back( std::make_unique< gocryptfs >() ) ;
-		m_backends.emplace_back( std::make_unique< encfs >() ) ;
-		m_backends.emplace_back( std::make_unique< ecryptfs >() ) ;
-		m_backends.emplace_back( std::make_unique< sshfs >() ) ;
-		m_backends.emplace_back( std::make_unique< fscrypt >() ) ;
-		m_backends.emplace_back( std::make_unique< cryptomator >() ) ;
+		if( utility::platformIsFlatPak() ){
+
+			m_backends.emplace_back( std::make_unique< securefs >() ) ;
+			m_backends.emplace_back( std::make_unique< cryfs >() ) ;
+			m_backends.emplace_back( std::make_unique< gocryptfs >() ) ;
+		}else{
+			m_backends.emplace_back( std::make_unique< securefs >() ) ;
+			m_backends.emplace_back( std::make_unique< cryfs >() ) ;
+			m_backends.emplace_back( std::make_unique< gocryptfs >() ) ;
+			m_backends.emplace_back( std::make_unique< encfs >() ) ;
+			m_backends.emplace_back( std::make_unique< ecryptfs >() ) ;
+			m_backends.emplace_back( std::make_unique< sshfs >() ) ;
+			m_backends.emplace_back( std::make_unique< fscrypt >() ) ;
+			m_backends.emplace_back( std::make_unique< cryptomator >() ) ;
+		}
 	}
 
 	custom::addEngines( m_backends ) ;

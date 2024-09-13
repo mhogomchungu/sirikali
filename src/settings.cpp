@@ -67,6 +67,22 @@ static QString _configPath()
 #endif
 }
 
+static QString _documentsPath()
+{
+#if QT_VERSION >= QT_VERSION_CHECK( 5,6,0 )
+
+	auto s = QStandardPaths::standardLocations( QStandardPaths::DocumentsLocation ) ;
+
+	if( s.isEmpty() ){
+
+		return QDir::homePath() + "/Documents" ;
+	}else{
+		return s.first() ;
+	}
+#else
+	return QDir::homePath() + "/Documents" ;
+#endif
+}
 static std::unique_ptr< QSettings > _set_config( const QString& path,bool createFolders )
 {
 	if( createFolders ){
@@ -187,7 +203,12 @@ QString settings::homePath()
 
 		return QDir::homePath() + "/Desktop" ;
 	}else{
-		return QDir::homePath() ;
+		if( utility::platformIsFlatPak() ){
+
+			return _documentsPath() ;
+		}else{
+			return QDir::homePath() ;
+		}
 	}
 }
 
