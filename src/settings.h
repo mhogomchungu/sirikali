@@ -190,6 +190,7 @@ public:
 	void doNotShowReadOnlyWarning( bool ) ;
 	bool autoMountFavoritesOnStartUp() ;
 	bool useDarkMode() ;
+	bool autodownloadMissingEngines() ;
 	void useDarkMode( bool ) ;
 	void autoMountFavoritesOnStartUp( bool ) ;
 	void autoMountFavoritesOnAvailable( bool ) ;

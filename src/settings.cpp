@@ -28,6 +28,7 @@
 #include "readonlywarning.h"
 #include "locale_path.h"
 #include "win.h"
+#include "auto_download_missing_engines.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -1217,6 +1218,27 @@ bool settings::useDarkMode()
 	}
 
 	return m_settings.value( "UseDarkMode" ).toBool() ;
+}
+
+static bool _auto_download_missing_engines()
+{
+#if AUTO_DOWNLOAD_MISSING_ENGINES
+	return true ;
+#else
+	return false ;
+#endif
+}
+
+bool settings::autodownloadMissingEngines()
+{
+	if( !m_settings.contains( "AutodownloadMissingEngines" ) ){
+
+		auto m = _auto_download_missing_engines() ;
+
+		m_settings.setValue( "AutodownloadMissingEngines",m ) ;
+	}
+
+	return m_settings.value( "AutodownloadMissingEngines" ).toBool() ;
 }
 
 void settings::useDarkMode( bool e )

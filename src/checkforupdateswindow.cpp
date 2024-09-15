@@ -188,9 +188,12 @@ void checkforupdateswindow::downloading( Ctx& ctx,const utils::network::progress
 
 			auto mm = this->tableText( row ) ;
 
-			mm.replace( "Downloading","" ) ;
+			const auto& ee = m_opts[ row ].name() ;
 
-			auto m = tr( "Download Complete" ) ;
+			mm.replace( tr( "Downloading %1" ).arg( ee ),"" ) ;
+
+			auto
+					m = tr( "Download Complete" ) ;
 
 			this->tableUpdate( row,m + mm ) ;
 
@@ -231,7 +234,9 @@ void checkforupdateswindow::downloading( Ctx& ctx,const utils::network::progress
 			m = QString( "%1 / %2 (%3%)" ).arg( current,totalSize,percentage ) ;
 		}
 
-		this->tableUpdate( row,tr( "Downloading" ) + "\n" + m ) ;
+		const auto& mm = m_opts[ row ].name() ;
+
+		this->tableUpdate( row,tr( "Downloading %1" ).arg( mm ) + "\n" + m ) ;
 	}
 }
 
@@ -469,6 +474,8 @@ void checkforupdateswindow::update( int row )
 		auto mm = tr( "Failed To Find Archive To Download" ) ;
 
 		this->tableUpdate( row,tr( "Error" ) + "\n" + mm ) ;
+	}else{
+		m_ui->pbOK->setEnabled( true ) ;
 	}
 }
 

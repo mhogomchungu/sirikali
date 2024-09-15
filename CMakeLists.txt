@@ -158,7 +158,8 @@ if(BUILD_WITH_QT6)
 		message( STATUS "Found Qt6Core, version  ${Qt6Core_VERSION}" )
 		message( STATUS "Found Qt6Network, version  ${Qt6Network_VERSION}" )
 	endif()
-   		SET (QTVERSION "${Qt6Core_VERSION}" )
+
+	SET (QTVERSION "${Qt6Core_VERSION}" )
 else()
 	if( UNIX AND NOT APPLE )
 
@@ -175,13 +176,22 @@ else()
 		message( STATUS "Found Qt5Core, version  ${Qt5Core_VERSION}" )
 		message( STATUS "Found Qt5Network, version  ${Qt5Network_VERSION}" )
 	endif()
-		SET (QTVERSION "${Qt5Core_VERSION}" )
+
+	SET (QTVERSION "${Qt5Core_VERSION}" )
 endif()
 
-if(BUILD_FLATPAK)
-	file( WRITE  ${PROJECT_BINARY_DIR}/flatpak.h "\n#define FLATPAK 1\n" )
+set( AUTO_DOWNLOAD_MISSING_ENGINES "ON" )
+
+if( AUTO_DOWNLOAD_MISSING_ENGINES )
+        file( WRITE ${PROJECT_BINARY_DIR}/auto_download_missing_engines.h "\n#define AUTO_DOWNLOAD_MISSING_ENGINES 1\n" )
 else()
-	file( WRITE  ${PROJECT_BINARY_DIR}/flatpak.h "\n#define FLATPAK 0\n" )
+        file( WRITE ${PROJECT_BINARY_DIR}/auto_download_missing_engines.h "\n#define AUTO_DOWNLOAD_MISSING_ENGINES 0\n" )
+endif()
+
+if( BUILD_FLATPAK )
+        file( WRITE ${PROJECT_BINARY_DIR}/flatpak.h "\n#define FLATPAK 1\n" )
+else()
+        file( WRITE ${PROJECT_BINARY_DIR}/flatpak.h "\n#define FLATPAK 0\n" )
 endif()
 
 #pkg_check_modules( MCHUNGU_TASK mhogomchungu_task )

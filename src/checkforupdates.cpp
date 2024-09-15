@@ -85,14 +85,17 @@ void checkUpdates::checkIfInstalled()
 
 	QStringList apps ;
 
-	if( !QFile::exists( basePath + "securefs" ) ){
+	if( settings::instance().autodownloadMissingEngines() ){
 
-		apps.append( "Securefs" ) ;
-	}
+		if( !QFile::exists( basePath + "securefs" ) ){
 
-	if( !QFile::exists( basePath + "gocryptfs" ) ){
+			apps.append( "Securefs" ) ;
+		}
 
-		apps.append( "Gocryptfs" ) ;
+		if( !QFile::exists( basePath + "gocryptfs" ) ){
+
+			apps.append( "Gocryptfs" ) ;
+		}
 	}
 
 	if( apps.isEmpty() ){
