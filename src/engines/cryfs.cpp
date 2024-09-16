@@ -27,14 +27,6 @@ static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
 
-	auto a = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{26116061-4F99-4C44-A178-2153FA396308}" ;
-	auto b = "InstallLocation" ;
-
-	auto c = SiriKali::Windows::engineInstalledDir( a,b ) + "\\bin\\cryfs-unmount.exe" ;
-	s.windowsInstallPathRegistryKey   = a ;
-	s.windowsInstallPathRegistryValue = b ;
-	s.windowsUnMountCommand           = QStringList{ c,"%{mountPoint}" } ;
-
 	s.backendTimeout              = 0 ;
 	s.takesTooLongToUnlock        = false ;
 	s.supportsMountPathsOnWindows = true ;
@@ -66,6 +58,25 @@ static engines::engine::BaseOptions _setOptions()
 	s.failedToMountList     = QStringList{ "Error" } ;
 	s.names                 = QStringList{ "cryfs" } ;
 	s.executableNames       = QStringList{ "cryfs" } ;
+
+	if( utility::platformIsWindows() ){
+
+		auto a = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{26116061-4F99-4C44-A178-2153FA396308}" ;
+		auto b = "InstallLocation" ;
+
+		auto c = SiriKali::Windows::engineInstalledDir( a,b ) + "\\bin\\cryfs-unmount.exe" ;
+
+		s.windowsInstallPathRegistryKey   = a ;
+		s.windowsInstallPathRegistryValue = b ;
+		s.windowsUnMountCommand           = QStringList{ c,"%{mountPoint}" } ;
+	}else{
+		auto m = engines::executableNotEngineFullPath( "cryfs-unmount" ) ;
+
+		if( !m.isEmpty() ){
+
+			s.unMountCommand = QStringList{ m,"%{mountPoint}" } ;
+		}
+	}
 
 	s.notFoundCode          = engines::engine::status::engineExecutableNotFound ;
 	s.versionInfo           = { { "--version",true,2,0 } } ;

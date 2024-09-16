@@ -38,6 +38,7 @@
 #include "crypto.h"
 #include "configfileoption.h"
 #include "processManager.h"
+#include "utils/threads.hpp"
 
 /*
  *
@@ -1134,8 +1135,6 @@ void keyDialog::pbOK()
 
 void keyDialog::encryptedFolderCreate()
 {
-	auto deleteKey = utility2::make_raii( [ & ](){ m_walletKey.deleteKey() ; } ) ;
-
 	auto path = m_ui->lineEditFolderPath->text() ;
 
 	auto m = utility::split( path,'/' ).last() ;
@@ -1177,12 +1176,26 @@ void keyDialog::encryptedFolderCreate()
 		}
 	}
 
-	if( m_engine->takesTooLongToUnlock() ){
+	this->disableAll() ;
+
+	utils::qthread::run( [ this ](){
+
+		return m_engine->takesTooLongToUnlock() ;
+
+	},[ path,m,this ]( bool e ){
+
+		this->encryptedFolderCreate( path,m,e ) ;
+	} ) ;
+}
+
+void keyDialog::encryptedFolderCreate( const QString& path,const QString& m,bool s )
+{
+	auto deleteKey = utility2::make_raii( [ & ](){ m_walletKey.deleteKey() ; } ) ;
+
+	if( s ){
 
 		m_warningLabel.showCreate( m_engine->name() ) ;
 	}
-
-	this->disableAll() ;
 
 	m_working = true ;
 
@@ -1278,12 +1291,24 @@ void keyDialog::encryptedFolderMount()
 		m_engine = { m_engine.get(),m_engine.cipherFolder(),m_mountOptions.configFile } ;
 	}
 
-	if( m_engine->takesTooLongToUnlock() ){
+	this->disableAll() ;
+
+	utils::qthread::run( [ this ](){
+
+		return m_engine->takesTooLongToUnlock() ;
+
+	},[ m,this ]( bool e ){
+
+		this->encryptedFolderMount( m,e ) ;
+	} ) ;
+}
+
+void keyDialog::encryptedFolderMount( const QString& m,bool s )
+{
+	if( s ){
 
 		m_warningLabel.showUnlock( m_engine->name() ) ;
 	}
-
-	this->disableAll() ;
 
 	auto e = siritask::encryptedFolderMount( { { m_path,m,m_key,m_mountOptions },false,m_engine } ) ;
 
