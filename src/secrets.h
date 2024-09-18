@@ -39,14 +39,14 @@ public:
 	class wallet
 	{
 	public:
+		static void setParent( QWidget * w )
+		{
+			m_parent = w ;
+		}
+
 		wallet( LXQt::Wallet::Wallet * ) ;
 
 		~wallet() ;
-
-		void setParent( QWidget * parent )
-		{
-			m_parent = parent ;
-		}
 
 		LXQt::Wallet::Wallet& bk() const
 		{
@@ -105,7 +105,7 @@ public:
 
 		LXQt::Wallet::Wallet * m_wallet = nullptr ;
 
-		QWidget * m_parent = nullptr ;
+		static QWidget * m_parent ;
 	} ;
 
 	LXQt::Wallet::Wallet * walletBk( LXQt::Wallet::BackEnd ) const ;

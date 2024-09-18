@@ -22,6 +22,8 @@
 #include "win.h"
 #include "settings.h"
 
+QWidget * secrets::wallet::m_parent = nullptr ;
+
 void secrets::changeInternalWalletPassword( QWidget * parent,
 					    const QString& walletName,
 					    const QString& appName,
@@ -29,7 +31,8 @@ void secrets::changeInternalWalletPassword( QWidget * parent,
 {
 	auto e = m_backends.get( LXQt::Wallet::BackEnd::internal ) ;
 
-	e->setParent( parent ) ;
+	Q_UNUSED( parent )
+	//e->setParent( parent ) ;
 
 	e->changeWalletPassWord( walletName,appName,[ ff = std::move( ff ) ]( bool q ){
 
@@ -44,7 +47,8 @@ void secrets::changeWindowsDPAPIWalletPassword( QWidget * parent,
 {
 	auto s = m_backends.get( LXQt::Wallet::BackEnd::windows_dpapi ) ;
 
-	s->setParent( parent ) ;
+	Q_UNUSED( parent )
+	//s->setParent( parent ) ;
 
 	s->changeWalletPassWord( walletName,appName,[ f = std::move( f ) ]( bool q ){
 

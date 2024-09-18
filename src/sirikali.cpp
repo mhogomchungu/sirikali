@@ -859,11 +859,6 @@ static int _unlockVolume( const unlockVolumeStruct& s,const QByteArray& key ){
 
 static secrets::wallet::walletKey _walletKey( const unlockVolumeStruct& s,secrets& secrets )
 {
-	Q_UNUSED( s )
-	Q_UNUSED( secrets )
-
-	return secrets::wallet::walletKey() ;
-#if 0
 	using wxt = LXQt::Wallet::BackEnd ;
 
 	auto _supported = [ & ]( wxt e,const char * m ){
@@ -871,39 +866,93 @@ static secrets::wallet::walletKey _walletKey( const unlockVolumeStruct& s,secret
 		return s.backEnd == m && LXQt::Wallet::backEndIsSupported( e ) ;
 	} ;
 
+	LXQt::Wallet::BackEnd bk ;
+
 	if( _supported( wxt::internal,"internal" ) ){
 
-		secrets::wallet w = secrets.walletBk( wxt::internal ) ;
-		return w.getKey( s.volume ) ;
+		bk = wxt::internal ;
+
+		auto& wlt = settings::instance() ;
+
+		auto s = LXQt::Wallet::walletExists( bk,wlt.walletName(),wlt.applicationName() ) ;
+
+		if( !s ){
+
+			return { false,true,"" } ;
+		}
 
 	}else if( _supported( wxt::libsecret,"gnomewallet" ) ||
 		  _supported( wxt::libsecret,"libsecret" ) ){
 
-		secrets::wallet w = secrets.walletBk( wxt::libsecret ) ;
-
-		return w.getKey( s.volume ) ;
+		bk = wxt::libsecret ;
 
 	}else if( _supported( wxt::kwallet,"kwallet" ) ){
 
-		secrets::wallet w = secrets.walletBk( wxt::kwallet ) ;
-
-		return w.getKey( s.volume ) ;
+		bk = wxt::kwallet ;
 
 	}else if( _supported( wxt::osxkeychain,"osxkeychain" ) ){
 
-		secrets::wallet w = secrets.walletBk( wxt::osxkeychain ) ;
-
-		return w.getKey( s.volume ) ;
+		bk = wxt::osxkeychain ;
 
 	}else if( _supported( wxt::windows_dpapi,"windows_dpapi" ) ){
 
-		secrets::wallet w = secrets.walletBk( wxt::windows_dpapi ) ;
-
-		return w.getKey( s.volume ) ;
+		bk = wxt::windows_dpapi ;
 	}else{
 		return secrets::wallet::walletKey{ false,true,"" } ;
 	}
-#endif
+
+	class meaw
+	{
+	public:
+		meaw( secrets::wallet s,
+		      QEventLoop& l,
+		      secrets::wallet::walletKey& key,
+		      const QString& id ) :
+			m_wallet( s ),m_eventLoop( l ),m_key( key ),m_id( id )
+		{
+			m_wallet.open( *this ) ;
+		}
+		void opened()
+		{
+			auto& m = *this ;
+
+			m( true ) ;
+		}
+		void before()
+		{
+		}
+		void after()
+		{
+		}
+		void operator()( bool e )
+		{
+			m_key.opened = e ;
+
+			if( e ){
+
+				m_key.key = m_wallet->readValue( m_id ) ;
+			}
+
+			m_eventLoop.exit() ;
+		}
+	private:
+		secrets::wallet m_wallet ;
+		QEventLoop& m_eventLoop ;
+		secrets::wallet::walletKey& m_key ;
+		const QString& m_id ;
+	} ;
+
+	QEventLoop loop ;
+
+	secrets::wallet::walletKey key ;
+
+	key.notConfigured = false ;
+
+	meaw( secrets.walletBk( bk ),loop,key,s.volume ) ;
+
+	loop.exec() ;
+
+	return key ;
 }
 
 int sirikali::unlockVolume( const QStringList& l,secrets& secrets )
@@ -1005,6 +1054,13 @@ void sirikali::mountMultipleVolumes( keyDialog::volumeList e )
 		m_allowEnableAll.setTrue() ;
 		this->enableAll() ;
 		utility::applicationStarted() ;
+	}
+
+	if( m_initWallet ){
+
+		m_initWallet = false ;
+
+		//secrets::wallet::setParent( this ) ;
 	}
 }
 
@@ -1944,7 +2000,7 @@ void sirikali::autoMount( const QString& vv )
 
 	if( volume.isEmpty() ){
 
-		utility::applicationStarted() ;
+		this->mountMultipleVolumes( {} ) ;
 
 		return this->enableAll() ;
 	}
@@ -1958,6 +2014,8 @@ void sirikali::autoMount( const QString& vv )
 		auto a = favorites.readFavoriteByFileSystemPath( volume ) ;
 
 		if( a.has_value() ){
+
+			this->mountMultipleVolumes( {} ) ;
 
 			return this->autoUnlockAutoMount( a.RValue(),s ) ;
 		}

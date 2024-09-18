@@ -295,7 +295,7 @@ private:
 	bool m_startHidden ;
 	bool m_autoOpenFolderOnMount ;
 	bool m_emergencyShuttingDown = false ;
-
+	bool m_initWallet = true ;
 	QString m_sharedFolderPath ;
 	QString m_folderOpener ;
 
