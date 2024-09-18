@@ -46,7 +46,8 @@ public:
 	static QStringList executableSearchPaths() ;
 	static QStringList executableSearchPaths( const engines::engine& ) ;
 
-	class engineVersion{
+	class engineVersion
+	{
 	public:
 		engineVersion() ;
 		engineVersion( int major,int minor,int patch ) ;

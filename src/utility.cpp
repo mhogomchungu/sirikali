@@ -311,20 +311,29 @@ utility::debug utility::debug::operator<<( const QString& e )
 	return utility::debug() ;
 }
 
+static bool _firstTime = true ;
+
 void utility::applicationStarted()
 {
-	utility::miscOptions::instance().doneStarting() ;
+	if( _firstTime ){
 
-	const auto& m = utility::miscOptions::instance() ;
+		_firstTime = false ;
 
-	const auto& e = m.getStartingLogs() ;
+		qDebug() << "utility::applicationStarted()" ;
 
-	if( !e.isEmpty() ){
+		auto& m = utility::miscOptions::instance() ;
 
-		QString a = "***********Start early logs************" ;
-		QString b = "\n\n***********End early logs*****************" ;
+		m.doneStarting() ;
 
-		utility::logger().enableDebug().showText( a + e + b ).showDebugWindow() ;
+		const auto& e = m.getStartingLogs() ;
+
+		if( !e.isEmpty() ){
+
+			QString a = "***********Start early logs************" ;
+			QString b = "\n\n***********End early logs*****************" ;
+
+			utility::logger().enableDebug().showText( a + e + b ).showDebugWindow() ;
+		}
 	}
 }
 
@@ -430,7 +439,7 @@ void utility::initGlobals()
 
 	auto& m = utility::miscOptions::instance() ;
 
-	m.setCurrentThreadAsMain() ;
+	m.setCurrentThreadAsMain() ;	
 
 	m.setEnableDebug( settings::instance().showDebugWindowOnStartup() ) ;
 

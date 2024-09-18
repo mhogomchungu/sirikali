@@ -191,7 +191,8 @@ namespace utility
 		QWidget * m_mainQWidget = nullptr ;
 	};
 
-	class logger{
+	class logger
+	{
 	public:
 		static QString starLine() ;
 		logger() ;

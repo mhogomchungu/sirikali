@@ -119,7 +119,7 @@ private :
 	void setMenu( QMenu& ) ;
 	void folderPath( void ) ;
 	void filePath( void ) ;
-	void mountPointPath( void ) ;
+	void mountPointPath() ;
 	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
 	void itemClicked( QTableWidgetItem * current,bool ) ;
 	void itemClicked( QTableWidgetItem * current ) ;
@@ -128,7 +128,7 @@ private :
 	void setVolumeProperties( utility2::result_ref< const favorites::entry& > e ) ;
 	void clearVolumeProperties() ;
 	void ShowUI() ;
-	void HideUI( void ) ;
+	void HideUI() ;
 	void checkFavoritesConsistency() ;
 	void setUiLikeSsh( const QString& cipherPath,const engines::engine& engine ) ;
 	void setDefaultUI( const engines::engine& ) ;
@@ -154,8 +154,8 @@ private :
 	QString m_cipherPath ;
 	QString m_keyFilePath ;
 
-	class wallet{
-
+	class wallet
+	{
 	public:
 		void operator=( secrets::wallet s )
 		{

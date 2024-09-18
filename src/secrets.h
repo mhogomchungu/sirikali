@@ -40,11 +40,13 @@ public:
 	{
 	public:
 		wallet( LXQt::Wallet::Wallet * ) ;
-		wallet() ;
 
 		~wallet() ;
 
-		wallet( wallet&& ) ;
+		void setParent( QWidget * parent )
+		{
+			m_parent = parent ;
+		}
 
 		LXQt::Wallet::Wallet& bk() const
 		{
@@ -61,58 +63,14 @@ public:
 			return m_wallet ;
 		}
 
-		template< typename Function,typename Before,typename After >
-		utility2::result< std::result_of_t< Function() > > openSync( Function&& function,
-									     Before&& b = [](){},
-									     After&& a = [](){} )
+		template< typename Events >
+		void open( Events ev )
 		{
 			if( m_wallet->opened() ){
 
-				return function() ;
+				ev.opened() ;
 			}else{
-				m_wallet->setImage( QIcon( ":/sirikali" ) ) ;
-
-				m_wallet->log( []( QString e ){
-
-					windowsDebugWindow( e,e.contains( "CRITICAL" ) ) ;
-				} );
-
-				auto s = this->walletInfo() ;
-
-				b() ;
-
-				auto m = m_wallet->open( s.walletName,s.appName ) ;
-
-				a() ;
-
-				if( m ){
-
-					return function() ;
-				}else{
-					return {} ;
-				}
-			}
-		}
-
-		template< typename Function >
-		utility2::result< std::result_of_t< Function() > > open( Function&& function )
-		{
-			return this->openSync( std::move( function ),[](){},[](){} ) ;
-		}
-
-		bool open()
-		{
-			return this->openSync( []{ return true ; },[](){},[](){} ).has_value() ;
-		}
-
-		template< typename Opened,typename Before,typename After >
-		void open( Opened&& o,Before&& b,After&& a )
-		{
-			if( m_wallet->opened() ){
-
-				o() ;
-			}else{
-				b() ;
+				ev.before() ;
 
 				auto s = this->walletInfo() ;
 
@@ -123,14 +81,10 @@ public:
 					windowsDebugWindow( e,e.contains( "CRITICAL" ) ) ;
 				} );
 
-				m_wallet->open( s.walletName,s.appName,std::move( a ) ) ;
-			}
-		}
+				m_wallet->open( s.walletName,s.appName,ev,this->setParent() ) ;
 
-		template< typename Opened,typename After >
-		void open( Opened&& ofunction,After&& afunction )
-		{
-			this->open( std::move( ofunction ),[](){},std::move( afunction ) ) ;
+				ev.after() ;
+			}
 		}
 
 		struct walletKey
@@ -139,45 +93,43 @@ public:
 			bool notConfigured ;
 			QString key ;
 		} ;
-
-		walletKey getKey( const QString& keyID,QWidget * widget = nullptr ) ;
 	private:
-		struct info{
-
+		QWidget * setParent() ;
+		struct info
+		{
 			QString walletName ;
 			QString appName ;
-		};
+		} ;
 
 		info walletInfo() ;
 
 		LXQt::Wallet::Wallet * m_wallet = nullptr ;
-	};
 
-	secrets::wallet walletBk( LXQt::Wallet::BackEnd ) const ;
+		QWidget * m_parent = nullptr ;
+	} ;
 
-	QWidget * parent() const ;
+	LXQt::Wallet::Wallet * walletBk( LXQt::Wallet::BackEnd ) const ;
 
-	void changeInternalWalletPassword( const QString&,const QString&,std::function< void( bool ) > ) ;
-	void changeWindowsDPAPIWalletPassword( const QString&,const QString&,std::function< void( bool ) > ) ;
+	void changeInternalWalletPassword( QWidget *,const QString&,const QString&,std::function< void( bool ) > ) ;
+	void changeWindowsDPAPIWalletPassword( QWidget *,const QString&,const QString&,std::function< void( bool ) > ) ;
 
 	void close() ;
-	secrets( QWidget * parent = nullptr ) ;
+	secrets() ;
 	secrets( const secrets& ) = delete ;
 
 	secrets& operator=( const secrets& ) = delete ;
 
 	~secrets() ;
 private:
-	QWidget * m_parent = nullptr ;
-
-	class backends{
+	class backends
+	{
 	public:
-		backends( QWidget * ) ;
+		backends() ;
 		LXQt::Wallet::Wallet * get( LXQt::Wallet::BackEnd ) ;
 		void close() ;
 	private:
-		struct bks{
-
+		struct bks
+		{
 			bks( LXQt::Wallet::BackEnd e,LXQt::Wallet::Wallet * s ) :
 				bk( e ),wallet( s )
 			{
@@ -187,7 +139,6 @@ private:
 		} ;
 
 		std::vector< bks > m_backends ;
-		QWidget * m_parent ;
 
 	} mutable m_backends ;
 } ;

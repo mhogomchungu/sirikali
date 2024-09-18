@@ -945,6 +945,30 @@ void keyDialog::closeEvent( QCloseEvent * e )
 	this->pbCancel() ;
 }
 
+secrets::wallet keyDialog::getBackendStorage()
+{
+	auto type = m_keyType.type() ;
+
+	if( type == keyType::name::kdewallet ){
+
+		return m_secrets.walletBk( LXQt::Wallet::BackEnd::kwallet ) ;
+
+	}else if( type == keyType::name::libsecret ){
+
+		return m_secrets.walletBk( LXQt::Wallet::BackEnd::libsecret ) ;
+
+	}else if( type == keyType::name::osxkeychain ){
+
+		return m_secrets.walletBk( LXQt::Wallet::BackEnd::osxkeychain ) ;
+
+	}else if( type == keyType::name::windowsdpapi ){
+
+		return m_secrets.walletBk( LXQt::Wallet::BackEnd::windows_dpapi ) ;
+	}else{
+		return m_secrets.walletBk( LXQt::Wallet::BackEnd::internal ) ;
+	}
+}
+
 bool keyDialog::mountedAll()
 {
 	return m_volumes.size() == m_counter ;
@@ -967,8 +991,6 @@ void keyDialog::pbOpen()
 	}
 
 	if( m_keyType.containsSecretStorage() ){
-
-		secrets::wallet::walletKey w ;
 
 		LXQt::Wallet::BackEnd ww ;
 
@@ -1008,42 +1030,98 @@ void keyDialog::pbOpen()
 
 		using mm = LXQt::Wallet::BackEnd ;
 
-		if( ww == mm::kwallet || ww == mm::libsecret || ww == mm::osxkeychain ){
+		if( ww == mm::internal ){
 
-			w = m_secrets.walletBk( ww ).getKey( m_path ) ;
+			auto& wlt = settings::instance() ;
 
-		}else if( ww == mm::internal || ww == mm::windows_dpapi ){
+			auto s = LXQt::Wallet::walletExists( ww,wlt.walletName(),wlt.applicationName() ) ;
 
-			w = m_secrets.walletBk( ww ).getKey( m_path,this ) ;
-
-			if( w.notConfigured ){
+			if( !s ){
 
 				this->showErrorMessage( tr( "Internal Wallet Is Not Configured." ) ) ;
 				return ;
 			}
-		}else{
-			/*
-			 * We shouldn't get here
-			 */
-			return this->openVolume() ;
 		}
 
-		if( w.opened ){
-
-			auto wallet = m_keyType.toString() ;
-
-			if( w.key.isEmpty() ){
-
-				m_walletType = wallet ;
-
-				auto s = tr( "Volume Not Found in \"%1\".\n\nSet The Volume Key To Add It To The Wallet Before Mounting." ).arg( wallet ) ;
-
-				this->setKeyInWallet( wallet,s ) ;
-			}else{
-				m_key = utility::convertPassword( w.key ) ;
-				this->openVolume() ;
+		class meaw
+		{
+		public:
+			meaw( keyDialog * parent,LXQt::Wallet::BackEnd ww ) :
+				m_parent( *parent ),
+				m_showAndHide( this->showAndHide( ww ) ),
+				m_wallet( this->wallet( ww ) )
+			{
+				m_wallet.open( *this ) ;
 			}
-		}
+			void opened()
+			{
+				auto& m = *this ;
+				m( true ) ;
+			}
+			void before()
+			{
+				if( m_showAndHide ){
+
+					m_parent.hide() ;
+				}
+			}
+			void after()
+			{
+			}
+			void operator()( bool e )
+			{
+				if( e ){
+
+					utils::qthread::run( [ this ](){
+
+						return m_wallet.bk().readValue( m_parent.m_path ) ;
+
+					},[ this ]( const QByteArray& key ){
+
+						m_parent.m_key = key ;
+
+						this->openVolume() ;
+					} ) ;
+				}
+
+				if( m_showAndHide ){
+
+					m_parent.show() ;
+				}
+			}
+		private:
+			secrets::wallet wallet( LXQt::Wallet::BackEnd bk )
+			{
+				return m_parent.m_secrets.walletBk( bk ) ;
+			}
+			void openVolume()
+			{
+				auto wallet = m_parent.m_keyType.toString() ;
+
+				if( m_parent.m_key.isEmpty() ){
+
+					m_parent.m_walletType = wallet ;
+
+					auto s = tr( "Volume Not Found in \"%1\".\n\nSet The Volume Key To Add It To The Wallet Before Mounting." ).arg( wallet ) ;
+
+					m_parent.setKeyInWallet( m_parent.m_walletType,s ) ;
+				}else{
+					m_parent.m_key = utility::convertPassword( m_parent.m_key ).toUtf8() ;
+					m_parent.openVolume() ;
+				}
+			}
+			bool showAndHide( LXQt::Wallet::BackEnd m )
+			{
+				using bk = LXQt::Wallet::BackEnd ;
+
+				return m == bk::internal || m == bk::windows_dpapi ;
+			}
+			keyDialog& m_parent ;
+			bool m_showAndHide ;
+			secrets::wallet m_wallet ;
+		} ;
+
+		meaw( this,ww ) ;
 	}else{
 		this->openVolume() ;
 	}
@@ -1347,107 +1425,121 @@ void keyDialog::pbSetKeyKeyFile()
 
 void keyDialog::setKeyInWallet()
 {
-	auto _enable_all = [ & ](){
-
-		m_ui->labelSetKeyKeyFile->setEnabled( false ) ;
-		m_ui->labelSetKeyPassword->setEnabled( true ) ;
-		m_ui->lineEditSetKeyKeyFile->setEnabled( false ) ;
-		m_ui->lineEditSetKeyPassword->setEnabled( true ) ;
-		m_ui->pbSetKey->setEnabled( true ) ;
-		m_ui->pbSetKeyCancel->setEnabled( true ) ;
-		m_ui->pbSetKeyKeyFile->setEnabled( false ) ;
-		m_ui->labelSetKey->setEnabled( true ) ;
-	} ;
-
 	auto passphrase = m_ui->lineEditSetKeyPassword->text() ;
 
 	if( passphrase.isEmpty() ){
 
 		m_ui->labelSetKey->setText( tr( "Volume Key Can Not Be Empty." ) ) ;
-		return _enable_all() ;
+		return this->enableAllx() ;
 	}
 
-	auto w = [ & ](){
+	qDebug() << "ssss" ;
 
-		auto type = m_keyType.type() ;
-
-		if( type == keyType::name::kdewallet ){
-
-			return m_secrets.walletBk( LXQt::Wallet::BackEnd::kwallet ) ;
-
-		}else if( type == keyType::name::libsecret ){
-
-			return m_secrets.walletBk( LXQt::Wallet::BackEnd::libsecret ) ;
-
-		}else if( type == keyType::name::osxkeychain ){
-
-			return m_secrets.walletBk( LXQt::Wallet::BackEnd::osxkeychain ) ;
-
-		}else if( type == keyType::name::windowsdpapi ){
-
-			return m_secrets.walletBk( LXQt::Wallet::BackEnd::windows_dpapi ) ;
-		}else{
-			return m_secrets.walletBk( LXQt::Wallet::BackEnd::internal ) ;
+	class meaw
+	{
+	public:
+		meaw( keyDialog * parent,const QString& e,secrets::wallet m ) :
+			m_parent( *parent ),
+			m_password( e ),
+			m_showAndHide( this->showAndHide( m.bk().backEnd() ) ),
+			m_wallet( m )
+		{
+			m_wallet.open( *this ) ;
 		}
-	}() ;
+		void opened()
+		{
+			auto& m = *this ;
 
-	auto m = [ & ](){
-
-		if( w->backEnd() == LXQt::Wallet::BackEnd::internal ||
-		    w->backEnd() == LXQt::Wallet::BackEnd::windows_dpapi ){
-
-			return w.openSync( [](){ return true ; },
-					   [ this ](){ this->hide() ; },
-					   [ this ](){ this->show() ; } ) ;
-		}else{
-			return w.open( [](){ return true ; } ) ;
+			m( true ) ;
 		}
-	}() ;
+		void before()
+		{
+			if( m_showAndHide ){
 
-	if( m ){
-
-		QString id ;
-
-		if( m_create ){
-
-			id = m_ui->lineEditFolderPath->text() ;
-		}else{
-			id = m_path ;
-		}
-
-		if( w->readValue( id ).isEmpty() ){
-
-			if( favorites2::addKey( w,id,passphrase ).await() ){
-
-				m_keyType.setType( keyType::name::Key ) ;
-				m_ui->lineEditKey->setText( passphrase ) ;
-				this->SetUISetKey( false ) ;
-				this->setUIVisible( true ) ;
-				m_ui->pbkeyOption->setVisible( false ) ;
-				this->disableAll() ;
-
-				m_walletKey.set = true ;
-				m_walletKey.id = id ;
-				m_walletKey.bk = w->backEnd() ;
-				m_walletKey.walletName = m_settings.walletName( m_walletKey.bk ) ;
-				m_walletKey.appName = m_settings.applicationName() ;
-
-				this->openVolume() ;
-
-				return ;
-			}else{
-				m_ui->labelSetKey->setText( tr( "Failed To Add A Volume To The A Wallet." ) ) ;
+				m_parent.hide() ;
 			}
-		}else{
-			m_ui->labelSetKey->setText( tr( "Volume Already Exists In The Wallet." ) ) ;
 		}
+		void after()
+		{
+			if( m_showAndHide ){
 
-		return ;
+				m_parent.show() ;
+			}
+		}
+		void operator()( bool e )
+		{
+			if( e ){
+
+				m_parent.walletOpened( m_wallet,m_password ) ;
+			}else{
+				m_parent.m_ui->labelSetKey->setText( tr( "Failed To Open Wallet." ) ) ;
+			}
+
+			m_parent.enableAllx() ;
+		}
+	private:
+		bool showAndHide( LXQt::Wallet::BackEnd m )
+		{
+			using bk = LXQt::Wallet::BackEnd ;
+
+			return m == bk::internal || m == bk::windows_dpapi ;
+		}
+		keyDialog& m_parent ;
+		QString m_password ;
+		bool m_showAndHide ;
+		secrets::wallet m_wallet ;
+	} ;
+
+	meaw( this,passphrase,this->getBackendStorage() ) ;
+}
+
+void keyDialog::enableAllx()
+{
+	m_ui->labelSetKeyKeyFile->setEnabled( false ) ;
+	m_ui->labelSetKeyPassword->setEnabled( true ) ;
+	m_ui->lineEditSetKeyKeyFile->setEnabled( false ) ;
+	m_ui->lineEditSetKeyPassword->setEnabled( true ) ;
+	m_ui->pbSetKey->setEnabled( true ) ;
+	m_ui->pbSetKeyCancel->setEnabled( true ) ;
+	m_ui->pbSetKeyKeyFile->setEnabled( false ) ;
+	m_ui->labelSetKey->setEnabled( true ) ;
+}
+
+void keyDialog::walletOpened( secrets::wallet& w,const QString& passphrase )
+{
+	QString id ;
+
+	if( m_create ){
+
+		id = m_ui->lineEditFolderPath->text() ;
 	}else{
-		m_ui->labelSetKey->setText( tr( "Failed To Open Wallet." ) ) ;
+		id = m_path ;
 	}
 
-	_enable_all() ;
+	if( w->readValue( id ).isEmpty() ){
+
+		if( favorites2::addKey( w,id,passphrase ).await() ){
+
+			m_keyType.setType( keyType::name::Key ) ;
+			m_ui->lineEditKey->setText( passphrase ) ;
+			this->SetUISetKey( false ) ;
+			this->setUIVisible( true ) ;
+			m_ui->pbkeyOption->setVisible( false ) ;
+			this->disableAll() ;
+
+			m_walletKey.set = true ;
+			m_walletKey.id = id ;
+			m_walletKey.bk = w->backEnd() ;
+			m_walletKey.walletName = m_settings.walletName( m_walletKey.bk ) ;
+			m_walletKey.appName = m_settings.applicationName() ;
+
+			this->openVolume() ;
+		}else{
+			m_ui->labelSetKey->setText( tr( "Failed To Add A Volume To The A Wallet." ) ) ;
+		}
+	}else{
+		m_ui->labelSetKey->setText( tr( "Volume Already Exists In The Wallet." ) ) ;
+	}
 }
 
 void keyDialog::setKeyInWallet( const QString& volumeType,const QString& title )

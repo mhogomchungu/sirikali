@@ -80,7 +80,8 @@ public:
 		LXQt::Wallet::BackEnd m_storage ;
 	};
 
-	class windowDimensions{
+	class windowDimensions
+	{
 	public:
 		static constexpr int size = 8 ;
 		windowDimensions( const QStringList& e ) ;

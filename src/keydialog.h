@@ -302,6 +302,7 @@ private:
 	void ShowUI() ;
 	void HideUI() ;
 	void setKeyInWallet() ;
+	void enableAllx() ;
 	void setKeyInWallet( const QString& volumeType,const QString& title ) ;
 	void showErrorMessage( const engines::engine::cmdStatus& ) ;
 	void showErrorMessage( const QString& ) ;
@@ -314,6 +315,9 @@ private:
 	void disableAll() ;
 	void windowSetTitle( const QString& = QString() ) ;
 	void closeEvent( QCloseEvent * ) ;
+
+	secrets::wallet getBackendStorage() ;
+	void walletOpened( secrets::wallet&,const QString& ) ;
 
 	bool upgradingFileSystem() ;
 	bool replaceFileSystem() ;
@@ -454,7 +458,7 @@ private:
 
 				set = false ;
 
-				auto s = secret.walletBk( bk ) ;
+				secrets::wallet s = secret.walletBk( bk ) ;
 
 				s->setImage( QIcon( ":/sirikali" ) ) ;
 

@@ -61,7 +61,7 @@ class miniSiriKali : public QObject
 public:
 	miniSiriKali( std::function< int( secrets& ) > function ) :
 		m_function( std::move( function ) ),
-		m_secrets( nullptr )
+		m_secrets()
 	{
 	}
 private slots :
@@ -86,7 +86,7 @@ private:
 	void genericVolumeProperties() ;
 	void unlockVolume( bool ) ;
 	void startGUI( const QString& ) ;
-	void startGUI( const QString&,bool ) ;
+	void startGUIx( const QString& ) ;
 	void autoMount( const QString& ) ;
 	void updateList() ;
 	void emergencyShutDown() ;
@@ -149,9 +149,12 @@ private:
 
 	QFont getSystemVolumeFont() ;
 
+	bool attachParent() ;
+
 	void updateFavoritesInContextMenu() ;
 	void updateAgainFavoritesInContextMenu() ;
 	void runIntervalCustomCommand( const QString& ) ;
+	void runIntervalCustomCommand( const QString&,const QStringList&,const QByteArray& ) ;
 	void updateVolumeList( const mountinfo::List&,bool enableAll = true ) ;
 	void openMountPoint( const QString& ) ;
 	void setLocalizationLanguage( bool ) ;
@@ -167,10 +170,10 @@ private:
 	void showMainWindow() ;
 	void raiseWindow( const QString& = QString() ) ;
 	void autoUnlockVolumes( const mountinfo::List&,bool autoSetAutoMount = false ) ;
-	keyDialog::volumeList autoUnlockVolumes( favorites::volumeList,
-						 bool autoOpenFolderOnMount = false,
-						 bool skipUnknown = false,
-						 bool autoSetAutoMount = false ) ;
+	void autoUnlockVolumes( favorites::volumeList,
+				bool autoOpenFolderOnMount = false,
+				bool skipUnknown = false,
+				bool autoSetAutoMount = false ) ;
 
 	template< typename ... Args >
 	void autoUnlockAutoMount( favorites::volEntry&& vEntry,Args&& ... args )
@@ -185,12 +188,13 @@ private:
 	template< typename ... Args >
 	void autoUnlockAutoMount( favorites::volumeList&& volList,Args&& ... args )
 	{
-		auto mm = this->autoUnlockVolumes( std::move( volList ),
-						   std::forward< Args >( args ) ... ) ;
-
-		this->mountMultipleVolumes( std::move( mm ) ) ;
+		this->autoUnlockVolumes( std::move( volList ),std::forward< Args >( args ) ... ) ;
 	}
 
+	void autoUnlockVolumesR( secrets::wallet&,
+				 keyDialog::volumeList& ss,
+				 bool autoOpenFolderOnMount,
+				 bool autoSetAutoMount ) ;
 	struct mountedEntry
 	{
 		const QString& cipherPath ;
@@ -357,7 +361,11 @@ class starter : public QObject
 public:
 	starter( const QStringList& args,QApplication& app ) : m_args( args ),m_app( app )
 	{
-		QMetaObject::invokeMethod( this,"start",Qt::QueuedConnection ) ;
+		auto m = Qt::QueuedConnection ;
+
+		connect( this,&starter::getStarted,this,&starter::start,m ) ;
+
+		emit this->getStarted() ;
 	}
 	~starter()
 	{
@@ -366,13 +374,10 @@ public:
 	{
 		return m_app.exec() ;
 	}
-private slots :
-	void start()
-	{
-		m_sirikali = std::make_unique< sirikali >( m_args,m_app ) ;
-		m_sirikali->start() ;
-	}
+signals:
+	void getStarted() ;
 private:
+	void start() ;
 	const QStringList& m_args ;
 	QApplication& m_app ;
 	std::unique_ptr< sirikali > m_sirikali ;

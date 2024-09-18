@@ -594,7 +594,7 @@ favorites2::favorites2( QWidget * parent,
 
 			this->hide() ;
 
-			m_secrets.changeInternalWalletPassword( a,b,[ this ]( bool s ){
+			m_secrets.changeInternalWalletPassword( this,a,b,[ this ]( bool s ){
 
 				if( s ){
 
@@ -608,7 +608,7 @@ favorites2::favorites2( QWidget * parent,
 
 			this->hide() ;
 
-			m_secrets.changeWindowsDPAPIWalletPassword( a,b,[ this ]( bool s ){
+			m_secrets.changeWindowsDPAPIWalletPassword( this,a,b,[ this ]( bool s ){
 
 				if( s ){
 
@@ -880,29 +880,60 @@ void favorites2::walletBkChanged( LXQt::Wallet::BackEnd bk )
 
 	m_wallet = m_secrets.walletBk( bk ) ;
 
-	m_wallet.open( [ this ](){
-
-		for( const auto& it : this->readAllKeys() ){
-
-			tablewidget::addRow( m_ui->tableWidgetWallet,{ it } ) ;
+	class meaw
+	{
+	public:
+		meaw( favorites2 * parent,LXQt::Wallet::BackEnd s ) :
+			m_parent( *parent ),
+			m_showAndHide( this->showAndHide( s ) )
+		{
 		}
+		void opened()
+		{
+			auto& m = *this ;
 
-	},_hide_ui( [ this ](){ this->hide() ; },bk ),[ this ]( bool opened ){
+			m( true ) ;
+		}
+		void before()
+		{
+			if( m_showAndHide ){
 
-		if( opened ){
-
-			for( const auto& it : this->readAllKeys() ){
-
-				tablewidget::addRow( m_ui->tableWidgetWallet,{ it } ) ;
+				m_parent.hide() ;
 			}
-		}else{
-			m_ui->lineEditVolumePath->clear() ;
-
-			this->setControlsAvailability( false,true ) ;
 		}
+		void after()
+		{
+		}
+		void operator()( bool e )
+		{
+			if( e ){
 
-		this->show() ;
-	} ) ;
+				for( const auto& it : m_parent.readAllKeys() ){
+
+					tablewidget::addRow( m_parent.m_ui->tableWidgetWallet,{ it } ) ;
+				}
+			}else{
+				m_parent.m_ui->lineEditVolumePath->clear() ;
+
+				m_parent.setControlsAvailability( false,true ) ;
+			}
+			if( m_showAndHide ){
+
+				m_parent.show() ;
+			}
+		}
+	private:
+		bool showAndHide( LXQt::Wallet::BackEnd m )
+		{
+			using bk = LXQt::Wallet::BackEnd ;
+
+			return m == bk::internal || m == bk::windows_dpapi ;
+		}
+		favorites2& m_parent ;
+		bool m_showAndHide ;
+	} ;
+
+	m_wallet.open( meaw( this,bk ) ) ;
 }
 
 void favorites2::setControlsAvailability( bool e,bool m )
