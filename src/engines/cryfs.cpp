@@ -81,7 +81,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.notFoundCode          = engines::engine::status::engineExecutableNotFound ;
 	s.versionInfo           = { { "--version",true,2,0 } } ;
 
-	if( utility::platformIsWindows() ){
+	if( utility::platformIsWindows() || utility::platformIsFlatPak() ){
 
 		s.createControlStructure = "-f %{createOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
 		s.mountControlStructure  = "-f %{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
@@ -99,6 +99,25 @@ cryfs::cryfs() :
 	m_version_greater_or_equal_0_10_0( true,*this,0,10,0 ),
 	m_version_greater_or_equal_0_9_9( true,*this,0,9,9 )
 {
+}
+
+engines::engine::args cryfs::command( const QByteArray& password,
+				      const cmdArgsList& args,
+				      bool create ) const
+{
+	if( utility::platformIsFlatPak() ){
+
+		auto m = engines::engine::command( password,args,create ) ;
+
+		m.cmd_args.prepend( m.cmd ) ;
+		m.cmd_args.prepend( "--host" ) ;
+
+		m.cmd = "flatpak-spawn" ;
+
+		return m ;
+	}else{
+		return engines::engine::command( password,args,create ) ;
+	}
 }
 
 QProcessEnvironment cryfs::setEnv() const

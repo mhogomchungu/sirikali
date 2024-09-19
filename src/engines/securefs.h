@@ -24,6 +24,8 @@ class securefs : public engines::engine
 public:
 	securefs() ;
 
+	engines::engine::args command( const QByteArray&,const engines::engine::cmdArgsList&,bool ) const override ;
+
 	engines::engine::cmdStatus commandStatus( const engines::engine::commandStatusOpts& ) const override ;
 
 	engines::engine::status errorCode( const QString&,const QString&,int s ) const override ;

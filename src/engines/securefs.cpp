@@ -66,7 +66,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.notFoundCode          = engines::engine::status::engineExecutableNotFound ;
 	s.versionInfo           = { { "version",true,1,0 } } ;
 
-	if( utility::platformIsWindows() ){
+	if( utility::platformIsWindows() || utility::platformIsFlatPak() ){
 
 		s.mountControlStructure = "mount %{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
 	}else{
@@ -85,9 +85,26 @@ securefs::securefs() :
 {
 }
 
+engines::engine::args securefs::command( const QByteArray& password,const cmdArgsList& args,bool create ) const
+{
+	if( utility::platformIsFlatPak() ){
+
+		auto m = engines::engine::command( password,args,create ) ;
+
+		m.cmd_args.prepend( m.cmd ) ;
+		m.cmd_args.prepend( "--host" ) ;
+
+		m.cmd = "flatpak-spawn" ;
+
+		return m ;
+	}else{
+		return engines::engine::command( password,args,create ) ;
+	}
+}
+
 engines::engine::cmdStatus securefs::commandStatus( const engines::engine::commandStatusOpts& e ) const
 {
-	if( utility::platformIsWindows() ){
+	if( utility::platformIsWindows() || utility::platformIsFlatPak() ){
 
 		return engines::engine::commandStatus( e ) ;
 	}else{
@@ -265,9 +282,14 @@ void securefs::updateOptions( engines::engine::commandOptions& opts,
 			exeOpts.add( "--fssubtype",fssubtype.RValue().mid( 8 ) ) ;
 		}
 
-		if( m_version_greater_or_equal_1_0_0 && utility::platformIsNOTWindows() ){
+		if( m_version_greater_or_equal_1_0_0 ){
 
-			exeOpts.add( "--log",_logPath( args.mountPoint ) ) ;
+			if( utility::platformIsWindows() || utility::platformIsFlatPak() ){
+
+				//Left empty on purpose
+			}else{
+				exeOpts.add( "--log",_logPath( args.mountPoint ) ) ;
+			}
 		}
 	}
 }

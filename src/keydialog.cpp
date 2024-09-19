@@ -26,6 +26,7 @@
 #include <QTableWidget>
 #include <QDebug>
 #include <QFile>
+#include <QDesktopServices>
 #include <QMessageBox>
 
 #include "win.h"
@@ -1131,7 +1132,12 @@ void keyDialog::openMountPoint( const QString& m )
 {
 	if( m_settings.autoOpenFolderOnMount() ){
 
-		utility::Task::exec( m_fileManagerOpen,{ m } ) ;
+		if( utility::platformIsFlatPak() ){
+
+			QDesktopServices::openUrl( QUrl( "file://" + m ) ) ;
+		}else{
+			utility::Task::exec( m_fileManagerOpen,{ m } ) ;
+		}
 	}
 }
 

@@ -24,6 +24,8 @@ class cryfs : public engines::engine
 public:
 	cryfs() ;
 
+	engines::engine::args command( const QByteArray&,const engines::engine::cmdArgsList&,bool ) const override ;
+
 	bool takesTooLongToUnlock() const override ;
 
 	engines::engine::cmdStatus commandStatus( const engines::engine::commandStatusOpts& ) const override ;
