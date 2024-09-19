@@ -12,7 +12,8 @@
         "--filesystem=home",
         "--share=network",
         "--device=dri",
-        "--talk-name=org.kde.StatusNotifierWatcher"
+        "--talk-name=org.kde.StatusNotifierWatcher",
+        "--talk-name=org.freedesktop.Flatpak"
     ],
     "modules": [
         {

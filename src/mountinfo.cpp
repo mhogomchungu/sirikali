@@ -103,9 +103,16 @@ static mountinfo::List _processManager_volumes()
 
 	for( const auto& e : m.mountOptions() ){
 
-		auto fs = "fuse." + e.subtype ;
+		auto subtype = e.subtype ;
 
-		auto mm = e.subtype + "@" + e.cipherFolder ;
+		if( subtype.isEmpty() ){
+
+			subtype = e.engine.name() ;
+		}
+
+		auto fs = "fuse." + subtype ;
+
+		auto mm = subtype + "@" + e.cipherFolder ;
 
 		volumeInfo aa{ std::move( mm ),e.mountPointPath,std::move( fs ),e.mode } ;
 
@@ -163,7 +170,7 @@ static volumeInfo::List _unlocked_volumes()
 
 			return _linux_volumes() ;
 
-		}else if( utility::platformIsWindows() ){
+		}else if( utility::platformIsWindows() || utility::platformIsFlatPak() ){
 
 			return mountinfo::toVolumeInfoList( _processManager_volumes() ) ;
 		}else{

@@ -166,7 +166,7 @@ static engines::engine::cmdStatus _unmount( const engines::engine::unMount& e )
 		return { engines::engine::status::unknown,engine } ;
 	}
 
-	if( utility::platformIsWindows() || engine.runsInForeGround() ){
+	if( utility::platformIsFlatPak() || utility::platformIsWindows() || engine.runsInForeGround() ){
 
 		auto s = processManager::get().remove( e.mountPoint ) ;
 
@@ -245,7 +245,7 @@ struct run_task{
 
 static utility::Task _run_task_0( const run_task& e )
 {
-	if( utility::platformIsWindows() || e.engine.runsInForeGround() ){
+	if( utility::platformIsFlatPak() || utility::platformIsWindows() || e.engine.runsInForeGround() ){
 
 		return processManager::get().run( { e.create,e.args,e.opts,e.engine,e.password } ) ;
 	}else{
@@ -255,13 +255,7 @@ static utility::Task _run_task_0( const run_task& e )
 						 e.engine.likeSsh(),
 						 e.engine.allowLogging( e.args.cmd_args ) ) ;
 
-		return utility::Task( e.args.cmd,
-				      e.args.cmd_args,
-				      -1,
-				      s,
-				      e.password,
-				      [](){},
-				      opts ) ;
+		return utility::Task( e.args.cmd,e.args.cmd_args,-1,s,e.password,[](){},opts ) ;
 	}
 }
 
@@ -588,7 +582,7 @@ engines::engine::cmdStatus siritask::encryptedFolderMount( const siritask::mount
 {
 	auto s = [ & ](){
 
-		if( utility::platformIsWindows() ){
+		if( utility::platformIsWindows() || utility::platformIsFlatPak() ){
 
 			if( utility::miscOptions::instance().runningOnGUIThread() ){
 

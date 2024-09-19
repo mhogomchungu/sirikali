@@ -309,7 +309,7 @@ void sirikali::closeApplication( int s,const QString& e )
 
 		auto m = processManager::get().enginesList() ;
 
-		if( utility::platformIsWindows() ){
+		if( utility::platformIsWindows() || utility::platformIsFlatPak() ){
 
 			if( m.size() > 0 ){
 
@@ -839,7 +839,7 @@ static int _unlockVolume( const unlockVolumeStruct& s,const QByteArray& key ){
 
 	siritask::mount sss{ ss,false,{ ss.cipherFolder,ss.configFilePath } } ;
 
-	if( utility::platformIsWindows() || sss.engine->runsInForeGround() ){
+	if( utility::platformIsFlatPak() || utility::platformIsWindows() || sss.engine->runsInForeGround() ){
 
 		QString a = "This Action Is Not Supported On Windows Or With" ;
 		QString b = " Backends That Do Not Run In Background" ;
@@ -1474,7 +1474,7 @@ void sirikali::genericVolumeProperties()
 
 	const auto& engine = engines::instance().getByName( table->item( row,2 )->text() ) ;
 
-	if( utility::platformIsWindows() || engine.runsInForeGround() ){
+	if( utility::platformIsFlatPak() || utility::platformIsWindows() || engine.runsInForeGround() ){
 
 		auto m = processManager::get().volumeProperties( table->item( row,1 )->text() ) ;
 
@@ -2492,7 +2492,7 @@ void sirikali::unMountAllAndQuit()
 
 void sirikali::updateList()
 {
-	if( utility::platformIsWindows() ){
+	if( utility::platformIsWindows() || utility::platformIsFlatPak() ){
 
 		this->updateVolumeList( mountinfo::unlockedVolumes().get() ) ;
 

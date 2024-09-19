@@ -223,15 +223,16 @@ public:
 	protected:
 		class commandOptions ;
 	public:
-		struct unMount{
-
+		struct unMount
+		{
 			const QString& cipherFolder ;
 			const QString& mountPoint ;
 			const engines::engine& engine ;
 			int numberOfAttempts ;
 		} ;
 
-		class Wrapper{
+		class Wrapper
+		{
 		public:
 			Wrapper( const engines::engine& e ) :
 			        m_engine( std::addressof( e ) )
@@ -652,12 +653,12 @@ public:
 		class terminate_process
 		{
 		public:
-		        terminate_process( QProcess& exe,const QString& mountPath ) :
-				m_exe( &exe ),m_mountPath( mountPath )
+			terminate_process( QProcess& exe,const engines::engine& engine,const QString& mountPath ) :
+				m_exe( &exe ),m_engine( engine ),m_mountPath( mountPath )
 			{
 			}
-			terminate_process( const QString& mountPath ) :
-				m_exe( nullptr ),m_mountPath( mountPath )
+			terminate_process( const engines::engine& engine,const QString& mountPath ) :
+				m_exe( nullptr ),m_engine( engine ),m_mountPath( mountPath )
 			{
 			}
 			qint64 PID() const
@@ -683,6 +684,10 @@ public:
 					utility::debug() << "Warning, accessing invalid entry in terminate_process::terminate" ;
 				}
 			}
+			const engines::engine& engine() const
+			{
+				return m_engine ;
+			}
 			bool waitForFinished() const
 			{
 				if( m_exe ){
@@ -695,6 +700,7 @@ public:
 			}
 		private:
 			QProcess * m_exe ;
+			const engines::engine& m_engine ;
 			const QString& m_mountPath ;
 		};
 
@@ -710,8 +716,6 @@ public:
 		virtual const QStringList& windowsUnmountCommand() const ;
 
 		virtual terminate_result terminateProcess( const terminate_process& ) const ;
-
-		virtual terminate_result terminateProcess( const QString& mountPath ) const ;
 
 		virtual engine::engine::error errorCode( const QString& ) const ;
 

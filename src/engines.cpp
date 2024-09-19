@@ -691,7 +691,7 @@ bool engines::engine::unmountVolume( const engines::engine::exe_args_const& exe,
 
 engines::engine::status engines::engine::unmount( const engines::engine::unMount& e ) const
 {
-	auto cmd = this->unMountCommand( e.mountPoint ) ;
+	auto cmd = this->unMountCommand( { e.engine,e.mountPoint } ) ;
 
 	if( cmd.error != engines::engine::status::success ){
 
@@ -883,6 +883,21 @@ engines::engine::terminateProcess( const engines::engine::terminate_process& e )
 		return { std::move( b ),{},{} } ;
 	}
 
+	if( utility::platformIsFlatPak() ){
+
+		auto r = e.engine().unmount( { "",e.mountPath(),e.engine(),3 } ) ;
+
+		if( r == engines::engine::status::success ){
+
+			return { 0,{},{} } ;
+		}else{
+			auto a = "SiriKali Error: Failed To UnMount" ;
+			auto b = Task::process::result( a,QByteArray(),-1,0,true ) ;
+
+			return { std::move( b ),{},{} } ;
+		}
+	}
+
 	if( exe == "SIGTERM" ){
 
 		utility::debug() << "Terminating a process by sending it SIGTERM" ;
@@ -922,12 +937,6 @@ engines::engine::terminateProcess( const engines::engine::terminate_process& e )
 	}else{
 		return { std::move( m ),std::move( exe ),std::move( args ) } ;
 	}
-}
-
-engines::engine::terminate_result engines::engine::terminateProcess( const QString& mountPath ) const
-{
-	Q_UNUSED( mountPath )
-	return engines::engine::terminate_result() ;
 }
 
 static engines::engine::BaseOptions _update( engines::engine::BaseOptions m )
@@ -1311,13 +1320,18 @@ engines::engine::exe_args engines::engine::unMountCommand( const engines::engine
 
 				return { "umount",{ e.mountPath() } } ;
 			}else{
-				auto fuserMount = engines::engine::fuserMountPath() ;
+				if( utility::platformIsFlatPak() ){
 
-				if( fuserMount.isEmpty() ){
-
-					return { engines::engine::status::fuserMountNotFound } ;
+					return { "flatpak-spawn",{ "--host","fusermount","-u",e.mountPath() } } ;
 				}else{
-					return { fuserMount,{ "-u",e.mountPath() } } ;
+					auto fuserMount = engines::engine::fuserMountPath() ;
+
+					if( fuserMount.isEmpty() ){
+
+						return { engines::engine::status::fuserMountNotFound } ;
+					}else{
+						return { fuserMount,{ "-u",e.mountPath() } } ;
+					}
 				}
 			}
 		}else{

@@ -47,6 +47,7 @@
 #include <QDir>
 #include <QTableWidget>
 #include <QMessageBox>
+#include <QDesktopServices>
 #include <QTableWidgetItem>
 #include <QProcessEnvironment>
 #include <QtNetwork/QLocalSocket>
@@ -319,8 +320,6 @@ void utility::applicationStarted()
 
 		_firstTime = false ;
 
-		qDebug() << "utility::applicationStarted()" ;
-
 		auto& m = utility::miscOptions::instance() ;
 
 		m.doneStarting() ;
@@ -520,16 +519,23 @@ void utility::openPath( const QString& path,const QString& opener,
 {
 	if( !path.isEmpty() ){
 
-		openPath( path,opener ).then( [ title,msg,obj ]( bool failed ){
+		if( utility::platformIsFlatPak() ){
 
-			if( utility::platformIsNOTWindows() ){
+			QDesktopServices::openUrl( QUrl( "file://" + path ) ) ;
+		}else{
+			auto& e = openPath( path,opener ) ;
 
-				if( failed && obj ){
+			e.then( [ title,msg,obj ]( bool failed ){
 
-					DialogMsg( obj ).ShowUIOK( title,msg ) ;
+				if( utility::platformIsNOTWindows() ){
+
+					if( failed && obj ){
+
+						DialogMsg( obj ).ShowUIOK( title,msg ) ;
+					}
 				}
-			}
-		} ) ;
+			} ) ;
+		}
 	}
 }
 

@@ -28,6 +28,8 @@ public:
 
 	engines::engine::status errorCode( const QString& e,const QString& err,int s ) const override ;
 
+	engine::engine::error errorCode( const QString& e ) const override ;
+
 	void GUICreateOptions( const engines::engine::createGUIOptions& ) const override ;
 
 	void GUIMountOptions( const engines::engine::mountGUIOptions& ) const override ;

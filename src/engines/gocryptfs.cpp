@@ -92,7 +92,17 @@ static engines::engine::BaseOptions _setOptions()
 
 		s.passwordFormat         = "%{password}" ;
 
-		s.createControlStructure = "-q --init %{createOptions} %{cipherFolder}" ;
+		if( utility::platformIsFlatPak() ){
+
+			s.successfulMountedList = QStringList{ "Filesystem mounted and ready" } ;
+			s.failedToMountList     = QStringList{ "Failed To Mount" } ;
+
+			s.createControlStructure = "-fg --init %{createOptions} %{cipherFolder}" ;
+			s.mountControlStructure  = "-fg %{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
+		}else{
+			s.createControlStructure = "-q --init %{createOptions} %{cipherFolder}" ;
+			s.mountControlStructure  = "-q %{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
+		}
 
 		s.reverseString         = "-reverse" ;
 
@@ -100,7 +110,6 @@ static engines::engine::BaseOptions _setOptions()
 
 		s.incorrectPasswordText = QStringList{ "Password incorrect." } ;
 
-		s.mountControlStructure  = "-q %{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
 		s.executableNames = QStringList{ "gocryptfs" } ;
 	}
 
@@ -222,6 +231,11 @@ engines::engine::status gocryptfs::errorCode( const QString& e,const QString& er
 
 	return engines::engine::errorCode( e,err,s ) ;
 #endif
+}
+
+engines::engine::error gocryptfs::errorCode( const QString& e ) const
+{
+	return engines::engine::errorCode( e ) ;
 }
 
 void gocryptfs::GUICreateOptions( const engines::engine::createGUIOptions& s ) const
@@ -346,6 +360,17 @@ engines::engine::args gocryptfs::command( const QByteArray& password,
 		m.cmd = m_sirikaliCppcryptfsExe ;
 		m.cmd_args.append( "--cppcryptfsctl-path" ) ;
 		m.cmd_args.append( m_cppcryptfsctl ) ;
+
+		return m ;
+
+	}else if( utility::platformIsFlatPak() ){
+
+		auto m = engines::engine::command( password,args,create ) ;
+
+		m.cmd_args.prepend( m.cmd ) ;
+		m.cmd_args.prepend( "--host" ) ;
+
+		m.cmd = "flatpak-spawn" ;
 
 		return m ;
 	}else{

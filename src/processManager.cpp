@@ -193,7 +193,7 @@ Task::process::result processManager::add( const processManager::opts& opts )
 
 		if( m.type == engines::engine::error::Timeout ){
 
-			opts.engine.terminateProcess( { *exe,opts.args.mountPath } ) ;
+			opts.engine.terminateProcess( { *exe,opts.engine,opts.args.mountPath } ) ;
 
 			return error( _backEndTimedOut ) ;
 
@@ -240,7 +240,7 @@ Task::process::result processManager::remove( const QString& mountPoint )
 
 		if( s.mountPoint() == mountPoint ){
 
-			auto m = s.engine().terminateProcess( { s.exe(),s.mountPoint() } ) ;
+			auto m = s.engine().terminateProcess( { s.exe(),s.engine(),s.mountPoint() } ) ;
 
 			if( m.result.success() ) {
 
