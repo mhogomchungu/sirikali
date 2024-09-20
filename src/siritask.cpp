@@ -514,7 +514,7 @@ static void _warning( const QString& e )
 
 engines::engine::cmdStatus siritask::encryptedFolderCreate( const siritask::create& e )
 {
-	if( utility::platformIsWindows() ){
+	if( utility::platformIsWindows() || utility::platformIsFlatPak() ){
 
 		if( utility::miscOptions::instance().runningOnGUIThread() ){
 

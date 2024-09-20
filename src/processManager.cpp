@@ -144,7 +144,11 @@ Task::process::result processManager::run( const processManager::opts& s )
 
 			logger.showText( s.args.cmd,s.args.cmd_args ) ;
 
-			auto m = utility::unwrap( Task::process::run( s.args.cmd,s.args.cmd_args,-1,s.password ) ) ;
+			const auto& env = s.engine.getProcessEnvironment() ;
+
+			auto& e = Task::process::run( s.args.cmd,s.args.cmd_args,-1,s.password,env ) ;
+
+			auto m = utility::unwrap( e ) ;
 
 			logger.showText( m ) ;
 
