@@ -166,13 +166,13 @@ static volumeInfo::List _unlocked_volumes()
 {
 	auto a = [](){
 
-		if( utility::platformIsLinux() ){
-
-			return _linux_volumes() ;
-
-		}else if( utility::platformIsWindows() || utility::platformIsFlatPak() ){
+		if( utility::platformIsWindows() || utility::platformIsFlatPak() ){
 
 			return mountinfo::toVolumeInfoList( _processManager_volumes() ) ;
+
+		}else if( utility::platformIsLinux() ){
+
+			return _linux_volumes() ;
 		}else{
 			return _qt_volumes() ;
 		}
@@ -206,13 +206,13 @@ mountinfo::mountinfo( QObject * parent,
 		emit this->updateVolume() ;
 	} ) ;
 
-	if( utility::platformIsLinux() ){
-
-		this->linuxMonitor() ;
-
-	}else if( utility::platformIsWindows() ){
+	if( utility::platformIsWindows() || utility::platformIsFlatPak() ){
 
 		this->windowsMonitor() ;
+
+	}else if( utility::platformIsLinux() ){
+
+		this->linuxMonitor() ;
 	}else{
 		this->qtMonitor() ;
 	}
