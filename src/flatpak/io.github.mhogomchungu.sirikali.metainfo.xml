@@ -25,21 +25,18 @@
 	<launchable type="desktop-id">io.github.mhogomchungu.sirikali.desktop</launchable>
 
 	<screenshots>
-		<screenshot>
-			<image>https://raw.githubusercontent.com/mhogomchungu/sirikali/mmm/images/sirikali-2.png</image>
-		</screenshot>
 		<screenshot  type="default">
-			<image>https://raw.githubusercontent.com/mhogomchungu/sirikali/mmm/images/sirikali-3.png</image>
+			<image>https://raw.githubusercontent.com/mhogomchungu/sirikali/03f5596db7b4a11bc3d394f5e57f69243e646505/images/Screenshot_20190912_114700.png</image>
 		</screenshot>
 	</screenshots>
 
 	<categories>
-		<category>Network</category>
+		<category>Utility</category>
 		<category>Qt</category>
 	</categories>
 
 	<releases>
-		<release version="1.7.0" type="stable" date="2024-10-01" >
+		<release version="1.6.1" type="stable" date="2024-09-21" >
 			<url type="details">https://github.com/mhogomchungu/sirikali/releases/download/$version/sirikali-$version.tar.xz/</url>
 			<description>
 				<p>Changelog</p>

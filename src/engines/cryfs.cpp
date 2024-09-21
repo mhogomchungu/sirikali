@@ -112,6 +112,8 @@ engines::engine::args cryfs::command( const QByteArray& password,
 		m.cmd_args.prepend( m.cmd ) ;
 		m.cmd_args.prepend( "--host" ) ;
 
+		m.cmd_args.prepend( "--env=CRYFS_FRONTEND=noninteractive" ) ;
+
 		m.cmd = "flatpak-spawn" ;
 
 		return m ;
@@ -137,7 +139,7 @@ bool cryfs::takesTooLongToUnlock() const
 
 engines::engine::cmdStatus cryfs::commandStatus( const engines::engine::commandStatusOpts& e ) const
 {
-	if( utility::platformIsWindows() ){
+	if( utility::platformIsWindows() || utility::platformIsFlatPak() ){
 
 		return engines::engine::commandStatus( e ) ;
 	}else{
