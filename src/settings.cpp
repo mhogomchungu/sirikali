@@ -206,12 +206,7 @@ QString settings::homePath()
 	}else{
 		if( utility::platformIsFlatPak() ){
 
-			auto m = _documentsPath() ;
-
-			Q_UNUSED( m )
-			//return m ;
-
-			return QDir::homePath() ;
+			return _documentsPath() ;
 		}else{
 			return QDir::homePath() ;
 		}
