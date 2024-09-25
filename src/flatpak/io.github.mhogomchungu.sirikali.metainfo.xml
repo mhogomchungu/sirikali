@@ -20,7 +20,7 @@
 		  <name>Francis Banyikwa</name>
 	</developer>
 
-	<description><p>This application makes it easy to use Gocryptfs, Securefs and Cryfs to store documents in secured folders.</p>.<p>Securefs is bundled with the application and users who prefer to use Gocryptfs or Cryfs should manually add them first to "~/.var/app/io.github.mhogomchungu.sirikali/data/SiriKali/bin" folder.</p></description>
+	<description><p>This application makes it easy to use Gocryptfs, Securefs and Cryfs to store documents in secured folders.</p><p>Securefs is bundled with the application and users who prefer to use Gocryptfs or Cryfs should manually add them first to "~/.var/app/io.github.mhogomchungu.sirikali/data/SiriKali/bin" folder.</p></description>
 
 	<launchable type="desktop-id">io.github.mhogomchungu.sirikali.desktop</launchable>
 
