@@ -4,10 +4,15 @@ SiriKali is a Qt/C++ GUI application that manages ecryptfs, cryfs, encfs, gocryp
 
 #### Supported Backends on Linux:
 
-<a href="https://github.com/google/fscrypt">Fscrypt</a>, <a href="https://github.com/netheril96/securefs">Securefs</a>, <a href="https://github.com/mhogomchungu/ecryptfs-simple">Ecryptfs</a>, <a href="https://www.cryfs.org/">Cryfs</a>, <a href="https://github.com/vgough/encfs">Encfs, </a><a href="https://nuetzlich.net/gocryptfs">Gocryptfs</a>, <a href="https://github.com/libfuse/sshfs">Sshfs</a> and <a href="https://github.com/mhogomchungu/cli">Cryptomator,</a>
+<a href="https://github.com/google/fscrypt">Fscrypt</a>, <a href="https://github.com/netheril96/securefs">Securefs</a>, <a href="https://github.com/mhogomchungu/ecryptfs-simple">Ecryptfs</a>, <a href="https://www.cryfs.org/">Cryfs</a>, <a href="https://github.com/vgough/encfs">Encfs, </a><a href="https://nuetzlich.net/gocryptfs">Gocryptfs</a>, <a href="https://github.com/libfuse/sshfs">Sshfs</a> and <a href="https://github.com/mhogomchungu/cli">Cryptomator,</a>.
+
+#### Supported Backends on Flatpak:
+
+<a href="https://github.com/netheril96/securefs">Securefs</a>, <a href="https://www.cryfs.org/">Cryfs</a> and <a href="https://nuetzlich.net/gocryptfs">Gocryptfs</a>.
 
 #### Supported Backends on Microsoft Windows:
- <a href="https://www.cryfs.org/">Cryfs</a>, <a href="https://github.com/netheril96/securefs">Securefs</a>, <a href="https://github.com/mhogomchungu/encfs">Encfs</a>, <a href="https://github.com/billziss-gh/sshfs-win">Sshfs</a> and <a href="https://github.com/bailey27/cppcryptfs">Cppcryptfs</a>
+
+ <a href="https://www.cryfs.org/">Cryfs</a>, <a href="https://github.com/netheril96/securefs">Securefs</a>, <a href="https://github.com/mhogomchungu/encfs">Encfs</a>, <a href="https://github.com/billziss-gh/sshfs-win">Sshfs</a> and <a href="https://github.com/bailey27/cppcryptfs">Cppcryptfs</a>.
 
 
 Users of Securefs and Cppcryptfs should inform SiriKali of where Securefs and Cppcryptfs binaries are located on the system by setting the path at: ```Menu->Settings->External Commands->Set Executables Search Path.```
@@ -15,26 +20,15 @@ Users of Securefs and Cppcryptfs should inform SiriKali of where Securefs and Cp
 If you are using the portable version, then a better place to put external executables is in the "local/bin" subfolder of the portable application folder.
 
 #### Supported Backends on macOS:
+
 <a href="https://github.com/netheril96/securefs">Securefs, </a><a href="https://www.cryfs.org/">Cryfs, </a><a href="https://github.com/vgough/encfs">Encfs</a> and <a href="https://nuetzlich.net/gocryptfs">Gocryptfs.</a>
 
 Building SiriKali on macOS is currently a bit involving process and [the steps are documented here](https://github.com/mhogomchungu/sirikali/blob/master/MACOS_BUILD_INSTRUCTIONS).
 
 
 #### Using SiriKali to connect to ssh server using sshfs:
+
 Steps to setup SiriKali to connect to an ssh server are documented <a href="https://github.com/mhogomchungu/sirikali/wiki/Frequently-Asked-Questions#90-how-do-i-add-options-to-connect-to-an-ssh-server">here.</a>
-
-Encrypted container ```folders``` have an advantage over encrypted container ```files``` like the ones that are created by <a href="http://mhogomchungu.github.io/zuluCrypt/">zuluCrypt</a>,TrueCrypt,VeraCrypt among other projects that use file based encrypted containers.
-
-SiriKali now has an extension system and it can support pretty much any fuse based backend and a small list of custom backends is <a href="https://github.com/mhogomchungu/sirikali/tree/master/custom%20backends">here.</a>
-#### Advantages are:
-
-The encrypted container folder can freely grow and shrink as files are added,removed,grow or shrink. File based encrypted containers are limited to the size of the container and the size is set when the container is created and does not change to reflect the amount of data the container is hosting.
-
-#### Disadvantages are:
-
-The encrypted container folder does not hide the space usage of its contents and an adversary can derive meaning from space usage of the encrypted container folder. File based container hides the space utilization of the volume and the only thing an adversary can see is the fixed size of the container.
-
-More advantages/disadvantages are discussed <a href="https://www.cryfs.org/comparison">here.</a>
 
 ## FAQ
 
@@ -56,6 +50,10 @@ We recommend using the installer version.
 A portable version is also found <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.6.0/SiriKali-1.6.0.1.zip">here</a>.
 
 Packages are also available for <a href="https://github.com/microsoft/winget-pkgs/tree/master/manifests/f/FrancisBanyikwa/SiriKali">Winget</a> and <a href="https://github.com/ScoopInstaller/Extras/blob/master/bucket/sirikali.json">Scoop</a>.
+
+## Flatpak package.
+
+Flatpak users should install SiriKali from <a href="https://flathub.org/apps/io.github.mhogomchungu.sirikali">Flathub</a>.
 
 ## Binary packages for Linux.
 
