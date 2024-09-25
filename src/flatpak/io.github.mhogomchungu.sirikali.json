@@ -39,6 +39,9 @@
     {
       "name" : "absl",
       "buildsystem" : "cmake-ninja",
+      "config-opts" : [
+        "-DCMAKE_BUILD_TYPE=Release"
+      ],
       "cleanup" : [
         "*"
       ],
@@ -57,6 +60,7 @@
         "*"
       ],
       "config-opts" : [
+        "-DCMAKE_BUILD_TYPE=Release",
         "-DCRYPTOPP_SOURCES=src/deps/cryptopp1",
         "-DCRYPTOPP_BUILD_TESTING=OFF",
         "-DCRYPTOPP_BUILD_DOCUMENTATION=OFF"
@@ -78,6 +82,9 @@
     {
       "name" : "uni-algo",
       "buildsystem" : "cmake-ninja",
+      "config-opts" : [
+        "-DCMAKE_BUILD_TYPE=Release"
+      ],
       "cleanup" : [
         "*"
       ],
@@ -96,6 +103,7 @@
         "*"
       ],
       "config-opts" : [
+        "-DCMAKE_BUILD_TYPE=Release",
         "-Dprotobuf_BUILD_TESTS=OFF",
         "-Dprotobuf_BUILD_CONFORMANCE=OFF",
         "-Dprotobuf_ABSL_PROVIDER=package"
@@ -157,6 +165,7 @@
       "name" : "securefs",
       "buildsystem" : "cmake-ninja",
       "config-opts" : [
+       "-DCMAKE_BUILD_TYPE=Release",
         "-DSECUREFS_USE_VCPKG=FALSE",
         "-DSECUREFS_ENABLE_UNIT_TEST=FALSE",
         "-DTCLAP_INCLUDE_DIRS=tclap/include"
