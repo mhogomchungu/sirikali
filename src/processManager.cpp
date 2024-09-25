@@ -21,12 +21,6 @@
 
 static const char * _backEndTimedOut = "BackendTimedOut" ;
 
-struct result
-{
-	engines::engine::error type ;
-	QByteArray outPut ;
-} ;
-
 enum class encode{ True,False } ;
 static QString _make_path( QString e,encode s )
 {
@@ -49,7 +43,7 @@ static QString _make_path( QString e,encode s )
 }
 
 template< typename Function >
-static result _read( QProcess& exe,const engines::engine& engine,Function function )
+static processManager::result _read( QProcess& exe,const engines::engine& engine,Function function )
 {
 	QByteArray m ;
 	QByteArray s ;
@@ -106,7 +100,7 @@ static result _read( QProcess& exe,const engines::engine& engine,Function functi
 	return { r,std::move( m ) } ;
 }
 
-static result _getProcessOutput( QProcess& exe,const engines::engine& engine )
+processManager::result processManager::getProcessOutput( QProcess& exe,const engines::engine& engine )
 {
 	int timeOut = engine.backendTimeout() ;
 
@@ -130,6 +124,11 @@ static result _getProcessOutput( QProcess& exe,const engines::engine& engine )
 			return engine.errorCode( e ) ;
 		} ) ;
 	}
+}
+
+static Task::process::result _error( const QByteArray& e )
+{
+	return Task::process::result( e,QByteArray(),-1,0,true ) ;
 }
 
 Task::process::result processManager::run( const processManager::opts& s )
@@ -166,16 +165,11 @@ bool processManager::backEndTimedOut( const QString& e )
 
 Task::process::result processManager::add( const processManager::opts& opts )
 {
-	auto error = []( const QByteArray& e ){
-
-		return Task::process::result( e,QByteArray(),-1,0,true ) ;
-	} ;
-
 	auto e = opts.engine.prepareBackend() ;
 
 	if( !e.isEmpty() ){
 
-		return error( e ) ;
+		return _error( e ) ;
 	}
 
 	auto exe = utility2::unique_qptr< QProcess >() ;
@@ -191,45 +185,7 @@ Task::process::result processManager::add( const processManager::opts& opts )
 
 	logger.showText( opts.args.cmd,opts.args.cmd_args ) ;
 
-	auto m = _getProcessOutput( *exe,opts.engine ) ;
-
-	auto s = [ & ](){
-
-		if( m.type == engines::engine::error::Timeout ){
-
-			opts.engine.terminateProcess( { *exe,opts.engine,opts.args.mountPath } ) ;
-
-			return error( _backEndTimedOut ) ;
-
-		}else if( m.type == engines::engine::error::Success ){
-
-			if( exe->state() == QProcess::Running ){
-
-				exe->closeReadChannel( QProcess::StandardError ) ;
-				exe->closeReadChannel( QProcess::StandardOutput ) ;
-
-				this->addEntry( opts,std::move( exe ) ) ;
-
-				m_updateVolumeList() ;
-
-				return Task::process::result( 0 ) ;
-			}else{
-				utility::waitForFinished( *exe ) ;
-
-				auto a = "SiriKali::Error: Backend Reported \"Success\" But Its No Longer Running\nGenerated Logs Are:\n" ;
-
-				QString b = "std error\n----------------------\n" + exe->readAllStandardError() + "\n----------------------\n" ;
-
-				QString c = "std out\n----------------------\n" + exe->readAllStandardOutput() + "\n----------------------\n" ;
-
-				return error( QString( "%1%2%3" ).arg( a,b,c ).toLatin1() ) ;
-			}
-		}else{
-			utility::waitForFinished( *exe ) ;
-
-			return error( m.outPut ) ;
-		}
-	}() ;
+	auto s = this->getResult( std::move( exe ),opts,_error,_backEndTimedOut ) ;
 
 	logger.showText( s ) ;
 
@@ -247,6 +203,16 @@ Task::process::result processManager::remove( const QString& mountPoint )
 			auto m = s.engine().terminateProcess( { s.exe(),s.engine(),s.mountPoint() } ) ;
 
 			if( m.result.success() ) {
+
+				auto& exe = s.exe() ;
+
+				for( int i = 0 ; i < 10 ; i++ ){
+
+					if( exe.waitForFinished( 100 ) ){
+
+						break ;
+					}
+				}
 
 				m_updateVolumeList() ;
 

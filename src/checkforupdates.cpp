@@ -85,7 +85,22 @@ void checkUpdates::checkIfInstalled()
 
 	QStringList apps ;
 
-	if( settings::instance().autodownloadMissingEngines() ){
+	if( utility::platformIsFlatPak() ){
+
+		auto src = "/app/bin/securefs" ;
+
+		if( QFile::exists( src ) ){
+
+			auto dst = basePath + "securefs" ;
+
+			if( !QFile::exists( dst ) ){
+
+				utility::copyFile( src,dst ) ;
+			}
+		}
+	}
+
+	if( settings::instance().autodownloadMissingEngines() && utility::canDownload() ){
 
 		if( !QFile::exists( basePath + "securefs" ) ){
 

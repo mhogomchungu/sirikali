@@ -309,6 +309,8 @@ namespace utility
 	bool platformIsWindows() ;
 	bool platformIsNOTWindows() ;
 
+	void setInternalWalletCustomPath( const QString& ) ;
+
 	void setWindowOptions( QDialog * ) ;
 
 	int startApplication( std::function< int() > ) ;
@@ -484,6 +486,8 @@ namespace utility
 	void licenseInfo( QWidget * ) ;
 
 	void applicationStarted() ;
+
+	bool canDownload() ;
 
 	QString removeOption( const QStringList&,const QString& option ) ;
 	QString removeOption( const QString& commaSeparatedString,const QString& option ) ;
@@ -821,6 +825,9 @@ private:
 
 namespace utility
 {
+
+bool copyFile( const QString& src,const QString& dst,bool = true ) ;
+
 namespace imp
 {
 template< typename Operator >

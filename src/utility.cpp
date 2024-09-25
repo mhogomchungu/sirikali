@@ -38,6 +38,7 @@
 #include <QTranslator>
 #include <QEventLoop>
 #include <QDebug>
+#include <QSysInfo>
 #include <QCoreApplication>
 #include <QApplication>
 #include <QByteArray>
@@ -1629,11 +1630,84 @@ QStringList utility::splitPreserveQuotes( const QString& e )
 #endif
 }
 
+#if FLATPAK
+
 bool utility::platformIsFlatPak()
 {
-#if FLATPAK
 	return true ;
+}
+
+extern "C"
+{
+	void lxqt_wallet_set_internal_wallet_custom_path( const char * ) ;
+}
+
+void utility::setInternalWalletCustomPath( const QString& e )
+{
+	QString m = e + "/lxqt/" ;
+
+	lxqt_wallet_set_internal_wallet_custom_path( m.toUtf8() ) ;
+}
+
 #else
+
+bool utility::platformIsFlatPak()
+{
 	return false ;
+}
+
+void utility::setInternalWalletCustomPath( const QString& )
+{
+}
+
 #endif
+
+bool utility::copyFile( const QString& s,const QString& d,bool setExePermssion )
+{
+	QFile src( s ) ;
+
+	if( src.open( QIODevice::ReadOnly ) ){
+
+		QFile dst( d ) ;
+
+		if( dst.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
+
+			std::array< char,1024 > buffer ;
+
+			while( true ){
+
+				auto m = src.read( buffer.data(),buffer.size() ) ;
+
+				if( m > 0 ){
+
+					dst.write( buffer.data(),m ) ;
+				}else{
+					if( src.size() == dst.size() ){
+
+						if( setExePermssion ){
+
+							auto s = dst.permissions() | QFileDevice::ExeOwner ;
+
+							dst.setPermissions( s ) ;
+						}
+
+						return true ;
+					}else{
+						dst.remove() ;
+
+						return false ;
+					}
+				}
+			}
+		}
+	}
+
+	return false ;
+}
+
+bool utility::canDownload()
+{
+	auto m = QSysInfo::currentCpuArchitecture() ;
+
+	return m == "x86_64" || m == "i386" ;
 }

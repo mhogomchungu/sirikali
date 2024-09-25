@@ -20,7 +20,7 @@
 		  <name>Francis Banyikwa</name>
 	</developer>
 
-	<description><p>This application make it easy to use CLI based tools to manage folder based encrypted volumes.</p></description>
+	<description><p>This application makes it easy to store your documents in a secured folder. Securefs is bundled with the application and users who prefer to use gocryptfs or Cryfs should add them to "/home/ink/.var/app/io.github.mhogomchungu.sirikali/data/SiriKali/bin" folder</p></description>
 
 	<launchable type="desktop-id">io.github.mhogomchungu.sirikali.desktop</launchable>
 
@@ -36,15 +36,12 @@
 	</categories>
 
 	<releases>
-		<release version="1.6.1" type="stable" date="2024-09-21" >
+		<release version="1.6.0.2" type="stable" date="2024-09-24" >
 			<url type="details">https://github.com/mhogomchungu/sirikali/releases/download/$version/sirikali-$version.tar.xz/</url>
 			<description>
 				<p>Changelog</p>
 				<ul>
-					<li>[WINDOWS]</li>
-					<li>  Internally manage securefs and make it possible to update it from within the app.</li>
-					<li>[LINUX]</li>
-					<li> Internally manage gocryptfs and securefs and make it possible to update them from within the app.</li>
+					<li>Initial Flatpak release</li>
 				</ul>
 			</description>
 		</release>

@@ -30,6 +30,12 @@
 class processManager
 {
 public:
+	struct result
+	{
+		engines::engine::error type ;
+		QByteArray outPut ;
+	} ;
+
 	struct mountOpts
 	{
 	        mountOpts( const QString& a,const QString& b,const QString& c,
@@ -73,6 +79,52 @@ public:
 	std::vector< processManager::mountOpts > mountOptions() const ;
 	bool mountPointTaken( const QString& e ) const ;
 private:
+	template< typename Exe,typename Error >
+	Task::process::result getResult( Exe exe,
+					 const processManager::opts& opts,
+					 Error error,
+					 const char * timeOut )
+	{
+		auto m = this->getProcessOutput( *exe,opts.engine ) ;
+
+		if( m.type == engines::engine::error::Timeout ){
+
+			opts.engine.terminateProcess( { *exe,opts.engine,opts.args.mountPath } ) ;
+
+			return error( timeOut ) ;
+
+		}else if( m.type == engines::engine::error::Success ){
+
+			if( exe->state() == QProcess::Running ){
+
+				exe->closeReadChannel( QProcess::StandardError ) ;
+				exe->closeReadChannel( QProcess::StandardOutput ) ;
+
+				this->addEntry( opts,std::move( exe ) ) ;
+
+				m_updateVolumeList() ;
+
+				return Task::process::result( 0 ) ;
+			}else{
+				utility::waitForFinished( *exe ) ;
+
+				auto a = "SiriKali::Error: Backend Reported \"Success\" But Its No Longer Running\nGenerated Logs Are:\n" ;
+
+				QString b = "std error\n----------------------\n" + exe->readAllStandardError() + "\n----------------------\n" ;
+
+				QString c = "std out\n----------------------\n" + exe->readAllStandardOutput() + "\n----------------------\n" ;
+
+				return error( QString( "%1%2%3" ).arg( a,b,c ).toUtf8() ) ;
+			}
+		}else{
+			utility::waitForFinished( *exe ) ;
+
+			return error( m.outPut ) ;
+		}
+	}
+
+	processManager::result getProcessOutput( QProcess&,const engines::engine& ) ;
+
 	template< typename A,typename B >
 	void addEntry( A&& a,B&& b )
 	{

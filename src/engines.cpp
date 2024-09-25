@@ -1314,28 +1314,28 @@ engines::engine::exe_args engines::engine::unMountCommand( const engines::engine
 			return _replace_opts( w ) ;
 		}
 	}else{
-		if( m_Options.unMountCommand.isEmpty() ){
+		if( !m_Options.unMountCommand.isEmpty() ){
 
-			if( utility::platformIsOSX() ){
-
-				return { "umount",{ e.mountPath() } } ;
-			}else{
-				if( utility::platformIsFlatPak() ){
-
-					return { "flatpak-spawn",{ "--host","fusermount","-u",e.mountPath() } } ;
-				}else{
-					auto fuserMount = engines::engine::fuserMountPath() ;
-
-					if( fuserMount.isEmpty() ){
-
-						return { engines::engine::status::fuserMountNotFound } ;
-					}else{
-						return { fuserMount,{ "-u",e.mountPath() } } ;
-					}
-				}
-			}
-		}else{
 			return _replace_opts( m_Options.unMountCommand ) ;
+		}
+
+		if( utility::platformIsOSX() ){
+
+			return { "umount",{ e.mountPath() } } ;
+		}
+
+		if( utility::platformIsFlatPak() ){
+
+			return { "flatpak-spawn",{ "--host","fusermount","-u",e.mountPath() } } ;
+		}
+
+		const auto& fm = engines::engine::fuserMountPath() ;
+
+		if( fm.isEmpty() ){
+
+			return { engines::engine::status::fuserMountNotFound } ;
+		}else{
+			return { fm,{ "-u",e.mountPath() } } ;
 		}
 	}
 }

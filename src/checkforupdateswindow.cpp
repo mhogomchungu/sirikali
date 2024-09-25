@@ -27,13 +27,18 @@
 
 bool checkforupdateswindow::updatable( const QString& m )
 {
-	if( m == "Securefs" ){
+	if( utility::canDownload() ){
 
-		return utility::platformIsLinux() || utility::platformIsWindows() ;
+		if( m == "Securefs" ){
 
-	}else if( m == "Gocryptfs" ){
+			return utility::platformIsLinux() || utility::platformIsWindows() ;
 
-		return utility::platformIsLinux() ;
+		}else if( m == "Gocryptfs" ){
+
+			return utility::platformIsLinux() ;
+		}else{
+			return false ;
+		}
 	}else{
 		return false ;
 	}
