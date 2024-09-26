@@ -994,7 +994,7 @@ public:
 		QProcessEnvironment setEnv() const ;
 		engines::engineVersion installedVersionImpl() const ;
 		engines::engineVersion installedVersion( const BaseOptions::vInfo& ) const ;
-
+		Task::process::result installedVersionImpl( const BaseOptions::vInfo& ) const ;
 		const BaseOptions m_Options ;
 		const QProcessEnvironment m_processEnvironment ;
 		mutable engines::exeFullPath m_exeFullPath ;

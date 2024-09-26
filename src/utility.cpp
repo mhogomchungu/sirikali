@@ -1644,7 +1644,7 @@ extern "C"
 
 void utility::setInternalWalletCustomPath( const QString& e )
 {
-	QString m = e + "/lxqt/" ;
+	auto m = e + "/lxqt/" ;
 
 	lxqt_wallet_set_internal_wallet_custom_path( m.toUtf8() ) ;
 }

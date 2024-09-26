@@ -776,32 +776,7 @@ static QString _sanitizeVersionString( const QString& s )
 
 engines::engineVersion engines::engine::installedVersion( const engines::engine::BaseOptions::vInfo& v ) const
 {
-	const auto& cmd = this->executableFullPath() ;
-
-	const auto r = [ & ](){
-
-		auto& env = m_processEnvironment ;
-
-		if( this->needsJava() ){
-
-			QStringList args{ "-jar",cmd,v.versionArgument } ;
-
-			auto& e = ::Task::process::run( m_exeJavaFullPath.get(),args,-1,{},env ) ;
-
-			return utility::unwrap( e ) ;
-		}else{
-			if( cmd.isEmpty() ){
-
-				return Task::process::result() ;
-			}else{
-				QStringList args{ v.versionArgument } ;
-
-				auto& e = ::Task::process::run( cmd,args,-1,{},env ) ;
-
-				return utility::unwrap( e ) ;
-			}
-		}
-	}() ;
+	const auto r = this->installedVersionImpl( v ) ;
 
 	const auto m = utility::split( v.readFromStdOut ? r.std_out() : r.std_error(),'\n' ) ;
 
@@ -816,6 +791,40 @@ engines::engineVersion engines::engine::installedVersion( const engines::engine:
 	}
 
 	return {} ;
+}
+
+Task::process::result engines::engine::installedVersionImpl( const BaseOptions::vInfo& v ) const
+{
+	auto& env = m_processEnvironment ;
+
+	const auto& cmd = this->executableFullPath() ;
+
+	if( cmd.isEmpty() ){
+
+		return Task::process::result() ;
+
+	}else if( this->needsJava() ){
+
+		QStringList args{ "-jar",cmd,v.versionArgument } ;
+
+		auto& e = ::Task::process::run( m_exeJavaFullPath.get(),args,-1,{},env ) ;
+
+		return utility::unwrap( e ) ;
+
+	}else if( utility::platformIsFlatPak() ){
+
+		QStringList args{ "--host",cmd,v.versionArgument } ;
+
+		auto& e = ::Task::process::run( "flatpak-spawn",args,-1,{},env ) ;
+
+		return utility::unwrap( e ) ;
+	}else{
+		QStringList args{ v.versionArgument } ;
+
+		auto& e = ::Task::process::run( cmd,args,-1,{},env ) ;
+
+		return utility::unwrap( e ) ;
+	}
 }
 
 engines::engineVersion engines::engine::installedVersionImpl() const

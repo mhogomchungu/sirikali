@@ -1132,12 +1132,7 @@ void keyDialog::openMountPoint( const QString& m )
 {
 	if( m_settings.autoOpenFolderOnMount() ){
 
-		if( utility::platformIsFlatPak() ){
-
-			QDesktopServices::openUrl( QUrl( "file://" + m ) ) ;
-		}else{
-			utility::Task::exec( m_fileManagerOpen,{ m } ) ;
-		}
+		utility::openPath( m,m_fileManagerOpen,nullptr,"","" ) ;
 	}
 }
 

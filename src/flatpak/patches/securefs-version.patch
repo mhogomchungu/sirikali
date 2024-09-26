@@ -1,0 +1,12 @@
+--- a/sources/commands.cpp	2024-04-20 18:21:59.000000000 +0300
++++ b/sources/commands.cpp	2024-09-25 21:56:09.104104841 +0300
+@@ -1028,7 +1028,8 @@
+     int execute() override
+     {
+         using namespace CryptoPP;
+-        absl::PrintF("securefs %s\n", GIT_VERSION);
++        auto version = "1.0.0";
++        absl::PrintF("securefs %s\n", version);
+         absl::PrintF("Crypto++ %g\n", CRYPTOPP_VERSION / 100.0);
+ #ifdef _WIN32
+         uint32_t vn;

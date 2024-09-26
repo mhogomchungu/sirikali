@@ -147,6 +147,8 @@ void checkforupdateswindow::doneUpdating( bool s )
 void checkforupdateswindow::Show()
 {
 	this->show() ;
+	this->raise() ;
+	this->setWindowState( Qt::WindowActive ) ;
 }
 
 checkforupdateswindow::~checkforupdateswindow()
@@ -197,8 +199,7 @@ void checkforupdateswindow::downloading( Ctx& ctx,const utils::network::progress
 
 			mm.replace( tr( "Downloading %1" ).arg( ee ),"" ) ;
 
-			auto
-					m = tr( "Download Complete" ) ;
+			auto m = tr( "Download Complete" ) ;
 
 			this->tableUpdate( row,m + mm ) ;
 
