@@ -578,6 +578,7 @@ public:
 
 		static const QString& javaFullPath() ;
 		static const QString& fuserMountPath() ;
+		static const QString& flatpakFuserMountPath() ;
 
 		bool isInstalled() const ;
 		bool isNotInstalled() const ;
@@ -1001,6 +1002,7 @@ public:
 		mutable engines::version m_version ;
 		static engines::exeFullPath m_exeJavaFullPath ;
 		static engines::exeFullPath m_exeFuserMount ;
+		static engines::exeFullPath m_flatpakExeFuserMount ;
 	} ;
 
 	engines() ;
