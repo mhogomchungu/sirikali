@@ -522,7 +522,20 @@ void utility::openPath( const QString& path,const QString& opener,
 
 		if( utility::platformIsFlatPak() ){
 
-			QDesktopServices::openUrl( QUrl( "file://" + path ) ) ;
+			auto exe = "flatpak-spawn" ;
+
+			QStringList args{ "--host",opener,path } ;
+
+			utility::logger logger ;
+
+			logger.showText( exe,args ) ;
+
+			if( QProcess::startDetached( exe,args ) ){
+
+				logger.showText( ::Task::process::result( 0 ) ) ;
+			}else{
+				logger.showText( ::Task::process::result( 1 ) ) ;
+			}
 		}else{
 			auto& e = openPath( path,opener ) ;
 

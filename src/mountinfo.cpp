@@ -293,9 +293,13 @@ static bool _unlocked_by_this_user( const engines::engine& engine,
 				    volumeInfo& e,
 				    const QString& userID )
 {
-	const auto& m = e.mountOptions() ;
+	if( utility::platformIsFlatPak() ){
 
-	if( utility::platformIsLinux() ){
+		return true ;
+
+	}else if( utility::platformIsLinux() ){
+
+		const auto& m = e.mountOptions() ;
 
 		if( m.contains( "user_id=" ) ){
 
