@@ -24,6 +24,12 @@ class securefs : public engines::engine
 public:
 	securefs() ;
 
+	bool updatable() const override ;
+
+	void setUpBinary( bool,QStringList&,const QString& ) const override ;
+
+	QString onlineArchiveFileName() const override ;
+
 	engines::engine::args command( const QByteArray&,const engines::engine::cmdArgsList&,bool ) const override ;
 
 	engines::engine::cmdStatus commandStatus( const engines::engine::commandStatusOpts& ) const override ;

@@ -1104,7 +1104,7 @@ void sirikali::setCreateMenu()
 
 		if( it->isNotInstalled() ){
 
-			if( checkforupdateswindow::updatable( name ) ){
+			if( it->updatable() ){
 
 				it->updateExecutableFullPath() ;
 

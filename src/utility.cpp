@@ -435,6 +435,8 @@ bool utility::enablePolkit()
 
 void utility::initGlobals()
 {
+	QDir().mkpath( engines::defaultBinPath() ) ;
+
 	settings::instance().scaleGUI() ;
 
 	auto& m = utility::miscOptions::instance() ;

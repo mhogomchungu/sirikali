@@ -158,6 +158,29 @@ static bool _set_if_found( const Function& function )
 	return false ;
 }
 
+bool gocryptfs::updatable() const
+{
+	if( utility::canDownload() ){
+
+		return utility::platformIsLinux() ;
+	}else{
+		return false ;
+	}
+}
+
+void gocryptfs::setUpBinary( bool add,QStringList& apps,const QString& basePath ) const
+{
+	if( add && !QFile::exists( basePath + "gocryptfs" ) ){
+
+		apps.append( "Gocryptfs" ) ;
+	}
+}
+
+QString gocryptfs::onlineArchiveFileName() const
+{
+	return "linux-static_amd64.tar.gz" ;
+}
+
 void gocryptfs::updateOptions( engines::engine::cmdArgsList& opt,bool creating ) const
 {
 	if( creating ){

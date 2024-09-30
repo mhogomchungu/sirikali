@@ -43,8 +43,6 @@ class checkforupdateswindow : public QDialog
 {
 	Q_OBJECT
 public:
-	static bool updatable( const QString& ) ;
-
 	using functions = std::pair< std::function< void() >,std::function< void() > > ;
 
 	static checkforupdateswindow& instance( QWidget * parent,
@@ -56,16 +54,28 @@ public:
 	checkforupdateswindow( QWidget * parent,functions&,utils::network::manager& ) ;
 	struct args
 	{
+		template< typename Engine >
+		args( const Engine& s )  :
+			updatable( s.updatable() ),
+			executableName( s.executableName() ),
+			engineName( s.known() ? s.name() : "SiriKali" ),
+			executableFullPath( s.executableFullPath() ),
+			url( s.releaseURL() ),
+			archiveName( s.onlineArchiveFileName() )
+		{
+		}
+		bool updatable ;
 		QString executableName ;
 		QString engineName ;
 		QString installedVersion ;
 		QString onLineVersion ;
 		QString executableFullPath ;
 		QString url ;
+		QString archiveName ;
 		QString error ;
 		QJsonObject data ;
 	} ;
-	void add( const checkforupdateswindow::args& ) ;
+	void add( const checkforupdateswindow::args& e ) ;
 	void doneUpdating( bool ) ;
 	void Show() ;
 	~checkforupdateswindow() ;
@@ -114,13 +124,12 @@ private:
 		int m_row ;
 		std::unique_ptr< QFile > m_file ;
 	} ;
-	bool canBeUpdated( int ) ;
 	void removeExtra( int ) ;
 	void downloading( Ctx&,const utils::network::progress& ) ;
 	void extracted( Ctx,const utils::qprocess::outPut& ) ;
 	void currentItemChanged( QTableWidgetItem * ,QTableWidgetItem * ) ;
 	void tableUpdate( int,const QString& ) ;
-	QString archiveName( int ) ;
+	const QString& archiveName( int ) ;
 	QString tableText( int ) ;
 	QString exePath( int ) ;
 	QString exeName( int ) ;
@@ -133,11 +142,16 @@ private:
 
 	Ui::checkforupdateswindow * m_ui ;
 	functions& m_functions ;
+
 	class opts
 	{
 	public:
-		opts( const QJsonObject& s,const QString& m,bool e ) :
-			m_data( s ),m_name( m ),m_noError( e )
+		opts( const checkforupdateswindow::args& e ) :
+			m_data( e.data ),
+			m_name( e.engineName ),
+			m_archiveName( e.archiveName ),
+			m_noError( e.error.isEmpty() ),
+			m_updatable( e.updatable )
 		{
 		}
 		const QJsonObject& data() const
@@ -148,14 +162,24 @@ private:
 		{
 			return m_name ;
 		}
+		const QString& archiveName() const
+		{
+			return m_archiveName ;
+		}
 		bool noError() const
 		{
 			return m_noError ;
 		}
+		bool updatable() const
+		{
+			return m_updatable ;
+		}
 	private:
 		QJsonObject m_data ;
 		QString m_name ;
+		QString m_archiveName ;
 		bool m_noError ;
+		bool m_updatable ;
 	} ;
 
 	class locale

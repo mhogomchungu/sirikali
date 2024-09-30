@@ -116,7 +116,7 @@ std::unique_ptr< QSettings > lxqt_qsettings()
 }
 
 static std::unique_ptr< QSettings > _init()
-{
+{	
 	if( settings::portableVersion() ){
 
 		return _set_config( settings::portableVersionConfigPath(),true ) ;

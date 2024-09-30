@@ -25,25 +25,6 @@
 
 #include "engines.h"
 
-bool checkforupdateswindow::updatable( const QString& m )
-{
-	if( utility::canDownload() ){
-
-		if( m == "Securefs" ){
-
-			return utility::platformIsLinux() || utility::platformIsWindows() ;
-
-		}else if( m == "Gocryptfs" ){
-
-			return utility::platformIsLinux() ;
-		}else{
-			return false ;
-		}
-	}else{
-		return false ;
-	}
-}
-
 checkforupdateswindow::checkforupdateswindow( QWidget * parent,
 					      functions& ff,
 					      utils::network::manager& nm ) :
@@ -84,7 +65,7 @@ checkforupdateswindow::checkforupdateswindow( QWidget * parent,
 
 			auto ac = m.addAction( tr( "Update" ) ) ;
 
-			if( this->canBeUpdated( row ) ){
+			if( m_opts[ row ].updatable() ){
 
 				ac->setEnabled( true ) ;
 
@@ -110,7 +91,7 @@ void checkforupdateswindow::add( const checkforupdateswindow::args& e )
 {
 	auto txt = e.engineName ;
 
-	m_opts.emplace_back( e.data,e.engineName,e.error.isEmpty() ) ;
+	m_opts.emplace_back( e ) ;
 
 	if( e.error.isEmpty() ){
 
@@ -154,13 +135,6 @@ void checkforupdateswindow::Show()
 checkforupdateswindow::~checkforupdateswindow()
 {
 	delete m_ui ;
-}
-
-bool checkforupdateswindow::canBeUpdated( int row )
-{
-	const auto& name = m_opts[ row ].name() ;
-
-	return this->updatable( name ) ;
 }
 
 void checkforupdateswindow::removeExtra( int row )
@@ -267,23 +241,9 @@ void checkforupdateswindow::tableUpdate( int row,const QString& s )
 	}
 }
 
-QString checkforupdateswindow::archiveName( int row )
+const QString& checkforupdateswindow::archiveName( int row )
 {
-	if( m_opts[ row ].name() == "Securefs" ){
-
-		if( utility::platformIsLinux() ){
-
-			return "securefs-linux-amd64-release.zip" ;
-
-		}else if( utility::platformIsWindows() ){
-
-			return "securefs-windows-amd64-release.zip" ;
-		}else{
-			return "securefs-macos-amd64-release.zip" ;
-		}
-	}else{
-		return "linux-static_amd64.tar.gz" ;
-	}
+	return m_opts[ row ].archiveName() ;
 }
 
 QString checkforupdateswindow::tableText( int row )
@@ -463,7 +423,7 @@ void checkforupdateswindow::update( int row )
 
 		const auto array = m_opts[ row ].data().value( "assets" ).toArray() ;
 
-		auto name = this->archiveName( row ) ;
+		const auto& name = this->archiveName( row ) ;
 
 		for( const auto& it : array ){
 

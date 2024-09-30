@@ -83,34 +83,15 @@ void checkUpdates::checkIfInstalled()
 
 	QDir().mkpath( basePath ) ;
 
+	auto& s = settings::instance() ;
+
+	auto m = s.autodownloadMissingEngines() && utility::canDownload() ;
+
 	QStringList apps ;
 
-	if( utility::platformIsFlatPak() ){
+	for( const auto& it : m_backends ){
 
-		auto src = "/app/bin/securefs" ;
-
-		if( QFile::exists( src ) ){
-
-			auto dst = basePath + "securefs" ;
-
-			if( !QFile::exists( dst ) ){
-
-				utility::copyFile( src,dst ) ;
-			}
-		}
-	}
-
-	if( settings::instance().autodownloadMissingEngines() && utility::canDownload() ){
-
-		if( !QFile::exists( basePath + "securefs" ) ){
-
-			apps.append( "Securefs" ) ;
-		}
-
-		if( !QFile::exists( basePath + "gocryptfs" ) ){
-
-			apps.append( "Gocryptfs" ) ;
-		}
+		it->setUpBinary( m,apps,basePath ) ;
 	}
 
 	if( apps.isEmpty() ){
@@ -123,7 +104,7 @@ void checkUpdates::checkIfInstalled()
 
 				if( it->name() == xt ){
 
-					if( checkforupdateswindow::updatable( it->name() ) ){
+					if( it->updatable() ){
 
 						m_backendsInstallable.emplace_back( it ) ;
 					}
@@ -232,9 +213,8 @@ void checkUpdates::checkForUpdate( size_t position )
 
 		if( f == "N/A" && m_backendsInUse == &m_backends ){
 
-			checkforupdateswindow::args args ;
+			checkforupdateswindow::args args( s.get() ) ;
 
-			args.engineName       = s->known() ? s->name() : "SiriKali" ; ;
 			args.installedVersion = "N/A" ;
 			args.onLineVersion    = "N/A" ;
 
@@ -264,35 +244,28 @@ void checkUpdates::networkReply( int position,
 {
 	if( reply.success() ){
 
-		checkforupdateswindow::args args ;
+		checkforupdateswindow::args args( s ) ;
 
 		auto m = this->latestVersion( reply.data() ) ;
 
-		args.executableName     = s.executableName() ;
-		args.engineName         = s.known() ? s.name() : "SiriKali" ;
-		args.installedVersion   = installedVersion ;
-		args.executableFullPath = s.executableFullPath() ;
-		args.onLineVersion      = m.version ;
-		args.url                = s.releaseURL() ;
-		args.data               = m.data ;
+		args.installedVersion = installedVersion ;
+		args.onLineVersion    = m.version ;
+		args.data             = m.data ;
 
 		emit update( args ) ;
 
 	}else if( reply.timeOut() ){
 
-		checkforupdateswindow::args args ;
-
-		args.engineName = s.known() ? s.name() : "SiriKali" ;
+		checkforupdateswindow::args args( s ) ;
 
 		auto ss    = QString::number( m_timeOut / 1000 ) ;
 		args.error = QObject::tr( "Network Request Failed To Respond Within %1 Seconds." ).arg( ss ) ;
 
 		emit update( args ) ;
 	}else{
-		checkforupdateswindow::args args ;
+		checkforupdateswindow::args args( s ) ;
 
-		args.engineName = s.known() ? s.name() : "SiriKali" ; ;
-		args.error      = reply.errorString() ;
+		args.error = reply.errorString() ;
 
 		emit update( args ) ;
 	}

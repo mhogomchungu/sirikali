@@ -332,11 +332,8 @@ Task::future< mountinfo::List >& mountinfo::unlockedVolumes()
 
 		mountinfo::List e ;
 
-		if( utility::platformIsWindows() ){
+		if( utility::platformIsWindows() || utility::platformIsFlatPak() ){
 
-			/*
-			 *  All engines in windows run in the foreground
-			 */
 			for( auto&& it : m ){
 
 				e.emplace_back( _decode( it.engine,std::move( it.vInfo ) ) ) ;

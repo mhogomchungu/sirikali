@@ -85,6 +85,53 @@ securefs::securefs() :
 {
 }
 
+bool securefs::updatable() const
+{
+	if( utility::canDownload() ){
+
+		return utility::platformIsLinux() || utility::platformIsWindows() ;
+	}else{
+		return false ;
+	}
+}
+
+void securefs::setUpBinary( bool add,QStringList& apps,const QString& basePath ) const
+{
+	if( utility::platformIsFlatPak() ){
+
+		auto src = "/app/bin/securefs" ;
+
+		if( QFile::exists( src ) ){
+
+			auto dst = basePath + "securefs" ;
+
+			if( !QFile::exists( dst ) ){
+
+				utility::copyFile( src,dst ) ;
+			}
+		}
+	}
+
+	if( add && !QFile::exists( basePath + "securefs" ) ){
+
+		apps.append( "Securefs" ) ;
+	}
+}
+
+QString securefs::onlineArchiveFileName() const
+{
+	if( utility::platformIsLinux() || utility::platformIsFlatPak() ){
+
+		return "securefs-linux-amd64-release.zip" ;
+
+	}else if( utility::platformIsWindows() ){
+
+		return "securefs-windows-amd64-release.zip" ;
+	}else{
+		return "securefs-macos-amd64-release.zip" ;
+	}
+}
+
 engines::engine::args securefs::command( const QByteArray& password,const cmdArgsList& args,bool create ) const
 {
 	if( utility::platformIsFlatPak() ){

@@ -714,6 +714,12 @@ public:
 
 		engines::engine::exe_args unMountCommand( const engines::engine::terminate_process& e ) const ;
 
+		virtual void setUpBinary( bool,QStringList&,const QString& ) const ;
+
+		virtual QString onlineArchiveFileName() const ;
+
+		virtual bool updatable() const ;
+
 		virtual const QStringList& windowsUnmountCommand() const ;
 
 		virtual terminate_result terminateProcess( const terminate_process& ) const ;

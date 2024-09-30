@@ -1077,6 +1077,11 @@ bool engines::engine::windowsCanUnlocInReadWriteMode() const
 	return m_Options.windowsCanUnlockInReadWriteMode ;
 }
 
+bool engines::engine::updatable() const
+{
+	return false ;
+}
+
 bool engines::engine::isInstalled() const
 {
 	return !this->isNotInstalled() ;
@@ -1404,6 +1409,15 @@ engines::engine::exe_args engines::engine::unMountCommand( const engines::engine
 			}
 		}
 	}
+}
+
+void engines::engine::setUpBinary( bool,QStringList&,const QString& ) const
+{
+}
+
+QString engines::engine::onlineArchiveFileName() const
+{
+	return {} ;
 }
 
 const QStringList& engines::engine::windowsUnmountCommand() const
