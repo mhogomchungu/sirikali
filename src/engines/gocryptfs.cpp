@@ -170,10 +170,7 @@ bool gocryptfs::updatable() const
 
 void gocryptfs::setUpBinary( bool add,QStringList& apps,const QString& basePath ) const
 {
-	if( add && !QFile::exists( basePath + "gocryptfs" ) ){
-
-		apps.append( "Gocryptfs" ) ;
-	}
+	engines::engine::setUpBinary( add,apps,basePath,"gocryptfs" ) ;
 }
 
 QString gocryptfs::onlineArchiveFileName() const

@@ -1,0 +1,24 @@
+--- a/Makefile	2023-06-10 17:31:49.000000000 +0300
++++ b/Makefile	2024-10-02 20:56:16.832488450 +0300
+@@ -1,7 +1,6 @@
+ .phony: build
+ build:
+ 	./build.bash
+-	./Documentation/MANPAGE-render.bash
+ 
+ .phony: test
+ test:
+@@ -23,11 +22,8 @@
+ # Keep in sync with uninstall!
+ .phony: install
+ install:
+-	install -Dm755 -t "$(DESTDIR)/usr/bin/" gocryptfs
+-	install -Dm755 -t "$(DESTDIR)/usr/bin/" gocryptfs-xray/gocryptfs-xray
+-	install -Dm644 -t "$(DESTDIR)/usr/share/man/man1/" Documentation/gocryptfs.1
+-	install -Dm644 -t "$(DESTDIR)/usr/share/man/man1/" Documentation/gocryptfs-xray.1
+-	install -Dm644 -t "$(DESTDIR)/usr/share/licenses/gocryptfs" LICENSE
++	install -Dm755 -t "/app/bin/" gocryptfs
++
+ 
+ .phony: uninstall
+ uninstall:

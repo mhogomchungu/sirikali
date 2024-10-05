@@ -217,6 +217,8 @@ int sirikali::run( const QStringList& args,int argc,char * argv[] )
 
 		srk.setApplicationName( "SiriKali" ) ;
 
+		QDir().mkpath( engines::defaultBinPath() ) ;
+
 		#if QT_VERSION >= QT_VERSION_CHECK( 5,11,3 )
 			srk.setDesktopFileName( "io.github.mhogomchungu.sirikali" ) ;
 		#endif

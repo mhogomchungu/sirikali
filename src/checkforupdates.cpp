@@ -81,8 +81,6 @@ void checkUpdates::checkIfInstalled()
 {
 	auto basePath = engines::defaultBinPath() ;
 
-	QDir().mkpath( basePath ) ;
-
 	auto& s = settings::instance() ;
 
 	auto m = s.autodownloadMissingEngines() && utility::canDownload() ;

@@ -1,0 +1,11 @@
+--- a/cmake-utils/Dependencies.cmake	2024-10-05 12:58:55.251047674 +0300
++++ b/cmake-utils/Dependencies.cmake	2024-10-05 11:52:02.039197519 +0300
+@@ -4,7 +4,7 @@
+ target_link_libraries(CryfsDependencies_range-v3 INTERFACE range-v3::range-v3)
+ 
+ # Setup boost dependency
+-set(Boost_USE_STATIC_LIBS OFF)
++set(Boost_USE_STATIC_LIBS ON)
+ find_package(Boost 1.84.0
+         REQUIRED
+         COMPONENTS filesystem system thread chrono program_options)

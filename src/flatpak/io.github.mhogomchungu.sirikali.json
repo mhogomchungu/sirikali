@@ -201,6 +201,127 @@
       ]
     },
     {
+      "name" : "gocryptfs",
+      "buildsystem" : "simple",
+      "build-commands" : [
+        "ln -s `pwd`/bin/go /app/bin/go",
+        "`pwd`/build-without-openssl.bash",
+        "make install",
+        "rm -rf /app/bin/go"
+      ],
+      "cleanup" : [],
+      "config-opts" : [],
+      "sources" : [
+        {
+          "type" : "archive",
+          "url" : "https://github.com/rfjakob/gocryptfs/releases/download/v2.4.0/gocryptfs_v2.4.0_src-deps.tar.gz",
+          "sha256" : "45158daf20df7f94e0c9ec57ba07af21df2e25e15b8584bf3c7de96adbbc2efd"
+        },
+        {
+          "type" : "patch",
+          "paths" : [
+            "patches/gocryptfs.patch",
+            "patches/gocryptfs_version.patch"
+          ]
+        },
+        {
+          "type" : "archive",
+          "only-arches" : [
+            "x86_64"
+          ],
+          "url" : "https://go.dev/dl/go1.23.2.linux-amd64.tar.gz",
+          "sha256" : "542d3c1705f1c6a1c5a80d5dc62e2e45171af291e755d591c5e6531ef63b454e"
+        },
+        {
+          "type" : "archive",
+          "only-arches" : [
+            "aarch64"
+          ],
+          "url" : "https://go.dev/dl/go1.23.2.linux-arm64.tar.gz",
+          "sha256" : "f626cdd92fc21a88b31c1251f419c17782933a42903db87a174ce74eeecc66a9"
+        }
+      ]
+    },
+    {
+      "name" : "range-v3",
+      "buildsystem" : "cmake-ninja",
+      "config-opts" : [
+        "-DCMAKE_BUILD_TYPE=Release"
+      ],
+      "cleanup" : [
+        "*"
+      ],
+      "sources" : [
+        {
+          "type" : "archive",
+          "url" : "https://github.com/ericniebler/range-v3/archive/refs/tags/0.12.0.tar.gz",
+          "sha256" : "015adb2300a98edfceaf0725beec3337f542af4915cec4d0b89fa0886f4ba9cb"
+        }
+      ]
+    },
+    {
+      "name" : "spdlog",
+      "buildsystem" : "cmake-ninja",
+      "config-opts" : [
+        "-DCMAKE_BUILD_TYPE=Release"
+      ],
+      "cleanup" : [
+        "*"
+      ],
+      "sources" : [
+        {
+          "type" : "archive",
+          "url" : "https://github.com/gabime/spdlog/archive/refs/tags/v1.14.1.tar.gz",
+          "sha256" : "1586508029a7d0670dfcb2d97575dcdc242d3868a259742b69f100801ab4e16b"
+        }
+      ]
+    },
+    {
+      "name" : "boost",
+      "buildsystem" : "simple",
+      "build-commands" : [
+        "`pwd`/bootstrap.sh --prefix=/app",
+        "`pwd`/b2 install --prefix=/app"
+      ],
+      "cleanup" : [
+        "*"
+      ],
+      "config-opts" : [],
+      "sources" : [
+        {
+          "type" : "archive",
+          "url" : "https://archives.boost.io/release/1.86.0/source/boost_1_86_0.tar.gz",
+          "sha256" : "2575e74ffc3ef1cd0babac2c1ee8bdb5782a0ee672b1912da40e5b4b591ca01f"
+        }
+      ]
+    },
+    {
+      "name" : "cryfs",
+      "buildsystem" : "cmake-ninja",
+      "config-opts" : [
+        "-DCMAKE_BUILD_TYPE=RELEASE",
+        "-DCRYFS_UPDATE_CHECKS=FALSE",
+        "-DDISABLE_OPENMP=ON",
+        "-DBoost_USE_STATIC_LIBS=ON"
+      ],
+      "cleanup" : [
+        "/share/*"
+      ],
+      "sources" : [
+        {
+          "type" : "archive",
+          "url" : "https://github.com/cryfs/cryfs/archive/refs/tags/1.0.0-rc1.tar.gz",
+          "sha256" : "79b4d665dd4fed2e4a380930e5c4d8ff458ef803881051cde193743d88168164"
+        },
+        {
+          "type" : "patch",
+          "paths" : [
+            "patches/cryfs.patch"
+          ]
+        }
+      ]
+    },
+    {
       "name" : "io.github.mhogomchungu.sirikali",
       "buildsystem" : "cmake-ninja",
       "config-opts" : [

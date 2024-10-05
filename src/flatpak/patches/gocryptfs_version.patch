@@ -1,0 +1,13 @@
+--- a/version.go	2023-06-10 17:31:49.000000000 +0300
++++ b/version.go	2024-10-03 00:58:27.203740817 +0300
+@@ -47,8 +47,8 @@
+ 	if raceDetector {
+ 		built += " -race"
+ 	}
+-	fmt.Printf("%s %s%s; go-fuse %s; %s %s/%s\n",
+-		tlog.ProgramName, GitVersion, tags, GitVersionFuse, built,
++	fmt.Printf("%s v2.4.0%s; go-fuse %s; %s %s/%s\n",
++		tlog.ProgramName,  tags, GitVersionFuse, built,
+ 		runtime.GOOS, runtime.GOARCH)
+ }
+ 

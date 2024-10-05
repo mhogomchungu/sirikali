@@ -24,6 +24,12 @@ class cryfs : public engines::engine
 public:
 	cryfs() ;
 
+	bool updatable() const override ;
+
+	void setUpBinary( bool,QStringList&,const QString& ) const override ;
+
+	QString onlineArchiveFileName() const override ;
+
 	engines::engine::args command( const QByteArray&,const engines::engine::cmdArgsList&,bool ) const override ;
 
 	bool takesTooLongToUnlock() const override ;

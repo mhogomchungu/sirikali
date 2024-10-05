@@ -606,6 +606,8 @@ public:
 		bool usesFuseArgumentSwitch() const ;
 		bool windowsCanUnlocInReadWriteMode() const ;
 
+		void setUpBinary( bool,QStringList&,const QString&,const QString& ) const ;
+
 		engines::engine::status notFoundCode() const ;
 
 		int backendTimeout() const ;

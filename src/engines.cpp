@@ -724,7 +724,7 @@ engines::engine::cmdStatus engines::engine::commandStatus( const engines::engine
 
 		return { engines::engine::status::success,engine } ;
 	}else{
-		if( utility::platformIsWindows() ){
+		if( utility::platformIsWindows() || utility::platformIsFlatPak() ){
 
 			if( processManager::backEndTimedOut( e.stdOut() ) ){
 
@@ -1408,6 +1408,36 @@ engines::engine::exe_args engines::engine::unMountCommand( const engines::engine
 				return { fm,{ "-u",e.mountPath() } } ;
 			}
 		}
+	}
+}
+
+void engines::engine::setUpBinary( bool add,
+				   QStringList& apps,
+				   const QString& basePath,
+				   const QString& exeName ) const
+{
+	if( utility::platformIsFlatPak() ){
+
+		auto src = "/app/bin/" + exeName ;
+
+		if( QFile::exists( src ) ){
+
+			auto dst = basePath + exeName ;
+
+			if( !QFile::exists( dst ) ){
+
+				utility::copyFile( src,dst ) ;
+			}
+		}
+	}
+
+	if( add && !QFile::exists( basePath + exeName ) ){
+
+		auto m = exeName ;
+
+		m[ 0 ] = m[ 0 ].toUpper() ;
+
+		apps.append( m ) ;
 	}
 }
 

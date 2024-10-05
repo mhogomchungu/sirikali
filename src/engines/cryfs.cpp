@@ -51,7 +51,7 @@ static engines::engine::BaseOptions _setOptions()
 	s.idleString            = "--unmount-idle %{timeout}" ;
 	s.configFileArgument    = "--config %{configFilePath}" ;
 	s.releaseURL            = "https://api.github.com/repos/cryfs/cryfs/releases" ;
-	s.incorrectPasswordText = QStringList{ "Could not load config file. Did you enter the correct password?" } ;
+	s.incorrectPasswordText = QStringList{ "Did you enter the correct password?" } ;
 	s.successfulMountedList = QStringList{ "Mounting filesystem." } ;
 	s.configFileNames       = QStringList{ "cryfs.config",".cryfs.config" } ;
 	s.fuseNames             = QStringList{ "fuse.cryfs" } ;
@@ -69,17 +69,25 @@ static engines::engine::BaseOptions _setOptions()
 		s.windowsInstallPathRegistryKey   = a ;
 		s.windowsInstallPathRegistryValue = b ;
 		s.windowsUnMountCommand           = QStringList{ c,"%{mountPoint}" } ;
+
+	}else if( utility::platformIsFlatPak() ){
+
+		auto exe = "flatpak-spawn" ;
+
+		auto m = engines::defaultBinPath() + "cryfs-unmount" ;
+
+		s.unMountCommand = QStringList{ exe,"--host",m,"--immediate","%{mountPoint}" } ;
 	}else{
 		auto m = engines::executableNotEngineFullPath( "cryfs-unmount" ) ;
 
 		if( !m.isEmpty() ){
 
-			s.unMountCommand = QStringList{ m,"%{mountPoint}" } ;
+			s.unMountCommand = QStringList{ m,"--immediate","%{mountPoint}" } ;
 		}
 	}
 
-	s.notFoundCode          = engines::engine::status::engineExecutableNotFound ;
-	s.versionInfo           = { { "--version",true,2,0 } } ;
+	s.notFoundCode = engines::engine::status::engineExecutableNotFound ;
+	s.versionInfo = { { "--version",true,2,0 } } ;
 
 	if( utility::platformIsWindows() || utility::platformIsFlatPak() ){
 
@@ -99,6 +107,23 @@ cryfs::cryfs() :
 	m_version_greater_or_equal_0_10_0( true,*this,0,10,0 ),
 	m_version_greater_or_equal_0_9_9( true,*this,0,9,9 )
 {
+}
+
+bool cryfs::updatable() const
+{
+	return false ;
+}
+
+void cryfs::setUpBinary( bool add,QStringList& apps,const QString& basePath ) const
+{
+	return ; //enable when version 1.0.0 is officially out
+	engines::engine::setUpBinary( add,apps,basePath,"cryfs" ) ;
+	engines::engine::setUpBinary( false,apps,basePath,"cryfs-unmount" ) ;
+}
+
+QString cryfs::onlineArchiveFileName() const
+{
+	return {} ;
 }
 
 engines::engine::args cryfs::command( const QByteArray& password,
@@ -166,6 +191,19 @@ const QProcessEnvironment& cryfs::getProcessEnvironment() const
 	return m_env ;
 }
 
+static bool _wrong_password( const QString& e,const char * s,const QStringList& m )
+{
+	for( const auto& a : m ){
+
+		if( utility::containsAtleastOne( e,s,a ) ){
+
+			return true ;
+		}
+	}
+
+	return false ;
+}
+
 engines::engine::status cryfs::errorCode( const QString& e,const QString& err,int s ) const
 {
 	if( s == 0 ){
@@ -196,36 +234,23 @@ engines::engine::status cryfs::errorCode( const QString& e,const QString& err,in
 
 			return engines::engine::status::cryfsReplaceFileSystem ;
 		}
-	}else{
-		auto _wrong_password = []( const QString& e,const char * s,const QStringList& m ){
+	}
 
-			for( const auto& a : m ){
+	/*
+	 * Falling back to parsing strings
+	 */
+	if( _wrong_password( e,"Error 11:",this->incorrectPasswordText() ) ){
 
-				if( utility::containsAtleastOne( e,s,a ) ){
+		return engines::engine::status::badPassword ;
 
-					return true ;
-				}
-			}
+	}else if( e.contains( "This filesystem is for CryFS" ) &&
+		  e.contains( "It has to be migrated" ) ){
 
-			return false ;
-		} ;
+		return engines::engine::status::cryfsMigrateFileSystem ;
 
-		/*
-		 * Falling back to parsing strings
-		 */
-		if( _wrong_password( e,"Error 11:",this->incorrectPasswordText() ) ){
+	}else if( e.contains( "The filesystem id in the config file is different to the last time we loaded a filesystem from this basedir" ) ){
 
-			return engines::engine::status::badPassword ;
-
-		}else if( e.contains( "This filesystem is for CryFS" ) &&
-			  e.contains( "It has to be migrated" ) ){
-
-			return engines::engine::status::cryfsMigrateFileSystem ;
-
-		}else if( e.contains( "The filesystem id in the config file is different to the last time we loaded a filesystem from this basedir" ) ){
-
-			return engines::engine::status::cryfsReplaceFileSystem ;
-		}
+		return engines::engine::status::cryfsReplaceFileSystem ;
 	}
 
 	return engines::engine::status::backendFail ;

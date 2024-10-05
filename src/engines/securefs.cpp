@@ -97,30 +97,12 @@ bool securefs::updatable() const
 
 void securefs::setUpBinary( bool add,QStringList& apps,const QString& basePath ) const
 {
-	if( utility::platformIsFlatPak() ){
-
-		auto src = "/app/bin/securefs" ;
-
-		if( QFile::exists( src ) ){
-
-			auto dst = basePath + "securefs" ;
-
-			if( !QFile::exists( dst ) ){
-
-				utility::copyFile( src,dst ) ;
-			}
-		}
-	}
-
-	if( add && !QFile::exists( basePath + "securefs" ) ){
-
-		apps.append( "Securefs" ) ;
-	}
+	engines::engine::setUpBinary( add,apps,basePath,"securefs" ) ;
 }
 
 QString securefs::onlineArchiveFileName() const
 {
-	if( utility::platformIsLinux() || utility::platformIsFlatPak() ){
+	if( utility::platformIsLinux() ){
 
 		return "securefs-linux-amd64-release.zip" ;
 
