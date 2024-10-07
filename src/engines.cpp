@@ -1435,8 +1435,9 @@ static bool _source_more_recent( const QString& exeName,const QString& src,const
 		return false ;
 	}
 #else
-	Q_UNUSED( s )
-	Q_UNUSED( d )
+	Q_UNUSED( exeName )
+	Q_UNUSED( src )
+	Q_UNUSED( dst )
 
 	return false ;
 #endif
