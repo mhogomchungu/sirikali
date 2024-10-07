@@ -1416,6 +1416,32 @@ engines::engine::exe_args engines::engine::unMountCommand( const engines::engine
 	}
 }
 
+static bool _source_more_recent( const QString& exeName,const QString& src,const QString& dst )
+{
+#if QT_VERSION >= QT_VERSION_CHECK( 5,10,0 )
+
+	auto m = QFileInfo( src ).birthTime() ;
+
+	auto e = QFileInfo( dst ).birthTime() ;
+
+	if( m.isValid() && e.isValid() ){
+
+		return m > e ;
+	}else{
+		qDebug() << "Name: " << exeName ;
+		qDebug() << "Src Date: " << m ;
+		qDebug() << "Dest Date: " << e ;
+
+		return false ;
+	}
+#else
+	Q_UNUSED( s )
+	Q_UNUSED( d )
+
+	return false ;
+#endif
+}
+
 void engines::engine::setUpBinary( bool add,
 				   QStringList& apps,
 				   const QString& basePath,
@@ -1430,6 +1456,12 @@ void engines::engine::setUpBinary( bool add,
 			auto dst = basePath + exeName ;
 
 			if( !QFile::exists( dst ) ){
+
+				utility::copyFile( src,dst ) ;
+
+			}else if( _source_more_recent( exeName,src,dst ) ){
+
+				QFile::remove( dst ) ;
 
 				utility::copyFile( src,dst ) ;
 			}
