@@ -188,6 +188,11 @@ QString settings::portableVersionConfigPath()
 	return SiriKali::Windows::applicationDirPath() + "/local" ;
 }
 
+const settings::flatpakRuntimeOptions& settings::flatpakIntance()
+{
+	return m_flatpakRuntimeOptions ;
+}
+
 bool settings::showCipherFolderAndMountPathInFavoritesList()
 {
 	if( !m_settings.contains( "ShowCipherFolderAndMountPathInFavoritesList" ) ){
@@ -1666,5 +1671,15 @@ void settings::translator::clear()
 
 settings::translator::entry::entry( const QString& a,const char * b,const QString& c ) :
 	UINameTranslated( a ),UINameUnTranslated( b ),internalName( c )
+{
+}
+
+settings::flatpakRuntimeOptions::flatpakRuntimeOptions() :
+	m_settings( "/.flatpak-info",QSettings::IniFormat ),
+	m_globalBinPath( m_settings.value( "Instance/app-path" ).toString() + "/bin" ),
+	m_architecture( m_settings.value( "Instance/arch" ).toString() ),
+	m_commitId( m_settings.value( "Instance/app-commit" ).toString() ),
+	m_runtimePath( m_settings.value( "Instance/runtime-path" ).toString() ),
+	m_localBinPath( "/app/bin" )
 {
 }

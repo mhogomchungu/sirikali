@@ -97,6 +97,40 @@ public:
 		bool m_ok = false ;
 	};
 
+	class flatpakRuntimeOptions
+	{
+	public:
+		flatpakRuntimeOptions() ;
+
+		const QString& globalBinPath() const
+		{
+			return m_globalBinPath ;
+		}
+		const QString& architecture() const
+		{
+			return m_architecture ;
+		}
+		const QString& commitId() const
+		{
+			return m_commitId ;
+		}
+		const QString& localBinPath() const
+		{
+			return m_localBinPath ;
+		}
+		const QString& runtimePath() const
+		{
+			return m_runtimePath ;
+		}
+	private:
+		QSettings m_settings ;
+		QString m_globalBinPath ;
+		QString m_architecture ;
+		QString m_commitId ;
+		QString m_runtimePath ;
+		QString m_localBinPath ;
+	} ;
+
 	class translator
 	{
 	public:
@@ -127,6 +161,8 @@ public:
 
 	static bool portableVersion() ;
 	static QString portableVersionConfigPath() ;
+
+	const flatpakRuntimeOptions& flatpakIntance() ;
 
 	settings::windowDimensions getWindowDimensions() ;
 	void setWindowDimensions( const settings::windowDimensions& ) ;
@@ -239,6 +275,7 @@ private:
 	std::unique_ptr< QSettings > m_settingsP ;
 	QSettings& m_settings ;
 	bool m_portableVersion ;
+	flatpakRuntimeOptions m_flatpakRuntimeOptions ;
 };
 
 #endif //SETTINGS_H
