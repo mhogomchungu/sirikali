@@ -194,9 +194,9 @@ static QString _executableFullPath( const QString& f,Function function )
 
 	auto list = function() ;
 
-	if( utility::platformIsFlatPak() ){
+	list.prepend( engines::defaultBinPath() ) ;
 
-		list.prepend( engines::defaultBinPath() ) ;
+	if( utility::platformIsFlatPak() ){
 
 		list.removeAll( "/app/bin" ) ;
 	}
