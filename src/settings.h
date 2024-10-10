@@ -123,6 +123,7 @@ public:
 			return m_runtimePath ;
 		}
 	private:
+		QString flatpkakInfoFile() ;
 		QSettings m_settings ;
 		QString m_globalBinPath ;
 		QString m_architecture ;
@@ -168,6 +169,7 @@ public:
 	void setWindowDimensions( const settings::windowDimensions& ) ;
 	settings() ;
 
+	bool flatpakUpdated() ;
 	bool showCipherFolderAndMountPathInFavoritesList() ;
 	int pollForUpdatesInterval() ;
 	int sshfsBackendTimeout() ;

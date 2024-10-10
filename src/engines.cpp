@@ -1416,7 +1416,13 @@ engines::engine::exe_args engines::engine::unMountCommand( const engines::engine
 	}
 }
 
-static bool _source_more_recent( const QString& exeName,const QString& src,const QString& dst )
+struct flatpak_result
+{
+	bool valid ;
+	bool src_newer ;
+} ;
+
+static flatpak_result _source_more_recent( const QString& src,const QString& dst )
 {
 #if QT_VERSION >= QT_VERSION_CHECK( 5,10,0 )
 
@@ -1426,20 +1432,15 @@ static bool _source_more_recent( const QString& exeName,const QString& src,const
 
 	if( m.isValid() && e.isValid() ){
 
-		return m > e ;
-	}else{
-		qDebug() << "Name: " << exeName ;
-		qDebug() << "Src Date: " << m ;
-		qDebug() << "Dest Date: " << e ;
-
-		return false ;
+		return { true,m > e } ;
+	}else{		
+		return { false,false } ;
 	}
 #else
-	Q_UNUSED( exeName )
 	Q_UNUSED( src )
 	Q_UNUSED( dst )
 
-	return false ;
+	return { false,false } ;
 #endif
 }
 
@@ -1460,11 +1461,23 @@ void engines::engine::setUpBinary( bool add,
 
 				utility::copyFile( src,dst ) ;
 
-			}else if( _source_more_recent( exeName,src,dst ) ){
+			}else if( settings::instance().flatpakUpdated() ){
 
-				QFile::remove( dst ) ;
+				auto m = _source_more_recent( src,dst ) ;
 
-				utility::copyFile( src,dst ) ;
+				if( m.valid ){
+
+					if( m.src_newer ){
+
+						QFile::remove( dst ) ;
+
+						utility::copyFile( src,dst ) ;
+					}
+				}else{
+					QFile::remove( dst ) ;
+
+					utility::copyFile( src,dst ) ;
+				}
 			}
 		}
 	}

@@ -169,6 +169,34 @@ settings::settings() :
 {
 }
 
+bool settings::flatpakUpdated()
+{
+	static bool updated = [ this ](){
+
+		auto id = "FlatpakInstanceId" ;
+
+		auto& m = this->flatpakIntance().commitId() ;
+
+		if( m_settings.contains( id ) ){
+
+			auto e = m_settings.value( id ).toString() ;
+
+			if( e == m ){
+
+				return false ;
+			}else{
+				m_settings.setValue( id,m ) ;
+				return true ;
+			}
+		}else{
+			m_settings.setValue( id,m ) ;
+			return true ;
+		}
+	}() ;
+
+	return updated ;
+}
+
 bool settings::portableVersion()
 {
 	if( utility::platformIsWindows() ){
@@ -1675,11 +1703,33 @@ settings::translator::entry::entry( const QString& a,const char * b,const QStrin
 }
 
 settings::flatpakRuntimeOptions::flatpakRuntimeOptions() :
-	m_settings( "/.flatpak-info",QSettings::IniFormat ),
-	m_globalBinPath( m_settings.value( "Instance/app-path" ).toString() + "/bin" ),
+	m_settings( this->flatpkakInfoFile(),QSettings::IniFormat ),
+	m_globalBinPath( m_settings.value( "Instance/app-path" ).toString() ),
 	m_architecture( m_settings.value( "Instance/arch" ).toString() ),
 	m_commitId( m_settings.value( "Instance/app-commit" ).toString() ),
 	m_runtimePath( m_settings.value( "Instance/runtime-path" ).toString() ),
 	m_localBinPath( "/app/bin" )
 {
+	if( !m_globalBinPath.isEmpty() ){
+
+		m_globalBinPath += "/bin" ;
+	}
+}
+
+QString settings::flatpakRuntimeOptions::flatpkakInfoFile()
+{
+	if( QFile::exists( "/.flatpak-info" ) ){
+
+		return "/.flatpak-info" ;
+	}else{
+		auto m = qgetenv( "XDG_RUNTIME_DIR" ) ;
+
+		if( m.isEmpty() ){
+
+			//???
+			return {} ;
+		}else{
+			return m + "/flatpak-info" ;
+		}
+	}
 }
