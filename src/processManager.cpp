@@ -214,7 +214,7 @@ Task::process::result processManager::remove( const QString& mountPoint )
 					}
 				}
 
-				m_updateVolumeList() ;
+				m_volumeList->update() ;
 
 				m_instances.erase( it ) ;
 
@@ -312,10 +312,7 @@ QString processManager::volumeProperties( const QString& mm ) const
 	return m ;
 }
 
-void processManager::updateVolumeList( std::function< void() > function )
-{
-	m_updateVolumeList = std::move( function ) ;
-}
+
 
 std::vector< processManager::mountOpts > processManager::mountOptions() const
 {

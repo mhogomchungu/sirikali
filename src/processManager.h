@@ -72,12 +72,31 @@ public:
 	Task::process::result add( const processManager::opts& ) ;
 	Task::process::result remove( const QString& mountPoint ) ;
 	void removeInActive() ;
-	void updateVolumeList( std::function< void() > ) ;
 	std::vector< QStringList > commands() const ;
 	std::vector< engines::engine::Wrapper > enginesList() const ;
 	QString volumeProperties( const QString& mountPath ) const ;
 	std::vector< processManager::mountOpts > mountOptions() const ;
 	bool mountPointTaken( const QString& e ) const ;
+	template< typename Obj,typename Method >
+	void updateVolumeList( Obj obj,Method method )
+	{
+		class meaw : public monitor
+		{
+		public:
+			meaw( Obj obj,Method method ) : m_obj( obj ),m_method( method )
+			{
+			}
+			void update() override
+			{
+				( m_obj->*m_method )() ;
+			}
+		private:
+			Obj m_obj ;
+			Method m_method ;
+		} ;
+
+		m_volumeList = std::make_unique< meaw >( obj,method ) ;
+	}
 private:
 	template< typename Exe,typename Error >
 	Task::process::result getResult( Exe exe,
@@ -102,7 +121,7 @@ private:
 
 				this->addEntry( opts,std::move( exe ) ) ;
 
-				m_updateVolumeList() ;
+				m_volumeList->update() ;
 
 				return Task::process::result( 0 ) ;
 			}else{
@@ -192,8 +211,16 @@ private:
 		QProcessEnvironment m_environment ;
 		std::unique_ptr< QProcess,void(*)( QProcess * ) > m_instance ;
 	} ;
+
 	std::vector< Process > m_instances ;
-	std::function< void() > m_updateVolumeList ;
+
+	class monitor
+	{
+	public:
+		virtual void update() = 0 ;
+	} ;
+
+	std::unique_ptr< monitor > m_volumeList ;
 } ;
 
 #endif

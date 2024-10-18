@@ -201,12 +201,9 @@ mountinfo::mountinfo( QObject * parent,
 {
 	connect( this,&mountinfo::updateVolume,this,&mountinfo::volumeUpdate,Qt::QueuedConnection ) ;
 
-	processManager::get().updateVolumeList( [ this ](){
-
-		emit this->updateVolume() ;
-	} ) ;
-
 	if( utility::platformIsWindows() || utility::platformIsFlatPak() ){
+
+		processManager::get().updateVolumeList( this,&mountinfo::updateVolumeHandle ) ;
 
 		this->windowsMonitor() ;
 
@@ -220,6 +217,11 @@ mountinfo::mountinfo( QObject * parent,
 
 mountinfo::~mountinfo()
 {
+}
+
+void mountinfo::updateVolumeHandle()
+{
+	emit this->updateVolume() ;
 }
 
 static mountinfo::volumeEntry _decode( const engines::engine& engine,volumeInfo&& e )

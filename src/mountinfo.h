@@ -384,6 +384,7 @@ signals:
 	void pbUpdate() ;
 	void autoMount( const QString& ) ;
 private:
+	void updateVolumeHandle() ;
 	void volumeUpdate() ;
 	void windowsMonitor() ;
 	void linuxMonitor() ;

@@ -222,7 +222,7 @@
       "name" : "gocryptfs",
       "buildsystem" : "simple",
       "build-commands" : [
-        "ln -s `pwd`/bin/go /app/bin/go",
+        "ln -s `pwd`/go/bin/go /app/bin/go",
         "`pwd`/build-without-openssl.bash",
         "make install",
         "rm -rf /app/bin/go"
@@ -248,7 +248,8 @@
             "x86_64"
           ],
           "url" : "https://go.dev/dl/go1.23.2.linux-amd64.tar.gz",
-          "sha256" : "542d3c1705f1c6a1c5a80d5dc62e2e45171af291e755d591c5e6531ef63b454e"
+          "sha256" : "542d3c1705f1c6a1c5a80d5dc62e2e45171af291e755d591c5e6531ef63b454e",
+          "dest" : "go"
         },
         {
           "type" : "archive",
@@ -256,7 +257,8 @@
             "aarch64"
           ],
           "url" : "https://go.dev/dl/go1.23.2.linux-arm64.tar.gz",
-          "sha256" : "f626cdd92fc21a88b31c1251f419c17782933a42903db87a174ce74eeecc66a9"
+          "sha256" : "f626cdd92fc21a88b31c1251f419c17782933a42903db87a174ce74eeecc66a9",
+          "dest" : "go"
         }
       ]
     },
