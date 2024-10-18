@@ -108,8 +108,8 @@ static void _run_command( const engines::engine::exe_args_const& exe,
 	}
 }
 
-struct run_command{
-
+struct run_command
+{
 	const QString& command ;
 	const QString& cipherFolder ;
 	const QString& plainFolder ;
@@ -221,16 +221,16 @@ engines::engine::cmdStatus siritask::encryptedFolderUnMount( const siritask::unm
 	}
 }
 
-struct cmd_args{
-
+struct cmd_args
+{
 	const engines::engine& engine ;
 	bool create ;
 	const engines::engine::cmdArgsList& opts ;
 	const QByteArray& password ;
 };
 
-struct run_task{
-
+struct run_task
+{
 	run_task( const engines::engine::args& args,const cmd_args& e ) :
 		args( args ),engine( e.engine ),password( e.password ),
 		opts( e.opts ),create( e.create )

@@ -913,18 +913,13 @@ bool utility::createFolder( const QString& m )
 	}
 }
 
-bool utility::removeFolder( const QString& e,int attempts )
+static bool _removeFolder( const QString& mountPath,int attempts )
 {
-	if( utility::isDriveLetter( e ) ){
-
-		return true ;
-	}
-
 	QDir dir ;
 
-	dir.rmdir( e ) ;
+	dir.rmdir( mountPath ) ;
 
-	if( utility::pathNotExists( e ) ){
+	if( utility::pathNotExists( mountPath ) ){
 
 		return true ;
 	}else{
@@ -932,15 +927,56 @@ bool utility::removeFolder( const QString& e,int attempts )
 
 			utility::waitForOneSecond() ;
 
-			dir.rmdir( e ) ;
+			dir.rmdir( mountPath ) ;
 
-			if( utility::pathNotExists( e ) ){
+			if( utility::pathNotExists( mountPath ) ){
 
 				return true ;
 			}
 		}
 
 		return false ;
+	}
+}
+
+bool utility::removeFolder( const QString& mountPath,int attempts )
+{
+	if( utility::platformIsFlatPak() ){
+
+		if( mountPath.startsWith( settings::instance().homePath() ) ){
+
+			return _removeFolder( mountPath,attempts ) ;
+		}else{
+			auto exe = "flatpak-spawn" ;
+
+			QStringList args{ "--host","rmdir",mountPath } ;
+
+			auto env = QProcessEnvironment::systemEnvironment() ;
+
+			utility::logger logger ;
+
+			logger.showText( exe,args ) ;
+
+			for( int i = 0 ; i < attempts ; i++ ){
+
+				auto mm = ::Task::process::run( exe,args,-1,{},env ).await() ;
+
+				logger.showText( mm ) ;
+
+				if( mm.success() ){
+
+					return true ;
+				}
+			}
+
+			return false ;
+		}
+
+	}else if( utility::isDriveLetter( mountPath ) ){
+
+		return true ;
+	}else{
+		return _removeFolder( mountPath,attempts ) ;
 	}
 }
 
