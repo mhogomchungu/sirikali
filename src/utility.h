@@ -309,8 +309,6 @@ namespace utility
 	bool platformIsWindows() ;
 	bool platformIsNOTWindows() ;
 
-	void setInternalWalletCustomPath( const QString& ) ;
-
 	void setWindowOptions( QDialog * ) ;
 
 	int startApplication( std::function< int() > ) ;

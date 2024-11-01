@@ -342,6 +342,52 @@
       ]
     },
     {
+      "name" : "libpwquality",
+      "buildsystem" : "autotools",
+      "config-opts" : [],
+      "cleanup" : [
+        "/include/*",
+        "/app/share/*",
+        "/lib/pkgconfig/*",
+        "/bin/*",
+        "/etc",
+        "/man/*",
+        "/locale/*",
+        "/lib/libpwquality.la",
+        "/lib/libpwquality.a",
+        "/lib/libpwquality.so",
+        "/share/*",
+        "/lib/python3.11"
+      ],
+      "sources" : [
+        {
+          "type" : "archive",
+          "url" : "https://github.com/libpwquality/libpwquality/releases/download/libpwquality-1.4.5/libpwquality-1.4.5.tar.bz2",
+          "sha256" : "6fcf18b75d305d99d04d2e42982ed5b787a081af2842220ed63287a2d6a10988"
+        }
+      ]
+    },
+    {
+      "name" : "lxqt_wallet",
+      "buildsystem" : "cmake-ninja",
+      "config-opts" : [
+        "-DCMAKE_BUILD_TYPE=RELEASE"
+      ],
+      "cleanup" : [
+        "/lib/pkgconfig/lxqt-wallet.pc",
+        "/include/lxqt/lxqt_wallet.h",
+        "/lib/liblxqt-wallet.so",
+        "/bin/lxqt_wallet-cli"
+      ],
+      "sources" : [
+        {
+          "type" : "archive",
+          "url" : "https://github.com/lxqt/lxqt_wallet/releases/download/4.0.2/lxqt-wallet-4.0.2.tar.xz",
+          "sha256" : "3dbfc24555e88f6dd8aa79c2bf22e455f82d6a332e95418b08788d7adc226e50"
+        }
+      ]
+    },
+    {
       "name" : "io.github.mhogomchungu.sirikali",
       "buildsystem" : "cmake-ninja",
       "config-opts" : [

@@ -229,7 +229,7 @@ int sirikali::run( const QStringList& args,int argc,char * argv[] )
 
 miniSiriKali::miniSiriKali(std::function<int (secrets &)> function) :
 	m_function( std::move( function ) ),
-	m_secrets( settings::instance().ConfigLocation() )
+	m_secrets()
 {
 }
 
@@ -244,7 +244,7 @@ void miniSiriKali::silenceWarning()
 
 sirikali::sirikali( const QStringList& args,QApplication& app ) :
 	m_app( app ),
-	m_secrets( settings::instance().ConfigLocation() ),
+	m_secrets(),
 	m_mountInfo( this,true,[ & ](){ QCoreApplication::exit( m_exitStatus ) ; },_debug() ),
 	m_checkUpdates( this,{ [ this ](){ this->disableAll() ; },[ this ](){ this->enableAll() ; } } ),
 	m_configOptions( this,m_secrets,&m_language_menu,this->configOption() ),

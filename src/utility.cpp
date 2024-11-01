@@ -1065,7 +1065,8 @@ QByteArray utility::readPassword( bool addNewLine )
 
 const QProcessEnvironment& utility::systemEnvironment()
 {
-	static class sysEnv{
+	static class sysEnv
+	{
 	public:
 		sysEnv() : m_QProcessEnvironment( QProcessEnvironment::systemEnvironment() )
 		{
@@ -1686,27 +1687,11 @@ bool utility::platformIsFlatPak()
 	return true ;
 }
 
-extern "C"
-{
-	void lxqt_wallet_set_internal_wallet_custom_path( const char * ) ;
-}
-
-void utility::setInternalWalletCustomPath( const QString& e )
-{
-	auto m = e + "/lxqt/" ;
-
-	lxqt_wallet_set_internal_wallet_custom_path( m.toUtf8() ) ;
-}
-
 #else
 
 bool utility::platformIsFlatPak()
 {
 	return false ;
-}
-
-void utility::setInternalWalletCustomPath( const QString& )
-{
 }
 
 #endif

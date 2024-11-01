@@ -114,7 +114,7 @@ public:
 	void changeWindowsDPAPIWalletPassword( QWidget *,const QString&,const QString&,std::function< void( bool ) > ) ;
 
 	void close() ;
-	secrets( const QString& ) ;
+	secrets() ;
 	secrets( const secrets& ) = delete ;
 
 	secrets& operator=( const secrets& ) = delete ;

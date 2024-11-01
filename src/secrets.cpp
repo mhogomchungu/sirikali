@@ -66,9 +66,8 @@ void secrets::close()
 	m_backends.close() ;
 }
 
-secrets::secrets( const QString& s )
+secrets::secrets()
 {
-	utility::setInternalWalletCustomPath( s ) ;
 }
 
 LXQt::Wallet::Wallet * secrets::walletBk( LXQt::Wallet::BackEnd e ) const
