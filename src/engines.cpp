@@ -165,6 +165,13 @@ static bool _has_no_extension( const QString& e )
 template< typename Function >
 static QString _executableFullPath( const QString& f,Function function )
 {
+	if( utility::platformIsFlatPak() ){
+
+		auto m = settings::instance().flatpakIntance().globalBinPath() ;
+
+		return m + "/" + f ;
+	}
+
 	if( utility::platformIsWindows() ){
 
 		if( utility::startsWithDriveLetter( f ) ){
@@ -192,14 +199,9 @@ static QString _executableFullPath( const QString& f,Function function )
 
 	QString exe ;
 
-	auto list = function() ;
+	auto list = function() ;	
 
 	list.prepend( engines::defaultBinPath() ) ;
-
-	if( utility::platformIsFlatPak() ){
-
-		list.removeAll( "/app/bin" ) ;
-	}
 
 	for( const auto& it : utility::asConst( list ) ){
 
@@ -1416,79 +1418,21 @@ engines::engine::exe_args engines::engine::unMountCommand( const engines::engine
 	}
 }
 
-struct flatpak_result
-{
-	bool valid ;
-	bool src_newer ;
-} ;
-
-static flatpak_result _source_more_recent( const QString& src,const QString& dst )
-{
-#if QT_VERSION >= QT_VERSION_CHECK( 5,10,0 )
-
-	auto m = QFileInfo( src ).birthTime() ;
-
-	auto e = QFileInfo( dst ).birthTime() ;
-
-	if( m.isValid() && e.isValid() ){
-
-		return { true,m > e } ;
-	}else{		
-		return { false,false } ;
-	}
-#else
-	Q_UNUSED( src )
-	Q_UNUSED( dst )
-
-	return { false,false } ;
-#endif
-}
-
 void engines::engine::setUpBinary( bool add,
 				   QStringList& apps,
 				   const QString& basePath,
 				   const QString& exeName ) const
 {
-	if( utility::platformIsFlatPak() ){
+	if( !utility::platformIsFlatPak() ){
 
-		auto src = "/app/bin/" + exeName ;
+		if( add && !QFile::exists( basePath + exeName ) ){
 
-		if( QFile::exists( src ) ){
+			auto m = exeName ;
 
-			auto dst = basePath + exeName ;
+			m[ 0 ] = m[ 0 ].toUpper() ;
 
-			if( !QFile::exists( dst ) ){
-
-				utility::copyFile( src,dst ) ;
-
-			}else if( settings::instance().flatpakUpdated() ){
-
-				auto m = _source_more_recent( src,dst ) ;
-
-				if( m.valid ){
-
-					if( m.src_newer ){
-
-						QFile::remove( dst ) ;
-
-						utility::copyFile( src,dst ) ;
-					}
-				}else{
-					QFile::remove( dst ) ;
-
-					utility::copyFile( src,dst ) ;
-				}
-			}
+			apps.append( m ) ;
 		}
-	}
-
-	if( add && !QFile::exists( basePath + exeName ) ){
-
-		auto m = exeName ;
-
-		m[ 0 ] = m[ 0 ].toUpper() ;
-
-		apps.append( m ) ;
 	}
 }
 

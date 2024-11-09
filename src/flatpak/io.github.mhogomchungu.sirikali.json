@@ -330,8 +330,8 @@
       "sources" : [
         {
           "type" : "archive",
-          "url" : "https://github.com/cryfs/cryfs/archive/refs/tags/1.0.0-rc1.tar.gz",
-          "sha256" : "79b4d665dd4fed2e4a380930e5c4d8ff458ef803881051cde193743d88168164"
+          "url" : "https://github.com/cryfs/cryfs/archive/refs/tags/1.0.0.tar.gz",
+          "sha256" : "8211c1637c2f8c419534c16c207efeae0d506abe9d8c7c0f44003e16a87d80a2"
         },
         {
           "type" : "patch",
@@ -389,7 +389,7 @@
     },
     {
       "name" : "io.github.mhogomchungu.sirikali",
-      "buildsystem" : "cmake-ninja",
+      "buildsystem" : "cmake",
       "config-opts" : [
         "-DCMAKE_BUILD_TYPE=release",
         "-DBUILD_FLATPAK=TRUE"

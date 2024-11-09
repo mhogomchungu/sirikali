@@ -23,6 +23,8 @@
 #include "options.h"
 #include "custom.h"
 
+#include "../settings.h"
+
 static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
@@ -74,7 +76,8 @@ static engines::engine::BaseOptions _setOptions()
 
 		auto exe = "flatpak-spawn" ;
 
-		auto m = engines::defaultBinPath() + "cryfs-unmount" ;
+		auto e = settings::instance().flatpakIntance().globalBinPath() ;
+		auto m = e + "/cryfs-unmount" ;
 
 		s.unMountCommand = QStringList{ exe,"--host",m,"--immediate","%{mountPoint}" } ;
 	}else{
@@ -116,7 +119,6 @@ bool cryfs::updatable() const
 
 void cryfs::setUpBinary( bool add,QStringList& apps,const QString& basePath ) const
 {
-	return ; //enable when version 1.0.0 is officially out
 	engines::engine::setUpBinary( add,apps,basePath,"cryfs" ) ;
 	engines::engine::setUpBinary( false,apps,basePath,"cryfs-unmount" ) ;
 }

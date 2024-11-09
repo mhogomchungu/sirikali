@@ -160,7 +160,11 @@ static bool _set_if_found( const Function& function )
 
 bool gocryptfs::updatable() const
 {
-	if( utility::canDownload() ){
+	if( utility::platformIsFlatPak() ){
+
+		return false ;
+
+	}else if( utility::canDownload() ){
 
 		return utility::platformIsLinux() ;
 	}else{

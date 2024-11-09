@@ -87,7 +87,11 @@ securefs::securefs() :
 
 bool securefs::updatable() const
 {
-	if( utility::canDownload() ){
+	if( utility::platformIsFlatPak() ){
+
+		return false ;
+
+	}else if( utility::canDownload() ){
 
 		return utility::platformIsLinux() || utility::platformIsWindows() ;
 	}else{
