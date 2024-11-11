@@ -48,6 +48,15 @@ jobs:
         host: 'windows'
         target: 'desktop'
     -
+      name: Download bsdtar
+      run: |
+         New-Item -ItemType Directory -Path ${{github.workspace}}\tmp
+         Invoke-WebRequest "https://github.com/mhogomchungu/sirikali/releases/download/1.5.2/bsdtar.zip" -OutFile ${{github.workspace}}\tmp\bsdtar.zip
+    -
+      name: Extract archive bsdtar
+      run: |
+         Expand-Archive -Path ${{github.workspace}}\tmp\bsdtar.zip -DestinationPath ${{github.workspace}}\tmp
+    -
       name: Configure CMake for Qt5
       env:
         CMAKE_PREFIX_PATH: "${{github.workspace}}/qt5/Qt/${{ env.QT5_VERSION }}"
@@ -76,7 +85,11 @@ jobs:
       run: |
         New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}
         New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}\local
-
+        New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}\extra
+        New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}\extra\bsdtar
+        
+        Copy-Item ${{github.workspace}}\tmp\bsdtar\* -Destination ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}\extra\bsdtar -Recurse
+        
         Copy-Item -Path ${{github.workspace}}\SiriKali\translations -Destination ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }} -Recurse
         Copy-Item -Path ${{github.workspace}}\SiriKali\build5\sirikali.exe -Destination ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}
 
@@ -130,7 +143,11 @@ jobs:
       run: |
         New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}
         New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}\local
-
+        New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}\extra
+        New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}\extra\bsdtar
+        
+        Copy-Item ${{github.workspace}}\tmp\bsdtar\* -Destination ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}\extra\bsdtar -Recurse
+        
         Copy-Item -Path ${{github.workspace}}\SiriKali\translations -Destination ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }} -Recurse
         Copy-Item -Path ${{github.workspace}}\SiriKali\build6\sirikali.exe -Destination ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}
 
