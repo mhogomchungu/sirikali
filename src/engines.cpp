@@ -1431,7 +1431,18 @@ void engines::engine::setUpBinary( bool add,
 				   const QString& basePath,
 				   const QString& exeName ) const
 {
-	if( !utility::platformIsFlatPak() ){
+	if( utility::platformIsWindows() ){
+
+		if( add && !QFile::exists( basePath + exeName + ".exe" ) ){
+
+			auto m = exeName ;
+
+			m[ 0 ] = m[ 0 ].toUpper() ;
+
+			apps.append( m ) ;
+		}
+
+	}else if( !utility::platformIsFlatPak() ){
 
 		if( add && !QFile::exists( basePath + exeName ) ){
 

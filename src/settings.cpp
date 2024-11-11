@@ -842,7 +842,7 @@ bool settings::internallyManageBackEnds()
 
 		if( utility::platformIsWindows() ){
 
-			m_settings.setValue( "InternallyManageBackEnds",true ) ;
+			m_settings.setValue( "InternallyManageBackEnds",false ) ;
 		}else{
 			m_settings.setValue( "InternallyManageBackEnds",false ) ;
 		}

@@ -101,12 +101,7 @@ bool securefs::updatable() const
 
 void securefs::setUpBinary( bool add,QStringList& apps,const QString& basePath ) const
 {
-	if( utility::platformIsWindows() ){
-
-		engines::engine::setUpBinary( add,apps,basePath,"securefs.exe" ) ;
-	}else{
-		engines::engine::setUpBinary( add,apps,basePath,"securefs" ) ;
-	}
+	engines::engine::setUpBinary( add,apps,basePath,"securefs" ) ;
 }
 
 QString securefs::onlineArchiveFileName() const

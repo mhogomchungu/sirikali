@@ -60,10 +60,17 @@ configOptions::configOptions( QWidget * parent,
 	m_ui->pbRunPeriodicallyCommand->setIcon( QIcon( ":/folder.png" ) ) ;
 	m_ui->pbRunCommandPeriodicallyDefault->setIcon( QIcon( ":/icons/setting_reset.png" ) );
 
-	if( utility::platformIsWindows() || utility::platformIsFlatPak() ){
+	if( utility::platformIsFlatPak() ){
 
 		m_ui->cbInternallyManageBackEnds->setChecked( true ) ;
 		m_ui->cbInternallyManageBackEnds->setEnabled( false ) ;
+
+	}else if( utility::platformIsWindows() ){
+
+		auto m = m_settings.internallyManageBackEnds() ;
+
+		m_ui->cbInternallyManageBackEnds->setChecked( m ) ;
+		m_ui->cbInternallyManageBackEnds->setEnabled( true ) ;
 
 	}else if( utility::platformIsLinux() ){
 
