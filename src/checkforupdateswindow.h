@@ -55,8 +55,8 @@ public:
 	struct args
 	{
 		template< typename Engine >
-		args( const Engine& s )  :
-			updatable( s.updatable() ),
+		args( const Engine& s,bool canUpdate )  :
+			updatable( s.updatable() && canUpdate ),
 			executableName( s.executableName() ),
 			engineName( s.known() ? s.name() : "SiriKali" ),
 			executableFullPath( s.executableFullPath() ),

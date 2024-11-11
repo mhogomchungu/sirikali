@@ -201,7 +201,15 @@ static QString _executableFullPath( const QString& f,Function function )
 
 	auto list = function() ;	
 
-	list.prepend( engines::defaultBinPath() ) ;
+	if( utility::platformIsLinux() ){
+
+		if( settings::instance().internallyManageBackEnds() ){
+
+			list.prepend( engines::defaultBinPath() ) ;
+		}
+	}else{
+		list.prepend( engines::defaultBinPath() ) ;
+	}
 
 	for( const auto& it : utility::asConst( list ) ){
 

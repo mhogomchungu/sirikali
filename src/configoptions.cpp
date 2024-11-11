@@ -60,9 +60,21 @@ configOptions::configOptions( QWidget * parent,
 	m_ui->pbRunPeriodicallyCommand->setIcon( QIcon( ":/folder.png" ) ) ;
 	m_ui->pbRunCommandPeriodicallyDefault->setIcon( QIcon( ":/icons/setting_reset.png" ) );
 
-	m_ui->cbAutoCheckForUpdates->setChecked( false ) ;
+	if( utility::platformIsWindows() || utility::platformIsFlatPak() ){
 
-	m_ui->cbAutoCheckForUpdates->setEnabled( false ) ;
+		m_ui->cbInternallyManageBackEnds->setChecked( true ) ;
+		m_ui->cbInternallyManageBackEnds->setCheckable( false ) ;
+
+	}else if( utility::platformIsLinux() ){
+
+		auto m = m_settings.internallyManageBackEnds() ;
+
+		m_ui->cbInternallyManageBackEnds->setChecked( m ) ;
+		m_ui->cbInternallyManageBackEnds->setCheckable( true ) ;
+	}else{
+		m_ui->cbInternallyManageBackEnds->setChecked( false ) ;
+		m_ui->cbInternallyManageBackEnds->setCheckable( false ) ;
+	}
 
 	connect( m_ui->pushButton,&QPushButton::clicked,[ this ](){ this->HideUI() ; } ) ;
 
@@ -76,9 +88,29 @@ configOptions::configOptions( QWidget * parent,
 		m_settings.reUseMountPoint( e ) ;
 	} ) ;
 
-	connect( m_ui->cbAutoCheckForUpdates,&QCheckBox::toggled,[ this ]( bool e ){
+	connect( m_ui->cbInternallyManageBackEnds,&QCheckBox::toggled,[ this ]( bool e ){
 
-		m_settings.autoCheck( e ) ;
+		m_settings.setInternallyManageBackEnds( e ) ;
+
+		if( !e ){
+
+			auto mm = engines::instance().supportedEngines() ;
+
+			auto m = engines::defaultBinPath() ;
+
+			for( const auto& it : mm ){
+
+				if( it->updatable() ){
+
+					auto e = m + "/" + it->executableName() ;
+
+					if( QFile::exists( e ) ){
+
+						QFile::remove( e ) ;
+					}
+				}
+			}
+		}
 	} ) ;
 
 	connect( m_ui->cbStartMinimized,&QCheckBox::toggled,[ this ]( bool e ){
@@ -270,8 +302,6 @@ void configOptions::ShowUI()
 	m_ui->cbAutoOpenMountPoint->setChecked( m_settings.autoOpenFolderOnMount() ) ;
 
 	m_ui->cbReUseMountPoint->setChecked( m_settings.reUseMountPoint() ) ;
-
-	m_ui->cbAutoCheckForUpdates->setChecked( m_settings.autoCheck() ) ;
 
 	m_ui->cbStartMinimized->setChecked( m_settings.startMinimized() ) ;
 

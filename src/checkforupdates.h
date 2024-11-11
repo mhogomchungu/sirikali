@@ -85,6 +85,7 @@ private:
 	utils::network::manager m_network ;
 
 	bool m_running ;
+	bool m_internallyManageBackEnds ;
 
 	std::vector< engines::engine::Wrapper > m_backends ;
 	std::vector< engines::engine::Wrapper > m_backendsInstallable ;

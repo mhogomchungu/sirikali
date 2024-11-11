@@ -31,6 +31,7 @@ checkUpdates::checkUpdates( QWidget * widget,checkforupdateswindow::functions ff
 	m_timeOut( settings::instance().networkTimeOut() * 1000 ),
 	m_network( m_timeOut ),
 	m_running( false ),
+	m_internallyManageBackEnds( settings::instance().internallyManageBackEnds() ),
 	m_functions( std::move( ff ) )
 {
 	m_networkRequest.setRawHeader( "Host","api.github.com" ) ;
@@ -83,7 +84,7 @@ void checkUpdates::checkIfInstalled()
 
 	auto& s = settings::instance() ;
 
-	auto m = s.autodownloadMissingEngines() && utility::canDownload() ;
+	auto m = s.internallyManageBackEnds() && utility::canDownload() ;
 
 	QStringList apps ;
 
@@ -211,7 +212,7 @@ void checkUpdates::checkForUpdate( size_t position )
 
 		if( f == "N/A" && m_backendsInUse == &m_backends ){
 
-			checkforupdateswindow::args args( s.get() ) ;
+			checkforupdateswindow::args args( s.get(),m_internallyManageBackEnds ) ;
 
 			args.installedVersion = "N/A" ;
 			args.onLineVersion    = "N/A" ;
@@ -242,7 +243,7 @@ void checkUpdates::networkReply( int position,
 {
 	if( reply.success() ){
 
-		checkforupdateswindow::args args( s ) ;
+		checkforupdateswindow::args args( s,m_internallyManageBackEnds ) ;
 
 		auto m = this->latestVersion( reply.data() ) ;
 
@@ -254,14 +255,14 @@ void checkUpdates::networkReply( int position,
 
 	}else if( reply.timeOut() ){
 
-		checkforupdateswindow::args args( s ) ;
+		checkforupdateswindow::args args( s,m_internallyManageBackEnds ) ;
 
 		auto ss    = QString::number( m_timeOut / 1000 ) ;
 		args.error = QObject::tr( "Network Request Failed To Respond Within %1 Seconds." ).arg( ss ) ;
 
 		emit update( args ) ;
 	}else{
-		checkforupdateswindow::args args( s ) ;
+		checkforupdateswindow::args args( s,m_internallyManageBackEnds ) ;
 
 		args.error = reply.errorString() ;
 

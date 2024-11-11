@@ -229,7 +229,6 @@ public:
 	void doNotShowReadOnlyWarning( bool ) ;
 	bool autoMountFavoritesOnStartUp() ;
 	bool useDarkMode() ;
-	bool autodownloadMissingEngines() ;
 	void useDarkMode( bool ) ;
 	void autoMountFavoritesOnStartUp( bool ) ;
 	void autoMountFavoritesOnAvailable( bool ) ;
@@ -269,6 +268,8 @@ public:
 	QString gvfsFuseMonitorPath() ;
 	int mountMonitorFolderPollingInterval() ;
 	int delayBeforeAutoMountAtStartup() ;
+	bool internallyManageBackEnds() ;
+	void setInternallyManageBackEnds( bool ) ;
 private:
 	bool cipherPathRepeats( const std::vector< favorites::entry >& ) ;
 	bool showCipherPathAndMountPath( bool ) ;

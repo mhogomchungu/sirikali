@@ -180,14 +180,6 @@ else()
 	SET (QTVERSION "${Qt5Core_VERSION}" )
 endif()
 
-set( AUTO_DOWNLOAD_MISSING_ENGINES "ON" )
-
-if( AUTO_DOWNLOAD_MISSING_ENGINES )
-        file( WRITE ${PROJECT_BINARY_DIR}/auto_download_missing_engines.h "\n#define AUTO_DOWNLOAD_MISSING_ENGINES 1\n" )
-else()
-        file( WRITE ${PROJECT_BINARY_DIR}/auto_download_missing_engines.h "\n#define AUTO_DOWNLOAD_MISSING_ENGINES 0\n" )
-endif()
-
 if( BUILD_FLATPAK )
         file( WRITE ${PROJECT_BINARY_DIR}/flatpak.h "\n#define FLATPAK 1\n" )
 else()

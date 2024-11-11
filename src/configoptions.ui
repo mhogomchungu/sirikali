@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="widget">
     <attribute name="title">
@@ -160,15 +160,15 @@
       <rect>
        <x>120</x>
        <y>60</y>
-       <width>195</width>
+       <width>436</width>
        <height>28</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
-       <widget class="QCheckBox" name="cbAutoCheckForUpdates">
+       <widget class="QCheckBox" name="chShowDebugWindowOnStartup">
         <property name="text">
-         <string>Auto Check For Updates</string>
+         <string>Show Debug Window On Startup</string>
         </property>
        </widget>
       </item>
@@ -217,15 +217,15 @@
       <rect>
        <x>120</x>
        <y>150</y>
-       <width>252</width>
-       <height>28</height>
+       <width>451</width>
+       <height>31</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_6">
       <item>
-       <widget class="QCheckBox" name="chShowDebugWindowOnStartup">
+       <widget class="QCheckBox" name="cbInternallyManageBackEnds">
         <property name="text">
-         <string>Show Debug Window On Startup</string>
+         <string>Internally Manage Securefs And Gocryptfs(When Supported)</string>
         </property>
        </widget>
       </item>
@@ -633,7 +633,6 @@
   <tabstop>tabWidget</tabstop>
   <tabstop>cbAutoOpenMountPoint</tabstop>
   <tabstop>cbReUseMountPoint</tabstop>
-  <tabstop>cbAutoCheckForUpdates</tabstop>
   <tabstop>cbStartMinimized</tabstop>
   <tabstop>pbSelectLanguage</tabstop>
   <tabstop>lineEditMountPointPrefix</tabstop>

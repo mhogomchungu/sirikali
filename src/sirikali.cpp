@@ -1096,6 +1096,8 @@ void sirikali::setCreateMenu()
 
 	connect( m,&QMenu::triggered,this,&sirikali::createVolume ) ;
 
+	auto e = settings::instance().internallyManageBackEnds() ;
+
 	for( const auto& it : engines::instance().supportedEngines() ){
 
 		const auto& name = it->uiName() ;
@@ -1106,7 +1108,7 @@ void sirikali::setCreateMenu()
 
 		if( it->isNotInstalled() ){
 
-			if( it->updatable() ){
+			if( it->updatable() && e ){
 
 				it->updateExecutableFullPath() ;
 

@@ -837,6 +837,26 @@ int settings::delayBeforeAutoMountAtStartup()
 	return m_settings.value( "DelayBeforeAutoMountAtStartup" ).toInt() ;
 }
 
+bool settings::internallyManageBackEnds()
+{
+	if( !m_settings.contains( "InternallyManageBackEnds" ) ){
+
+		if( utility::platformIsWindows() ){
+
+			m_settings.setValue( "InternallyManageBackEnds",true ) ;
+		}else{
+			m_settings.setValue( "InternallyManageBackEnds",false ) ;
+		}
+	}
+
+	return m_settings.value( "InternallyManageBackEnds" ).toBool() ;
+}
+
+void settings::setInternallyManageBackEnds( bool e )
+{
+	m_settings.setValue( "InternallyManageBackEnds",e ) ;
+}
+
 bool settings::cipherPathRepeats( const std::vector< favorites::entry >& favorites )
 {
 	for( auto it = favorites.begin() ; it != favorites.end() ; it++ ){
@@ -1246,27 +1266,6 @@ bool settings::useDarkMode()
 	}
 
 	return m_settings.value( "UseDarkMode" ).toBool() ;
-}
-
-static bool _auto_download_missing_engines()
-{
-#if AUTO_DOWNLOAD_MISSING_ENGINES
-	return true ;
-#else
-	return false ;
-#endif
-}
-
-bool settings::autodownloadMissingEngines()
-{
-	if( !m_settings.contains( "AutodownloadMissingEngines" ) ){
-
-		auto m = _auto_download_missing_engines() ;
-
-		m_settings.setValue( "AutodownloadMissingEngines",m ) ;
-	}
-
-	return m_settings.value( "AutodownloadMissingEngines" ).toBool() ;
 }
 
 void settings::useDarkMode( bool e )
