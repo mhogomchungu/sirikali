@@ -36,6 +36,15 @@
 	</categories>
 
 	<releases>
+		<release version="1.7.1" type="stable" date="2024-11-11" >
+			<url type="details">https://github.com/mhogomchungu/sirikali/releases/download/$version/sirikali-$version.tar.xz/</url>
+			<description>
+				<p>Changelog</p>
+				<ul>
+					<li>Bundle Cryfs along side Securefs and Gocryptfs</li>
+				</ul>
+			</description>
+		</release>
 		<release version="1.7.0." type="stable" date="2024-11-09" >
 			<url type="details">https://github.com/mhogomchungu/sirikali/releases/download/$version/sirikali-$version.tar.xz/</url>
 			<description>

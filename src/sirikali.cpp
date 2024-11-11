@@ -555,16 +555,11 @@ void sirikali::setUpAppMenu()
 
 	m->setFont( this->font() ) ;
 
-	if( utility::platformIsNOTWindows() ){
+	auto ac = this->addAction( tr( "Check For Updates" ),"Check For Updates",&sirikali::updateCheck ) ;
 
-		auto mm = &sirikali::updateCheck ;
+	ac->setEnabled( checkUpdates::hasNetworkSupport() ) ;
 
-		auto ac = this->addAction( tr( "Check For Updates" ),"Check For Updates",mm ) ;
-
-		ac->setEnabled( checkUpdates::hasNetworkSupport() ) ;
-
-		m->addAction( ac ) ;
-	}
+	m->addAction( ac ) ;
 
 	m->addAction( this->addAction( tr( "Unmount All" ),"Unmount All",&sirikali::unMountAll ) ) ;
 
@@ -738,6 +733,8 @@ void sirikali::startGUIx( const QString& volume )
 
 				utility::logger().appendLog( "\nbsdtar Not Found, Updating disabled" ) ;
 			}
+
+			this->setCreateMenu() ;
 		}else{
 			m_checkUpdates.checkIfInstalled() ;
 		}
