@@ -28,7 +28,6 @@
 #include "readonlywarning.h"
 #include "locale_path.h"
 #include "win.h"
-#include "auto_download_missing_engines.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
