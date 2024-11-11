@@ -1739,9 +1739,18 @@ bool utility::copyFile( const QString& s,const QString& d,bool setExePermssion )
 	return false ;
 }
 
-bool utility::canDownload()
+bool utility::canDownload( utility::arch arch )
 {
 	auto m = QSysInfo::currentCpuArchitecture() ;
 
-	return m == "x86_64" || m == "i386" ;
+	if( arch == utility::arch::either ){
+
+		return m == "x86_64" || m == "i386" ;
+
+	}else if( arch == utility::arch::x64 ){
+
+		return m == "x86_64" ;
+	}else{
+		return m == "i386" ;
+	}
 }

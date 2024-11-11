@@ -63,17 +63,17 @@ configOptions::configOptions( QWidget * parent,
 	if( utility::platformIsWindows() || utility::platformIsFlatPak() ){
 
 		m_ui->cbInternallyManageBackEnds->setChecked( true ) ;
-		m_ui->cbInternallyManageBackEnds->setCheckable( false ) ;
+		m_ui->cbInternallyManageBackEnds->setEnabled( false ) ;
 
 	}else if( utility::platformIsLinux() ){
 
 		auto m = m_settings.internallyManageBackEnds() ;
 
 		m_ui->cbInternallyManageBackEnds->setChecked( m ) ;
-		m_ui->cbInternallyManageBackEnds->setCheckable( true ) ;
+		m_ui->cbInternallyManageBackEnds->setEnabled( true ) ;
 	}else{
 		m_ui->cbInternallyManageBackEnds->setChecked( false ) ;
-		m_ui->cbInternallyManageBackEnds->setCheckable( false ) ;
+		m_ui->cbInternallyManageBackEnds->setEnabled( false ) ;
 	}
 
 	connect( m_ui->pushButton,&QPushButton::clicked,[ this ](){ this->HideUI() ; } ) ;

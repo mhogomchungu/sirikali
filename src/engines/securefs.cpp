@@ -91,7 +91,7 @@ bool securefs::updatable() const
 
 		return false ;
 
-	}else if( utility::canDownload() ){
+	}else if( utility::canDownload( utility::arch::x64 ) ){
 
 		return utility::platformIsLinux() || utility::platformIsWindows() ;
 	}else{
@@ -101,7 +101,12 @@ bool securefs::updatable() const
 
 void securefs::setUpBinary( bool add,QStringList& apps,const QString& basePath ) const
 {
-	engines::engine::setUpBinary( add,apps,basePath,"securefs" ) ;
+	if( utility::platformIsWindows() ){
+
+		engines::engine::setUpBinary( add,apps,basePath,"securefs.exe" ) ;
+	}else{
+		engines::engine::setUpBinary( add,apps,basePath,"securefs" ) ;
+	}
 }
 
 QString securefs::onlineArchiveFileName() const

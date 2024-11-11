@@ -485,7 +485,9 @@ namespace utility
 
 	void applicationStarted() ;
 
-	bool canDownload() ;
+	enum class arch{ x64,x86,either } ;
+
+	bool canDownload( utility::arch = utility::arch::either ) ;
 
 	QString removeOption( const QStringList&,const QString& option ) ;
 	QString removeOption( const QString& commaSeparatedString,const QString& option ) ;
