@@ -89,10 +89,10 @@ jobs:
         New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}\local
         New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}\extra
         New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}\extra\bsdtar
-        
+
         Copy-Item ${{github.workspace}}\tmp\bsdtar\* -Destination ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}\extra\bsdtar -Recurse
         Copy-Item ${{github.workspace}}\tmp\libs\* -Destination ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }} -Recurse
-        
+
         Copy-Item -Path ${{github.workspace}}\SiriKali\translations -Destination ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }} -Recurse
         Copy-Item -Path ${{github.workspace}}\SiriKali\build5\sirikali.exe -Destination ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}
 
@@ -148,11 +148,9 @@ jobs:
         New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}\local
         New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}\extra
         New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}\extra\bsdtar
-        
+
         Copy-Item ${{github.workspace}}\tmp\bsdtar\* -Destination ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}\extra\bsdtar -Recurse
 
-        Copy-Item ${{github.workspace}}\tmp\libs\msvcr100.dll -Destination ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}
-        
         Copy-Item -Path ${{github.workspace}}\SiriKali\translations -Destination ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }} -Recurse
         Copy-Item -Path ${{github.workspace}}\SiriKali\build6\sirikali.exe -Destination ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}
 

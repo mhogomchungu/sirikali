@@ -31,7 +31,6 @@ checkUpdates::checkUpdates( QWidget * widget,checkforupdateswindow::functions ff
 	m_timeOut( settings::instance().networkTimeOut() * 1000 ),
 	m_network( m_timeOut ),
 	m_running( false ),
-	m_internallyManageBackEnds( settings::instance().internallyManageBackEnds() ),
 	m_functions( std::move( ff ) )
 {
 	m_networkRequest.setRawHeader( "Host","api.github.com" ) ;
@@ -210,29 +209,17 @@ void checkUpdates::checkForUpdate( size_t position )
 
 		auto f = this->InstalledVersion( s.get() ) ;
 
-		if( f == "N/A" && m_backendsInUse == &m_backends ){
+		if( s->known() ){
 
-			checkforupdateswindow::args args( s.get(),m_internallyManageBackEnds ) ;
-
-			args.installedVersion = "N/A" ;
-			args.onLineVersion    = "N/A" ;
-
-			emit update( args ) ;
-
-			this->checkForUpdate( position ) ;
-		}else {
-			if( s->known() ){
-
-				m_networkRequest.setUrl( QUrl( s->releaseURL() ) ) ;
-			}else{
-				m_networkRequest.setUrl( QUrl( "https://api.github.com/repos/mhogomchungu/sirikali/releases" ) ) ;
-			}
-
-			m_network.get( m_networkRequest,[ =,&s ]( const utils::network::reply& reply ){
-
-				this->networkReply( position,s.get(),f,reply ) ;
-			} ) ;
+			m_networkRequest.setUrl( QUrl( s->releaseURL() ) ) ;
+		}else{
+			m_networkRequest.setUrl( QUrl( "https://api.github.com/repos/mhogomchungu/sirikali/releases" ) ) ;
 		}
+
+		m_network.get( m_networkRequest,[ =,&s ]( const utils::network::reply& reply ){
+
+			this->networkReply( position,s.get(),f,reply ) ;
+		} ) ;
 	}
 }
 
@@ -243,7 +230,7 @@ void checkUpdates::networkReply( int position,
 {
 	if( reply.success() ){
 
-		checkforupdateswindow::args args( s,m_internallyManageBackEnds ) ;
+		checkforupdateswindow::args args( s ) ;
 
 		auto m = this->latestVersion( reply.data() ) ;
 
@@ -255,14 +242,14 @@ void checkUpdates::networkReply( int position,
 
 	}else if( reply.timeOut() ){
 
-		checkforupdateswindow::args args( s,m_internallyManageBackEnds ) ;
+		checkforupdateswindow::args args( s ) ;
 
 		auto ss    = QString::number( m_timeOut / 1000 ) ;
 		args.error = QObject::tr( "Network Request Failed To Respond Within %1 Seconds." ).arg( ss ) ;
 
 		emit update( args ) ;
 	}else{
-		checkforupdateswindow::args args( s,m_internallyManageBackEnds ) ;
+		checkforupdateswindow::args args( s ) ;
 
 		args.error = reply.errorString() ;
 

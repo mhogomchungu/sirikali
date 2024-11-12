@@ -25,6 +25,8 @@
 
 #include "engines.h"
 
+#include "settings.h"
+
 checkforupdateswindow::checkforupdateswindow( QWidget * parent,
 					      functions& ff,
 					      utils::network::manager& nm ) :
@@ -63,9 +65,11 @@ checkforupdateswindow::checkforupdateswindow( QWidget * parent,
 
 			QMenu m ;
 
+			auto u = settings::instance().internallyManageBackEnds() ;
+
 			auto ac = m.addAction( tr( "Update" ) ) ;
 
-			if( m_opts[ row ].updatable() ){
+			if( m_opts[ row ].updatable() && u ){
 
 				ac->setEnabled( true ) ;
 
