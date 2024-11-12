@@ -50,14 +50,16 @@ jobs:
         host: 'windows'
         target: 'desktop'
     -
-      name: Download bsdtar
+      name: Download dependencies
       run: |
          New-Item -ItemType Directory -Path ${{github.workspace}}\tmp
          Invoke-WebRequest "https://github.com/mhogomchungu/sirikali/releases/download/1.5.2/bsdtar.zip" -OutFile ${{github.workspace}}\tmp\bsdtar.zip
+         Invoke-WebRequest "https://github.com/mhogomchungu/media-downloader-git/releases/download/0.0.0/libs.zip" -OutFile ${{github.workspace}}\tmp\libs.zip
     -
-      name: Extract archive bsdtar
+      name: Extract dependencies
       run: |
          Expand-Archive -Path ${{github.workspace}}\tmp\bsdtar.zip -DestinationPath ${{github.workspace}}\tmp
+         Expand-Archive -Path ${{github.workspace}}\tmp\libs.zip -DestinationPath ${{github.workspace}}\tmp
     -
       name: Set Build time
       run: |
@@ -112,15 +114,16 @@ jobs:
 
         echo "BUILD_VERSION=$versionInfo" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
     -
-      name: Create SiriKali.git.exe.zip
+      name: Create SiriKali.git.zip
       run: |
         New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKali.git
-        New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKali.git/local
-        New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKali.git/extra
-        New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKali.git/extra/bsdtar
+        New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKali.git\local
+        New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKali.git\extra
+        New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKali.git\extra\bsdtar
         
-        Copy-Item ${{github.workspace}}\tmp\bsdtar\* -Destination ${{github.workspace}}\SiriKali.git/extra/bsdtar -Recurse
-
+        Copy-Item ${{github.workspace}}\tmp\bsdtar\* -Destination ${{github.workspace}}\SiriKali.git\extra\bsdtar -Recurse
+        Copy-Item ${{github.workspace}}\tmp\libs\* -Destination ${{github.workspace}}\SiriKali.git -Recurse
+        
         Copy-Item -Path ${{github.workspace}}\SiriKali\translations -Destination ${{github.workspace}}\SiriKali.git -Recurse
         Copy-Item -Path ${{github.workspace}}\SiriKali\build5\sirikali.exe -Destination ${{github.workspace}}\SiriKali.git
         Copy-Item -Path ${{github.workspace}}\SiriKali\build5\src/sirikali_cppcryptfs\sirikali_cppcryptfs.exe -Destination ${{github.workspace}}\SiriKali.git
