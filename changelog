@@ -291,7 +291,10 @@ version 1.4.2(December 18,2019)
   [FLATPAK]
 -- Bundle Cryfs along side Securefs and Gocryptfs.
 
-   version 1.7.1(November 11, 2024)
+   version 1.7.1(November 13, 2024)
+    [WINDOWS]
+-- Internally manage securefs and make it possible to update it from within the app.
+    The ability is set to "off" by default and can be enabled in the settings menu.
     [LINUX]
 -- Internally manage gocryptfs and securefs and make it possible to update them from within the app.
     The ability is set to "off" by default and can be enabled in the settings menu.

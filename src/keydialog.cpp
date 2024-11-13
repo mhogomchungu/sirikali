@@ -329,9 +329,9 @@ void keyDialog::setUpInitUI()
 		m_ui->pbOpen->setFocus() ;
 	}
 
-    m_ui->tbVisibleKey->setToolTip( tr( "Check This Box To Make Password Visible" ) ) ;
+	m_ui->tbVisibleKey->setToolTip( tr( "Check This Box To Make Password Visible" ) ) ;
 
-    m_ui->tbVisibleKey->setEnabled( m_settings.enableRevealingPasswords() ) ;
+	m_ui->tbVisibleKey->setEnabled( m_settings.enableRevealingPasswords() ) ;
 }
 
 void keyDialog::setVolumeToUnlock()

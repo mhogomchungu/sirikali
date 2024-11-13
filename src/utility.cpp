@@ -1741,6 +1741,10 @@ bool utility::copyFile( const QString& s,const QString& d,bool setExePermssion )
 
 bool utility::canDownload( utility::arch arch )
 {
+#if QT_VERSION < QT_VERSION_CHECK( 5,4,0 )
+
+	return false ;
+#else
 	auto m = QSysInfo::currentCpuArchitecture() ;
 
 	if( arch == utility::arch::either ){
@@ -1753,4 +1757,5 @@ bool utility::canDownload( utility::arch arch )
 	}else{
 		return m == "i386" ;
 	}
+#endif
 }
