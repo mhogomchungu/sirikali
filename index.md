@@ -36,18 +36,18 @@ Most frequently asked questions are answered <a href="https://github.com/mhogomc
 
 ## Source download link.
 
-Latest released version is 1.7.0 and its source code can be downloaded by clicking below link.
+Latest released version is 1.7.1 and its source code can be downloaded by clicking below link.
 
-<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.7.0/SiriKali-1.7.0.tar.xz">SiriKali-1.7.0.tar.xz</a>
+<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.7.1/SiriKali-1.7.1.tar.xz">SiriKali-1.7.1.tar.xz</a>
 
 ## Download links for Microsoft Windows Operating System.
 
-The installer for Microsoft Windows operating system is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.7.0/SiriKali-1.7.0.setup.exe">here</a>.
+The installer for Microsoft Windows operating system is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.7.1/SiriKaliQt5-1.7.1.setup.exe">here</a> for those with windows7 going up and <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.7.1/SiriKaliQt6-1.7.1.setup.exe">here</a> for those with Windows10 going up.
 
 The installer is not signed and expect to get a warning from windows saying the installer is from an unknown publisher.
 We recommend using the installer version.
 
-A portable version is also found <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.7.0/SiriKali-1.7.0.zip">here</a>.
+A portable version is also found <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.7.1/SiriKaliQt5-1.7.1.zip">here</a> for those with windows7 going up and  <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.7.1/SiriKaliQt6-1.7.1.zip">here</a> for those with windows10 going up.
 
 Packages are also available for <a href="https://github.com/microsoft/winget-pkgs/tree/master/manifests/f/FrancisBanyikwa/SiriKali">Winget</a> and <a href="https://github.com/ScoopInstaller/Extras/blob/master/bucket/sirikali.json">Scoop</a>.
 
