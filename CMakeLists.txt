@@ -181,9 +181,9 @@ else()
 endif()
 
 if( BUILD_FLATPAK )
-        file( WRITE ${PROJECT_BINARY_DIR}/flatpak.h "\n#define FLATPAK 1\n" )
+	file( WRITE ${PROJECT_BINARY_DIR}/flatpak.h "\n#define FLATPAK 1\n" )
 else()
-        file( WRITE ${PROJECT_BINARY_DIR}/flatpak.h "\n#define FLATPAK 0\n" )
+	file( WRITE ${PROJECT_BINARY_DIR}/flatpak.h "\n#define FLATPAK 0\n" )
 endif()
 
 #pkg_check_modules( MCHUNGU_TASK mhogomchungu_task )
@@ -282,8 +282,7 @@ set( UI_FILES 	src/sirikali.ui
 		src/engines/fscryptcreateoptions.ui
 )
 
-set( MOC_FILES
-		src/configoptions.h
+set( MOC_FILES	src/configoptions.h
 		src/configfileoption.h
 		src/dialogok.h
 		src/checkforupdates.h
@@ -310,7 +309,7 @@ set( MOC_FILES
 		src/engines/fscryptcreateoptions.h
  )
 
-set( SRC 	src/dialogok.cpp
+set( SRC 		src/dialogok.cpp
 		src/main.cpp
 		src/systemsignalhandler.cpp
 		src/crypto.cpp
@@ -367,27 +366,30 @@ INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 INCLUDE_DIRECTORIES( ${GCRYPT_INCLUDE_PATH} )
 
 if(BUILD_WITH_QT6)
-        set( CMAKE_AUTOMOC ON )
+
+	SET( TRAY_RC_SRCS "src/icon.qrc" )
+
+	set( CMAKE_AUTOMOC ON )
 	set( CMAKE_AUTORCC ON )
 	set( CMAKE_AUTOUIC ON )
 
 	if( APPLE )
-	        add_executable( SiriKali MACOSX_BUNDLE ${MOC_FILES} ${UI_FILES} ${SRC} ${TRAY_RC_SRCS} ${PROJECT_SOURCE_DIR}/icons/256x256/sirikali.icns )
+		add_executable( SiriKali MACOSX_BUNDLE ${MOC_FILES} ${UI_FILES} ${SRC} ${TRAY_RC_SRCS} ${PROJECT_SOURCE_DIR}/icons/256x256/sirikali.icns )
 		set_target_properties( SiriKali PROPERTIES MACOSX_BUNDLE ON )
 
 		set_target_properties( SiriKali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic")
 	else()
-	        if( WIN32 )
-		        set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/src/appicon.rc" )
+		if( WIN32 )
+			set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/src/appicon.rc" )
 			add_executable( sirikali WIN32 ${MOC_FILES} ${UI_FILES} ${SRC} ${TRAY_RC_SRCS} ${APP_ICON_RESOURCE_WINDOWS} )
 			set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -pedantic")
 		else()
-		        add_executable( sirikali ${MOC_FILES} ${UI_FILES} ${SRC} ${TRAY_RC_SRCS} )
+			add_executable( sirikali ${MOC_FILES} ${UI_FILES} ${SRC} ${TRAY_RC_SRCS} )
 			set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic")
 		endif()
 	endif()
 else()
-        QT5_WRAP_UI( UI ${UI_FILES} )
+	QT5_WRAP_UI( UI ${UI_FILES} )
 	QT5_WRAP_CPP( MOC ${MOC_FILES} )
 	QT5_ADD_RESOURCES( TRAY_RC_SRCS src/icon.qrc )
 
@@ -396,7 +398,7 @@ else()
 		set_target_properties( SiriKali PROPERTIES MACOSX_BUNDLE ON )
 		set_target_properties( SiriKali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic")
 	else()
-	        if( WIN32 )
+		 if( WIN32 )
 			set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/src/appicon.rc" )
 			add_executable( sirikali WIN32 ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} ${APP_ICON_RESOURCE_WINDOWS} )
 			set_target_properties( sirikali PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -pedantic")
@@ -612,7 +614,7 @@ endif()
 set( OutputBaseFilename "SiriKali-${PGR_VERSION}.setup" )
 
 if(OUTPUT_BASE_NAME)
-    set( OutputBaseFilename ${OUTPUT_BASE_NAME})
+	set( OutputBaseFilename ${OUTPUT_BASE_NAME})
 endif()
 
 if( WIN32 )

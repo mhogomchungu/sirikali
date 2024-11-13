@@ -186,6 +186,8 @@ void checkforupdateswindow::downloading( Ctx& ctx,const utils::network::progress
 			auto m = tr( "Error" ) + "\n" + tr( "Download Failed" ) ;
 
 			this->tableUpdate( row,m ) ;
+
+			m_ui->pbOK->setEnabled( true ) ;
 		}
 
 	}else if( p.timeOut() ){
@@ -197,6 +199,8 @@ void checkforupdateswindow::downloading( Ctx& ctx,const utils::network::progress
 		auto m = tr( "Error" ) + "\n" + tr( "Network Timed Out" ) ;
 
 		this->tableUpdate( row,m ) ;
+
+		m_ui->pbOK->setEnabled( true ) ;
 	}else{
 		ctx.fileWrite( p.data() ) ;
 
@@ -359,6 +363,8 @@ void checkforupdateswindow::extract( Ctx ctx )
 		}() ;
 
 		this->tableUpdate( row,m + "\n" + mm ) ;
+
+		m_ui->pbOK->setEnabled( true ) ;
 	}else{
 		auto exePath = this->exePath( row ) ;
 
