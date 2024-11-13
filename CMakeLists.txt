@@ -533,8 +533,7 @@ else()
 		install( FILES src/sirikali.pkexec.1.gz DESTINATION ${CMAKE_INSTALL_DATADIR}/man/man1/ )
 
 		install( FILES src/sirikali.appdata.xml DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo/ )
-endif()
-
+	endif()
 
 endif()
 
@@ -666,6 +665,7 @@ Source: {#MySourcesPath}\\LICENSE.txt; DestDir: {app}; Flags: ignoreversion
 Source: {#MyLibrariesLocation}\\iconengines\\* ; DestDir: {app}\\iconengines; Flags: ignoreversion
 Source: {#MyLibrariesLocation}\\imageformats\\*; DestDir: {app}\\imageformats; Flags: ignoreversion
 Source: {#MyLibrariesLocation}\\styles\\*; DestDir: {app}\\styles; Flags: ignoreversion
+Source: {#MyLibrariesLocation}\\extra\\*; DestDir: {app}\\extra; Flags: ignoreversion
 Source: {#MyLibrariesLocation}\\platforms\\*; DestDir: {app}\\platforms; Flags: ignoreversion
 Source: {#MyLibrariesLocation}\\generic\\*; DestDir: {app}\\generic; Flags: ignoreversion
 Source: {#MyLibrariesLocation}\\tls\\*; DestDir: {app}\\tls; Flags: ignoreversion
@@ -760,6 +760,7 @@ Source: {#MyLibrariesLocation}\\bearer\\* ; DestDir: {app}\\bearer; Flags: ignor
 Source: {#MyLibrariesLocation}\\iconengines\\* ; DestDir: {app}\\iconengines; Flags: ignoreversion
 Source: {#MyLibrariesLocation}\\imageformats\\*; DestDir: {app}\\imageformats; Flags: ignoreversion
 Source: {#MyLibrariesLocation}\\styles\\*; DestDir: {app}\\styles; Flags: ignoreversion
+Source: {#MyLibrariesLocation}\\extra\\*; DestDir: {app}\\extra; Flags: ignoreversion
 Source: {#MyLibrariesLocation}\\platforms\\*; DestDir: {app}\\platforms; Flags: ignoreversion
 Source: {#MyLibrariesLocation}\\translations\\*; DestDir: {app}\\translations; Flags: ignoreversion
 Source: {#MySourcesPath}\\translations\\*.qm; DestDir: {app}\\translations; Flags: ignoreversion

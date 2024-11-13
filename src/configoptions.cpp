@@ -302,6 +302,21 @@ void configOptions::translateUI()
 	}else{
 		m_ui->label_3->setText( tr( "Set Executables Search Path" ) ) ;
 	}
+
+	if( utility::platformIsFlatPak() ){
+
+		m_ui->cbInternallyManageBackEnds->setText( tr( "Manage Securefs, Gocryptfs And Cryfs" ) ) ;
+
+	}else if( utility::platformIsWindows() ){
+
+		m_ui->cbInternallyManageBackEnds->setText( tr( "Manage Securefs" ) ) ;
+
+	}else if( utility::platformIsLinux() ){
+
+		m_ui->cbInternallyManageBackEnds->setText( tr( "Manage Securefs And Gocryptfs" ) ) ;
+	}else{
+		m_ui->cbInternallyManageBackEnds->setText( tr( "Manage Securefs" ) ) ;
+	}
 }
 
 void configOptions::ShowUI()

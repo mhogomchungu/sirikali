@@ -122,7 +122,7 @@
       <rect>
        <x>120</x>
        <y>0</y>
-       <width>191</width>
+       <width>431</width>
        <height>28</height>
       </rect>
      </property>
@@ -141,7 +141,7 @@
       <rect>
        <x>120</x>
        <y>30</y>
-       <width>166</width>
+       <width>431</width>
        <height>28</height>
       </rect>
      </property>
@@ -160,8 +160,8 @@
       <rect>
        <x>120</x>
        <y>60</y>
-       <width>436</width>
-       <height>28</height>
+       <width>431</width>
+       <height>31</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -179,7 +179,7 @@
       <rect>
        <x>120</x>
        <y>90</y>
-       <width>141</width>
+       <width>431</width>
        <height>28</height>
       </rect>
      </property>
@@ -198,8 +198,8 @@
       <rect>
        <x>120</x>
        <y>120</y>
-       <width>288</width>
-       <height>28</height>
+       <width>431</width>
+       <height>31</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -217,7 +217,7 @@
       <rect>
        <x>120</x>
        <y>150</y>
-       <width>451</width>
+       <width>431</width>
        <height>31</height>
       </rect>
      </property>
@@ -225,7 +225,7 @@
       <item>
        <widget class="QCheckBox" name="cbInternallyManageBackEnds">
         <property name="text">
-         <string>Internally Manage Securefs And Gocryptfs(When Supported)</string>
+         <string>Manage Cryfs/Securefs/Gocryptfs</string>
         </property>
        </widget>
       </item>
