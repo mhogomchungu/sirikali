@@ -271,7 +271,7 @@ void keyDialog::setUpInitUI()
 
 			//m_ui->lineEditFolderPath->setText( "Z:" ) ;
 			//utility::setWindowsMountPointOptions( this,m_ui->lineEditFolderPath,m_ui->pbOpenFolderPath ) ;
-			m_ui->lineEditFolderPath->setText( m_settings.homePath() ) ;
+			m_ui->lineEditFolderPath->setText( m_settings.homePath() + "/" ) ;
 			//m_ui->pbOpenFolderPath->setIcon( QIcon( ":/folder.png" ) ) ;
 		}else{
 			m_ui->lineEditFolderPath->setText( m_settings.homePath() + "/" ) ;
