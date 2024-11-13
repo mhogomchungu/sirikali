@@ -52,7 +52,7 @@ jobs:
       uses: ncipollo/release-action@v1
       with:
         artifacts: ${{github.workspace}}/MAC/build6/SiriKali-${{ env.VERSION_INFO }}.dmg
-        tag: "1.5.2"
+        tag: ${{ env.VERSION_INFO }}
         commit: "master"
         allowUpdates: true
         omitBody: true
