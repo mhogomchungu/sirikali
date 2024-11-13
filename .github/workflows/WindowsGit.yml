@@ -130,7 +130,7 @@ jobs:
 
         Set-Location ${{github.workspace}}\SiriKaliQt5.git
 
-        ${{github.workspace}}/qt5/Qt/${{ env.QT5_VERSION }}/${{ env.MINGW5_PATH }}/bin/windeployqt.exe ${{github.workspace}}\SiriKali.git\sirikali.exe
+        ${{github.workspace}}/qt5/Qt/${{ env.QT5_VERSION }}/${{ env.MINGW5_PATH }}/bin/windeployqt.exe ${{github.workspace}}\SiriKaliQt5.git\sirikali.exe
 
         $bb = ${{ env.BUILD_VERSION }}
         $bb = $bb.Trim()
