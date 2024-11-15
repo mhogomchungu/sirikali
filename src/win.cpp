@@ -38,7 +38,7 @@ namespace Windows
 
 #include <windows.h>
 
-static int _terminateProcess( unsigned long pid )
+int terminateProcess( unsigned long pid )
 {
 	FreeConsole() ;
 
@@ -146,54 +146,6 @@ QString applicationDirPath()
 	return m ;
 }
 
-#else
-
-QString applicationDirPath()
-{
-	return {} ;
-}
-QString lastError()
-{
-	return {} ;
-}
-
-static int _terminateProcess( unsigned long pid )
-{
-	Q_UNUSED( pid )
-	return 1 ;
-}
-
-std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path )
-{
-	Q_UNUSED( path )
-
-	return { false,QString() } ;
-}
-
-#endif
-
-}
-
-}
-
-int SiriKali::Windows::terminateProcess( unsigned long pid )
-{
-	return _terminateProcess( pid ) ;
-}
-
-QString SiriKali::Windows::engineInstalledDir( const engines::engine& m )
-{
-	const auto& key   = m.windowsInstallPathRegistryKey() ;
-	const auto& value = m.windowsInstallPathRegistryValue() ;
-
-	if( key.isEmpty() || value.isEmpty() ){
-
-		return {} ;
-	}else{
-		return SiriKali::Windows::engineInstalledDir( key,value ) ;
-	}
-}
-
 static QString _readRegistry( const QString&,const QString& )
 {
 	return {} ;
@@ -214,13 +166,60 @@ static QString _readRegistry( const QString& key,const QString& value,const E& f
 	}
 }
 
-QString SiriKali::Windows::engineInstalledDir( const QString& key,const QString& value )
+QString engineInstalledDir( const QString& key,const QString& value )
 {
 	return _readRegistry( key,
 			      value,
 			      QSettings::NativeFormat,
 			      QSettings::Registry32Format,
 			      QSettings::Registry64Format ) ;
+}
+
+#else
+
+QString engineInstalledDir( const QString&,const QString& )
+{
+	return {} ;
+}
+
+QString applicationDirPath()
+{
+	return {} ;
+}
+QString lastError()
+{
+	return {} ;
+}
+
+int terminateProcess( unsigned long )
+{
+	return 1 ;
+}
+
+std::pair< bool,QString > driveHasSupportedFileSystem( const QString& path )
+{
+	Q_UNUSED( path )
+
+	return { false,QString() } ;
+}
+
+#endif
+
+}
+
+}
+
+QString SiriKali::Windows::engineInstalledDir( const engines::engine& m )
+{
+	const auto& key   = m.windowsInstallPathRegistryKey() ;
+	const auto& value = m.windowsInstallPathRegistryValue() ;
+
+	if( key.isEmpty() || value.isEmpty() ){
+
+		return {} ;
+	}else{
+		return SiriKali::Windows::engineInstalledDir( key,value ) ;
+	}
 }
 
 QStringList SiriKali::Windows::engineInstalledDirs()
