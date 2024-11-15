@@ -94,6 +94,11 @@ static engines::engine::BaseOptions _setOptions()
 
 	if( utility::platformIsWindows() || utility::platformIsFlatPak() ){
 
+		s.createControlStructure = "%{createOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
+		s.mountControlStructure  = "%{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
+
+	}else if( utility::platformIsFlatPak() ){
+
 		s.createControlStructure = "-f %{createOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
 		s.mountControlStructure  = "-f %{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
 	}else{
