@@ -168,11 +168,7 @@ static QString _readRegistry( const QString& key,const QString& value,const E& f
 
 QString engineInstalledDir( const QString& key,const QString& value )
 {
-	return _readRegistry( key,
-			      value,
-			      QSettings::NativeFormat,
-			      QSettings::Registry32Format,
-			      QSettings::Registry64Format ) ;
+	return _readRegistry( key,value,QSettings::Registry32Format,QSettings::Registry64Format ) ;
 }
 
 #else

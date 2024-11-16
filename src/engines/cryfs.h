@@ -52,4 +52,5 @@ private:
 	const QProcessEnvironment m_env ;
 	const engines::versionGreaterOrEqual m_version_greater_or_equal_0_10_0 ;
 	const engines::versionGreaterOrEqual m_version_greater_or_equal_0_9_9 ;
+	const engines::versionGreaterOrEqual m_version_greater_or_equal_1_0_0 ;
 } ;

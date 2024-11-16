@@ -95,6 +95,7 @@ jobs:
 
         Copy-Item -Path ${{github.workspace}}\SiriKali\translations -Destination ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }} -Recurse
         Copy-Item -Path ${{github.workspace}}\SiriKali\build5\sirikali.exe -Destination ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}
+        Copy-Item -Path ${{github.workspace}}\SiriKali\build5\src\sirikali_cppcryptfs\sirikali_cppcryptfs.exe -Destination ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}
 
         Set-Location ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}
 
@@ -153,6 +154,7 @@ jobs:
 
         Copy-Item -Path ${{github.workspace}}\SiriKali\translations -Destination ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }} -Recurse
         Copy-Item -Path ${{github.workspace}}\SiriKali\build6\sirikali.exe -Destination ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}
+        Copy-Item -Path ${{github.workspace}}\SiriKali\build6\src\sirikali_cppcryptfs\sirikali_cppcryptfs.exe -Destination ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}
 
         Set-Location ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}
 

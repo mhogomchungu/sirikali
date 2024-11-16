@@ -184,7 +184,7 @@ jobs:
       name: Build Project for Qt6
       run: cmake --build ${{github.workspace}}/SiriKali/build6
     -
-      name: Create SiriKaliQt6.git.exe.zip
+      name: Create SiriKaliQt6.git.zip
       run: |
         New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKaliQt6.git
         New-Item -ItemType Directory -Path ${{github.workspace}}\SiriKaliQt6.git\local
