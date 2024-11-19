@@ -996,9 +996,9 @@ public:
 	{
 		if( utility::platformIsFlatPak() ){
 
-			return flatpak() ;
+			return this->flatpak() ;
 		}else{
-			return normal() ;
+			return this->normal() ;
 		}
 	}
 private:
@@ -1039,8 +1039,6 @@ private:
 	}
 } ;
 
-engines::exeFullPath engines::engine::m_flatpakExeFuserMount( fuserMountExe{} ) ;
-
 engines::exeFullPath engines::engine::m_exeFuserMount( fuserMountExe{} ) ;
 
 engines::engine::engine( engines::engine::BaseOptions o ) :
@@ -1070,11 +1068,6 @@ const QString& engines::engine::javaFullPath()
 const QString& engines::engine::fuserMountPath()
 {
 	return m_exeFuserMount.get() ;
-}
-
-const QString& engines::engine::flatpakFuserMountPath()
-{
-	return m_flatpakExeFuserMount.get() ;
 }
 
 bool engines::engine::needsJava() const
@@ -1403,25 +1396,17 @@ engines::engine::exe_args engines::engine::unMountCommand( const engines::engine
 			return { "umount",{ e.mountPath() } } ;
 		}
 
-		if( utility::platformIsFlatPak() ){
+		const auto& fm = engines::engine::fuserMountPath() ;
 
-			const auto& fm = engines::engine::flatpakFuserMountPath() ;
+		if( fm.isEmpty() ){
 
-			if( fm.isEmpty() ){
+			return { engines::engine::status::fuserMountNotFound } ;
 
-				return { engines::engine::status::fuserMountNotFound } ;
-			}else{
-				return { "flatpak-spawn",{ "--host",fm,"-u",e.mountPath() } } ;
-			}
+		}else if( utility::platformIsFlatPak() ){
+
+			return { "flatpak-spawn",{ "--host",fm,"-u",e.mountPath() } } ;
 		}else{
-			const auto& fm = engines::engine::fuserMountPath() ;
-
-			if( fm.isEmpty() ){
-
-				return { engines::engine::status::fuserMountNotFound } ;
-			}else{
-				return { fm,{ "-u",e.mountPath() } } ;
-			}
+			return { fm,{ "-u",e.mountPath() } } ;
 		}
 	}
 }

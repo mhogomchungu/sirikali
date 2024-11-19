@@ -298,3 +298,8 @@ version 1.4.2(December 18,2019)
     [LINUX]
 -- Internally manage gocryptfs and securefs and make it possible to update them from within the app.
     The ability is set to "off" by default and can be enabled in the settings menu.
+
+   version 1.7.2(November 18, 2024)
+    [WINDOWS]
+-- Fix API breakage in Cryfs version 1.0.0.
+-- Do not check for minimum version of sshfs-win.

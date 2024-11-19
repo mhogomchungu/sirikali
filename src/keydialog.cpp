@@ -867,7 +867,7 @@ void keyDialog::enableAll()
 
 void keyDialog::disableAll()
 {
-    m_ui->tbVisibleKey->setEnabled( false ) ;
+	m_ui->tbVisibleKey->setEnabled( false ) ;
 	m_ui->pbMountPoint->setEnabled( false ) ;
 	m_ui->pbMountPoint_1->setEnabled( false ) ;
 	m_ui->cbKeyType->setEnabled( false ) ;
@@ -898,7 +898,7 @@ void keyDialog::setUIVisible( bool e )
 	m_ui->pbCancel->setVisible( e ) ;
 	m_ui->pbOpen->setVisible( e ) ;
 	m_ui->label->setVisible( e ) ;
-    m_ui->tbVisibleKey->setVisible( e ) ;
+	m_ui->tbVisibleKey->setVisible( e ) ;
 	m_ui->pbkeyOption->setVisible( e ) ;
 
 	if( e ){
@@ -1195,8 +1195,8 @@ void keyDialog::pbOK()
 		return this->HideUI() ;
 	}
 
-    m_ui->tbVisibleKey->setIcon(QIcon(":/icons/password_show.png")) ;
-    m_ui->lineEditKey->setEchoMode( QLineEdit::Password );
+	m_ui->tbVisibleKey->setIcon(QIcon(":/icons/password_show.png")) ;
+	m_ui->lineEditKey->setEchoMode( QLineEdit::Password );
 
 	this->setUIVisible( true ) ;
 
@@ -1205,9 +1205,10 @@ void keyDialog::pbOK()
 	if( this->keySelected( m_ui->cbKeyType->currentIndex() ) ) {
 
         m_ui->tbVisibleKey->setVisible( true ) ;
+
 		m_ui->pbkeyOption->setVisible( false ) ;
 	}else{
-        m_ui->tbVisibleKey->setVisible( false ) ;
+		m_ui->tbVisibleKey->setVisible( false ) ;
 		m_ui->pbkeyOption->setVisible( true ) ;
 	}
 }
@@ -1620,7 +1621,7 @@ void keyDialog::pbSetKeyCancel()
 	this->setUIVisible( true ) ;
 	this->enableAll() ;
 	m_keyType.setAsKey() ;
-    m_keyType.setEnabled(true) ;
+	m_keyType.setEnabled(true) ;
 }
 
 void keyDialog::setKeyEnabled( bool e )
@@ -1871,11 +1872,13 @@ void keyDialog::cbVisibleKeyclicked()
 {
 	if( this->keySelected( m_ui->cbKeyType->currentIndex() ) ){
 
-        if(m_ui->lineEditKey->echoMode() == QLineEdit::Password){
-            m_ui->tbVisibleKey->setIcon(QIcon(":/icons/password_hide.png"));
+	if( m_ui->lineEditKey->echoMode() == QLineEdit::Password ){
+
+		m_ui->tbVisibleKey->setIcon(QIcon(":/icons/password_hide.png") ) ;
+
 			m_ui->lineEditKey->setEchoMode( QLineEdit::Normal ) ;
 		}else{
-            m_ui->tbVisibleKey->setIcon(QIcon(":/icons/password_show.png"));
+			m_ui->tbVisibleKey->setIcon(QIcon(":/icons/password_show.png"));
 			m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
 		}
 
@@ -1899,7 +1902,7 @@ void keyDialog::key()
 	m_ui->pbkeyOption->setEnabled( false ) ;
 	m_ui->label->setText( m_keyType.toString() ) ;
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
-    m_ui->tbVisibleKey->setIcon(QIcon(":/icons/password_show.png")) ;
+	m_ui->tbVisibleKey->setIcon(QIcon(":/icons/password_show.png")) ;
 	m_ui->lineEditKey->clear() ;
 	m_ui->lineEditKey->setEnabled( true ) ;
 	m_ui->lineEditKey->setFocus() ;
@@ -1911,7 +1914,7 @@ void keyDialog::yubiKey()
 	m_ui->pbkeyOption->setEnabled( false ) ;
 	m_ui->label->setText( m_keyType.toString( keyType::name::Key ) ) ;
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
-    m_ui->tbVisibleKey->setIcon(QIcon(":/icons/password_show.png")) ;
+	m_ui->tbVisibleKey->setIcon(QIcon(":/icons/password_show.png")) ;
 	m_ui->lineEditKey->clear() ;
 	m_ui->lineEditKey->setEnabled( true ) ;
 	m_ui->lineEditKey->setFocus() ;
