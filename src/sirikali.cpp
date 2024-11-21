@@ -219,8 +219,14 @@ int sirikali::run( const QStringList& args,int argc,char * argv[] )
 
 		QDir().mkpath( engines::defaultBinPath() ) ;
 
-		#if QT_VERSION >= QT_VERSION_CHECK( 5,11,3 )
-			srk.setDesktopFileName( "io.github.mhogomchungu.sirikali" ) ;
+		#if QT_VERSION >= QT_VERSION_CHECK( 5,7,0 )
+
+			if( utility::platformIsFlatPak() ){
+
+				srk.setDesktopFileName( "io.github.mhogomchungu.sirikali" ) ;
+			}else{
+				srk.setDesktopFileName( "sirikali" ) ;
+			}
 		#endif
 
 		return starter( args,srk ).exec() ;

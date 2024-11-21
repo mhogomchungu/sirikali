@@ -321,7 +321,7 @@
       "config-opts" : [
         "-DCMAKE_BUILD_TYPE=RELEASE",
         "-DCRYFS_UPDATE_CHECKS=FALSE",
-        "-DDISABLE_OPENMP=ON",
+        "-DDISABLE_OPENMP=OFF",
         "-DBoost_USE_STATIC_LIBS=ON"
       ],
       "cleanup" : [
