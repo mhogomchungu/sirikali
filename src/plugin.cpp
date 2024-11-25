@@ -59,7 +59,7 @@ plugin::plugin( QWidget * parent,
 	connect( m_ui->pbCancel,&QPushButton::clicked,this,&plugin::pbClose ) ;
 	connect( m_ui->pbKeyFile,&QPushButton::clicked,this,&plugin::pbSelectKeyFile ) ;
 
-	m_ui->pbKeyFile->setIcon( QIcon( ":/file.png" ) ) ;
+    m_ui->pbKeyFile->setIcon( QIcon( ":/icons/file.png" ) ) ;
 
 	m_ui->lineEdit->setFocus() ;
 

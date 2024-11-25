@@ -272,7 +272,7 @@ void keyDialog::setUpInitUI()
 			//m_ui->lineEditFolderPath->setText( "Z:" ) ;
 			//utility::setWindowsMountPointOptions( this,m_ui->lineEditFolderPath,m_ui->pbOpenFolderPath ) ;
 			m_ui->lineEditFolderPath->setText( m_settings.homePath() + "/" ) ;
-			//m_ui->pbOpenFolderPath->setIcon( QIcon( ":/folder.png" ) ) ;
+            //m_ui->pbOpenFolderPath->setIcon( QIcon( ":/icons/folder.png" ) ) ;
 		}else{
 			m_ui->lineEditFolderPath->setText( m_settings.homePath() + "/" ) ;
 		}
@@ -289,14 +289,14 @@ void keyDialog::setUpInitUI()
 
 		m_ui->label_2->setText( tr( "Mount Path" ) ) ;
 
-		m_ui->pbMountPoint->setIcon( QIcon( ":/folder.png" ) ) ;
+        m_ui->pbMountPoint->setIcon( QIcon( ":/icons/folder.png" ) ) ;
 
-		m_ui->pbMountPoint_1->setIcon( QIcon( ":/folder.png" ) ) ;
+        m_ui->pbMountPoint_1->setIcon( QIcon( ":/icons/folder.png" ) ) ;
 
 		m_ui->lineEditKey->setFocus() ;
 	}
 
-	QIcon folderIcon( ":/folder.png" ) ;
+    QIcon folderIcon( ":/icons/folder.png" ) ;
 
 	m_ui->pbOpenFolderPath->setIcon( folderIcon ) ;
 
@@ -1888,7 +1888,7 @@ void keyDialog::cbVisibleKeyclicked()
 
 void keyDialog::secretStorage()
 {
-	m_ui->pbkeyOption->setIcon( QIcon( ":/module.png" ) ) ;
+    m_ui->pbkeyOption->setIcon( QIcon( ":/icons/module.png" ) ) ;
 	m_ui->pbkeyOption->setEnabled( false ) ;
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Normal ) ;
 	m_ui->label->setText( tr( "Plugin name" ) ) ;
@@ -1922,7 +1922,7 @@ void keyDialog::yubiKey()
 
 void keyDialog::keyFile()
 {
-	m_ui->pbkeyOption->setIcon( QIcon( ":/keyfile.png" ) ) ;
+    m_ui->pbkeyOption->setIcon( QIcon( ":/icons/keyfile.png" ) ) ;
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Normal ) ;
 	m_ui->label->setText( m_keyType.toString() ) ;
 	m_ui->pbkeyOption->setEnabled( true ) ;

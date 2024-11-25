@@ -1,15 +1,15 @@
 <RCC>
     <qresource prefix="/">
         <file>sirikali.png</file>
-        <file>folder.png</file>
-        <file>file.png</file>
-        <file>keyfile.png</file>
-        <file>module.png</file>
-        <file>harddrive.png</file>
-        <file>executable.png</file>
-        <file>lock.png</file>
         <file>icons/password_show.png</file>
         <file>icons/password_hide.png</file>
         <file>icons/setting_reset.png</file>
+        <file>icons/folder.png</file>
+        <file>icons/executable.png</file>
+        <file>icons/file.png</file>
+        <file>icons/harddrive.png</file>
+        <file>icons/keyfile.png</file>
+        <file>icons/lock.png</file>
+        <file>icons/module.png</file>
     </qresource>
 </RCC>

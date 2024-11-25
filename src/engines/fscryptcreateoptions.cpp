@@ -39,7 +39,7 @@ fscryptcreateoptions::fscryptcreateoptions( const engines::engine::createGUIOpti
 	m_ui->lineEditKeyFile->setEnabled( false ) ;
 	m_ui->pbKeyFile->setEnabled( false ) ;
 
-	m_ui->pbKeyFile->setIcon( QIcon( ":/file.png" ) ) ;
+    m_ui->pbKeyFile->setIcon( QIcon( ":/icons/file.png" ) ) ;
 
 	connect( m_ui->pbKeyFile,&QPushButton::clicked,[ this ](){
 

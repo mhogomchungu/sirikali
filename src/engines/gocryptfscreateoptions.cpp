@@ -39,7 +39,7 @@ gocryptfscreateoptions::gocryptfscreateoptions( const engines::engine& engine,
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbConfigPath,SIGNAL( clicked() ),this,SLOT( pbSelectConfigPath() ) ) ;
 
-	m_ui->pbConfigPath->setIcon( QIcon( ":/folder.png" ) ) ;
+    m_ui->pbConfigPath->setIcon( QIcon( ":/icons/folder.png" ) ) ;
 
 	m_ui->comboBox->addItems( { "AES256-GCM","AES256-SIV" } ) ;
 
