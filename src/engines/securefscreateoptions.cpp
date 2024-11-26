@@ -45,9 +45,9 @@ securefscreateoptions::securefscreateoptions( const engines::engine& engine,
 	connect( m_ui->pbConfigFile,SIGNAL( clicked() ),this,SLOT( pbConfigFilePath() ) ) ;
 	connect( m_ui->pbConfigFile_2,SIGNAL( clicked() ),this,SLOT( pbKeyFilePath() ) ) ;
 
-	m_ui->pbConfigFile->setIcon( QIcon( ":/folder.png" ) ) ;
+    m_ui->pbConfigFile->setIcon( QIcon( ":/icons/folder.png" ) ) ;
 
-	m_ui->pbConfigFile_2->setIcon( QIcon( ":/file.png" ) ) ;
+    m_ui->pbConfigFile_2->setIcon( QIcon( ":/icons/file.png" ) ) ;
 
 	m_ui->comboBox->setFocus() ;
 

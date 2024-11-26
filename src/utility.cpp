@@ -1215,7 +1215,7 @@ static void _setWindowsMountMountOptions( QWidget * obj,E e,QPushButton * s )
 	menu->addActions( actions ) ;
 
 	s->setMenu( menu ) ;
-	s->setIcon( QIcon( ":/harddrive.png" ) ) ;
+    s->setIcon( QIcon( ":/icons/harddrive.png" ) ) ;
 }
 
 void utility::setWindowsMountPointOptions( QWidget * obj,QTextEdit * e,QPushButton * s )

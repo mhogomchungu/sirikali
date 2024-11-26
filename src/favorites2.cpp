@@ -516,7 +516,7 @@ favorites2::favorites2( QWidget * parent,
 		utility::setWindowsMountPointOptions( this,m_ui->lineEditMountPath,m_ui->pbMountPointPath ) ;
 		m_ui->labelMountPointPrefix->setText( tr( "Mount Point Path" ) ) ;
 	}else{
-		m_ui->pbMountPointPath->setIcon( QIcon( ":/folder.png" ) ) ;
+        m_ui->pbMountPointPath->setIcon( QIcon( ":/icons/folder.png" ) ) ;
 
 		m_ui->labelMountPointPrefix->setText( tr( "Mount Point Prefix" ) ) ;
 
@@ -621,11 +621,11 @@ favorites2::favorites2( QWidget * parent,
 	} ) ;
 
 	m_ui->pbFolderPath->setIcon( QIcon( ":/sirikali.png" ) ) ;
-	m_ui->pbConfigFilePath->setIcon( QIcon( ":/file.png" ) ) ;
-	m_ui->pbIdentityFile->setIcon( QIcon( ":/file.png" ) ) ;
-	m_ui->pbAddToWallets->setIcon( QIcon( ":/lock.png" ) ) ;
+    m_ui->pbConfigFilePath->setIcon( QIcon( ":/icons/file.png" ) ) ;
+    m_ui->pbIdentityFile->setIcon( QIcon( ":/icons/file.png" ) ) ;
+    m_ui->pbAddToWallets->setIcon( QIcon( ":/icons/lock.png" ) ) ;
 
-	QIcon exeIcon( ":/executable.png" ) ;
+    QIcon exeIcon( ":/icons/executable.png" ) ;
 
 	m_ui->pbPreMount->setIcon( exeIcon ) ;
 	m_ui->pbPostMount->setIcon( exeIcon ) ;
@@ -1711,7 +1711,7 @@ void favorites2::setDefaultUI( const engines::engine& engine )
 
 		if( engine.usesOnlyMountPoint() ){
 
-			m_ui->pbFolderPath->setIcon( QIcon( ":/folder.png" ) ) ;
+            m_ui->pbFolderPath->setIcon( QIcon( ":/icons/folder.png" ) ) ;
 
 			m_ui->pbFolderPath->setObjectName( "FolderHandle" ) ;
 			m_ui->labelName->setText( tr( "Mount Point Path" ) ) ;
@@ -1724,7 +1724,7 @@ void favorites2::setDefaultUI( const engines::engine& engine )
 
 			m_ui->pbFolderPath->setObjectName( "FileHandle" ) ;
 
-			m_ui->pbFolderPath->setIcon( QIcon( ":/file.png" ) ) ;
+            m_ui->pbFolderPath->setIcon( QIcon( ":/icons/file.png" ) ) ;
 
 			m_ui->labelName ->setText( tr( "File Path" ) ) ;
 
@@ -1732,7 +1732,7 @@ void favorites2::setDefaultUI( const engines::engine& engine )
 		}
 	}
 
-	m_ui->pbFolderPath->setIcon( QIcon( ":/folder.png" ) ) ;
+    m_ui->pbFolderPath->setIcon( QIcon( ":/icons/folder.png" ) ) ;
 	m_ui->pbFolderPath->setObjectName( "FolderHandle" ) ;
 
 	m_ui->labelName ->setText( tr( "Encrypted Folder Path" ) ) ;

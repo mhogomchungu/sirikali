@@ -40,7 +40,7 @@ ecryptfscreateoptions::ecryptfscreateoptions( const engines::engine& e,
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbConfigPath,SIGNAL( clicked() ),this,SLOT( pbSelectConfigPath() ) ) ;
 
-	m_ui->pbConfigPath->setIcon( QIcon( ":/folder.png" ) ) ;
+    m_ui->pbConfigPath->setIcon( QIcon( ":/icons/folder.png" ) ) ;
 
 	m_ui->rbEncryptFileNames->setChecked( true ) ;
 	m_ui->rbDoNotEnablePlainText->setChecked( true ) ;

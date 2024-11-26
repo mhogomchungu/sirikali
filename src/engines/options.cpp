@@ -39,9 +39,9 @@ options::options( const engines::engine& engine,const engines::engine::mountGUIO
 
 	this->setFixedSize( this->size() ) ;
 
-	m_ui->pbConfigFile->setIcon( QIcon( ":/file.png" ) ) ;
+    m_ui->pbConfigFile->setIcon( QIcon( ":/icons/file.png" ) ) ;
 
-	m_ui->pbKeyFile->setIcon( QIcon( ":/file.png" ) ) ;
+    m_ui->pbKeyFile->setIcon( QIcon( ":/icons/file.png" ) ) ;
 
 	this->setWindowIcon( QIcon( ":/sirikali.png" ) ) ;
 

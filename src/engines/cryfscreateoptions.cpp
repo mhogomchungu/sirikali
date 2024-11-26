@@ -48,7 +48,7 @@ cryfscreateoptions::cryfscreateoptions( const engines::engine& engine,
 		m_ui->cbAllowReplacedFileSystem->setEnabled( false ) ;
 	}
 
-	m_ui->pbConfigPath->setIcon( QIcon( ":/folder.png" ) ) ;
+    m_ui->pbConfigPath->setIcon( QIcon( ":/icons/folder.png" ) ) ;
 
 	m_ui->lineEdit->setText( "32768" ) ;
 
