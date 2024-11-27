@@ -1764,8 +1764,6 @@ void sirikali::setUpFont()
 
 void sirikali::closeEvent( QCloseEvent * e )
 {
-	e->ignore() ;
-	this->hide() ;
 }
 
 void sirikali::trayClicked( QSystemTrayIcon::ActivationReason e )
