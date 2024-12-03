@@ -43,19 +43,25 @@ public:
 		walletOpts() ;
 		void setActive( favorites2 * ) ;
 		void setInactive() ;
+		void checkAvaibale() ;
 	private:
-		void setOptions() ;
-		void getOptions() ;
-		bool m_gnomeWallet = false ;
-		bool m_kdeWallet = false ;
-		bool m_osxkeychain = false ;
-		bool m_windows_dpapi = false ;
-		std::atomic_bool m_active{ false } ;
+		struct status
+		{
+			status() = default ;
+			status( int ) ;
+			bool m_gnomeWallet ;
+			bool m_kdeWallet ;
+			bool m_osxkeychain ;
+			bool m_windows_dpapi ;
+		} ;
+		void setStatus( const status& ) ;
+		void getStatus() ;
 		bool m_set = false ;
+		status m_status ;
 		favorites2 * m_parent ;
 	} ;
 
-	static walletOpts m_walletOpts ;
+	static void checkAvailableWallets() ;
 
 	static QString encodeKeyKeyFile( const QString&,const QString& ) ;
 	class credentials
@@ -173,6 +179,8 @@ private :
 	const engines::engine& m_engine ;
 	QString m_cipherPath ;
 	QString m_keyFilePath ;
+
+	static walletOpts m_walletOpts ;
 
 	class wallet
 	{

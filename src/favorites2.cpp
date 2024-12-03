@@ -32,6 +32,11 @@ const QString COMMENT = "-SiriKali_Comment_ID" ;
 
 favorites2::walletOpts favorites2::m_walletOpts ;
 
+void favorites2::checkAvailableWallets()
+{
+	m_walletOpts.checkAvaibale() ;
+}
+
 QString favorites2::encodeKeyKeyFile( const QString& key,const QString& keyFile )
 {
 	if( keyFile.isEmpty() ){
@@ -1799,47 +1804,58 @@ favorites2::walletOpts::walletOpts()
 void favorites2::walletOpts::setActive( favorites2 * m )
 {
 	m_parent = m ;
-	m_active = true ;
 
 	if( m_set ){
 
-		this->setOptions() ;
+		this->setStatus( m_status ) ;
 	}else{
-		this->getOptions() ;
+		this->getStatus() ;
 	}
 }
 
 void favorites2::walletOpts::setInactive()
 {
-	m_active = false ;
+	m_parent = nullptr ;
 }
 
-void favorites2::walletOpts::setOptions()
+void favorites2::walletOpts::checkAvaibale()
 {
-	if( m_active ){
+	this->setActive( nullptr ) ;
+}
 
-		m_parent->m_ui->rbKWallet->setEnabled( m_kdeWallet ) ;
-		m_parent->m_ui->rbLibSecret->setEnabled( m_gnomeWallet ) ;
-		m_parent->m_ui->rbMacOSKeyChain->setEnabled( m_osxkeychain ) ;
-		m_parent->m_ui->rbWindowsDPAPI->setEnabled( m_windows_dpapi ) ;
+void favorites2::walletOpts::setStatus( const favorites2::walletOpts::status& s )
+{
+	m_status = s ;
+
+	if( m_parent ){
+
+		m_parent->m_ui->rbKWallet->setEnabled( m_status.m_kdeWallet ) ;
+		m_parent->m_ui->rbLibSecret->setEnabled( m_status.m_gnomeWallet ) ;
+		m_parent->m_ui->rbMacOSKeyChain->setEnabled( m_status.m_osxkeychain ) ;
+		m_parent->m_ui->rbWindowsDPAPI->setEnabled( m_status.m_windows_dpapi ) ;
 	}
 }
 
-void favorites2::walletOpts::getOptions()
+void favorites2::walletOpts::getStatus()
 {
 	Task::run( [ & ](){
 
-		using wbe = LXQt::Wallet::BackEnd ;
+		return favorites2::walletOpts::status( 0 ) ;
 
-		m_gnomeWallet   = LXQt::Wallet::backEndIsSupported( wbe::libsecret ) ;
-		m_kdeWallet     = LXQt::Wallet::backEndIsSupported( wbe::kwallet ) ;
-		m_osxkeychain   = LXQt::Wallet::backEndIsSupported( wbe::osxkeychain ) ;
-		m_windows_dpapi = LXQt::Wallet::backEndIsSupported( wbe::windows_dpapi ) ;
+	} ).then( [ & ]( const favorites2::walletOpts::status& s ){
 
 		m_set = true ;
 
-	} ).then( [ & ](){
-
-		this->setOptions() ;
+		this->setStatus( s ) ;
 	} ) ;
+}
+
+favorites2::walletOpts::status::status( int )
+{
+	using wbe = LXQt::Wallet::BackEnd ;
+
+	m_gnomeWallet   = LXQt::Wallet::backEndIsSupported( wbe::libsecret ) ;
+	m_kdeWallet     = LXQt::Wallet::backEndIsSupported( wbe::kwallet ) ;
+	m_osxkeychain   = LXQt::Wallet::backEndIsSupported( wbe::osxkeychain ) ;
+	m_windows_dpapi = LXQt::Wallet::backEndIsSupported( wbe::windows_dpapi ) ;
 }

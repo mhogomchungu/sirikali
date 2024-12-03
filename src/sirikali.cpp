@@ -522,6 +522,8 @@ void sirikali::setUpApp( const QString& volume )
 	this->updateFavoritesInContextMenu() ;
 
 	this->startGUI( volume ) ;
+
+	favorites2::checkAvailableWallets() ;
 }
 
 void sirikali::showTrayIcon()
