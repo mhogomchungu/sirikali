@@ -1762,7 +1762,7 @@ void sirikali::setUpFont()
 {
 }
 
-void sirikali::closeEvent( QCloseEvent * e )
+void sirikali::closeEvent( QCloseEvent * )
 {
 }
 

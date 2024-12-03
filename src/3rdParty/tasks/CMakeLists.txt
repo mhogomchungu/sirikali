@@ -1,5 +1,5 @@
 if(${CMAKE_VERSION} VERSION_GREATER "3.26")
-    cmake_minimum_required(VERSION 3.5.0)
+    cmake_minimum_required(VERSION 3.26.0)
 else()
     cmake_minimum_required(VERSION 3.0.0)
 endif()
@@ -31,7 +31,6 @@ if(BUILD_WITH_QT6)
 else()
 	include_directories( ${Qt5Core_INCLUDE_DIRS} )
 endif()
-
 
 if( MCHUNGU_TASK_INSTALL )
 	add_library( mhogomchungu_task SHARED ${MOC_LIBRARY} )

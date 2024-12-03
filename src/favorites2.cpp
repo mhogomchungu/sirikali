@@ -30,6 +30,8 @@
 
 const QString COMMENT = "-SiriKali_Comment_ID" ;
 
+favorites2::walletOpts favorites2::m_walletOpts ;
+
 QString favorites2::encodeKeyKeyFile( const QString& key,const QString& keyFile )
 {
 	if( keyFile.isEmpty() ){
@@ -359,17 +361,11 @@ favorites2::favorites2( QWidget * parent,
 	using bk = LXQt::Wallet::BackEnd ;
 
 	m_ui->rbNone->setEnabled( true ) ;
-
-	auto _set_supported = []( QRadioButton * rb,LXQt::Wallet::BackEnd e ){
-
-		rb->setEnabled( LXQt::Wallet::backEndIsSupported( e ) ) ;
-	} ;
-
-	_set_supported( m_ui->rbInternalWallet,bk::internal ) ;
-	_set_supported( m_ui->rbKWallet,bk::kwallet ) ;
-	_set_supported( m_ui->rbLibSecret,bk::libsecret ) ;
-	_set_supported( m_ui->rbMacOSKeyChain,bk::osxkeychain ) ;
-	_set_supported( m_ui->rbWindowsDPAPI,bk::windows_dpapi ) ;
+	m_ui->rbKWallet->setEnabled( false ) ;
+	m_ui->rbLibSecret->setEnabled( false ) ;
+	m_ui->rbMacOSKeyChain->setEnabled( false ) ;
+	m_ui->rbWindowsDPAPI->setEnabled( false ) ;
+	m_ui->rbInternalWallet->setEnabled( LXQt::Wallet::backEndIsSupported( bk::libsecret ) ) ;
 
 	auto walletBk = m_settings.autoMountBackEnd() ;
 
@@ -516,7 +512,7 @@ favorites2::favorites2( QWidget * parent,
 		utility::setWindowsMountPointOptions( this,m_ui->lineEditMountPath,m_ui->pbMountPointPath ) ;
 		m_ui->labelMountPointPrefix->setText( tr( "Mount Point Path" ) ) ;
 	}else{
-        m_ui->pbMountPointPath->setIcon( QIcon( ":/icons/folder.png" ) ) ;
+		m_ui->pbMountPointPath->setIcon( QIcon( ":/icons/folder.png" ) ) ;
 
 		m_ui->labelMountPointPrefix->setText( tr( "Mount Point Prefix" ) ) ;
 
@@ -621,11 +617,11 @@ favorites2::favorites2( QWidget * parent,
 	} ) ;
 
 	m_ui->pbFolderPath->setIcon( QIcon( ":/sirikali.png" ) ) ;
-    m_ui->pbConfigFilePath->setIcon( QIcon( ":/icons/file.png" ) ) ;
-    m_ui->pbIdentityFile->setIcon( QIcon( ":/icons/file.png" ) ) ;
-    m_ui->pbAddToWallets->setIcon( QIcon( ":/icons/lock.png" ) ) ;
+	m_ui->pbConfigFilePath->setIcon( QIcon( ":/icons/file.png" ) ) ;
+	m_ui->pbIdentityFile->setIcon( QIcon( ":/icons/file.png" ) ) ;
+	m_ui->pbAddToWallets->setIcon( QIcon( ":/icons/lock.png" ) ) ;
 
-    QIcon exeIcon( ":/icons/executable.png" ) ;
+	QIcon exeIcon( ":/icons/executable.png" ) ;
 
 	m_ui->pbPreMount->setIcon( exeIcon ) ;
 	m_ui->pbPostMount->setIcon( exeIcon ) ;
@@ -663,6 +659,8 @@ favorites2::favorites2( QWidget * parent,
 	m_ui->pbOptions->setMenu( optionsMenu ) ;
 
 	this->ShowUI() ;
+
+	m_walletOpts.setActive( this ) ;
 }
 
 void favorites2::setMenu( QMenu& m )
@@ -718,6 +716,8 @@ void favorites2::setMenu( QMenu& m )
 
 favorites2::~favorites2()
 {
+	m_walletOpts.setInactive() ;
+
 	delete m_ui ;
 }
 
@@ -1732,7 +1732,7 @@ void favorites2::setDefaultUI( const engines::engine& engine )
 		}
 	}
 
-    m_ui->pbFolderPath->setIcon( QIcon( ":/icons/folder.png" ) ) ;
+	m_ui->pbFolderPath->setIcon( QIcon( ":/icons/folder.png" ) ) ;
 	m_ui->pbFolderPath->setObjectName( "FolderHandle" ) ;
 
 	m_ui->labelName ->setText( tr( "Encrypted Folder Path" ) ) ;
@@ -1790,4 +1790,56 @@ void favorites2::ShowUI()
 bool favorites2::eventFilter( QObject * watched,QEvent * event )
 {
 	return utility::eventFilter( this,watched,event,[ this ](){ this->HideUI() ; } ) ;
+}
+
+favorites2::walletOpts::walletOpts()
+{
+}
+
+void favorites2::walletOpts::setActive( favorites2 * m )
+{
+	m_parent = m ;
+	m_active = true ;
+
+	if( m_set ){
+
+		this->setOptions() ;
+	}else{
+		this->getOptions() ;
+	}
+}
+
+void favorites2::walletOpts::setInactive()
+{
+	m_active = false ;
+}
+
+void favorites2::walletOpts::setOptions()
+{
+	if( m_active ){
+
+		m_parent->m_ui->rbKWallet->setEnabled( m_kdeWallet ) ;
+		m_parent->m_ui->rbLibSecret->setEnabled( m_gnomeWallet ) ;
+		m_parent->m_ui->rbMacOSKeyChain->setEnabled( m_osxkeychain ) ;
+		m_parent->m_ui->rbWindowsDPAPI->setEnabled( m_windows_dpapi ) ;
+	}
+}
+
+void favorites2::walletOpts::getOptions()
+{
+	Task::run( [ & ](){
+
+		using wbe = LXQt::Wallet::BackEnd ;
+
+		m_gnomeWallet   = LXQt::Wallet::backEndIsSupported( wbe::libsecret ) ;
+		m_kdeWallet     = LXQt::Wallet::backEndIsSupported( wbe::kwallet ) ;
+		m_osxkeychain   = LXQt::Wallet::backEndIsSupported( wbe::osxkeychain ) ;
+		m_windows_dpapi = LXQt::Wallet::backEndIsSupported( wbe::windows_dpapi ) ;
+
+		m_set = true ;
+
+	} ).then( [ & ](){
+
+		this->setOptions() ;
+	} ) ;
 }

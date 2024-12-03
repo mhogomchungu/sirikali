@@ -37,6 +37,26 @@ class favorites2 : public QDialog
 {
 	Q_OBJECT
 public:
+	class walletOpts
+	{
+	public:
+		walletOpts() ;
+		void setActive( favorites2 * ) ;
+		void setInactive() ;
+	private:
+		void setOptions() ;
+		void getOptions() ;
+		bool m_gnomeWallet = false ;
+		bool m_kdeWallet = false ;
+		bool m_osxkeychain = false ;
+		bool m_windows_dpapi = false ;
+		std::atomic_bool m_active{ false } ;
+		bool m_set = false ;
+		favorites2 * m_parent ;
+	} ;
+
+	static walletOpts m_walletOpts ;
+
 	static QString encodeKeyKeyFile( const QString&,const QString& ) ;
 	class credentials
 	{
