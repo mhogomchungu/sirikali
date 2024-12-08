@@ -2080,30 +2080,33 @@ void keyDialog::keyType::keyOptions( QComboBox * s,keyDialog * object,void( keyD
 	this->addItem( keyType::name::yubikey,tr( "YubiKey Challenge/Response" ) ) ;
 	this->addItem( keyType::name::externalExecutable,tr( "ExternalExecutable" ) ) ;
 
-	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::internal ) ){
+	favorites2::getAvailableWallets( [ this ]( const favorites2::walletOpts::status& s ){
 
-		this->addItem( keyType::name::internalWallet,tr( "Internal Wallet" ) ) ;
-	}
+		if( s.internal ){
 
-	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::libsecret ) ){
+			this->addItem( keyType::name::internalWallet,tr( "Internal Wallet" ) ) ;
+		}
 
-		this->addItem( keyType::name::libsecret,tr( "Gnome Wallet" ) ) ;
-	}
+		if( s.gnomeWallet ){
 
-	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::kwallet ) ){
+			this->addItem( keyType::name::libsecret,tr( "Gnome Wallet" ) ) ;
+		}
 
-		this->addItem( keyType::name::kdewallet,tr( "Kde Wallet" ) ) ;
-	}
+		if( s.kdeWallet ){
 
-	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::osxkeychain ) ){
+			this->addItem( keyType::name::kdewallet,tr( "Kde Wallet" ) ) ;
+		}
 
-		this->addItem( keyType::name::kdewallet,tr( "OSX KeyChain" ) ) ;
-	}
+		if( s.osxkeychain ){
 
-	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::windows_dpapi ) ){
+			this->addItem( keyType::name::kdewallet,tr( "OSX KeyChain" ) ) ;
+		}
 
-		this->addItem( keyType::name::windowsdpapi,tr( "Windows DPAPI" ) ) ;
-	}
+		if( s.windows_dpapi ){
+
+			this->addItem( keyType::name::windowsdpapi,tr( "Windows DPAPI" ) ) ;
+		}
+	} ) ;
 
 	this->setAsKey() ;
 

@@ -40,30 +40,42 @@ public:
 	class walletOpts
 	{
 	public:
+		struct status
+		{
+			status() ;
+			bool gnomeWallet;
+			bool kdeWallet ;
+			bool osxkeychain ;
+			bool windows_dpapi ;
+			bool internal ;
+		} ;
 		walletOpts() ;
 		void setActive( favorites2 * ) ;
 		void setInactive() ;
 		void checkAvaibale() ;
-	private:
-		struct status
+		template< typename Function >
+		void getAvailableWallets( const Function& function )
 		{
-			status() = default ;
-			status( int ) ;
-			bool m_gnomeWallet ;
-			bool m_kdeWallet ;
-			bool m_osxkeychain ;
-			bool m_windows_dpapi ;
-		} ;
-		void setStatus( const status& ) ;
+			function( utility::asConst( m_walletOpts.m_status ) ) ;
+		}
+	private:
 		void getStatus() ;
+		void setStatus() ;
 		bool m_set = false ;
-		status m_status ;
+		favorites2::walletOpts::status m_status ;
 		favorites2 * m_parent ;
 	} ;
+
+	template< typename Function >
+	static void getAvailableWallets( const Function& function )
+	{
+		m_walletOpts.getAvailableWallets( function ) ;
+	}
 
 	static void checkAvailableWallets() ;
 
 	static QString encodeKeyKeyFile( const QString&,const QString& ) ;
+
 	class credentials
 	{
 	public:

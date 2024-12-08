@@ -370,7 +370,7 @@ favorites2::favorites2( QWidget * parent,
 	m_ui->rbLibSecret->setEnabled( false ) ;
 	m_ui->rbMacOSKeyChain->setEnabled( false ) ;
 	m_ui->rbWindowsDPAPI->setEnabled( false ) ;
-	m_ui->rbInternalWallet->setEnabled( LXQt::Wallet::backEndIsSupported( bk::libsecret ) ) ;
+	m_ui->rbInternalWallet->setEnabled( false ) ;
 
 	auto walletBk = m_settings.autoMountBackEnd() ;
 
@@ -1716,7 +1716,7 @@ void favorites2::setDefaultUI( const engines::engine& engine )
 
 		if( engine.usesOnlyMountPoint() ){
 
-            m_ui->pbFolderPath->setIcon( QIcon( ":/icons/folder.png" ) ) ;
+			m_ui->pbFolderPath->setIcon( QIcon( ":/icons/folder.png" ) ) ;
 
 			m_ui->pbFolderPath->setObjectName( "FolderHandle" ) ;
 			m_ui->labelName->setText( tr( "Mount Point Path" ) ) ;
@@ -1729,7 +1729,7 @@ void favorites2::setDefaultUI( const engines::engine& engine )
 
 			m_ui->pbFolderPath->setObjectName( "FileHandle" ) ;
 
-            m_ui->pbFolderPath->setIcon( QIcon( ":/icons/file.png" ) ) ;
+			m_ui->pbFolderPath->setIcon( QIcon( ":/icons/file.png" ) ) ;
 
 			m_ui->labelName ->setText( tr( "File Path" ) ) ;
 
@@ -1805,10 +1805,10 @@ void favorites2::walletOpts::setActive( favorites2 * m )
 {
 	m_parent = m ;
 
-	if( m_set ){
+	this->setStatus() ;
 
-		this->setStatus( m_status ) ;
-	}else{
+	if( !m_set ){
+
 		this->getStatus() ;
 	}
 }
@@ -1823,39 +1823,43 @@ void favorites2::walletOpts::checkAvaibale()
 	this->setActive( nullptr ) ;
 }
 
-void favorites2::walletOpts::setStatus( const favorites2::walletOpts::status& s )
-{
-	m_status = s ;
-
-	if( m_parent ){
-
-		m_parent->m_ui->rbKWallet->setEnabled( m_status.m_kdeWallet ) ;
-		m_parent->m_ui->rbLibSecret->setEnabled( m_status.m_gnomeWallet ) ;
-		m_parent->m_ui->rbMacOSKeyChain->setEnabled( m_status.m_osxkeychain ) ;
-		m_parent->m_ui->rbWindowsDPAPI->setEnabled( m_status.m_windows_dpapi ) ;
-	}
-}
-
 void favorites2::walletOpts::getStatus()
 {
 	Task::run( [ & ](){
 
-		return favorites2::walletOpts::status( 0 ) ;
+		using wbe = LXQt::Wallet::BackEnd ;
 
-	} ).then( [ & ]( const favorites2::walletOpts::status& s ){
+		return LXQt::Wallet::backEndIsSupported( wbe::kwallet ) ;
+
+	} ).then( [ & ]( bool s ){
 
 		m_set = true ;
 
-		this->setStatus( s ) ;
+		m_status.kdeWallet = s ;
+
+		this->setStatus() ;
 	} ) ;
 }
 
-favorites2::walletOpts::status::status( int )
+void favorites2::walletOpts::setStatus()
+{
+	if( m_parent ){
+
+		m_parent->m_ui->rbKWallet->setEnabled( m_status.kdeWallet ) ;
+		m_parent->m_ui->rbLibSecret->setEnabled( m_status.gnomeWallet ) ;
+		m_parent->m_ui->rbMacOSKeyChain->setEnabled( m_status.osxkeychain ) ;
+		m_parent->m_ui->rbWindowsDPAPI->setEnabled( m_status.windows_dpapi ) ;
+		m_parent->m_ui->rbInternalWallet->setEnabled( m_status.internal ) ;
+	}
+}
+
+favorites2::walletOpts::status::status()
 {
 	using wbe = LXQt::Wallet::BackEnd ;
 
-	m_gnomeWallet   = LXQt::Wallet::backEndIsSupported( wbe::libsecret ) ;
-	m_kdeWallet     = LXQt::Wallet::backEndIsSupported( wbe::kwallet ) ;
-	m_osxkeychain   = LXQt::Wallet::backEndIsSupported( wbe::osxkeychain ) ;
-	m_windows_dpapi = LXQt::Wallet::backEndIsSupported( wbe::windows_dpapi ) ;
+	gnomeWallet   = LXQt::Wallet::backEndIsSupported( wbe::libsecret ) ;
+	osxkeychain   = LXQt::Wallet::backEndIsSupported( wbe::osxkeychain ) ;
+	windows_dpapi = LXQt::Wallet::backEndIsSupported( wbe::windows_dpapi ) ;
+	internal      = LXQt::Wallet::backEndIsSupported( wbe::internal ) ;
+	kdeWallet     = false ;
 }
