@@ -99,7 +99,19 @@ void checkUpdates::checkIfInstalled()
 
 			for( const auto& xt : utility::asConst( apps ) ){
 
-				if( it->executableName() == xt ){
+				const auto& m = [ & ](){
+
+					const auto& displayName = it->displayName() ;
+
+					if( displayName.isEmpty() ){
+
+						return it->name() ;
+					}else{
+						return displayName ;
+					}
+				}() ;
+
+				if( m == xt ){
 
 					if( it->updatable() ){
 
