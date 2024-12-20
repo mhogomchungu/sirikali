@@ -78,6 +78,8 @@ checkforupdateswindow::checkforupdateswindow( QWidget * parent,
 					this->update( row ) ;
 				} ) ;
 			}else{
+				ac->setText( tr( "Update Disabled" ) ) ;
+
 				ac->setEnabled( false ) ;
 			}
 
@@ -93,7 +95,7 @@ checkforupdateswindow::checkforupdateswindow( QWidget * parent,
 
 void checkforupdateswindow::add( const checkforupdateswindow::args& e )
 {
-	auto txt = e.engineName ;
+	auto txt = e.displayName ;
 
 	m_opts.emplace_back( e ) ;
 
@@ -181,7 +183,12 @@ void checkforupdateswindow::downloading( Ctx& ctx,const utils::network::progress
 
 			this->tableUpdate( row,m + mm ) ;
 
-			this->extract( ctx.move() ) ;
+			if( this->archivePath( ctx.filePath() ) ){
+
+				this->extract( ctx.move() ) ;
+			}else{
+				this->noNeedToExtract( ctx.move() ) ;
+			}
 		}else{
 			auto m = tr( "Error" ) + "\n" + tr( "Download Failed" ) ;
 
@@ -222,7 +229,7 @@ void checkforupdateswindow::downloading( Ctx& ctx,const utils::network::progress
 			m = QString( "%1 / %2 (%3%)" ).arg( current,totalSize,percentage ) ;
 		}
 
-		const auto& mm = m_opts[ row ].name() ;
+		const auto& mm = m_opts[ row ].displayName() ;
 
 		this->tableUpdate( row,tr( "Downloading %1" ).arg( mm ) + "\n" + m ) ;
 	}
@@ -268,10 +275,25 @@ QString checkforupdateswindow::exeName( int row )
 {
 	if( utility::platformIsWindows() ){
 
-		return m_opts[ row ].name().toLower() + ".exe" ;
+		return m_opts[ row ].executableName().toLower() + ".exe" ;
 	}else{
-		return m_opts[ row ].name().toLower() ;
+		return m_opts[ row ].executableName().toLower() ;
 	}
+}
+
+QString checkforupdateswindow::engineName( int row )
+{
+	return m_opts[ row ].name() ;
+}
+
+QString checkforupdateswindow::engineDisplayName( int row )
+{
+	return m_opts[ row ].displayName() ;
+}
+
+bool checkforupdateswindow::archivePath( const QString& e )
+{
+	return e.endsWith( ".zip" ) ;
 }
 
 QNetworkRequest checkforupdateswindow::networkRequest( const QString& url )
@@ -291,13 +313,16 @@ QNetworkRequest checkforupdateswindow::networkRequest( const QString& url )
 	return networkRequest ;
 }
 
-void checkforupdateswindow::download( int row,const QString& url,const QString& archiveName )
+void checkforupdateswindow::download( int row,
+				      const QString& url,
+				      const QString& archiveName,
+				      const QString& tagName )
 {
 	class progress
 	{
 	public:
-		progress( checkforupdateswindow * p,const QString& path,int row ) :
-			m_parent( *p ),m_ctx( row,path )
+		progress( checkforupdateswindow * p,const QString& path,int row,const QString& tagName ) :
+			m_parent( *p ),m_ctx( row,path,tagName )
 		{
 		}
 		Ctx& ctx()
@@ -317,7 +342,7 @@ void checkforupdateswindow::download( int row,const QString& url,const QString& 
 		Ctx m_ctx ;
 	} ;
 
-	progress p( this,m_binPath + archiveName,row ) ;
+	progress p( this,m_binPath + archiveName,row,tagName ) ;
 
 	auto& cc = p.ctx() ;
 
@@ -379,41 +404,77 @@ void checkforupdateswindow::extract( Ctx ctx )
 	}
 }
 
+void checkforupdateswindow::noNeedToExtract( Ctx ctx )
+{
+	this->updateComplete( ctx ) ;
+
+	this->goToNext() ;
+}
+
+void checkforupdateswindow::updateComplete( const Ctx& ctx )
+{
+	int row = ctx.row() ;
+	const auto& exePath = ctx.filePath() ;
+
+	QFile f( exePath ) ;
+
+	f.setPermissions( f.permissions() | QFileDevice::ExeOwner ) ;
+
+	auto m = QObject::tr( "Update Complete" ) ;
+
+	if( this->archivePath( exePath ) ){
+
+		auto s = m_binPath + this->exeName( row ) ;
+
+		this->tableUpdate( row,m + "\n" + s ) ;
+	}else{
+		this->tableUpdate( row,m + "\n" + exePath ) ;
+	}
+
+	const auto& engine = engines::instance().getByName( this->engineDisplayName( row ) ) ;
+
+	if( engine.unknown() ){
+
+		const auto& engine = engines::instance().getByName( this->engineName( row ) ) ;
+
+		engine.setInstalledVersionHack( m_binPath,ctx.tagName() ) ;
+	}else{
+		engine.setInstalledVersionHack( m_binPath,ctx.tagName() ) ;
+	}
+}
+
+void checkforupdateswindow::goToNext()
+{
+	if( m_position != -1 ){
+
+		m_position++ ;
+
+		if( m_position < static_cast< int >( m_opts.size() ) ){
+
+			this->update( m_position ) ;
+		}else{
+			m_ui->tableWidget->setEnabled( true ) ;
+
+			m_ui->pbOK->setEnabled( true ) ;
+		}
+	}else{
+		m_ui->tableWidget->setEnabled( true ) ;
+
+		m_ui->pbOK->setEnabled( true ) ;
+	}
+}
+
 void checkforupdateswindow::extracted( Ctx ctx,const utils::qprocess::outPut& p )
 {
 	int row = ctx.row() ;
 
 	if( p.success() ){
 
-		auto exePath = this->exePath( row ) ;
-
-		QFile f( exePath ) ;
-
-		f.setPermissions( f.permissions() | QFileDevice::ExeOwner ) ;
-
-		auto m = QObject::tr( "Update Complete" ) ;
-
-		this->tableUpdate( row,m + "\n" + exePath ) ;
+		this->updateComplete( ctx ) ;
 
 		this->removeExtra( row ) ;
 
-		if( m_position != -1 ){
-
-			m_position++ ;
-
-			if( m_position < static_cast< int >( m_opts.size() ) ){
-
-				this->update( m_position ) ;
-			}else{
-				m_ui->tableWidget->setEnabled( true ) ;
-
-				m_ui->pbOK->setEnabled( true ) ;
-			}
-		}else{
-			m_ui->tableWidget->setEnabled( true ) ;
-
-			m_ui->pbOK->setEnabled( true ) ;
-		}
+		this->goToNext() ;
 	}else{
 		m_ui->pbOK->setEnabled( true ) ;
 
@@ -433,6 +494,8 @@ void checkforupdateswindow::update( int row )
 
 		const auto array = m_opts[ row ].data().value( "assets" ).toArray() ;
 
+		auto tag_name = m_opts[ row ].data().value( "tag_name" ).toString() ;
+
 		const auto& name = this->archiveName( row ) ;
 
 		for( const auto& it : array ){
@@ -443,7 +506,7 @@ void checkforupdateswindow::update( int row )
 
 			if( url.endsWith( name ) ){
 
-				return this->download( row,url,name ) ;
+				return this->download( row,url,name,tag_name ) ;
 			}
 		}
 

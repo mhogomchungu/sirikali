@@ -583,6 +583,7 @@ public:
 		bool isNotInstalled() const ;
 		bool unknown() const ;
 		bool known() const ;
+		bool forUpdatingOnly() const ;
 		bool setsCipherPath() const ;
 		bool autoMountsOnCreate() const ;
 		bool hasGUICreateOptions() const ;
@@ -714,6 +715,10 @@ public:
 		} ;
 
 		engines::engine::exe_args unMountCommand( const engines::engine::terminate_process& e ) const ;
+
+		virtual QString installedVersionHack( const QString& ) const ;
+
+		virtual void setInstalledVersionHack( const QString&,const QString& ) const ;
 
 		virtual void setUpBinary( bool,QStringList&,const QString& ) const ;
 

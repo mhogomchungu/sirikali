@@ -309,7 +309,7 @@ void configOptions::translateUI()
 
 	}else if( utility::platformIsWindows() ){
 
-		m_ui->cbInternallyManageBackEnds->setText( tr( "Manage Securefs" ) ) ;
+		m_ui->cbInternallyManageBackEnds->setText( tr( "Manage Securefs and Cppcryptfs" ) ) ;
 
 	}else if( utility::platformIsLinux() ){
 

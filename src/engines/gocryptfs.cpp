@@ -23,7 +23,7 @@
 #include "gocryptfscreateoptions.h"
 #include "options.h"
 
-static engines::engine::BaseOptions _setOptions()
+static engines::engine::BaseOptions _setOptions( const QString& displayName )
 {
 	engines::engine::BaseOptions s ;
 
@@ -46,7 +46,6 @@ static engines::engine::BaseOptions _setOptions()
 	s.hasGUICreateOptions   = true ;
 	s.setsCipherPath        = true ;
 	s.acceptsVolName        = false ;
-	s.releaseURL             = "https://api.github.com/repos/rfjakob/gocryptfs/releases" ;
 	s.idleString            = "-idle %{timeout}" ;
 	s.configFileArgument    = "--config %{configFilePath}" ;
 	s.configFileNames       = QStringList{ "gocryptfs.conf",
@@ -60,6 +59,8 @@ static engines::engine::BaseOptions _setOptions()
 
 	if( utility::platformIsWindows() ){
 
+		s.releaseURL = "https://api.github.com/repos/bailey27/cppcryptfs/releases" ;
+
 		auto aa = engines::executableNotEngineFullPath( "sirikali_cppcryptfs.exe" ) ;
 		auto bb = engines::executableNotEngineFullPath( "cppcryptfsctl.exe" ) ;
 
@@ -69,7 +70,7 @@ static engines::engine::BaseOptions _setOptions()
 
 		s.windowsUnMountCommand = QStringList{ aa,"--umount","--mountPath","%{mountPoint}","--cppcryptfsctl-path",bb } ;
 
-		s.displayName           = "cppcryptfs" ;
+		s.displayName           = displayName ;
 
 		s.acceptsSubType        = true ;
 
@@ -87,6 +88,8 @@ static engines::engine::BaseOptions _setOptions()
 		s.executableNames = QStringList{ "cppcryptfsctl.exe" } ;
 		s.mountControlStructure  = "--mount %{mountOptions} --cipherPath %{cipherFolder} --mountPath %{mountPoint} %{fuseOpts}" ;
 	}else{
+		s.releaseURL             = "https://api.github.com/repos/rfjakob/gocryptfs/releases" ;
+
 		s.volumePropertiesCommands = QStringList{ "gocryptfs -info %{cipherFolder}",
 							  "gocryptfs -info %{plainFolder}" } ;
 
@@ -124,7 +127,7 @@ static QString _to_native_path( const QString& e )
 #ifdef Q_OS_WIN
 
 gocryptfs::gocryptfs() :
-	engines::engine( _setOptions() ),
+	engines::engine( _setOptions( "cppcryptfs" ) ),
 	m_sirikaliCppcryptfsExe( _to_native_path( engines::executableNotEngineFullPath( "sirikali_cppcryptfs.exe" ) ) ),
 	m_cppcryptfsctl( _to_native_path( engines::executableNotEngineFullPath( "cppcryptfsctl.exe" ) ) ),
 	m_cppcryptfs( QString( m_cppcryptfsctl ).replace( "cppcryptfsctl","cppcryptfs" ) ),
@@ -132,9 +135,18 @@ gocryptfs::gocryptfs() :
 {
 }
 
+gocryptfs::gocryptfs( const QString& e ) : engines::engine( _setOptions( e ) )
+{
+}
+
 #else
 
-gocryptfs::gocryptfs() : engines::engine( _setOptions() ),
+gocryptfs::gocryptfs() : engines::engine( _setOptions( "gocryptfs" ) ),
+	m_version_has_error_codes( true,*this,1,2,1 )
+{
+}
+
+gocryptfs::gocryptfs( const QString& e ) : engines::engine( _setOptions( e ) ),
 	m_version_has_error_codes( true,*this,1,2,1 )
 {
 }
@@ -160,7 +172,11 @@ static bool _set_if_found( const Function& function )
 
 bool gocryptfs::updatable() const
 {
-	if( utility::platformIsFlatPak() ){
+	if( utility::platformIsWindows() ){
+
+		return true ;
+
+	}else if( utility::platformIsFlatPak() ){
 
 		return false ;
 
@@ -174,12 +190,49 @@ bool gocryptfs::updatable() const
 
 void gocryptfs::setUpBinary( bool add,QStringList& apps,const QString& basePath ) const
 {
-	engines::engine::setUpBinary( add,apps,basePath,"gocryptfs" ) ;
+	engines::engine::setUpBinary( add,apps,basePath,this->displayName() ) ;
 }
 
 QString gocryptfs::onlineArchiveFileName() const
 {
-	return "linux-static_amd64.tar.gz" ;
+	if( utility::platformIsWindows() ){
+
+		return this->displayName().toLower() + ".exe" ;
+	}else{
+		return "linux-static_amd64.tar.gz" ;
+	}
+}
+
+QString gocryptfs::installedVersionHack( const QString& e ) const
+{	
+	if( utility::platformIsWindows() ){
+
+		QFile f( e + "/" + this->displayName().toLower() + "_version.txt" ) ;
+
+		if( f.open( QIODevice::ReadOnly ) ){
+
+			auto m = f.readAll() ;
+
+			if( !m.isEmpty() ){
+
+				return m ;
+			}
+		}
+
+		return "N/A" ;
+	}else{
+		return {} ;
+	}
+}
+
+void gocryptfs::setInstalledVersionHack( const QString& e,const QString& m ) const
+{
+	QFile f( e + "/" + this->displayName().toLower() + "_version.txt" ) ;
+
+	if( f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
+
+		f.write( m.toUtf8() ) ;
+	}
 }
 
 void gocryptfs::updateOptions( engines::engine::cmdArgsList& opt,bool creating ) const

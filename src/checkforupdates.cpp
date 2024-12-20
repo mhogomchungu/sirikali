@@ -31,7 +31,8 @@ checkUpdates::checkUpdates( QWidget * widget,checkforupdateswindow::functions ff
 	m_timeOut( settings::instance().networkTimeOut() * 1000 ),
 	m_network( m_timeOut ),
 	m_running( false ),
-	m_functions( std::move( ff ) )
+	m_functions( std::move( ff ) ),
+	m_basePath( engines::defaultBinPath() )
 {
 	m_networkRequest.setRawHeader( "Host","api.github.com" ) ;
 	m_networkRequest.setRawHeader( "Accept-Encoding","text/plain" ) ;
@@ -79,8 +80,6 @@ void checkUpdates::check()
 
 void checkUpdates::checkIfInstalled()
 {
-	auto basePath = engines::defaultBinPath() ;
-
 	auto& s = settings::instance() ;
 
 	auto m = s.internallyManageBackEnds() && utility::canDownload() ;
@@ -89,7 +88,7 @@ void checkUpdates::checkIfInstalled()
 
 	for( const auto& it : m_backends ){
 
-		it->setUpBinary( m,apps,basePath ) ;
+		it->setUpBinary( m,apps,m_basePath ) ;
 	}
 
 	if( apps.isEmpty() ){
@@ -100,7 +99,7 @@ void checkUpdates::checkIfInstalled()
 
 			for( const auto& xt : utility::asConst( apps ) ){
 
-				if( it->name() == xt ){
+				if( it->executableName() == xt ){
 
 					if( it->updatable() ){
 
@@ -131,7 +130,13 @@ void checkUpdates::run()
 
 QString checkUpdates::InstalledVersion( const engines::engine& e )
 {
-	if( e.unknown() ){
+	auto m = e.installedVersionHack( m_basePath ) ;
+
+	if( !m.isEmpty() ){
+
+		return m ;
+
+	}else if( e.unknown() ){
 
 		return utility::SiriKaliVersion() ;
 	}else{

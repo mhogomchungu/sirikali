@@ -1110,6 +1110,11 @@ bool engines::engine::known() const
 	return !this->unknown() ;
 }
 
+bool engines::engine::forUpdatingOnly() const
+{
+	return m_Options.displayName == "Cppcryptfsctl" ;
+}
+
 bool engines::engine::setsCipherPath() const
 {
 	return m_Options.setsCipherPath ;
@@ -1409,6 +1414,15 @@ engines::engine::exe_args engines::engine::unMountCommand( const engines::engine
 			return { fm,{ "-u",e.mountPath() } } ;
 		}
 	}
+}
+
+QString engines::engine::installedVersionHack( const QString& ) const
+{
+	return {} ;
+}
+
+void engines::engine::setInstalledVersionHack( const QString&,const QString& ) const
+{
 }
 
 void engines::engine::setUpBinary( bool add,
@@ -1823,6 +1837,7 @@ engines::engines()
 		m_backends.emplace_back( std::make_unique< encfs >() ) ;
 		m_backends.emplace_back( std::make_unique< sshfs >() ) ;
 		m_backends.emplace_back( std::make_unique< gocryptfs >() ) ;
+		m_backends.emplace_back( std::make_unique< gocryptfs >( "cppcryptfsctl" ) ) ;
 
 	}else if( utility::platformIsOSX() ){
 

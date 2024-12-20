@@ -92,6 +92,8 @@ private:
 	std::vector< engines::engine::Wrapper > * m_backendsInUse ;
 
 	checkforupdateswindow::functions m_functions ;
+
+	QString m_basePath ;
 } ;
 
 #else

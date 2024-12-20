@@ -1105,6 +1105,11 @@ void sirikali::setCreateMenu()
 
 	for( const auto& it : engines::instance().supportedEngines() ){
 
+		if( it->forUpdatingOnly() ){
+
+			continue ;
+		}
+
 		const auto& name = it->uiName() ;
 
 		auto ac = m->addAction( name ) ;

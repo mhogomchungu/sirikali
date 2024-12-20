@@ -59,6 +59,7 @@ public:
 			updatable( s.updatable() ),
 			executableName( s.executableName() ),
 			engineName( s.known() ? s.name() : "SiriKali" ),
+			displayName( s.displayName().isEmpty() ? engineName : s.displayName() ),
 			executableFullPath( s.executableFullPath() ),
 			url( s.releaseURL() ),
 			archiveName( s.onlineArchiveFileName() )
@@ -67,6 +68,7 @@ public:
 		bool updatable ;
 		QString executableName ;
 		QString engineName ;
+		QString displayName ;
 		QString installedVersion ;
 		QString onLineVersion ;
 		QString executableFullPath ;
@@ -85,8 +87,10 @@ private:
 	class Ctx
 	{
 	public:
-		Ctx( int row,const QString& path ) :
-			m_row( row ),m_file( std::make_unique< QFile >( path ) )
+		Ctx( int row,const QString& path,const QString& tagName ) :
+			m_row( row ),
+			m_file( std::make_unique< QFile >( path ) ),
+			m_tagName( tagName )
 		{
 		}
 		void fileClose()
@@ -101,7 +105,7 @@ private:
 		{
 			m_file->write( data ) ;
 		}
-		QString filePath()
+		QString filePath() const
 		{
 			return m_file->fileName() ;
 		}
@@ -116,13 +120,18 @@ private:
 				m_file->remove() ;
 			}
 		}
-		int row()
+		int row() const
 		{
 			return m_row ;
+		}
+		const QString& tagName() const
+		{
+			return m_tagName ;
 		}
 	private:
 		int m_row ;
 		std::unique_ptr< QFile > m_file ;
+		QString m_tagName ;
 	} ;
 	void removeExtra( int ) ;
 	void downloading( Ctx&,const utils::network::progress& ) ;
@@ -133,8 +142,14 @@ private:
 	QString tableText( int ) ;
 	QString exePath( int ) ;
 	QString exeName( int ) ;
-	void download( int,const QString&,const QString& ) ;
+	QString engineName( int ) ;
+	QString engineDisplayName( int ) ;
+	bool archivePath( const QString& ) ;
+	void download( int,const QString&,const QString&,const QString& ) ;
 	void extract( Ctx ) ;
+	void noNeedToExtract( Ctx ) ;
+	void updateComplete( const Ctx& ) ;
+	void goToNext() ;
 	void update( int ) ;
 	void closeEvent( QCloseEvent * ) override ;
 	void closeUI() ;
@@ -149,6 +164,8 @@ private:
 		opts( const checkforupdateswindow::args& e ) :
 			m_data( e.data ),
 			m_name( e.engineName ),
+			m_executableName( e.executableName ),
+			m_displayName( e.displayName ),
 			m_archiveName( e.archiveName ),
 			m_noError( e.error.isEmpty() ),
 			m_updatable( e.updatable )
@@ -162,9 +179,17 @@ private:
 		{
 			return m_name ;
 		}
+		const QString& executableName() const
+		{
+			return m_executableName ;
+		}
 		const QString& archiveName() const
 		{
 			return m_archiveName ;
+		}
+		const QString& displayName() const
+		{
+			return m_displayName ;
 		}
 		bool noError() const
 		{
@@ -177,6 +202,8 @@ private:
 	private:
 		QJsonObject m_data ;
 		QString m_name ;
+		QString m_executableName ;
+		QString m_displayName ;
 		QString m_archiveName ;
 		bool m_noError ;
 		bool m_updatable ;

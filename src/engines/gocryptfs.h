@@ -24,11 +24,17 @@ class gocryptfs : public engines::engine
 public:
 	gocryptfs() ;
 
+	gocryptfs( const QString& ) ;
+
 	bool updatable() const override ;
 
 	void setUpBinary( bool,QStringList&,const QString& ) const override ;
 
 	QString onlineArchiveFileName() const override ;
+
+	QString installedVersionHack( const QString& ) const override ;
+
+	void setInstalledVersionHack( const QString&,const QString& ) const override ;
 
 	void updateOptions( engines::engine::cmdArgsList&,bool ) const override ;
 
