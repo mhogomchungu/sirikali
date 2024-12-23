@@ -379,16 +379,7 @@ void checkforupdateswindow::updateComplete( const Ctx& ctx )
 		f.setPermissions( f.permissions() | QFileDevice::ExeOwner ) ;
 	}
 
-	const auto& engine = engines::instance().getByName( m_opts[ row ].displayName() ) ;
-
-	if( engine.unknown() ){
-
-		const auto& engine = engines::instance().getByName( m_opts[ row ].engineName() ) ;
-
-		engine.setInstalledVersionHack( m_binPath,ctx.tagName() ) ;
-	}else{
-		engine.setInstalledVersionHack( m_binPath,ctx.tagName() ) ;
-	}
+	m_opts[ row ].engine().setInstalledVersionHack( m_binPath,ctx.tagName() ) ;
 }
 
 void checkforupdateswindow::goToNext()
