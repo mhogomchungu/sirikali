@@ -722,7 +722,9 @@ public:
 
 		virtual void setUpBinary( bool,QStringList&,const QString& ) const ;
 
-		virtual QString onlineArchiveFileName() const ;
+		virtual void deleteBinPath( const QString& ) const ;
+
+		virtual bool onlineArchiveFileName( const QString& ) const ;
 
 		virtual bool updatable() const ;
 

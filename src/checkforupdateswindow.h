@@ -62,7 +62,8 @@ public:
 			displayName( s.displayName().isEmpty() ? engineName : s.displayName() ),
 			executableFullPath( s.executableFullPath() ),
 			url( s.releaseURL() ),
-			archiveName( s.onlineArchiveFileName() )
+			archiveUrl( [ &s ]( const QString& e ){ return s.onlineArchiveFileName( e ) ; } ),
+			removeExecutable( [ & ]( const QString& e ){ s.deleteBinPath( e ) ; } )
 		{
 		}
 		bool updatable ;
@@ -73,9 +74,10 @@ public:
 		QString onLineVersion ;
 		QString executableFullPath ;
 		QString url ;
-		QString archiveName ;
 		QString error ;
 		QJsonObject data ;
+		std::function< bool( const QString& ) > archiveUrl ;
+		std::function< void( const QString& ) > removeExecutable ;
 	} ;
 	void add( const checkforupdateswindow::args& e ) ;
 	void doneUpdating( bool ) ;
@@ -138,7 +140,6 @@ private:
 	void extracted( Ctx,const utils::qprocess::outPut& ) ;
 	void currentItemChanged( QTableWidgetItem * ,QTableWidgetItem * ) ;
 	void tableUpdate( int,const QString& ) ;
-	const QString& archiveName( int ) ;
 	QString tableText( int ) ;
 	QString exePath( int ) ;
 	QString exeName( int ) ;
@@ -166,7 +167,8 @@ private:
 			m_name( e.engineName ),
 			m_executableName( e.executableName ),
 			m_displayName( e.displayName ),
-			m_archiveName( e.archiveName ),
+			m_archiveUrl( e.archiveUrl ),
+			m_removeExecutable( e.removeExecutable ),
 			m_noError( e.error.isEmpty() ),
 			m_updatable( e.updatable )
 		{
@@ -187,6 +189,10 @@ private:
 		{
 			return m_archiveName ;
 		}
+		bool archiveUrl( const QString& e ) const
+		{
+			return m_archiveUrl( e ) ;
+		}
 		const QString& displayName() const
 		{
 			return m_displayName ;
@@ -199,12 +205,22 @@ private:
 		{
 			return m_updatable ;
 		}
+		void setArchiveName( const QString& e )
+		{
+			m_archiveName = e ;
+		}
+		void removeExecutable( const QString& e )
+		{
+			m_removeExecutable( e ) ;
+		}
 	private:
 		QJsonObject m_data ;
 		QString m_name ;
 		QString m_executableName ;
 		QString m_displayName ;
 		QString m_archiveName ;
+		std::function< bool( const QString& ) > m_archiveUrl ;
+		std::function< void( const QString& ) > m_removeExecutable ;
 		bool m_noError ;
 		bool m_updatable ;
 	} ;

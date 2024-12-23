@@ -24,6 +24,16 @@ class cryptomator : public engines::engine
 public:
 	cryptomator() ;
 
+	bool updatable() const override ;
+
+	bool onlineArchiveFileName( const QString& ) const override ;
+
+	void deleteBinPath( const QString& ) const override ;
+
+	void setUpBinary( bool,QStringList&,const QString& ) const override ;
+
+	void updateOptions( QStringList&,const engines::engine::cmdArgsList&,bool creating ) const override ;
+
 	engines::engine::ownsCipherFolder ownsCipherPath( const QString& cipherPath,
 							  const QString& configPath ) const override ;
 
@@ -31,5 +41,5 @@ public:
 
 	engines::engine::status passAllRequirenments( const engines::engine::cmdArgsList& opt ) const override ;
 private:
-	const engines::versionGreaterOrEqual m_version_greater_or_equal_0_4_5 ;
+	const engines::versionGreaterOrEqual m_version_greater_or_equal_0_6_0 ;
 } ;

@@ -1458,9 +1458,24 @@ void engines::engine::setUpBinary( bool,QStringList&,const QString& ) const
 {
 }
 
-QString engines::engine::onlineArchiveFileName() const
+void engines::engine::deleteBinPath( const QString& e ) const
 {
-	return {} ;
+	auto exePath = e + "/" + this->executableName() ;
+
+	if( utility::platformIsWindows() ){
+
+		exePath += ".exe" ;
+	}
+
+	if( QFile::exists( exePath ) ){
+
+		QFile::remove( exePath ) ;
+	}
+}
+
+bool engines::engine::onlineArchiveFileName( const QString& ) const
+{
+	return false ;
 }
 
 const QStringList& engines::engine::windowsUnmountCommand() const
@@ -1836,6 +1851,7 @@ engines::engines()
 		m_backends.emplace_back( std::make_unique< cryfs >() ) ;
 		m_backends.emplace_back( std::make_unique< encfs >() ) ;
 		m_backends.emplace_back( std::make_unique< sshfs >() ) ;
+		m_backends.emplace_back( std::make_unique< cryptomator >() ) ;
 		m_backends.emplace_back( std::make_unique< gocryptfs >() ) ;
 		m_backends.emplace_back( std::make_unique< gocryptfs >( "cppcryptfsctl" ) ) ;
 

@@ -193,13 +193,13 @@ void gocryptfs::setUpBinary( bool add,QStringList& apps,const QString& basePath 
 	engines::engine::setUpBinary( add,apps,basePath,this->displayName() ) ;
 }
 
-QString gocryptfs::onlineArchiveFileName() const
+bool gocryptfs::onlineArchiveFileName( const QString& e ) const
 {
 	if( utility::platformIsWindows() ){
 
-		return this->displayName().toLower() + ".exe" ;
+		return e.endsWith( this->displayName().toLower() + ".exe" ) ;
 	}else{
-		return "linux-static_amd64.tar.gz" ;
+		return e.endsWith( "linux-static_amd64.tar.gz" ) ;
 	}
 }
 

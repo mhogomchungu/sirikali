@@ -30,7 +30,7 @@ public:
 
 	void setUpBinary( bool,QStringList&,const QString& ) const override ;
 
-	QString onlineArchiveFileName() const override ;
+	bool onlineArchiveFileName( const QString& ) const override ;
 
 	QString installedVersionHack( const QString& ) const override ;
 

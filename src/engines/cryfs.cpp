@@ -118,9 +118,9 @@ void cryfs::setUpBinary( bool add,QStringList& apps,const QString& basePath ) co
 	engines::engine::setUpBinary( false,apps,basePath,"cryfs-unmount" ) ;
 }
 
-QString cryfs::onlineArchiveFileName() const
+bool cryfs::onlineArchiveFileName( const QString& ) const
 {
-	return {} ;
+	return false ;
 }
 
 engines::engine::args cryfs::command( const QByteArray& password,

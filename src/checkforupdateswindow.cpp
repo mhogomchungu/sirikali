@@ -256,11 +256,6 @@ void checkforupdateswindow::tableUpdate( int row,const QString& s )
 	}
 }
 
-const QString& checkforupdateswindow::archiveName( int row )
-{
-	return m_opts[ row ].archiveName() ;
-}
-
 QString checkforupdateswindow::tableText( int row )
 {
 	return m_ui->tableWidget->item( row,0 )->text() ;
@@ -391,12 +386,7 @@ void checkforupdateswindow::extract( Ctx ctx )
 
 		m_ui->pbOK->setEnabled( true ) ;
 	}else{
-		auto exePath = this->exePath( row ) ;
-
-		if( QFile::exists( exePath ) ){
-
-			QFile::remove( exePath ) ;
-		}
+		m_opts[ row ].removeExecutable( m_binPath ) ;
 
 		auto args = QStringList{ "-x","-f",ctx.filePath(),"-C",m_binPath } ;
 
@@ -496,18 +486,21 @@ void checkforupdateswindow::update( int row )
 
 		auto tag_name = m_opts[ row ].data().value( "tag_name" ).toString() ;
 
-		const auto& name = this->archiveName( row ) ;
-
 		for( const auto& it : array ){
 
 			auto obj = it.toObject() ;
 
 			auto url = obj.value( "browser_download_url" ).toString() ;
 
-			if( url.endsWith( name ) ){
+			if( m_opts[ row ].archiveUrl( url ) ){
 
-				return this->download( row,url,name,tag_name ) ;
+				auto m = obj.value( "name" ).toString() ;
+
+				m_opts[ row ].setArchiveName( m ) ;
+
+				return this->download( row,url,m,tag_name ) ;
 			}
+
 		}
 
 		auto mm = tr( "Failed To Find Archive To Download" ) ;

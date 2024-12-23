@@ -104,17 +104,17 @@ void securefs::setUpBinary( bool add,QStringList& apps,const QString& basePath )
 	engines::engine::setUpBinary( add,apps,basePath,"securefs" ) ;
 }
 
-QString securefs::onlineArchiveFileName() const
+bool securefs::onlineArchiveFileName( const QString& e ) const
 {
 	if( utility::platformIsLinux() ){
 
-		return "securefs-linux-amd64-release.zip" ;
+		return e.endsWith( "securefs-linux-amd64-release.zip" ) ;
 
 	}else if( utility::platformIsWindows() ){
 
-		return "securefs-windows-amd64-release.zip" ;
+		return e.endsWith( "securefs-windows-amd64-release.zip" ) ;
 	}else{
-		return "securefs-macos-amd64-release.zip" ;
+		return e.endsWith( "securefs-macos-amd64-release.zip" ) ;
 	}
 }
 

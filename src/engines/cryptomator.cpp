@@ -25,6 +25,8 @@
 
 #include "../crypto.h"
 
+#include "../utils/threads.hpp"
+
 static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
@@ -49,40 +51,112 @@ static engines::engine::BaseOptions _setOptions()
 	s.setsCipherPath        = true ;
 	s.acceptsSubType        = true ;
 	s.acceptsVolName        = false ;
-	s.releaseURL            = "https://api.github.com/repos/mhogomchungu/cli/releases" ;
+	s.releaseURL            = "https://api.github.com/repos/cryptomator/cli/releases" ;
 	s.passwordFormat        = "" ;
 	s.configFileArgument    = "" ;
 	s.keyFileArgument       = "" ;
 
 	s.incorrectPasswordText    = QStringList{ "InvalidPassphraseException" } ;
-	s.executableNames          = QStringList{ "cryptomator-cli","cryptomator-cli.jar" } ;
 	s.volumePropertiesCommands = QStringList{} ;
-	s.windowsUnMountCommand    = QStringList{} ;
-	s.configFileNames          = QStringList{ "masterkey.cryptomator" } ;
+	s.windowsUnMountCommand    = QStringList{ "sirikali.exe", "-T","%{PID}" } ;
+	s.configFileNames          = QStringList{ "vault.cryptomator" } ;
 	s.fuseNames                = QStringList{ "fuse.cryptomator" } ;
 	s.names                    = QStringList{ "cryptomator" } ;
 	s.failedToMountList        = QStringList{ " ERROR ","Exception","fuse: unknown option" } ;
-	s.successfulMountedList    = QStringList{ "Mounted to" } ;
+	s.successfulMountedList    = QStringList{ "Unlocked and mounted vault successfully" } ;
 	s.notFoundCode             = engines::engine::status::engineExecutableNotFound ;
 	s.versionInfo              = { { "--version",true,0,0 } } ;
-	s.versionMinimum           = "0.4.5" ;
+	s.versionMinimum           = "0.6.0" ;
 
-	s.mountControlStructure    = "--foreground --vault %{cipherFolder} --fusemount %{mountPoint} --mountFlags %{fuseOpts}" ;
 	s.createControlStructure   = "" ;
+
+	QString m = "unlock --password:stdin --mounter=%1 --mountPoint %{mountPoint} %{cipherFolder}" ;
+
+	if( utility::platformIsWindows() ){
+
+		s.mountControlStructure = m.arg( "org.cryptomator.frontend.fuse.mount.WinFspMountProvider" ) ;
+
+		s.executableNames       = QStringList{ "cryptomator-cli" } ;
+	}else{
+		s.mountControlStructure = m.arg( "org.cryptomator.frontend.fuse.mount.LinuxFuseMountProvider" ) ;
+
+		s.executableNames       = QStringList{ "cryptomator-cli" } ;
+	}
 
 	return s ;
 }
 
 cryptomator::cryptomator() :
 	engines::engine( _setOptions() ),
-	m_version_greater_or_equal_0_4_5( false,*this,this->minimumVersion() )
+	m_version_greater_or_equal_0_6_0( false,*this,this->minimumVersion() )
 {
+}
+
+bool cryptomator::updatable() const
+{
+	if( utility::platformIsWindows() ){
+
+		return true ;
+	}else{
+		return false ;
+	}
+}
+
+void cryptomator::deleteBinPath( const QString& e ) const
+{
+	auto m = e + "/cryptomator-cli" ;
+
+	if( QFile::exists( e ) ){
+
+		auto p = m + ".old" ;
+
+		QDir().rename( m,p ) ;
+
+		utils::qthread::run( [ p ](){
+
+			QDir( p ).removeRecursively() ;
+		} ) ;
+	}
+}
+
+bool cryptomator::onlineArchiveFileName( const QString& e ) const
+{
+	if( utility::platformIsLinux() ){
+
+		return false ;
+
+	}else if( utility::platformIsWindows() ){
+
+		return e.endsWith( "win-x64.zip" ) ;
+	}else{
+		return false ;
+	}
+}
+
+void cryptomator::setUpBinary( bool add,QStringList& apps,const QString& basePath ) const
+{
+	engines::engine::setUpBinary( add,apps,basePath,"cryptomator-cli" ) ;
+}
+
+void cryptomator::updateOptions( QStringList& opts,const engines::engine::cmdArgsList&,bool ) const
+{
+	for( int i = 0 ; i < opts.size() ; i++ ){
+
+		if( opts[ i ] == "--mountPoint" && i + 1 < opts.size() ){
+
+			opts[ i ] += "=" + opts[ i + 1 ] ;
+
+			opts.removeAt( i + 1 ) ;
+
+			break ;
+		}
+	}
 }
 
 engines::engine::ownsCipherFolder cryptomator::ownsCipherPath( const QString& cipherPath,
 							       const QString& configPath ) const
 {
-	bool s = utility::pathExists( cipherPath + "/masterkey.cryptomator" ) ;
+	bool s = utility::pathExists( cipherPath + "/vault.cryptomator" ) ;
 
 	return { s,cipherPath,configPath } ;
 }
@@ -103,7 +177,7 @@ void cryptomator::GUIMountOptions( const engines::engine::mountGUIOptions& s ) c
 
 engines::engine::status cryptomator::passAllRequirenments( const engines::engine::cmdArgsList& opt ) const
 {
-	if( m_version_greater_or_equal_0_4_5 ){
+	if( m_version_greater_or_equal_0_6_0 ){
 
 		return engines::engine::passAllRequirenments( opt ) ;
 	}else{
