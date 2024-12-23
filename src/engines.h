@@ -720,9 +720,13 @@ public:
 
 		virtual void setInstalledVersionHack( const QString&,const QString& ) const ;
 
+		virtual QString setExecutablePermissions( const QString& ) const ;
+
 		virtual void setUpBinary( bool,QStringList&,const QString& ) const ;
 
 		virtual void deleteBinPath( const QString& ) const ;
+
+		virtual void removeExtraFiles( const QString& ) const ;
 
 		virtual bool onlineArchiveFileName( const QString& ) const ;
 

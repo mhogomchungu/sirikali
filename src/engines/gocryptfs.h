@@ -32,6 +32,8 @@ public:
 
 	bool onlineArchiveFileName( const QString& ) const override ;
 
+	void removeExtraFiles( const QString& ) const override ;
+
 	QString installedVersionHack( const QString& ) const override ;
 
 	void setInstalledVersionHack( const QString&,const QString& ) const override ;

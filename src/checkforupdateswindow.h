@@ -35,6 +35,8 @@
 #include "utils/network_access_manager.hpp"
 #include "utils/qprocess.hpp"
 
+#include "engines.h"
+
 namespace Ui {
 class checkforupdateswindow;
 }
@@ -52,34 +54,19 @@ public:
 		return *( new checkforupdateswindow( parent,function,nm ) ) ;
 	}
 	checkforupdateswindow( QWidget * parent,functions&,utils::network::manager& ) ;
+
 	struct args
 	{
-		template< typename Engine >
-		args( const Engine& s )  :
-			updatable( s.updatable() ),
-			executableName( s.executableName() ),
-			engineName( s.known() ? s.name() : "SiriKali" ),
-			displayName( s.displayName().isEmpty() ? engineName : s.displayName() ),
-			executableFullPath( s.executableFullPath() ),
-			url( s.releaseURL() ),
-			archiveUrl( [ &s ]( const QString& e ){ return s.onlineArchiveFileName( e ) ; } ),
-			removeExecutable( [ & ]( const QString& e ){ s.deleteBinPath( e ) ; } )
+		args( const engines::engine& s ) : engine( &s )
 		{
 		}
-		bool updatable ;
-		QString executableName ;
-		QString engineName ;
-		QString displayName ;
 		QString installedVersion ;
 		QString onLineVersion ;
-		QString executableFullPath ;
-		QString url ;
 		QString error ;
 		QJsonObject data ;
-		std::function< bool( const QString& ) > archiveUrl ;
-		std::function< void( const QString& ) > removeExecutable ;
+		const engines::engine * engine ;
 	} ;
-	void add( const checkforupdateswindow::args& e ) ;
+	void add( const checkforupdateswindow::args& ) ;
 	void doneUpdating( bool ) ;
 	void Show() ;
 	~checkforupdateswindow() ;
@@ -141,10 +128,6 @@ private:
 	void currentItemChanged( QTableWidgetItem * ,QTableWidgetItem * ) ;
 	void tableUpdate( int,const QString& ) ;
 	QString tableText( int ) ;
-	QString exePath( int ) ;
-	QString exeName( int ) ;
-	QString engineName( int ) ;
-	QString engineDisplayName( int ) ;
 	bool archivePath( const QString& ) ;
 	void download( int,const QString&,const QString&,const QString& ) ;
 	void extract( Ctx ) ;
@@ -163,66 +146,45 @@ private:
 	{
 	public:
 		opts( const checkforupdateswindow::args& e ) :
-			m_data( e.data ),
-			m_name( e.engineName ),
-			m_executableName( e.executableName ),
-			m_displayName( e.displayName ),
-			m_archiveUrl( e.archiveUrl ),
-			m_removeExecutable( e.removeExecutable ),
-			m_noError( e.error.isEmpty() ),
-			m_updatable( e.updatable )
+			m_data( std::move( e.data ) ),
+			m_engine( e.engine ),
+			m_noError( e.error.isEmpty() )
 		{
 		}
 		const QJsonObject& data() const
 		{
 			return m_data ;
 		}
-		const QString& name() const
+		const engines::engine& engine() const
 		{
-			return m_name ;
-		}
-		const QString& executableName() const
-		{
-			return m_executableName ;
-		}
-		const QString& archiveName() const
-		{
-			return m_archiveName ;
-		}
-		bool archiveUrl( const QString& e ) const
-		{
-			return m_archiveUrl( e ) ;
-		}
-		const QString& displayName() const
-		{
-			return m_displayName ;
+			return *m_engine ;
 		}
 		bool noError() const
 		{
 			return m_noError ;
 		}
-		bool updatable() const
+		QString engineName() const
 		{
-			return m_updatable ;
+			if( m_engine->known() ){
+
+				return m_engine->name() ;
+			}else{
+				return "SiriKali" ;
+			}
 		}
-		void setArchiveName( const QString& e )
+		QString	displayName() const
 		{
-			m_archiveName = e ;
-		}
-		void removeExecutable( const QString& e )
-		{
-			m_removeExecutable( e ) ;
+			if( m_engine->displayName().isEmpty() ){
+
+				return this->engineName() ;
+			}else{
+				return m_engine->displayName() ;
+			}
 		}
 	private:
 		QJsonObject m_data ;
-		QString m_name ;
-		QString m_executableName ;
-		QString m_displayName ;
-		QString m_archiveName ;
-		std::function< bool( const QString& ) > m_archiveUrl ;
-		std::function< void( const QString& ) > m_removeExecutable ;
+		const engines::engine * m_engine ;
 		bool m_noError ;
-		bool m_updatable ;
 	} ;
 
 	class locale

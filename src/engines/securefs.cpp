@@ -104,6 +104,16 @@ void securefs::setUpBinary( bool add,QStringList& apps,const QString& basePath )
 	engines::engine::setUpBinary( add,apps,basePath,"securefs" ) ;
 }
 
+void securefs::removeExtraFiles( const QString& e ) const
+{
+	auto m = e + "/securefs.sig" ;
+
+	if( QFile::exists( m ) ){
+
+		QFile::remove( m ) ;
+	}
+}
+
 bool securefs::onlineArchiveFileName( const QString& e ) const
 {
 	if( utility::platformIsLinux() ){

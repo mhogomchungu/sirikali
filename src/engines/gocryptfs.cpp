@@ -203,6 +203,30 @@ bool gocryptfs::onlineArchiveFileName( const QString& e ) const
 	}
 }
 
+static void _remove()
+{
+}
+
+template< typename T,typename ... E >
+static void _remove( const T& t,E&& ... e )
+{
+	if( QFile::exists( t ) ){
+
+		QFile::remove( t ) ;
+	}
+
+	_remove( std::forward< E >( e ) ... ) ;
+}
+
+void gocryptfs::removeExtraFiles( const QString& e ) const
+{
+	auto a = e + "gocryptfs.1" ;
+	auto b = e + "gocryptfs-xray" ;
+	auto c = e + "gocryptfs-xray.1" ;
+
+	_remove( a,b,c ) ;
+}
+
 QString gocryptfs::installedVersionHack( const QString& e ) const
 {	
 	if( utility::platformIsWindows() ){
@@ -227,11 +251,14 @@ QString gocryptfs::installedVersionHack( const QString& e ) const
 
 void gocryptfs::setInstalledVersionHack( const QString& e,const QString& m ) const
 {
-	QFile f( e + "/" + this->displayName().toLower() + "_version.txt" ) ;
+	if( utility::platformIsWindows() ){
 
-	if( f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
+		QFile f( e + "/" + this->displayName().toLower() + "_version.txt" ) ;
 
-		f.write( m.toUtf8() ) ;
+		if( f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
+
+			f.write( m.toUtf8() ) ;
+		}
 	}
 }
 

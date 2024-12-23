@@ -1425,6 +1425,22 @@ void engines::engine::setInstalledVersionHack( const QString&,const QString& ) c
 {
 }
 
+QString engines::engine::setExecutablePermissions( const QString& e ) const
+{
+	auto m = e + this->executableName() ;
+
+	if( utility::platformIsNOTWindows() ){
+
+		QFile f( m ) ;
+
+		f.setPermissions( f.permissions() | QFileDevice::ExeOwner ) ;
+	}else{
+		m += ".exe" ;
+	}
+
+	return m ;
+}
+
 void engines::engine::setUpBinary( bool add,
 				   QStringList& apps,
 				   const QString& basePath,
@@ -1471,6 +1487,10 @@ void engines::engine::deleteBinPath( const QString& e ) const
 
 		QFile::remove( exePath ) ;
 	}
+}
+
+void engines::engine::removeExtraFiles( const QString& ) const
+{
 }
 
 bool engines::engine::onlineArchiveFileName( const QString& ) const

@@ -23,8 +23,6 @@
 #include <QDebug>
 #include <QTextEdit>
 
-#include "engines.h"
-
 #include "settings.h"
 
 checkforupdateswindow::checkforupdateswindow( QWidget * parent,
@@ -69,7 +67,7 @@ checkforupdateswindow::checkforupdateswindow( QWidget * parent,
 
 			auto ac = m.addAction( tr( "Update" ) ) ;
 
-			if( m_opts[ row ].updatable() && u ){
+			if( m_opts[ row ].engine().updatable() && u ){
 
 				ac->setEnabled( true ) ;
 
@@ -93,18 +91,18 @@ checkforupdateswindow::checkforupdateswindow( QWidget * parent,
 		 &checkforupdateswindow::currentItemChanged ) ;
 }
 
-void checkforupdateswindow::add( const checkforupdateswindow::args& e )
+void checkforupdateswindow::add( const checkforupdateswindow::args& s )
 {
-	auto txt = e.displayName ;
+	m_opts.emplace_back( s ) ;
 
-	m_opts.emplace_back( e ) ;
+	auto txt = m_opts.back().displayName() ;
 
-	if( e.error.isEmpty() ){
+	if( s.error.isEmpty() ){
 
-		txt += "\n" + tr( "Installed Version: %1" ).arg( e.installedVersion ) ;
-		txt += "\n" + tr( "Latest Version: %1 " ).arg( e.onLineVersion ) ;
+		txt += "\n" + tr( "Installed Version: %1" ).arg( s.installedVersion ) ;
+		txt += "\n" + tr( "Latest Version: %1 " ).arg( s.onLineVersion ) ;
 	}else{
-		txt += "\n" + e.error ;
+		txt += "\n" + s.error ;
 	}
 
 	auto row = m_ui->tableWidget->rowCount() ;
@@ -145,22 +143,7 @@ checkforupdateswindow::~checkforupdateswindow()
 
 void checkforupdateswindow::removeExtra( int row )
 {
-	auto filters = QDir::Filter::Files | QDir::Filter::NoDotAndDotDot ;
-
-	const auto m = QDir( m_binPath ).entryList( filters ) ;
-
-	auto name = this->exeName( row ) ;
-
-	for( const auto& it : m ){
-
-		if( it.startsWith( name ) ){
-
-			if( it != name ){
-
-				QFile::remove( m_binPath + it ) ;
-			}
-		}
-	}	
+	m_opts[ row ].engine().removeExtraFiles( m_binPath ) ;
 }
 
 void checkforupdateswindow::downloading( Ctx& ctx,const utils::network::progress& p )
@@ -175,7 +158,7 @@ void checkforupdateswindow::downloading( Ctx& ctx,const utils::network::progress
 
 			auto mm = this->tableText( row ) ;
 
-			const auto& ee = m_opts[ row ].name() ;
+			const auto& ee = m_opts[ row ].engineName() ;
 
 			mm.replace( tr( "Downloading %1" ).arg( ee ),"" ) ;
 
@@ -261,34 +244,9 @@ QString checkforupdateswindow::tableText( int row )
 	return m_ui->tableWidget->item( row,0 )->text() ;
 }
 
-QString checkforupdateswindow::exePath( int row )
-{
-	return m_binPath + this->exeName( row ) ;
-}
-
-QString checkforupdateswindow::exeName( int row )
-{
-	if( utility::platformIsWindows() ){
-
-		return m_opts[ row ].executableName().toLower() + ".exe" ;
-	}else{
-		return m_opts[ row ].executableName().toLower() ;
-	}
-}
-
-QString checkforupdateswindow::engineName( int row )
-{
-	return m_opts[ row ].name() ;
-}
-
-QString checkforupdateswindow::engineDisplayName( int row )
-{
-	return m_opts[ row ].displayName() ;
-}
-
 bool checkforupdateswindow::archivePath( const QString& e )
 {
-	return e.endsWith( ".zip" ) ;
+	return e.endsWith( ".zip" ) || e.endsWith( ".gz" ) ;
 }
 
 QNetworkRequest checkforupdateswindow::networkRequest( const QString& url )
@@ -386,7 +344,7 @@ void checkforupdateswindow::extract( Ctx ctx )
 
 		m_ui->pbOK->setEnabled( true ) ;
 	}else{
-		m_opts[ row ].removeExecutable( m_binPath ) ;
+		m_opts[ row ].engine().deleteBinPath( m_binPath ) ;
 
 		auto args = QStringList{ "-x","-f",ctx.filePath(),"-C",m_binPath } ;
 
@@ -406,26 +364,26 @@ void checkforupdateswindow::updateComplete( const Ctx& ctx )
 	int row = ctx.row() ;
 	const auto& exePath = ctx.filePath() ;
 
-	QFile f( exePath ) ;
-
-	f.setPermissions( f.permissions() | QFileDevice::ExeOwner ) ;
-
 	auto m = QObject::tr( "Update Complete" ) ;
 
 	if( this->archivePath( exePath ) ){
 
-		auto s = m_binPath + this->exeName( row ) ;
+		auto e = m_opts[ row ].engine().setExecutablePermissions( m_binPath ) ;
 
-		this->tableUpdate( row,m + "\n" + s ) ;
+		this->tableUpdate( row,m + "\n" + e ) ;
 	}else{
 		this->tableUpdate( row,m + "\n" + exePath ) ;
+
+		QFile f( exePath ) ;
+
+		f.setPermissions( f.permissions() | QFileDevice::ExeOwner ) ;
 	}
 
-	const auto& engine = engines::instance().getByName( this->engineDisplayName( row ) ) ;
+	const auto& engine = engines::instance().getByName( m_opts[ row ].displayName() ) ;
 
 	if( engine.unknown() ){
 
-		const auto& engine = engines::instance().getByName( this->engineName( row ) ) ;
+		const auto& engine = engines::instance().getByName( m_opts[ row ].engineName() ) ;
 
 		engine.setInstalledVersionHack( m_binPath,ctx.tagName() ) ;
 	}else{
@@ -492,15 +450,12 @@ void checkforupdateswindow::update( int row )
 
 			auto url = obj.value( "browser_download_url" ).toString() ;
 
-			if( m_opts[ row ].archiveUrl( url ) ){
+			if( m_opts[ row ].engine().onlineArchiveFileName( url ) ){
 
 				auto m = obj.value( "name" ).toString() ;
 
-				m_opts[ row ].setArchiveName( m ) ;
-
 				return this->download( row,url,m,tag_name ) ;
 			}
-
 		}
 
 		auto mm = tr( "Failed To Find Archive To Download" ) ;
