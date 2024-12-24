@@ -32,6 +32,10 @@ public:
 
 	void setUpBinary( bool,QStringList&,const QString& ) const override ;
 
+	QString setExecutablePermissions( const QString& ) const override ;
+
+	engines::engine::args command( const QByteArray&,const engines::engine::cmdArgsList&,bool ) const override ;
+
 	void updateOptions( QStringList&,const engines::engine::cmdArgsList&,bool creating ) const override ;
 
 	engines::engine::ownsCipherFolder ownsCipherPath( const QString& cipherPath,

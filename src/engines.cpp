@@ -162,14 +162,37 @@ static bool _has_no_extension( const QString& e )
 	return !e.contains( '.' ) ;
 }
 
+static QStringList _addBinPaths()
+{
+	const auto m = engines::defaultBinPath() ;
+
+	QStringList s ;
+
+	s.append( m ) ;
+
+	const auto a = QDir( m ).entryList( QDir::Filter::Dirs | QDir::Filter::NoDotAndDotDot ) ;
+
+	for( const auto& it : a ){
+
+		s.append( m + "/" + it ) ;
+		s.append( m + "/" + it + "/bin/" ) ;
+		s.append( m + "/" + it + "/bin/" ) ;
+	}
+
+	return s ;
+}
+
 template< typename Function >
 static QString _executableFullPath( const QString& f,Function function )
 {
 	if( utility::platformIsFlatPak() ){
 
-		auto m = settings::instance().flatpakIntance().globalBinPath() ;
+		if( QFile::exists( "/app/bin/" + f ) ){
 
-		return m + "/" + f ;
+			auto m = settings::instance().flatpakIntance().globalBinPath() ;
+
+			return m + "/" + f ;
+		}
 	}
 
 	if( utility::platformIsWindows() ){
@@ -201,15 +224,21 @@ static QString _executableFullPath( const QString& f,Function function )
 
 	auto list = function() ;	
 
-	if( utility::platformIsLinux() ){
+	if( utility::platformIsFlatPak() ){
+
+		list = _addBinPaths() ;
+
+	}else if( utility::platformIsLinux() ){
 
 		if( settings::instance().internallyManageBackEnds() ){
 
-			list.prepend( engines::defaultBinPath() ) ;
+			list = _addBinPaths() + list ;
 		}
 	}else{
-		list.prepend( engines::defaultBinPath() ) ;
+		list = _addBinPaths() + list ;
 	}
+
+	QFileInfo fileInfo ;
 
 	for( const auto& it : utility::asConst( list ) ){
 
@@ -219,14 +248,18 @@ static QString _executableFullPath( const QString& f,Function function )
 
 				exe = it + e ;
 
-				if( QFile::exists( exe ) ){
+				fileInfo.setFile( exe ) ;
+
+				if( fileInfo.exists() && fileInfo.isFile() ){
 
 					return exe ;
 				}
 			}else{
 				exe = it + "/" + e ;
 
-				if( QFile::exists( exe ) ){
+				fileInfo.setFile( exe ) ;
+
+				if( fileInfo.exists() && fileInfo.isFile() ){
 
 					return exe ;
 				}
@@ -1881,22 +1914,22 @@ engines::engines()
 		m_backends.emplace_back( std::make_unique< cryfs >() ) ;
 		m_backends.emplace_back( std::make_unique< gocryptfs >() ) ;
 		m_backends.emplace_back( std::make_unique< encfs >() ) ;
-	}else{
-		if( utility::platformIsFlatPak() ){
 
-			m_backends.emplace_back( std::make_unique< securefs >() ) ;
-			m_backends.emplace_back( std::make_unique< cryfs >() ) ;
-			m_backends.emplace_back( std::make_unique< gocryptfs >() ) ;
-		}else{
-			m_backends.emplace_back( std::make_unique< securefs >() ) ;
-			m_backends.emplace_back( std::make_unique< cryfs >() ) ;
-			m_backends.emplace_back( std::make_unique< gocryptfs >() ) ;
-			m_backends.emplace_back( std::make_unique< encfs >() ) ;
-			m_backends.emplace_back( std::make_unique< ecryptfs >() ) ;
-			m_backends.emplace_back( std::make_unique< sshfs >() ) ;
-			m_backends.emplace_back( std::make_unique< fscrypt >() ) ;
-			m_backends.emplace_back( std::make_unique< cryptomator >() ) ;
-		}
+	}else if( utility::platformIsFlatPak() ){
+
+		m_backends.emplace_back( std::make_unique< securefs >() ) ;
+		m_backends.emplace_back( std::make_unique< cryfs >() ) ;
+		m_backends.emplace_back( std::make_unique< gocryptfs >() ) ;
+		m_backends.emplace_back( std::make_unique< cryptomator >() ) ;
+	}else{
+		m_backends.emplace_back( std::make_unique< securefs >() ) ;
+		m_backends.emplace_back( std::make_unique< cryfs >() ) ;
+		m_backends.emplace_back( std::make_unique< gocryptfs >() ) ;
+		m_backends.emplace_back( std::make_unique< encfs >() ) ;
+		m_backends.emplace_back( std::make_unique< ecryptfs >() ) ;
+		m_backends.emplace_back( std::make_unique< sshfs >() ) ;
+		m_backends.emplace_back( std::make_unique< fscrypt >() ) ;
+		//m_backends.emplace_back( std::make_unique< cryptomator >() ) ;
 	}
 
 	custom::addEngines( m_backends ) ;

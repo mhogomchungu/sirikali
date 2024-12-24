@@ -67,20 +67,20 @@ static engines::engine::BaseOptions _setOptions()
 	s.notFoundCode             = engines::engine::status::engineExecutableNotFound ;
 	s.versionInfo              = { { "--version",true,0,0 } } ;
 	s.versionMinimum           = "0.6.0" ;
-
 	s.createControlStructure   = "" ;
+	s.executableNames          = QStringList{ "cryptomator-cli" } ;
 
 	QString m = "unlock --password:stdin --mounter=%1 --mountPoint %{mountPoint} %{cipherFolder}" ;
 
 	if( utility::platformIsWindows() ){
 
-		s.mountControlStructure = m.arg( "org.cryptomator.frontend.fuse.mount.WinFspMountProvider" ) ;
+		auto a = "org.cryptomator.frontend.fuse.mount.WinFspMountProvider" ;
 
-		s.executableNames       = QStringList{ "cryptomator-cli" } ;
+		s.mountControlStructure = m.arg( a ) ;
 	}else{
-		s.mountControlStructure = m.arg( "org.cryptomator.frontend.fuse.mount.LinuxFuseMountProvider" ) ;
+		auto a = "org.cryptomator.frontend.fuse.mount.LinuxFuseMountProvider" ;
 
-		s.executableNames       = QStringList{ "cryptomator-cli" } ;
+		s.mountControlStructure = m.arg( a ) ;
 	}
 
 	return s ;
@@ -123,7 +123,7 @@ bool cryptomator::onlineArchiveFileName( const QString& e ) const
 {
 	if( utility::platformIsLinux() ){
 
-		return false ;
+		return e.endsWith( "linux-x64.zip" ) ;
 
 	}else if( utility::platformIsWindows() ){
 
@@ -136,6 +136,46 @@ bool cryptomator::onlineArchiveFileName( const QString& e ) const
 void cryptomator::setUpBinary( bool add,QStringList& apps,const QString& basePath ) const
 {
 	engines::engine::setUpBinary( add,apps,basePath,"cryptomator-cli" ) ;
+}
+
+QString cryptomator::setExecutablePermissions( const QString& e ) const
+{
+	if( utility::platformIsNOTWindows() ){
+
+		if( QFile::exists( e + "/target" ) ){
+
+			QDir().rename( e + "/target/cryptomator-cli",e + "/cryptomator-cli" ) ;
+
+			QDir( e + "/target" ).removeRecursively() ;
+		}
+
+		auto m = e + "/cryptomator-cli/bin/cryptomator-cli" ;
+
+		QFile f( m ) ;
+
+		f.setPermissions( f.permissions() | QFileDevice::ExeOwner ) ;
+
+		return m ;
+	}else{
+		return e + "/cryptomator-cli/cryptomator-cli.exe" ;
+	}
+}
+
+engines::engine::args cryptomator::command( const QByteArray& password,const cmdArgsList& args,bool create ) const
+{
+	if( utility::platformIsFlatPak() ){
+
+		auto m = engines::engine::command( password,args,create ) ;
+
+		m.cmd_args.prepend( m.cmd ) ;
+		m.cmd_args.prepend( "--host" ) ;
+
+		m.cmd = "flatpak-spawn" ;
+
+		return m ;
+	}else{
+		return engines::engine::command( password,args,create ) ;
+	}
 }
 
 void cryptomator::updateOptions( QStringList& opts,const engines::engine::cmdArgsList&,bool ) const
