@@ -85,15 +85,20 @@ securefs::securefs() :
 {
 }
 
-bool securefs::updatable() const
+bool securefs::updatable( bool s ) const
 {
-	if( utility::platformIsFlatPak() ){
+	if( s ){
 
-		return false ;
+		if( utility::platformIsFlatPak() ){
 
-	}else if( utility::canDownload( utility::arch::x64 ) ){
+			return false ;
 
-		return utility::platformIsLinux() || utility::platformIsWindows() ;
+		}else if( utility::canDownload( utility::arch::x64 ) ){
+
+			return utility::platformIsLinux() || utility::platformIsWindows() ;
+		}else{
+			return false ;
+		}
 	}else{
 		return false ;
 	}

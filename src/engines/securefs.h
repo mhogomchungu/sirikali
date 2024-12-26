@@ -24,7 +24,7 @@ class securefs : public engines::engine
 public:
 	securefs() ;
 
-	bool updatable() const override ;
+	bool updatable( bool ) const override ;
 
 	void setUpBinary( bool,QStringList&,const QString& ) const override ;
 

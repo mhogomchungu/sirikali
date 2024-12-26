@@ -169,19 +169,24 @@ static bool _set_if_found( const Function& function )
 	return false ;
 }
 
-bool gocryptfs::updatable() const
+bool gocryptfs::updatable( bool s ) const
 {
-	if( utility::platformIsWindows() ){
+	if( s ){
 
-		return true ;
+		if( utility::platformIsWindows() ){
 
-	}else if( utility::platformIsFlatPak() ){
+			return true ;
 
-		return false ;
+		}else if( utility::platformIsFlatPak() ){
 
-	}else if( utility::canDownload() ){
+			return false ;
 
-		return utility::platformIsLinux() ;
+		}else if( utility::canDownload() ){
+
+			return utility::platformIsLinux() ;
+		}else{
+			return false ;
+		}
 	}else{
 		return false ;
 	}

@@ -94,11 +94,20 @@ cryptomator::cryptomator() :
 {
 }
 
-bool cryptomator::updatable() const
+bool cryptomator::updatable( bool s ) const
 {
-	if( utility::platformIsWindows() || utility::platformIsFlatPak() ){
+	if( utility::platformIsFlatPak() ){
 
 		return true ;
+
+	}else if( s ){
+
+		if( utility::platformIsWindows() ){
+
+			return true ;
+		}else{
+			return false ;
+		}
 	}else{
 		return false ;
 	}
@@ -142,7 +151,11 @@ bool cryptomator::enginesMatch( const QString& e ) const
 
 void cryptomator::setUpBinary( bool add,QStringList& apps,const QString& basePath ) const
 {
-	engines::engine::setUpBinary( add,apps,basePath,"cryptomator-cli" ) ;
+	Q_UNUSED( add )
+	Q_UNUSED( apps )
+	Q_UNUSED( basePath )
+
+	//engines::engine::setUpBinary( add,apps,basePath,"cryptomator-cli" ) ;
 }
 
 QString cryptomator::setExecutablePermissions( const QString& e ) const

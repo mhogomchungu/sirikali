@@ -26,7 +26,7 @@ public:
 
 	gocryptfs( const QString& ) ;
 
-	bool updatable() const override ;
+	bool updatable( bool ) const override ;
 
 	void setUpBinary( bool,QStringList&,const QString& ) const override ;
 

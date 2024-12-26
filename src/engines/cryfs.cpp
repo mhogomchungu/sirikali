@@ -107,7 +107,7 @@ cryfs::cryfs() :
 {
 }
 
-bool cryfs::updatable() const
+bool cryfs::updatable( bool ) const
 {
 	return false ;
 }

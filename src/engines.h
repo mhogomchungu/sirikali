@@ -734,7 +734,7 @@ public:
 
 		virtual void changeEnvironment( const QString&,const QStringList& ) const ;
 
-		virtual bool updatable() const ;
+		virtual bool updatable( bool ) const ;
 
 		virtual const QStringList& windowsUnmountCommand() const ;
 

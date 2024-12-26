@@ -99,7 +99,7 @@ void checkUpdates::checkIfInstalled()
 
 			for( const auto& xt : utility::asConst( apps ) ){
 
-				if( it->enginesMatch( xt ) && it->updatable() ){
+				if( it->enginesMatch( xt ) && it->updatable( m ) ){
 
 					m_backendsInstallable.emplace_back( it ) ;
 				}

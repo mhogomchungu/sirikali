@@ -67,7 +67,7 @@ checkforupdateswindow::checkforupdateswindow( QWidget * parent,
 
 			auto ac = m.addAction( tr( "Update" ) ) ;
 
-			if( m_opts[ row ].engine().updatable() && u ){
+			if( m_opts[ row ].engine().updatable( u ) ){
 
 				ac->setEnabled( true ) ;
 

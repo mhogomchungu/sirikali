@@ -1101,8 +1101,6 @@ void sirikali::setCreateMenu()
 
 	connect( m,&QMenu::triggered,this,&sirikali::createVolume ) ;
 
-	auto e = settings::instance().internallyManageBackEnds() ;
-
 	for( const auto& it : engines::instance().supportedEngines() ){
 
 		if( it->forUpdatingOnly() ){
@@ -1118,20 +1116,13 @@ void sirikali::setCreateMenu()
 
 		if( it->isNotInstalled() ){
 
-			if( it->updatable() && e ){
+			ac->setEnabled( false ) ;
 
-				it->updateExecutableFullPath() ;
+			if( name == "Ecryptfs" ){
 
-				ac->setEnabled( true ) ;
+				ac->setText( tr( "%1 Is Not Installed" ).arg( "Ecryptfs-simple" ) ) ;
 			}else{
-				ac->setEnabled( false ) ;
-
-				if( name == "Ecryptfs" ){
-
-					ac->setText( tr( "%1 Is Not Installed" ).arg( "Ecryptfs-simple" ) ) ;
-				}else{
-					ac->setText( tr( "%1 Is Not Installed" ).arg( name ) ) ;
-				}
+				ac->setText( tr( "%1 Is Not Installed" ).arg( name ) ) ;
 			}
 		}else{
 			if( it->likeSsh() ){

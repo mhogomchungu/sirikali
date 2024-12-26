@@ -226,7 +226,7 @@ static QString _executableFullPath( const QString& f,Function function )
 
 	if( utility::platformIsFlatPak() ){
 
-		list = _addBinPaths() ;
+		list = _addBinPaths() + list ;
 
 	}else if( utility::platformIsLinux() ){
 
@@ -1103,9 +1103,9 @@ bool engines::engine::windowsCanUnlocInReadWriteMode() const
 	return m_Options.windowsCanUnlockInReadWriteMode ;
 }
 
-bool engines::engine::updatable() const
+bool engines::engine::updatable( bool s ) const
 {
-	return false ;
+	return s ;
 }
 
 bool engines::engine::isInstalled() const

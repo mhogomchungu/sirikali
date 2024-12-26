@@ -24,7 +24,7 @@ class cryfs : public engines::engine
 public:
 	cryfs() ;
 
-	bool updatable() const override ;
+	bool updatable( bool ) const override ;
 
 	void setUpBinary( bool,QStringList&,const QString& ) const override ;
 

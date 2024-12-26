@@ -107,14 +107,9 @@ configOptions::configOptions( QWidget * parent,
 
 			for( const auto& it : mm ){
 
-				if( it->updatable() ){
+				if( it->updatable( true ) ){
 
-					auto e = m + "/" + it->executableName() ;
-
-					if( QFile::exists( e ) ){
-
-						QFile::remove( e ) ;
-					}
+					it->deleteBinPath( m ) ;
 				}
 			}
 		}
@@ -305,11 +300,11 @@ void configOptions::translateUI()
 
 	if( utility::platformIsFlatPak() ){
 
-		m_ui->cbInternallyManageBackEnds->setText( tr( "Manage Securefs, Gocryptfs And Cryfs" ) ) ;
+		m_ui->cbInternallyManageBackEnds->setText( tr( "Manage Securefs, Gocryptfs, Cryfs And Cryptomator" ) ) ;
 
 	}else if( utility::platformIsWindows() ){
 
-		m_ui->cbInternallyManageBackEnds->setText( tr( "Manage Securefs, Cppcryptfs And Cryptomator" ) ) ;
+		m_ui->cbInternallyManageBackEnds->setText( tr( "Manage Securefs, Cppcryptfs" ) ) ;
 
 	}else if( utility::platformIsLinux() ){
 

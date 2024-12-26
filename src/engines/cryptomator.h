@@ -24,7 +24,7 @@ class cryptomator : public engines::engine
 public:
 	cryptomator() ;
 
-	bool updatable() const override ;
+	bool updatable( bool ) const override ;
 
 	bool onlineArchiveFileName( const QString& ) const override ;
 
