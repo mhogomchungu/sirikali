@@ -730,6 +730,8 @@ public:
 
 		virtual bool onlineArchiveFileName( const QString& ) const ;
 
+		virtual void changeEnvironment( const QString&,const QStringList& ) const ;
+
 		virtual bool updatable() const ;
 
 		virtual const QStringList& windowsUnmountCommand() const ;

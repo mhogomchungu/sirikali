@@ -940,21 +940,6 @@ engines::engine::terminateProcess( const engines::engine::terminate_process& e )
 		return { std::move( b ),{},{} } ;
 	}
 
-	if( utility::platformIsFlatPak() ){
-
-		auto r = e.engine().unmount( { "",e.mountPath(),e.engine(),3 } ) ;
-
-		if( r == engines::engine::status::success ){
-
-			return { 0,{},{} } ;
-		}else{
-			auto a = "SiriKali Error: Failed To UnMount" ;
-			auto b = Task::process::result( a,QByteArray(),-1,0,true ) ;
-
-			return { std::move( b ),{},{} } ;
-		}
-	}
-
 	if( exe == "SIGTERM" ){
 
 		utility::debug() << "Terminating a process by sending it SIGTERM" ;
@@ -1529,6 +1514,10 @@ void engines::engine::removeExtraFiles( const QString& ) const
 bool engines::engine::onlineArchiveFileName( const QString& ) const
 {
 	return false ;
+}
+
+void engines::engine::changeEnvironment( const QString&,const QStringList& ) const
+{
 }
 
 const QStringList& engines::engine::windowsUnmountCommand() const

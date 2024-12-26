@@ -56,6 +56,7 @@ static engines::engine::BaseOptions _setOptions( const QString& displayName )
 	s.names                 = QStringList{ "gocryptfs","gocryptfs.reverse","gocryptfs-reverse" } ;
 	s.notFoundCode          = engines::engine::status::engineExecutableNotFound ;
 	s.versionInfo           = { { "--version",true,1,0 } } ;
+	s.displayName           = displayName ;
 
 	if( utility::platformIsWindows() ){
 
@@ -70,8 +71,6 @@ static engines::engine::BaseOptions _setOptions( const QString& displayName )
 
 		s.windowsUnMountCommand = QStringList{ aa,"--umount","--mountPath","%{mountPoint}","--cppcryptfsctl-path",bb } ;
 
-		s.displayName           = displayName ;
-
 		s.acceptsSubType        = true ;
 
 		s.reverseString         = "--reverse" ;
@@ -85,7 +84,7 @@ static engines::engine::BaseOptions _setOptions( const QString& displayName )
 
 		s.incorrectPasswordText = QStringList{ "cppcryptfs: password incorrect" } ;
 
-		s.executableNames = QStringList{ "cppcryptfsctl.exe" } ;
+		s.executableNames       = QStringList{ "cppcryptfsctl.exe" } ;
 		s.mountControlStructure  = "--mount %{mountOptions} --cipherPath %{cipherFolder} --mountPath %{mountPoint} %{fuseOpts}" ;
 	}else{
 		s.releaseURL             = "https://api.github.com/repos/rfjakob/gocryptfs/releases" ;
@@ -93,7 +92,7 @@ static engines::engine::BaseOptions _setOptions( const QString& displayName )
 		s.volumePropertiesCommands = QStringList{ "gocryptfs -info %{cipherFolder}",
 							  "gocryptfs -info %{plainFolder}" } ;
 
-		s.passwordFormat         = "%{password}" ;
+		s.passwordFormat           = "%{password}" ;
 
 		if( utility::platformIsFlatPak() ){
 
@@ -107,13 +106,13 @@ static engines::engine::BaseOptions _setOptions( const QString& displayName )
 			s.mountControlStructure  = "-q %{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
 		}
 
-		s.reverseString         = "-reverse" ;
+		s.reverseString  = "-reverse" ;
 
-		s.acceptsSubType        = false ;
+		s.acceptsSubType = false ;
 
 		s.incorrectPasswordText = QStringList{ "Password incorrect." } ;
 
-		s.executableNames = QStringList{ "gocryptfs" } ;
+		s.executableNames       = QStringList{ "gocryptfs" } ;
 	}
 
 	return s ;
@@ -190,7 +189,7 @@ bool gocryptfs::updatable() const
 
 void gocryptfs::setUpBinary( bool add,QStringList& apps,const QString& basePath ) const
 {
-	engines::engine::setUpBinary( add,apps,basePath,this->displayName() ) ;
+	engines::engine::setUpBinary( add,apps,basePath,this->displayName().toLower() ) ;
 }
 
 bool gocryptfs::onlineArchiveFileName( const QString& e ) const

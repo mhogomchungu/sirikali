@@ -146,7 +146,7 @@ private:
 	{
 	public:
 		opts( const checkforupdateswindow::args& e ) :
-			m_data( std::move( e.data ) ),
+			m_data( e.data ),
 			m_engine( e.engine ),
 			m_noError( e.error.isEmpty() )
 		{

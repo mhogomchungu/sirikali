@@ -34,6 +34,8 @@ public:
 
 	QString setExecutablePermissions( const QString& ) const override ;
 
+	void changeEnvironment( const QString&,const QStringList& ) const override ;
+
 	engines::engine::args command( const QByteArray&,const engines::engine::cmdArgsList&,bool ) const override ;
 
 	void updateOptions( QStringList&,const engines::engine::cmdArgsList&,bool creating ) const override ;

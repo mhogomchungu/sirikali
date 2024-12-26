@@ -255,7 +255,9 @@ static utility::Task _run_task_0( const run_task& e )
 						 e.engine.likeSsh(),
 						 e.engine.allowLogging( e.args.cmd_args ) ) ;
 
-		return utility::Task( e.args.cmd,e.args.cmd_args,-1,s,e.password,[](){},opts ) ;
+		auto function = [ & ](){ e.engine.changeEnvironment( e.args.cmd,e.args.cmd_args ) ; } ;
+
+		return utility::Task( e.args.cmd,e.args.cmd_args,-1,s,e.password,function,opts ) ;
 	}
 }
 

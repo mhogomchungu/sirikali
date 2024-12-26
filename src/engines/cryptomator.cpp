@@ -58,7 +58,6 @@ static engines::engine::BaseOptions _setOptions()
 
 	s.incorrectPasswordText    = QStringList{ "InvalidPassphraseException" } ;
 	s.volumePropertiesCommands = QStringList{} ;
-	s.windowsUnMountCommand    = QStringList{ "sirikali.exe", "-T","%{PID}" } ;
 	s.configFileNames          = QStringList{ "vault.cryptomator" } ;
 	s.fuseNames                = QStringList{ "fuse.cryptomator" } ;
 	s.names                    = QStringList{ "cryptomator" } ;
@@ -74,10 +73,14 @@ static engines::engine::BaseOptions _setOptions()
 
 	if( utility::platformIsWindows() ){
 
+		s.windowsUnMountCommand = QStringList{ "sirikali.exe", "-T","%{PID}" } ;
+
 		auto a = "org.cryptomator.frontend.fuse.mount.WinFspMountProvider" ;
 
 		s.mountControlStructure = m.arg( a ) ;
 	}else{
+		s.unMountCommand = QStringList{ "kill","-s","SIGTERM","%{PID}" } ;
+
 		auto a = "org.cryptomator.frontend.fuse.mount.LinuxFuseMountProvider" ;
 
 		s.mountControlStructure = m.arg( a ) ;
@@ -161,6 +164,16 @@ QString cryptomator::setExecutablePermissions( const QString& e ) const
 	}
 }
 
+void cryptomator::changeEnvironment( const QString&,const QStringList& args ) const
+{
+	if( args.size() > 1 ){
+
+		auto m = QFileInfo( args[ 1 ] ).dir().absolutePath() ;
+
+		QDir::setCurrent( m ) ;
+	}
+}
+
 engines::engine::args cryptomator::command( const QByteArray& password,const cmdArgsList& args,bool create ) const
 {
 	if( utility::platformIsFlatPak() ){
@@ -178,7 +191,9 @@ engines::engine::args cryptomator::command( const QByteArray& password,const cmd
 	}
 }
 
-void cryptomator::updateOptions( QStringList& opts,const engines::engine::cmdArgsList&,bool ) const
+void cryptomator::updateOptions( QStringList& opts,
+				 const engines::engine::cmdArgsList& args,
+				 bool create ) const
 {
 	for( int i = 0 ; i < opts.size() ; i++ ){
 
@@ -190,6 +205,11 @@ void cryptomator::updateOptions( QStringList& opts,const engines::engine::cmdArg
 
 			break ;
 		}
+	}
+
+	if( !create && args.boolOptions.unlockInReadOnly ){
+
+		opts.insert( opts.size() - 2,"--mountOption=-oro" ) ;
 	}
 }
 

@@ -163,6 +163,23 @@ bool processManager::backEndTimedOut( const QString& e )
 	return e == _backEndTimedOut ;
 }
 
+static void _change_env( QProcess& exe,const processManager::opts& opts )
+{
+#if QT_VERSION > QT_VERSION_CHECK( 6,0,0 )
+#ifdef Q_OS_WIN
+	exe.setCreateProcessArgumentsModifier( [ & ]( QProcess::CreateProcessArguments * ){
+
+		opts.engine.changeEnvironment( opts.args.cmd,opts.args.cmd_args ) ;
+	} ) ;
+#else
+	exe.setChildProcessModifier( [ & ]{
+
+		opts.engine.changeEnvironment( opts.args.cmd,opts.args.cmd_args ) ;
+	} ) ;
+#endif
+#endif
+}
+
 Task::process::result processManager::add( const processManager::opts& opts )
 {
 	auto e = opts.engine.prepareBackend() ;
@@ -173,6 +190,8 @@ Task::process::result processManager::add( const processManager::opts& opts )
 	}
 
 	auto exe = utility2::unique_qptr< QProcess >() ;
+
+	_change_env( *exe,opts ) ;
 
 	exe->setProcessEnvironment( opts.engine.getProcessEnvironment() ) ;
 	exe->setProcessChannelMode( QProcess::MergedChannels ) ;
