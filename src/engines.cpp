@@ -1434,6 +1434,11 @@ engines::engine::exe_args engines::engine::unMountCommand( const engines::engine
 	}
 }
 
+bool engines::engine::enginesMatch( const QString& e ) const
+{
+	return this->name() == e ;
+}
+
 QString engines::engine::installedVersionHack( const QString& ) const
 {
 	return {} ;

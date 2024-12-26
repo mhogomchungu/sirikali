@@ -28,6 +28,8 @@ public:
 
 	bool onlineArchiveFileName( const QString& ) const override ;
 
+	bool enginesMatch( const QString& ) const override ;
+
 	void deleteBinPath( const QString& ) const override ;
 
 	void setUpBinary( bool,QStringList&,const QString& ) const override ;

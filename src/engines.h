@@ -716,6 +716,8 @@ public:
 
 		engines::engine::exe_args unMountCommand( const engines::engine::terminate_process& e ) const ;
 
+		virtual bool enginesMatch( const QString& ) const ;
+
 		virtual QString installedVersionHack( const QString& ) const ;
 
 		virtual void setInstalledVersionHack( const QString&,const QString& ) const ;

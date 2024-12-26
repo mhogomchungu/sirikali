@@ -177,6 +177,9 @@ static void _change_env( QProcess& exe,const processManager::opts& opts )
 		opts.engine.changeEnvironment( opts.args.cmd,opts.args.cmd_args ) ;
 	} ) ;
 #endif
+#else
+	Q_UNUSED( exe )
+	Q_UNUSED( opts )
 #endif
 }
 

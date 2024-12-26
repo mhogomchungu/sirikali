@@ -55,7 +55,6 @@ static engines::engine::BaseOptions _setOptions()
 	s.passwordFormat        = "" ;
 	s.configFileArgument    = "" ;
 	s.keyFileArgument       = "" ;
-
 	s.incorrectPasswordText    = QStringList{ "InvalidPassphraseException" } ;
 	s.volumePropertiesCommands = QStringList{} ;
 	s.configFileNames          = QStringList{ "vault.cryptomator" } ;
@@ -97,7 +96,7 @@ cryptomator::cryptomator() :
 
 bool cryptomator::updatable() const
 {
-	if( utility::platformIsWindows() ){
+	if( utility::platformIsWindows() || utility::platformIsFlatPak() ){
 
 		return true ;
 	}else{
@@ -134,6 +133,11 @@ bool cryptomator::onlineArchiveFileName( const QString& e ) const
 	}else{
 		return false ;
 	}
+}
+
+bool cryptomator::enginesMatch( const QString& e ) const
+{
+	return this->name() + "-cli" == e ;
 }
 
 void cryptomator::setUpBinary( bool add,QStringList& apps,const QString& basePath ) const

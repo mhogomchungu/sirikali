@@ -99,24 +99,9 @@ void checkUpdates::checkIfInstalled()
 
 			for( const auto& xt : utility::asConst( apps ) ){
 
-				const auto& m = [ & ](){
+				if( it->enginesMatch( xt ) && it->updatable() ){
 
-					const auto& displayName = it->displayName() ;
-
-					if( displayName.isEmpty() ){
-
-						return it->name() ;
-					}else{
-						return displayName ;
-					}
-				}() ;
-
-				if( m == xt ){
-
-					if( it->updatable() ){
-
-						m_backendsInstallable.emplace_back( it ) ;
-					}
+					m_backendsInstallable.emplace_back( it ) ;
 				}
 			}
 		}
