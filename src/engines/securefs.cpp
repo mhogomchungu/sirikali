@@ -92,12 +92,8 @@ bool securefs::updatable( bool s ) const
 		if( utility::platformIsFlatPak() ){
 
 			return false ;
-
-		}else if( utility::canDownload( utility::arch::x64 ) ){
-
-			return utility::platformIsLinux() || utility::platformIsWindows() ;
 		}else{
-			return false ;
+			return utility::archInUseIsAnyOf( utility::arch::x64 ) ;
 		}
 	}else{
 		return false ;

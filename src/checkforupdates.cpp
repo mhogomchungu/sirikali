@@ -82,7 +82,7 @@ void checkUpdates::checkIfInstalled()
 {
 	auto& s = settings::instance() ;
 
-	auto m = s.internallyManageBackEnds() && utility::canDownload() ;
+	auto m = s.internallyManageBackEnds() ;
 
 	QStringList apps ;
 

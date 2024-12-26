@@ -181,9 +181,9 @@ bool gocryptfs::updatable( bool s ) const
 
 			return false ;
 
-		}else if( utility::canDownload() ){
+		}else if( utility::platformIsLinux() ){
 
-			return utility::platformIsLinux() ;
+			return utility::archInUse( utility::arch::x64 ) ;
 		}else{
 			return false ;
 		}

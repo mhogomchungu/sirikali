@@ -1103,9 +1103,9 @@ bool engines::engine::windowsCanUnlocInReadWriteMode() const
 	return m_Options.windowsCanUnlockInReadWriteMode ;
 }
 
-bool engines::engine::updatable( bool s ) const
+bool engines::engine::updatable( bool ) const
 {
-	return s ;
+	return false ;
 }
 
 bool engines::engine::isInstalled() const

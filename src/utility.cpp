@@ -1739,23 +1739,32 @@ bool utility::copyFile( const QString& s,const QString& d,bool setExePermssion )
 	return false ;
 }
 
-bool utility::canDownload( utility::arch arch )
+static QString _currentCpuArch()
 {
 #if QT_VERSION < QT_VERSION_CHECK( 5,4,0 )
 
-	return false ;
+	return {} ;
 #else
-	auto m = QSysInfo::currentCpuArchitecture() ;
-
-	if( arch == utility::arch::either ){
-
-		return m == "x86_64" || m == "i386" ;
-
-	}else if( arch == utility::arch::x64 ){
-
-		return m == "x86_64" ;
-	}else{
-		return m == "i386" ;
-	}
+	return QSysInfo::currentCpuArchitecture() ;
 #endif
+}
+
+bool utility::archInUse( utility::arch m )
+{
+	auto e = _currentCpuArch() ;
+
+	if( m == utility::arch::x64 ){
+
+		return e == "x86_64";
+
+	}else if( m == utility::arch::x86 ){
+
+		return e == "i386" ;
+
+	}else if( m == utility::arch::aarch64 ){
+
+		return e == "arm64" ;
+	}else{
+		return false ;
+	}
 }
