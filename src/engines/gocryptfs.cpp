@@ -197,6 +197,11 @@ void gocryptfs::setUpBinary( bool add,QStringList& apps,const QString& basePath 
 	engines::engine::setUpBinary( add,apps,basePath,this->displayName().toLower() ) ;
 }
 
+bool gocryptfs::enginesMatch( const QString& e ) const
+{
+	return this->displayName() == e ;
+}
+
 bool gocryptfs::onlineArchiveFileName( const QString& e ) const
 {
 	if( utility::platformIsWindows() ){

@@ -30,6 +30,8 @@ public:
 
 	void setUpBinary( bool,QStringList&,const QString& ) const override ;
 
+	bool enginesMatch( const QString& ) const override ;
+
 	bool onlineArchiveFileName( const QString& ) const override ;
 
 	void removeExtraFiles( const QString& ) const override ;
