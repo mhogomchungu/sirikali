@@ -236,6 +236,21 @@ void gocryptfs::removeExtraFiles( const QString& e ) const
 	_remove( a,b,c ) ;
 }
 
+void gocryptfs::deleteBinPath( const QString& e ) const
+{
+	if( utility::platformIsWindows() ){
+
+		auto a = e + "cppcryptfsctl.exe" ;
+		auto b = e + "cppcryptfsctl_version.txt" ;
+		auto c = e + "cppcryptfs.exe" ;
+		auto d = e + "cppcryptfs_version.txt" ;
+
+		_remove( a,b,c,d ) ;
+	}else{
+		engines::engine::deleteBinPath( e ) ;
+	}
+}
+
 QString gocryptfs::installedVersionHack( const QString& e ) const
 {	
 	if( utility::platformIsWindows() ){

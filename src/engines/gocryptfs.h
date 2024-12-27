@@ -28,6 +28,8 @@ public:
 
 	bool updatable( bool ) const override ;
 
+	void deleteBinPath( const QString& ) const ;
+
 	void setUpBinary( bool,QStringList&,const QString& ) const override ;
 
 	bool enginesMatch( const QString& ) const override ;
