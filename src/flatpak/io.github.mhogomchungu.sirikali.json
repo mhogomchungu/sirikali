@@ -330,8 +330,8 @@
       "sources" : [
         {
           "type" : "archive",
-          "url" : "https://github.com/cryfs/cryfs/archive/refs/tags/1.0.0.tar.gz",
-          "sha256" : "8211c1637c2f8c419534c16c207efeae0d506abe9d8c7c0f44003e16a87d80a2"
+          "url" : "https://github.com/cryfs/cryfs/archive/refs/tags/1.0.1.tar.gz",
+          "sha256" : "485e7aa1b3b7e38a5ed422a22817aa2962c411b5afbc8be41d76750c50700a28"
         },
         {
           "type" : "patch",

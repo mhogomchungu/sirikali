@@ -309,4 +309,5 @@ version 1.4.2(December 18,2019)
 -- Make it possible to install cppcryptfs and cryptomator from within the app.
 -- Minimum supported version of cryptomator is 0.6.0.
     [LINUX]
+-- Make it possible to install cryptomator from within the app.
 -- Minimum supported version of cryptomator is 0.6.0 and works in flatpak version only.

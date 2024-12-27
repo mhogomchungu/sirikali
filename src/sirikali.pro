@@ -9,6 +9,7 @@ SOURCES += \
     3rdParty/lxqt_wallet/frontend/changepassworddialog.cpp \
     dialogok.cpp \
     checkforupdates.cpp \
+    checkforupdateswindow.cpp \
     favorites.cpp \
     favorites2.cpp \
     oneinstance.cpp \
@@ -58,6 +59,7 @@ HEADERS += \
     engines/gocryptfscreateoptions.h \
     configfileoption.h \
     checkforupdates.h \
+    checkforupdateswindow.h \
     favorites.h \
     favorites2.h \
     filemanager.h \
@@ -91,6 +93,7 @@ FORMS += \
     engines/customcreateoptions,ui \
     engines/fscryptcreateoptions.ui \
     engines/options.ui \
+    checkforupdateswindow.ui \
     dialogok.ui \
     sirikali.ui \
     engines/gocryptfscreateoptions.ui \
