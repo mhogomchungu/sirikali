@@ -160,7 +160,9 @@ bool cryptomator::enginesMatch( const QString& e ) const
 
 void cryptomator::setUpBinary( bool add,QStringList& apps,const QString& basePath ) const
 {
-	engines::engine::setUpBinary( add,apps,basePath,"cryptomator-cli" ) ;
+	auto m = basePath + "/cryptomator-cli/" ;
+
+	engines::engine::setUpBinary( add,apps,m,"cryptomator-cli" ) ;
 }
 
 QString cryptomator::setExecutablePermissions( const QString& e ) const

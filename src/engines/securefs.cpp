@@ -107,11 +107,21 @@ void securefs::setUpBinary( bool add,QStringList& apps,const QString& basePath )
 
 void securefs::removeExtraFiles( const QString& e ) const
 {
-	auto m = e + "/securefs.sig" ;
+	if( utility::platformIsWindows() ){
 
-	if( QFile::exists( m ) ){
+		auto m = e + "/securefs.exe.sig" ;
 
-		QFile::remove( m ) ;
+		if( QFile::exists( m ) ){
+
+			QFile::remove( m ) ;
+		}
+	}else{
+		auto m = e + "/securefs.sig" ;
+
+		if( QFile::exists( m ) ){
+
+			QFile::remove( m ) ;
+		}
 	}
 }
 
