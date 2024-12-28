@@ -23,6 +23,16 @@
 #include "gocryptfscreateoptions.h"
 #include "options.h"
 
+static QString _exeName( const QString& e,const QString& m = {} )
+{
+	if( utility::archInUse( utility::arch::x64 ) ){
+
+		return e + m ;
+	}else{
+		return e + "32" + m ;
+	}
+}
+
 static engines::engine::BaseOptions _setOptions( const QString& displayName )
 {
 	engines::engine::BaseOptions s ;
@@ -63,7 +73,7 @@ static engines::engine::BaseOptions _setOptions( const QString& displayName )
 		s.releaseURL = "https://api.github.com/repos/bailey27/cppcryptfs/releases" ;
 
 		auto aa = engines::executableNotEngineFullPath( "sirikali_cppcryptfs.exe" ) ;
-		auto bb = engines::executableNotEngineFullPath( "cppcryptfsctl.exe" ) ;
+		auto bb = engines::executableNotEngineFullPath( _exeName( "cppcryptfsctl",".exe" ) ) ;
 
 		s.windowsCanUnlockInReadWriteMode = true ;
 
@@ -84,7 +94,7 @@ static engines::engine::BaseOptions _setOptions( const QString& displayName )
 
 		s.incorrectPasswordText = QStringList{ "cppcryptfs: password incorrect" } ;
 
-		s.executableNames       = QStringList{ "cppcryptfsctl.exe" } ;
+		s.executableNames       = QStringList{ _exeName( "cppcryptfsctl",".exe" ) } ;
 		s.mountControlStructure  = "--mount %{mountOptions} --cipherPath %{cipherFolder} --mountPath %{mountPoint} %{fuseOpts}" ;
 	}else{
 		s.releaseURL             = "https://api.github.com/repos/rfjakob/gocryptfs/releases" ;
@@ -128,7 +138,7 @@ static QString _to_native_path( const QString& e )
 gocryptfs::gocryptfs() :
 	engines::engine( _setOptions( "cppcryptfs" ) ),
 	m_sirikaliCppcryptfsExe( _to_native_path( engines::executableNotEngineFullPath( "sirikali_cppcryptfs.exe" ) ) ),
-	m_cppcryptfsctl( _to_native_path( engines::executableNotEngineFullPath( "cppcryptfsctl.exe" ) ) ),
+	m_cppcryptfsctl( _to_native_path( engines::executableNotEngineFullPath( _exeName( "cppcryptfsctl",".exe" ) ) ) ),
 	m_cppcryptfs( QString( m_cppcryptfsctl ).replace( "cppcryptfsctl","cppcryptfs" ) ),
 	m_windowsUnmountCommand( engines::engine::windowsUnmountCommand() + QStringList{ "--exit" } )
 {
@@ -194,19 +204,29 @@ bool gocryptfs::updatable( bool s ) const
 
 void gocryptfs::setUpBinary( bool add,QStringList& apps,const QString& basePath ) const
 {
-	engines::engine::setUpBinary( add,apps,basePath,this->displayName().toLower() ) ;
+	if( utility::platformIsWindows() ){
+
+		engines::engine::setUpBinary( add,apps,basePath,_exeName( this->displayName().toLower() ) ) ;
+	}else{
+		engines::engine::setUpBinary( add,apps,basePath,this->displayName().toLower() ) ;
+	}
 }
 
 bool gocryptfs::enginesMatch( const QString& e ) const
 {
-	return this->displayName() == e ;
+	if( utility::platformIsWindows() ){
+
+		return _exeName( this->displayName() ) == e ;
+	}else{
+		return this->displayName() == e ;
+	}
 }
 
 bool gocryptfs::onlineArchiveFileName( const QString& e ) const
 {
 	if( utility::platformIsWindows() ){
 
-		return e.endsWith( this->displayName().toLower() + ".exe" ) ;
+		return e.endsWith( _exeName( this->displayName().toLower(),".exe" ) ) ;
 	}else{
 		return e.endsWith( "linux-static_amd64.tar.gz" ) ;
 	}
@@ -240,9 +260,9 @@ void gocryptfs::deleteBinPath( const QString& e ) const
 {
 	if( utility::platformIsWindows() ){
 
-		auto a = e + "cppcryptfsctl.exe" ;
+		auto a = e + _exeName( "cppcryptfsctl",".exe" ) ;
 		auto b = e + "cppcryptfsctl_version.txt" ;
-		auto c = e + "cppcryptfs.exe" ;
+		auto c = e + _exeName( "cppcryptfs",".exe" ) ;
 		auto d = e + "cppcryptfs_version.txt" ;
 
 		_remove( a,b,c,d ) ;
@@ -508,17 +528,19 @@ engines::engine::args gocryptfs::command( const QByteArray& password,
 
 QString gocryptfs::getcppcryptfsPid() const
 {
-	auto m = Task::process::run( "taskList",{ "/fi","IMAGENAME eq cppcryptfs.exe" } ).await() ;
+	auto exe = _exeName( "cppcryptfs",".exe" ).toUtf8() ;
+
+	auto m = Task::process::run( "taskList",{ "/fi","IMAGENAME eq " + QString( exe ) } ).await() ;
 
 	auto s = m.std_out() ;
 
-	if( s.contains( "cppcryptfs.exe" ) ){
+	if( s.contains( exe ) ){
 
 		const auto e = utility::split( s,'\n' ) ;
 
 		for( const auto& it : e ){
 
-			if( it.startsWith( "cppcryptfs.exe" ) ){
+			if( it.startsWith( exe ) ){
 
 				auto ss = utility::split( it,' ' ) ;
 
