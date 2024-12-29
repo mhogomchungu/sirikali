@@ -165,7 +165,8 @@ void cryptomator::setUpBinary( bool add,QStringList& apps,const QString& basePat
 	engines::engine::setUpBinary( add,apps,m,"cryptomator-cli" ) ;
 }
 
-engines::engine::terminate_result cryptomator::terminateProcess( const terminate_process& e ) const
+engines::engine::terminate_result
+cryptomator::terminateProcess( int attempts,const engines::engine::terminate_process& e ) const
 {
 	if( utility::platformIsFlatPak() ){
 
@@ -175,9 +176,9 @@ engines::engine::terminate_result cryptomator::terminateProcess( const terminate
 
 		QStringList args{ "--host",this->fuserMountPath(),"-u",e.mountPath() } ;
 
-		logger.showText( exe,args ) ;
-
 		const auto& env = this->getProcessEnvironment() ;
+
+		logger.showText( exe,args ) ;
 
 		auto m = utility::unwrap( Task::process::run( exe,args,-1,"",env ) ) ;
 
@@ -185,12 +186,28 @@ engines::engine::terminate_result cryptomator::terminateProcess( const terminate
 
 		if( m.success() ){
 
-			return engines::engine::terminateProcess( e ) ;
+			return engines::engine::terminateProcess( attempts,e ) ;
 		}else{
-			return { std::move( m ),std::move( exe ),std::move( args ) } ;
+			for( int i = 1 ; i < attempts ; i++ ){
+
+				logger.showText( exe,args ) ;
+
+				utility::Task::suspendForOneSecond() ;
+
+				m = utility::unwrap( Task::process::run( exe,args,-1,"",env ) ) ;
+
+				logger.showText( m ) ;
+
+				if( m.success() ){
+
+					return engines::engine::terminateProcess( attempts,e ) ;
+				}
+			}
 		}
+
+		return { std::move( m ),std::move( exe ),std::move( args ) } ;
 	}else{
-		return engines::engine::terminateProcess( e ) ;
+		return engines::engine::terminateProcess( attempts,e ) ;
 	}
 }
 

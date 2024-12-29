@@ -296,6 +296,7 @@ public:
 
 			failedToStartPolkit,
 			failedToUnMount,
+			failedToUnMountMountPointStillInUse,
 			failedToCreateMountPoint,
 
 			invalidConfigFileName,
@@ -738,7 +739,7 @@ public:
 
 		virtual const QStringList& windowsUnmountCommand() const ;
 
-		virtual terminate_result terminateProcess( const terminate_process& ) const ;
+		virtual terminate_result terminateProcess( int,const terminate_process& ) const ;
 
 		virtual engine::engine::error errorCode( const QString& ) const ;
 
@@ -847,9 +848,9 @@ public:
 		virtual void GUICreateOptions( const createGUIOptions& ) const ;
 
 		virtual void GUIMountOptions( const mountGUIOptions& ) const ;
-	protected:
-		bool unmountVolume( const engine::engine::exe_args_const& exe,bool usePolkit ) const ;
 
+		virtual utility::Task unmountVolume( const engine::engine::exe_args_const& exe,bool usePolkit ) const ;
+	protected:
 		class commandOptions
 		{
 		public:

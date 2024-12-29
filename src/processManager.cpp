@@ -214,7 +214,7 @@ Task::process::result processManager::add( const processManager::opts& opts )
 	return s ;
 }
 
-Task::process::result processManager::remove( const QString& mountPoint )
+Task::process::result processManager::remove( const QString& mountPoint,int attempts )
 {
 	for( auto it = m_instances.begin() ; it != m_instances.end() ; it++ ){
 
@@ -222,7 +222,7 @@ Task::process::result processManager::remove( const QString& mountPoint )
 
 		if( s.mountPoint() == mountPoint ){
 
-			auto m = s.engine().terminateProcess( { s.exe(),s.engine(),s.mountPoint() } ) ;
+			auto m = s.engine().terminateProcess( attempts,{ s.exe(),s.engine(),s.mountPoint() } ) ;
 
 			if( m.result.success() ) {
 
@@ -242,7 +242,7 @@ Task::process::result processManager::remove( const QString& mountPoint )
 
 				return 0 ;
 			}else{
-				return { "","Failed To Terminate A Process",1,0,true } ;
+				return m.result ;
 			}
 		}
 	}

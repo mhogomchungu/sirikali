@@ -169,7 +169,7 @@ engines::engine::status ecryptfs::unmount( const engines::engine::unMount& e ) c
 		}
 	} ;
 
-	if( this->unmountVolume( cmd(),usePolkit ) ){
+	if( this->unmountVolume( cmd(),usePolkit ).success() ){
 
 		return engines::engine::status::success ;
 	}else{
@@ -177,7 +177,7 @@ engines::engine::status ecryptfs::unmount( const engines::engine::unMount& e ) c
 
 			utility::Task::waitForOneSecond() ;
 
-			if( this->unmountVolume( cmd(),usePolkit ) ){
+			if( this->unmountVolume( cmd(),usePolkit ).success() ){
 
 				return engines::engine::status::success ;
 			}

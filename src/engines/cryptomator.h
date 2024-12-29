@@ -34,7 +34,7 @@ public:
 
 	void setUpBinary( bool,QStringList&,const QString& ) const override ;
 
-	terminate_result terminateProcess( const terminate_process& ) const override ;
+	engines::engine::terminate_result terminateProcess( int,const engines::engine::terminate_process& ) const override ;
 
 	QString setExecutablePermissions( const QString& ) const override ;
 

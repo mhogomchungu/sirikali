@@ -39,16 +39,16 @@ jobs:
       name: Create img Bundle
       run: |
          cd ${{github.workspace}}/MAC/build6
-         ${{github.workspace}}/qt6/Qt/${{ env.QT6_VERSION }}/macos/bin/macdeployqt6 SiriKali.app -dmg
+         ${{github.workspace}}/qt6/Qt/${{ env.QT6_VERSION }}/macos/bin/macdeployqt6 SiriKaliQt6.app -dmg
     -
       name: Rename Bundle
       run: |
-        cp ${{github.workspace}}/MAC/build6/SiriKali.dmg ${{github.workspace}}/MAC/build6/SiriKali.git.dmg
+        cp ${{github.workspace}}/MAC/build6/SiriKaliQt6.dmg ${{github.workspace}}/MAC/build6/SiriKaliQt6.git.dmg
     -
       name: Post Bundle
       uses: ncipollo/release-action@v1
       with:
-        artifacts: ${{github.workspace}}/MAC/build6/SiriKali.git.dmg
+        artifacts: ${{github.workspace}}/MAC/build6/SiriKaliQt6.git.dmg
         tag: "1.5.2"
         commit: "master"
         allowUpdates: true

@@ -168,13 +168,20 @@ static engines::engine::cmdStatus _unmount( const engines::engine::unMount& e )
 
 	if( utility::platformIsFlatPak() || utility::platformIsWindows() || engine.runsInForeGround() ){
 
-		auto s = processManager::get().remove( e.mountPoint ) ;
+		auto s = processManager::get().remove( e.mountPoint,e.numberOfAttempts ) ;
 
 		if( s.success() ){
 
 			return { engines::engine::status::success,engine } ;
 		}else{
-			return { engines::engine::status::failedToUnMount,engine } ;
+			if( s.std_error().contains( "Device or resource busy" ) ){
+
+				using mm = engines::engine::status ;
+
+				return { mm::failedToUnMountMountPointStillInUse,engine } ;
+			}else{
+				return { engines::engine::status::failedToUnMount,engine } ;
+			}
 		}
 	}else{
 		if( engine.requiresPolkit() && !utility::enablePolkit() ){

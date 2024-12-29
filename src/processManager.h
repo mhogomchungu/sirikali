@@ -70,7 +70,7 @@ public:
 
 	Task::process::result run( const processManager::opts& ) ;
 	Task::process::result add( const processManager::opts& ) ;
-	Task::process::result remove( const QString& mountPoint ) ;
+	Task::process::result remove( const QString& mountPoint,int ) ;
 	void removeInActive() ;
 	std::vector< QStringList > commands() const ;
 	std::vector< engines::engine::Wrapper > enginesList() const ;
@@ -108,7 +108,7 @@ private:
 
 		if( m.type == engines::engine::error::Timeout ){
 
-			opts.engine.terminateProcess( { *exe,opts.engine,opts.args.mountPath } ) ;
+			opts.engine.terminateProcess( 1,{ *exe,opts.engine,opts.args.mountPath } ) ;
 
 			return error( timeOut ) ;
 

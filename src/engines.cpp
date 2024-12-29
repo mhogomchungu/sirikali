@@ -728,13 +728,13 @@ Task::future< QString >& engines::engine::volumeProperties( const QString& ciphe
 	} ) ;
 }
 
-bool engines::engine::unmountVolume( const engines::engine::exe_args_const& exe,bool usePolkit ) const
+utility::Task engines::engine::unmountVolume( const engines::engine::exe_args_const& exe,bool usePolkit ) const
 {
 	int timeOut = 10000 ;
 
 	auto& s = utility::Task::run( exe.exe,exe.args,timeOut,usePolkit ) ;
 
-	return utility::unwrap( s ).success() ;
+	return utility::unwrap( s ) ;
 }
 
 engines::engine::status engines::engine::unmount( const engines::engine::unMount& e ) const
@@ -746,7 +746,9 @@ engines::engine::status engines::engine::unmount( const engines::engine::unMount
 		return cmd.error ;
 	}
 
-	if( this->unmountVolume( cmd,false ) ){
+	auto m = this->unmountVolume( cmd,false ) ;
+
+	if( m.success() ){
 
 		return engines::engine::status::success ;
 	}else{
@@ -754,13 +756,20 @@ engines::engine::status engines::engine::unmount( const engines::engine::unMount
 
 			utility::Task::waitForOneSecond() ;
 
-			if( this->unmountVolume( cmd,false ) ){
+			m = this->unmountVolume( cmd,false ) ;
+
+			if( m.success() ){
 
 				return engines::engine::status::success ;
 			}
 		}
 
-		return engines::engine::status::failedToUnMount ;
+		if( m.stdError().contains( "Device or resource busy" ) ){
+
+			return engines::engine::status::failedToUnMountMountPointStillInUse ;
+		}else{
+			return engines::engine::status::failedToUnMount ;
+		}
 	}
 }
 
@@ -925,8 +934,10 @@ static engines::engine::terminate_result _failed_to_finish( QString exe,QStringL
 }
 
 engines::engine::terminate_result
-engines::engine::terminateProcess( const engines::engine::terminate_process& e ) const
+engines::engine::terminateProcess( int attempts,const engines::engine::terminate_process& e ) const
 {
+	Q_UNUSED( attempts )
+
 	auto aaa = this->unMountCommand( e ) ;
 
 	auto exe = std::move( aaa.exe ) ;
@@ -948,11 +959,9 @@ engines::engine::terminateProcess( const engines::engine::terminate_process& e )
 
 		if( e.waitForFinished() ){
 
-			auto a = Task::process::result( QByteArray(),
-							QByteArray(),
-							0,
-							0,
-							true ) ;
+			QByteArray m ;
+
+			auto a = Task::process::result( m,m,0,0,true ) ;
 
 			return { std::move( a ),std::move( exe ),std::move( args ) } ;
 		}else{
@@ -2164,6 +2173,10 @@ QString engines::engine::cmdStatus::toString() const
 	case engines::engine::status::failedToUnMount :
 
 		return QObject::tr( "Failed To Unmount %1 Volume" ).arg( m_engine->name() ) ;
+
+	case engines::engine::status::failedToUnMountMountPointStillInUse :
+
+		return QObject::tr( "Failed To Unmount %1 Volume\nMount Point Still In Use" ).arg( m_engine->name() ) ;
 
 	case engines::engine::status::volumeCreatedSuccessfully :
 
