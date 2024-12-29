@@ -165,6 +165,35 @@ void cryptomator::setUpBinary( bool add,QStringList& apps,const QString& basePat
 	engines::engine::setUpBinary( add,apps,m,"cryptomator-cli" ) ;
 }
 
+engines::engine::terminate_result cryptomator::terminateProcess( const terminate_process& e ) const
+{
+	if( utility::platformIsFlatPak() ){
+
+		utility::logger logger ;
+
+		auto exe = "flatpak-spawn" ;
+
+		QStringList args{ "--host",this->fuserMountPath(),"-u",e.mountPath() } ;
+
+		logger.showText( exe,args ) ;
+
+		const auto& env = this->getProcessEnvironment() ;
+
+		auto m = utility::unwrap( Task::process::run( exe,args,-1,"",env ) ) ;
+
+		logger.showText( m ) ;
+
+		if( m.success() ){
+
+			return engines::engine::terminateProcess( e ) ;
+		}else{
+			return { std::move( m ),std::move( exe ),std::move( args ) } ;
+		}
+	}else{
+		return engines::engine::terminateProcess( e ) ;
+	}
+}
+
 QString cryptomator::setExecutablePermissions( const QString& e ) const
 {
 	if( utility::platformIsNOTWindows() ){
