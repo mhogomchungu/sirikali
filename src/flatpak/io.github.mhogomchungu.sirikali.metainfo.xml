@@ -36,8 +36,20 @@
 	</categories>
 
 	<releases>
+		<release version="1.8.0" type="stable" date="2025-01-01" >
+			<url type="details">https://github.com/mhogomchungu/sirikali/releases/download/$version/sirikali-$version.tar.xz/</url>
+			<description>
+				<p>Changelog</p>
+				<ul>
+					<li>Update Cryfs to version 1.0.1.</li>
+					<li>Add support for cryptomator-cli 0.6.0.</li>
+					<li>Make it possible to install cryptomator-cli from within the app.</li>
+					<li>Install cryptomator-cli by going to menu->"check for updates"->cryptomator-cli->update.</li>
+				</ul>
+			</description>
+		</release>
 		<release version="1.7.2" type="stable" date="2024-11-19" >
-		<url type="details">https://github.com/mhogomchungu/sirikali/releases/download/$version/sirikali-$version.tar.xz/</url>
+			<url type="details">https://github.com/mhogomchungu/sirikali/releases/download/$version/sirikali-$version.tar.xz/</url>
 			<description>
 				<p>Changelog</p>
 				<ul>

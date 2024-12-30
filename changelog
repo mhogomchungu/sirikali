@@ -304,7 +304,7 @@ version 1.4.2(December 18,2019)
 -- Fix API breakage in Cryfs version 1.0.0.
 -- Do not check for minimum version of sshfs-win.
 
-   version 1.8.0(Unreleased)
+   version 1.8.0(January 01, 2025)
     [WINDOWS]
 -- Make it possible to install cppcryptfs and cryptomator from within the app.
 -- Minimum supported version of cryptomator is 0.6.0.

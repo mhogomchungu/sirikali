@@ -70,6 +70,10 @@ else()
 	add_definitions( -D_DEFAULT_SOURCE -fstack-protector-all --param ssp-buffer-size=4 )
 endif()
 
+if( APPLE )
+	add_definitions( -Wno-deprecated-declarations )
+endif()
+
 include_directories( ${PROJECT_BINARY_DIR} )
 
 if( LIB_SUFFIX )
