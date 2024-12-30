@@ -218,6 +218,7 @@ private:
 	{
 	public:
 		virtual void update() = 0 ;
+		virtual ~monitor() = default ;
 	} ;
 
 	std::unique_ptr< monitor > m_volumeList ;
