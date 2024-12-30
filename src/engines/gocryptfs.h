@@ -28,7 +28,7 @@ public:
 
 	bool updatable( bool ) const override ;
 
-	void deleteBinPath( const QString& ) const ;
+	void deleteBinPath( const QString& ) const override ;
 
 	void setUpBinary( bool,QStringList&,const QString& ) const override ;
 

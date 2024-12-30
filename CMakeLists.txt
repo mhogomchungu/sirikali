@@ -485,9 +485,9 @@ if( APPLE )
 	SET( plugin_dest_dir SiriKali.app/Contents )
 	SET( qtconf_dest_dir SiriKali.app/Contents/Resources )
 	if(BUILD_WITH_QT6)
-		SET( APPS "\${CMAKE_INSTALL_PREFIX}/SiriKaliQt6.app" )
+	        SET( APPS "\${CMAKE_INSTALL_PREFIX}/SiriKali.app" )
 	else()
-		SET( APPS "\${CMAKE_INSTALL_PREFIX}/SiriKaliQt5.app" )
+	        SET( APPS "\${CMAKE_INSTALL_PREFIX}/SiriKali.app" )
 	endif()
 
 	set_target_properties( SiriKali
