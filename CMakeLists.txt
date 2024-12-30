@@ -484,12 +484,16 @@ if( APPLE )
 
 	SET( plugin_dest_dir SiriKali.app/Contents )
 	SET( qtconf_dest_dir SiriKali.app/Contents/Resources )
-	SET( APPS "\${CMAKE_INSTALL_PREFIX}/SiriKali.app" )
+	if(BUILD_WITH_QT6)
+		SET( APPS "\${CMAKE_INSTALL_PREFIX}/SiriKaliQt6.app" )
+	else()
+		SET( APPS "\${CMAKE_INSTALL_PREFIX}/SiriKaliQt5.app" )
+	endif()
 
 	set_target_properties( SiriKali
 		PROPERTIES
 		MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/MacOSXBundleInfo.plist.in"
-		MACOSX_BUNDLE_BUNDLE_NAME "SiriKaliQt6"
+		MACOSX_BUNDLE_BUNDLE_NAME "SiriKali"
 		MACOSX_BUNDLE_COPYRIGHT "(c)${COPYRIGHT_YEARS},Francis Banyikwa,mhogomchungu@gmail.com"
 		MACOSX_BUNDLE_BUNDLE_VERSION "${PGR_VERSION}"
 		MACOSX_BUNDLE_GUI_IDENTIFIER "io.github.mhogomchungu.sirikali"
