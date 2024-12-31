@@ -96,13 +96,13 @@ cryptomator::cryptomator() :
 
 bool cryptomator::updatable( bool s ) const
 {
-	if( utility::platformIsFlatPak() ){
+	if( s ){
 
-		return utility::archInUseIsAnyOf( utility::arch::x64,utility::arch::aarch64 ) ;
+		if( utility::platformIsFlatPak() ){
 
-	}else if( s ){
+			return utility::archInUseIsAnyOf( utility::arch::x64,utility::arch::aarch64 ) ;
 
-		if( utility::platformIsWindows() ){
+		}else if( utility::platformIsWindows() ){
 
 			return utility::archInUse( utility::arch::x64 ) ;
 		}else{

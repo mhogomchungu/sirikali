@@ -93,7 +93,7 @@ bool securefs::updatable( bool s ) const
 
 			return false ;
 		}else{
-			return utility::archInUseIsAnyOf( utility::arch::x64 ) ;
+			return utility::archInUse( utility::arch::x64 ) ;
 		}
 	}else{
 		return false ;
