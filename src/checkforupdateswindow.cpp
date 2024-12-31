@@ -63,11 +63,9 @@ checkforupdateswindow::checkforupdateswindow( QWidget * parent,
 
 			QMenu m ;
 
-			auto u = settings::instance().internallyManageBackEnds() ;
-
 			auto ac = m.addAction( tr( "Update" ) ) ;
 
-			if( m_opts[ row ].engine().updatable( u ) ){
+			if( m_opts[ row ].engine().updatable( true ) ){
 
 				ac->setEnabled( true ) ;
 
