@@ -26,6 +26,13 @@ Steps to setup SiriKali to connect to an ssh server are documented <a href="http
 
 ## FAQ
 
+Question: How do i install these backends?
+Steps to install a backend.
+1. Click "Menu" backend.
+2. Click "Check For Updates".
+3. Right click an entry you want to install.
+4. Click "Update" to install it if the backend can be installed by SiriKali to its private location. If SiriKali can not install it then go to "Menu"->"Settings"->"External Commands" and then put the executable where "Executable Search Path" points to.
+
 Most frequently asked questions are answered <a href="https://github.com/mhogomchungu/SiriKali/wiki/Frequently-Asked-Questions">here.</a>
 
 ## Source download link.
@@ -45,7 +52,7 @@ The installer for Microsoft Windows operating system is <a href="https://github.
 The installer is not signed and expect to get a warning from windows saying the installer is from an unknown publisher.
 We recommend using the installer version.
 
-A portable version is also found <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.8.0/SiriKaliQt5-1.8.0.zip">here</a> for those with windows7 going up and  <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.8.0/SiriKaliQt6-1.8.0.zip">here</a> for those with windows10 going up.
+There is also a portable version and it is found <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.8.0/SiriKaliQt5-1.8.0.zip">here</a> for those with windows7 going up and <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.8.0/SiriKaliQt6-1.8.0.zip">here</a> for those with windows10 going up.
 
 Packages are also available for <a href="https://github.com/microsoft/winget-pkgs/tree/master/manifests/f/FrancisBanyikwa/SiriKali">Winget</a> and <a href="https://github.com/ScoopInstaller/Extras/blob/master/bucket/sirikali.json">Scoop</a>.
 
