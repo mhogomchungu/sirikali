@@ -1,29 +1,23 @@
 ## SiriKali works on Linux, macOS and Microsoft Windows Operating Systems
 
-SiriKali is a Qt/C++ GUI application that manages ecryptfs, cryfs, encfs, gocryptfs, fscrypt and securefs based encrypted folders. These projects are compared <a href="https://nuetzlich.net/gocryptfs/comparison/">here.</a> SiriKali can also connect to ssh servers using sshfs.
+SiriKali is a Qt/C++ GUI application that manages ecryptfs, cryfs, encfs, gocryptfs, fscrypt, securefs and Cryptomator encrypted folders. These projects are compared <a href="https://nuetzlich.net/gocryptfs/comparison/">here.</a> SiriKali can also connect to ssh servers using sshfs.
 
 #### Supported Backends on Linux:
 
-<a href="https://github.com/google/fscrypt">Fscrypt</a>, <a href="https://github.com/netheril96/securefs">Securefs</a>, <a href="https://github.com/mhogomchungu/ecryptfs-simple">Ecryptfs</a>, <a href="https://www.cryfs.org/">Cryfs</a>, <a href="https://github.com/vgough/encfs">Encfs, </a><a href="https://nuetzlich.net/gocryptfs">Gocryptfs</a>, <a href="https://github.com/libfuse/sshfs">Sshfs</a> and <a href="https://github.com/mhogomchungu/cli">Cryptomator,</a>.
+<a href="https://github.com/google/fscrypt">Fscrypt</a>, <a href="https://github.com/netheril96/securefs">Securefs</a>, <a href="https://github.com/mhogomchungu/ecryptfs-simple">Ecryptfs</a>, <a href="https://www.cryfs.org/">Cryfs</a>, <a href="https://github.com/vgough/encfs">Encfs, </a><a href="https://nuetzlich.net/gocryptfs">Gocryptfs</a>, <a href="https://github.com/libfuse/sshfs">Sshfs</a> and <a href="https://github.com/cryptomator/cli">Cryptomator</a>.
 
 #### Supported Backends on Flatpak:
 
-<a href="https://github.com/netheril96/securefs">Securefs</a>, <a href="https://www.cryfs.org/">Cryfs</a> and <a href="https://nuetzlich.net/gocryptfs">Gocryptfs</a>.
+<a href="https://github.com/netheril96/securefs">Securefs</a>, <a href="https://www.cryfs.org/">Cryfs</a>, <a href="https://nuetzlich.net/gocryptfs">Gocryptfs</a> and <a href="https://github.com/cryptomator/cli">Cryptomator</a>.
 
 #### Supported Backends on Microsoft Windows:
 
- <a href="https://www.cryfs.org/">Cryfs</a>, <a href="https://github.com/netheril96/securefs">Securefs</a>, <a href="https://github.com/mhogomchungu/encfs">Encfs</a>, <a href="https://github.com/billziss-gh/sshfs-win">Sshfs</a> and <a href="https://github.com/bailey27/cppcryptfs">Cppcryptfs</a>.
+ <a href="https://www.cryfs.org/">Cryfs</a>, <a href="https://github.com/netheril96/securefs">Securefs</a>, <a href="https://github.com/mhogomchungu/encfs">Encfs</a>, <a href="https://github.com/billziss-gh/sshfs-win">Sshfs</a>, <a href="https://github.com/bailey27/cppcryptfs">Cppcryptfs</a> and <a href="https://github.com/cryptomator/cli">Cryptomator</a>.
 
-
-Users of Securefs and Cppcryptfs should inform SiriKali of where Securefs and Cppcryptfs binaries are located on the system by setting the path at: ```Menu->Settings->External Commands->Set Executables Search Path.```
-
-If you are using the portable version, then a better place to put external executables is in the "local/bin" subfolder of the portable application folder.
 
 #### Supported Backends on macOS:
 
-<a href="https://github.com/netheril96/securefs">Securefs, </a><a href="https://www.cryfs.org/">Cryfs, </a><a href="https://github.com/vgough/encfs">Encfs</a> and <a href="https://nuetzlich.net/gocryptfs">Gocryptfs.</a>
-
-Building SiriKali on macOS is currently a bit involving process and [the steps are documented here](https://github.com/mhogomchungu/sirikali/blob/master/MACOS_BUILD_INSTRUCTIONS).
+<a href="https://github.com/netheril96/securefs">Securefs, </a><a href="https://www.cryfs.org/">Cryfs, </a><a href="https://github.com/vgough/encfs">Encfs</a> and <a href="https://nuetzlich.net/gocryptfs">Gocryptfs</a>.
 
 
 #### Using SiriKali to connect to ssh server using sshfs:
@@ -36,18 +30,22 @@ Most frequently asked questions are answered <a href="https://github.com/mhogomc
 
 ## Source download link.
 
-Latest released version is 1.7.2 and its source code can be downloaded by clicking below link.
+Latest released version is 1.8.0 and its source code can be downloaded by clicking below link.
 
-<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.7.2/SiriKali-1.7.2.tar.xz">SiriKali-1.7.2.tar.xz</a>
+<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.8.0/SiriKali-1.8.0.tar.xz">SiriKali-1.8.0.tar.xz</a>
+
+## Download links for macOS.
+
+MacOS bundle can be downloaded from <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.8.0/SiriKaliQt6-1.8.0.dmg">here</a>. The bundle is for x86_64 only and is not notarized so you may need to jump a few hoops to get it to run on your system. Supported versions of MacOS is 13+.
 
 ## Download links for Microsoft Windows Operating System.
 
-The installer for Microsoft Windows operating system is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.7.2/SiriKaliQt5-1.7.2.setup.exe">here</a> for those with windows7 going up and <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.7.2/SiriKaliQt6-1.7.2.setup.exe">here</a> for those with Windows10 going up.
+The installer for Microsoft Windows operating system is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.8.0/SiriKaliQt5-1.8.0.setup.exe">here</a> for those with windows7 going up and <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.8.0/SiriKaliQt6-1.8.0.setup.exe">here</a> for those with Windows10 going up.
 
 The installer is not signed and expect to get a warning from windows saying the installer is from an unknown publisher.
 We recommend using the installer version.
 
-A portable version is also found <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.7.2/SiriKaliQt5-1.7.2.zip">here</a> for those with windows7 going up and  <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.7.2/SiriKaliQt6-1.7.2.zip">here</a> for those with windows10 going up.
+A portable version is also found <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.8.0/SiriKaliQt5-1.8.0.zip">here</a> for those with windows7 going up and  <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.8.0/SiriKaliQt6-1.8.0.zip">here</a> for those with windows10 going up.
 
 Packages are also available for <a href="https://github.com/microsoft/winget-pkgs/tree/master/manifests/f/FrancisBanyikwa/SiriKali">Winget</a> and <a href="https://github.com/ScoopInstaller/Extras/blob/master/bucket/sirikali.json">Scoop</a>.
 
@@ -143,4 +141,4 @@ cv9jY9bZAbVaMUjF7dw/bsqgJ2HCJ33cf16GybRtozOE36YDB2omg58ngIrlmlea
 -----END PGP PUBLIC KEY BLOCK-----
 ```
 
-last update: Sat Nov  9 08:30:27 PM EAT 2024
+last update: Wed Jan  1 08:24:07 PM EAT 2025
