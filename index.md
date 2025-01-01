@@ -27,13 +27,13 @@ Steps to setup SiriKali to connect to an ssh server are documented <a href="http
 ## FAQ
 
 Question: How do i install these backends?
-Steps to install a backend.
+Steps to install a backend are below:-
 1. Click "Menu" backend.
 2. Click "Check For Updates".
 3. Right click an entry you want to install.
 4. Click "Update" to install it if the backend can be installed by SiriKali to its private location. If SiriKali can not install it then go to "Menu"->"Settings"->"External Commands" and then put the executable where "Executable Search Path" points to.
 
-Most frequently asked questions are answered <a href="https://github.com/mhogomchungu/SiriKali/wiki/Frequently-Asked-Questions">here.</a>
+Rest of FAQs are <a href="https://github.com/mhogomchungu/SiriKali/wiki/Frequently-Asked-Questions">here.</a>
 
 ## Source download link.
 
