@@ -44,7 +44,7 @@
 					<li>Update Cryfs to version 1.0.1.</li>
 					<li>Add support for cryptomator-cli 0.6.0.</li>
 					<li>Make it possible to install cryptomator-cli from within the app.</li>
-					<li>Install cryptomator-cli by going to menu->"check for updates"->cryptomator-cli->update.</li>
+					<li>Install cryptomator-cli by going to menu->"check for updates"->cryptomator->update.</li>
 				</ul>
 			</description>
 		</release>

@@ -90,7 +90,7 @@ static engines::engine::BaseOptions _setOptions()
 
 cryptomator::cryptomator() :
 	engines::engine( _setOptions() ),
-	m_version_greater_or_equal_0_6_0( false,*this,this->minimumVersion() )
+	m_version_greater_or_equal_0_6_0( true,*this,this->minimumVersion() )
 {
 }
 
