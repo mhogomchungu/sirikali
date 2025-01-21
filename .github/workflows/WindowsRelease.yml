@@ -9,7 +9,7 @@ env:
   QT5_VERSION:     "5.15.2"
   MINGW5_VERSION:  "win32_mingw81"
   MINGW5_PATH:     "mingw81_32"
-  QT6_VERSION:     "6.6.2"
+  QT6_VERSION:     "6.8.1"
   MINGW6_VERSION:  "win64_mingw"
   MINGW6_PATH:     "mingw_64"
   BUILD_TYPE:      Release
