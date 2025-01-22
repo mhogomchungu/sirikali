@@ -92,59 +92,65 @@
         <translation type="vanished">错误</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="2170"/>
+        <location filename="../src/engines.cpp" line="2183"/>
         <source>Volume Created Successfully.</source>
         <translation>成功创建卷。</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="2174"/>
+        <location filename="../src/engines.cpp" line="2187"/>
         <source>Backend Requires A Password.</source>
         <translation>后端需要一个密码。</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="2190"/>
+        <location filename="../src/engines.cpp" line="2203"/>
         <source>Backend Requires Polkit Support and SiriKali Failed To Start It.</source>
         <translation>后端需要 Polkit 支持，但 SiriKali 没能启动它。</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="2194"/>
+        <location filename="../src/engines.cpp" line="2207"/>
         <source>A Space Character Is Not Allowed In Paths When Using Ecryptfs Backend And Polkit.</source>
         <translation>使用 Ecryptfs 后端和 Polkit 时路径中不允许含有空格。</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="2166"/>
+        <location filename="../src/engines.cpp" line="2175"/>
         <source>Failed To Unmount %1 Volume</source>
         <translation>卸载 %1 卷失败</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="2178"/>
+        <location filename="../src/engines.cpp" line="2179"/>
+        <source>Failed To Unmount %1 Volume
+Mount Point Still In Use</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/engines.cpp" line="2191"/>
         <source>Failed To UnMount Because &quot;fusermount&quot; Executable Could Not Be Found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="2186"/>
+        <location filename="../src/engines.cpp" line="2199"/>
         <source>This Fscrypt Volume Requires A KeyFile.</source>
         <translation>这个 Fscrypt 卷需要一个密钥文件。</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="2198"/>
+        <location filename="../src/engines.cpp" line="2211"/>
         <source>Backend Does Not Support Custom Configuration File Path.</source>
         <translation>后端不支持自定义配置文件路径。</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="2202"/>
+        <location filename="../src/engines.cpp" line="2215"/>
         <source>Failed To Complete The Request.
 %1 Executable Could Not Be Found.</source>
         <translation>无法完成此请求。
 没有找到 %1 的可执行文件。</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="2206"/>
+        <location filename="../src/engines.cpp" line="2219"/>
         <source>Something Is Wrong With The Backend And It Took Too Long To Respond.</source>
         <translation>后端出现问题，很久没有响应。</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="2210"/>
+        <location filename="../src/engines.cpp" line="2223"/>
         <source>This Volume Of Cryfs Needs To Be Upgraded To Work With The Version Of Cryfs You Are Using.
 
 The Upgrade is IRREVERSIBLE And The Volume Will No Longer Work With Older Versions of Cryfs.
@@ -157,7 +163,7 @@ To Do The Upgrade, Check The &quot;Upgrade File System&quot; Option And Unlock T
 如要升级，请选中“升级文件系统”，然后再次解锁该卷。</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="2214"/>
+        <location filename="../src/engines.cpp" line="2227"/>
         <source>This Volume Of Cryfs Is Different From The Known One.
 
 Check The &quot;Replace File System&quot; Option And Unlock The Volume Again To Replace The Previous File System.</source>
@@ -166,84 +172,84 @@ Check The &quot;Replace File System&quot; Option And Unlock The Volume Again To 
 选中“替换文件系统”并再次解锁该卷来代替之前那个文件系统。</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="2218"/>
+        <location filename="../src/engines.cpp" line="2231"/>
         <source>Atleast Version 0.9.9 Of Cryfs Is Required To Be Able To Upgrade A Volume and Installed Version Is &quot;%1&quot;.</source>
         <translation>需要 Cryfs 的 0.9.9 或以上版本来升级卷，而当前安装的版本为“%1”。</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="2222"/>
+        <location filename="../src/engines.cpp" line="2235"/>
         <source>Mount Point Folder Path Must Reside In An NTFS FileSystem.</source>
         <translation>挂载点文件路径必须位于一个 NTFS 文件系统。</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="2226"/>
+        <location filename="../src/engines.cpp" line="2239"/>
         <source>Mount Point Folder Path Is Not Empty.</source>
         <translation>挂载点文件路径不能为空。</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="2234"/>
+        <location filename="../src/engines.cpp" line="2247"/>
         <source>Failed To Complete The Request.
 Java Executable Could Not Be Found.</source>
         <translation>无法完成请求。
 找不到 Java 可执行文件。</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="2230"/>
+        <location filename="../src/engines.cpp" line="2243"/>
         <source>Failed To Complete The Request.
 Ecryptfs-simple Executable Could Not Be Found.</source>
         <translation>无法完成此请求。
 没有找到 Ecryptfs-simple 的可执行文件。</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="2182"/>
+        <location filename="../src/engines.cpp" line="2195"/>
         <source>Failed To Unlock &quot;%1&quot; Volume.
 Wrong Password Entered.</source>
         <translation>无法解锁“%1”卷。
 输入的密码不正确。</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="2238"/>
+        <location filename="../src/engines.cpp" line="2251"/>
         <source>Failed To Create Mount Point.</source>
         <translation>创建挂载点失败。</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="2242"/>
+        <location filename="../src/engines.cpp" line="2255"/>
         <source>Backend Could Not Load WinFsp. Please Make Sure You Have WinFsp Properly Installed.</source>
         <translation>后端未能加载 WinFsp。请确保您已正确安装 WinFsp。</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="2246"/>
+        <location filename="../src/engines.cpp" line="2259"/>
         <source>Failed To Unlock The Volume.
 Not Supported Volume Encountered.</source>
         <translation>无法解锁该卷。
 遇到不支持的卷。</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="2250"/>
+        <location filename="../src/engines.cpp" line="2263"/>
         <source>Backend Requires Atleast Version &quot;%1&quot; Of SiriKali.</source>
         <translation>后端需要至少“%1”或以上版本的 SiriKali。</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="2260"/>
+        <location filename="../src/engines.cpp" line="2273"/>
         <source>Installed &quot;%1&quot; Version Is Too Old.
  Please Update To Atleast Version %2.</source>
         <translation>已安装的“%1”版本太旧。
 请升级到至少 %2 版本。</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="2265"/>
+        <location filename="../src/engines.cpp" line="2278"/>
         <source>Folder Not Fully Locked Because Some Files Are Still In Use.</source>
         <translation>文件夹未完全锁定，某些文件仍在使用。</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="2275"/>
+        <location filename="../src/engines.cpp" line="2288"/>
         <source>Invalid Config File Name.
 Its Name Must End With &quot;%1&quot;</source>
         <translation>配置文件名称无效。
 名称必须以“%1”结尾</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="2278"/>
+        <location filename="../src/engines.cpp" line="2291"/>
         <source>Invalid Config File Name.
 It Must End With One Of The Following:
 &quot;%1&quot;</source>
@@ -252,7 +258,7 @@ It Must End With One Of The Following:
 “%1”</translation>
     </message>
     <message>
-        <location filename="../src/engines.cpp" line="2288"/>
+        <location filename="../src/engines.cpp" line="2301"/>
         <source>Failed To Complete The Task And Below Log was Generated By The Backend.
 </source>
         <translation>无法完成任务，后端产生了下列日志。</translation>
@@ -444,28 +450,28 @@ options:
         <translation>未知选项</translation>
     </message>
     <message>
-        <location filename="../src/checkforupdateswindow.cpp" line="321"/>
+        <location filename="../src/checkforupdateswindow.cpp" line="319"/>
         <source>Extracting archive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/checkforupdateswindow.cpp" line="331"/>
-        <location filename="../src/checkforupdateswindow.cpp" line="420"/>
+        <location filename="../src/checkforupdateswindow.cpp" line="329"/>
+        <location filename="../src/checkforupdateswindow.cpp" line="418"/>
         <source>Failed To Extract</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/checkforupdateswindow.cpp" line="337"/>
+        <location filename="../src/checkforupdateswindow.cpp" line="335"/>
         <source>Failed To Find &quot;bsdtar.exe&quot; Executable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/checkforupdateswindow.cpp" line="339"/>
+        <location filename="../src/checkforupdateswindow.cpp" line="337"/>
         <source>Failed To Find &quot;bsdtar&quot; Executable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/checkforupdateswindow.cpp" line="367"/>
+        <location filename="../src/checkforupdateswindow.cpp" line="365"/>
         <source>Update Complete</source>
         <translation type="unfinished"></translation>
     </message>
@@ -559,60 +565,60 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/checkforupdateswindow.cpp" line="68"/>
+        <location filename="../src/checkforupdateswindow.cpp" line="66"/>
         <source>Update</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/checkforupdateswindow.cpp" line="79"/>
+        <location filename="../src/checkforupdateswindow.cpp" line="77"/>
         <source>Update Disabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/checkforupdateswindow.cpp" line="102"/>
+        <location filename="../src/checkforupdateswindow.cpp" line="100"/>
         <source>Installed Version: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/checkforupdateswindow.cpp" line="103"/>
+        <location filename="../src/checkforupdateswindow.cpp" line="101"/>
         <source>Latest Version: %1 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/checkforupdateswindow.cpp" line="163"/>
-        <location filename="../src/checkforupdateswindow.cpp" line="217"/>
+        <location filename="../src/checkforupdateswindow.cpp" line="161"/>
+        <location filename="../src/checkforupdateswindow.cpp" line="215"/>
         <source>Downloading %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/checkforupdateswindow.cpp" line="165"/>
+        <location filename="../src/checkforupdateswindow.cpp" line="163"/>
         <source>Download Complete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/checkforupdateswindow.cpp" line="176"/>
-        <location filename="../src/checkforupdateswindow.cpp" line="189"/>
-        <location filename="../src/checkforupdateswindow.cpp" line="454"/>
+        <location filename="../src/checkforupdateswindow.cpp" line="174"/>
+        <location filename="../src/checkforupdateswindow.cpp" line="187"/>
+        <location filename="../src/checkforupdateswindow.cpp" line="452"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/checkforupdateswindow.cpp" line="176"/>
+        <location filename="../src/checkforupdateswindow.cpp" line="174"/>
         <source>Download Failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/checkforupdateswindow.cpp" line="189"/>
+        <location filename="../src/checkforupdateswindow.cpp" line="187"/>
         <source>Network Timed Out</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/checkforupdateswindow.cpp" line="313"/>
+        <location filename="../src/checkforupdateswindow.cpp" line="311"/>
         <source>Failed To Open Path For Writing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/checkforupdateswindow.cpp" line="452"/>
+        <location filename="../src/checkforupdateswindow.cpp" line="450"/>
         <source>Failed To Find Archive To Download</source>
         <translation type="unfinished"></translation>
     </message>
@@ -800,7 +806,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/configoptions.cpp" line="307"/>
-        <source>Manage Securefs, Cppcryptfs</source>
+        <source>Manage Securefs, Cppcryptfs And Cryptomator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

@@ -36,6 +36,15 @@
 	</categories>
 
 	<releases>
+		<release version="1.8.1" type="stable" date="2025-01-22" >
+			<url type="details">https://github.com/mhogomchungu/sirikali/releases/download/$version/sirikali-$version.tar.xz/</url>
+			<description>
+				<p>Changelog</p>
+				<ul>
+					<li>Update Gocryptfs from version 2.4.0 to version 2.5.0.</li>
+				</ul>
+			</description>
+		</release>
 		<release version="1.8.0" type="stable" date="2025-01-01" >
 			<url type="details">https://github.com/mhogomchungu/sirikali/releases/download/$version/sirikali-$version.tar.xz/</url>
 			<description>
