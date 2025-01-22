@@ -311,3 +311,12 @@ version 1.4.2(December 18,2019)
     [LINUX]
 -- Make it possible to install cryptomator from within the app.
 -- Minimum supported version of cryptomator is 0.6.0 and works in flatpak version only.
+
+   version 1.8.1(January 22, 2025)
+    [WINDOWS]
+-- Qt6 build now depends on version 6.8.1. This update prevents crashing when using cppcryptfs.
+    [LINUX]
+-- Disable eCryptfs support because ecryptfs-simple project is dead.
+    [FLATPAK]
+-- Update gocryptfs to version 2.5.0.
+-- Update KDE runtime to version 6.8.

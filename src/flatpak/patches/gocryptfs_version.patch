@@ -6,7 +6,7 @@
  	}
 -	fmt.Printf("%s %s%s; go-fuse %s; %s %s/%s\n",
 -		tlog.ProgramName, GitVersion, tags, GitVersionFuse, built,
-+	fmt.Printf("%s v2.4.0%s; go-fuse %s; %s %s/%s\n",
++	fmt.Printf("%s v2.5.0%s; go-fuse %s; %s %s/%s\n",
 +		tlog.ProgramName,  tags, GitVersionFuse, built,
  		runtime.GOOS, runtime.GOARCH)
  }
