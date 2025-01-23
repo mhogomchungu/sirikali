@@ -279,7 +279,7 @@ private:
 	void pbFolderPath() ;
 	void pbOK() ;
 	void pbOpen() ;
-	void cbMountReadOnlyStateChanged( int ) ;
+	void cbMountReadOnlyStateChanged( bool ) ;
 	void encryptedFolderMount() ;
 	void encryptedFolderMount( const QString&,bool ) ;
 	void encryptedFolderCreate() ;

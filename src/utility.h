@@ -51,6 +51,7 @@
 #include <vector>
 #include <type_traits>
 #include <chrono>
+#include <QCheckBox>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -609,6 +610,25 @@ namespace utility
 		}
 
 		return false ;
+	}
+}
+
+namespace utility
+{
+	template< typename Function >
+	void connectQCheckBox( QCheckBox * cb,Function function )
+	{
+		#if QT_VERSION < QT_VERSION_CHECK( 6,7,0 )
+			QObject::connect( cb,&QCheckBox::stateChanged,[ function ]( int s ){
+
+				function( s == static_cast< int >( Qt::CheckState::Checked ) ) ;
+			} ) ;
+		#else
+			QObject::connect( cb,&QCheckBox::checkStateChanged,[ function ]( Qt::CheckState s ){
+
+				function( s == Qt::CheckState::Checked ) ;
+			} ) ;
+		#endif
 	}
 }
 

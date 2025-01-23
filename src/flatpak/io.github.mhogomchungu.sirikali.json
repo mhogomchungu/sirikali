@@ -266,7 +266,9 @@
       "name" : "range-v3",
       "buildsystem" : "cmake-ninja",
       "config-opts" : [
-        "-DCMAKE_BUILD_TYPE=Release"
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DRANGE_V3_TESTS=OFF",
+        "-DRANGE_V3_EXAMPLES=OFF"
       ],
       "cleanup" : [
         "*"

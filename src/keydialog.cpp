@@ -226,8 +226,11 @@ void keyDialog::setUpInitUI()
 
 	m_ui->tbVisibleKey->setIcon( QIcon( ":/icons/password_show.png" ) ) ;
 
-	connect( m_ui->checkBoxOpenReadOnly,&QCheckBox::stateChanged,
-		 this,&keyDialog::cbMountReadOnlyStateChanged ) ;
+	utility::connectQCheckBox( m_ui->checkBoxOpenReadOnly,[ this ]( bool s ){
+
+		this->keyDialog::cbMountReadOnlyStateChanged( s ) ;
+	} ) ;
+
 	connect( m_ui->pbCancel,&QPushButton::clicked,this,&keyDialog::pbCancel ) ;
 	connect( m_ui->pbOpen,&QPushButton::clicked,this,&keyDialog::pbOpen ) ;
 	connect( m_ui->pbkeyOption,&QPushButton::clicked,this,&keyDialog::pbkeyOption ) ;
@@ -748,7 +751,7 @@ bool keyDialog::keySelected( int e )
 	return m == keyDialog::keyType::name::Key || m == keyDialog::keyType::name::yubikey ;
 }
 
-void keyDialog::cbMountReadOnlyStateChanged( int state )
+void keyDialog::cbMountReadOnlyStateChanged( bool checked )
 {
 	if( this->upgradingFileSystem() ){
 
@@ -757,11 +760,11 @@ void keyDialog::cbMountReadOnlyStateChanged( int state )
 
 	if( m_favoriteReadOnly.defined() ){
 
-		m_ui->checkBoxOpenReadOnly->setChecked( state == Qt::Checked ) ;
+		m_ui->checkBoxOpenReadOnly->setChecked( checked ) ;
 		return ;
 	}
 
-	auto e = m_settings.setOpenVolumeReadOnly( this,state == Qt::Checked ) ;
+	auto e = m_settings.setOpenVolumeReadOnly( this,checked ) ;
 
 	m_ui->checkBoxOpenReadOnly->setChecked( e ) ;
 
