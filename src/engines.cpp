@@ -125,12 +125,9 @@ static QStringList _search_path_0( const QString& e )
 
 static QStringList _search_path( const QStringList& m )
 {
-	const auto a = QDir::homePath().toUtf8() ;
-
 	if( utility::platformIsWindows() ){
 
-		auto x = _search_path_0( a + "\\bin\\" ) ;
-		x += _search_path_0( QDir().currentPath() + "\\" ) ;
+		auto x = _search_path_0( QDir().currentPath() + "\\" ) ;
 
 		for( const auto& it : _windows_search_paths() ){
 
@@ -147,6 +144,8 @@ static QStringList _search_path( const QStringList& m )
 
 		return x ;
 	}else{
+		const auto a = QDir::homePath().toUtf8() ;
+
 		const auto b = a + "/bin/" ;
 		const auto c = a + "/.bin/" ;
 		const auto d = QCoreApplication::applicationDirPath().toUtf8() ;
