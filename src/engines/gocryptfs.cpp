@@ -77,7 +77,7 @@ static engines::engine::BaseOptions _setOptions( const QString& displayName )
 
 		s.windowsCanUnlockInReadWriteMode = true ;
 
-		s.createControlStructure = "" ;
+		s.createControlStructure = "--create --cipherPath %{cipherFolder}" ;
 
 		s.windowsUnMountCommand = QStringList{ aa,"--umount","--mountPath","%{mountPoint}","--cppcryptfsctl-path",bb } ;
 
