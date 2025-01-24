@@ -479,18 +479,20 @@ static engines::engine::cmdStatus _create( const siritask::create& s )
 
 	auto e = _cmd( { engine,true,opt,engine.setPassword( opt.key ) } ) ;
 
-	if( e == engines::engine::status::success ){
+	if( e == engines::engine::status::success ){		
 
-		engine.updateVolumeList( opt ) ;
+		if( engine.autoMountsOnCreate() ){
 
-		if( !engine.autoMountsOnCreate() ){
-
+			engine.updateVolumeList( opt ) ;
+		}else{
 			engines::engineWithPaths s{ engine,opt.cipherFolder,opt.configFilePath } ;
 
 			auto e = siritask::encryptedFolderMount( { opt,true,s } ) ;
 
-			if( e != engines::engine::status::success ){
+			if( e == engines::engine::status::success ){
 
+				engine.updateVolumeList( opt ) ;
+			}else{
 				if( e.engine().backendRequireMountPath() ){
 
 					engine.deleteFolder( opt.cipherFolder ) ;
