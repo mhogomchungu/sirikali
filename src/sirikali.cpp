@@ -359,12 +359,6 @@ void sirikali::closeApplication( int s,const QString& e )
 	if( m_ui ){
 
 		m_debugWindow.Hide() ;
-		this->hide() ;
-
-		if( !m_emergencyShuttingDown ){
-
-			utility::waitForOneSecond() ;
-		}
 	}
 
 	engines::instance().aboutToExit() ;
@@ -1760,8 +1754,23 @@ void sirikali::setUpFont()
 {
 }
 
-void sirikali::closeEvent( QCloseEvent * )
+void sirikali::closeEvent( QCloseEvent * e )
 {
+	if( utility::platformIsFlatPak() || utility::platformIsWindows() ){
+
+		e->ignore() ;
+
+		this->hide() ;
+
+		this->unMountAll() ;
+
+		if( processManager::get().enginesList().empty() ){
+
+			this->closeApplication() ;
+		}else{
+			this->show() ;
+		}
+	}
 }
 
 void sirikali::trayClicked( QSystemTrayIcon::ActivationReason e )
