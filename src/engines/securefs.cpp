@@ -217,8 +217,10 @@ engines::engine::status securefs::errorCode( const QString& e,const QString&,int
 	}
 }
 
-static QByteArray _get_log( QFile&& file )
+static QByteArray _get_log( const QString& path )
 {
+	QFile file( path ) ;
+
 	for( int s = 0 ; s < 5 ; s++ ){
 
 		if( file.open( QIODevice::ReadOnly ) ){
