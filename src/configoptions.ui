@@ -122,8 +122,8 @@
       <rect>
        <x>120</x>
        <y>0</y>
-       <width>431</width>
-       <height>28</height>
+       <width>331</width>
+       <height>31</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
@@ -141,8 +141,8 @@
       <rect>
        <x>120</x>
        <y>30</y>
-       <width>431</width>
-       <height>28</height>
+       <width>331</width>
+       <height>31</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -160,7 +160,7 @@
       <rect>
        <x>120</x>
        <y>60</y>
-       <width>431</width>
+       <width>331</width>
        <height>31</height>
       </rect>
      </property>
@@ -179,8 +179,8 @@
       <rect>
        <x>120</x>
        <y>90</y>
-       <width>431</width>
-       <height>28</height>
+       <width>331</width>
+       <height>31</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -198,7 +198,7 @@
       <rect>
        <x>120</x>
        <y>120</y>
-       <width>431</width>
+       <width>331</width>
        <height>31</height>
       </rect>
      </property>
@@ -217,7 +217,7 @@
       <rect>
        <x>120</x>
        <y>150</y>
-       <width>431</width>
+       <width>331</width>
        <height>34</height>
       </rect>
      </property>

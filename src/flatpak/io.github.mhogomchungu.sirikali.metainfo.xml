@@ -36,12 +36,12 @@
 	</categories>
 
 	<releases>
-		<release version="1.8.2" type="stable" date="2025-04-21" >
+		<release version="1.8.2" type="stable" date="2025-04-20" >
 		<url type="details">https://github.com/mhogomchungu/sirikali/releases/download/$version/sirikali-$version.tar.xz/</url>
 			<description>
 				<p>Changelog</p>
 				<ul>
-					<li>Add UI config for 3 theme options and they are platform default, light theme and dark them.</li>
+					<li>Add UI config for 3 theme options and they are platform default, light theme and dark theme.</li>
 				</ul>
 			</description>
 		</release>

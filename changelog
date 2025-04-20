@@ -321,7 +321,7 @@ version 1.4.2(December 18,2019)
 -- Update gocryptfs to version 2.5.0.
 -- Update KDE runtime to version 6.8.
 
-   version 1.8.2(April 21, 2025)
+   version 1.8.2(April 20, 2025)
    [ALL]
 -- Fix a build error when building with Qt >= 6.9.
--- Add UI config for 3 theme options and they are platform default, light theme and dark them.
+-- Add UI config for 3 theme options and they are platform default, light theme and dark theme.
