@@ -96,7 +96,9 @@ configOptions::configOptions( QWidget * parent,
 		m_ui->cbThemes->setCurrentIndex( 0 ) ;
 	}
 
-	connect( m_ui->cbThemes,&QComboBox::activated,[ this ]( int m ){
+	auto sig = static_cast< void( QComboBox::* )( int ) >( &QComboBox::activated ) ;
+
+	connect( m_ui->cbThemes,sig,[ this ]( int m ){
 
 		if( m == 0 ){
 
