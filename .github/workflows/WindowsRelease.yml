@@ -176,6 +176,15 @@ jobs:
           Rename-Item -Path ${{github.workspace}}\SiriKaliQt5.exe -NewName ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}.setup.exe
           Rename-Item -Path ${{github.workspace}}\SiriKaliQt6.exe -NewName ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}.setup.exe
     -
+     name: Print Hashes
+     run: | 
+          $SiriKaliQt5z = (Get-FileHash ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}.zip).Hash 
+          $SiriKaliQt5s = (Get-FileHash ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}.setup.exe).Hash 
+          $SiriKaliQt6z = (Get-FileHash ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}.zip).Hash 
+          $SiriKaliQt6s = (Get-FileHash ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}.setup.exe).Hash 
+
+          echo "$SiriKaliQt5z SiriKaliQt5-${{ env.RELEASEVERSION }}.zip`n$SiriKaliQt5s SiriKaliQt5-${{ env.RELEASEVERSION }}.setup.exe`n$SiriKaliQt6z SiriKaliQt6-${{ env.RELEASEVERSION }}.zip`n$SiriKaliQt6s SiriKaliQt6-${{ env.RELEASEVERSION }}.setup.exe" 
+    -
       name: Post Releases
       uses: ncipollo/release-action@v1
       with:
