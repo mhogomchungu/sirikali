@@ -221,6 +221,15 @@ jobs:
           Rename-Item -Path ${{github.workspace}}\SiriKaliQt5.exe -NewName ${{github.workspace}}\SiriKaliQt5.git.setup.exe
           Rename-Item -Path ${{github.workspace}}\SiriKaliQt6.exe -NewName ${{github.workspace}}\SiriKaliQt6.git.setup.exe
     -
+     name: Print Hashes
+     run: | 
+          $SiriKaliQt5z = (Get-FileHash ${{github.workspace}}\SiriKaliQt5.git.zip).Hash 
+          $SiriKaliQt5s = (Get-FileHash ${{github.workspace}}\SiriKaliQt5.git.setup.exe).Hash 
+          $SiriKaliQt6z = (Get-FileHash ${{github.workspace}}\SiriKaliQt6.git.zip).Hash 
+          $SiriKaliQt6s = (Get-FileHash ${{github.workspace}}\SiriKaliQt6.git.setup.exe).Hash 
+
+          echo "$SiriKaliQt5z SiriKaliQt5.git.zip`n$SiriKaliQt5s SiriKaliQt5.git.setup.exe`n$SiriKaliQt6z SiriKaliQt6.git.zip`n$SiriKaliQt6s SiriKaliQt6.git.setup.exe" 
+    -
       name: Post Releases
       uses: ncipollo/release-action@v1
       with:
