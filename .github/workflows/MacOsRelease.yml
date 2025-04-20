@@ -48,6 +48,11 @@ jobs:
       run: |
         cp ${{github.workspace}}/MAC/build6/SiriKali.dmg ${{github.workspace}}/MAC/build6/SiriKaliQt6-${{ env.VERSION_INFO }}.dmg
     -
+         name: Print Hashes
+         run: | 
+          cd ${{github.workspace}}/MAC/build6
+          shasum -a 256 SiriKaliQt6-${{ env.VERSION_INFO }}.dmg
+    -
       name: Post Bundle
       uses: ncipollo/release-action@v1
       with:
