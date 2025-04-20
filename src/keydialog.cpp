@@ -299,7 +299,7 @@ void keyDialog::setUpInitUI()
 		m_ui->lineEditKey->setFocus() ;
 	}
 
-    QIcon folderIcon( ":/icons/folder.png" ) ;
+	QIcon folderIcon( ":/icons/folder.png" ) ;
 
 	m_ui->pbOpenFolderPath->setIcon( folderIcon ) ;
 

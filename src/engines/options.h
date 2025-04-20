@@ -79,12 +79,11 @@ public:
 	~options() ;
 	void ShowUI() ;
 	Options& GUIOptions() ;
-private slots:
-        void pbConfigFile( void ) ;
+private:
+	void pbConfigFile( void ) ;
 	void pbKeyFile( void ) ;
 	void pbSet( void ) ;
 	void pbCancel( void ) ;
-private:
 	void Hide( const engines::engine::mOpts& = engines::engine::mOpts() ) ;
 	void closeEvent( QCloseEvent * ) ;
 	Ui::options * m_ui ;

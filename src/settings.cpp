@@ -1257,19 +1257,39 @@ bool settings::autoMountFavoritesOnStartUp()
 	}
 }
 
-bool settings::useDarkMode()
+void settings::setThemeType( settings::themeType m )
 {
-	if( !m_settings.contains( "UseDarkMode" ) ){
+	if( m == settings::themeType::light ){
 
-		m_settings.setValue( "UseDarkMode",false ) ;
+		m_settings.setValue( "ThemeType","light" ) ;
+
+	}else if( m == settings::themeType::dark ){
+
+		m_settings.setValue( "ThemeType","dark" ) ;
+	}else{
+		m_settings.setValue( "ThemeType","platformDefault" ) ;
 	}
-
-	return m_settings.value( "UseDarkMode" ).toBool() ;
 }
 
-void settings::useDarkMode( bool e )
+settings::themeType settings::getThemeType()
 {
-	m_settings.setValue( "UseDarkMode",e ) ;
+	if( !m_settings.contains( "ThemeType" ) ){
+
+		m_settings.setValue( "ThemeType","platformDefault" ) ;
+	}
+
+	auto m = m_settings.value( "ThemeType" ).toString() ;
+
+	if( m == "dark" ){
+
+		return settings::themeType::dark ;
+
+	}else if( m == "light" ){
+
+		return settings::themeType::light ;
+	}else{
+		return settings::themeType::platformDefault ;
+	}
 }
 
 void settings::autoMountFavoritesOnStartUp( bool e )

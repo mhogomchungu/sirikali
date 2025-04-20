@@ -698,11 +698,17 @@ void sirikali::setLocalizationLanguage( bool translate )
 
 void sirikali::startGUI( const QString& volume )
 {
-	auto& settings = settings::instance() ;
+	auto& s = settings::instance() ;
 
-	if( settings.useDarkMode() ){
+	auto theme = s.getThemeType() ;
 
-		themes::setUpTheme( m_app,settings.ConfigLocation() + "/themes" ) ;
+	if( theme == settings::themeType::dark ){
+
+		themes( m_app,s.ConfigLocation() + "/themes","dark.json" ) ;
+
+	}else if( theme == settings::themeType::light ){
+
+		themes( m_app,s.ConfigLocation() + "/themes","light.json" ) ;
 	}
 
 	if( m_startHidden ){

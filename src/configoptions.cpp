@@ -83,6 +83,33 @@ configOptions::configOptions( QWidget * parent,
 		m_ui->cbInternallyManageBackEnds->setEnabled( false ) ;
 	}
 
+	auto theme = m_settings.getThemeType() ;
+
+	if( theme == settings::themeType::dark ){
+
+		m_ui->cbThemes->setCurrentIndex( 1 ) ;
+
+	}else if( theme == settings::themeType::light ){
+
+		m_ui->cbThemes->setCurrentIndex( 2 ) ;
+	}else{
+		m_ui->cbThemes->setCurrentIndex( 0 ) ;
+	}
+
+	connect( m_ui->cbThemes,&QComboBox::activated,[ this ]( int m ){
+
+		if( m == 0 ){
+
+			m_settings.setThemeType( settings::themeType::platformDefault ) ;
+
+		}else if( m == 1 ){
+
+			m_settings.setThemeType( settings::themeType::dark ) ;
+		}else{
+			m_settings.setThemeType( settings::themeType::light ) ;
+		}
+	} ) ;
+
 	connect( m_ui->pushButton,&QPushButton::clicked,[ this ](){ this->HideUI() ; } ) ;
 
 	connect( m_ui->cbAutoOpenMountPoint,&QCheckBox::toggled,[ this ]( bool e ){
@@ -118,11 +145,6 @@ configOptions::configOptions( QWidget * parent,
 	connect( m_ui->cbStartMinimized,&QCheckBox::toggled,[ this ]( bool e ){
 
 		m_settings.setStartMinimized( e ) ;
-	} ) ;
-
-	connect( m_ui->cbUseDarkTheme,&QCheckBox::toggled,[ this ]( bool e ){
-
-		m_settings.useDarkMode( e ) ;
 	} ) ;
 
 	if( utility::platformIsWindows() ){
@@ -346,8 +368,6 @@ void configOptions::ShowUI()
 	m_ui->lineEditHiDPI->setEnabled( m_ui->cbHiDPI->isChecked() ) ;
 
 	m_ui->chShowDebugWindowOnStartup->setChecked( m_settings.showDebugWindowOnStartup() ) ;
-
-	m_ui->cbUseDarkTheme->setChecked( m_settings.useDarkMode() ) ;
 
 	if( utility::platformIsWindows() ){
 

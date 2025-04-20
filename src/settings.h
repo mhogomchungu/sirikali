@@ -228,8 +228,9 @@ public:
 	bool doNotShowReadOnlyWarning() ;
 	void doNotShowReadOnlyWarning( bool ) ;
 	bool autoMountFavoritesOnStartUp() ;
-	bool useDarkMode() ;
-	void useDarkMode( bool ) ;
+	enum class themeType{ platformDefault,dark,light } ;
+	themeType getThemeType() ;
+	void setThemeType( themeType ) ;
 	void autoMountFavoritesOnStartUp( bool ) ;
 	void autoMountFavoritesOnAvailable( bool ) ;
 	bool autoMountFavoritesOnAvailable() ;

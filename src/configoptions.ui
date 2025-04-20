@@ -46,9 +46,9 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>180</y>
+       <y>190</y>
        <width>531</width>
-       <height>181</height>
+       <height>171</height>
       </rect>
      </property>
      <property name="title">
@@ -91,7 +91,7 @@
 (Enter A Decimal Number)</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -110,7 +110,7 @@
        <string>SiriKali Will Have To Be Restarted For These Changes To Take Effect.</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -204,9 +204,9 @@
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_5">
       <item>
-       <widget class="QCheckBox" name="cbUseDarkTheme">
+       <widget class="QCheckBox" name="cbInternallyManageBackEnds">
         <property name="text">
-         <string>Use Dark Theme(Restarting Required)</string>
+         <string>Manage Cryfs/Securefs/Gocryptfs</string>
         </property>
        </widget>
       </item>
@@ -218,15 +218,27 @@
        <x>120</x>
        <y>150</y>
        <width>431</width>
-       <height>31</height>
+       <height>34</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_6">
       <item>
-       <widget class="QCheckBox" name="cbInternallyManageBackEnds">
-        <property name="text">
-         <string>Manage Cryfs/Securefs/Gocryptfs</string>
-        </property>
+       <widget class="QComboBox" name="cbThemes">
+        <item>
+         <property name="text">
+          <string>Platform Default Theme</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Dark Theme</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Light Theme</string>
+         </property>
+        </item>
        </widget>
       </item>
      </layout>
@@ -249,7 +261,7 @@
       <string>Set File Manager</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignCenter</set>
+      <set>Qt::AlignmentFlag::AlignCenter</set>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
@@ -298,7 +310,7 @@
       <string>Set Mount Point Prefix</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignCenter</set>
+      <set>Qt::AlignmentFlag::AlignCenter</set>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
@@ -330,7 +342,7 @@
       <string>Set External Plugin Executable</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignCenter</set>
+      <set>Qt::AlignmentFlag::AlignCenter</set>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
@@ -349,7 +361,7 @@
       <string>Set Command To Run After Mount</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignCenter</set>
+      <set>Qt::AlignmentFlag::AlignCenter</set>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
@@ -388,7 +400,7 @@
       <string>Set Command To Run Before UnMount</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignCenter</set>
+      <set>Qt::AlignmentFlag::AlignCenter</set>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
@@ -433,7 +445,7 @@
       <string>Set Command To Run Periodically</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignCenter</set>
+      <set>Qt::AlignmentFlag::AlignCenter</set>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
@@ -485,7 +497,7 @@
       <string>Interval In Minutes Periodic Command Will Run</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
      </property>
      <property name="wordWrap">
       <bool>true</bool>

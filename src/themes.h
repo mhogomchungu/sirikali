@@ -34,47 +34,50 @@
 class themes
 {
 public:
-	themes() = default ;
-	themes( const QString& themeName,const QString& themePath ) ;
-	themes( const QString& themePath ) ;
-	QStringList typesUntranslated() const ;
-	QStringList typesTranslated() const ;
-	const QString& translatedAt( int s ) const ;
-	const QString& unTranslatedAt( int s ) const ;
-	int translatedIndexAt( const QString& e ) const ;
-	int unTranslatedIndexAt( const QString& e ) const ;
-	bool usingThemes() const ;
-	void setComboBox( QComboBox& cb,const QString& dm ) const ;
-	QString defaultthemeFullPath() const ;
-	QString themeFullPath() const ;
-	void setDefaultTheme( QApplication& app ) const ;
-	void setTheme( QApplication& app,const QJsonObject& obj ) const ;
-	QJsonObject defaultTheme() const ;
-	static QString defaultDarkThemeName()
-	{
-		return "Dark" ;
-	}
-	static void setUpTheme( QApplication& app,const QString& themeConfigPath ) ;
+	themes( QApplication& app,const QString& themeConfigPath,const QString& themeName ) ;
 private:
-	QColor getColor( const QString& e,const QJsonObject& obj ) const ;
-	void updateThemes() ;
-	int indexAt( const QString& e,const QStringList& s ) const ;
-
-	QString m_theme ;
-	QString m_themePath ;
-	QString m_defaultDarkTheme = "Dark" ;
-
-	struct Pair{
-		Pair( const QString& u,const QString& t ) :
-			untranslated( u ),translated( t )
+	class JObject
+	{
+	public:
+		void insert( const char * key,int a,int b,int c,int d )
 		{
-		}
-		QString untranslated ;
-		QString translated ;
-	};
+			QJsonObject obj ;
 
-	std::vector< Pair > m_strings{ { "Normal",QObject::tr( "Normal" ) },
-				       { "Dark",QObject::tr( "Dark" ) } } ;
+			QJsonArray arr ;
+
+			arr.append( a ) ;
+			arr.append( b ) ;
+			arr.append( c ) ;
+			arr.append( d ) ;
+
+			obj.insert( "rgba",std::move( arr ) ) ;
+
+			m_obj.insert( key,std::move( obj ) ) ;
+		}
+		void insert( const char * key,const char * subkey,const char * value )
+		{
+			QJsonObject obj ;
+
+			obj.insert( subkey,value ) ;
+
+			m_obj.insert( key,std::move( obj ) ) ;
+		}
+		void insert( const char * key,const char * value )
+		{
+			m_obj.insert( key,value ) ;
+		}
+		operator QJsonObject()
+		{
+			return std::move( m_obj ) ;
+		}
+	private:
+		QJsonObject m_obj ;
+	} ;
+	themes::JObject baseTheme() const ;
+	QJsonObject darkTheme() const ;
+	QJsonObject lightTheme() const ;
+	void setTheme( QApplication& app,const QJsonObject& obj ) const ;
+	QColor getColor( const QString& e,const QJsonObject& obj ) const ;
 } ;
 
 #endif

@@ -21,117 +21,6 @@
 
 #include <QJsonDocument>
 
-themes::themes( const QString& themeName,const QString& themePath )  :
-	m_theme( themeName ),
-	m_themePath( themePath )
-{
-	this->updateThemes() ;
-
-	if( !this->typesUntranslated().contains( m_theme ) ){
-
-		m_theme = this->unTranslatedAt( 0 ) ;
-	}
-}
-
-themes::themes( const QString& themePath ) : m_themePath( themePath )
-{
-	this->updateThemes() ;
-}
-
-QStringList themes::typesUntranslated() const
-{
-	QStringList m ;
-
-	for( const auto& it : m_strings ){
-
-		m.append( it.untranslated ) ;
-	}
-
-	return m ;
-}
-
-QStringList themes::typesTranslated() const
-{
-	QStringList m ;
-
-	for( const auto& it : m_strings ){
-
-		m.append( it.translated ) ;
-	}
-
-	return m ;
-}
-
-const QString & themes::translatedAt( int s ) const
-{
-	return m_strings[ static_cast< size_t >( s ) ].translated ;
-}
-
-const QString & themes::unTranslatedAt( int s ) const
-{
-	return m_strings[ static_cast< size_t >( s ) ].untranslated ;
-}
-
-int themes::translatedIndexAt( const QString& e ) const
-{
-	for( size_t i = 0 ; i < m_strings.size() ; i++ ){
-
-		if( m_strings[ i ].translated == e ){
-
-			return static_cast< int >( i ) ;
-		}
-	}
-
-	return 0 ;
-}
-
-int themes::unTranslatedIndexAt( const QString& e ) const
-{
-	for( size_t i = 0 ; i < m_strings.size() ; i++ ){
-
-		if( m_strings[ i ].untranslated == e ){
-
-			return static_cast< int >( i ) ;
-		}
-	}
-
-	return 0 ;
-}
-
-bool themes::usingThemes() const
-{
-	return this->unTranslatedAt( 0 ) != m_theme ;
-}
-
-void themes::setComboBox( QComboBox& cb,const QString& dm ) const
-{
-	cb.clear() ;
-
-	cb.addItems( this->typesTranslated() ) ;
-
-	cb.setCurrentIndex( this->unTranslatedIndexAt( dm ) ) ;
-}
-
-QString themes::defaultthemeFullPath() const
-{
-	return m_themePath + "/" + m_defaultDarkTheme + ".json" ;
-}
-
-QString themes::themeFullPath() const
-{
-	if( m_theme == m_defaultDarkTheme ){
-
-		return this->defaultthemeFullPath() ;
-	}else{
-		return m_themePath + "/" + m_theme + ".json" ;
-	}
-}
-
-void themes::setDefaultTheme( QApplication& app ) const
-{
-	this->setTheme( app,this->defaultTheme() ) ;
-}
-
 void themes::setTheme( QApplication& app,const QJsonObject& obj ) const
 {
 	app.setStyle( QStyleFactory::create( "Fusion" ) ) ;
@@ -165,260 +54,107 @@ void themes::setTheme( QApplication& app,const QJsonObject& obj ) const
 	}
 }
 
-QJsonObject themes::defaultTheme() const
+QJsonObject themes::darkTheme() const
 {
-	QJsonObject obj ;
-
-	obj.insert( "darkColor",[](){
-
-		QJsonObject obj ;
-
-		obj.insert( "rgba",[](){
-
-			QJsonArray arr ;
-
-			arr.append( 45 ) ;
-			arr.append( 45 ) ;
-			arr.append( 45 ) ;
-			arr.append( 255 ) ;
-
-			return arr ;
-		}() ) ;
-
-		return obj ;
-	}() ) ;
-
-	obj.insert( "disabledColor",[](){
-
-		QJsonObject obj ;
-
-		obj.insert( "rgba",[](){
-
-			QJsonArray arr ;
-
-			arr.append( 127 ) ;
-			arr.append( 127 ) ;
-			arr.append( 127 ) ;
-			arr.append( 255 ) ;
-
-			return arr ;
-		}() ) ;
-
-		return obj ;
-	}() ) ;
-
-	obj.insert( "QPalette::WindowText",[](){
-
-		QJsonObject obj ;
-
-		obj.insert( "Qt::GlobalColor","Qt::lightGray" ) ;
-
-		return obj ;
-	}() ) ;
-
-	obj.insert( "QPalette::Window",[](){
-
-		QJsonObject obj ;
-
-		obj.insert( "GlobalColor","darkColor" ) ;
-
-		return obj ;
-	}() ) ;
-
-	obj.insert( "QPalette::Base",[](){
-
-		QJsonObject obj ;
-
-		obj.insert( "rgba",[](){
-
-			QJsonArray arr ;
-
-			arr.append( 41 ) ;
-			arr.append( 42 ) ;
-			arr.append( 43 ) ;
-			arr.append( 255 ) ;
-
-			return arr ;
-		}() ) ;
-
-		return obj ;
-	}() ) ;
-
-	obj.insert( "QPalette::AlternateBase",[](){
-
-		QJsonObject obj ;
-
-		obj.insert( "GlobalColor","darkColor" ) ;
-
-		return obj ;
-	}() ) ;
-
-	obj.insert( "QPalette::ToolTipBase",[](){
-
-		QJsonObject obj ;
-
-		obj.insert( "GlobalColor","darkColor" ) ;
-
-		return obj ;
-	}() ) ;
-
-	obj.insert( "QPalette::ToolTipText",[](){
-
-		QJsonObject obj ;
-
-		obj.insert( "Qt::GlobalColor","Qt::lightGray" ) ;
-
-		return obj ;
-	}() ) ;
-
-	obj.insert( "QPalette::Text",[](){
-
-		QJsonObject obj ;
-
-		obj.insert( "Qt::GlobalColor","Qt::lightGray" ) ;
-
-		return obj ;
-	}() ) ;
-
-	obj.insert( "QPalette::Disabled,QPalette::Text",[](){
-
-		QJsonObject obj ;
-
-		obj.insert( "GlobalColor","disabledColor" ) ;
-
-		return obj ;
-	}() ) ;
-
-	obj.insert( "QPalette::Button",[](){
-
-		QJsonObject obj ;
-
-		obj.insert( "GlobalColor","darkColor" ) ;
-
-		return obj ;
-	}() ) ;
-
-	obj.insert( "QPalette::ButtonText",[](){
-
-		QJsonObject obj ;
-
-		obj.insert( "Qt::GlobalColor","Qt::lightGray" ) ;
-
-		return obj ;
-	}() ) ;
-
-	obj.insert( "QPalette::Disabled,QPalette::ButtonText",[](){
-
-		QJsonObject obj ;
-
-		obj.insert( "GlobalColor","disabledColor" ) ;
-
-		return obj ;
-	}() ) ;
-
-	obj.insert( "QPalette::BrightText",[](){
-
-		QJsonObject obj ;
-
-		obj.insert( "Qt::GlobalColor","Qt::yellow" ) ;
-
-		return obj ;
-	}() ) ;
-
-	obj.insert( "QPalette::Link",[](){
-
-		QJsonObject obj ;
-
-		obj.insert( "rgba",[](){
-
-			QJsonArray arr ;
-
-			arr.append( 77 ) ;
-			arr.append( 148 ) ;
-			arr.append( 209 ) ;
-			arr.append( 255 ) ;
-
-			return arr ;
-		}() ) ;
-
-		return obj ;
-	}() ) ;
-
-	obj.insert( "QPalette::Highlight",[](){
-
-		QJsonObject obj ;
-
-		obj.insert( "rgba",[](){
-
-			QJsonArray arr ;
-
-			arr.append( 27 ) ;
-			arr.append( 129 ) ;
-			arr.append( 231 ) ;
-			arr.append( 255 ) ;
-
-			return arr ;
-		}() ) ;
-
-		return obj ;
-	}() ) ;
-
-	obj.insert( "QPalette::HighlightedText",[](){
-
-		QJsonObject obj ;
-
-		obj.insert( "Qt::GlobalColor","Qt::black" ) ;
-
-		return obj ;
-	}() ) ;
-
-	obj.insert( "QPalette::Disabled,QPalette::HighlightedText",[](){
-
-		QJsonObject obj ;
-
-		obj.insert( "GlobalColor","disabledColor" ) ;
-
-		return obj ;
-	}() ) ;
+	auto obj = this->baseTheme() ;
+
+	obj.insert( "darkColor",45,45,45,255 ) ;
+
+	return obj ;
+}
+
+QJsonObject themes::lightTheme() const
+{
+	JObject obj ;
+
+	obj.insert( "disabledColor",127,127,127,255 ) ;
+	obj.insert( "QPalette::Base",255,255,255,255 ) ;
+	obj.insert( "QPalette::Link",77,148,209,255 ) ;
+	obj.insert( "QPalette::Highlight",27,129,231,255 ) ;
+
+	obj.insert( "darkColor",230,230,230,255 ) ;
+
+	obj.insert( "QPalette::WindowText","Qt::GlobalColor","Qt::black" ) ;
+	obj.insert( "QPalette::Window","GlobalColor","darkColor" ) ;
+	obj.insert( "QPalette::AlternateBase","GlobalColor","darkColor" ) ;
+	obj.insert( "QPalette::ToolTipBase","GlobalColor","darkColor" ) ;
+	obj.insert( "QPalette::ToolTipText","Qt::GlobalColor","Qt::black" ) ;
+	obj.insert( "QPalette::Text","Qt::GlobalColor","Qt::black" ) ;
+	obj.insert( "QPalette::Disabled,QPalette::Text","GlobalColor","disabledColor" ) ;
+	obj.insert( "QPalette::Button","GlobalColor","darkColor" ) ;
+	obj.insert( "QPalette::ButtonText","Qt::GlobalColor","Qt::black" ) ;
+	obj.insert( "QPalette::Disabled,QPalette::ButtonText","GlobalColor","disabledColor" ) ;
+	obj.insert( "QPalette::BrightText","Qt::GlobalColor","Qt::yellow" ) ;
+	obj.insert( "QPalette::HighlightedText","Qt::GlobalColor","Qt::black" ) ;
+	obj.insert( "QPalette::Disabled,QPalette::HighlightedText","GlobalColor","disabledColor" ) ;
 
 	obj.insert( "QToolTipStyleSheet","QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }" ) ;
 
 	return obj ;
 }
 
-void themes::setUpTheme( QApplication& app,const QString& themeBasePath )
+themes::themes( QApplication& app,const QString& themeBasePath,const QString& themeName )
 {
-	themes ths( themes::defaultDarkThemeName(),themeBasePath ) ;
-
 	QDir().mkpath( themeBasePath ) ;
 
-	auto defaultThemePath = ths.defaultthemeFullPath() ;
+	auto themePath = themeBasePath + "/" + themeName ;
 
-	if( !QFile::exists( defaultThemePath ) ){
+	if( !QFile::exists( themePath ) ){
 
-		QFile f( defaultThemePath ) ;
+		QFile f( themePath ) ;
 
 		if( f.open( QIODevice::WriteOnly ) ){
 
-			f.write( QJsonDocument( ths.defaultTheme() ).toJson( QJsonDocument::Indented ) ) ;
+			if( themeName == "dark.json" ){
+
+				f.write( QJsonDocument( this->darkTheme() ).toJson( QJsonDocument::Indented ) ) ;
+
+			}else if( themeName == "light.json" ){
+
+				f.write( QJsonDocument( this->lightTheme() ).toJson( QJsonDocument::Indented ) ) ;
+			}
 		}
 	}
 
-	QFile f( ths.themeFullPath() ) ;
+	QFile f( themePath ) ;
 
-	if( !f.open( QIODevice::ReadOnly ) ){
+	if( f.open( QIODevice::ReadOnly ) ){
 
-		ths.setDefaultTheme( app ) ;
-	}else{
 		auto obj = QJsonDocument::fromJson( f.readAll() ).object() ;
 
-		if( obj.isEmpty() ){
+		if( !obj.isEmpty() ){
 
-			return ths.setDefaultTheme( app ) ;
+			this->setTheme( app,obj ) ;
 		}
-
-		ths.setTheme( app,obj ) ;
 	}
+}
+
+themes::JObject themes::baseTheme() const
+{
+	JObject obj ;
+
+	obj.insert( "disabledColor",127,127,127,255 ) ;
+	obj.insert( "QPalette::Base",41,42,43,255 ) ;
+	obj.insert( "QPalette::Link",77,148,209,255 ) ;
+	obj.insert( "QPalette::Highlight",27,129,231,255 ) ;
+
+	obj.insert( "QPalette::WindowText","Qt::GlobalColor","Qt::lightGray" ) ;
+	obj.insert( "QPalette::Window","GlobalColor","darkColor" ) ;
+	obj.insert( "QPalette::AlternateBase","GlobalColor","darkColor" ) ;
+	obj.insert( "QPalette::ToolTipBase","GlobalColor","darkColor" ) ;
+	obj.insert( "QPalette::ToolTipText","Qt::GlobalColor","Qt::lightGray" ) ;
+	obj.insert( "QPalette::Text","Qt::GlobalColor","Qt::lightGray" ) ;
+	obj.insert( "QPalette::Disabled,QPalette::Text","GlobalColor","disabledColor" ) ;
+	obj.insert( "QPalette::Button","GlobalColor","darkColor" ) ;
+	obj.insert( "QPalette::ButtonText","Qt::GlobalColor","Qt::lightGray" ) ;
+	obj.insert( "QPalette::Disabled,QPalette::ButtonText","GlobalColor","disabledColor" ) ;
+	obj.insert( "QPalette::BrightText","Qt::GlobalColor","Qt::yellow" ) ;
+	obj.insert( "QPalette::HighlightedText","Qt::GlobalColor","Qt::black" ) ;
+	obj.insert( "QPalette::Disabled,QPalette::HighlightedText","GlobalColor","disabledColor" ) ;
+
+	obj.insert( "QToolTipStyleSheet","QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }" ) ;
+
+	return obj ;
 }
 
 static QColor _qtColor( const QString& aa )
@@ -579,31 +315,4 @@ QColor themes::getColor( const QString& e,const QJsonObject& obj ) const
 	}else{
 		return _qtColor( a.toString() ) ;
 	}
-}
-
-void themes::updateThemes()
-{
-	auto s = QDir( m_themePath ).entryList( QDir::Filter::Files ) ;
-
-	s.removeOne( m_defaultDarkTheme + ".json" ) ;
-
-	for( auto& it : s ){
-
-		it.replace( ".json","" ) ;
-
-		m_strings.emplace_back( it,it ) ;
-	}
-}
-
-int themes::indexAt( const QString& e,const QStringList& s ) const
-{
-	for( int i = 0 ; i < s.size() ; i++ ){
-
-		if( s[ i ] == e ){
-
-			return i ;
-		}
-	}
-
-	return 0 ;
 }
