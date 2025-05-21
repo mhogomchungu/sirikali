@@ -317,8 +317,6 @@ configOptions::functions sirikali::configOption()
 
 void sirikali::closeApplication( int s,const QString& e )
 {
-	m_secrets.close() ;
-
 	if( m_ui && !m_emergencyShuttingDown ){
 
 		auto m = processManager::get().enginesList() ;
@@ -346,6 +344,8 @@ void sirikali::closeApplication( int s,const QString& e )
 			}
 		}
 	}
+
+	m_secrets.close() ;
 
 	utility::quitHelper() ;
 
@@ -2503,14 +2503,59 @@ void sirikali::unMountAll()
 	m_mountInfo.announceEvents( true ) ;
 }
 
+bool sirikali::unMountAllBeforeQuitting()
+{
+	m_mountInfo.announceEvents( false ) ;
+	m_allowEnableAll.setFalse() ;
+
+	this->disableAll() ;
+
+	this->processMountedVolumes( m_ui->tableWidget,[ this ]( const mountedEntry& e ){
+
+		if( this->unMountVolume( e ).success() ){
+
+			tablewidget::deleteRow( m_ui->tableWidget,e.mountPoint,1 ) ;
+
+			utility::waitForOneSecond() ;
+		}
+	} ) ;
+
+	auto m = m_ui->tableWidget->rowCount() ;
+
+	if( m > 0 ){
+
+		if( m == 1 ){
+
+			DialogMsg( this ).ShowUIOK( tr( "WARNING" ),tr( "Failed To Unmount 1 Volume." ) ) ;
+		}else{
+			DialogMsg( this ).ShowUIOK( tr( "WARNING" ),tr( "Failed To Unmount %1 Volumes." ).arg( m ) ) ;
+		}
+
+		m_allowEnableAll.setTrue() ;
+
+		this->updateList() ;
+
+		this->enableAll() ;
+
+		m_mountInfo.announceEvents( true ) ;
+
+		return true ;
+	}else{
+		return false ;
+	}
+}
+
 void sirikali::unMountAllAndQuit()
 {
-	if( m_ui->tableWidget->rowCount() == 0 ){
+	if( m_ui->tableWidget->rowCount() != 0 ){
 
-		this->hide() ;
-	}else{
-		this->unMountAll() ;
+		if( this->unMountAllBeforeQuitting() ){
+
+			return ;
+		}
 	}
+
+	this->hide() ;
 
 	this->closeApplication() ;
 }

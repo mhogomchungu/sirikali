@@ -106,6 +106,7 @@ private:
 	void setUpApp( const QString& ) ;
 	void enableAll() ;
 	void unMountAll() ;
+	bool unMountAllBeforeQuitting() ;
 	void autoMountFavoritesOnAvailable( QString ) ;
 
 	void favoriteClickedA( QAction * ) ;
