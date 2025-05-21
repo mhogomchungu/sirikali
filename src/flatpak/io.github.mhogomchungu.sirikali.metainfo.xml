@@ -36,8 +36,18 @@
 	</categories>
 
 	<releases>
+		<release version="1.8.3" type="stable" date="unreleased" >
+			<url type="details">https://github.com/mhogomchungu/sirikali/releases/download/$version/sirikali-$version.tar.xz/</url>
+			<description>
+				<p>Changelog</p>
+				<ul>
+					<li>Fix a bug that caused the app to close instead of minimizing to tray.</li>
+					<li>Fix a bug that caused unlocked favorites on the tray menu to show up twice.</li>
+				</ul>
+			</description>
+		</release>
 		<release version="1.8.2" type="stable" date="2025-04-20" >
-		<url type="details">https://github.com/mhogomchungu/sirikali/releases/download/$version/sirikali-$version.tar.xz/</url>
+			<url type="details">https://github.com/mhogomchungu/sirikali/releases/download/$version/sirikali-$version.tar.xz/</url>
 			<description>
 				<p>Changelog</p>
 				<ul>

@@ -325,3 +325,9 @@ version 1.4.2(December 18,2019)
    [ALL]
 -- Fix a build error when building with Qt >= 6.9.
 -- Add UI config for 3 theme options and they are platform default, light theme and dark theme.
+
+   version 1.8.3(Unreleased)
+   [WINDOWS and FLATPAK]
+-- Fix a bug that caused the app to close instead of minimizing to tray.
+   [ALL]
+-- Fix a bug that caused unlocked favorites on the tray menu to show up twice.
