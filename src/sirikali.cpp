@@ -368,6 +368,14 @@ void sirikali::closeApplication( int s,const QString& e )
 
 void sirikali::closeApp()
 {
+	auto m = m_ui->tableWidget->rowCount() ;
+
+	if( m == 0 || utility::platformIsLinux() || utility::platformIsOSX() ){
+
+		this->hide() ;
+
+	}
+
 	this->closeApplication() ;
 }
 
@@ -2512,12 +2520,14 @@ void sirikali::unMountAll()
 
 void sirikali::unMountAllAndQuit()
 {
-	this->unMountAll() ;
-
 	if( m_ui->tableWidget->rowCount() == 0 ){
 
-		this->closeApplication() ;
+		this->hide() ;
+	}else{
+		this->unMountAll() ;
 	}
+
+	this->closeApplication() ;
 }
 
 void sirikali::updateList()
