@@ -2099,7 +2099,8 @@ class mountedVolumes{
 public:
 	mountedVolumes( QTableWidget * table ) :
 		m_cipherPath( tablewidget::columnEntries( table,0 ) ),
-		m_mountPath( tablewidget::columnEntries( table,1 ) )
+		m_mountPath( tablewidget::columnEntries( table,1 ) ),
+		m_mode( tablewidget::columnEntries( table,3 ) )
 	{
 	}
 	int row( const QString& e )
@@ -2112,7 +2113,7 @@ public:
 
 			for( int i = 0 ; i < m_cipherPath.size() ; i++ ){
 
-				if( m == m_cipherPath.at( i ) ){
+				if( m == this->cipherPath( i ) ){
 
 					return i ;
 				}
@@ -2123,7 +2124,7 @@ public:
 
 			for( int i = 0 ; i < m_cipherPath.size() ; i++ ){
 
-				if( x == m_cipherPath.at( i ) && y == m_mountPath.at( i ) ){
+				if( x == this->cipherPath( i ) && y == m_mountPath.at( i ) ){
 
 					return i ;
 				}
@@ -2172,8 +2173,13 @@ public:
 		}
 	}
 private:
+	QString cipherPath( int s )
+	{
+		return m_cipherPath.at( s ) + "(" + m_mode.at( s ) + ")" ;
+	}
 	QStringList m_cipherPath ;
 	QStringList m_mountPath ;
+	QStringList m_mode ;
 };
 
 void sirikali::updateFavoritesInContextMenu()

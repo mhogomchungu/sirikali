@@ -252,7 +252,7 @@ static QByteArray _get_log( const QString& path )
 
 QByteArray securefs::extraLogOutput( const engines::engine::args& e ) const
 {
-	if( m_version_greater_or_equal_1_0_0  && utility::platformIsNOTWindows() ){
+	if( m_version_greater_or_equal_1_0_0 && utility::platformIsNOTWindows() ){
 
 		const auto& opts = e.cmd_args ;
 
