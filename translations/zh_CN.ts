@@ -91,11 +91,12 @@
     <message>
         <source>Failed To Unmount %1 Volume
 Mount Point Still In Use</source>
-        <translation type="unfinished"></translation>
+        <translation>无法卸载 %1 卷
+挂载点仍在使用中</translation>
     </message>
     <message>
         <source>Failed To UnMount Because &quot;fusermount&quot; Executable Could Not Be Found.</source>
-        <translation type="unfinished"></translation>
+        <translation>卸载失败，因为找不到“fusermount”可执行文件。</translation>
     </message>
     <message>
         <source>This Fscrypt Volume Requires A KeyFile.</source>
@@ -258,7 +259,7 @@ options:
 	-u   Unmount volume.
 	-p   Print a list of unlocked volumes.
 	-s   Option to trigger generation of password hash.</source>
-        <translation type="unfinished">
+        <translation>
 选项：
 	-d   自动挂载/卸载卷的所在路径。
 	-m   打开文件夹的默认文件管理器（默认工具为 xdg-open）。
@@ -286,15 +287,15 @@ options:
     </message>
     <message>
         <source>about SiriKali</source>
-        <translation type="unfinished">关于 SiriKali</translation>
+        <translation>关于 SiriKali</translation>
     </message>
     <message>
         <source>Policy:</source>
-        <translation type="unfinished">政策：</translation>
+        <translation>原则：</translation>
     </message>
     <message>
         <source>Comment:</source>
-        <translation type="unfinished">注释：</translation>
+        <translation>注释：</translation>
     </message>
     <message>
         <source>This plugin delegates key generation to an external application</source>
@@ -338,11 +339,11 @@ options:
     </message>
     <message>
         <source>Spanish (SP)</source>
-        <translation type="unfinished"></translation>
+        <translation>西班牙语 (SP)</translation>
     </message>
     <message>
         <source>Chinese Simplified (zh-CN)</source>
-        <translation type="unfinished"></translation>
+        <translation>简体中文 (zh-CN)</translation>
     </message>
     <message>
         <source>Select %1 Configuration File.</source>
@@ -374,23 +375,23 @@ options:
     </message>
     <message>
         <source>Extracting archive</source>
-        <translation type="unfinished"></translation>
+        <translation>提取档案</translation>
     </message>
     <message>
         <source>Failed To Extract</source>
-        <translation type="unfinished"></translation>
+        <translation>未能提取</translation>
     </message>
     <message>
         <source>Failed To Find &quot;bsdtar.exe&quot; Executable</source>
-        <translation type="unfinished"></translation>
+        <translation>无法找到 “bsdtar.exe” 可执行文件</translation>
     </message>
     <message>
         <source>Failed To Find &quot;bsdtar&quot; Executable</source>
-        <translation type="unfinished"></translation>
+        <translation>无法找到 “bsdtar” 可执行文件</translation>
     </message>
     <message>
         <source>Update Complete</source>
-        <translation type="unfinished"></translation>
+        <translation>更新完成</translation>
     </message>
 </context>
 <context>
@@ -409,11 +410,11 @@ options:
     </message>
     <message>
         <source>Enter Current Password Below.</source>
-        <translation>在下方输入当前密码。</translation>
+        <translation>在下面输入当前密码。</translation>
     </message>
     <message>
         <source>Enter New Password Below.</source>
-        <translation>在下方输入新密码。</translation>
+        <translation>在下面输入新密码。</translation>
     </message>
     <message>
         <source>Re Enter New Password Below.</source>
@@ -430,7 +431,7 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Monospace&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;An application &apos;&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt; font-weight:600;&quot;&gt;%1&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;&apos; has made a request for a password of its wallet &apos;&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt; font-weight:600;&quot;&gt;%2&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;&apos; to be changed&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Monospace&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
@@ -447,70 +448,70 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Monospace&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;在下方输入密码信息来为应用程序“&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt; font-weight:600;&quot;&gt;%2&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;”新建一个钱包 “&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt; font-weight:600;&quot;&gt;%1&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;”&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;在下面输入密码信息来为应用程序“&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt; font-weight:600;&quot;&gt;%2&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;”新建一个钱包 “&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt; font-weight:600;&quot;&gt;%1&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;”&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
 </context>
 <context>
     <name>checkforupdateswindow</name>
     <message>
         <source>Dialog</source>
-        <translation type="unfinished">对话框</translation>
+        <translation>对话框</translation>
     </message>
     <message>
         <source>&amp;OK</source>
-        <translation type="unfinished">确定(&amp;O)</translation>
+        <translation>确定(&amp;O)</translation>
     </message>
     <message>
         <source>Updates</source>
-        <translation type="unfinished"></translation>
+        <translation>更新</translation>
     </message>
     <message>
         <source>Version Info</source>
-        <translation type="unfinished"></translation>
+        <translation>版本信息</translation>
     </message>
     <message>
         <source>Update</source>
-        <translation type="unfinished"></translation>
+        <translation>更新</translation>
     </message>
     <message>
         <source>Update Disabled</source>
-        <translation type="unfinished"></translation>
+        <translation>更新已禁用</translation>
     </message>
     <message>
         <source>Installed Version: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>安装版本：%1</translation>
     </message>
     <message>
         <source>Latest Version: %1 </source>
-        <translation type="unfinished"></translation>
+        <translation>最新版本：%1 </translation>
     </message>
     <message>
         <source>Downloading %1</source>
-        <translation type="unfinished"></translation>
+        <translation>下载中 %1</translation>
     </message>
     <message>
         <source>Download Complete</source>
-        <translation type="unfinished"></translation>
+        <translation>下载完成</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>错误</translation>
     </message>
     <message>
         <source>Download Failed</source>
-        <translation type="unfinished"></translation>
+        <translation>下载失败</translation>
     </message>
     <message>
         <source>Network Timed Out</source>
-        <translation type="unfinished"></translation>
+        <translation>网络超时</translation>
     </message>
     <message>
         <source>Failed To Open Path For Writing</source>
-        <translation type="unfinished"></translation>
+        <translation>无法打开路径进行写入</translation>
     </message>
     <message>
         <source>Failed To Find Archive To Download</source>
-        <translation type="unfinished"></translation>
+        <translation>未能找到可下载的文件</translation>
     </message>
 </context>
 <context>
@@ -594,7 +595,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Manage Cryfs/Securefs/Gocryptfs</source>
-        <translation type="unfinished"></translation>
+        <translation>管理 Cryfs/Securefs/Gocryptfs</translation>
     </message>
     <message>
         <source>External Commands</source>
@@ -642,31 +643,31 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Manage Securefs, Gocryptfs, Cryfs And Cryptomator</source>
-        <translation type="unfinished"></translation>
+        <translation>管理 Securefs、Gocryptfs、Cryfs 和 Cryptomator</translation>
     </message>
     <message>
         <source>Manage Securefs, Cppcryptfs And Cryptomator</source>
-        <translation type="unfinished"></translation>
+        <translation>管理 Securefs，Cppcryptfs 和 Cryptomator</translation>
     </message>
     <message>
         <source>Manage Securefs And Gocryptfs</source>
-        <translation type="unfinished"></translation>
+        <translation>管理 Securefs 和 Gocryptfs</translation>
     </message>
     <message>
         <source>Manage Securefs</source>
-        <translation type="unfinished"></translation>
+        <translation>管理 Securefs</translation>
     </message>
     <message>
         <source>Platform Default Theme</source>
-        <translation type="unfinished"></translation>
+        <translation>默认主题</translation>
     </message>
     <message>
         <source>Dark Theme</source>
-        <translation type="unfinished"></translation>
+        <translation>深色主题</translation>
     </message>
     <message>
         <source>Light Theme</source>
-        <translation type="unfinished"></translation>
+        <translation>浅色主题</translation>
     </message>
 </context>
 <context>
@@ -984,15 +985,15 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Enter KeyFile Path Below(Optional)</source>
-        <translation type="unfinished"></translation>
+        <translation>在下面输入密钥文件路径（可选）</translation>
     </message>
     <message>
         <source>Enter Volume Path Below</source>
-        <translation>在下方输入卷路径</translation>
+        <translation>在下面输入卷路径</translation>
     </message>
     <message>
         <source>Enter Password Below</source>
-        <translation>在下方输入密码</translation>
+        <translation>在下面输入密码</translation>
     </message>
     <message>
         <source>Add Volume To Selected Wallet</source>
@@ -1060,7 +1061,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Path To KeyFile</source>
-        <translation type="unfinished"></translation>
+        <translation>密钥文件路径</translation>
     </message>
     <message>
         <source>Toggle AutoMount</source>
@@ -1171,7 +1172,7 @@ woof@example.com:/remote/path</translation>
     </message>
     <message>
         <source>Enter Below The Name Of The Application You Want To Be Used To Open Mount Points.</source>
-        <translation>在下方输入要使用哪个应用程序来打开挂载点。</translation>
+        <translation>在下面输入要使用哪个应用程序来打开挂载点。</translation>
     </message>
     <message>
         <source>Set Executable For &quot;ExternalExecutable&quot; Plugin</source>
@@ -1179,7 +1180,7 @@ woof@example.com:/remote/path</translation>
     </message>
     <message>
         <source>Enter Below The Name Of The External Executable And Its Arguments To Use When Invoking &quot;ExternalExecutable&quot; Plugin.</source>
-        <translation>在下方输入调用 &quot;ExternalExecutable&quot; 插件时要使用的外部可执行文件及参数。</translation>
+        <translation>在下面输入调用 &quot;ExternalExecutable&quot; 插件时要使用的外部可执行文件及参数。</translation>
     </message>
 </context>
 <context>
@@ -1361,7 +1362,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>TextLabel</source>
-        <translation type="unfinished">TextLabel</translation>
+        <translation>TextLabel</translation>
     </message>
     <message>
         <source>O&amp;ptions</source>
@@ -1433,15 +1434,15 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Passphrase Quality: 0%</source>
-        <translation type="unfinished">口令质量：0%</translation>
+        <translation>密码短语质量：0%</translation>
     </message>
     <message>
         <source>Passphrase Quality: %1%</source>
-        <translation>口令质量：%1%</translation>
+        <translation>密码短语质量：%1%</translation>
     </message>
     <message>
         <source>Passphrase Quality: 100%</source>
-        <translation>口令质量：100%</translation>
+        <translation>密码短语质量：100%</translation>
     </message>
     <message>
         <source>Select A Folder To Create A Mount Point In.</source>
@@ -1471,7 +1472,7 @@ p, li { white-space: pre-wrap; }
         <source>Volume Not Found in &quot;%1&quot;.
 
 Set The Volume Key To Add It To The Wallet Before Mounting.</source>
-        <translation type="unfinished">找不到“%1”卷。
+        <translation>找不到“%1”卷。
 
 挂载前设置卷密钥以添加到钱包中。</translation>
     </message>
@@ -1620,7 +1621,7 @@ Set The Volume Key To Add It To The Wallet Before Mounting.</source>
     </message>
     <message>
         <source>The application &apos;%1&apos; has requested to open the wallet &apos;%2&apos;.Enter the password below for this wallet to unlock it</source>
-        <translation>应用程序“%1”请求打开钱包“%2”。在下方输入此钱包的密码来解锁</translation>
+        <translation>应用程序“%1”请求打开钱包“%2”。在下面输入此钱包的密码来解锁</translation>
     </message>
     <message>
         <source>Wallet &apos;%1&apos; does not exist,do you want to create it?</source>
@@ -1648,7 +1649,7 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Monospace&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;应用程序 &lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt; font-weight:600;&quot;&gt;“%1”&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt; 请求打开钱包&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt; font-weight:600;&quot;&gt;“%2”&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;。在下方输入此钱包的密码来解锁。&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;应用程序 &lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt; font-weight:600;&quot;&gt;“%1”&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt; 请求打开钱包&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt; font-weight:600;&quot;&gt;“%2”&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;。在下面输入此钱包的密码来解锁。&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>&amp;Unlock</source>
@@ -1890,7 +1891,7 @@ lite 格式已成为类 Unix 操作系统上的默认方式，因为更快、更
     </message>
     <message>
         <source>Open Folder With %1</source>
-        <translation type="unfinished"></translation>
+        <translation>打开文件夹 %1</translation>
     </message>
     <message>
         <source>Unmount</source>
