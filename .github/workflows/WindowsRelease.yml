@@ -16,27 +16,12 @@ env:
 
 jobs:
   WindowsRelease:
-    runs-on: windows-latest
+    runs-on: windows-2022
     steps:
     -
       uses: actions/checkout@v4
       with:
          path: SiriKali
-    -
-      name: Install mingw
-      uses: msys2/setup-msys2@v2
-      with:
-            install: mingw-w64-i686-gcc
-            msystem: mingw32
-            location: ${{github.workspace}}
-    -
-      name: update env for Qt5
-      run: echo "${{github.workspace}}/msys64/mingw32/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-    -
-      name: Check GCC version and path for Qt5
-      run: |
-          Write-Output (Get-Command c++.exe).Path
-          c++.exe --version
     -
       name: Install Qt5
       uses: jurplel/install-qt-action@v3
@@ -47,6 +32,15 @@ jobs:
         install-deps: "true"
         host: 'windows'
         target: 'desktop'
+        tools: 'tools_mingw81,qt.tools.win32_mingw810'
+    -
+      name: update env for Qt5
+      run: echo "${{github.workspace}}/msys64/mingw32/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+    -
+      name: Check GCC version and path for Qt5
+      run: |
+          Write-Output (Get-Command c++.exe).Path
+          c++.exe --version
     -
       name: Download dependencies
       run: |
