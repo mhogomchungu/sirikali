@@ -26,13 +26,15 @@
 #include "json_parser.hpp"
 #include "engines.h"
 
-checkUpdates::checkUpdates( QWidget * widget,checkforupdateswindow::functions ff ) :
-	m_widget( widget ),
+#include "sirikali.h"
+
+checkUpdates::checkUpdates( sirikali * parent ) :
+	m_widget( parent ),
 	m_timeOut( settings::instance().networkTimeOut() * 1000 ),
 	m_network( m_timeOut ),
 	m_running( false ),
-	m_functions( std::move( ff ) ),
-	m_basePath( engines::defaultBinPath() )
+	m_basePath( engines::defaultBinPath() ),
+	m_sirikali( *parent )
 {
 	m_networkRequest.setRawHeader( "Host","api.github.com" ) ;
 	m_networkRequest.setRawHeader( "Accept-Encoding","text/plain" ) ;
@@ -56,7 +58,7 @@ void checkUpdates::check()
 {
 	m_running = true ;
 
-	auto& m = checkforupdateswindow::instance( m_widget,m_functions,m_network ) ;
+	auto& m = checkforupdateswindow::instance( m_sirikali,m_network ) ;
 
 	connect( this,&checkUpdates::update,&m,&checkforupdateswindow::add ) ;
 	connect( this,&checkUpdates::done,&m,&checkforupdateswindow::doneUpdating ) ;
@@ -73,7 +75,7 @@ void checkUpdates::check()
 
 	m.show() ;
 
-	m_functions.first() ;
+	m_sirikali.disableAll() ;
 
 	this->checkForUpdate() ;
 }

@@ -38,7 +38,7 @@ configFileOption::configFileOption( QWidget * parent,
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbOpenPath,SIGNAL( clicked() ),this,SLOT( pbSetConfigFile() ) ) ;
 
-    m_ui->pbOpenPath->setIcon( QIcon( ":/icons/folder.png" ) ) ;
+	m_ui->pbOpenPath->setIcon( QIcon( ":/icons/folder.png" ) ) ;
 
 	this->show() ;
 }

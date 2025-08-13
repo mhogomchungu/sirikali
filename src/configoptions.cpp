@@ -24,15 +24,14 @@
 
 #include <QFileDialog>
 
-configOptions::configOptions( QWidget * parent,
-			      secrets& a,
-			      QMenu * m,
-			      configOptions::functions f ) :
-	QDialog( parent ),
+#include "sirikali.h"
+
+configOptions::configOptions( sirikali * s,secrets& a,QMenu * m ) :
+	QDialog( s ),
 	m_ui( new Ui::configOptions ),
-	m_functions( std::move( f ) ),
 	m_secrets( a ),
-	m_settings( settings::instance() )
+	m_settings( settings::instance() ),
+	m_sirikali( *s )
 {
 	m_ui->setupUi( this ) ;
 
@@ -149,6 +148,15 @@ configOptions::configOptions( QWidget * parent,
 		m_settings.setStartMinimized( e ) ;
 	} ) ;
 
+	m_ui->cbShowTrayIcon->setChecked( m_settings.showSystemTray() ) ;
+
+	connect( m_ui->cbShowTrayIcon,&QCheckBox::toggled,[ this ]( bool e ){
+
+		m_settings.setShowSystemTray( e ) ;
+
+		m_sirikali.showTrayIcon( e ) ;
+	} ) ;
+
 	if( utility::platformIsWindows() ){
 
 		m_ui->label->setText( tr( "Set Executables Search Path" ) ) ;
@@ -184,7 +192,7 @@ configOptions::configOptions( QWidget * parent,
 
 	connect( m,&QMenu::triggered,[ this ]( QAction * ac ){
 
-		m_functions.function_2( ac ) ;
+		m_sirikali.updateLanguage( ac ) ;
 
 		this->translateUI() ;
 	} ) ;
@@ -383,7 +391,7 @@ void configOptions::ShowUI()
 
 void configOptions::HideUI()
 {
-	m_functions.function_1() ;
+	m_sirikali.enableAllAndSetFileManager() ;
 
 	m_settings.setFileManager( m_ui->lineEditFileManager->text() ) ;
 	m_settings.preUnMountCommand( m_ui->lineEditBeforesUnMount->text() ) ;

@@ -46,9 +46,9 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>190</y>
+       <y>220</y>
        <width>531</width>
-       <height>171</height>
+       <height>141</height>
       </rect>
      </property>
      <property name="title">
@@ -58,9 +58,9 @@
       <property name="geometry">
        <rect>
         <x>100</x>
-        <y>80</y>
+        <y>60</y>
         <width>181</width>
-        <height>41</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="text">
@@ -71,7 +71,7 @@
       <property name="geometry">
        <rect>
         <x>102</x>
-        <y>130</y>
+        <y>100</y>
         <width>101</width>
         <height>31</height>
        </rect>
@@ -81,9 +81,9 @@
       <property name="geometry">
        <rect>
         <x>210</x>
-        <y>110</y>
+        <y>90</y>
         <width>311</width>
-        <height>61</height>
+        <height>51</height>
        </rect>
       </property>
       <property name="text">
@@ -103,7 +103,7 @@
         <x>20</x>
         <y>20</y>
         <width>491</width>
-        <height>71</height>
+        <height>41</height>
        </rect>
       </property>
       <property name="text">
@@ -216,7 +216,7 @@
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>150</y>
+       <y>180</y>
        <width>331</width>
        <height>34</height>
       </rect>
@@ -239,6 +239,25 @@
           <string>Light Theme</string>
          </property>
         </item>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="layoutWidget5_2">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>150</y>
+       <width>331</width>
+       <height>34</height>
+      </rect>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_8">
+      <item>
+       <widget class="QCheckBox" name="cbShowTrayIcon">
+        <property name="text">
+         <string>Show Tray Icon</string>
+        </property>
        </widget>
       </item>
      </layout>

@@ -170,6 +170,8 @@ public:
 	settings() ;
 
 	bool flatpakUpdated() ;
+	bool showSystemTray() ;
+	void setShowSystemTray( bool ) ;
 	bool showCipherFolderAndMountPathInFavoritesList() ;
 	int pollForUpdatesInterval() ;
 	int sshfsBackendTimeout() ;

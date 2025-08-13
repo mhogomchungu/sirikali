@@ -39,6 +39,8 @@
 #include <utility>
 #include <vector>
 
+class sirikali ;
+
 class checkUpdates : public QObject
 {
 	Q_OBJECT
@@ -52,7 +54,7 @@ public:
 
 	void run() ;
 
-	checkUpdates( QWidget * widget,checkforupdateswindow::functions ) ;
+	checkUpdates( sirikali * widget ) ;
 signals:
 	void update( const checkforupdateswindow::args& ) ;
 	void done( bool ) ;
@@ -91,9 +93,9 @@ private:
 
 	std::vector< engines::engine::Wrapper > * m_backendsInUse ;
 
-	checkforupdateswindow::functions m_functions ;
-
 	QString m_basePath ;
+
+	sirikali& m_sirikali ;
 } ;
 
 #else
@@ -113,7 +115,7 @@ public:
 		Q_UNUSED( e )
 	}
 
-	checkUpdates( QWidget * widget,checkforupdateswindow::functions function )
+	checkUpdates( sirikali * widget )
 	{
 		Q_UNUSED( widget )
 		Q_UNUSED( function )

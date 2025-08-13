@@ -34,17 +34,13 @@ namespace Ui {
 class configOptions ;
 }
 
+class sirikali ;
+
 class configOptions : public QDialog
 {
 	Q_OBJECT
 public:
-	struct functions{
-
-		std::function< void() > function_1 ;
-		std::function< void( QAction * ) > function_2 ;
-	};
-
-	configOptions( QWidget * parent,secrets&,QMenu *,functions ) ;
+	configOptions( sirikali *,secrets&,QMenu * ) ;
 	void ShowUI() ;
 	void translateUI() ;
 	~configOptions() ;
@@ -53,9 +49,9 @@ private:
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::configOptions * m_ui ;
-	configOptions::functions m_functions ;
 	secrets& m_secrets ;
 	settings& m_settings ;
+	sirikali& m_sirikali ;
 	std::vector< std::pair< QAction *,const char * > > m_actionPair ;
 };
 

@@ -77,6 +77,11 @@ public:
 
 	sirikali( const QStringList&,QApplication& ) ;
 	void start() ;
+	void showTrayIcon( bool ) ;
+	void updateLanguage( QAction * ac ) ;
+	void enableAllAndSetFileManager() ;
+	void enableAll() ;
+	void disableAll() ;
 	~sirikali() ;
 private:
 	void genericVolumeProperties() ;
@@ -104,7 +109,6 @@ private:
 	void showDebugWindow() ;
 	void slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ;
 	void setUpApp( const QString& ) ;
-	void enableAll() ;
 	void unMountAll() ;
 	bool unMountAllBeforeQuitting() ;
 	void autoMountFavoritesOnAvailable( QString ) ;
@@ -128,8 +132,6 @@ private:
 	void setCreateMenu() ;
 	void mountAll() ;
 	void mountFavorite( const QString& ) ;
-
-	configOptions::functions configOption() ;
 
 	void showTrayIcon() ;
 
@@ -160,7 +162,6 @@ private:
 	void showContextMenu( QTableWidgetItem *,bool ) ;
 	void updateList( const volumeInfo& ) ;
 	void setUpAppMenu() ;
-	void disableAll() ;
 	void closeEvent( QCloseEvent * e ) ;
 	void setUpFont() ;
 	void setUpShortCuts() ;

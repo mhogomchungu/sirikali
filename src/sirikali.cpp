@@ -252,8 +252,8 @@ sirikali::sirikali( const QStringList& args,QApplication& app ) :
 	m_app( app ),
 	m_secrets(),
 	m_mountInfo( this,true,[ & ](){ QCoreApplication::exit( m_exitStatus ) ; },_debug() ),
-	m_checkUpdates( this,{ [ this ](){ this->disableAll() ; },[ this ](){ this->enableAll() ; } } ),
-	m_configOptions( this,m_secrets,&m_language_menu,this->configOption() ),
+	m_checkUpdates( this ),
+	m_configOptions( this,m_secrets,&m_language_menu ),
 	m_signalHandler( this ),
 	m_argumentList( args )
 {
@@ -280,39 +280,6 @@ sirikali::sirikali( const QStringList& args,QApplication& app ) :
 		 Qt::QueuedConnection ) ;
 
 	utility::miscOptions::instance().setMainQtWidget( this ) ;
-}
-
-configOptions::functions sirikali::configOption()
-{
-	auto a = [ this ](){
-
-		this->enableAll() ;
-		m_folderOpener = settings::instance().fileManager() ;
-	} ;
-
-	auto b = [ this ]( QAction * ac ){
-
-		settings::instance().languageMenu( &m_language_menu,ac,m_translator ) ;
-
-		m_ui->retranslateUi( this ) ;
-
-		for( auto& it : m_actionPair ){
-
-			it.first->setText( tr( it.second ) ) ;
-		}
-
-		for( auto& it : m_menuPair ){
-
-			it.first->setTitle( tr( it.second ) ) ;
-		}
-
-		for( auto& it : m_language_menu.actions() ){
-
-			it->setText( m_translator.translate( it->objectName() ) ) ;
-		}
-	} ;
-
-	return { std::move( a ),std::move( b ) } ;
 }
 
 void sirikali::closeApplication( int s,const QString& e )
@@ -373,7 +340,6 @@ void sirikali::closeApp()
 	if( m == 0 || utility::platformIsLinux() || utility::platformIsOSX() ){
 
 		this->hide() ;
-
 	}
 
 	this->closeApplication() ;
@@ -495,14 +461,17 @@ void sirikali::setUpApp( const QString& volume )
 	m_trayIcon.setParent( this ) ;
 	m_trayIcon.setIcon( utility::getIcon( utility::iconType::trayIcon ) ) ;
 
-	this->showTrayIcon() ;
-
 	if( utility::miscOptions::instance().debugEnabled() ){
 
 		this->showDebugWindow() ;
 	}
 
 	auto& ss = settings::instance() ;
+
+	if( ss.showSystemTray() ){
+
+		this->showTrayIcon() ;
+	}
 
 	auto e = ss.runCommandOnInterval() ;
 	auto p = ss.runCommandOnIntervalTime() ;
@@ -2094,7 +2063,46 @@ bool sirikali::attachParent()
 	return !utility::miscOptions::instance().starting() ;
 }
 
-class mountedVolumes{
+void sirikali::showTrayIcon( bool e )
+{
+	if( e ){
+
+		m_trayIcon.show() ;
+	}else{
+		m_trayIcon.hide() ;
+	}
+}
+
+void sirikali::updateLanguage( QAction * ac )
+{
+	settings::instance().languageMenu( &m_language_menu,ac,m_translator ) ;
+
+	m_ui->retranslateUi( this ) ;
+
+	for( auto& it : m_actionPair ){
+
+		it.first->setText( tr( it.second ) ) ;
+	}
+
+	for( auto& it : m_menuPair ){
+
+		it.first->setTitle( tr( it.second ) ) ;
+	}
+
+	for( auto& it : m_language_menu.actions() ){
+
+		it->setText( m_translator.translate( it->objectName() ) ) ;
+	}
+}
+
+void sirikali::enableAllAndSetFileManager()
+{
+	this->enableAll() ;
+	m_folderOpener = settings::instance().fileManager() ;
+}
+
+class mountedVolumes
+{
 public:
 	mountedVolumes( QTableWidget * table ) :
 		m_cipherPath( tablewidget::columnEntries( table,0 ) ),

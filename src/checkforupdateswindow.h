@@ -41,19 +41,17 @@ namespace Ui {
 class checkforupdateswindow;
 }
 
+class sirikali ;
+
 class checkforupdateswindow : public QDialog
 {
 	Q_OBJECT
 public:
-	using functions = std::pair< std::function< void() >,std::function< void() > > ;
-
-	static checkforupdateswindow& instance( QWidget * parent,
-						functions& function,
-						utils::network::manager& nm )
+	static checkforupdateswindow& instance( sirikali& parent,utils::network::manager& nm )
 	{
-		return *( new checkforupdateswindow( parent,function,nm ) ) ;
+		return *( new checkforupdateswindow( parent,nm ) ) ;
 	}
-	checkforupdateswindow( QWidget * parent,functions&,utils::network::manager& ) ;
+	checkforupdateswindow( sirikali& parent,utils::network::manager& ) ;
 
 	struct args
 	{
@@ -140,7 +138,6 @@ private:
 	QNetworkRequest networkRequest( const QString& url ) ;
 
 	Ui::checkforupdateswindow * m_ui ;
-	functions& m_functions ;
 
 	class opts
 	{
@@ -208,6 +205,7 @@ private:
 	utils::network::manager& m_network ;
 	locale m_locale ;
 	QString m_binPath ;
+	sirikali& m_sirikali ;
 	int m_position = -1 ;
 };
 

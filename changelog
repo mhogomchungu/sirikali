@@ -331,3 +331,4 @@ version 1.4.2(December 18,2019)
 -- Fix a bug that caused the app to close instead of minimizing to tray.
    [ALL]
 -- Fix a bug that caused unlocked favorites on the tray menu to show up twice.
+-- Add a GUI option to show or hide a tray icon.

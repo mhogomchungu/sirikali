@@ -196,6 +196,21 @@ bool settings::flatpakUpdated()
 	return updated ;
 }
 
+bool settings::showSystemTray()
+{
+	if( !m_settings.contains( "ShowSystemTray" ) ){
+
+		m_settings.setValue( "ShowSystemTray",true ) ;
+	}
+
+	return m_settings.value( "ShowSystemTray" ).toBool() ;
+}
+
+void settings::setShowSystemTray( bool s )
+{
+	m_settings.setValue( "ShowSystemTray",s ) ;
+}
+
 bool settings::portableVersion()
 {
 	if( utility::platformIsWindows() ){

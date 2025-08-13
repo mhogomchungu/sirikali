@@ -24,15 +24,14 @@
 #include <QTextEdit>
 
 #include "settings.h"
+#include "sirikali.h"
 
-checkforupdateswindow::checkforupdateswindow( QWidget * parent,
-					      functions& ff,
-					      utils::network::manager& nm ) :
-	QDialog( parent ),
+checkforupdateswindow::checkforupdateswindow( sirikali& parent,utils::network::manager& nm ) :
+	QDialog( &parent ),
 	m_ui( new Ui::checkforupdateswindow ),
-	m_functions( ff ),
 	m_network( nm ),
-	m_binPath( engines::defaultBinPath() )
+	m_binPath( engines::defaultBinPath() ),
+	m_sirikali( parent )
 {
 	m_ui->setupUi( this ) ;
 
@@ -463,7 +462,7 @@ void checkforupdateswindow::closeEvent( QCloseEvent * e )
 
 void checkforupdateswindow::closeUI()
 {
-	m_functions.second() ;
+	m_sirikali.enableAll() ;
 	this->hide() ;
 	this->deleteLater() ;
 
