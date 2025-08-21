@@ -33,7 +33,7 @@ class custom : public engines::engine
 public:
 	static void addEngines( std::vector< std::unique_ptr< engines::engine > >& ) ;
 
-	custom( engines::engine::BaseOptions baseOpts ) ;
+    explicit custom(const BaseOptions &baseOpts ) ;
 
 	engines::engine::status errorCode( const QString& e,const QString& err,int s ) const override ;
 
