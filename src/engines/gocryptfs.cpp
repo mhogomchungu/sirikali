@@ -403,11 +403,11 @@ void gocryptfs::GUIMountOptions( const engines::engine::mountGUIOptions& s ) con
 
 	ee.updateOptions = []( const ::options::Options& s ){
 
-		engines::engine::booleanOptions e ;
+        engines::engine::booleanOptions bo ;
 
-		e.unlockInReverseMode = s.checkBoxChecked ;
+        bo.unlockInReverseMode = s.checkBoxChecked ;
 
-		return e ;
+        return bo ;
 	} ;
 
 	e.ShowUI() ;
