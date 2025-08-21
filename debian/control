@@ -1,0 +1,45 @@
+Source: sirikali
+Section: utils
+Priority: optional
+Maintainer: Francis Banyikwa <mhogomchungu@gmail.com>
+Build-Depends: debhelper (>= 9),
+               cmake (>= 3.0.2),
+               qtbase5-dev (>= 5.9.0),
+               qttools5-dev,
+               qttools5-dev-tools,
+               libqt5dbus5,
+               libgcrypt20-dev,
+               libsecret-1-dev,
+               libpwquality-dev,
+               pkg-config,
+               g++ (>= 4.9),
+               gcc (>= 4.9)
+Standards-Version: 4.5.0
+Homepage: https://mhogomchungu.github.io/sirikali
+Vcs-Git: https://github.com/mhogomchungu/sirikali.git
+Vcs-Browser: https://github.com/mhogomchungu/sirikali
+
+Package: sirikali
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},
+         xdg-utils
+Recommends: encfs,
+            cryfs,
+            gocryptfs,
+            securefs
+Suggests: ecryptfs-utils,
+          sshfs,
+          fuse
+Description: Qt/C++ GUI front end to various encrypted filesystems
+ SiriKali is a Qt/C++ GUI front end to encfs, cryfs, gocryptfs, ecryptfs,
+ securefs, fscrypt and sshfs. These tools can be used to create encrypted
+ filesystems that can be mounted and unmounted on demand to provide a 
+ layer of security when working with sensitive data.
+ .
+ Features:
+  * Easy to use graphical interface
+  * Support for multiple encryption backends
+  * Secure password management with optional keyring integration
+  * Cross-platform compatibility
+  * Volume favorites management
+  * Mount options configuration

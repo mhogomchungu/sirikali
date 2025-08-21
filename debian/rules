@@ -1,0 +1,40 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# 启用所有强化选项
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+# 设置编译标志
+export DEB_CFLAGS_MAINT_APPEND  = -Wall -pedantic
+export DEB_CXXFLAGS_MAINT_APPEND = -Wall -pedantic
+export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
+
+# CMake 配置选项
+CMAKE_OPTS = -DCMAKE_INSTALL_PREFIX=/usr \
+             -DCMAKE_BUILD_TYPE=Release \
+             -DQT5=true \
+             -DNOKDESUPPORT=false \
+             -DNOSECRETSUPPORT=false
+
+%:
+	dh $@ --buildsystem=cmake --parallel
+
+override_dh_auto_configure:
+	dh_auto_configure -- $(CMAKE_OPTS)
+
+override_dh_auto_clean:
+	dh_auto_clean
+	rm -rf build
+
+override_dh_auto_test:
+	# 跳过测试，因为需要图形界面
+	@echo "Tests skipped - GUI application"
+
+override_dh_install:
+	dh_install
+	# 确保可执行文件有正确的权限
+	chmod +x debian/sirikali/usr/bin/sirikali
+	chmod +x debian/sirikali/usr/bin/sirikali.pkexec
+
+override_dh_strip:
+	dh_strip --dbg-package=sirikali-dbg
