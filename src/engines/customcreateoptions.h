@@ -17,7 +17,7 @@ public:
 	{
 		new customcreateoptions( s ) ;
 	}
-	customcreateoptions( const engines::engine::createGUIOptions& s ) ;
+    explicit customcreateoptions( const engines::engine::createGUIOptions& s ) ;
 	~customcreateoptions() ;
 private:
 	Ui::customcreateoptions * m_ui ;

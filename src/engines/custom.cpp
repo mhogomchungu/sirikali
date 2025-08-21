@@ -176,7 +176,7 @@ void custom::addEngines( std::vector< std::unique_ptr< engines::engine > >& engi
 	}
 }
 
-custom::custom( engines::engine::BaseOptions baseOpts ) :
+custom::custom(const engines::engine::BaseOptions &baseOpts ) :
 	engines::engine( std::move( baseOpts ) )
 {
 }
