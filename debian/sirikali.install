@@ -1,0 +1,12 @@
+# 安装可执行文件
+usr/bin/sirikali
+usr/bin/sirikali.pkexec
+
+# 安装桌面文件
+usr/share/applications/io.github.mhogomchungu.sirikali.desktop
+
+# 安装策略文件
+usr/share/polkit-1/actions/org.sirikali.pkexec.policy
+
+# 安装图标（如果存在）
+usr/share/pixmaps/* usr/share/pixmaps/

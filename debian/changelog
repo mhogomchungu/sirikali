@@ -1,0 +1,18 @@
+sirikali (1.8.3-1) unstable; urgency=medium
+
+  * New upstream version 1.8.3
+  * Updated Qt5 compatibility
+  * Improved support for various encrypted filesystems
+  * Enhanced security features
+  * Bug fixes and performance improvements
+  * Updated Chinese translations
+  * Better integration with modern desktop environments
+
+ -- Francis Banyikwa <mhogomchungu@gmail.com>  Wed, 21 Aug 2024 17:45:00 +0800
+
+sirikali (1.8.2-1) unstable; urgency=medium
+
+  * Previous stable release
+  * Various bug fixes and improvements
+
+ -- Francis Banyikwa <mhogomchungu@gmail.com>  Mon, 01 Jul 2024 10:00:00 +0800
