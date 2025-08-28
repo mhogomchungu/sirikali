@@ -1,0 +1,69 @@
+sirikali for Debian/UOS
+=======================
+
+这个 debian 包已经为 UOS/统信桌面操作系统进行了优化配置。
+
+构建依赖安装
+-----------
+
+使用以下命令自动安装所有构建依赖：
+
+    sudo apt build-dep .
+
+或者手动安装依赖：
+
+    sudo apt install debhelper cmake qtbase5-dev qttools5-dev \
+                     qttools5-dev-tools libqt5dbus5 libgcrypt20-dev \
+                     libsecret-1-dev libpwquality-dev pkg-config \
+                     g++ gcc
+
+构建 deb 包
+----------
+
+1. 安装构建依赖：
+   sudo apt build-dep .
+
+2. 构建二进制包：
+   dpkg-buildpackage -us -uc
+
+3. 构建源码包：
+   dpkg-buildpackage -S
+
+安装包
+------
+
+构建完成后，使用以下命令安装：
+
+    sudo dpkg -i ../sirikali_*.deb
+    sudo apt install -f  # 解决可能的依赖问题
+
+推荐的加密文件系统
+----------------
+
+安装 SiriKali 后，建议安装以下加密文件系统工具：
+
+    sudo apt install encfs cryfs gocryptfs securefs
+
+可选工具：
+
+    sudo apt install ecryptfs-utils sshfs
+
+系统集成
+--------
+
+SiriKali 已经配置了以下系统集成功能：
+
+- 桌面文件：/usr/share/applications/io.github.mhogomchungu.sirikali.desktop
+- PolicyKit 策略：/usr/share/polkit-1/actions/org.sirikali.pkexec.policy
+- 密钥环支持：通过 libsecret 与 GNOME 密钥环集成
+
+故障排除
+--------
+
+如果遇到权限问题，确保您的用户在 'fuse' 组中：
+
+    sudo usermod -a -G fuse $USER
+
+然后重新登录以使更改生效。
+
+ -- Francis Banyikwa <mhogomchungu@gmail.com>  Wed, 21 Aug 2024 17:45:00 +0800
