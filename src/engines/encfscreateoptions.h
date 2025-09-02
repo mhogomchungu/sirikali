@@ -41,7 +41,7 @@ public:
 	{
 		new encfscreateoptions( s ) ;
 	}
-	encfscreateoptions( const engines::engine::createGUIOptions& ) ;
+    explicit encfscreateoptions( const engines::engine::createGUIOptions& ) ;
         ~encfscreateoptions() ;
 private slots:
 	void pbSelectConfigPath() ;

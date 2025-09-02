@@ -370,9 +370,9 @@ engines::engine::status fscrypt::unmount( const engines::engine::unMount& e ) co
 
 		exeOptions.add( "lock",e.mountPoint ) ;
 	}else{
-		auto m = _mount_point( e.mountPoint,exe,*this ) ;
+        auto mp = _mount_point( e.mountPoint,exe,*this ) ;
 
-		exeOptions.add( "purge",m,"--force","--drop-caches=false" ) ;
+        exeOptions.add( "purge",mp,"--force","--drop-caches=false" ) ;
 	}
 
 	for( int i = 0 ; i < e.numberOfAttempts ; i++ ){
