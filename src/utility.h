@@ -453,6 +453,7 @@ namespace utility
 	bool pathIsFile( const QString& ) ;
 	bool pathIsReadable( const QString&,bool isFolder = true ) ;
 	bool pathIsWritable( const QString&,bool isFolder = true ) ;
+	QString cleanPath( const QString& ) ;
 
 	QString userName() ;
 	QString userIDAsString() ;
@@ -677,11 +678,12 @@ namespace utility
 
 		static ::Task::future< utility::Task >& run( const QString& exe,
 							     const QStringList& list,
-							     const QByteArray& password = QByteArray() )
+							     const QByteArray& password = QByteArray(),
+							     const QProcessEnvironment& env = utility::systemEnvironment() )
 		{
 			return ::Task::run( [ = ](){
 
-				return utility::Task( exe,list,-1,utility::systemEnvironment(),password ) ;
+				return utility::Task( exe,list,-1,env,password ) ;
 			} ) ;
 		}
 

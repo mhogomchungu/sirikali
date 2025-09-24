@@ -68,6 +68,8 @@ static engines::engine::BaseOptions _setOptions()
 
 		auto c = SiriKali::Windows::engineInstalledDir( a,b ) + "\\bin\\cryfs-unmount.exe" ;
 
+		c = utility::cleanPath( c ) ;
+
 		s.windowsInstallPathRegistryKey   = a ;
 		s.windowsInstallPathRegistryValue = b ;
 		s.windowsUnMountCommand           = QStringList{ c,"%{mountPoint}" } ;

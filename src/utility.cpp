@@ -1768,3 +1768,10 @@ bool utility::archInUse( utility::arch m )
 		return false ;
 	}
 }
+
+QString utility::cleanPath( const QString& e )
+{
+	auto m = QDir::cleanPath( e ) ;
+
+	return QDir::toNativeSeparators( m ) ;
+}

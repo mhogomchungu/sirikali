@@ -48,13 +48,11 @@ cryfscreateoptions::cryfscreateoptions( const engines::engine& engine,
 		m_ui->cbAllowReplacedFileSystem->setEnabled( false ) ;
 	}
 
-    m_ui->pbConfigPath->setIcon( QIcon( ":/icons/folder.png" ) ) ;
+	m_ui->pbConfigPath->setIcon( QIcon( ":/icons/folder.png" ) ) ;
 
-	m_ui->lineEdit->setText( "32768" ) ;
+	m_ui->pbOptions->setMenu( [ this ](){
 
-	m_ui->pbOptions->setMenu( [ w = this ](){
-
-		auto m = new QMenu( w ) ;
+		auto m = new QMenu( this ) ;
 
 		auto s = { "4KB","16KB","32KB","64KB","128KB","512KB","1024KB","2048KB","4096KB" } ;
 
@@ -63,23 +61,32 @@ cryfscreateoptions::cryfscreateoptions( const engines::engine& engine,
 			m->addAction( it )->setObjectName( it ) ;
 		}
 
-		QObject::connect( m,&QMenu::triggered,[ w ]( QAction * ac ){
+		QObject::connect( m,&QMenu::triggered,[ this ]( QAction * ac ){
 
 			int e = ac->objectName().replace( "KB","" ).toInt() * 1024 ;
 
-			w->m_ui->lineEdit->setText( QString::number( e ) ) ;
+			this->m_ui->lineEdit->setText( QString::number( e ) ) ;
 		} ) ;
 
 		return m ;
 	}() ) ;
 
-	auto& exe = engine.executableFullPath() ;
+	auto exe = utility::cleanPath( engine.executableFullPath() ) ;
 
-	utility::Task::run( exe,{ "--show-ciphers" } ).then( [ this ]( const utility::Task& e ){
+	auto env = utility::systemEnvironment() ;
+
+	env.insert( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
+	env.insert( "CRYFS_FRONTEND","noninteractive" ) ;
+
+	utility::Task::run( exe,{ "--show-ciphers" },{},env ).then( [ this ]( const utility::Task& e ){
 
 		if( e.success() ){
 
-			auto s = e.splitOutput( '\n',utility::Task::channel::stdError ) ;
+			auto m = e.stdError() ;
+
+			m.replace( "\r","" ) ;
+
+			auto s = utility::split( m,'\n' ) ;
 
 			if( !s.isEmpty() ){
 
@@ -109,30 +116,32 @@ void cryfscreateoptions::pbSelectConfigPath()
 
 void cryfscreateoptions::pbOK()
 {
-	auto e = [ & ](){
+	QString m ;
 
-		auto s = m_ui->lineEdit->text() ;
+	auto s = m_ui->lineEdit->text() ;
 
-		if( s.isEmpty() ){
+	if( !s.isEmpty() ){
 
-			s = "32768" ;
-		}
+		m = "--blocksize," + s ;
+	}
 
-		auto m = m_ui->comboBox->currentText() ;
+	s = m_ui->comboBox->currentText() ;
+
+	if( !s.isEmpty() ){
 
 		if( m.isEmpty() ){
 
-			return QString( "--blocksize,%2" ).arg( s ) ;
+			m = "--cipher," + s ;
 		}else{
-			return QString( "--cipher,%1,--blocksize,%2" ).arg( m,s ) ;
+			m += ",--cipher," + s ;
 		}
-	}() ;
+	}
 
 	engines::engine::booleanOptions opts ;
 
 	opts.allowReplacedFileSystem = m_ui->cbAllowReplacedFileSystem->isChecked() ;
 
-	this->HideUI( { e,m_ui->lineEdit_2->text(),QString(),opts } ) ;
+	this->HideUI( { m,m_ui->lineEdit_2->text(),QString(),opts } ) ;
 }
 
 void cryfscreateoptions::pbCancel()

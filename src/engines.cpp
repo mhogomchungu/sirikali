@@ -2428,7 +2428,7 @@ engines::engine::args::args( const engines::engine::cmdArgsList& m,
 			     const engines::engine::commandOptions& s,
 			     const QString& c,
 			     const QStringList& l ) :
-	cmd( c ),
+	cmd( utility::cleanPath( c ) ),
 	cipherPath( m.cipherFolder ),
 	mountPath( m.mountPoint ),
 	mode( s.mode() ),
