@@ -1737,14 +1737,8 @@ void sirikali::setUpFont()
 {
 }
 
-void sirikali::closeEvent( QCloseEvent * e )
+void sirikali::closeEvent( QCloseEvent * )
 {
-	if( utility::platformIsWindows() ){
-
-		e->ignore() ;
-
-		this->hideWindow() ;
-	}
 }
 
 void sirikali::trayClicked( QSystemTrayIcon::ActivationReason e )

@@ -128,17 +128,12 @@ static engines::engine::BaseOptions _setOptions( const QString& displayName )
 	return s ;
 }
 
-static QString _to_native_path( const QString& e )
-{
-	return QDir::toNativeSeparators( e ) ;
-}
-
 #ifdef Q_OS_WIN
 
 gocryptfs::gocryptfs() :
 	engines::engine( _setOptions( "cppcryptfs" ) ),
-	m_sirikaliCppcryptfsExe( _to_native_path( engines::executableNotEngineFullPath( "sirikali_cppcryptfs.exe" ) ) ),
-	m_cppcryptfsctl( _to_native_path( engines::executableNotEngineFullPath( _exeName( "cppcryptfsctl",".exe" ) ) ) ),
+	m_sirikaliCppcryptfsExe( utility::cleanPath( engines::executableNotEngineFullPath( "sirikali_cppcryptfs.exe" ) ) ),
+	m_cppcryptfsctl( utility::cleanPath( engines::executableNotEngineFullPath( _exeName( "cppcryptfsctl",".exe" ) ) ) ),
 	m_cppcryptfs( QString( m_cppcryptfsctl ).replace( "cppcryptfsctl","cppcryptfs" ) ),
 	m_windowsUnmountCommand( engines::engine::windowsUnmountCommand() + QStringList{ "--exit" } )
 {
@@ -312,9 +307,9 @@ void gocryptfs::updateOptions( engines::engine::cmdArgsList& opt,bool creating )
 
 		if( utility::platformIsWindows() ){
 
-			opt.cipherFolder   = _to_native_path( opt.cipherFolder ) ;
-			opt.mountPoint     = _to_native_path( opt.mountPoint ) ;
-			opt.configFilePath = _to_native_path( opt.configFilePath ) ;
+			opt.cipherFolder   = utility::cleanPath( opt.cipherFolder ) ;
+			opt.mountPoint     = utility::cleanPath( opt.mountPoint ) ;
+			opt.configFilePath = utility::cleanPath( opt.configFilePath ) ;
 		}
 		if( opt.boolOptions.unlockInReverseMode ){
 
@@ -328,9 +323,9 @@ void gocryptfs::updateOptions( engines::engine::cmdArgsList& opt,bool creating )
 				opt.configFilePath = opt.cipherFolder + "/" + this->configFileName() ;
 			}
 
-			opt.cipherFolder   = _to_native_path( opt.cipherFolder ) ;
-			opt.mountPoint     = _to_native_path( opt.mountPoint ) ;
-			opt.configFilePath = _to_native_path( opt.configFilePath ) ;
+			opt.cipherFolder   = utility::cleanPath( opt.cipherFolder ) ;
+			opt.mountPoint     = utility::cleanPath( opt.mountPoint ) ;
+			opt.configFilePath = utility::cleanPath( opt.configFilePath ) ;
 		}
 
 		opt.boolOptions.unlockInReverseMode = [ & ](){

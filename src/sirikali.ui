@@ -1,141 +1,131 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>sirikali</class>
- <widget class="QWidget" name="sirikali">
+ <widget class="QMainWindow" name="sirikali">
   <property name="windowModality">
-   <enum>Qt::NonModal</enum>
+   <enum>Qt::WindowModality::WindowModal</enum>
   </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>910</width>
-    <height>477</height>
+    <width>721</width>
+    <height>404</height>
    </rect>
   </property>
-  <property name="windowTitle">
-   <string>SiriKali</string>
-  </property>
-  <property name="windowIcon">
-   <iconset resource="icon.qrc">
-    <normaloff>:/sirikali.png</normaloff>:/sirikali.png</iconset>
-  </property>
-  <layout class="QVBoxLayout" name="verticalLayout_3">
-   <item>
-    <widget class="QWidget" name="centralWidget" native="true">
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item>
-       <widget class="QTableWidget" name="tableWidget">
-        <property name="editTriggers">
-         <set>QAbstractItemView::NoEditTriggers</set>
-        </property>
-        <property name="selectionMode">
-         <enum>QAbstractItemView::NoSelection</enum>
-        </property>
-        <property name="showGrid">
-         <bool>false</bool>
-        </property>
-        <property name="gridStyle">
-         <enum>Qt::NoPen</enum>
-        </property>
-        <column>
-         <property name="text">
-          <string>Volume Path</string>
+  <widget class="QWidget" name="sirikaliWidget">
+   <property name="windowTitle">
+    <string>SiriKali</string>
+   </property>
+   <property name="windowIcon">
+    <iconset resource="icon.qrc">
+     <normaloff>:/sirikali.png</normaloff>:/sirikali.png</iconset>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_3">
+    <item>
+     <widget class="QWidget" name="centralWidget" native="true">
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QTableWidget" name="tableWidget">
+         <property name="editTriggers">
+          <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
          </property>
-         <property name="textAlignment">
-          <set>AlignCenter</set>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::SelectionMode::NoSelection</enum>
          </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Mount Point Path</string>
+         <property name="showGrid">
+          <bool>false</bool>
          </property>
-         <property name="textAlignment">
-          <set>AlignCenter</set>
+         <property name="gridStyle">
+          <enum>Qt::PenStyle::NoPen</enum>
          </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>File System</string>
-         </property>
-         <property name="textAlignment">
-          <set>AlignCenter</set>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Mode</string>
-         </property>
-         <property name="textAlignment">
-          <set>AlignCenter</set>
-         </property>
-        </column>
-       </widget>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <property name="sizeConstraint">
-         <enum>QLayout::SetFixedSize</enum>
-        </property>
-        <item>
-         <widget class="QPushButton" name="pbcreate">
+         <column>
           <property name="text">
-           <string>&amp;Create Volume</string>
+           <string>Volume Path</string>
           </property>
-          <property name="autoDefault">
-           <bool>false</bool>
-          </property>
-          <property name="default">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pbunlockvolume">
+         </column>
+         <column>
           <property name="text">
-           <string>Mount &amp;Volume</string>
+           <string>Mount Point Path</string>
           </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pbupdate">
+         </column>
+         <column>
           <property name="text">
-           <string>&amp;Refresh</string>
+           <string>File System</string>
           </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pbFavorites">
+         </column>
+         <column>
           <property name="text">
-           <string>Favorites</string>
+           <string>Mode</string>
           </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pbmenu">
-          <property name="text">
-           <string>&amp;Menu</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
-    </widget>
-   </item>
-  </layout>
+         </column>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <property name="sizeConstraint">
+          <enum>QLayout::SizeConstraint::SetFixedSize</enum>
+         </property>
+         <item>
+          <widget class="QPushButton" name="pbcreate">
+           <property name="text">
+            <string>&amp;Create Volume</string>
+           </property>
+           <property name="autoDefault">
+            <bool>false</bool>
+           </property>
+           <property name="default">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pbunlockvolume">
+           <property name="text">
+            <string>Mount &amp;Volume</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pbupdate">
+           <property name="text">
+            <string>&amp;Refresh</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pbFavorites">
+           <property name="text">
+            <string>Favorites</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pbmenu">
+           <property name="text">
+            <string>&amp;Menu</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
  </widget>
  <layoutdefault spacing="6" margin="5"/>
  <tabstops>

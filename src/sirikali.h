@@ -28,6 +28,7 @@
 #include <QVector>
 #include <QSettings>
 #include <QApplication>
+#include <QMainWindow>
 
 #include "volumeinfo.h"
 #include "utility.h"
@@ -68,7 +69,7 @@ private:
 	secrets m_secrets ;
 } ;
 
-class sirikali : public QWidget
+class sirikali : public QMainWindow
 {
 	Q_OBJECT
 public:
