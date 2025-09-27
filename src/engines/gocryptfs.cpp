@@ -77,7 +77,7 @@ static engines::engine::BaseOptions _setOptions( const QString& displayName )
 
 		s.windowsCanUnlockInReadWriteMode = true ;
 
-		s.createControlStructure = "--create --cipherPath %{cipherFolder}" ;
+		s.createControlStructure = "--create %{createOptions} --cipherPath %{cipherFolder}" ;
 
 		s.windowsUnMountCommand = QStringList{ aa,"--umount","--mountPath","%{mountPoint}","--cppcryptfsctl-path",bb } ;
 
@@ -158,20 +158,22 @@ gocryptfs::gocryptfs( const QString& e ) : engines::engine( _setOptions( e ) ),
 #endif
 
 template< typename Function >
-static bool _set_if_found( const Function& function )
+static QString _set_if_found( const Function& function )
 {
 	std::array< QString,3 > m = { "gocryptfs.reverse.conf",
 				      ".gocryptfs.reverse.conf",
 				      "gocryptfs.reverse" } ;
 	for( const auto& it : m ){
 
-		if( function( it ) ){
+		QString s = function( it ) ;
 
-			return true ;
+		if( !s.isEmpty() ){
+
+			return s ;
 		}
 	}
 
-	return false ;
+	return {} ;
 }
 
 bool gocryptfs::updatable( bool s ) const
@@ -318,31 +320,45 @@ void gocryptfs::updateOptions( engines::engine::cmdArgsList& opt,bool creating )
 	}else{
 		if( utility::platformIsWindows() ){
 
-			if( opt.configFilePath.isEmpty() ){
-
-				opt.configFilePath = opt.cipherFolder + "/" + this->configFileName() ;
-			}
-
 			opt.cipherFolder   = utility::cleanPath( opt.cipherFolder ) ;
 			opt.mountPoint     = utility::cleanPath( opt.mountPoint ) ;
 			opt.configFilePath = utility::cleanPath( opt.configFilePath ) ;
 		}
 
-		opt.boolOptions.unlockInReverseMode = [ & ](){
+		auto configPath = [ & ]{
 
 			if( opt.configFilePath.isEmpty() ){
 
 				return _set_if_found( [ & ]( const QString& e ){
 
-					return utility::pathExists( opt.cipherFolder + "/" + e ) ;
+					auto m = opt.cipherFolder + "/" + e ;
+
+					if( utility::pathExists( m ) ){
+
+						return m ;
+					}else{
+						return QString() ;
+					}
 				} ) ;
 			}else{
 				return _set_if_found( [ & ]( const QString& e ){
 
-					return opt.configFilePath.endsWith( e ) ;
+					if( opt.configFilePath.endsWith( e ) ){
+
+						return opt.configFilePath ;
+					}else{
+						return QString() ;
+					}
 				} ) ;
 			}
 		}() ;
+
+		if( !configPath.isEmpty() ){
+
+			opt.configFilePath = configPath ;
+
+			opt.boolOptions.unlockInReverseMode = !opt.configFilePath.isEmpty() ;
+		}
 	}
 }
 

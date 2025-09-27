@@ -485,6 +485,8 @@ static engines::engine::cmdStatus _create( const siritask::create& s )
 
 			engine.updateVolumeList( opt ) ;
 		}else{
+			engine.updateOptions( opt,false ) ;
+
 			engines::engineWithPaths s{ engine,opt.cipherFolder,opt.configFilePath } ;
 
 			auto e = siritask::encryptedFolderMount( { opt,true,s } ) ;
