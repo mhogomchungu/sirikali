@@ -1737,8 +1737,15 @@ void sirikali::setUpFont()
 {
 }
 
-void sirikali::closeEvent( QCloseEvent * )
+void sirikali::closeEvent( QCloseEvent * e )
 {
+	if( settings::instance().showSystemTray() ){
+
+		e->ignore() ;
+		this->hide() ;
+	}else{
+		QMainWindow::closeEvent( e ) ;
+	}
 }
 
 void sirikali::trayClicked( QSystemTrayIcon::ActivationReason e )
