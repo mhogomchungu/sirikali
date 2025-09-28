@@ -157,25 +157,6 @@ gocryptfs::gocryptfs( const QString& e ) : engines::engine( _setOptions( e ) ),
 
 #endif
 
-template< typename Function >
-static QString _set_if_found( const Function& function )
-{
-	std::array< QString,3 > m = { "gocryptfs.reverse.conf",
-				      ".gocryptfs.reverse.conf",
-				      "gocryptfs.reverse" } ;
-	for( const auto& it : m ){
-
-		QString s = function( it ) ;
-
-		if( !s.isEmpty() ){
-
-			return s ;
-		}
-	}
-
-	return {} ;
-}
-
 bool gocryptfs::updatable( bool s ) const
 {
 	if( s ){
@@ -325,39 +306,25 @@ void gocryptfs::updateOptions( engines::engine::cmdArgsList& opt,bool creating )
 			opt.configFilePath = utility::cleanPath( opt.configFilePath ) ;
 		}
 
-		auto configPath = [ & ]{
+		if( opt.configFilePath.isEmpty() && !opt.cipherFolder.isEmpty() ){
 
-			if( opt.configFilePath.isEmpty() ){
+			for( const auto& it : this->configFileNames() ){
 
-				return _set_if_found( [ & ]( const QString& e ){
+				auto m = opt.cipherFolder + "/" + it ;
 
-					auto m = opt.cipherFolder + "/" + e ;
+				if( utility::pathExists( m ) ){
 
-					if( utility::pathExists( m ) ){
+					opt.configFilePath = utility::cleanPath( m ) ;
 
-						return m ;
-					}else{
-						return QString() ;
-					}
-				} ) ;
-			}else{
-				return _set_if_found( [ & ]( const QString& e ){
-
-					if( opt.configFilePath.endsWith( e ) ){
-
-						return opt.configFilePath ;
-					}else{
-						return QString() ;
-					}
-				} ) ;
+					break ;
+				}
 			}
-		}() ;
+		}
 
-		if( !configPath.isEmpty() ){
+		if( !opt.boolOptions.unlockInReverseMode ){
 
-			opt.configFilePath = configPath ;
-
-			opt.boolOptions.unlockInReverseMode = !opt.configFilePath.isEmpty() ;
+			auto m = opt.configFilePath.endsWith( "gocryptfs.reverse.conf" ) ;
+			opt.boolOptions.unlockInReverseMode = m ;
 		}
 	}
 }

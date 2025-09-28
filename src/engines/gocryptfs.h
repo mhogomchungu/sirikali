@@ -24,7 +24,7 @@ class gocryptfs : public engines::engine
 public:
 	gocryptfs() ;
 
-    explicit gocryptfs( const QString& ) ;
+	explicit gocryptfs( const QString& ) ;
 
 	bool updatable( bool ) const override ;
 
