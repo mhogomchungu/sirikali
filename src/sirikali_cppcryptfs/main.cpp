@@ -92,39 +92,136 @@ struct context
 	context( const context& ) = delete ;
 	context( context&& ) = delete ;
 	context( const QCoreApplication& app ) :
-		args( app.arguments() ),
-		cryptFolder( this->arg( "--cipherPath" ) ),
-		mountPoint( this->arg( "--mountPath" ) ),
-		configPath( this->arg( "--config" ) ),
-		cppcryptfsctl( this->arg( "--cppcryptfsctl-path" ) ),
-		readOnly( this->arg( "-o" ).startsWith( "ro" ) ),
-		quitCppcryptfs( this->contains( "--exit" ) )
+		m_args( app.arguments() ),
+		m_cryptFolder( this->arg( "--cipherPath" ) ),
+		m_mountPoint( this->arg( "--mountPath" ) ),
+		m_configPath( this->arg( "--config" ) ),
+		m_cppcryptfsctl( this->arg( "--cppcryptfsctl-path" ) ),
+		m_quitCppcryptfs( this->contains( "--exit" ) )
 	{
 	}
 	bool contains( const QString& e ) const
 	{
-		return args.contains( e ) ;
+		return m_args.contains( e ) ;
 	}
-	QStringList args ;
-	QString cryptFolder ;
-	QString mountPoint ;
-	QString configPath ;
-	QString cppcryptfsctl ;
-	QByteArray password ;
-	bool readOnly ;
-	bool quitCppcryptfs ;
-private:
-	QString arg( const char * arg )
+	QStringList umount_opts() const
 	{
-		int j = args.size() ;
+		QStringList opts{ "-u",m_mountPoint } ;
+
+		if( m_quitCppcryptfs ){
+
+			opts.append( "--exit" ) ;
+		}
+
+		return opts ;
+	}
+	QStringList unlocking_opts() const
+	{
+		QStringList opts{ "-p",m_password,"-d",m_mountPoint,"-m",m_cryptFolder,"-c",m_configPath } ;
+
+		if( this->arg( "-o" ).startsWith( "ro" ) ){
+
+			opts.append( "--readonly" ) ;
+		}
+
+		if( m_args.contains( "--reverse" ) ){
+
+			opts.append( "--reverse" ) ;
+		}
+
+		return opts ;
+	}
+	QStringList creating_opts() const
+	{
+		QStringList opts ;
+
+		if( m_args.contains( "--siv" ) || m_args.contains( "-S" ) ){
+
+			opts.append( "--siv" ) ;
+		}
+
+		if( m_args.contains( "--plaintext" )  || m_args.contains( "-T" ) ){
+
+			opts.append( "--plaintext" ) ;
+		}
+
+		if( m_args.contains( "--reverse" ) ){
+
+			opts.append( "--reverse" ) ;
+		}
+
+		auto m = this->arg( "V" ) ;
+
+		if( !m.isEmpty() ){
+
+			opts.append( "V" ) ;
+			opts.append( m ) ;
+		}
+
+		m = this->arg( "L" ) ;
+
+		if( !m.isEmpty() ){
+
+			opts.append( "L" ) ;
+			opts.append( m ) ;
+		}
+
+		 m = this->arg( "b" ) ;
+
+		if( !m.isEmpty() ){
+
+			opts.append( "b" ) ;
+			opts.append( m ) ;
+		}
+
+		m = this->arg( "--longnamemax" ) ;
+
+		if( !m.isEmpty() ){
+
+		       opts.append( "--longnamemax" ) ;
+		       opts.append( m ) ;
+		}
+
+		m = this->arg( "--scryptn" ) ;
+
+		if( !m.isEmpty() ){
+
+		      opts.append( "--scryptn" ) ;
+		      opts.append( m ) ;
+		}
+
+		opts.append( "--init=" + m_cryptFolder ) ;
+
+		return opts ;
+	}
+	const QString cppcryptfsctl() const
+	{
+		return m_cppcryptfsctl ;
+	}
+	const QString& mountPoint() const
+	{
+		return m_mountPoint ;
+	}
+	const QByteArray& password() const
+	{
+		return m_password ;
+	}
+	void setPassowrd( QByteArray p )
+	{
+		m_password = std::move( p ) ;
+	}
+private:
+	QString arg( const char * arg ) const
+	{
+		int j = m_args.size() ;
 
 		for( int i = 0 ; i < j ; i++ ){
 
-			if( args.at( i ) == arg ){
+			if( m_args.at( i ) == arg ){
 
 				if( i + 1 < j ){
 
-					return args.at( i + 1 ) ;
+					return m_args.at( i + 1 ) ;
 				}else{
 					return {} ;
 				}
@@ -133,6 +230,14 @@ private:
 
 		return {} ;
 	}
+
+	QStringList m_args ;
+	QString m_cryptFolder ;
+	QString m_mountPoint ;
+	QString m_configPath ;
+	QString m_cppcryptfsctl ;
+	QByteArray m_password ;
+	bool m_quitCppcryptfs ;
 };
 
 template< typename Function,typename Ctx >
@@ -238,15 +343,15 @@ static QString _deviceName( const context& ctx )
 	std::fill( mountPoint.begin(),mountPoint.end(),'\0' ) ;
 	std::fill( buffer.begin(),buffer.end(),'\0' ) ;
 
-	if( _is_driveLetter( ctx.mountPoint ) ){
+	if( _is_driveLetter( ctx.mountPoint() ) ){
 
-		ctx.mountPoint.toWCharArray( mountPoint.data() ) ;
+		ctx.mountPoint().toWCharArray( mountPoint.data() ) ;
 
 		auto s = QueryDosDeviceW( mountPoint.data(),buffer.data(),buffer.size() ) ;
 
 		return QString::fromWCharArray( buffer.data(),s ) ;
 	}else{
-		auto m = ctx.mountPoint + "\\" ;
+		auto m = ctx.mountPoint() + "\\" ;
 
 		m.toWCharArray( mountPoint.data() ) ;
 
@@ -312,14 +417,7 @@ static void _read_password( Then then )
 
 static void _mount( const context& ctx,counter c = 3 )
 {
-	QStringList args{ "-p",ctx.password,"-d",ctx.mountPoint,"-m",ctx.cryptFolder,"-c",ctx.configPath } ;
-
-	if( ctx.readOnly ){
-
-		args.append( "-r" ) ;
-	}
-
-	_run( ctx.cppcryptfsctl,args,[ &ctx,c ]( const result& m ){
+	_run( ctx.cppcryptfsctl(),ctx.unlocking_opts(),[ &ctx,c ]( const result& m ){
 
 		if( m.success() ){
 
@@ -341,7 +439,7 @@ static void _mount( const context& ctx,counter c = 3 )
 
 static void _info( const context& ctx,counter c = 3 )
 {
-	_run( ctx.cppcryptfsctl,{ "-i",ctx.mountPoint },[ &ctx,c ]( const result& m ){
+	_run( ctx.cppcryptfsctl(),{ "-i",ctx.mountPoint() },[ &ctx,c ]( const result& m ){
 
 		if( m.success() ){
 
@@ -380,22 +478,15 @@ static void _info( const context& ctx,counter c = 3 )
 
 static void _umount( const context& ctx,counter c = 3 )
 {
-	QStringList opts{ "-u",ctx.mountPoint } ;
-
-	if( ctx.quitCppcryptfs ){
-
-		opts.append( "--exit" ) ;
-	}
-
-	_run( ctx.cppcryptfsctl,opts,[ &ctx,c ]( const result& m ){
+	_run( ctx.cppcryptfsctl(),ctx.umount_opts(),[ &ctx,c ]( const result& m ){
 
 		if( m.success() ){
 
-			if( !_is_driveLetter( ctx.mountPoint ) ){
+			if( !_is_driveLetter( ctx.mountPoint() ) ){
 
 				QDir d ;
-				d.rmdir( ctx.mountPoint ) ;
-				d.mkdir( ctx.mountPoint ) ;
+				d.rmdir( ctx.mountPoint() ) ;
+				d.mkdir( ctx.mountPoint() ) ;
 			}
 
 			_msg( m,"Umount Success" ) ;
@@ -414,26 +505,7 @@ static void _umount( const context& ctx,counter c = 3 )
 
 static void _create( const context& ctx,counter c = 3 )
 {
-	QStringList opts ;
-
-	if( ctx.contains( "--siv" ) ){
-
-		opts.append( "--siv" ) ;
-	}
-
-	if( ctx.contains( "--plaintext" ) ){
-
-		opts.append( "--plaintext" ) ;
-	}
-
-	if( ctx.contains( "--reverse" ) ){
-
-		opts.append( "--reverse" ) ;
-	}
-
-	opts.append( "--init=" + ctx.cryptFolder ) ;
-
-	_run( ctx.cppcryptfsctl,opts,ctx.password,[ &ctx,c ]( const result& m ){
+	_run( ctx.cppcryptfsctl(),ctx.creating_opts(),ctx.password(),[ &ctx,c ]( const result& m ){
 
 		if( m.success() ){
 
@@ -457,7 +529,7 @@ static void _exec( context& ctx )
 
 		_read_password( [ &ctx ]( QByteArray password ){
 
-			ctx.password = std::move( password ) ;
+			ctx.setPassowrd( std::move( password ) ) ;
 
 			_mount( ctx ) ;
 		} ) ;
@@ -470,7 +542,7 @@ static void _exec( context& ctx )
 
 		_read_password( [ & ]( const QByteArray& password ){
 
-			ctx.password = password + "\n" + password ;
+			ctx.setPassowrd( password + "\n" + password ) ;
 
 			_create( ctx ) ;
 		} ) ;
