@@ -55,17 +55,17 @@ public:
 	result( QProcess& p ) :
 		m_exitCode( p.exitCode() ),
 		m_exitStatus( p.exitStatus() ),
-		m_stdOut( p.readAllStandardOutput() ),
-		m_stdError( p.readAllStandardError() )
+		m_stdOut( this->setText( true,p.readAllStandardOutput() ) ),
+		m_stdErr( this->setText( false,p.readAllStandardError() ) )
 	{
 	}
-	const QByteArray& stdOut() const
+	const QString& stdOut() const
 	{
 		return m_stdOut ;
 	}
-	const QByteArray& stdError() const
+	const QString& stdError() const
 	{
-		return m_stdError ;
+		return m_stdErr ;
 	}
 	bool success() const
 	{
@@ -77,13 +77,35 @@ public:
 	}
 	bool retry( const counter& c ) const
 	{
-		return c.Continue() && m_stdError.contains( "Named pipe connection wait failed" ) ;
+		return c.Continue() && m_stdErr.contains( "Named pipe connection wait failed" ) ;
 	}
 private:
+	bool textIsUnicode( bool stdOut,const QByteArray& e )
+	{
+		if( e.size() > 2 ){
+
+			int a = e[ 0 ] ;
+			int b = e[ 1 ] ;
+
+			return a == 0 || b == 0 ;
+		}else{
+			return false ;
+		}
+	}
+	QString setText( bool stdOut,const QByteArray& e )
+	{
+		if( this->textIsUnicode( stdOut,e ) ){
+
+			auto m = reinterpret_cast< const char16_t * >( e.constData() ) ;
+			return QString::fromUtf16( m,e.size() ) ;
+		}else{
+			return e ;
+		}
+	}
 	int m_exitCode ;
 	QProcess::ExitStatus m_exitStatus ;
-	QByteArray m_stdOut ;
-	QByteArray m_stdError ;
+	QString m_stdOut ;
+	QString m_stdErr ;
 };
 
 struct context
@@ -96,8 +118,7 @@ struct context
 		m_cryptFolder( this->arg( "--cipherPath" ) ),
 		m_mountPoint( this->arg( "--mountPath" ) ),
 		m_configPath( this->arg( "--config" ) ),
-		m_cppcryptfsctl( this->arg( "--cppcryptfsctl-path" ) ),
-		m_quitCppcryptfs( this->contains( "--exit" ) )
+		m_cppcryptfsctl( this->arg( "--cppcryptfsctl-path" ) )
 	{
 	}
 	bool contains( const QString& e ) const
@@ -108,7 +129,7 @@ struct context
 	{
 		QStringList opts{ "-u",m_mountPoint } ;
 
-		if( m_quitCppcryptfs ){
+		if( this->contains( "--exit" ) ){
 
 			opts.append( "--exit" ) ;
 		}
@@ -237,7 +258,6 @@ private:
 	QString m_configPath ;
 	QString m_cppcryptfsctl ;
 	QByteArray m_password ;
-	bool m_quitCppcryptfs ;
 };
 
 template< typename Function,typename Ctx >
@@ -381,11 +401,12 @@ static void _hang_until_unmounted( const context& ctx,const QString& id )
 	} ) ;
 }
 
-static void _msg( const result& r,const char * msg )
+static void _msg( const result& r,const QString& msg )
 {
-	std::cout << "status: " << msg << "\n" ;
-	std::cout << "std out: " + r.stdOut().trimmed().toStdString() << "\n" ;
-	std::cout << "std error: " + r.stdError().trimmed().toStdString() << std::endl ;
+	std::wcout << L"status: " << msg.toStdWString() << L"\n" ;
+	std::wcout << L"std out: " << r.stdOut().trimmed().toStdWString() << L"\n" ;
+	std::wcout << L"std error: " << r.stdError().trimmed().toStdWString() << L"\n" ;
+	std::wcout << std::endl ;
 }
 
 template< typename Then >
@@ -443,7 +464,11 @@ static void _info( const context& ctx,counter c = 3 )
 
 		if( m.success() ){
 
-			auto s = m.stdOut().split( '\n' ) ;
+			auto ss = m.stdOut() ;
+
+			ss.replace( "\r","" ) ;
+
+			auto s = ss.split( '\n' ) ;
 
 			for( int i = 0 ; i < s.size() ; i++ ){
 
@@ -461,10 +486,10 @@ static void _info( const context& ctx,counter c = 3 )
 					}
 				}
 
-				std::cout << e.constData() << "\n" ;
+				std::wcout << e.toStdWString() << "\n" ;
 			}
 
-			std::cout << std::endl ;
+			std::wcout << L"\n" ;
 		}else{
 			if( m.retry( c ) ){
 
@@ -553,7 +578,7 @@ static void _exec( context& ctx )
 
 	}else if( ctx.contains( "--deviceName" ) ){
 
-		std::cout << _deviceName( ctx ).toStdString() << std::endl ;
+		std::wcout << _deviceName( ctx ).toStdWString() << L"\n" ;
 
 		_quit( 0 ) ;
 
@@ -561,7 +586,7 @@ static void _exec( context& ctx )
 
 		_hang_until_unmounted( ctx,_deviceName( ctx ) ) ;
 	}else{
-		std::cout << "Unknown command" << std::endl ;
+		std::wcout << L"Unknown command" << L"\n" ;
 
 		_quit( 255 ) ;
 	}
