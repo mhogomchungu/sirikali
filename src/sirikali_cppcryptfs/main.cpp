@@ -55,8 +55,8 @@ public:
 	result( QProcess& p ) :
 		m_exitCode( p.exitCode() ),
 		m_exitStatus( p.exitStatus() ),
-		m_stdOut( this->setText( true,p.readAllStandardOutput() ) ),
-		m_stdErr( this->setText( false,p.readAllStandardError() ) )
+		m_stdOut( this->setOutPut( p.readAllStandardOutput() ) ),
+		m_stdErr( this->setOutPut( p.readAllStandardError() ) )
 	{
 	}
 	const QString& stdOut() const
@@ -80,7 +80,7 @@ public:
 		return c.Continue() && m_stdErr.contains( "Named pipe connection wait failed" ) ;
 	}
 private:
-	bool textIsUnicode( bool stdOut,const QByteArray& e )
+	bool textIsUnicode( const QByteArray& e ) const
 	{
 		if( e.size() > 2 ){
 
@@ -92,9 +92,9 @@ private:
 			return false ;
 		}
 	}
-	QString setText( bool stdOut,const QByteArray& e )
+	QString setOutPut( const QByteArray& e ) const
 	{
-		if( this->textIsUnicode( stdOut,e ) ){
+		if( this->textIsUnicode( e ) ){
 
 			auto m = reinterpret_cast< const char16_t * >( e.constData() ) ;
 			return QString::fromUtf16( m,e.size() ) ;
@@ -187,7 +187,7 @@ struct context
 			opts.append( m ) ;
 		}
 
-		 m = this->arg( "b" ) ;
+		m = this->arg( "b" ) ;
 
 		if( !m.isEmpty() ){
 
