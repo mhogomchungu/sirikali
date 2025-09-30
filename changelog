@@ -333,7 +333,7 @@ version 1.4.2(December 18,2019)
 -- Fix a bug that caused unlocked favorites on the tray menu to show up twice.
 -- Add a GUI option to show or hide a tray icon.
 
-   version 1.8.4(Unreleased)
+   version 1.8.4(October 1st, 2025)
    [WINDOWS]
 -- Fix cppcryptfs bugs.
    [ALL]
