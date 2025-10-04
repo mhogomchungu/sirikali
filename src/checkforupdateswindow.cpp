@@ -169,6 +169,7 @@ void checkforupdateswindow::downloading( Ctx& ctx,const utils::network::progress
 			}else{
 				this->noNeedToExtract( ctx.move() ) ;
 			}
+
 		}else{
 			auto m = tr( "Error" ) + "\n" + tr( "Download Failed" ) ;
 
@@ -271,8 +272,8 @@ void checkforupdateswindow::download( int row,
 	class progress
 	{
 	public:
-		progress( checkforupdateswindow * p,const QString& path,int row,const QString& tagName ) :
-			m_parent( *p ),m_ctx( row,path,tagName )
+		progress( checkforupdateswindow& p,const QString& path,int row,const QString& tagName ) :
+			m_parent( p ),m_ctx( row,path,tagName )
 		{
 		}
 		Ctx& ctx()
@@ -292,7 +293,7 @@ void checkforupdateswindow::download( int row,
 		Ctx m_ctx ;
 	} ;
 
-	progress p( this,m_binPath + archiveName,row,tagName ) ;
+	progress p( *this,m_binPath + archiveName,row,tagName ) ;
 
 	auto& cc = p.ctx() ;
 
@@ -363,9 +364,11 @@ void checkforupdateswindow::updateComplete( const Ctx& ctx )
 
 	auto m = QObject::tr( "Update Complete" ) ;
 
+	auto& engine = m_opts[ row ].engine() ;
+
 	if( this->archivePath( exePath ) ){
 
-		auto e = m_opts[ row ].engine().setExecutablePermissions( m_binPath ) ;
+		auto e = engine.setExecutablePermissions( m_binPath ) ;
 
 		this->tableUpdate( row,m + "\n" + e ) ;
 	}else{
@@ -376,7 +379,8 @@ void checkforupdateswindow::updateComplete( const Ctx& ctx )
 		f.setPermissions( f.permissions() | QFileDevice::ExeOwner ) ;
 	}
 
-	m_opts[ row ].engine().setInstalledVersionHack( m_binPath,ctx.tagName() ) ;
+	engine.setInstalledVersionHack( m_binPath,ctx.tagName() ) ;
+	engine.updateExecutablePaths() ;
 }
 
 void checkforupdateswindow::goToNext()

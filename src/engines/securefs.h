@@ -52,8 +52,6 @@ public:
 			    const engines::engine::cmdArgsList& args,
 			    bool creating ) const override ;
 private:
+	bool useLogFile() const ;
 	QByteArray extraLogOutput( const engines::engine::args& ) const ;
-
-	const engines::versionGreaterOrEqual m_version_greater_or_equal_0_11_1 ;
-	const engines::versionGreaterOrEqual m_version_greater_or_equal_1_0_0 ;
 } ;

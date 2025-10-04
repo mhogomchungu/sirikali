@@ -60,6 +60,4 @@ private:
 		const QString m_configFilePath ;
 		const char * m_keyName = "unlockedList" ;
 	} mutable m_unlockedVolumeManager ;
-
-	engines::versionGreaterOrEqual m_versionGreatorOrEqual_0_2_6 ;
 } ;

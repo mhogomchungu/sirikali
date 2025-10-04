@@ -347,6 +347,45 @@ QString engines::executableFullPath( const QString& f,const engines::engine& eng
 	return _executableFullPath( f,[ &engine ](){ return engines::executableSearchPaths( engine ) ; } ) ;
 }
 
+utility::bool_result engines::version::compare( const engineVersion& b,Operator op ) const
+{
+	const auto& a = this->get() ;
+
+	if( a.valid() && b.valid() ){
+
+		if( op == engines::version::Operator::less ){
+
+			return a < b ;
+
+		}else if( op == engines::version::Operator::lessOrEqual ){
+
+			return a <= b ;
+
+		}else if( op == engines::version::Operator::lessOrEqual ){
+
+			return a <= b ;
+
+		}else if( op == engines::version::Operator::equal ){
+
+			return a == b ;
+
+		}else if( op == engines::version::Operator::notEqual ){
+
+			return a != b ;
+
+		}else if( op == engines::version::Operator::greater ){
+
+			return a > b ;
+
+		}else if( op == engines::version::Operator::greaterOrEqual ){
+
+			return a >= b ;
+		}
+	}
+
+	return {} ;
+}
+
 void engines::version::logError() const
 {
 	auto a = QString( "%1 backend has an invalid version string (%2)" ) ;
@@ -1419,7 +1458,17 @@ engines::engine::exe_args engines::engine::unMountCommand( const engines::engine
 	}else{
 		if( !m_Options.unMountCommand.isEmpty() ){
 
-			return _replace_opts( m_Options.unMountCommand ) ;
+			if( utility::platformIsFlatPak() ){
+
+				engines::engine::exe_args m = _replace_opts( m_Options.unMountCommand ) ;
+
+				m.args.prepend( m.exe ) ;
+				m.args.prepend( "--host" ) ;
+
+				return { "flatpak-spawn",m.args } ;
+			}else{
+				return _replace_opts( m_Options.unMountCommand ) ;
+			}
 		}
 
 		if( utility::platformIsOSX() ){
@@ -1440,6 +1489,22 @@ engines::engine::exe_args engines::engine::unMountCommand( const engines::engine
 			return { fm,{ "-u",e.mountPath() } } ;
 		}
 	}
+}
+
+bool engines::engine::installedVersionGreaterOrEqual( const QString& e ) const
+{
+	auto m = this->installedVersion().greaterOrEqual( e ) ;
+
+	if( m ){
+
+		return m.value() ;
+	}else{
+		return false ;
+	}
+}
+
+void engines::engine::updateExecutablePaths() const
+{
 }
 
 bool engines::engine::enginesMatch( const QString& e ) const
@@ -1531,6 +1596,11 @@ bool engines::engine::onlineArchiveFileName( const QString& ) const
 
 void engines::engine::changeEnvironment( const QString&,const QStringList& ) const
 {
+}
+
+void engines::engine::setUnmountCommand( const QStringList& e )
+{
+	m_Options.unMountCommand = e ;
 }
 
 const QStringList& engines::engine::windowsUnmountCommand() const

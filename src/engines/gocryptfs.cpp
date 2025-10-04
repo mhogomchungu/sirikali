@@ -145,14 +145,24 @@ gocryptfs::gocryptfs( const QString& e ) : engines::engine( _setOptions( e ) )
 
 #else
 
-gocryptfs::gocryptfs() : engines::engine( _setOptions( "gocryptfs" ) ),
-	m_version_has_error_codes( true,*this,1,2,1 )
+gocryptfs::gocryptfs() : engines::engine( _setOptions( "gocryptfs" ) )
+{
+
+}
+
+gocryptfs::gocryptfs( const QString& e ) : engines::engine( _setOptions( e ) )
 {
 }
 
-gocryptfs::gocryptfs( const QString& e ) : engines::engine( _setOptions( e ) ),
-	m_version_has_error_codes( true,*this,1,2,1 )
+void gocryptfs::updateExecutablePaths() const
 {
+	if( utility::platformIsWindows() ){
+
+		m_sirikaliCppcryptfsExe = utility::cleanPath( engines::executableNotEngineFullPath( "sirikali_cppcryptfs.exe" ) ) ;
+		m_cppcryptfsctl         = utility::cleanPath( engines::executableNotEngineFullPath( _exeName( "cppcryptfsctl",".exe" ) ) ) ;
+		m_cppcryptfs            = QString( m_cppcryptfsctl ).replace( "cppcryptfsctl","cppcryptfs" ) ;
+		m_windowsUnmountCommand = engines::engine::windowsUnmountCommand() + QStringList{ "--exit" } ;
+	}
 }
 
 #endif
@@ -343,7 +353,7 @@ engines::engine::status gocryptfs::errorCode( const QString& e,const QString& er
 
 	return engines::engine::errorCode( e,err,s ) ;
 #else
-	if( m_version_has_error_codes ){
+	if( this->installedVersionGreaterOrEqual( "1.2.1" ) ){
 
 		/*
 		 * This error code was added in gocryptfs 1.2.1

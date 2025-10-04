@@ -347,9 +347,7 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
-fscrypt::fscrypt() :
-	engines::engine( _setOptions() ),
-	m_versionGreatorOrEqual_0_2_6( true,*this,0,2,6 )
+fscrypt::fscrypt() : engines::engine( _setOptions() )
 {
 }
 
@@ -366,13 +364,13 @@ engines::engine::status fscrypt::unmount( const engines::engine::unMount& e ) co
 
 	auto exeOptions = m.exeOptions() ;
 
-	if( m_versionGreatorOrEqual_0_2_6 ){
+	if( this->installedVersionGreaterOrEqual( "0.2.6" ) ){
 
 		exeOptions.add( "lock",e.mountPoint ) ;
 	}else{
-        auto mp = _mount_point( e.mountPoint,exe,*this ) ;
+		auto mp = _mount_point( e.mountPoint,exe,*this ) ;
 
-        exeOptions.add( "purge",mp,"--force","--drop-caches=false" ) ;
+		exeOptions.add( "purge",mp,"--force","--drop-caches=false" ) ;
 	}
 
 	for( int i = 0 ; i < e.numberOfAttempts ; i++ ){

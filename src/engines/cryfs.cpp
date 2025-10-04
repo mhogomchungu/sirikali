@@ -100,12 +100,7 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
-cryfs::cryfs() :
-	engines::engine( _setOptions() ),
-	m_env( this->setEnv() ),
-	m_version_greater_or_equal_0_10_0( true,*this,0,10,0 ),
-	m_version_greater_or_equal_0_9_9( true,*this,0,9,9 ),
-	m_version_greater_or_equal_1_0_0( true,*this,1,0,0 )
+cryfs::cryfs() :	engines::engine( _setOptions() ),	m_env( this->setEnv() )
 {
 }
 
@@ -141,7 +136,7 @@ engines::engine::args cryfs::command( const QByteArray& password,
 
 		m.cmd = "flatpak-spawn" ;
 
-	}else if( utility::platformIsWindows() && !m_version_greater_or_equal_1_0_0 ){
+	}else if( utility::platformIsWindows() && !this->installedVersionGreaterOrEqual( "1.0.0" ) ){
 
 		m.cmd_args.prepend( "-f" ) ;
 	}
@@ -161,7 +156,7 @@ QProcessEnvironment cryfs::setEnv() const
 
 bool cryfs::takesTooLongToUnlock() const
 {
-	return m_version_greater_or_equal_0_10_0 ;
+	return this->installedVersionGreaterOrEqual( "0.10.0" ) ;
 }
 
 engines::engine::cmdStatus cryfs::commandStatus( const engines::engine::commandStatusOpts& e ) const
@@ -216,7 +211,7 @@ engines::engine::status cryfs::errorCode( const QString& e,const QString& err,in
 		}
 	}
 
-	if( m_version_greater_or_equal_0_9_9 ){
+	if( this->installedVersionGreaterOrEqual( "0.9.9" ) ){
 
 		/*
 		 * Error codes are here: https://github.com/cryfs/cryfs/blob/develop/src/cryfs/ErrorCodes.h
@@ -262,7 +257,7 @@ void cryfs::updateOptions( engines::engine::cmdArgsList& e,bool creating ) const
 {
 	Q_UNUSED( creating )
 
-	if( m_version_greater_or_equal_0_10_0 && e.boolOptions.allowReplacedFileSystem ){
+	if( this->installedVersionGreaterOrEqual( "0.10.0" ) && e.boolOptions.allowReplacedFileSystem ){
 
 		e.mountOptions.append( "--allow-replaced-filesystem" ) ;
 	}
@@ -272,7 +267,7 @@ void cryfs::updateOptions( engines::engine::cmdArgsList& e,bool creating ) const
 		e.mountOptions.append( "--allow-filesystem-upgrade" ) ;
 	}
 
-	if( !m_version_greater_or_equal_0_10_0 ){
+	if( !this->installedVersionGreaterOrEqual( "0.10.0" ) ){
 
 		e.fuseOptionsSeparator = "--" ;
 	}
@@ -289,7 +284,7 @@ engines::engine::status cryfs::passAllRequirenments( const engines::engine::cmdA
 
 	if( opt.boolOptions.allowUpgradeFileSystem ){
 
-		if( !m_version_greater_or_equal_0_9_9 ){
+		if( !this->installedVersionGreaterOrEqual( "0.9.9" ) ){
 
 			return engines::engine::status::cryfsVersionTooOldToMigrateVolume ;
 		}
@@ -310,7 +305,7 @@ engines::engine::status cryfs::passAllRequirenments( const engines::engine::cmdA
 
 void cryfs::GUICreateOptions( const engines::engine::createGUIOptions& s ) const
 {
-	cryfscreateoptions::instance( *this,s,m_version_greater_or_equal_0_10_0 ) ;
+	cryfscreateoptions::instance( *this,s,this->installedVersionGreaterOrEqual( "0.10.0" ) ) ;
 }
 
 void cryfs::GUIMountOptions( const engines::engine::mountGUIOptions& s ) const
@@ -319,7 +314,7 @@ void cryfs::GUIMountOptions( const engines::engine::mountGUIOptions& s ) const
 
 	auto& ee = e.GUIOptions() ;
 
-	if( m_version_greater_or_equal_0_10_0 ){
+	if( this->installedVersionGreaterOrEqual( "0.10.0" ) ){
 
 		ee.checkBoxChecked = s.mOpts.opts.allowReplacedFileSystem ;
 	}else{

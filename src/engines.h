@@ -55,15 +55,9 @@ public:
 		bool valid() const ;
 		bool operator==( const engineVersion& other ) const ;
 		bool operator<( const engineVersion& other ) const ;
-		/*
-		 * a != b equal to !(a == b)
-		 * a <= b equal to (a < b) || (a == b)
-		 * a >= b equal to !(a < b)
-		 * a > b  equal to !(a <= b)
-		 */
 		bool operator>=( const engineVersion& other ) const
 		{
-			return !( *this < other ) ;
+			return *this > other || *this == other ;
 		}
 		bool operator<=( const engineVersion& other ) const
 		{
@@ -75,7 +69,7 @@ public:
 		}
 		bool operator>( const engineVersion& other ) const
 		{
-			return !( *this <= other ) ;
+			return !( *this < other || *this == other ) ;
 		}
 		QString toString() const ;
 	private:
@@ -128,26 +122,7 @@ public:
 		version()
 		{
 		}
-		utility::bool_result compare( const engines::engineVersion& b,
-					      engines::version::Operator op ) const
-		{
-			const auto& a = this->get() ;
-
-			if( a.valid() && b.valid() ){
-
-			        switch( op ) {
-
-				        case engines::version::Operator::less :           return a < b ;
-				        case engines::version::Operator::lessOrEqual :    return a <= b ;
-				        case engines::version::Operator::equal :          return a == b ;
-				        case engines::version::Operator::notEqual :       return a != b ;
-				        case engines::version::Operator::greater :        return a > b ;
-				        case engines::version::Operator::greaterOrEqual : return a >= b ;
-				}
-			}
-
-			return {} ;
-		}
+		utility::bool_result compare( const engines::engineVersion& b,engines::version::Operator op ) const ;
 		QString toString() const
 		{
 			return this->get().toString() ;
@@ -717,6 +692,10 @@ public:
 
 		engines::engine::exe_args unMountCommand( const engines::engine::terminate_process& e ) const ;
 
+		virtual bool installedVersionGreaterOrEqual( const QString& ) const ;
+
+		virtual void updateExecutablePaths() const ;
+
 		virtual bool enginesMatch( const QString& ) const ;
 
 		virtual QString installedVersionHack( const QString& ) const ;
@@ -734,6 +713,8 @@ public:
 		virtual bool onlineArchiveFileName( const QString& ) const ;
 
 		virtual void changeEnvironment( const QString&,const QStringList& ) const ;
+
+		virtual void setUnmountCommand( const QStringList& ) ;
 
 		virtual bool updatable( bool ) const ;
 
@@ -1019,7 +1000,7 @@ public:
 		engines::engineVersion installedVersionImpl() const ;
 		engines::engineVersion installedVersion( const BaseOptions::vInfo& ) const ;
 		Task::process::result installedVersionImpl( const BaseOptions::vInfo& ) const ;
-		const BaseOptions m_Options ;
+		BaseOptions m_Options ;
 		const QProcessEnvironment m_processEnvironment ;
 		mutable engines::exeFullPath m_exeFullPath ;
 		mutable engines::version m_version ;

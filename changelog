@@ -333,8 +333,12 @@ version 1.4.2(December 18,2019)
 -- Fix a bug that caused unlocked favorites on the tray menu to show up twice.
 -- Add a GUI option to show or hide a tray icon.
 
-   version 1.8.4(October 1st, 2025)
+   version 1.8.4(Unreleased)
+   [FLATPAK]
+-- Update gocryptfs to version 2.6.1.
+-- Update securefs to version 2.0.0.
    [WINDOWS]
 -- Fix cppcryptfs bugs.
    [ALL]
 -- Fix app not minimizing to tray on other platforms too other than windows.
+-- Add support for securefs 2.0.0

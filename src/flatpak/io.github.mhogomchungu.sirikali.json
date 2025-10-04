@@ -206,8 +206,8 @@
         },
         {
           "type" : "archive",
-          "url" : "https://github.com/netheril96/securefs/archive/refs/tags/v1.0.0.tar.gz",
-          "sha256" : "de888359734a05ca0db56d006b4c9774f18fd9e6f9253466a86739b5f6ac3753"
+          "url" : "https://github.com/netheril96/securefs/archive/refs/tags/v2.0.0.tar.gz",
+          "sha256" : "d7fac7adc70c09473173aeadee5b7041d7e63fbf392ef40bdd77888590bb12a2"
         },
         {
           "type" : "patch",
@@ -232,8 +232,8 @@
       "sources" : [
         {
           "type" : "archive",
-          "url" : "https://github.com/rfjakob/gocryptfs/releases/download/v2.5.0/gocryptfs_v2.5.0_src-deps.tar.gz",
-          "sha256" : "eed73d59a3f5019ec5ce6a2026cbff95789c2280308781bfa7da4aaf84126a67"
+          "url" : "https://github.com/rfjakob/gocryptfs/releases/download/v2.6.1/gocryptfs_v2.6.1_src-deps.tar.gz",
+          "sha256" : "9a966c1340a1a1d92073091643687b1205c46b57017c5da2bf7e97e3f5729a5a"
         },
         {
           "type" : "patch",

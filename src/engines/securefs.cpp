@@ -78,11 +78,14 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
-securefs::securefs() :
-	engines::engine( _setOptions() ),
-	m_version_greater_or_equal_0_11_1( true,*this,0,11,1 ),
-	m_version_greater_or_equal_1_0_0( true,*this,1,0,0 )
+securefs::securefs() : engines::engine( _setOptions() )
 {
+	if( this->installedVersionGreaterOrEqual( "2.0.0" ) ){
+
+		auto m = QStringList{ this->executableFullPath(),"unmount","%{mountPoint}" } ;
+
+		engines::engine::setUnmountCommand( m ) ;
+	}
 }
 
 bool securefs::updatable( bool s ) const
@@ -175,7 +178,12 @@ engines::engine::cmdStatus securefs::commandStatus( const engines::engine::comma
 				return { engines::engine::status::backendFail,engine,ss } ;
 			}
 		}else{
-			auto ss = e.stdOut() + "\n" + e.stdError() + "\n" + this->extraLogOutput( e.args() ) ;
+			auto ss = e.stdOut() + "\n" + e.stdError() ;
+
+			if( this->useLogFile() ){
+
+				ss += "\n" + this->extraLogOutput( e.args() ) ;
+			}
 
 			auto n = engine.errorCode( ss,ss,e.exitCode() ) ;
 
@@ -199,7 +207,16 @@ static engines::engine::status _check_password( const QString& m,const QStringLi
 
 engines::engine::status securefs::errorCode( const QString& e,const QString&,int s ) const
 {
-	if( m_version_greater_or_equal_1_0_0 ){
+	if( this->installedVersionGreaterOrEqual( "2.0.0" ) ){
+
+		if( s == 0 ){
+
+			return engines::engine::status::success ;
+		}else{
+			return _check_password( e,this->incorrectPasswordText() ) ;
+		}
+
+	}else if( this->installedVersionGreaterOrEqual( "1.0.0" ) ){
 
 		if( e.contains( " Fuse operations initialized" ) ){
 
@@ -252,18 +269,15 @@ static QByteArray _get_log( const QString& path )
 
 QByteArray securefs::extraLogOutput( const engines::engine::args& e ) const
 {
-	if( m_version_greater_or_equal_1_0_0 && utility::platformIsNOTWindows() ){
+	const auto& opts = e.cmd_args ;
 
-		const auto& opts = e.cmd_args ;
+	for( int s = 0 ; s < opts.size() ; s++ ){
 
-		for( int s = 0 ; s < opts.size() ; s++ ){
+		if( opts[ s ] == "--log" ){
 
-			if( opts[ s ] == "--log" ){
+			if( s + 1 < opts.size() ){
 
-				if( s + 1 < opts.size() ){
-
-					return _get_log( opts[ s + 1 ] ) ;
-				}
+				return _get_log( opts[ s + 1 ] ) ;
 			}
 		}
 	}
@@ -273,7 +287,7 @@ QByteArray securefs::extraLogOutput( const engines::engine::args& e ) const
 
 bool securefs::canShowVolumeProperties() const
 {
-	return !m_version_greater_or_equal_1_0_0 ;
+	return !this->installedVersionGreaterOrEqual( "1.0.0" ) ;
 }
 
 static void _updateKeys( QStringList& opts,engines::engine::cmdArgsList& e )
@@ -289,7 +303,7 @@ static void _updateKeys( QStringList& opts,engines::engine::cmdArgsList& e )
 
 void securefs::updateOptions( engines::engine::cmdArgsList& e,bool creating ) const
 {
-	if( m_version_greater_or_equal_0_11_1 ){
+	if( this->installedVersionGreaterOrEqual( "0.11.1" ) ){
 
 		if( creating ){
 
@@ -319,7 +333,7 @@ void securefs::updateOptions( engines::engine::commandOptions& opts,
 {
 	Q_UNUSED( args )
 
-	if( !creating && m_version_greater_or_equal_0_11_1 ){
+	if( !creating && this->installedVersionGreaterOrEqual( "0.11.1" ) ){
 
 		auto fuseOpts = opts.fuseOpts() ;
 		auto exeOpts  = opts.exeOptions() ;
@@ -338,15 +352,29 @@ void securefs::updateOptions( engines::engine::commandOptions& opts,
 			exeOpts.add( "--fssubtype",fssubtype.RValue().mid( 8 ) ) ;
 		}
 
-		if( m_version_greater_or_equal_1_0_0 ){
+		if( this->useLogFile() ){
 
-			if( utility::platformIsWindows() || utility::platformIsFlatPak() ){
-
-				//Left empty on purpose
-			}else{
-				exeOpts.add( "--log",_logPath( args.mountPoint ) ) ;
-			}
+			exeOpts.add( "--log",_logPath( args.mountPoint ) ) ;
 		}
+	}
+}
+
+bool securefs::useLogFile() const
+{
+	if( utility::platformIsWindows() || utility::platformIsFlatPak() ){
+
+		return false ;
+
+	}else if( this->installedVersionGreaterOrEqual( "1.0.0" ) ){
+
+		if( this->installedVersionGreaterOrEqual( "2.0.0" ) ){
+
+			return false ;
+		}else{
+			return true ;
+		}
+	}else{
+		return false ;
 	}
 }
 
@@ -362,7 +390,7 @@ bool securefs::requiresAPassword( const engines::engine::cmdArgsList& opt ) cons
 
 void securefs::GUICreateOptions( const engines::engine::createGUIOptions& s ) const
 {
-	securefscreateoptions::instance( *this,s,m_version_greater_or_equal_0_11_1 ) ;
+	securefscreateoptions::instance( *this,s,this->installedVersionGreaterOrEqual( "0.11.1" ) ) ;
 }
 
 void securefs::GUIMountOptions( const engines::engine::mountGUIOptions& s ) const
@@ -373,7 +401,7 @@ void securefs::GUIMountOptions( const engines::engine::mountGUIOptions& s ) cons
 
 	ee.enableIdleTime = false ;
 	ee.enableCheckBox = false ;
-	ee.enableKeyFile  = m_version_greater_or_equal_0_11_1 ;
+	ee.enableKeyFile  = this->installedVersionGreaterOrEqual( "0.11.1" ) ;
 
 	e.ShowUI() ;
 }

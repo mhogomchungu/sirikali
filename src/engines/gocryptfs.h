@@ -54,6 +54,8 @@ public:
 
 	void parseVolumeProperties( QString& ) const override ;
 
+	void updateExecutablePaths() const override ;
+
 	void aboutToExit() const override ;
 
 	const QStringList& windowsUnmountCommand() const override ;
@@ -64,14 +66,10 @@ public:
 		      const engines::engine::cmdArgsList& args,
 		      bool create ) const override ;
 private:
-#ifdef Q_OS_WIN
-#else
-	const engines::versionGreaterOrEqual m_version_has_error_codes ;
-#endif
-	QString m_sirikaliCppcryptfsExe ;
-	QString m_cppcryptfsctl ;
-	QString m_cppcryptfs ;
-	QStringList m_windowsUnmountCommand ;
+	mutable QString m_sirikaliCppcryptfsExe ;
+	mutable QString m_cppcryptfsctl ;
+	mutable QString m_cppcryptfs ;
+	mutable QStringList m_windowsUnmountCommand ;
 	mutable QString m_cppcryptfsPid ;
 	QString getcppcryptfsPid() const ;
 } ;
