@@ -716,6 +716,8 @@ public:
 
 		virtual void setUnmountCommand( const QStringList& ) ;
 
+		virtual void setWindowsUnmountCommand( const QStringList& ) ;
+
 		virtual bool updatable( bool ) const ;
 
 		virtual const QStringList& windowsUnmountCommand() const ;

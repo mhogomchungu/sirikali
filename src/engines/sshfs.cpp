@@ -78,6 +78,11 @@ static engines::engine::BaseOptions _setOptions()
 		s.autoCreatesMountPoint = false ;
 		s.autoDeletesMountPoint = false ;
 		s.defaultFavoritesMountOptions = "idmap=user,StrictHostKeyChecking=no" ;
+
+		if( utility::platformIsOSX() ){
+
+			s.unMountCommand = QStringList{ "umount","%{mountPoint}" } ;
+		}
 	}
 
 	return s ;

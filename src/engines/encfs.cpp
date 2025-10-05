@@ -65,6 +65,11 @@ static engines::engine::BaseOptions _setOptions()
 	s.notFoundCode          = engines::engine::status::engineExecutableNotFound ;
 	s.versionInfo           = { { "--version",false,2,0 } } ;
 
+	if( utility::platformIsOSX() ){
+
+		s.unMountCommand = QStringList{ "umount","%{mountPoint}" } ;
+	}
+
 	if( utility::platformIsWindows() ){
 
 		s.autoCreatesMountPoint = true ;

@@ -78,10 +78,16 @@ static engines::engine::BaseOptions _setOptions()
 
 		auto exe = "flatpak-spawn" ;
 
-		auto e = settings::instance().flatpakIntance().globalBinPath() ;
-		auto m = e + "/cryfs-unmount" ;
+		auto m = engines::executableNotEngineFullPath( "cryfs-unmount" ) ;
 
-		s.unMountCommand = QStringList{ exe,"--host",m,"--immediate","%{mountPoint}" } ;
+		if( !m.isEmpty() ){
+
+			s.unMountCommand = QStringList{ exe,"--host",m,"--immediate","%{mountPoint}" } ;
+		}
+
+	}else if( utility::platformIsOSX() ){
+
+		s.unMountCommand = QStringList{ "umount","%{mountPoint}" } ;
 	}else{
 		auto m = engines::executableNotEngineFullPath( "cryfs-unmount" ) ;
 
@@ -100,7 +106,7 @@ static engines::engine::BaseOptions _setOptions()
 	return s ;
 }
 
-cryfs::cryfs() :	engines::engine( _setOptions() ),	m_env( this->setEnv() )
+cryfs::cryfs() : engines::engine( _setOptions() ),m_env( this->setEnv() )
 {
 }
 

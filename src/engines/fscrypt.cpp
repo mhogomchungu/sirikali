@@ -344,6 +344,11 @@ static engines::engine::BaseOptions _setOptions()
 
 	s.keyFileArgument        = "--key=%{keyfile}" ;
 
+	if( utility::platformIsOSX() ){
+
+		s.unMountCommand = QStringList{ "umount","%{mountPoint}" } ;
+	}
+
 	return s ;
 }
 

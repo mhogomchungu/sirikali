@@ -123,6 +123,11 @@ static engines::engine::BaseOptions _setOptions( const QString& displayName )
 		s.incorrectPasswordText = QStringList{ "Password incorrect." } ;
 
 		s.executableNames       = QStringList{ "gocryptfs" } ;
+
+		if( utility::platformIsOSX() ){
+
+			s.unMountCommand = QStringList{ "umount","%{mountPoint}" } ;
+		}
 	}
 
 	return s ;

@@ -60,6 +60,8 @@ static engines::engine::exe_args _cmd_args_1( QString e )
 
 			if( !b.isEmpty() ){
 
+				b = utility::cleanPath( b ) ;
+
 				return { b,utility::split( e.mid( i + 1 ),' ' ) } ;
 			}
 		}
@@ -90,7 +92,7 @@ static engines::engine::exe_args _cmd_args( const QString& e )
 
 	args.removeFirst() ;
 
-	return { std::move( exe ),std::move( args ) } ;
+	return { utility::cleanPath( exe ),std::move( args ) } ;
 }
 
 static void _run_command( const engines::engine::exe_args_const& exe,

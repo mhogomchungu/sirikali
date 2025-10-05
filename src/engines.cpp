@@ -1028,24 +1028,6 @@ engines::engine::terminateProcess( int attempts,const engines::engine::terminate
 	}
 }
 
-static engines::engine::BaseOptions _update( engines::engine::BaseOptions m )
-{
-	for( auto& it : m.names ){
-
-		if( !it.isEmpty() ){
-
-			it.replace( 0,1,it.at( 0 ).toUpper() ) ;
-		}
-	}
-
-	if( !m.displayName.isEmpty() ){
-
-		m.displayName.replace( 0,1,m.displayName.at( 0 ).toUpper() ) ;
-	}
-
-	return m ;
-}
-
 engines::exeFullPath engines::engine::m_exeJavaFullPath( [](){
 
 	return engines::executableNotEngineFullPath( "java" ) ;
@@ -1105,6 +1087,24 @@ private:
 } ;
 
 engines::exeFullPath engines::engine::m_exeFuserMount( fuserMountExe{} ) ;
+
+static engines::engine::BaseOptions _update( engines::engine::BaseOptions m )
+{
+	for( auto& it : m.names ){
+
+		if( !it.isEmpty() ){
+
+			it.replace( 0,1,it.at( 0 ).toUpper() ) ;
+		}
+	}
+
+	if( !m.displayName.isEmpty() ){
+
+		m.displayName.replace( 0,1,m.displayName.at( 0 ).toUpper() ) ;
+	}
+
+	return m ;
+}
 
 engines::engine::engine( engines::engine::BaseOptions o ) :
 	m_Options( _update( std::move( o ) ) ),
@@ -1456,8 +1456,21 @@ engines::engine::exe_args engines::engine::unMountCommand( const engines::engine
 			return _replace_opts( w ) ;
 		}
 	}else{
-		if( !m_Options.unMountCommand.isEmpty() ){
+		if( m_Options.unMountCommand.isEmpty() ){
 
+			const auto& fm = engines::engine::fuserMountPath() ;
+
+			if( fm.isEmpty() ){
+
+				return { engines::engine::status::fuserMountNotFound } ;
+
+			}else if( utility::platformIsFlatPak() ){
+
+				return { "flatpak-spawn",{ "--host",fm,"-u",e.mountPath() } } ;
+			}else{
+				return { fm,{ "-u",e.mountPath() } } ;
+			}
+		}else{
 			if( utility::platformIsFlatPak() ){
 
 				auto m = _replace_opts( m_Options.unMountCommand ) ;
@@ -1469,24 +1482,6 @@ engines::engine::exe_args engines::engine::unMountCommand( const engines::engine
 			}else{
 				return _replace_opts( m_Options.unMountCommand ) ;
 			}
-		}
-
-		if( utility::platformIsOSX() ){
-
-			return { "umount",{ e.mountPath() } } ;
-		}
-
-		const auto& fm = engines::engine::fuserMountPath() ;
-
-		if( fm.isEmpty() ){
-
-			return { engines::engine::status::fuserMountNotFound } ;
-
-		}else if( utility::platformIsFlatPak() ){
-
-			return { "flatpak-spawn",{ "--host",fm,"-u",e.mountPath() } } ;
-		}else{
-			return { fm,{ "-u",e.mountPath() } } ;
 		}
 	}
 }
@@ -1601,6 +1596,11 @@ void engines::engine::changeEnvironment( const QString&,const QStringList& ) con
 void engines::engine::setUnmountCommand( const QStringList& e )
 {
 	m_Options.unMountCommand = e ;
+}
+
+void engines::engine::setWindowsUnmountCommand( const QStringList& e )
+{
+	m_Options.windowsUnMountCommand = e ;
 }
 
 const QStringList& engines::engine::windowsUnmountCommand() const

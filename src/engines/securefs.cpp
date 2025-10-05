@@ -66,6 +66,11 @@ static engines::engine::BaseOptions _setOptions()
 	s.notFoundCode          = engines::engine::status::engineExecutableNotFound ;
 	s.versionInfo           = { { "version",true,1,0 } } ;
 
+	if( utility::platformIsOSX() ){
+
+		s.unMountCommand = QStringList{ "umount","%{mountPoint}" } ;
+	}
+
 	if( utility::platformIsWindows() || utility::platformIsFlatPak() ){
 
 		s.mountControlStructure = "mount %{mountOptions} %{cipherFolder} %{mountPoint} %{fuseOpts}" ;
@@ -82,9 +87,21 @@ securefs::securefs() : engines::engine( _setOptions() )
 {
 	if( this->installedVersionGreaterOrEqual( "2.0.0" ) ){
 
-		auto m = QStringList{ this->executableFullPath(),"unmount","%{mountPoint}" } ;
+		auto e = this->executableFullPath() ;
 
-		engines::engine::setUnmountCommand( m ) ;
+		if( !e.isEmpty() ){
+
+			e = utility::cleanPath( e ) ;
+
+			auto m = QStringList{ e,"unmount","%{mountPoint}" } ;
+
+			if( utility::platformIsWindows() ){
+
+				engines::engine::setWindowsUnmountCommand( m ) ;
+			}else{
+				engines::engine::setUnmountCommand( m ) ;
+			}
+		}
 	}
 }
 
