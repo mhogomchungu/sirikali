@@ -147,12 +147,13 @@ gocryptfs::gocryptfs( const QString& e ) : engines::engine( _setOptions( e ) )
 
 gocryptfs::gocryptfs() : engines::engine( _setOptions( "gocryptfs" ) )
 {
-
 }
 
 gocryptfs::gocryptfs( const QString& e ) : engines::engine( _setOptions( e ) )
 {
 }
+
+#endif
 
 void gocryptfs::updateExecutablePaths() const
 {
@@ -164,8 +165,6 @@ void gocryptfs::updateExecutablePaths() const
 		m_windowsUnmountCommand = engines::engine::windowsUnmountCommand() + QStringList{ "--exit" } ;
 	}
 }
-
-#endif
 
 bool gocryptfs::updatable( bool s ) const
 {

@@ -1460,7 +1460,7 @@ engines::engine::exe_args engines::engine::unMountCommand( const engines::engine
 
 			if( utility::platformIsFlatPak() ){
 
-				engines::engine::exe_args m = _replace_opts( m_Options.unMountCommand ) ;
+				auto m = _replace_opts( m_Options.unMountCommand ) ;
 
 				m.args.prepend( m.exe ) ;
 				m.args.prepend( "--host" ) ;
