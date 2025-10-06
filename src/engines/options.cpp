@@ -168,6 +168,11 @@ void options::ShowUI()
 
 	m_ui->checkBox->setText( e.checkBoxText ) ;
 
+	if( !e.idleTimeOutText.isEmpty() ){
+
+		m_ui->labelIdleTimeout->setText( e.idleTimeOutText ) ;
+	}
+
 	[ this ](){
 
 		std::array< QLineEdit *,4 > lineEdits = { m_ui->lineEditKeyFile,

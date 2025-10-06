@@ -1593,16 +1593,6 @@ void engines::engine::changeEnvironment( const QString&,const QStringList& ) con
 {
 }
 
-void engines::engine::setUnmountCommand( const QStringList& e )
-{
-	m_Options.unMountCommand = e ;
-}
-
-void engines::engine::setWindowsUnmountCommand( const QStringList& e )
-{
-	m_Options.windowsUnMountCommand = e ;
-}
-
 const QStringList& engines::engine::windowsUnmountCommand() const
 {
 	return m_Options.windowsUnMountCommand ;

@@ -144,11 +144,11 @@ void encfs::GUIMountOptions( const engines::engine::mountGUIOptions& s ) const
 
 	ee.updateOptions = []( const ::options::Options& s ){
 
-        engines::engine::booleanOptions bo ;
+		engines::engine::booleanOptions bo ;
 
-        bo.unlockInReverseMode = s.checkBoxChecked ;
+		bo.unlockInReverseMode = s.checkBoxChecked ;
 
-        return bo ;
+		return bo ;
 	} ;
 
 	e.ShowUI() ;

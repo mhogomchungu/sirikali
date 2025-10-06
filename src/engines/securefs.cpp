@@ -87,21 +87,26 @@ securefs::securefs() : engines::engine( _setOptions() )
 {
 	if( this->installedVersionGreaterOrEqual( "2.0.0" ) ){
 
-		auto e = this->executableFullPath() ;
+		engines::engine::updateOptions( [ this ]( BaseOptions& s ){
 
-		if( !e.isEmpty() ){
+			s.idleString = "--max-idle-seconds %{timeout}" ;
 
-			e = utility::cleanPath( e ) ;
+			auto e = this->executableFullPath() ;
 
-			auto m = QStringList{ e,"unmount","%{mountPoint}" } ;
+			if( !e.isEmpty() ){
 
-			if( utility::platformIsWindows() ){
+				e = utility::cleanPath( e ) ;
 
-				engines::engine::setWindowsUnmountCommand( m ) ;
-			}else{
-				engines::engine::setUnmountCommand( m ) ;
+				auto m = QStringList{ e,"unmount","%{mountPoint}" } ;
+
+				if( utility::platformIsWindows() ){
+
+					s.windowsUnMountCommand = m ;
+				}else{
+					s.unMountCommand = m ;
+				}
 			}
-		}
+		} ) ;
 	}
 }
 
@@ -416,9 +421,11 @@ void securefs::GUIMountOptions( const engines::engine::mountGUIOptions& s ) cons
 
 	auto& ee = e.GUIOptions() ;
 
-	ee.enableIdleTime = false ;
-	ee.enableCheckBox = false ;
-	ee.enableKeyFile  = this->installedVersionGreaterOrEqual( "0.11.1" ) ;
+	ee.enableCheckBox  = false ;
+	ee.checkBoxChecked = false ;
+	ee.enableIdleTime  = this->installedVersionGreaterOrEqual( "2.0.0" ) ;
+	ee.enableKeyFile   = this->installedVersionGreaterOrEqual( "0.11.1" ) ;
+	ee.idleTimeOutText = QObject::tr( "Automatically Unmount After Specified Seconds of Inactivity Is Reached." ) ;
 
 	e.ShowUI() ;
 }

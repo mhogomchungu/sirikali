@@ -555,6 +555,11 @@ public:
 		static const QString& javaFullPath() ;
 		static const QString& fuserMountPath() ;
 
+		template< typename Function >
+		void updateOptions( Function function )
+		{
+			function( m_Options ) ;
+		}
 		bool isInstalled() const ;
 		bool isNotInstalled() const ;
 		bool unknown() const ;
@@ -713,10 +718,6 @@ public:
 		virtual bool onlineArchiveFileName( const QString& ) const ;
 
 		virtual void changeEnvironment( const QString&,const QStringList& ) const ;
-
-		virtual void setUnmountCommand( const QStringList& ) ;
-
-		virtual void setWindowsUnmountCommand( const QStringList& ) ;
 
 		virtual bool updatable( bool ) const ;
 
