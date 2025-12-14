@@ -37,22 +37,22 @@ Rest of FAQs are <a href="https://github.com/mhogomchungu/SiriKali/wiki/Frequent
 
 ## Source download link.
 
-Latest released version is 1.8.3 and its source code can be downloaded by clicking below link.
+Latest released version is 1.8.4 and its source code can be downloaded by clicking below link.
 
-<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.8.3/SiriKali-1.8.3.tar.xz">SiriKali-1.8.3.tar.xz</a>
+<a href="https://github.com/mhogomchungu/sirikali/releases/download/1.8.4/SiriKali-1.8.4.tar.xz">SiriKali-1.8.4.tar.xz</a>
 
 ## Download links for macOS.
 
-MacOS bundle can be downloaded from <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.8.3/SiriKaliQt6-1.8.3.dmg">here</a>. The bundle is for x86_64 only and is not notarized so you may need to jump a few hoops to get it to run on your system. Supported versions of MacOS is 13+.
+MacOS bundle can be downloaded from <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.8.4/SiriKaliQt6-1.8.4.dmg">here</a>. The bundle is for x86_64 only and is not notarized so you may need to jump a few hoops to get it to run on your system. Supported versions of MacOS is 13+.
 
 ## Download links for Microsoft Windows Operating System.
 
-The installer for Microsoft Windows operating system is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.8.3/SiriKaliQt5-1.8.3.setup.exe">here</a> for those with windows7 going up and <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.8.3/SiriKaliQt6-1.8.3.setup.exe">here</a> for those with Windows10 going up.
+The installer for Microsoft Windows operating system is <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.8.4/SiriKaliQt5-1.8.4.setup.exe">here</a> for those with windows7 going up and <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.8.4/SiriKaliQt6-1.8.4.setup.exe">here</a> for those with Windows10 going up.
 
 The installer is not signed and expect to get a warning from windows saying the installer is from an unknown publisher.
 We recommend using the installer version.
 
-There is also a portable version and it is found <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.8.3/SiriKaliQt5-1.8.3.zip">here</a> for those with windows7 going up and <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.8.3/SiriKaliQt6-1.8.3.zip">here</a> for those with windows10 going up.
+There is also a portable version and it is found <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.8.4/SiriKaliQt5-1.8.4.zip">here</a> for those with windows7 going up and <a href="https://github.com/mhogomchungu/sirikali/releases/download/1.8.4/SiriKaliQt6-1.8.4.zip">here</a> for those with windows10 going up.
 
 Packages are also available for <a href="https://github.com/microsoft/winget-pkgs/tree/master/manifests/f/FrancisBanyikwa/SiriKali">Winget</a> and <a href="https://github.com/ScoopInstaller/Extras/blob/master/bucket/sirikali.json">Scoop</a>.
 
@@ -149,3 +149,4 @@ cv9jY9bZAbVaMUjF7dw/bsqgJ2HCJ33cf16GybRtozOE36YDB2omg58ngIrlmlea
 ```
 
 last update: Mon Apr 21 10:53:34 AM EAT 2025
+
