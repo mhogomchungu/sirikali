@@ -9,7 +9,7 @@ env:
   QT6_VERSION: "6.6.2"
 jobs:
   MacOSRelease:
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
     -
       uses: actions/checkout@v4
