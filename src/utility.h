@@ -532,8 +532,12 @@ namespace utility
 	QByteArray fileContents( const T& e )
 	{
 		QFile file( e ) ;
-		file.open( QIODevice::ReadOnly ) ;
-		return file.readAll() ;
+		if( file.open( QIODevice::ReadOnly ) ){
+
+			return file.readAll() ;
+		}else{
+			return {} ;
+		}
 	}
 
 	bool pathExists( const QString& ) ;

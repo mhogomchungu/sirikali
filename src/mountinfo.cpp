@@ -439,7 +439,10 @@ void mountinfo::linuxMonitor()
 
 		QFile s( "/proc/self/mountinfo" ) ;
 
-		s.open( QIODevice::ReadOnly ) ;
+		if( s.open( QIODevice::ReadOnly ) ){
+
+			m_debug( "Warning: Failed to Open \"/proc/self/mountinfo\"" ) ;
+		}
 
 		eventsMonitor::pollMonitor( s.handle() ).poll( [ this ]( int a ){
 

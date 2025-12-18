@@ -106,16 +106,17 @@ static void _set_path_writable_by_others( const QString& e )
 
 		umask( i ) ;
 
-		f.open( QIODevice::WriteOnly ) ;
+		if( f.open( QIODevice::WriteOnly ) ){
 
-		auto s = f.permissions() ;
+			auto s = f.permissions() ;
 
-		f.close() ;
-		f.remove() ;
+			f.close() ;
+			f.remove() ;
 
-		if( s & QFileDevice::WriteOther ){
+			if( s & QFileDevice::WriteOther ){
 
-			break ;
+				break ;
+			}
 		}
 	}
 }
