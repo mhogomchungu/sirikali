@@ -1739,34 +1739,53 @@ bool utility::copyFile( const QString& s,const QString& d,bool setExePermssion )
 	return false ;
 }
 
-static QString _currentCpuArch()
+utility::CPU::CPU() : m_cpu( this->getCPU() )
 {
-#if QT_VERSION < QT_VERSION_CHECK( 5,4,0 )
-
-	return {} ;
-#else
-	return QSysInfo::currentCpuArchitecture() ;
-#endif
 }
 
-bool utility::archInUse( utility::arch m )
+bool utility::CPU::x86_32() const
 {
-	auto e = _currentCpuArch() ;
+	return m_cpu == "i386" || m_cpu == "x86_32" ;
+}
 
-	if( m == utility::arch::x64 ){
+bool utility::CPU::x86_64() const
+{
+	return m_cpu == "x86_64" ;
+}
 
-		return e == "x86_64";
+bool utility::CPU::aarch64() const
+{
+	return m_cpu == "arm64" || m_cpu == "aarch64" ;
+}
 
-	}else if( m == utility::arch::x86 ){
+bool utility::CPU::aarch32() const
+{
+	return m_cpu == "arm" || m_cpu == "aarch32" ;
+}
 
-		return e == "i386" ;
+const QString& utility::CPU::getCPU() const
+{
+#if QT_VERSION >= QT_VERSION_CHECK( 5,4,0 )
+	static QString m = QSysInfo::currentCpuArchitecture() ;
+	return m ;
+#else
+	static QString m = [](){
 
-	}else if( m == utility::arch::aarch64 ){
+		if( utility::platformIsLinux() ){
 
-		return e == "arm64" ;
-	}else{
-		return false ;
-	}
+			QFile file( "/proc/sys/kernel/arch" ) ;
+
+			if( file.open( QIODevice::ReadOnly ) ){
+
+				return file.readAll().trimmed() ;
+			}
+		}
+
+		return QByteArray() ;
+	}() ;
+
+	return m ;
+#endif
 }
 
 QString utility::cleanPath( const QString& e )

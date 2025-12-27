@@ -487,23 +487,18 @@ namespace utility
 
 	void applicationStarted() ;
 
-	enum class arch{ x64,x86,aarch64 } ;
-
-	bool archInUse( utility::arch ) ;
-
-	template< typename ... T >
-	bool archInUseIsAnyOf( T ... m )
+	class CPU
 	{
-		for( const auto& it : { m ... } ){
-
-			if( utility::archInUse( it ) ){
-
-				return true ;
-			}
-		}
-
-		return false ;
-	}
+	public:
+		CPU() ;
+		bool x86_32() const ;
+		bool x86_64() const ;
+		bool aarch64() const ;
+		bool aarch32() const ;
+	private:
+		const QString& getCPU() const ;
+		const QString& m_cpu ;
+	} ;
 
 	QString removeOption( const QStringList&,const QString& option ) ;
 	QString removeOption( const QString& commaSeparatedString,const QString& option ) ;

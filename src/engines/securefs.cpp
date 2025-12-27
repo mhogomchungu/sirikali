@@ -118,7 +118,9 @@ bool securefs::updatable( bool s ) const
 
 			return false ;
 		}else{
-			return utility::archInUse( utility::arch::x64 ) ;
+			utility::CPU cpu ;
+
+			return cpu.x86_64() || cpu.aarch64() ;
 		}
 	}else{
 		return false ;
@@ -152,16 +154,39 @@ void securefs::removeExtraFiles( const QString& e ) const
 
 bool securefs::onlineArchiveFileName( const QString& e ) const
 {
+	utility::CPU cpu ;
+
 	if( utility::platformIsLinux() ){
 
-		return e.endsWith( "securefs-linux-amd64-release.zip" ) ;
+		if( cpu.x86_64() ){
+
+			return e.endsWith( "securefs-linux-amd64-release.zip" ) ;
+
+		}else if( cpu.aarch64() ){
+
+			return e.endsWith( "securefs-linux-arm64-release.zip" ) ;
+		}
 
 	}else if( utility::platformIsWindows() ){
 
-		return e.endsWith( "securefs-windows-amd64-release.zip" ) ;
-	}else{
-		return e.endsWith( "securefs-macos-amd64-release.zip" ) ;
+		if( cpu.x86_64() ){
+
+			return e.endsWith( "securefs-windows-amd64-release.zip" ) ;
+		}
+
+	}else if( utility::platformIsOSX() ){
+
+		if( cpu.x86_64() ){
+
+			return e.endsWith( "securefs-macos-amd64-release.zip" ) ;
+
+		}else if( cpu.aarch64() ){
+
+			return e.endsWith( "securefs-macos-arm64-release.zip" ) ;
+		}
 	}
+
+	return false ;
 }
 
 engines::engine::args securefs::command( const QByteArray& password,const cmdArgsList& args,bool create ) const

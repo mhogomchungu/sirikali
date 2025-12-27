@@ -98,13 +98,15 @@ bool cryptomator::updatable( bool s ) const
 {
 	if( s ){
 
-		if( utility::platformIsFlatPak() ){
+		utility::CPU cpu ;
 
-			return utility::archInUseIsAnyOf( utility::arch::x64,utility::arch::aarch64 ) ;
+		if( utility::platformIsFlatPak() ){			
+
+			return cpu.aarch64() || cpu.x86_64() ;
 
 		}else if( utility::platformIsWindows() ){
 
-			return utility::archInUse( utility::arch::x64 ) ;
+			return cpu.x86_64() ;
 		}else{
 			return false ;
 		}
@@ -134,11 +136,13 @@ bool cryptomator::onlineArchiveFileName( const QString& e ) const
 {
 	if( utility::platformIsLinux() ){
 
-		if( utility::archInUse( utility::arch::x64 ) ){
+		utility::CPU cpu ;
+
+		if( cpu.x86_64() ){
 
 			return e.endsWith( "linux-x64.zip" ) ;
 
-		}else if( utility::archInUse( utility::arch::aarch64 ) ){
+		}else if( cpu.aarch64() ){
 
 			return e.endsWith( "linux-aarch64.zip" ) ;
 		}else{

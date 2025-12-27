@@ -25,7 +25,7 @@
 
 static QString _exeName( const QString& e,const QString& m = {} )
 {
-	if( utility::archInUse( utility::arch::x64 ) ){
+	if( utility::CPU().x86_64() ){
 
 		return e + m ;
 	}else{
@@ -185,7 +185,7 @@ bool gocryptfs::updatable( bool s ) const
 
 		}else if( utility::platformIsLinux() ){
 
-			return utility::archInUse( utility::arch::x64 ) ;
+			return utility::CPU().x86_64() ;
 		}else{
 			return false ;
 		}
