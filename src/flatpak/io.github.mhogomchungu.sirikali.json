@@ -1,7 +1,7 @@
 {
   "app-id" : "io.github.mhogomchungu.sirikali",
   "runtime" : "org.kde.Platform",
-  "runtime-version" : "6.9",
+  "runtime-version" : "6.10",
   "sdk" : "org.kde.Sdk",
   "command" : "io.github.mhogomchungu.sirikali",
   "finish-args" : [
@@ -160,7 +160,8 @@
       "config-opts" : [
         "-DCMAKE_BUILD_TYPE=Release",
         "-DFRUIT_USES_BOOST=False",
-        "-DBUILD_SHARED_LIBS=FALSE"
+        "-DBUILD_SHARED_LIBS=FALSE",
+        "-DCMAKE_POLICY_VERSION_MINIMUM=4.0"
       ],
       "sources" : [
         {
@@ -332,8 +333,8 @@
       "sources" : [
         {
           "type" : "archive",
-          "url" : "https://github.com/cryfs/cryfs/archive/refs/tags/1.0.1.tar.gz",
-          "sha256" : "485e7aa1b3b7e38a5ed422a22817aa2962c411b5afbc8be41d76750c50700a28"
+          "url" : "https://github.com/cryfs/cryfs/archive/refs/tags/1.0.3.tar.gz",
+          "sha256" : "d5867a41b52d591c575bc2b403181f44b1b677d17a86c2b28f77ebf1f9f08ef1"
         },
         {
           "type" : "patch",

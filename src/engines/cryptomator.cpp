@@ -176,9 +176,9 @@ cryptomator::terminateProcess( int attempts,const engines::engine::terminate_pro
 
 		utility::logger logger ;
 
-		auto exe = "flatpak-spawn" ;
+		const auto& exe = this->fuserMountPath() ;
 
-		QStringList args{ "--host",this->fuserMountPath(),"-u",e.mountPath() } ;
+		QStringList args{ "-u",e.mountPath() } ;
 
 		const auto& env = this->getProcessEnvironment() ;
 

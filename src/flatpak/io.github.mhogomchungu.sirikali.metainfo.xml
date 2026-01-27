@@ -13,6 +13,8 @@
 
 	<url type="homepage">https://mhogomchungu.github.io/sirikali</url>
 	<url type="bugtracker">https://github.com/mhogomchungu/sirikali/issues</url>
+	<url type="vcs-browser">https://github.com/mhogomchungu/sirikali</url>
+	<url type="faq">https://github.com/mhogomchungu/sirikali/wiki/Frequently-Asked-Questions</url>
 
 	<content_rating type="oars-1.1" />
 
@@ -26,6 +28,7 @@
 
 	<screenshots>
 		<screenshot  type="default">
+			<caption>Main window with a password dialog window</caption>
 			<image>https://raw.githubusercontent.com/mhogomchungu/sirikali/03f5596db7b4a11bc3d394f5e57f69243e646505/images/Screenshot_20190912_114700.png</image>
 		</screenshot>
 	</screenshots>

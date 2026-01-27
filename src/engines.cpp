@@ -186,7 +186,7 @@ static QString _executableFullPath( const QString& f,Function function )
 {
 	if( utility::platformIsFlatPak() ){
 
-		if( QFile::exists( "/app/bin/" + f ) ){
+		if( f == "gocryptfs" && QFile::exists( "/app/bin/" + f ) ){
 
 			auto m = settings::instance().flatpakIntance().globalBinPath() ;
 
@@ -905,14 +905,6 @@ Task::process::result engines::engine::installedVersionImpl( const BaseOptions::
 		auto& e = ::Task::process::run( m_exeJavaFullPath.get(),args,-1,{},env ) ;
 
 		return utility::unwrap( e ) ;
-
-	}else if( utility::platformIsFlatPak() ){
-
-		QStringList args{ "--host",cmd,v.versionArgument } ;
-
-		auto& e = ::Task::process::run( "flatpak-spawn",args,-1,{},env ) ;
-
-		return utility::unwrap( e ) ;
 	}else{
 		QStringList args{ v.versionArgument } ;
 
@@ -1041,40 +1033,6 @@ public:
 	}
 	QString operator()() const
 	{
-		if( utility::platformIsFlatPak() ){
-
-			return this->flatpak() ;
-		}else{
-			return this->normal() ;
-		}
-	}
-private:
-	QString flatpak() const
-	{
-		auto e = "flatpak-spawn" ;
-
-		auto m = utility::Task::run( e,{ "--host","which","fusermount" } ).await() ;
-
-		if( m.stdOut().isEmpty() ){
-
-			m = utility::Task::run( e,{ "--host","which","fusermount3" } ).await() ;
-
-			auto s = m.stdOut() ;
-
-			s.replace( "\n","" ) ;
-
-			return s ;
-		}else{
-			auto s = m.stdOut() ;
-
-			s.replace( "\n","" ) ;
-
-			return s ;
-		}
-	}
-
-	QString normal() const
-	{
 		auto e = engines::executableNotEngineFullPath( "fusermount3" ) ;
 
 		if( e.isEmpty() ){
@@ -1084,6 +1042,7 @@ private:
 
 		return e ;
 	}
+private:
 } ;
 
 engines::exeFullPath engines::engine::m_exeFuserMount( fuserMountExe{} ) ;
@@ -1455,34 +1414,19 @@ engines::engine::exe_args engines::engine::unMountCommand( const engines::engine
 		}else{
 			return _replace_opts( w ) ;
 		}
-	}else{
-		if( m_Options.unMountCommand.isEmpty() ){
 
-			const auto& fm = engines::engine::fuserMountPath() ;
+	}else if( m_Options.unMountCommand.isEmpty() ){
 
-			if( fm.isEmpty() ){
+		const auto& fm = engines::engine::fuserMountPath() ;
 
-				return { engines::engine::status::fuserMountNotFound } ;
+		if( fm.isEmpty() ){
 
-			}else if( utility::platformIsFlatPak() ){
-
-				return { "flatpak-spawn",{ "--host",fm,"-u",e.mountPath() } } ;
-			}else{
-				return { fm,{ "-u",e.mountPath() } } ;
-			}
+			return { engines::engine::status::fuserMountNotFound } ;
 		}else{
-			if( utility::platformIsFlatPak() ){
-
-				auto m = _replace_opts( m_Options.unMountCommand ) ;
-
-				m.args.prepend( m.exe ) ;
-				m.args.prepend( "--host" ) ;
-
-				return { "flatpak-spawn",m.args } ;
-			}else{
-				return _replace_opts( m_Options.unMountCommand ) ;
-			}
+			return { fm,{ "-u",e.mountPath() } } ;
 		}
+	}else{
+		return _replace_opts( m_Options.unMountCommand ) ;
 	}
 }
 

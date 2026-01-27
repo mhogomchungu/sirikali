@@ -76,13 +76,11 @@ static engines::engine::BaseOptions _setOptions()
 
 	}else if( utility::platformIsFlatPak() ){
 
-		auto exe = "flatpak-spawn" ;
-
 		auto m = engines::executableNotEngineFullPath( "cryfs-unmount" ) ;
 
 		if( !m.isEmpty() ){
 
-			s.unMountCommand = QStringList{ exe,"--host",m,"--immediate","%{mountPoint}" } ;
+			s.unMountCommand = QStringList{ m,"--immediate","%{mountPoint}" } ;
 		}
 
 	}else if( utility::platformIsOSX() ){
@@ -135,12 +133,6 @@ engines::engine::args cryfs::command( const QByteArray& password,
 	if( utility::platformIsFlatPak() ){		
 
 		m.cmd_args.prepend( "-f" ) ;
-		m.cmd_args.prepend( m.cmd ) ;
-		m.cmd_args.prepend( "--host" ) ;
-
-		m.cmd_args.prepend( "--env=CRYFS_FRONTEND=noninteractive" ) ;
-
-		m.cmd = "flatpak-spawn" ;
 
 	}else if( utility::platformIsWindows() && !this->installedVersionGreaterOrEqual( "1.0.0" ) ){
 

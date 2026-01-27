@@ -193,14 +193,7 @@ engines::engine::args securefs::command( const QByteArray& password,const cmdArg
 {
 	if( utility::platformIsFlatPak() ){
 
-		auto m = engines::engine::command( password,args,create ) ;
-
-		m.cmd_args.prepend( m.cmd ) ;
-		m.cmd_args.prepend( "--host" ) ;
-
-		m.cmd = "flatpak-spawn" ;
-
-		return m ;
+		return engines::engine::command( password,args,create ) ;
 	}else{
 		return engines::engine::command( password,args,create ) ;
 	}
