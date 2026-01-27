@@ -888,6 +888,11 @@ engines::engineVersion engines::engine::installedVersion( const engines::engine:
 	return {} ;
 }
 
+static bool _flatpakBinPath( const QString& e )
+{
+	return e.startsWith( settings::instance().flatpakIntance().globalBinPath() ) ;
+}
+
 Task::process::result engines::engine::installedVersionImpl( const BaseOptions::vInfo& v ) const
 {
 	auto& env = m_processEnvironment ;
@@ -903,6 +908,14 @@ Task::process::result engines::engine::installedVersionImpl( const BaseOptions::
 		QStringList args{ "-jar",cmd,v.versionArgument } ;
 
 		auto& e = ::Task::process::run( m_exeJavaFullPath.get(),args,-1,{},env ) ;
+
+		return utility::unwrap( e ) ;
+
+	}else if( utility::platformIsFlatPak() && _flatpakBinPath( cmd ) ){
+
+		QStringList args{ "--host",cmd,v.versionArgument } ;
+
+		auto& e = ::Task::process::run( "flatpak-spawn",args,-1,{},env ) ;
 
 		return utility::unwrap( e ) ;
 	}else{
