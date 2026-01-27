@@ -172,12 +172,12 @@ jobs:
     -
      name: Print Hashes
      run: | 
-          $SiriKaliQt5z = (Get-FileHash ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}.zip).Hash 
-          $SiriKaliQt5s = (Get-FileHash ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}.setup.exe).Hash 
-          $SiriKaliQt6z = (Get-FileHash ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}.zip).Hash 
-          $SiriKaliQt6s = (Get-FileHash ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}.setup.exe).Hash 
+          $SiriKaliQt5z = (Get-FileHash ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}.zip).Hash.ToLower()
+          $SiriKaliQt5s = (Get-FileHash ${{github.workspace}}\SiriKaliQt5-${{ env.RELEASEVERSION }}.setup.exe).Hash.ToLower()
+          $SiriKaliQt6z = (Get-FileHash ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}.zip).Hash.ToLower()
+          $SiriKaliQt6s = (Get-FileHash ${{github.workspace}}\SiriKaliQt6-${{ env.RELEASEVERSION }}.setup.exe).Hash.ToLower()
 
-          echo "$SiriKaliQt5z SiriKaliQt5-${{ env.RELEASEVERSION }}.zip`n$SiriKaliQt5s SiriKaliQt5-${{ env.RELEASEVERSION }}.setup.exe`n$SiriKaliQt6z SiriKaliQt6-${{ env.RELEASEVERSION }}.zip`n$SiriKaliQt6s SiriKaliQt6-${{ env.RELEASEVERSION }}.setup.exe" 
+          echo "$SiriKaliQt5z SiriKaliQt5-${{ env.RELEASEVERSION }}.zip`n$SiriKaliQt5s SiriKaliQt5-${{ env.RELEASEVERSION }}.setup.exe`n$SiriKaliQt6z SiriKaliQt6-${{ env.RELEASEVERSION }}.zip`n$SiriKaliQt6s SiriKaliQt6-${{ env.RELEASEVERSION }}.setup.exe"
     -
       name: Post Releases
       uses: ncipollo/release-action@v1

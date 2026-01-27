@@ -342,3 +342,11 @@ version 1.4.2(December 18,2019)
    [ALL]
 -- Fix app not minimizing to tray on other platforms too other than windows.
 -- Add support for securefs 2.0.0
+
+   version 1.8.5(January 27th, 2026)
+   [FLATPAK]
+-- Improve how backends interact with the host system.
+-- Update Cryfs to version 1.0.3.
+-- Update Kde platform to version 6.10.
+   [ALL]
+-- Maintanance release.

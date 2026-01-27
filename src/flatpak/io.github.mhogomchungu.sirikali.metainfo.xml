@@ -39,6 +39,17 @@
 	</categories>
 
 	<releases>
+		<release version="1.8.5" type="stable" date="2025-01-27" >
+		<url type="details">https://github.com/mhogomchungu/sirikali/releases/download/1.8.5/sirikali-1.8.5.tar.xz/</url>
+			<description>
+				<p>Changelog</p>
+				<ul>
+					<li>Improve how backends interact with the host system</li>
+					<li>Update Cryfs to version 1.0.3.</li>
+					<li>Update Kde platform to version 6.10</li>
+				</ul>
+			</description>
+		</release>
 		<release version="1.8.4" type="stable" date="2025-10-10" >
 		<url type="details">https://github.com/mhogomchungu/sirikali/releases/download/1.8.4/sirikali-1.8.4.tar.xz/</url>
 			<description>
