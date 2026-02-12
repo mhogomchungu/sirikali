@@ -102,7 +102,9 @@ securefs::securefs() : engines::engine( _setOptions() )
 				if( utility::platformIsWindows() ){
 
 					s.windowsUnMountCommand = m ;
-				}else{
+
+				}else if( !utility::platformIsFlatPak() ){
+
 					s.unMountCommand = m ;
 				}
 			}

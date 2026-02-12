@@ -622,9 +622,37 @@ void settings::scaleGUI()
 #endif
 }
 
-QString settings::fileManager()
+cmd::exe settings::fileManager()
 {
-	if( m_settings.contains( "FileManagerOpener" ) ){
+	if( utility::platformIsFlatPak() ){
+
+		if( !m_settings.contains( "Xdg-Open" ) ){
+
+			QProcess exe ;
+
+			exe.start( "flatpak-spawn",{ "--host","which","xdg-open" } ) ;
+
+			exe.waitForFinished() ;
+
+			auto m = exe.readAllStandardOutput().trimmed() ;
+
+			QStringList s{ "flatpak-spawn","--host",m } ;
+
+			m_settings.setValue( "Xdg-Open",s ) ;
+		}
+
+		auto m = m_settings.value( "Xdg-Open" ).toStringList() ;
+
+		if( m.size() ){
+
+			auto exe = m.takeAt( 0 ) ;
+
+			return { exe,m } ;
+		}else{
+			return {} ;
+		}
+
+	}else if( m_settings.contains( "FileManagerOpener" ) ){
 
 		auto e = m_settings.value( "FileManagerOpener" ).toString() ;
 

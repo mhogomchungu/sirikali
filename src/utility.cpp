@@ -507,43 +507,33 @@ void utility::quitHelper()
 	}
 }
 
-::Task::future<bool>& utility::openPath( const QString& path,const QString& opener )
-{
-	return ::Task::run( [ = ](){
-
-		return utility::Task::run( opener,{ path } ).get().failed() ;
-	} ) ;
-}
-
-void utility::openPath( const QString& path,const QString& opener,
+void utility::openPath( const QString& path,const cmd::exe& fm,
 			QWidget * obj,const QString& title,const QString& msg )
 {
 	if( !path.isEmpty() ){
 
 		if( utility::platformIsFlatPak() ){
 
-			auto exe = "flatpak-spawn" ;
+			logger l ;
 
-			QStringList args{ "--host",opener,path } ;
+			auto args = fm.addArgs( path ) ;
 
-			utility::logger logger ;
+			l.showText( fm.command(),args ) ;
 
-			logger.showText( exe,args ) ;
+			if( QProcess::startDetached( fm.command(),args ) ){
 
-			if( QProcess::startDetached( exe,args ) ){
-
-				logger.showText( ::Task::process::result( 0 ) ) ;
+				l.showText( ::Task::process::result( 0 ) ) ;
 			}else{
-				logger.showText( ::Task::process::result( 1 ) ) ;
+				l.showText( ::Task::process::result( 1 ) ) ;
 			}
 		}else{
-			auto& e = openPath( path,opener ) ;
+			auto& e = utility::Task::run( fm.command(),fm.addArgs( path ) ) ;
 
-			e.then( [ title,msg,obj ]( bool failed ){
+			e.then( [ title,msg,obj ]( const utility::Task& e ){
 
 				if( utility::platformIsNOTWindows() ){
 
-					if( failed && obj ){
+					if( e.failed() && obj ){
 
 						DialogMsg( obj ).ShowUIOK( title,msg ) ;
 					}

@@ -25,6 +25,7 @@
 #include <QString>
 #include <functional>
 #include <utility>
+#include "cmd.hpp"
 
 class QCloseEvent ;
 class QEvent ;
@@ -38,11 +39,11 @@ class help : public QDialog
 {
 	Q_OBJECT
 public:
-        static void instance( QWidget * parent,const QString& path,std::function< void() > function )
+	static void instance( QWidget * parent,const cmd::exe& path,std::function< void() > function )
 	{
                 new help( parent,path,std::move( function ) ) ;
 	}
-        help( QWidget * parent,const QString&,std::function< void() > ) ;
+	help( QWidget * parent,const cmd::exe&,std::function< void() > ) ;
 	~help() ;
 private slots:
 	void pbClose( void ) ;
@@ -51,7 +52,7 @@ private:
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::help * m_ui ;
-	QString m_openPath ;
+	const cmd::exe& m_openPath ;
         std::function< void() > m_function ;
 };
 

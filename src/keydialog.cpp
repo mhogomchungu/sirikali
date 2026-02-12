@@ -49,7 +49,7 @@
 keyDialog::keyDialog( QWidget * parent,
 		      secrets& s,
 		      bool o,
-		      const QString& q,
+		      const cmd::exe& q,
 		      keyDialog::volumeList z,
 		      std::function< void() > f,
 		      std::function< void() > g ) :
@@ -183,7 +183,7 @@ keyDialog::keyDialog( QWidget * parent,
 		      std::function< void() > p,
 		      std::function< void() > l,
 		      bool o,
-		      const QString& q,
+		      const cmd::exe& q,
 		      const QString& exe ) :
 	QDialog( parent ),
 	m_ui( new Ui::keyDialog ),

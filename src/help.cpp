@@ -26,7 +26,7 @@
 
 #include "utility.h"
 
-help::help( QWidget * parent,const QString& path,std::function< void() > function ) :
+help::help( QWidget * parent,const cmd::exe& path,std::function< void() > function ) :
 	QDialog( parent ),
 	m_ui( new Ui::help ),
 	m_openPath( path ),

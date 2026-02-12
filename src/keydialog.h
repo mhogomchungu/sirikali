@@ -230,7 +230,7 @@ public:
 			      std::function< void() > cancel,
 			      std::function< void() > updateList,
 			      bool o,
-			      const QString& m,
+			      const cmd::exe& m,
 			      const QString& exe )
 	{
 		new keyDialog( parent,s,std::move( cancel ),std::move( updateList),o,m,exe ) ;
@@ -238,7 +238,7 @@ public:
 	static void instance( QWidget * parent,
 			      secrets& s,
 			      bool o,
-			      const QString& m,
+			      const cmd::exe& m,
 			      keyDialog::volumeList e,
 			      std::function< void() > function,
 			      std::function< void() > updateList )
@@ -254,7 +254,7 @@ public:
 	keyDialog( QWidget * parent,
 		   secrets&,
 		   bool,
-		   const QString&,
+		   const cmd::exe&,
 		   keyDialog::volumeList,
 		   std::function< void() >,
 		   std::function< void() > ) ;
@@ -263,7 +263,7 @@ public:
 		   std::function< void() >,
 		   std::function< void() >,
 		   bool,
-		   const QString&,
+		   const cmd::exe&,
 		   const QString& ) ;
 	~keyDialog() ;
 signals:
@@ -339,7 +339,7 @@ private:
 	QString m_path ;
 	QString m_deviceOffSet ;
 	QString m_exe ;
-	QString m_fileManagerOpen ;
+	const cmd::exe& m_fileManagerOpen ;
 
 	bool m_autoOpenMountPoint ;
 	bool m_working ;

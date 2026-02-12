@@ -756,12 +756,19 @@ void sirikali::start()
 {
 	m_startHidden  = m_argumentList.contains( "-e" ) ;
 
+	auto& ss = settings::instance() ;
+
 	if( !m_startHidden ){
 
-		m_startHidden = settings::instance().startMinimized() ;
+		m_startHidden = ss.startMinimized() ;
 	}
 
-	m_folderOpener = utility::cmdArgumentValue( m_argumentList,"-m",settings::instance().fileManager() ) ;
+	if( utility::platformIsFlatPak() ){
+
+		m_folderOpener = ss.fileManager() ;
+	}else{
+		m_folderOpener = utility::cmdArgumentValue( m_argumentList,"-m",ss.fileManager().toString() ) ;
+	}
 
 	auto s = utility::socketPath() ;
 
@@ -1671,9 +1678,9 @@ void sirikali::slotOpenParentFolder()
 void sirikali::openMountPoint( const QString& m_point )
 {
 	auto x = tr( "WARNING" ) ;
-	auto y = tr( "Could Not Open Mount Point Because \"%1\" Tool Does Not Appear To Be Working Correctly." ).arg( m_folderOpener ) ;
+	auto y = tr( "Could Not Open Mount Point Because \"%1\" Tool Does Not Appear To Be Working Correctly." ) ;
 
-	utility::openPath( m_point,m_folderOpener,this,x,y ) ;
+	utility::openPath( m_point,m_folderOpener,this,x,y.arg( m_folderOpener.toString() ) ) ;
 }
 
 void sirikali::openMountPointPath( const QString& m )

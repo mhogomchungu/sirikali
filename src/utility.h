@@ -58,6 +58,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include "cmd.hpp"
 #include "task.hpp"
 #include "lxqt_wallet.h"
 #include "plugins.h"
@@ -65,7 +66,6 @@
 #include "utility2.h"
 #include "debugwindow.h"
 #include "version.h"
-
 #include <QObject>
 #include <QLabel>
 
@@ -515,10 +515,6 @@ namespace utility
 	} ;
 
 	SocketPaths socketPath() ;
-
-	::Task::future< bool >& openPath( const QString& path,const QString& opener ) ;
-
-	void openPath( const QString& path,const QString& opener,QWidget *,const QString&,const QString& ) ;
 }
 
 namespace utility
@@ -830,6 +826,8 @@ namespace utility
 	};
 
 	using task_result = utility2::result< utility::Task > ;
+
+	void openPath( const QString& path,const cmd::exe& opener,QWidget *,const QString&,const QString& ) ;
 }
 
 namespace utility

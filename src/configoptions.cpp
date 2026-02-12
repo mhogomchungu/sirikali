@@ -59,7 +59,14 @@ configOptions::configOptions( sirikali * s,secrets& a,QMenu * m ) :
 	m_ui->pbRunPeriodicallyCommand->setIcon( QIcon( ":/icons/folder.png" ) ) ;
 	m_ui->pbRunCommandPeriodicallyDefault->setIcon( QIcon( ":/icons/setting_reset.png" ) );
 
-	if( utility::platformIsFlatPak() ){
+	if( utility::platformIsFlatPak() ){		
+
+		m_ui->lineEditFileManager->setEnabled( false ) ;
+		m_ui->pbSetFileManager->setEnabled( false ) ;
+		m_ui->pbSetFileManagerToDefault->setEnabled( false ) ;
+		m_ui->lineEditExecutableKeySource->setEnabled( false ) ;
+		m_ui->pbSetExternalCommand->setEnabled( false ) ;
+		m_ui->pbExternalExecutableDefault->setEnabled( false ) ;
 
 		m_ui->cbInternallyManageBackEnds->setChecked( true ) ;
 		m_ui->cbInternallyManageBackEnds->setEnabled( false ) ;
@@ -260,7 +267,7 @@ configOptions::configOptions( sirikali * s,secrets& a,QMenu * m ) :
 	connect( m_ui->pbSetFileManagerToDefault,&QPushButton::pressed,[ this ](){
 
 		m_settings.setFileManager( QString() ) ;
-		m_ui->lineEditFileManager->setText( m_settings.fileManager() ) ;
+		m_ui->lineEditFileManager->setText( m_settings.fileManager().toString() ) ;
 	} ) ;
 
 	connect( m_ui->pbExternalExecutableDefault,&QPushButton::pressed,[ this ](){
@@ -354,7 +361,7 @@ void configOptions::ShowUI()
 
 	m_ui->cbStartMinimized->setChecked( m_settings.startMinimized() ) ;
 
-	m_ui->lineEditFileManager->setText( m_settings.fileManager() ) ;
+	m_ui->lineEditFileManager->setText( m_settings.fileManager().toString() ) ;
 
 	if( utility::platformIsWindows() ){
 

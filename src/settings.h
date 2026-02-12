@@ -30,9 +30,8 @@
 #include <QDir>
 #include <QtGlobal>
 #include <QTranslator>
-
+#include "cmd.hpp"
 #include "lxqt_wallet.h"
-#include "favorites.h"
 #include "engines.h"
 #include <vector>
 #include <array>
@@ -190,7 +189,7 @@ public:
 	bool enableRevealingPasswords() ;
 	void scaleGUI() ;
 	void setParent( QWidget * parent,QWidget ** localParent,QDialog * dialog ) ;
-	QString fileManager() ;
+	cmd::exe fileManager() ;
 	QStringList openWith() ;
 	QString readPassword( bool addNewLine ) ;
 	QString mountPath() ;

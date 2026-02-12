@@ -40,7 +40,7 @@ fileManager::fileManager( QWidget * parent,QString& e,bool s ) :
 
 		m_ui->label->setText( tr( "Enter Below The Name Of The Application You Want To Be Used To Open Mount Points." ) ) ;
 
-		m_ui->lineEdit->setText( settings::instance().fileManager() ) ;
+		m_ui->lineEdit->setText( settings::instance().fileManager().toString() ) ;
 
 		m_ui->lineEdit->setVisible( true ) ;
 		m_ui->lineEdit_2->setVisible( false ) ;
@@ -79,7 +79,7 @@ void fileManager::set()
 
 		s.setFileManager( m_ui->lineEdit->text() ) ;
 
-		m_fileManager = s.fileManager() ;
+		m_fileManager = s.fileManager().toString() ;
 	}else{
 		s.setExternalPluginExecutable( m_ui->lineEdit_2->text() ) ;
 	}
