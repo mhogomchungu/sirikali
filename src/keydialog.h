@@ -393,6 +393,7 @@ private:
 				 yubikey,
 				 externalExecutable } ;
 
+		static keyType::name fromString( const QString& ) ;
 		void setType( keyType::name s ) ;
 		bool key() const ;
 		void setAsKey() ;

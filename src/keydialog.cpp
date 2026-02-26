@@ -159,6 +159,10 @@ void keyDialog::autoMount( const keyDialog::entry& ee )
 		}else if( ee.engine->requiresNoPassword() ){
 
 			this->openVolume() ;
+
+		}else if( m_keyType.yubikey() ){
+
+			this->openVolume() ;
 		}
 	}
 }
@@ -275,7 +279,7 @@ void keyDialog::setUpInitUI()
 			//m_ui->lineEditFolderPath->setText( "Z:" ) ;
 			//utility::setWindowsMountPointOptions( this,m_ui->lineEditFolderPath,m_ui->pbOpenFolderPath ) ;
 			m_ui->lineEditFolderPath->setText( m_settings.homePath() + "/" ) ;
-            //m_ui->pbOpenFolderPath->setIcon( QIcon( ":/icons/folder.png" ) ) ;
+			//m_ui->pbOpenFolderPath->setIcon( QIcon( ":/icons/folder.png" ) ) ;
 		}else{
 			m_ui->lineEditFolderPath->setText( m_settings.homePath() + "/" ) ;
 		}
@@ -381,26 +385,43 @@ void keyDialog::setVolumeToUnlock()
 
 	auto mm = favorites2::decodeKeyKeyFile( s.volEntry.password() ) ;
 
-	if( mm.hasKeyOnly() ){
+	auto keySource = m_keyType.fromString( s.volEntry.favorite().passwordSource ) ;
 
-		m_ui->lineEditKey->setText( mm.password() ) ;
+	if( keySource == keyType::name::Key ){
 
-	}else if( mm.hasBoth() ){
+		if( mm.hasKeyOnly() ){
 
-		const auto& a = mm.keyFilePath() ;
-		const auto& b = mm.password() ;
+			m_ui->lineEditKey->setText( mm.password() ) ;
 
-		auto m = Task::await( [ & ](){ return crypto::hmac_key( a,b ) ; } ) ;
+		}else if( mm.hasBoth() ){
 
-		m_ui->lineEditKey->setText( m ) ;
+			const auto& a = mm.keyFilePath() ;
+			const auto& b = mm.password() ;
 
-	}else if( mm.hasKeyFileOnly() ){
+			auto m = Task::await( [ & ](){ return crypto::hmac_key( a,b ) ; } ) ;
 
-		m_keyType.setType( keyType::name::keyKeyFile ) ;
+			m_ui->lineEditKey->setText( m ) ;
+
+		}else if( mm.hasKeyFileOnly() ){
+
+			m_keyType.setType( keyType::name::keyKeyFile ) ;
+
+			this->keyTypeChanged() ;
+
+			m_ui->lineEditSetKeyKeyFile->setText( mm.keyFilePath() ) ;
+
+			return ;
+		}
+
+	}else if( keySource == keyType::name::yubikey ){
+
+		m_keyType.setType( keySource ) ;
 
 		this->keyTypeChanged() ;
+	}else{
+		m_keyType.setType( keySource ) ;
 
-		m_ui->lineEditSetKeyKeyFile->setText( mm.keyFilePath() ) ;
+		this->keyTypeChanged() ;
 
 		return ;
 	}
@@ -2072,6 +2093,56 @@ bool keyDialog::keyType::containsSecretStorage() const
 		m == keyType::name::windowsdpapi ;
 }
 
+keyDialog::keyType::name keyDialog::keyType::fromString( const QString& e )
+{
+	if( e == "Password" ){
+
+		return keyType::name::Key ;
+
+	}else if( e == "KeyFile" ){
+
+		return keyType::name::keyfile ;
+
+	}else if( e == "Key+KeyFile" ){
+
+		return keyType::name::keyKeyFile ;
+
+	}else if( e == "HMAC+KeyFile" ){
+
+		return keyType::name::hmacKeyFile ;
+
+	}else if( e == "YubiKey Challenge/Response" ){
+
+		return keyType::name::yubikey ;
+
+	}else if( e == "ExternalExecutable" ){
+
+		return keyType::name::externalExecutable ;
+
+	}else if( e == "Internal Wallet" ){
+
+		return keyType::name::internalWallet ;
+
+	}else if( e == "Gnome Wallet" ){
+
+		return keyType::name::libsecret ;
+
+	}else if( e == "Kde Wallet" ){
+
+		return keyType::name::kdewallet ;
+
+	}else if( e == "OSX KeyChain" ){
+
+		return keyType::name::osxkeychain ;
+
+	}else if( e == "Windows DPAPI" ){
+
+		return keyType::name::windowsdpapi ;
+	}else{
+		return keyType::name::Key ;
+	}
+}
+
 void keyDialog::keyType::keyOptions( QComboBox * s,keyDialog * object,void( keyDialog::*method )() )
 {
 	m_comboBox = s ;
@@ -2113,12 +2184,13 @@ void keyDialog::keyType::keyOptions( QComboBox * s,keyDialog * object,void( keyD
 
 	this->setAsKey() ;
 
-	connect( m_comboBox,static_cast< void( QComboBox::* )( int ) >( &QComboBox::currentIndexChanged ),
-		 [ this,function = utility2::make_mem_fn( object,method ) ]( int e ){
+	auto m = static_cast< void( QComboBox::* )( int ) >( &QComboBox::currentIndexChanged ) ;
+
+	connect( m_comboBox,m,[ this,object,method ]( int e ){
 
 		if( e >= 0 && e < static_cast< int >( m_entries.size() ) ){
 
-			function() ;
+			( object->*method )() ;
 		}
 	} ) ;
 }

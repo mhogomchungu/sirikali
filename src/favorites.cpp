@@ -166,6 +166,12 @@ static utility2::result< favorites::entry > _favorites( const QString& path )
 		m.identityFile         = json.getString( "identityFile" ) ;
 		m.identityAgent        = json.getString( "identityAgent" ) ;
 		m.mountOptions         = json.getString( "mountOptions" ) ;
+		m.passwordSource       = json.getString( "passwordSource" ) ;
+
+		if( m.passwordSource.isEmpty() ){
+
+			m.passwordSource = "Password" ;
+		}
 
 		m.password             = json.getByteArray( "password" ) ;
 
@@ -244,6 +250,7 @@ favorites::error favorites::add( const favorites::entry& e )
 	json[ "volumeNeedNoPassword" ] = e.volumeNeedNoPassword ;
 	json[ "identityAgent" ]        = e.identityAgent ;
 	json[ "identityFile" ]         = e.identityFile ;
+	json[ "passwordSource" ]       = e.passwordSource ;
 
 	json[ "password" ]             = e.password ;
 

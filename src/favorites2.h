@@ -232,6 +232,30 @@ private :
 		std::unique_ptr< w > m_w = nullptr ;
 
 	} m_wallet ;
+
+	class passwordSources
+	{
+	public:
+		passwordSources() ;
+		QStringList listTranslated() const ;
+		QStringList listUntranslated() const ;
+		const QString& getTranslated( const QString& ) const ;
+		const QString& getUntranslated( const QString& ) const ;
+	private:
+		struct pair
+		{
+			pair( QString t,QString u ) :
+				translated( std::move( t ) ),untranslated( std::move( u ) )
+			{
+			}
+			QString translated ;
+			QString untranslated ;
+		} ;
+		std::vector< pair > m_sources ;
+		QString m_empty ;
+	};
+
+	passwordSources m_passwordSources ;
 } ;
 
 #endif // FAVORITES2_H

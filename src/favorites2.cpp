@@ -117,6 +117,8 @@ favorites2::favorites2( QWidget * parent,
 
 	m_settings.setParent( parent,&m_parentWidget,this ) ;
 
+	m_ui->cbPasswordSource->addItems( m_passwordSources.listTranslated() ) ;
+
 	m_ui->pbFailedToCreateFavorite->setVisible( false ) ;
 
 	m_ui->labelFailedToCreateFavorite->setVisible( false ) ;
@@ -1163,6 +1165,22 @@ void favorites2::edit()
 
 		const auto& entry = volumes[ size_t( m_editRow ) ] ;
 
+		auto ks = m_passwordSources.getTranslated( entry.passwordSource ) ;
+
+		auto& ps = *m_ui->cbPasswordSource ;
+
+		ps.setCurrentIndex( 0 ) ;
+
+		for( int i = 0 ; i < ps.count() ; i++ ){
+
+			if( ps.itemText( i ) == ks ){
+
+				ps.setCurrentIndex( i ) ;
+
+				break ;
+			}
+		}
+
 		m_ui->lineEditEncryptedFolderPath->setText( entry.volumePath ) ;
 		m_ui->lineEditMountPath->setText( entry.mountPointPath ) ;
 		m_ui->cbAutoMount->setChecked( entry.autoMount ) ;
@@ -1317,6 +1335,8 @@ void favorites2::updateFavorite( bool edit )
 	e.postUnmountCommand   = m_ui->lineEditPostUnmount->text() ;
 	e.reverseMode          = m_ui->cbReverseMode->isChecked() ;
 	e.readOnlyMode         = m_ui->cbReadOnlyMode->isChecked() ;
+
+	e.passwordSource       = m_passwordSources.getUntranslated( m_ui->cbPasswordSource->currentText() ) ;
 
 	if( likeSsh ){
 
@@ -1862,4 +1882,92 @@ favorites2::walletOpts::status::status()
 	windows_dpapi = LXQt::Wallet::backEndIsSupported( wbe::windows_dpapi ) ;
 	internal      = LXQt::Wallet::backEndIsSupported( wbe::internal ) ;
 	kdeWallet     = false ;
+}
+
+favorites2::passwordSources::passwordSources()
+{
+	m_sources.emplace_back( tr( "Password" ),"Password" ) ;
+	m_sources.emplace_back( tr( "KeyFile" ),"KeyFile" ) ;
+	m_sources.emplace_back( tr( "YubiKey Challenge/Response" ),"YubiKey Challenge/Response" ) ;
+	m_sources.emplace_back( tr( "Key+KeyFile" ),"Key+KeyFile" ) ;
+	m_sources.emplace_back( tr( "HMAC+KeyFile" ),"HMAC+KeyFile" ) ;
+	m_sources.emplace_back( tr( "ExternalExecutable" ),"ExternalExecutable" ) ;
+
+	favorites2::getAvailableWallets( [ this ]( const favorites2::walletOpts::status& s ){
+
+		if( s.internal ){
+
+			m_sources.emplace_back( tr( "Internal Wallet" ),"Internal Wallet" ) ;
+		}
+
+		if( s.gnomeWallet ){
+
+			m_sources.emplace_back( tr( "Gnome Wallet" ),"Gnome Wallet" ) ;
+		}
+
+		if( s.kdeWallet ){
+
+			m_sources.emplace_back( tr( "Kde Wallet" ),"Kde Wallet" ) ;
+		}
+
+		if( s.osxkeychain ){
+
+			m_sources.emplace_back( tr( "OSX KeyChain" ),"OSX KeyChain" ) ;
+		}
+
+		if( s.windows_dpapi ){
+
+			m_sources.emplace_back( tr( "Windows DPAPI" ),"Windows DPAPI" ) ;
+		}
+	} ) ;
+}
+
+const QString& favorites2::passwordSources::getTranslated( const QString& e ) const
+{
+	for( const auto& it : m_sources ){
+
+		if( it.untranslated == e ){
+
+			return it.translated ;
+		}
+	}
+
+	return m_empty ;
+}
+
+const QString& favorites2::passwordSources::getUntranslated( const QString& e ) const
+{
+	for( const auto& it : m_sources ){
+
+		if( it.translated == e ){
+
+			return it.untranslated ;
+		}
+	}
+
+	return m_empty ;
+}
+
+QStringList favorites2::passwordSources::listTranslated() const
+{
+	QStringList list ;
+
+	for( const auto& it : m_sources ){
+
+		list.append( it.translated ) ;
+	}
+
+	return list ;
+}
+
+QStringList favorites2::passwordSources::listUntranslated() const
+{
+	QStringList list ;
+
+	for( const auto& it : m_sources ){
+
+		list.append( it.untranslated ) ;
+	}
+
+	return list ;
 }

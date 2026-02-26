@@ -138,6 +138,7 @@ public:
 		QString preUnmountCommand ;
 		QString postUnmountCommand ;
 		QString internalConfigPath ;
+		QString passwordSource ;
 
 		QByteArray password ;
 

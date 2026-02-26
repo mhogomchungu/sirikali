@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>791</width>
-    <height>563</height>
+    <height>603</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <x>10</x>
      <y>10</y>
      <width>771</width>
-     <height>521</height>
+     <height>561</height>
     </rect>
    </property>
    <property name="currentIndex">
@@ -33,16 +33,16 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>0</y>
+       <y>20</y>
        <width>271</width>
-       <height>441</height>
+       <height>451</height>
       </rect>
      </property>
      <property name="editTriggers">
-      <set>QAbstractItemView::NoEditTriggers</set>
+      <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
      </property>
      <property name="selectionMode">
-      <enum>QAbstractItemView::NoSelection</enum>
+      <enum>QAbstractItemView::SelectionMode::NoSelection</enum>
      </property>
      <column>
       <property name="text">
@@ -60,16 +60,16 @@
       </rect>
      </property>
      <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
+      <enum>QFrame::Shape::StyledPanel</enum>
      </property>
      <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
+      <enum>QFrame::Shadow::Raised</enum>
      </property>
      <widget class="QLabel" name="label">
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>30</y>
+        <y>50</y>
         <width>161</width>
         <height>31</height>
        </rect>
@@ -78,7 +78,7 @@
        <string>Mount Point</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -88,7 +88,7 @@
       <property name="geometry">
        <rect>
         <x>180</x>
-        <y>30</y>
+        <y>50</y>
         <width>291</width>
         <height>31</height>
        </rect>
@@ -101,7 +101,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>70</y>
+        <y>90</y>
         <width>161</width>
         <height>31</height>
        </rect>
@@ -110,7 +110,7 @@
        <string>Auto Mount</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -120,7 +120,7 @@
       <property name="geometry">
        <rect>
         <x>180</x>
-        <y>70</y>
+        <y>90</y>
         <width>291</width>
         <height>31</height>
        </rect>
@@ -133,7 +133,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>110</y>
+        <y>130</y>
         <width>161</width>
         <height>31</height>
        </rect>
@@ -142,7 +142,7 @@
        <string>Config File Path</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -152,7 +152,7 @@
       <property name="geometry">
        <rect>
         <x>180</x>
-        <y>110</y>
+        <y>130</y>
         <width>291</width>
         <height>31</height>
        </rect>
@@ -165,7 +165,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>150</y>
+        <y>170</y>
         <width>161</width>
         <height>31</height>
        </rect>
@@ -174,7 +174,7 @@
        <string>Idle Time Out</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -184,7 +184,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>190</y>
+        <y>210</y>
         <width>161</width>
         <height>81</height>
        </rect>
@@ -193,7 +193,7 @@
        <string>Mount Options</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -203,7 +203,7 @@
       <property name="geometry">
        <rect>
         <x>180</x>
-        <y>150</y>
+        <y>170</y>
         <width>291</width>
         <height>31</height>
        </rect>
@@ -216,7 +216,7 @@
       <property name="geometry">
        <rect>
         <x>180</x>
-        <y>190</y>
+        <y>210</y>
         <width>291</width>
         <height>81</height>
        </rect>
@@ -229,7 +229,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>-1</y>
+        <y>19</y>
         <width>461</width>
         <height>31</height>
        </rect>
@@ -238,14 +238,14 @@
        <string>Volume Properties</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
      <widget class="QTextEdit" name="textEditPreMount">
       <property name="geometry">
        <rect>
         <x>180</x>
-        <y>280</y>
+        <y>300</y>
         <width>291</width>
         <height>41</height>
        </rect>
@@ -258,7 +258,7 @@
       <property name="geometry">
        <rect>
         <x>180</x>
-        <y>330</y>
+        <y>350</y>
         <width>291</width>
         <height>41</height>
        </rect>
@@ -271,7 +271,7 @@
       <property name="geometry">
        <rect>
         <x>180</x>
-        <y>380</y>
+        <y>400</y>
         <width>291</width>
         <height>41</height>
        </rect>
@@ -284,7 +284,7 @@
       <property name="geometry">
        <rect>
         <x>180</x>
-        <y>430</y>
+        <y>450</y>
         <width>291</width>
         <height>41</height>
        </rect>
@@ -297,7 +297,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>280</y>
+        <y>300</y>
         <width>161</width>
         <height>41</height>
        </rect>
@@ -306,7 +306,7 @@
        <string>PreMount Command</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -316,7 +316,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>330</y>
+        <y>350</y>
         <width>161</width>
         <height>41</height>
        </rect>
@@ -325,7 +325,7 @@
        <string>PostMount Command</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -335,7 +335,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>380</y>
+        <y>400</y>
         <width>161</width>
         <height>41</height>
        </rect>
@@ -344,7 +344,7 @@
        <string>PreUnMount Command</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -354,7 +354,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>430</y>
+        <y>450</y>
         <width>161</width>
         <height>41</height>
        </rect>
@@ -363,7 +363,7 @@
        <string>PostUnMount Command</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -374,7 +374,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>440</y>
+       <y>480</y>
        <width>271</width>
        <height>41</height>
       </rect>
@@ -394,20 +394,20 @@
        <x>10</x>
        <y>10</y>
        <width>741</width>
-       <height>471</height>
+       <height>511</height>
       </rect>
      </property>
      <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
+      <enum>QFrame::Shape::StyledPanel</enum>
      </property>
      <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
+      <enum>QFrame::Shadow::Raised</enum>
      </property>
      <widget class="QPushButton" name="pbEdit">
       <property name="geometry">
        <rect>
         <x>370</x>
-        <y>430</y>
+        <y>470</y>
         <width>171</width>
         <height>31</height>
        </rect>
@@ -420,7 +420,7 @@
       <property name="geometry">
        <rect>
         <x>200</x>
-        <y>430</y>
+        <y>470</y>
         <width>171</width>
         <height>31</height>
        </rect>
@@ -435,7 +435,7 @@
         <x>10</x>
         <y>10</y>
         <width>721</width>
-        <height>411</height>
+        <height>451</height>
        </rect>
       </property>
       <property name="currentIndex">
@@ -458,7 +458,7 @@
          <string>Encrypted Folder Path</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -500,7 +500,7 @@
          <string>Volume Type (Required For Volumes That Do Not Use A Configuration File Like sshfs)</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -542,7 +542,7 @@
          <string>Mount Point Prefix</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -600,7 +600,7 @@
          <string>Config File Path (Optional)</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -642,7 +642,7 @@
          <string>Idle TimeOut (Optional)</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -684,7 +684,7 @@
          <string>Mount Options (Optional And Comma Separated)</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -704,7 +704,7 @@
         <property name="geometry">
          <rect>
           <x>400</x>
-          <y>310</y>
+          <y>350</y>
           <width>301</width>
           <height>41</height>
          </rect>
@@ -713,7 +713,7 @@
          <string>Auto Mount Volume</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+         <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -723,7 +723,7 @@
         <property name="geometry">
          <rect>
           <x>370</x>
-          <y>310</y>
+          <y>350</y>
           <width>21</width>
           <height>41</height>
          </rect>
@@ -736,7 +736,7 @@
         <property name="geometry">
          <rect>
           <x>400</x>
-          <y>340</y>
+          <y>380</y>
           <width>311</width>
           <height>41</height>
          </rect>
@@ -745,7 +745,7 @@
          <string>Volume Does Not Use A Password</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+         <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -755,7 +755,7 @@
         <property name="geometry">
          <rect>
           <x>370</x>
-          <y>340</y>
+          <y>380</y>
           <width>21</width>
           <height>41</height>
          </rect>
@@ -768,7 +768,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>310</y>
+          <y>350</y>
           <width>311</width>
           <height>41</height>
          </rect>
@@ -777,7 +777,7 @@
          <string>Mount In Read Only Mode</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -787,7 +787,7 @@
         <property name="geometry">
          <rect>
           <x>330</x>
-          <y>310</y>
+          <y>350</y>
           <width>21</width>
           <height>41</height>
          </rect>
@@ -800,7 +800,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>340</y>
+          <y>380</y>
           <width>311</width>
           <height>41</height>
          </rect>
@@ -809,7 +809,7 @@
          <string>Reverse Mode (Gocryptfs and Encfs Only)</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -819,7 +819,7 @@
         <property name="geometry">
          <rect>
           <x>330</x>
-          <y>340</y>
+          <y>380</y>
           <width>21</width>
           <height>41</height>
          </rect>
@@ -867,7 +867,33 @@
          <string>Ssh Port Number</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_24">
+        <property name="geometry">
+         <rect>
+          <x>18</x>
+          <y>320</y>
+          <width>301</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Password Source</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+        </property>
+       </widget>
+       <widget class="QComboBox" name="cbPasswordSource">
+        <property name="geometry">
+         <rect>
+          <x>330</x>
+          <y>320</y>
+          <width>311</width>
+          <height>32</height>
+         </rect>
         </property>
        </widget>
        <widget class="QLabel" name="labelFailedToCreateFavorite">
@@ -876,7 +902,7 @@
           <x>0</x>
           <y>0</y>
           <width>711</width>
-          <height>381</height>
+          <height>411</height>
          </rect>
         </property>
         <property name="autoFillBackground">
@@ -886,7 +912,7 @@
          <string>Entry Already Exist</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignCenter</set>
+         <set>Qt::AlignmentFlag::AlignCenter</set>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -910,7 +936,7 @@
          <string>PreMount Command</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -929,7 +955,7 @@
          <string>PostMount Command</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -948,7 +974,7 @@
          <string>PreUnMount Command</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -967,7 +993,7 @@
          <string>PostUnMount Command</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -1071,7 +1097,7 @@
       <property name="geometry">
        <rect>
         <x>200</x>
-        <y>430</y>
+        <y>470</y>
         <width>341</width>
         <height>33</height>
        </rect>
@@ -1092,14 +1118,14 @@
        <x>10</x>
        <y>10</y>
        <width>741</width>
-       <height>471</height>
+       <height>511</height>
       </rect>
      </property>
      <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
+      <enum>QFrame::Shape::StyledPanel</enum>
      </property>
      <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
+      <enum>QFrame::Shadow::Raised</enum>
      </property>
      <widget class="QGroupBox" name="groupBoxKeys">
       <property name="geometry">
@@ -1202,10 +1228,10 @@
        </rect>
       </property>
       <property name="editTriggers">
-       <set>QAbstractItemView::NoEditTriggers</set>
+       <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
       </property>
       <property name="selectionMode">
-       <enum>QAbstractItemView::NoSelection</enum>
+       <enum>QAbstractItemView::SelectionMode::NoSelection</enum>
       </property>
       <column>
        <property name="text">
@@ -1226,7 +1252,7 @@
        <string>Enter KeyFile Path Below(Optional)</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEditVolumeKeyFilePath">
@@ -1239,7 +1265,7 @@
        </rect>
       </property>
       <property name="echoMode">
-       <enum>QLineEdit::Normal</enum>
+       <enum>QLineEdit::EchoMode::Normal</enum>
       </property>
      </widget>
      <widget class="QPushButton" name="pbKeyFileVolumePathFromFavorites">
@@ -1268,7 +1294,7 @@
        <string>Enter Volume Path Below</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEditVolumePath">
@@ -1281,7 +1307,7 @@
        </rect>
       </property>
       <property name="echoMode">
-       <enum>QLineEdit::Normal</enum>
+       <enum>QLineEdit::EchoMode::Normal</enum>
       </property>
      </widget>
      <widget class="QLabel" name="label_23">
@@ -1297,7 +1323,7 @@
        <string>Enter Password Below</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEditPassword">
@@ -1310,7 +1336,7 @@
        </rect>
       </property>
       <property name="echoMode">
-       <enum>QLineEdit::Password</enum>
+       <enum>QLineEdit::EchoMode::Password</enum>
       </property>
      </widget>
      <widget class="QPushButton" name="pbAddKeyToWallet">
@@ -1365,7 +1391,7 @@
        <string>Change Internal Wallet Password</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+       <set>Qt::AlignmentFlag::AlignBottom|Qt::AlignmentFlag::AlignHCenter</set>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -1403,7 +1429,7 @@
         <x>-10</x>
         <y>0</y>
         <width>761</width>
-        <height>471</height>
+        <height>501</height>
        </rect>
       </property>
       <property name="autoFillBackground">
@@ -1413,13 +1439,13 @@
        <string>TextLabel</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
       </property>
       <property name="textInteractionFlags">
-       <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+       <set>Qt::TextInteractionFlag::LinksAccessibleByMouse|Qt::TextInteractionFlag::TextSelectableByKeyboard|Qt::TextInteractionFlag::TextSelectableByMouse</set>
       </property>
      </widget>
      <widget class="QPushButton" name="pbVisiblePassword">
@@ -1548,7 +1574,7 @@
    <property name="geometry">
     <rect>
      <x>310</x>
-     <y>530</y>
+     <y>570</y>
      <width>171</width>
      <height>31</height>
     </rect>
