@@ -1155,6 +1155,50 @@ woof@example.com:/remote/path</source>
         <source>IdentityFile Path (Optional)</source>
         <translation>Chemin d&apos;accès de l&apos;IdentityFile (Optionnel)</translation>
     </message>
+    <message>
+        <source>Password Source</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Password</source>
+        <translation type="unfinished">Mot de passe</translation>
+    </message>
+    <message>
+        <source>KeyFile</source>
+        <translation type="unfinished">Fichier de clé</translation>
+    </message>
+    <message>
+        <source>YubiKey Challenge/Response</source>
+        <translation type="unfinished">YubiKey Challenge/Réponse</translation>
+    </message>
+    <message>
+        <source>Key+KeyFile</source>
+        <translation type="unfinished">Clé+fichier de clé</translation>
+    </message>
+    <message>
+        <source>HMAC+KeyFile</source>
+        <translation type="unfinished">HMAC+fichier de clé</translation>
+    </message>
+    <message>
+        <source>ExternalExecutable</source>
+        <translation type="unfinished">ExternalExecutable</translation>
+    </message>
+    <message>
+        <source>Gnome Wallet</source>
+        <translation type="unfinished">Trousseau Gnome</translation>
+    </message>
+    <message>
+        <source>Kde Wallet</source>
+        <translation type="unfinished">Trousseau Kde</translation>
+    </message>
+    <message>
+        <source>OSX KeyChain</source>
+        <translation type="unfinished">Porte clés OSX</translation>
+    </message>
+    <message>
+        <source>Windows DPAPI</source>
+        <translation type="unfinished">Windows DPAPI</translation>
+    </message>
 </context>
 <context>
     <name>fileManager</name>

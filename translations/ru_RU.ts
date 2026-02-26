@@ -1130,6 +1130,50 @@ woof@example.com:/удаленный/путь</translation>
         <source>IdentityFile Path (Optional)</source>
         <translation>IdentityFile путь (опционально)</translation>
     </message>
+    <message>
+        <source>Password Source</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Password</source>
+        <translation type="unfinished">Пароль</translation>
+    </message>
+    <message>
+        <source>KeyFile</source>
+        <translation type="unfinished">Файл ключа</translation>
+    </message>
+    <message>
+        <source>YubiKey Challenge/Response</source>
+        <translation type="unfinished">Вызов/Ответ Yubikey</translation>
+    </message>
+    <message>
+        <source>Key+KeyFile</source>
+        <translation type="unfinished">Пароль+файл ключа</translation>
+    </message>
+    <message>
+        <source>HMAC+KeyFile</source>
+        <translation type="unfinished">HMAC+файл ключа</translation>
+    </message>
+    <message>
+        <source>ExternalExecutable</source>
+        <translation type="unfinished">Внешнее приложение</translation>
+    </message>
+    <message>
+        <source>Gnome Wallet</source>
+        <translation type="unfinished">GNOME Wallet</translation>
+    </message>
+    <message>
+        <source>Kde Wallet</source>
+        <translation type="unfinished">KDE Wallet</translation>
+    </message>
+    <message>
+        <source>OSX KeyChain</source>
+        <translation type="unfinished">Связка ключей macOS</translation>
+    </message>
+    <message>
+        <source>Windows DPAPI</source>
+        <translation type="unfinished">DPAPI Windows</translation>
+    </message>
 </context>
 <context>
     <name>fileManager</name>

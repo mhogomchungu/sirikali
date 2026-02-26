@@ -1154,6 +1154,50 @@ woof@example.com:/remote/path</translation>
         <source>IdentityFile Path (Optional)</source>
         <translation>IdentityFile 路径（可选）</translation>
     </message>
+    <message>
+        <source>Password Source</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Password</source>
+        <translation type="unfinished">密码</translation>
+    </message>
+    <message>
+        <source>KeyFile</source>
+        <translation type="unfinished">密钥文件</translation>
+    </message>
+    <message>
+        <source>YubiKey Challenge/Response</source>
+        <translation type="unfinished">YubiKey 质询/应答</translation>
+    </message>
+    <message>
+        <source>Key+KeyFile</source>
+        <translation type="unfinished">密钥+密钥文件</translation>
+    </message>
+    <message>
+        <source>HMAC+KeyFile</source>
+        <translation type="unfinished">HMAC+密钥文件</translation>
+    </message>
+    <message>
+        <source>ExternalExecutable</source>
+        <translation type="unfinished">外部可执行程序</translation>
+    </message>
+    <message>
+        <source>Gnome Wallet</source>
+        <translation type="unfinished">Gnome 钱包</translation>
+    </message>
+    <message>
+        <source>Kde Wallet</source>
+        <translation type="unfinished">Kde 钱包</translation>
+    </message>
+    <message>
+        <source>OSX KeyChain</source>
+        <translation type="unfinished">OSX 钥匙串</translation>
+    </message>
+    <message>
+        <source>Windows DPAPI</source>
+        <translation type="unfinished">Windows DPAPI</translation>
+    </message>
 </context>
 <context>
     <name>fileManager</name>

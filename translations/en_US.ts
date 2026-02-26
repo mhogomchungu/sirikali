@@ -1103,6 +1103,50 @@ woof@example.com:/remote/path</source>
         <source>IdentityFile Path (Optional)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Password Source</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>KeyFile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>YubiKey Challenge/Response</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Key+KeyFile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>HMAC+KeyFile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ExternalExecutable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Gnome Wallet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Kde Wallet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OSX KeyChain</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Windows DPAPI</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>fileManager</name>
