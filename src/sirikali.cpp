@@ -1283,7 +1283,7 @@ void sirikali::autoUnlockVolumes( favorites::volumeList ss,
 
 			utility::debug() << "Warning, Wallet Not Set" ;
 
-			this->mountMultipleVolumes( std::move( l ) ) ;
+			this->autoUnlockVolumesR( {},l,autoOpenFolderOnMount,autoSetAutoMount ) ;
 		}else{
 			class meaw
 			{
@@ -1314,16 +1314,16 @@ void sirikali::autoUnlockVolumes( favorites::volumeList ss,
 				}
 				void operator()( bool e )
 				{
-					if( e ){
+					auto a = m_autoOpenFolderOnMount ;
+					auto b = m_autoSetAutoMount ;
 
-						auto a = m_autoOpenFolderOnMount ;
-						auto b = m_autoSetAutoMount ;
+					if( e ){						
 
 						m_parent.autoUnlockVolumesR( m_wallet,*m_list,a,b ) ;
 					}else{
 						utility::debug() << "Warning, Failed To Open Selected Wallet" ;
 
-						m_parent.mountMultipleVolumes( std::move( *m_list ) ) ;
+						m_parent.autoUnlockVolumesR( {},*m_list,a,b ) ;
 					}
 				}
 			private:
@@ -1343,7 +1343,7 @@ void sirikali::autoUnlockVolumes( favorites::volumeList ss,
 	}
 }
 
-void sirikali::autoUnlockVolumesR( secrets::wallet& wallet,
+void sirikali::autoUnlockVolumesR( sirikali::wallet wallet,
 				   keyDialog::volumeList& l,
 				   bool autoOpenFolderOnMount,
 				   bool autoSetAutoMount )
@@ -1375,11 +1375,11 @@ void sirikali::autoUnlockVolumesR( secrets::wallet& wallet,
 
 			debug += "\n2. Engine requires no password or favorite need no password" ;
 
-		}else if( wallet ){
+		}else if( wallet.valid() && wallet.get().valid() ){
 
 			debug += "\n2. Trying to get volume password from wallet" ;
 
-			auto uu = _get_key( it,debug,wallet ) ;
+			auto uu = _get_key( it,debug,wallet.get() ) ;
 
 			if( uu.isEmpty() ){
 

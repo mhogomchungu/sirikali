@@ -190,7 +190,28 @@ private:
 		this->autoUnlockVolumes( std::move( volList ),std::forward< Args >( args ) ... ) ;
 	}
 
-	void autoUnlockVolumesR( secrets::wallet&,
+	class wallet
+	{
+	public:
+		wallet()
+		{
+		}
+		wallet( secrets::wallet& s ) : m_wallet( &s )
+		{
+		}
+		bool valid() const
+		{
+			return m_wallet ;
+		}
+		secrets::wallet& get() const
+		{
+			return *m_wallet ;
+		}
+	private:
+		secrets::wallet * m_wallet = nullptr ;
+	} ;
+
+	void autoUnlockVolumesR( sirikali::wallet,
 				 keyDialog::volumeList& ss,
 				 bool autoOpenFolderOnMount,
 				 bool autoSetAutoMount ) ;

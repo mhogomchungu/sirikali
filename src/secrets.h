@@ -62,7 +62,10 @@ public:
 		{
 			return m_wallet ;
 		}
-
+		bool valid() const
+		{
+			return m_wallet ;
+		}
 		template< typename Events >
 		void open( Events ev )
 		{
