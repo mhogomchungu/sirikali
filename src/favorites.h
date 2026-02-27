@@ -271,6 +271,12 @@ public:
 
 	favorites() ;
 private:
+	enum class PathFormat{ New,Old,Older,Oldest,Ancient } ;
+	static QString createPath( const QString&,const favorites::entry&,PathFormat ) ;
+	static utility::qstring_result configPath() ;
+	static void updateFavorites( favorites::entry& ) ;
+	static utility2::result< favorites::entry > fromPath( const QString& ) ;
+	static QString findPath( const favorites::entry& e ) ;
 	void reload() ;
 	std::vector< favorites::entry > m_favorites ;
 };

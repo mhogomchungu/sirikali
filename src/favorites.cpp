@@ -27,7 +27,7 @@
 #include <QFile>
 #include <QCryptographicHash>
 
-static utility::qstring_result _config_path()
+utility::qstring_result favorites::configPath()
 {
 	QString m = settings::instance().ConfigLocation() + "/favorites/" ;
 
@@ -44,7 +44,7 @@ static utility::qstring_result _config_path()
 	}
 }
 
-static QString _create_path( const QString& m,const favorites::entry& e,bool newFormat )
+QString favorites::createPath( const QString& m,const favorites::entry& e,favorites::PathFormat pathFormat )
 {
 	auto a = utility::split( e.volumePath,'@' ).last() ;
 
@@ -52,7 +52,7 @@ static QString _create_path( const QString& m,const favorites::entry& e,bool new
 
 	a.replace( ":","" ) ;
 
-	if( newFormat ){
+	if( pathFormat == favorites::PathFormat::New ){
 
 		auto b = e.volumePath + e.mountPointPath ;
 
@@ -64,7 +64,9 @@ static QString _create_path( const QString& m,const favorites::entry& e,bool new
 		}
 
 		return m + a + "-" + crypto::sha256( b ) + ".json" ;
-	}else{
+
+	}else if( pathFormat == favorites::PathFormat::Old ){
+
 		auto b = a + e.mountPointPath ;
 
 		if( e.readOnlyMode.True() ){
@@ -75,22 +77,27 @@ static QString _create_path( const QString& m,const favorites::entry& e,bool new
 		}
 
 		return m + a + "-" + crypto::sha256( b ) + ".json" ;
-	}
-}
 
-static QString _create_entry_path( const favorites::entry& e,bool newFormat )
-{
-	auto s = _config_path() ;
+	}else if( pathFormat == favorites::PathFormat::Older ){
 
-	if( s.has_value() ){
+		auto b = e.volumePath + e.mountPointPath ;
 
-		return _create_path( s.value(),e,newFormat ) ;
+		return m + a + "-" + crypto::sha256( b ) + ".json" ;
+
+	}else if( pathFormat == favorites::PathFormat::Oldest ){
+
+		auto b = a + e.mountPointPath ;
+
+		return m + a + "-" + crypto::sha256( b.toLatin1() ) + ".json" ;
 	}else{
-		return {} ;
+		auto a = utility::split( e.volumePath,'/' ).last() ;
+		auto b = a + e.mountPointPath ;
+
+		return m + a + "-" + crypto::sha256( b.toLatin1() ) + ".json" ;
 	}
 }
 
-static void _update_favorites( favorites::entry& m )
+void favorites::updateFavorites( favorites::entry& m )
 {
 	const auto mOpts = utility::split( m.mountOptions,',' ) ;
 
@@ -141,7 +148,7 @@ static void _update_favorites( favorites::entry& m )
 	}
 }
 
-static utility2::result< favorites::entry > _favorites( const QString& path )
+utility2::result< favorites::entry > favorites::fromPath( const QString& path )
 {
 	utility::logger logger ;
 
@@ -177,7 +184,7 @@ static utility2::result< favorites::entry > _favorites( const QString& path )
 
 		m.volumePath           = json.getString( "volumePath" ) ;
 
-		_update_favorites( m ) ;
+		favorites::updateFavorites( m ) ;
 
 		favorites::triState::readTriState( json,m.readOnlyMode,"mountReadOnly" ) ;
 		favorites::triState::readTriState( json,m.autoMount,"autoMountVolume" ) ;
@@ -186,6 +193,30 @@ static utility2::result< favorites::entry > _favorites( const QString& path )
 	}else{
 		return {} ;
 	}
+}
+
+QString favorites::findPath( const favorites::entry& e )
+{
+	using tty = std::array< favorites::PathFormat,5 > ;
+
+	tty paths{ PathFormat::New,PathFormat::Old,PathFormat::Older,PathFormat::Oldest,PathFormat::Ancient } ;
+
+	auto m = favorites::configPath() ;
+
+	if( m.has_value() ){
+
+		for( const auto& it : paths ){
+
+			auto s = favorites::createPath( m.value(),e,it ) ;
+
+			if( !s.isEmpty() && utility::pathExists( s ) ){
+
+				return s ;
+			}
+		}
+	}
+
+	return {} ;
 }
 
 favorites::favorites()
@@ -197,7 +228,7 @@ void favorites::reload()
 {
 	m_favorites.clear() ;
 
-	const auto m = _config_path() ;
+	const auto m = favorites::configPath() ;
 
 	if( m.has_value() ){
 
@@ -207,7 +238,7 @@ void favorites::reload()
 
 		for( const auto& it : s ){
 
-			auto m = _favorites( a + it ) ;
+			auto m = favorites::fromPath( a + it ) ;
 
 			if( m.has_value() ){
 
@@ -221,7 +252,7 @@ void favorites::reload()
 
 favorites::error favorites::add( const favorites::entry& e )
 {
-	auto m = _config_path() ;
+	auto m = favorites::configPath() ;
 
 	if( !m.has_value() ){
 
@@ -230,7 +261,7 @@ favorites::error favorites::add( const favorites::entry& e )
 		return error::FAILED_TO_CREATE_ENTRY ;
 	}
 
-	auto a = _create_path( m.value(),e,true ) ;
+	auto a = favorites::createPath( m.value(),e,PathFormat::New ) ;
 
 	utility::logger logger ;
 
@@ -306,7 +337,7 @@ utility2::result_ref< const favorites::entry& > favorites::readFavoriteByPath( c
 
 utility2::result< favorites::entry > favorites::readFavoriteByFileSystemPath( const QString& path ) const
 {
-	return _favorites( path ) ;
+	return this->fromPath( path ) ;
 }
 
 utility2::result_ref< const favorites::entry& > favorites::readFavorite( const QString& volumePath,
@@ -340,30 +371,20 @@ void favorites::replaceFavorite( const favorites::entry& old,const favorites::en
 	this->add( New ) ;
 }
 
-template< typename Function >
-static bool _remove( const favorites::entry& e,Function function,bool newFormat )
-{
-	auto s = function( e,newFormat ) ;
-
-	if( !s.isEmpty() && utility::pathExists( s ) ){
-
-		return QFile::remove( s ) ;
-	}else{
-		return false ;
-	}
-}
-
 void favorites::removeFavoriteEntry( const favorites::entry& e )
 {
-	if( _remove( e,_create_entry_path,false ) ){
+	auto s = favorites::findPath( e ) ;
 
-		this->reload() ;
+	if( s.isEmpty() ){
 
-	}else if( _remove( e,_create_entry_path,true ) ){
-
-		this->reload() ;
+		utility::debug() << "Failed To Find To Remove Favorite Entry: " + e.volumePath ;
 	}else{
-		utility::debug() << "Failed To Remove Favorite Entry: " + e.volumePath ;
+		if( QFile::remove( s ) ){
+
+			this->reload() ;
+		}else{
+			utility::debug() << "Failed To Remove Favorite Entry: " + e.volumePath ;
+		}
 	}
 }
 
