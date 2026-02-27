@@ -98,6 +98,7 @@ private:
 	void addEntryToTable( const volumeInfo& ) ;
 	void removeEntryFromTable( QString ) ;
 	void showFavorites() ;
+	void showFavoriteFromShortCut() ;
 	void openMountPointPath( const QString& ) ;
 	void openWith() ;
 	void slotOpenFolder() ;

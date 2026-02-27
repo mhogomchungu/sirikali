@@ -20,10 +20,6 @@
 #ifndef CHECKFORUPDATES_H
 #define CHECKFORUPDATES_H
 
-#include "network_support.h"
-
-#if HAS_NETWORK_SUPPORT
-
 #include <QFile>
 #include <QObject>
 #include <QWidget>
@@ -45,11 +41,6 @@ class checkUpdates : public QObject
 {
 	Q_OBJECT
 public:
-	static bool hasNetworkSupport()
-	{
-		return true ;
-	}
-
 	void checkIfInstalled() ;
 
 	void run() ;
@@ -97,31 +88,5 @@ private:
 
 	sirikali& m_sirikali ;
 } ;
-
-#else
-
-#include "checkforupdateswindow.h"
-
-class checkUpdates
-{
-public:
-	static bool hasNetworkSupport()
-	{
-		return false ;
-	}
-
-	void run( bool e )
-	{
-		Q_UNUSED( e )
-	}
-
-	checkUpdates( sirikali * widget )
-	{
-		Q_UNUSED( widget )
-		Q_UNUSED( function )
-	}
-} ;
-
-#endif
 
 #endif // CHECKFORUPDATES_H

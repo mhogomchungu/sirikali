@@ -536,7 +536,7 @@ void sirikali::setUpAppMenu()
 
 	auto ac = this->addAction( tr( "Check For Updates" ),"Check For Updates",&sirikali::updateCheck ) ;
 
-	ac->setEnabled( checkUpdates::hasNetworkSupport() ) ;
+	ac->setEnabled( true ) ;
 
 	m->addAction( ac ) ;
 
@@ -666,6 +666,13 @@ void sirikali::favoriteClickedA( QAction * ac )
 void sirikali::showFavorites()
 {
 	settings::instance().readFavorites( m_ui->pbFavorites->menu() ) ;
+}
+
+void sirikali::showFavoriteFromShortCut()
+{
+	auto m = m_ui->pbFavorites->menu() ;
+	settings::instance().readFavorites( m ) ;
+	m_ui->pbFavorites->click() ;
 }
 
 void sirikali::setLocalizationLanguage( bool translate )
@@ -1704,7 +1711,7 @@ void sirikali::setUpShortCuts()
 
 	QWidget::addAction( this->addAction( { modifier + Qt::Key::Key_E },&sirikali::favoriteClicked ) ) ;
 
-	QWidget::addAction( this->addAction( { modifier + Qt::Key::Key_F },&sirikali::showFavorites ) ) ;
+	QWidget::addAction( this->addAction( { modifier + Qt::Key::Key_F },&sirikali::showFavoriteFromShortCut ) ) ;
 
 	QWidget::addAction( this->addAction( { modifier+ Qt::Key::Key_U },&sirikali::pbUmount ) ) ;
 
@@ -1720,7 +1727,7 @@ void sirikali::setUpShortCuts()
 
 	QWidget::addAction( [ & ](){
 
-		auto e = this->addAction( { Qt::Key( Qt::CTRL ) + Qt::Key::Key_Q },&sirikali::closeApp )  ;
+		auto e = this->addAction( { modifier + Qt::Key::Key_Q },&sirikali::closeApp )  ;
 
 		e->setMenuRole( QAction::QuitRole ) ;
 

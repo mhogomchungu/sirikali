@@ -20,8 +20,6 @@
 
 #include "checkforupdates.h"
 
-#if HAS_NETWORK_SUPPORT
-
 #include "settings.h"
 #include "json_parser.hpp"
 #include "engines.h"
@@ -262,5 +260,3 @@ void checkUpdates::networkReply( int position,
 
 	this->checkForUpdate( position ) ;
 }
-
-#endif

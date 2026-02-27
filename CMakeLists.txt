@@ -203,8 +203,6 @@ file( WRITE ${PROJECT_BINARY_DIR}/version.h "
 #endif
 \n" )
 
-file(WRITE  ${PROJECT_BINARY_DIR}/network_support.h "\n#define HAS_NETWORK_SUPPORT 1\n")
-
 if( MCHUNGU_TASK_FOUND )
 
 	message( STATUS "---------------------------------------------------------------------------" )
