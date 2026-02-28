@@ -117,4 +117,5 @@ TRANSLATIONS = \
                ../translations/en_US.ts \
                ../translations/fr_FR.ts \
                ../translations/ru_RU.ts \
+               ../translations/pl_PL.ts \
                ../translations/zh_CN.ts

@@ -513,6 +513,7 @@ if( APPLE )
 	file( COPY translations/en_US.qm DESTINATION "sirikali.app/Contents/Resources/translations/" )
 	file( COPY translations/zh_CN.qm DESTINATION "sirikali.app/Contents/Resources/translations/" )
 	file( COPY translations/de_DE.qm DESTINATION "sirikali.app/Contents/Resources/translations/" )
+	file( COPY translations/pl_PL.qm DESTINATION "sirikali.app/Contents/Resources/translations/" )
 	#file( COPY translations/es_MX.qm DESTINATION "sirikali.app/Contents/Resources/translations/" )
 
 	file( COPY changelog DESTINATION "sirikali.app/Contents/Resources/" )
@@ -527,6 +528,7 @@ else()
 
 		install( FILES src/flatpak/io.github.mhogomchungu.sirikali.desktop DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications )
 
+		install( FILES translations/pl_PL.qm DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/sirikali/translations )
 		install( FILES translations/fr_FR.qm DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/sirikali/translations )
 		install( FILES translations/ru_RU.qm DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/sirikali/translations )
 		install( FILES translations/es_ES.qm DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/sirikali/translations )
@@ -545,6 +547,7 @@ else()
 		install( FILES src/sirikali.png DESTINATION           ${CMAKE_INSTALL_DATAROOTDIR}/pixmaps )
 		install( FILES src/sirikali.png DESTINATION           ${CMAKE_INSTALL_DATAROOTDIR}/icons )
 
+		install( FILES translations/pl_PL.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 		install( FILES translations/fr_FR.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 		install( FILES translations/ru_RU.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
 		install( FILES translations/es_ES.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/sirikali/translations )
