@@ -396,6 +396,10 @@ Il doit se terminer avec un des termes suivants : &quot;%1&quot;</translation>
         <source>Automatically Unmount After Specified Seconds of Inactivity Is Reached.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Polish (PL)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>changePassWordDialog</name>

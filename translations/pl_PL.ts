@@ -399,6 +399,10 @@ opcje:
         <source>Automatically Unmount After Specified Seconds of Inactivity Is Reached.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Polish (PL)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>changePassWordDialog</name>
@@ -429,32 +433,6 @@ opcje:
     <message>
         <source>&amp;Cancel</source>
         <translation>&amp;Anuluj</translation>
-    </message>
-    <message>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Monospace&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;An application &apos;&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt; font-weight:600;&quot;&gt;%1&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;&apos; has made a request for a password of its wallet &apos;&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt; font-weight:600;&quot;&gt;%2&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;&apos; to be changed&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li {biała spacja: zawijanie wstępne; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot;font-family:&apos;Monospace&apos;; rozmiar czcionki:10pt; waga-czcionki:400; styl czcionki:normalny;&quot;&gt;
-&lt;p style=&quot; margines-top:0px; margines-dolny:0px; margines-left:0px; margines-prawy:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; czcionki-family:&apos;Sans Serif&apos;; rozmiar czcionki:9pt;&quot;&gt;Aplikacja &apos;&lt;/span&gt;&lt;span style=&quot;font-family:&apos;Sans Serif&apos;; rozmiar czcionki:9pt; waga czcionki:600;&quot;&gt;%1&lt;/span&gt;&lt;span style=&quot;font-family:&apos;Sans Serif&apos;; rozmiar czcionki:9pt;&quot;&gt;&apos; wysłał prośbę o hasło do swojego portfela &quot;&lt;/span&gt;&lt;span style=&quot;font-family:&apos;Sans Serif&apos;; rozmiar czcionki:600;&quot;&gt;%2&lt;/span&gt;&lt;span style=&quot;font-family:&apos;Sans Serif&apos;; rozmiar czcionki:9pt;&quot;&gt;&apos; do zmiany&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margines-górny:0px; margines-dolny:0px; margines-lewy:0px; margines-prawy:0px; -qt-block-indent:0; text-indent:0px; rodzina czcionek:&apos;Sans Serif&apos;; rozmiar czcionki:9pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Monospace&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;Enter password information below to create a new wallet &apos;&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt; font-weight:600;&quot;&gt;%1&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;&apos; for application &apos;&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt; font-weight:600;&quot;&gt;%2&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt;&quot;&gt;&apos;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li {biała spacja: zawijanie wstępne; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot;font-family:&apos;Monospace&apos;; rozmiar czcionki:10pt; waga-czcionki:400; styl czcionki:normalny;&quot;&gt;
-&lt;p style=&quot; margines-top:0px; margines-dolny:0px; margines-left:0px; margines-prawo:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; Font-family:&apos;Sans Serif&apos;; Font-size:9pt;&quot;&gt;Wprowadź poniżej hasło, aby utworzyć nowy portfel &apos;&lt;/span&gt;&lt;span style=&quot; Font-family:&apos;Sans Serif&apos;; rozmiar czcionki:9pt; waga czcionki:600;&quot;&gt;%1&lt;/span&gt;&lt;span style=&quot;font-family:&apos;Sans Serif&apos;; rozmiar czcionki:9pt;&quot;&gt;&apos; dla aplikacji &apos;&lt;/span&gt;&lt;span style=&quot; Font-family:&apos;Bezszeryfowy&apos;; rozmiar czcionki:600;&quot;&gt;%2&lt;/span&gt;&lt;span style=&quot;font-family:&apos;Sans Serif&apos;; rozmiar czcionki:9pt;&quot;&gt;&apos;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;

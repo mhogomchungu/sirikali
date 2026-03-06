@@ -350,3 +350,9 @@ version 1.4.2(December 18,2019)
 -- Update Kde platform to version 6.10.
    [ALL]
 -- Maintanance release.
+
+   version 1.8.6(March 6th, 2026)
+   [ALL]
+-- Make it possible to set in favorites the key source to unlock a volume.
+-- Fix a bug that caused an option to unlock a window without showing password dialog to be ignored.
+-- Add Polish translations.

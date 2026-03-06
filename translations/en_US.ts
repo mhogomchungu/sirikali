@@ -353,6 +353,10 @@ options:
         <source>Automatically Unmount After Specified Seconds of Inactivity Is Reached.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Polish (PL)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>changePassWordDialog</name>

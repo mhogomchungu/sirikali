@@ -39,6 +39,17 @@
 	</categories>
 
 	<releases>
+	<release version="1.8.6" type="stable" date="2025-03-06" >
+		<url type="details">https://github.com/mhogomchungu/sirikali/releases/download/1.8.6/sirikali-1.8.6.tar.xz/</url>
+			<description>
+				<p>Changelog</p>
+				<ul>
+					<li>Make it possible to set in favorites the key source to unlock a volume</li>
+					<li>Fix a bug that caused an option to unlock a window without showing password dialog to be ignored</li>
+					<li>Add Polish translations</li>
+				</ul>
+			</description>
+	</release>
 		<release version="1.8.5" type="stable" date="2025-01-27" >
 		<url type="details">https://github.com/mhogomchungu/sirikali/releases/download/1.8.5/sirikali-1.8.5.tar.xz/</url>
 			<description>

@@ -1004,7 +1004,7 @@ void settings::setLocalizationLanguage( bool translate,
 					QMenu * m,
 					settings::translator& translator )
 {
-	auto r = settings::instance().localizationLanguage().toLatin1() ;
+	auto r = settings::instance().localizationLanguage().toUtf8() ;
 
 	if( translate ){
 
@@ -1672,6 +1672,7 @@ settings::translator::translator()
 	m_languages.emplace_back( QObject::tr( "French (FR)" ),"French (FR)","fr_FR" ) ;
 	m_languages.emplace_back( QObject::tr( "German (DE)" ),"German (DE)","de_DE" ) ;
 	m_languages.emplace_back( QObject::tr( "English (US)" ),"English (US)","en_US" ) ;
+	m_languages.emplace_back( QObject::tr( "Polish (PL)" ),"Polish (PL)","pl_PL" ) ;
 	m_languages.emplace_back( QObject::tr( "Swedish (SE)" ),"Swedish (SE)","sv_SE" ) ;
 	m_languages.emplace_back( QObject::tr( "Arabic (SA)" ) ,"Arabic (SA)","ar_SA" ) ;
 	m_languages.emplace_back( QObject::tr( "Spanish (MX)" ),"Spanish (MX)","es_MX" ) ;
