@@ -72,12 +72,9 @@ void createBackendWIndow::save()
 
 	QString path ;
 
-	if( utility::platformIsWindows() ){
-
-		path = QDir::homePath() + "/Desktop/" + pluginname + ".json" ;
-	}else{
-		path = QDir::homePath() + "/" + pluginname + ".json" ;
-	}
+	path = utility::platformIsWindows()
+		? QDir::homePath() + "/Desktop/" + pluginname + ".json"
+		: QDir::homePath() + "/" + pluginname + ".json" ;
 
 	if( utility::pathExists( path ) ){
 
@@ -126,16 +123,10 @@ void createBackendWIndow::save()
 	SirikaliJson config( logger.function() ) ;
 
 	auto _addList = [ & ]( const QString& e ){
-
-		if( e.isEmpty() ){
-
-			return QStringList() ;
-		}else{
-			return utility::split( e,',' ) ;
-		}
+		return e.isEmpty() ? QStringList() : utility::split( e,',' ) ;
 	} ;
 
-	QStringList emptyStringList ;
+	const QStringList emptyStringList ;
 
 	config[ "createControlStructure" ]      = m_ui->lineEditCreateControlStructure->text() ;
 	config[ "mountControlStructure" ]       = m_ui->lineEditMountControlStructure->text() ;
@@ -145,7 +136,6 @@ void createBackendWIndow::save()
 	config[ "unMountCommand" ]              = emptyStringList ;
 	config[ "windowsUnMountCommand" ]       = emptyStringList ;
 	config[ "fileExtensions" ]              = emptyStringList ;
-	config[ "unMountCommand" ]              = emptyStringList ;
 	config[ "volumePropertiesCommands" ]    = emptyStringList ;
 	config[ "passwordFormat" ]              = "%{password}" ;
 	config[ "defaultFavoritesMountOptions" ]    = "" ;
