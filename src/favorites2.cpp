@@ -1347,9 +1347,13 @@ void favorites2::updateFavorite( bool edit )
 
 		auto b = "port=" + a ;
 
-		if( !a.isEmpty() && a != "22" ){
+		auto volumePath = utility::likeSshRemovePortNumber( e.volumePath ) ;
 
-			e.volumePath = utility::likeSshaddPortNumber( e.volumePath,a ) ;
+		if( a.isEmpty() || a == "22" ){
+
+			e.volumePath = volumePath ;
+		}else{
+			e.volumePath = utility::likeSshaddPortNumber( volumePath,a ) ;
 
 			if( e.mountOptions.isEmpty() ){
 

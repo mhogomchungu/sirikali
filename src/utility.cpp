@@ -1379,7 +1379,6 @@ QString utility::removeLastPathComponent( const QString& e,char separator )
 	return separator + s.join( separator ) ;
 }
 
-
 QString utility::likeSshaddPortNumber( const QString& path,const QString& port )
 {
 	return path + settings::instance().portSeparator() + port ;
