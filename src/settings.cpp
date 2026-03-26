@@ -624,7 +624,20 @@ void settings::scaleGUI()
 
 cmd::exe settings::fileManager()
 {
-	if( utility::platformIsFlatPak() ){
+	if( utility::platformIsWindows() ){
+
+		auto e = m_settings.value( "WindowsFileManagerOpener" ).toString() ;
+
+		if( e.isEmpty() ){
+
+			this->setFileManager( QString() ) ;
+
+			return m_settings.value( "WindowsFileManagerOpener" ).toString() ;
+		}else{
+			return e ;
+		}
+
+	}else if( utility::platformIsFlatPak() ){
 
 		if( !m_settings.contains( "Xdg-Open" ) ){
 
@@ -1105,7 +1118,16 @@ void settings::setStartMinimized( bool e )
 
 void settings::setFileManager( const QString& e )
 {
-	if( e.isEmpty() ){
+	if( utility::platformIsWindows() ){
+
+		if( e.isEmpty() ){
+
+			m_settings.setValue( "WindowsFileManagerOpener","Default" ) ;
+		}else{
+			m_settings.setValue( "WindowsFileManagerOpener",e ) ;
+		}
+
+	}else if( e.isEmpty() ){
 
 		m_settings.setValue( "FileManagerOpener",_file_manager() ) ;
 	}else{

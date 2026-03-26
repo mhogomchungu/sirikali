@@ -111,7 +111,7 @@ public:
 			m_tv.tv_sec  = sec ;
 			m_tv.tv_usec = usec ;
 
-			FD_ZERO( &m_rfds ) ;
+			m_rfds.zero() ;
 		}
 		template< typename Function >
 		void poll( Function&& function ) const
@@ -120,12 +120,12 @@ public:
 
 			while( true ){
 
-				FD_SET( m_fd,&m_rfds ) ;
+				m_rfds.set( m_fd ) ;
 
 				tv.tv_sec  = m_tv.tv_sec ;
 				tv.tv_usec = m_tv.tv_usec ;
 
-				auto r = select( m_fd + 1,&m_rfds,nullptr,nullptr,&tv ) ;
+				auto r = sirikali_select( m_fd + 1,m_rfds.get(),nullptr,nullptr,&tv ) ;
 
 				if( function( r ) ){
 
@@ -135,7 +135,7 @@ public:
 		}
 	private:
 		int m_fd ;
-		mutable fd_set m_rfds ;
+		mutable sirikali_fd_set m_rfds ;
 		struct timeval m_tv ;
 	} ;
 

@@ -81,6 +81,10 @@
 
 #include <sys/vfs.h>
 
+static bool _windows_open_path( const QString& )
+{
+}
+
 bool utility::platformIsLinux()
 {
 	return true ;
@@ -103,6 +107,10 @@ bool utility::platformIsWindows()
 #include <sys/param.h>
 #include <sys/mount.h>
 
+static bool _windows_open_path( const QString& )
+{
+}
+
 bool utility::platformIsLinux()
 {
 	return false ;
@@ -121,6 +129,55 @@ bool utility::platformIsWindows()
 #endif
 
 #ifdef Q_OS_WIN
+
+#include <windows.h>
+
+#include <shlobj.h>
+
+static std::wstring _get_first_entry( const QString& e )
+{
+	auto s = e.toStdWString() ;
+
+	if( *s.rbegin() == L'\\' ){
+
+		s += L"*" ;
+	}else{
+		s += L"\\*" ;
+	}
+
+	WIN32_FIND_DATAW data ;
+
+	memset( &data.cFileName,'\0',sizeof( data.cFileName ) ) ;
+
+	auto handle = FindFirstFileW( s.data(),&data ) ;
+
+	if( handle == INVALID_HANDLE_VALUE ){
+
+		return e.toStdWString() ;
+	}else{
+		FindClose( handle ) ;
+
+		s = e.toStdWString() ;
+		s += L"\\" ;
+		s += data.cFileName ;
+
+		return s ;
+	}
+}
+
+static void _windows_open_path( const QString& e )
+{
+	auto path = _get_first_entry( e ) ;
+
+	auto pidl = ILCreateFromPathW( path.c_str() ) ;
+
+	if( pidl ){
+
+		SHOpenFolderAndSelectItems( pidl,0,nullptr,0 ) ;
+
+		ILFree( pidl ) ;
+	}
+}
 
 bool utility::platformIsLinux()
 {
@@ -512,7 +569,11 @@ void utility::openPath( const QString& path,const cmd::exe& fm,
 {
 	if( !path.isEmpty() ){
 
-		if( utility::platformIsFlatPak() ){
+		if( utility::platformIsWindows() && fm.command() == "Default" ){
+
+			_windows_open_path( path ) ;
+
+		}else if( utility::platformIsFlatPak() ){
 
 			logger l ;
 
