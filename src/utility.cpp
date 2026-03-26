@@ -83,6 +83,7 @@
 
 static bool _windows_open_path( const QString& )
 {
+	return false ;
 }
 
 bool utility::platformIsLinux()
@@ -109,6 +110,7 @@ bool utility::platformIsWindows()
 
 static bool _windows_open_path( const QString& )
 {
+	return false ;
 }
 
 bool utility::platformIsLinux()

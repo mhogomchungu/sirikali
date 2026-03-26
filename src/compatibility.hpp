@@ -112,6 +112,28 @@ private:
 
 #else
 
+template< typename ... Args >
+int sirikali_select( Args&& ... )
+{
+	return -1 ;
+}
+
+class sirikali_fd_set
+{
+public:
+	int * get()
+	{
+		return nullptr ;
+	}
+	void zero()
+	{
+	}
+	void set( int )
+	{
+	}
+private:
+};
+
 const static int IN_CREATE = 0 ;
 const static int IN_DELETE = 0 ;
 
@@ -145,28 +167,6 @@ static inline int inotify_add_watch( int a,const char * b,size_t c )
 #endif
 
 #ifdef Q_OS_WIN
-
-template< typename ... Args >
-int sirikali_select( Args&& ... )
-{
-	return -1 ;
-}
-
-class sirikali_fd_set
-{
-public:
-	int * get()
-	{
-		return nullptr ;
-	}
-	void zero()
-	{
-	}
-	void set( int )
-	{
-	}
-private:
-};
 
 extern "C"
 {
@@ -239,31 +239,6 @@ static inline int tcsetattr( int a,int b,struct termios * c )
 #include <poll.h>
 #include <sys/select.h>
 #include <termios.h>
-
-template< typename ... Args >
-int sirikali_select( Args&& ... args )
-{
-	return select( std::forward< Args >( args ) ... ) ;
-}
-
-class sirikali_fd_set
-{
-public:
-	fd_set * get()
-	{
-		return &m_fd_set ;
-	}
-	void zero()
-	{
-		FD_ZERO( this->get() ) ;
-	}
-	void set( int fd )
-	{
-		FD_SET( fd,this->get() ) ;
-	}
-private:
-	fd_set m_fd_set ;
-};
 
 #endif
 
