@@ -29,14 +29,21 @@ static engines::engine::BaseOptions _setOptions()
 {
 	engines::engine::BaseOptions s ;
 
+	if( utility::platformIsWindows() ){
+
+		s.autoCreatesMountPoint = true ;
+		s.autoDeletesMountPoint = true ;
+	}else{
+		s.autoCreatesMountPoint = false ;
+		s.autoDeletesMountPoint = false ;
+	}
+
 	s.backendTimeout              = 0 ;
 	s.takesTooLongToUnlock        = false ;
-	s.supportsMountPathsOnWindows = false ;
+	s.supportsMountPathsOnWindows = true ;
 	s.autorefreshOnMountUnMount   = true ;
 	s.backendRequireMountPath     = true ;
 	s.backendRunsInBackGround     = true ;
-	s.autoCreatesMountPoint       = false ;
-	s.autoDeletesMountPoint       = false ;
 	s.usesOnlyMountPoint          = false ;
 	s.usesFuseArgumentSwitch      = true ;
 	s.likeSsh               = false ;
