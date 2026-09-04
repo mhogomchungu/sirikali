@@ -794,20 +794,27 @@ QStringList utility::directoryList( const QString& e )
 	return s ;
 }
 
-QIcon utility::getIcon( iconType type )
+static QIcon _icon()
 {
-	if( utility::platformIsLinux() ){
+	if( utility::platformIsFlatPak() ){
 
-		QIcon icon( INSTALL_PREFIX "/share/icons/hicolor/48x48/apps/sirikali.png" ) ;
+		return QIcon( INSTALL_PREFIX "/share/icons/hicolor/48x48/apps/io.github.mhogomchungu.sirikali.png" ) ;
 
-		if( type == utility::iconType::trayIcon ){
+	}else if( utility::platformIsLinux() ){
 
-			return QIcon::fromTheme( "sirikali-panel",icon ) ;
-		}else{
-			return QIcon::fromTheme( "sirikali",icon ) ;
-		}
+		return QIcon( INSTALL_PREFIX "/share/icons/hicolor/48x48/apps/sirikali.png" ) ;
 	}else{
 		return QIcon( ":sirikali" ) ;
+	}
+}
+
+QIcon utility::getIcon( iconType type )
+{
+	if( type == utility::iconType::trayIcon ){
+
+		return QIcon::fromTheme( "sirikali-panel",_icon() ) ;
+	}else{
+		return QIcon::fromTheme( "sirikali",_icon() ) ;
 	}
 }
 
