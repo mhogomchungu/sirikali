@@ -29,6 +29,8 @@ debugWindow::debugWindow( QWidget * parent ) :
 
 	this->window()->setFixedSize( this->window()->size() ) ;
 
+	this->window()->setWindowIcon( utility::getIcon( utility::iconType::general ) ) ;
+
 	m_ui->pbClose->setFocus() ;
 
 	connect( m_ui->pbClear,&QPushButton::clicked,[ this ](){
